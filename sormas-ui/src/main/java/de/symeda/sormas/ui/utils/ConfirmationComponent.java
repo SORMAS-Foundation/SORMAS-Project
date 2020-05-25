@@ -64,32 +64,23 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
-			confirmButton = new Button(I18nProperties.getCaption(Captions.actionConfirm));
-			confirmButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
-			confirmButton.addClickListener(new ClickListener() {
-				public void buttonClick(ClickEvent event) {
-					onConfirm();
-					onDone();
-				}
-			});
+			confirmButton = ButtonHelper.createButton(Captions.actionConfirm, event -> {
+				onConfirm();
+				onDone();
+			}, ValoTheme.BUTTON_PRIMARY);
 		}
+
 		return confirmButton;
 	}
 	
 	public Button getCancelButton() {
 		if (cancelButton == null) {
-			cancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
-			cancelButton.addStyleName(ValoTheme.BUTTON_LINK);
-
-			cancelButton.addClickListener(new ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					onCancel();
-					onDone();
-				}
-			});
+			cancelButton = ButtonHelper.createButton(Captions.actionCancel, event -> {
+				onCancel();
+				onDone();
+			}, ValoTheme.BUTTON_LINK);
 		}
+
 		return cancelButton;
 	}
 

@@ -37,9 +37,11 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -63,11 +65,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private VerticalLayout gridLayout;
 	protected PointsOfEntryGrid grid;
 	protected Button createButton;
-	protected Button importButton;
 	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
-	private MenuItem archiveItem;
-	private MenuItem dearchiveItem;
 
 	public PointsOfEntryView() {
 		super(VIEW_NAME);
@@ -89,24 +88,20 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
-			Button importButton = new Button(I18nProperties.getCaption(Captions.actionImport));
-			importButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			importButton.setIcon(VaadinIcons.UPLOAD);
-			importButton.addClickListener(e -> {
+			Button importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.POINT_OF_ENTRY));
 				window.setCaption(I18nProperties.getString(Strings.headingImportPointsOfEntry));
 				window.addCloseListener(c -> {
 					grid.reload();
 				});
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(importButton);
 		}
 		
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-			exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			exportButton.setIcon(VaadinIcons.TABLE);
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_pointsofentry", "sormas_pointsofentry_" + DateHelper.formatDateForExport(new Date()) + ".csv", PointsOfEntryGrid.EDIT_BTN_ID);
@@ -115,24 +110,18 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.actionNewEntry));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createPointOfEntry());
+			createButton = ButtonHelper.createIconButton(Captions.actionNewEntry, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getInfrastructureController().createPointOfEntry(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(createButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionEnterBulkEditMode));
-			btnEnterBulkEditMode.setId("enterBulkEditMode");
-			btnEnterBulkEditMode.setIcon(VaadinIcons.CHECK_SQUARE_O);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
 
-			Button btnLeaveBulkEditMode = new Button(I18nProperties.getCaption(Captions.actionLeaveBulkEditMode));
-			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
-			btnLeaveBulkEditMode.setIcon(VaadinIcons.CLOSE);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			btnLeaveBulkEditMode.setStyleName(ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(btnLeaveBulkEditMode);
@@ -166,6 +155,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		searchField = new TextField();
+		searchField.setId("search");
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptSearch));
@@ -177,6 +167,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.addComponent(searchField);
 
 		regionFilter = new ComboBox();
+		regionFilter.setId(PointOfEntryDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
 		regionFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.REGION));
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -190,6 +181,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.addComponent(regionFilter);
 
 		districtFilter = new ComboBox();
+		districtFilter.setId(PointOfEntryDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.DISTRICT));
 		districtFilter.addValueChangeListener(e -> {
@@ -199,6 +191,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.addComponent(districtFilter);
 
 		typeFilter = new ComboBox();
+		typeFilter.setId(PointOfEntryDto.POINT_OF_ENTRY_TYPE);
 		typeFilter.setWidth(140, Unit.PIXELS);
 		typeFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.POINT_OF_ENTRY_TYPE));
 		typeFilter.addItems(PointOfEntryType.values());
@@ -209,6 +202,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		filterLayout.addComponent(typeFilter);
 
 		activeFilter = new ComboBox();
+		activeFilter.setId(PointOfEntryDto.ACTIVE);
 		activeFilter.setWidth(140, Unit.PIXELS);
 		activeFilter.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.ACTIVE));
 		activeFilter.addItem(Boolean.TRUE);
@@ -221,13 +215,12 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		});
 		filterLayout.addComponent(activeFilter);
 
-		resetButton = new Button(I18nProperties.getCaption(Captions.actionResetFilters));
-		resetButton.setVisible(false);
-		CssStyles.style(resetButton, CssStyles.FORCE_CAPTION);
-		resetButton.addClickListener(event -> {
+		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(PointsOfEntryView.class).remove(PointOfEntryCriteria.class);
 			navigateTo(null);
-		});
+		}, CssStyles.FORCE_CAPTION);
+		resetButton.setVisible(false);
+
 		filterLayout.addComponent(resetButton);
 
 		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
@@ -236,6 +229,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW_ARCHIVED)) {
 				relevanceStatusFilter = new ComboBox();
+				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
@@ -250,28 +244,22 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 				// Bulk operation dropdown
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					bulkOperationsDropdown = new MenuBar();	
-					MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-					Command archiveCommand = selectedItem -> {
-						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
-					};
-					archiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, archiveCommand);
-					archiveItem.setVisible(EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus()));
-
-					Command dearchiveCommand = selectedItem -> {
-						ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
-					};
-					dearchiveItem = bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, dearchiveCommand);
-					dearchiveItem.setVisible(EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()));
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+									public void run() {
+										navigateTo(criteria);
+									}
+								});
+							}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
+									public void run() {
+										navigateTo(criteria);
+									}
+								});
+							}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()))
+					);
 
 					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);

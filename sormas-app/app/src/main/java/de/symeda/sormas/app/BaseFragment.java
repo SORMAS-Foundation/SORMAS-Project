@@ -19,6 +19,7 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,8 +28,16 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 
@@ -87,7 +96,40 @@ public class BaseFragment extends Fragment {
 
     protected boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
         String propertyId = field.getSubPropertyId();
-        return Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+        final boolean definedOrMissingForDisease = Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
+        final boolean fieldHiddenForCurrentCountry = isFieldHiddenForCurrentCountry(propertyId, dtoClass);
+        return definedOrMissingForDisease && !fieldHiddenForCurrentCountry;
+    }
+
+    private boolean isFieldHiddenForCurrentCountry(Object propertyId, Class<?> dtoClass) {
+        try {
+            final java.lang.reflect.Field declaredField =
+                    dtoClass.getDeclaredField(propertyId.toString());
+            final String countryLocale = ConfigProvider.getServerLocale().toLowerCase();
+            if (declaredField.isAnnotationPresent(HideForCountries.class)) {
+                final String[] hideForCountries = Objects.requireNonNull(declaredField.getAnnotation(HideForCountries.class)).countries();
+                for (String country : hideForCountries) {
+                    if (countryLocale.startsWith(country)) {
+                        return true;
+                    }
+                }
+            }
+            if (declaredField.isAnnotationPresent(HideForCountriesExcept.class)) {
+                final String[] hideForCountriesExcept = Objects.requireNonNull(declaredField.getAnnotation(HideForCountriesExcept.class)).countries();
+                boolean countryIncluded = false;
+                for (String country : hideForCountriesExcept) {
+                    if (countryLocale.startsWith(country)) {
+                        countryIncluded = true;
+                    }
+                }
+                if (!countryIncluded) {
+                    return true;
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
+        return false;
     }
 
     protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {

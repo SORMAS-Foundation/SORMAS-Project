@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 
@@ -90,8 +91,7 @@ public class AboutView extends VerticalLayout implements View {
 		documentsLayout.setMargin(false);
 		aboutContent.addComponent(documentsLayout, "documents");
 		
-		Button classificationDocumentButton = new Button(I18nProperties.getCaption(Captions.aboutCaseClassificationRules));
-		CssStyles.style(classificationDocumentButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+		Button classificationDocumentButton = ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(classificationDocumentButton);
 
 		try {
@@ -103,8 +103,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		}
 
-		Button dataDictionaryButton = new Button(I18nProperties.getCaption(Captions.aboutDataDictionary));
-		CssStyles.style(dataDictionaryButton, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+		Button dataDictionaryButton = ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 		documentsLayout.addComponent(dataDictionaryButton);
 		FileDownloader dataDictionaryDownloader = new FileDownloader(new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		dataDictionaryDownloader.extend(dataDictionaryButton);

@@ -135,7 +135,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 	}
 	
 	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ClinicalVisit, ClinicalVisit> path, Timestamp date) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ClinicalVisit> path, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(path.get(ClinicalVisit.CHANGE_DATE), date);
 		
 		Join<ClinicalVisit, Symptoms> symptoms = path.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);

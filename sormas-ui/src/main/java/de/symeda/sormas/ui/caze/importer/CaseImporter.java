@@ -67,6 +67,7 @@ import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -520,8 +521,7 @@ public class CaseImporter extends DataImporter {
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 				component.getCommitButton().setEnabled(false);
 
-				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
-				skipButton.addClickListener(e -> {
+				Button skipButton = ButtonHelper.createButton(Captions.actionSkip, e -> {
 					component.removeDiscardListener(discardListener);
 					component.discard();
 					resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));

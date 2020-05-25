@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -41,7 +42,6 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.util.LocationService;
-//import kotlin.NotImplementedError;
 
 public class VisitDao extends AbstractAdoDao<Visit> {
 
@@ -108,18 +108,18 @@ public class VisitDao extends AbstractAdoDao<Visit> {
             where.eq(Visit.VISIT_STATUS, visitStatus);
         }
 
-        // see sormas-backend/VisitService.getAllByContact()
-        Date contactReferenceDate = contact.getLastContactDate() != null ? contact.getLastContactDate() : contact.getReportDateTime();
-        Date lowerLimit = DateHelper.subtractDays(contactReferenceDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+        Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+        Date contactEndDate = ContactLogic.getEndDate(contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil());
+        Date lowerLimit = DateHelper.subtractDays(contactStartDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
         if (lowerLimit != null) {
             where.and();
-            where.gt(Visit.VISIT_DATE_TIME, lowerLimit);
+            where.ge(Visit.VISIT_DATE_TIME, lowerLimit);
         }
 
-        Date upperLimit = DateHelper.addDays(contact.getFollowUpUntil(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+        Date upperLimit = DateHelper.addDays(contactEndDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
         if (upperLimit != null) {
             where.and();
-            where.lt(Visit.VISIT_DATE_TIME, upperLimit);
+            where.le(Visit.VISIT_DATE_TIME, upperLimit);
         }
     }
 
@@ -143,13 +143,6 @@ public class VisitDao extends AbstractAdoDao<Visit> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * new visit is assigned to the contact's person and has the same disease as the contact's case
-     * @param contactUuid
-     * @return
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     */
     @NonNull
     public Visit build(String contactUuid) {
         Contact contact = DatabaseHelper.getContactDao().queryUuid(contactUuid);

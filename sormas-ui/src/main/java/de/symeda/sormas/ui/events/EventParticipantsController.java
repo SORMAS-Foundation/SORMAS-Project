@@ -54,9 +54,10 @@ public class EventParticipantsController {
 	
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef);
-		EventParticipantCreateForm createForm = new EventParticipantCreateForm(UserRight.EVENTPARTICIPANT_CREATE);
+		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
 		
 		createComponent.addCommitListener(new CommitListener() {
 			@Override
@@ -90,9 +91,10 @@ public class EventParticipantsController {
 	
 	public void editEventParticipant(String eventParticipantUuid) {
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), UserRight.EVENTPARTICIPANT_EDIT);
+		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()));
 		editForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT), editForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEventParticipant));
         // form is too big for typical screens

@@ -17,30 +17,26 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.symptoms.SymptomsForm;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 public class CaseSymptomsView extends AbstractCaseView {
 
 	private static final long serialVersionUID = -1L;
-	
+
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/symptoms";
 
-    public CaseSymptomsView() {
-    	super(VIEW_NAME);
-    }
+	public CaseSymptomsView() {
+		super(VIEW_NAME, true);
+	}
 
-    @Override
-    public void enter(ViewChangeEvent event) {
-    	super.enter(event);
-    	
-    	if (getViewMode() == ViewMode.SIMPLE) {
-    		ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
-    		return;
-    	}
+	@Override
+	protected void initView(String params) {
 
-    	setSubComponent(ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode()));
-    }
+		CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent =
+			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
+		setSubComponent(caseSymptomsComponent);
+		setCaseEditPermission(caseSymptomsComponent);
+	}
 }

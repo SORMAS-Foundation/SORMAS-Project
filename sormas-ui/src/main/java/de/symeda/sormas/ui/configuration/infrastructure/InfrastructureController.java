@@ -45,6 +45,7 @@ import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -118,9 +119,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
 		boolean isNew = facility == null;
-		FacilityEditForm editForm = new FacilityEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT,
-				isNew, laboratory);
+		FacilityEditForm editForm = new FacilityEditForm(isNew, laboratory);
 		if (isNew) {
 			facility = FacilityDto.build();
 			if (laboratory) {
@@ -131,7 +130,7 @@ public class InfrastructureController {
 		editForm.setValue(facility);
 
 		final CommitDiscardWrapperComponent<FacilityEditForm> editView = new CommitDiscardWrapperComponent<FacilityEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -157,8 +156,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<RegionEditForm> getRegionEditComponent(RegionDto region) {
 		boolean isNew = region == null;
-		RegionEditForm editForm = new RegionEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		RegionEditForm editForm = new RegionEditForm(isNew);
 		if (isNew) {
 			region = RegionDto.build();
 		}
@@ -166,7 +164,7 @@ public class InfrastructureController {
 		editForm.setValue(region);
 
 		final CommitDiscardWrapperComponent<RegionEditForm> editView = new CommitDiscardWrapperComponent<RegionEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -187,8 +185,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<DistrictEditForm> getDistrictEditComponent(DistrictDto district) {
 		boolean isNew = district == null;
-		DistrictEditForm editForm = new DistrictEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		DistrictEditForm editForm = new DistrictEditForm(isNew);
 		if (isNew) {
 			district = DistrictDto.build();
 		}
@@ -196,7 +193,7 @@ public class InfrastructureController {
 		editForm.setValue(district);
 
 		final CommitDiscardWrapperComponent<DistrictEditForm> editView = new CommitDiscardWrapperComponent<DistrictEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -217,8 +214,7 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<CommunityEditForm> getCommunityEditComponent(CommunityDto community) {
 		boolean isNew = community == null;
-		CommunityEditForm editForm = new CommunityEditForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		CommunityEditForm editForm = new CommunityEditForm(isNew);
 		if (isNew) {
 			community = CommunityDto.build();
 		}
@@ -226,7 +222,7 @@ public class InfrastructureController {
 		editForm.setValue(community);
 
 		final CommitDiscardWrapperComponent<CommunityEditForm> editView = new CommitDiscardWrapperComponent<CommunityEditForm>(
-				editForm, editForm.getFieldGroup());
+				editForm, UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), editForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -247,15 +243,15 @@ public class InfrastructureController {
 
 	private CommitDiscardWrapperComponent<PointOfEntryForm> getPointOfEntryEditComponent(PointOfEntryDto pointOfEntry) {
 		boolean isNew = pointOfEntry == null;
-		PointOfEntryForm form = new PointOfEntryForm(
-				isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT, isNew);
+		PointOfEntryForm form = new PointOfEntryForm(isNew);
 		if (isNew) {
 			pointOfEntry = PointOfEntryDto.build();
 		}
 
 		form.setValue(pointOfEntry);
 
-		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<PointOfEntryForm> view = new CommitDiscardWrapperComponent<PointOfEntryForm>(form, 
+				UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT), form.getFieldGroup());
 		view.addCommitListener(() -> {
 			FacadeProvider.getPointOfEntryFacade().save(form.getValue());
 			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
@@ -272,34 +268,28 @@ public class InfrastructureController {
 
 	private void extendEditComponentWithArchiveButton(CommitDiscardWrapperComponent<?> component, boolean isArchived, String uuid, InfrastructureType infrastructureType, FacilityType facilityType) {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
-			Button archiveButton = new Button();
-			archiveButton.addStyleName(ValoTheme.BUTTON_LINK);
-			if (isArchived) {
-				archiveButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
-			} else {
-				archiveButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
-			}
-			archiveButton.addClickListener(e -> {
-				if (!isArchived) {
-					if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
-							InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))) {
-						showArchivingNotPossibleWindow(infrastructureType, false);
-						return;
-					}
-				} else {
-					if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
-							InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
-						showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
-						return;
-					}
-				}
-				
-				component.commit();
-				archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
-			});
+			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchive : Captions.actionArchive,
+					e -> {
+						if (!isArchived) {
+							if (InfrastructureType.REGION.equals(infrastructureType) && FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+									InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid)) ||
+									InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))) {
+								showArchivingNotPossibleWindow(infrastructureType, false);
+								return;
+							}
+						} else {
+							if (InfrastructureType.DISTRICT.equals(infrastructureType) && FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.COMMUNITY.equals(infrastructureType) && FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.FACILITY.equals(infrastructureType) && FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid)) ||
+									InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType) && FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
+								showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
+								return;
+							}
+						}
+
+						component.commit();
+						archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
+					}, ValoTheme.BUTTON_LINK);
 
 			component.getButtonsPanel().addComponentAsFirst(archiveButton);
 			component.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);

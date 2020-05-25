@@ -29,7 +29,9 @@ import com.vaadin.ui.themes.ValoTheme;
 public abstract class PaginationList<T> extends VerticalLayout {
 
 	private static final long serialVersionUID = -1949084832307944448L;
-	
+	public static final String[] BUTTON_STYLES = {ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL};
+	public static final String[] CURRENT_BUTTON_STYLES = {ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_DARK, CssStyles.BUTTON_FILTER_SMALL};
+
 	protected final VerticalLayout listLayout;
 	protected final HorizontalLayout paginationLayout;
 	protected final int maxDisplayedEntries;
@@ -86,58 +88,52 @@ public abstract class PaginationList<T> extends VerticalLayout {
 	}
 	
 	private void initializePaginationLayout() {
-		firstPageButton = new Button("|<");
-		CssStyles.style(firstPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		firstPageButton.addClickListener(e -> {
+		firstPageButton = ButtonHelper.createButtonWithCaption("fistPage", "|<", e -> {
 			showPage(1);
-		});
+		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
+
 		paginationLayout.addComponent(firstPageButton);
 		
 		previousGapLabel = new Label("...");
 		CssStyles.style(previousGapLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY);
 		paginationLayout.addComponent(previousGapLabel);
 
-		previousPreviousPageButton = new Button();
-		CssStyles.style(previousPreviousPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		previousPreviousPageButton.addClickListener(e -> {
+		previousPreviousPageButton = ButtonHelper.createButtonWithCaption("previousPreviousPage", null, e -> {
 			showPage(currentPage - 2);
-		});
+		}, BUTTON_STYLES);
+
 		paginationLayout.addComponent(previousPreviousPageButton);
 		
-		previousPageButton = new Button();
-		CssStyles.style(previousPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		previousPageButton.addClickListener(e -> {
+		previousPageButton = ButtonHelper.createButtonWithCaption("previousPage", null, e -> {
 			showPage(currentPage - 1);
-		});
+		}, BUTTON_STYLES);
+
 		paginationLayout.addComponent(previousPageButton);
 
-		currentPageButton = new Button();
-		CssStyles.style(currentPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_DARK, CssStyles.BUTTON_FILTER_SMALL);
+		currentPageButton = ButtonHelper.createButtonWithCaption("currentPage", null, null,
+				CURRENT_BUTTON_STYLES);
 		paginationLayout.addComponent(currentPageButton);
 		
-		nextPageButton = new Button();
-		CssStyles.style(nextPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		nextPageButton.addClickListener(e -> {
+		nextPageButton = ButtonHelper.createButtonWithCaption("nextPage", null, e -> {
 			showPage(currentPage + 1);
-		});
+		}, BUTTON_STYLES);
+
 		paginationLayout.addComponent(nextPageButton);
 
-		nextNextPageButton = new Button();
-		CssStyles.style(nextNextPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		nextNextPageButton.addClickListener(e -> {
+		nextNextPageButton = ButtonHelper.createButtonWithCaption("nextNextPage", null, e -> {
 			showPage(currentPage + 2);
-		});
+		}, BUTTON_STYLES);
+
 		paginationLayout.addComponent(nextNextPageButton);
 		
 		nextGapLabel = new Label("...");
 		CssStyles.style(nextGapLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY);
 		paginationLayout.addComponent(nextGapLabel);
 		
-		lastPageButton = new Button(">|");
-		CssStyles.style(lastPageButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT, CssStyles.BUTTON_FILTER_SMALL);
-		lastPageButton.addClickListener(e -> {
+		lastPageButton = ButtonHelper.createButtonWithCaption("", ">|", e -> {
 			showPage(calculateLastPageNumber());
-		});
+		}, BUTTON_STYLES);
+
 		paginationLayout.addComponent(lastPageButton);
 	}
 	

@@ -29,7 +29,6 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -44,8 +43,8 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 
 	private boolean create;
 	
-	public CommunityEditForm(UserRight editOrCreateUserRight, boolean create) {
-		super(CommunityDto.class, CommunityDto.I18N_PREFIX, editOrCreateUserRight, false);
+	public CommunityEditForm(boolean create) {
+		super(CommunityDto.class, CommunityDto.I18N_PREFIX, false);
 		this.create = create;
 		
 		setWidth(540, Unit.PIXELS);

@@ -114,7 +114,9 @@ public class ContactListActivity extends PagedBaseListActivity {
         super.onResume();
         if (getIntent().getBooleanExtra("refreshOnResume", false)) {
             showPreloader();
-            model.getContacts().getValue().getDataSource().invalidate();
+            if (model.getContacts().getValue() != null) {
+                model.getContacts().getValue().getDataSource().invalidate();
+            }
         }
     }
 

@@ -25,7 +25,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
@@ -39,8 +38,8 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 
 	private boolean create;
 	
-	public DistrictEditForm(UserRight editOrCreateUserRight, boolean create) {
-		super(DistrictDto.class, DistrictDto.I18N_PREFIX, editOrCreateUserRight, false);
+	public DistrictEditForm(boolean create) {
+		super(DistrictDto.class, DistrictDto.I18N_PREFIX, false);
 		this.create = create;
 		
 		setWidth(540, Unit.PIXELS);

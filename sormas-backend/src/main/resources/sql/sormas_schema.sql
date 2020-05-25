@@ -4102,8 +4102,10 @@ DROP FUNCTION export_database_join(text, text, text, text, text);
 INSERT INTO schema_version (version_number, comment) VALUES (200, 'Remove export functions which are now maintained within java code #1830');
 
 -- 2020-04-23 Re-introduce quarantine end date #1891
-ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
-ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+-- 2020-05-11 #1952: Was needed for #1891 to make sure existing SORMAS systems
+-- pre and schema version 198 were correctly updated. No removed due to incompatibility with PostgreSQL 9.5
+-- ALTER TABLE contact ADD COLUMN IF NOT EXISTS quarantineto timestamp;
+-- ALTER TABLE contact_history ADD COLUMN IF NOT EXISTS quarantineto timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (201, 'Re-introduce quarantine end date #1891');
 
@@ -4207,7 +4209,7 @@ ALTER TABLE healthconditions_history ADD COLUMN asthma varchar(255);
 ALTER TABLE healthconditions_history ADD COLUMN sickleCellDisease varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (206, 'Add new symptoms and health conditions #1824');
-                                                                                                                        
+
 -- 2020-05-05 Added table for contact-visit association #1329
 CREATE TABLE contacts_visits(
 	contact_id bigint NOT NULL,
@@ -4225,9 +4227,9 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON contacts_
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
 ALTER TABLE contacts_visits_history OWNER TO sormas_user;
 
-WITH ids AS 
+WITH ids AS
 (SELECT c.id AS contact_id, v.id AS visit_id FROM contact c, visit v WHERE c.person_id = v.person_id AND c.disease = v.disease AND
-CASE 
+CASE
 WHEN c.lastcontactdate IS NOT NULL THEN v.visitdatetime >= (c.lastcontactdate - interval '30' day)
 ELSE v.visitdatetime >= (c.reportdatetime - interval '30' day)
 END
@@ -4246,5 +4248,40 @@ ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
-                                                                                                                        
+
+-- 2020-05-18 Add Trimester and Postpartum selection to case #1981
+ALTER TABLE cases ADD COLUMN postpartum varchar(255);
+ALTER TABLE cases ADD COLUMN trimester varchar(255);
+ALTER TABLE cases_history ADD COLUMN postpartum varchar(255);
+ALTER TABLE cases_history ADD COLUMN trimester varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (209, 'Add Trimester and Postpartum selection to case #1981');
+
+-- 2020-05-20 Adjust COVID-19 symptoms and health conditions for Germany #2097
+ALTER TABLE symptoms ADD COLUMN respiratorydiseaseventilation varchar(255);
+ALTER TABLE symptoms ADD COLUMN generalsignsofdisease varchar(255);
+ALTER TABLE symptoms ADD COLUMN fastheartrate varchar(255);
+ALTER TABLE symptoms ADD COLUMN oxygensaturationlower94 varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN respiratorydiseaseventilation varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN generalsignsofdisease varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fastheartrate varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN oxygensaturationlower94 varchar(255);
+
+ALTER TABLE healthconditions ADD COLUMN immunodeficiencyincludinghiv varchar(255);
+ALTER TABLE healthconditions_history ADD COLUMN immunodeficiencyincludinghiv varchar(255);
+
+UPDATE healthconditions SET immunodeficiencyincludinghiv = 'YES' WHERE hiv = 'YES' OR immunodeficiencyotherthanhiv = 'YES';
+UPDATE healthconditions SET immunodeficiencyincludinghiv = 'NO' WHERE hiv = 'NO' AND immunodeficiencyotherthanhiv = 'NO';
+UPDATE healthconditions SET immunodeficiencyincludinghiv = 'UNKNOWN' WHERE hiv = 'UNKNOWN ' AND immunodeficiencyotherthanhiv = 'UNKNOWN';
+
+INSERT INTO schema_version (version_number, comment) VALUES (210, 'Adjust COVID-19 symptoms and health conditions for Germany #2097');
+
+-- 2020-05-07 Add samples to contacts #1753
+ALTER TABLE samples ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedcontact_id FOREIGN KEY (associatedcontact_id) REFERENCES contact (id);
+ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
+ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
+ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (211, '2020-05-07 Add samples to contacts #1753');
 -- *** Insert new sql commands BEFORE this line ***

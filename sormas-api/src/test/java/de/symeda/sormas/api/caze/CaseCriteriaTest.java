@@ -14,9 +14,9 @@ public class CaseCriteriaTest {
 	public void testFromToUrlParams() throws Exception {
 		CaseCriteria criteria = new CaseCriteria();
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
-		criteria.district(district);
-		criteria.nameUuidEpidNumberLike("test AHSDBSD-ADS");
-		criteria.disease(Disease.CSM);
+		criteria.setDistrict(district);
+		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
+		criteria.setDisease(Disease.CSM);
 		
 		CaseCriteria generatedCriteria = new CaseCriteria();
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());

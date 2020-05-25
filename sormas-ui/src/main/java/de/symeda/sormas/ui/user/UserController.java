@@ -45,9 +45,9 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -96,10 +96,11 @@ public class UserController {
 	}
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
-		UserEditForm userEditForm = new UserEditForm(false, UserRight.USER_EDIT);
+		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm, userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT), userEditForm.getFieldGroup());
 
 		// Add reset password button
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
@@ -122,9 +123,10 @@ public class UserController {
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {
 
-		UserEditForm createForm = new UserEditForm(true, UserRight.USER_CREATE);
+		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -182,20 +184,14 @@ public class UserController {
 	}
 
 	public Button createResetPasswordButton(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
-		Button resetPasswordButton = new Button(null, VaadinIcons.UNLOCK);
-		resetPasswordButton.setCaption(I18nProperties.getCaption(Captions.userResetPassword));
-		resetPasswordButton.addStyleName(ValoTheme.BUTTON_LINK);
-		resetPasswordButton.addClickListener(new ClickListener() {
+
+		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, editView);
 				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
-				resetPasswordComponent.addDoneListener(new DoneListener() {
-					public void onDone() {
-						popupWindow.close();
-					}
-				});
+				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
 				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
 					private static final long serialVersionUID = 1L;
 					@Override
@@ -205,9 +201,7 @@ public class UserController {
 				});
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingUpdatePassword));
 			}
-		});
-
-		return resetPasswordButton;
+		}, ValoTheme.BUTTON_LINK);
 	}
 
 	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {

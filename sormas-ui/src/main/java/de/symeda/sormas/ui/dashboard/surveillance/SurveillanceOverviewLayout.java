@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -78,13 +79,10 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		layout.setExpandRatio(diseaseTileViewLayout, 1);
 		
 		// "Expand" and "Collapse" buttons
-		Button showTableViewButton = new Button("", VaadinIcons.TABLE);
-		CssStyles.style(showTableViewButton, CssStyles.BUTTON_SUBTLE);
-		showTableViewButton.addStyleName(CssStyles.VSPACE_NONE);
-		
-		Button showTileViewButton = new Button("", VaadinIcons.SQUARE_SHADOW);
-		CssStyles.style(showTileViewButton, CssStyles.BUTTON_SUBTLE);
-		showTileViewButton.addStyleName(CssStyles.VSPACE_NONE);
+		Button showTableViewButton = ButtonHelper.createIconButtonWithCaption("showTableView", "", VaadinIcons.TABLE, null,
+				CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+		Button showTileViewButton = ButtonHelper.createIconButtonWithCaption("showTileView", "", VaadinIcons.SQUARE_SHADOW, null,
+				CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 
 		showTableViewButton.addClickListener(e -> {
 			layout.removeComponent(diseaseTileViewLayout);
@@ -122,11 +120,12 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		buttonsLayout.setWidth(100, Unit.PERCENTAGE);
 		buttonsLayout.setMargin(new MarginInfo(false, true));
 		
-		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), VaadinIcons.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
-		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), VaadinIcons.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
+		showMoreButton = ButtonHelper.createIconButton(Captions.dashboardShowAllDiseases, VaadinIcons.CHEVRON_DOWN, null,
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
+		showLessButton = ButtonHelper.createIconButton(Captions.dashboardShowFirstDiseases, VaadinIcons.CHEVRON_UP, null,
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_4);
 		hideOverview = new CheckBox(I18nProperties.getCaption(Captions.dashboardHideOverview));
+		hideOverview.setId("hideOverview");
 		CssStyles.style(hideOverview, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {

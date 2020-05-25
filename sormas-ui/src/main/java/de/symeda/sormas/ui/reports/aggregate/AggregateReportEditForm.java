@@ -8,7 +8,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.report.AggregateReportDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -37,7 +36,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	private TextField deathField;
 
 	public AggregateReportEditForm(String disease) {
-		super(AggregateReportDto.class, AggregateReportDto.I18N_PREFIX, UserRight.AGGREGATE_REPORT_EDIT);
+		super(AggregateReportDto.class, AggregateReportDto.I18N_PREFIX);
 
 		this.disease = disease;
 

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekFilterOption;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -237,17 +238,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		cancelButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
+		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, e -> window.close());
 
-		cancelButton.addClickListener(e -> window.close());
 		buttonsPanel.addComponent(cancelButton);
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = new Button(I18nProperties.getCaption(Captions.actionSave));
-		saveButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> save(), ValoTheme.BUTTON_PRIMARY);
 
-		saveButton.addClickListener(event -> save());
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(saveButton, 0);

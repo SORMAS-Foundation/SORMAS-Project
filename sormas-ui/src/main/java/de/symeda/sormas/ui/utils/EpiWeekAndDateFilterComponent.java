@@ -68,6 +68,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		dateToFilter = new PopupDateField();
 
 		// Date filter options
+		dateFilterOptionFilter.setId("dateFilterOption");
 		dateFilterOptionFilter.setWidth(200, Unit.PIXELS);
 		dateFilterOptionFilter.addItems((Object[])DateFilterOption.values());
 		dateFilterOptionFilter.setNullSelectionAllowed(false);
@@ -109,6 +110,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 
 		// New case date type selector
 		if (dateType != null) {
+			dateTypeSelector.setId("dateType");
 			dateTypeSelector.setWidth(200, Unit.PIXELS);
 			dateTypeSelector.addItems((Object[]) dateType.getEnumConstants());
 			if (dateTypePrompt != null) {
@@ -134,6 +136,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		// Epi week filter
 		List<EpiWeek> epiWeekList = DateHelper.createEpiWeekList(c.get(Calendar.YEAR), c.get(Calendar.WEEK_OF_YEAR));
 
+		weekFromFilter.setId("weekFrom");
 		weekFromFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
 			weekFromFilter.addItem(week);
@@ -153,6 +156,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		}
 		addComponent(weekFromFilter);
 
+		weekToFilter.setId("weekTo");
 		weekToFilter.setWidth(200, Unit.PIXELS);
 		for (EpiWeek week : epiWeekList) {
 			weekToFilter.addItem(week);
@@ -173,6 +177,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		addComponent(weekToFilter);
 
 		// Date filter
+		dateFromFilter.setId("dateFrom");
 		dateFromFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
 			dateFromFilter.setCaption(I18nProperties.getCaption(Captions.from));
@@ -184,6 +189,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 			});
 		}
 
+		dateToFilter.setId("dateTo");
 		dateToFilter.setWidth(200, Unit.PIXELS);
 		if (showCaption) {
 			dateToFilter.setCaption(I18nProperties.getCaption(Captions.to));

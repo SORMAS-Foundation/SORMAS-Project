@@ -56,9 +56,10 @@ public class VisitController {
     	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
     	VisitReferenceDto referenceDto = visit.toReference();
     	PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
-    	VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, UserRight.VISIT_EDIT);
+    	VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
         editForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, editForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, 
+        		UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT), editForm.getFieldGroup());
         editView.setWidth(100, Unit.PERCENTAGE);
 
         Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
@@ -97,9 +98,10 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, UserRight.VISIT_CREATE);
+    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
         createForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, createForm.getFieldGroup());
+        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, 
+        		UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE), createForm.getFieldGroup());
         
         editView.addCommitListener(new CommitListener() {
         	@Override

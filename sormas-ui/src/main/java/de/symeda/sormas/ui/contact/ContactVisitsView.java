@@ -43,9 +43,11 @@ import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 import java.util.Date;
@@ -76,44 +78,20 @@ public class ContactVisitsView extends AbstractContactView {
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
-
-//		statusButtons = new HashMap<>();
-//
-//		Button contactButton = new Button(I18nProperties.getCaption(Captions.contactRelated), e -> {
-//			grid.reload(getContactRef());
-//			processStatusChangeVisuals(e.getButton());
-//		});
-//		CssStyles.style(contactButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
-//		contactButton.setCaptionAsHtml(true);
-//		topLayout.addComponent(contactButton);
-//		statusButtons.put(contactButton, I18nProperties.getCaption(Captions.contactRelated));
-//
-//		Button personButton = new Button(I18nProperties.getCaption(Captions.contactPersonVisits), e -> {
-//			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
-//			grid.reload(contact.getPerson());
-//			processStatusChangeVisuals(e.getButton());
-//		});
-//		CssStyles.style(personButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
-//		personButton.setCaptionAsHtml(true);
-//		topLayout.addComponent(personButton);
-//		statusButtons.put(personButton, I18nProperties.getCaption(Captions.contactPersonVisits));
-
-//		topLayout.setExpandRatio(topLayout.getComponent(topLayout.getComponentCount()-1), 1);
+		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = new MenuBar();	
-			MenuItem bulkOperationsItem = bulkOperationsDropdown.addItem(I18nProperties.getCaption(Captions.bulkActions), null);
-
-			Command deleteCommand = selectedItem -> {
-				ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-					public void run() {
-						navigateTo(criteria);
-					}
-				});
-			};
-			bulkOperationsItem.addItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, deleteCommand);
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+							public void run() {
+								navigateTo(criteria);
+							}
+						});
+					})
+			);
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -121,11 +99,8 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
-			Button exportButton = new Button(I18nProperties.getCaption(Captions.export));
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
-				exportButton.setId("export");
-				exportButton.setIcon(VaadinIcons.DOWNLOAD);
-				exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 				topLayout.addComponent(exportButton);
 				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 			}
@@ -149,19 +124,15 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
-			newButton = new Button(I18nProperties.getCaption(Captions.visitNewVisit));
-			newButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			newButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			newButton.addClickListener(e -> {
-				ControllerProvider.getVisitController().createVisit(this.getContactRef(), 
+			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
+				ControllerProvider.getVisitController().createVisit(this.getContactRef(),
 						r -> navigateTo(criteria));
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
+
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 		}
 
-		topLayout.addStyleName(CssStyles.VSPACE_3);
-//		activeStatusButton = contactButton;
 		return topLayout;
 	}
 
@@ -207,6 +178,8 @@ public class ContactVisitsView extends AbstractContactView {
 		
 		grid.reload();
 //		updateActiveStatusButtonCaption();
+		
+		setContactEditPermission(gridLayout);
 	}
 
 }

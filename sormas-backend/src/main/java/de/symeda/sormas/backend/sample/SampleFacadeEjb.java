@@ -30,16 +30,13 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.*;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +64,6 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -93,581 +85,669 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String CONTACT_CASE_REGION = "contactCaseRegion";
+    public static final String CONTACT_CASE_DISTRICT = "contactCaseDistrict";
+    public static final String DISEASE = "disease";
+    public static final String DISEASE_DETAILS = "diseaseDetails";
+    public static final String REGION = "region";
+    public static final String DISTRICT = "district";
+    public static final String DISTRICT_NAME = "districtName";
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@EJB
-	private SampleService sampleService;
-	@EJB
-	private PathogenTestService pathogenTestService;
-	@EJB
-	private AdditionalTestService additionalTestService;
-	@EJB
-	private AdditionalTestFacadeEjbLocal additionalTestFacade;
-	@EJB
-	private UserService userService;
-	@EJB
-	private CaseService caseService;
-	@EJB
-	private FacilityService facilityService;
-	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private MessagingService messagingService;
-	@EJB
-	private LocationService locationService;
-	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
-	private PathogenTestFacadeEjbLocal pathogenTestFacade;
+    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+    private EntityManager em;
 
-	@Override
-	public List<String> getAllActiveUuids() {
-		User user = userService.getCurrentUser();
+    @EJB
+    private SampleService sampleService;
+    @EJB
+    private PathogenTestService pathogenTestService;
+    @EJB
+    private AdditionalTestService additionalTestService;
+    @EJB
+    private AdditionalTestFacadeEjbLocal additionalTestFacade;
+    @EJB
+    private UserService userService;
+    @EJB
+    private CaseService caseService;
+    @EJB
+    private ContactService contactService;
+    @EJB
+    private FacilityService facilityService;
+    @EJB
+    private CaseFacadeEjbLocal caseFacade;
+    @EJB
+    private MessagingService messagingService;
+    @EJB
+    private LocationService locationService;
+    @EJB
+    private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+    @EJB
+    private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
-		if (user == null) {
-			return Collections.emptyList();
-		}
+    @Override
+    public List<String> getAllActiveUuids() {
+        User user = userService.getCurrentUser();
 
-		return sampleService.getAllActiveUuids(user);
-	}	
+        if (user == null) {
+            return Collections.emptyList();
+        }
 
-	@Override
-	public List<SampleDto> getAllActiveSamplesAfter(Date date) {
-		User user = userService.getCurrentUser();
+        return sampleService.getAllActiveUuids(user);
+    }
 
-		if(user == null) {
-			return Collections.emptyList();
-		}
+    @Override
+    public List<SampleDto> getAllActiveSamplesAfter(Date date) {
+        User user = userService.getCurrentUser();
 
-		return sampleService.getAllActiveSamplesAfter(date, user).stream()
-				.map(e -> toDto(e))
-				.collect(Collectors.toList());
-	}
+        if (user == null) {
+            return Collections.emptyList();
+        }
 
-	@Override
-	public List<SampleDto> getByUuids(List<String> uuids) {
-		return sampleService.getByUuids(uuids)
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
-		return sampleService.getByCaseUuids(caseUuids)
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
-	}
+        return sampleService.getAllActiveSamplesAfter(date, user).stream()
+                .map(e -> toDto(e))
+                .collect(Collectors.toList());
+    }
 
-	@Override
-	public List<String> getDeletedUuidsSince(Date since) {
-		User user = userService.getCurrentUser();
+    @Override
+    public List<SampleDto> getByUuids(List<String> uuids) {
+        return sampleService.getByUuids(uuids)
+                .stream()
+                .map(c -> toDto(c))
+                .collect(Collectors.toList());
+    }
 
-		if (user == null) {
-			return Collections.emptyList();
-		}
+    @Override
+    public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
+        return sampleService.getByCaseUuids(caseUuids)
+                .stream()
+                .map(c -> toDto(c))
+                .collect(Collectors.toList());
+    }
 
-		return sampleService.getDeletedUuidsSince(user, since);
-	}
-	
-	@Override
-	public SampleDto getSampleByUuid(String uuid) {
-		return toDto(sampleService.getByUuid(uuid));
-	}
+    @Override
+    public List<String> getDeletedUuidsSince(Date since) {
+        User user = userService.getCurrentUser();
 
-	@Override
-	public SampleDto saveSample(SampleDto dto) {
-		return saveSample(dto, true);
-	}
-	
-	public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
-		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
-		Sample sample = fromDto(dto);
+        if (user == null) {
+            return Collections.emptyList();
+        }
 
-		// Set defaults for testing requests
-		if (sample.getPathogenTestingRequested() == null) {
-			sample.setPathogenTestingRequested(false);
-		}
-		if (sample.getAdditionalTestingRequested() == null) {
-			sample.setAdditionalTestingRequested(false);
-		}
+        return sampleService.getDeletedUuidsSince(user, since);
+    }
 
-		sampleService.ensurePersisted(sample);
+    @Override
+    public SampleDto getSampleByUuid(String uuid) {
+        return toDto(sampleService.getByUuid(uuid));
+    }
 
-		if (handleChanges) {
-			onSampleChanged(existingSample, sample);
-		}
+    @Override
+    public SampleDto saveSample(SampleDto dto) {
+        return saveSample(dto, true);
+    }
 
-		return toDto(sample);
-	}
+    public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
+        SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
+        Sample sample = fromDto(dto);
 
-	@Override
-	public SampleReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(sampleService.getByUuid(uuid));
-	}
+        // Set defaults for testing requests
+        if (sample.getPathogenTestingRequested() == null) {
+            sample.setPathogenTestingRequested(false);
+        }
+        if (sample.getAdditionalTestingRequested() == null) {
+            sample.setAdditionalTestingRequested(false);
+        }
 
-	@Override
-	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
-		Root<Sample> sample = cq.from(Sample.class);
+        sampleService.ensurePersisted(sample);
 
-		Join<Sample, Sample> referredSample = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
-		Join<Sample, Facility> lab = sample.join(Sample.LAB, JoinType.LEFT);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Case, Person> cazePerson = caze.join(Case.PERSON, JoinType.LEFT);
-		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
+        if (handleChanges) {
+            onSampleChanged(existingSample, sample);
+        }
 
-		cq.multiselect(sample.get(Sample.UUID), 
-				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME), 
-				sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED), sample.get(Sample.RECEIVED_DATE), 
-				sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE), sample.get(Sample.SPECIMEN_CONDITION), 
-				lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID), 
-				caze.get(Case.UUID), cazePerson.get(Person.FIRST_NAME), cazePerson.get(Person.LAST_NAME),
-				caze.get(Case.DISEASE), caze.get(Case.DISEASE_DETAILS), 
-				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
-				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
+        return toDto(sample);
+    }
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
+    @Override
+    public SampleReferenceDto getReferenceByUuid(String uuid) {
+        return toReferenceDto(sampleService.getByUuid(uuid));
+    }
 
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}		
+    @Override
+    public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max,
+                                             List<SortProperty> sortProperties) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
+        final Root<Sample> sample = cq.from(Sample.class);
 
-		if (filter != null) {
-			cq.where(filter);
-		}
+        final QueryContext qc = new QueryContext(cb, cq, sample);
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<>(sortProperties.size());
-			for (SortProperty sortProperty : sortProperties) {
-				Expression<?> expression;
-				switch (sortProperty.propertyName) {
-				case SampleIndexDto.UUID:
-				case SampleIndexDto.LAB_SAMPLE_ID:
-				case SampleIndexDto.SHIPPED:
-				case SampleIndexDto.RECEIVED:
-				case SampleIndexDto.REFERRED:
-				case SampleIndexDto.SAMPLE_DATE_TIME:
-				case SampleIndexDto.SHIPMENT_DATE:
-				case SampleIndexDto.RECEIVED_DATE:
-				case SampleIndexDto.SAMPLE_MATERIAL:
-				case SampleIndexDto.SAMPLE_PURPOSE:
-				case SampleIndexDto.PATHOGEN_TEST_RESULT:
-				case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
-					expression = sample.get(sortProperty.propertyName);
-					break;
-				case SampleIndexDto.DISEASE:
-					expression = caze.get(Case.DISEASE);
-					break;
-				case SampleIndexDto.EPID_NUMBER:
-					expression = caze.get(Case.EPID_NUMBER);
-					break;
-				case SampleIndexDto.ASSOCIATED_CASE:
-					expression = cazePerson.get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = cazePerson.get(Person.FIRST_NAME);
-					break;
-				case SampleIndexDto.CASE_DISTRICT:
-					expression = caseDistrict.get(District.NAME);
-					break;
-				case SampleIndexDto.LAB:
-					expression = lab.get(Facility.NAME);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
-				}
-				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-			}
-			cq.orderBy(order);
-		} else {
-			cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
-		}
+        sampleService.buildJoins(qc, sampleCriteria);
 
-		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		} else {
-			return em.createQuery(cq).getResultList();
-		}
-	}
-	
-	@Override
-	public void validate(SampleDto sample) throws ValidationRuntimeException {
-		if (sample.getAssociatedCase() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCase));
-		}
-		if (sample.getSampleDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
-		}
-		if (sample.getReportDateTime() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
-		}
-		if (sample.getSampleMaterial() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
-		}
-		if (sample.getSamplePurpose() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
-		}
-		if (sample.getLab() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
-		}
-	}
-	
-	private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
-		Root<Sample> sample = cq.from(Sample.class);
-		Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-		Join<Sample, Facility> laboratory = sample.join(Sample.LAB, JoinType.LEFT);
-		Join<Sample, Sample> referredTo = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
-		Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
-		Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
-		Join<Case, Community> caseCommunity = caze.join(Case.COMMUNITY, JoinType.LEFT);
-		Join<Case, Facility> caseFacility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-		Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+        final Join<Sample, Sample> referredSample = qc.getJoin(Sample.class, Sample.class);
 
-		cq.multiselect(
-				sample.get(Sample.ID),
-				sample.get(Sample.UUID),
-				sample.get(Sample.LAB_SAMPLE_ID),
-				caze.get(Case.EPID_NUMBER),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				caze.get(Case.DISEASE),
-				caze.get(Case.DISEASE_DETAILS),
-				sample.get(Sample.SAMPLE_DATE_TIME),
-				sample.get(Sample.SAMPLE_MATERIAL),
-				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
-				sample.get(Sample.SAMPLE_PURPOSE),
-				sample.get(Sample.SAMPLE_SOURCE),
-				laboratory.get(Facility.UUID),
-				laboratory.get(Facility.NAME),
-				sample.get(Sample.LAB_DETAILS),
-				sample.get(Sample.PATHOGEN_TEST_RESULT),
-				sample.get(Sample.PATHOGEN_TESTING_REQUESTED),
-				sample.get(Sample.REQUESTED_PATHOGEN_TESTS_STRING),
-				sample.get(Sample.REQUESTED_OTHER_PATHOGEN_TESTS),
-				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
-				sample.get(Sample.REQUESTED_ADDITIONAL_TESTS_STRING),
-				sample.get(Sample.REQUESTED_OTHER_ADDITIONAL_TESTS),
-				sample.get(Sample.SHIPPED),
-				sample.get(Sample.SHIPMENT_DATE),
-				sample.get(Sample.SHIPMENT_DETAILS),
-				sample.get(Sample.RECEIVED),
-				sample.get(Sample.RECEIVED_DATE),
-				sample.get(Sample.SPECIMEN_CONDITION),
-				sample.get(Sample.NO_TEST_POSSIBLE_REASON),
-				sample.get(Sample.COMMENT),
-				referredTo.get(Sample.UUID),
-				caze.get(Case.UUID),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				person.get(Person.SEX),
-				personAddress.get(Location.ID),
-				caze.get(Case.REPORT_DATE),
-				caze.get(Case.CASE_CLASSIFICATION),
-				caze.get(Case.OUTCOME),
-				caseRegion.get(Region.NAME),
-				caseDistrict.get(District.NAME),
-				caseCommunity.get(Community.NAME),
-				caseFacility.get(Facility.UUID),
-				caseFacility.get(Facility.NAME),
-				caze.get(Case.HEALTH_FACILITY_DETAILS)
-				);
+        final Join<Sample, Facility> lab = qc.getJoin(Sample.class, Facility.class);
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
+        final Join<Sample, Case> caze = qc.getJoin(Sample.class, Case.class);
+        final Join<Case, Person> casePerson = qc.getJoin(Case.class, Person.class);
+        final Join<Case, Region> caseRegion = qc.getJoin(Case.class, Region.class);
+        final Join<Case, District> caseDistrict = qc.getJoin(Case.class, District.class);
 
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		} else if (caseCriteria != null) {
-			Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, casePath);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-			filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
-		}
+        final Join<Sample, Contact> contact = qc.getJoin(Sample.class, Contact.class);
+        final Join<Contact, Person> contactPerson = qc.getJoin(Contact.class, Person.class);
+        final Join<Contact, Region> contactRegion = qc.getJoin(Contact.class, Region.class);
+        final Join<Contact, District> contactDistrict = qc.getJoin(Contact.class, District.class);
+        final Join<Contact, Case> contactCase = qc.getJoin(Contact.class, Case.class);
+        final Join<Case, Region> contactCaseRegion = qc.getJoin(Case.class, Region.class, CONTACT_CASE_REGION);
+        final Join<Case, District> contactCaseDistrict = qc.getJoin(Case.class, District.class, CONTACT_CASE_DISTRICT);
 
-		if (filter != null) {
-			cq.where(filter);
-		}
+        final Expression diseaseSelect = qc.addExpression(DISEASE,
+                cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE)));
+        final Expression diseaseDetailsSelect = qc.addExpression(DISEASE_DETAILS,
+                cb.selectCase().when(cb.isNotNull(caze),
+                caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS)));
 
-		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)));
+        final Expression regionSelect = qc.addExpression(REGION, cb.selectCase().when(cb.isNotNull(caseRegion),
+                caseRegion.get(Region.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactRegion),
+                contactRegion.get(Region.UUID)).otherwise(contactCaseRegion.get(Region.UUID))));
 
-		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+        final Expression districtSelect = qc.addExpression(DISTRICT, cb.selectCase().when(cb.isNotNull(caseDistrict),
+                caseDistrict.get(District.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
+                contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID))));
+        final Expression districtNameSelect = qc.addExpression(DISTRICT_NAME,
+                cb.selectCase().when(cb.isNotNull(caseDistrict),
+                caseDistrict.get(District.NAME)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
+                contactDistrict.get(District.NAME)).otherwise(contactCaseDistrict.get(District.NAME))));
 
-		for (SampleExportDto exportDto : resultList) {
-			exportDto.setCaseAddress(locationService.getById(exportDto.getCaseAddressId()).toString());
+        cq.multiselect(sample.get(Sample.UUID),
+                caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME),
+                sample.get(Sample.SHIPPED), sample.get(Sample.SHIPMENT_DATE), sample.get(Sample.RECEIVED),
+                sample.get(Sample.RECEIVED_DATE),
+                sample.get(Sample.SAMPLE_MATERIAL), sample.get(Sample.SAMPLE_PURPOSE),
+                sample.get(Sample.SPECIMEN_CONDITION),
+                lab.get(Facility.UUID), lab.get(Facility.NAME), referredSample.get(Sample.UUID),
+                caze.get(Case.UUID), casePerson.get(Person.FIRST_NAME), casePerson.get(Person.LAST_NAME),
+                contact.get(Contact.UUID), contactPerson.get(Person.FIRST_NAME), contactPerson.get(Person.LAST_NAME),
+                diseaseSelect, diseaseDetailsSelect,
+                regionSelect, districtSelect, districtNameSelect,
+                sample.get(Sample.PATHOGEN_TEST_RESULT),
+                sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
-			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
-			int count = 0;
-			for (PathogenTest pathogenTest : pathogenTests) {
-				switch (++count) {
-				case 1:
-					exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
-					break;
-				case 2:
-					exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
-					break;
-				case 3:
-					exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto
-								.setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
-										pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
-					break;
-				default:
-					StringBuilder sb = new StringBuilder();
-					if (!exportDto.getOtherPathogenTestsDetails().isEmpty()) {
-						sb.append(", ");
-					}
-					sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime())).append(" (")
-					.append(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()))
-					.append(", ").append(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()))
-					.append(", ").append(pathogenTest.getTestResult()).append(")");
-					exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
-					break;
-				}
-			}
+        Predicate filter = sampleService.createUserFilter(qc);
 
-			List<AdditionalTest> additionalTests = additionalTestService.getAllBySample(sampleService.getById(exportDto.getId()));
-			if (additionalTests.size() > 0) {
-				exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTests.get(0)));
-			}
-			if (additionalTests.size() > 1) {
-				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.yes));
-			} else {
-				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
-			}
-		}
+        if (sampleCriteria != null) {
+            Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc);
+            filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+        }
 
-		return resultList;
-	}
+        if (filter != null) {
+            cq.where(filter);
+        }
 
-	@Override
-	public List<SampleExportDto> getExportList(SampleCriteria criteria, int first, int max) {
-		return getExportList(criteria, null, first, max);
-	}
+        if (sortProperties != null && sortProperties.size() > 0) {
+            List<Order> order = new ArrayList<>(sortProperties.size());
+            for (SortProperty sortProperty : sortProperties) {
+                Expression<?> expression;
+                switch (sortProperty.propertyName) {
+                    case SampleIndexDto.UUID:
+                    case SampleIndexDto.LAB_SAMPLE_ID:
+                    case SampleIndexDto.SHIPPED:
+                    case SampleIndexDto.RECEIVED:
+                    case SampleIndexDto.REFERRED:
+                    case SampleIndexDto.SAMPLE_DATE_TIME:
+                    case SampleIndexDto.SHIPMENT_DATE:
+                    case SampleIndexDto.RECEIVED_DATE:
+                    case SampleIndexDto.SAMPLE_MATERIAL:
+                    case SampleIndexDto.SAMPLE_PURPOSE:
+                    case SampleIndexDto.PATHOGEN_TEST_RESULT:
+                    case SampleIndexDto.ADDITIONAL_TESTING_STATUS:
+                        expression = sample.get(sortProperty.propertyName);
+                        break;
+                    case SampleIndexDto.DISEASE:
+                        expression = diseaseSelect;
+                        break;
+                    case SampleIndexDto.EPID_NUMBER:
+                        expression = caze.get(Case.EPID_NUMBER);
+                        break;
+                    case SampleIndexDto.ASSOCIATED_CASE:
+                        expression = casePerson.get(Person.LAST_NAME);
+                        order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+                        expression = casePerson.get(Person.FIRST_NAME);
+                        break;
+                    case SampleIndexDto.DISTRICT:
+                        expression = districtSelect;
+                        break;
+                    case SampleIndexDto.LAB:
+                        expression = lab.get(Facility.NAME);
+                        break;
+                    default:
+                        throw new IllegalArgumentException(sortProperty.propertyName);
+                }
+                order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+            }
+            cq.orderBy(order);
+        } else {
+            cq.orderBy(cb.desc(sample.get(Sample.SAMPLE_DATE_TIME)));
+        }
 
-	@Override
-	public List<SampleExportDto> getExportList(CaseCriteria criteria, int first, int max) {
-		return getExportList(null, criteria, first, max);
-	}
+        if (first != null && max != null) {
+            List<SampleIndexDto> resultList =
+                    em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+            return resultList;
+        } else {
+            List<SampleIndexDto> resultList = em.createQuery(cq).getResultList();
+            return resultList;
+        }
+    }
 
-	@Override
-	public long count(SampleCriteria sampleCriteria) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> root = cq.from(Sample.class);
-		Predicate filter = sampleService.createUserFilter(cb, cq, root);
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);
-			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
+    @Override
+    public void validate(SampleDto sample) throws ValidationRuntimeException {
+        if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseOrContact));
+        }
+        if (sample.getSampleDateTime() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+                    I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)));
+        }
+        if (sample.getReportDateTime() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+                    I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORT_DATE_TIME)));
+        }
+        if (sample.getSampleMaterial() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+                    I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_MATERIAL)));
+        }
+        if (sample.getSamplePurpose() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+                    I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
+        }
+        if (sample.getLab() == null) {
+            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+                    I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+        }
+    }
 
-	@Override
-	public SampleReferenceDto getReferredFrom(String sampleUuid) {
-		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
-	}
+    private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first,
+                                                int max) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
+        Root<Sample> sample = cq.from(Sample.class);
+        Join<Sample, Case> caze = sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
+        Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
+        Join<Sample, Facility> laboratory = sample.join(Sample.LAB, JoinType.LEFT);
+        Join<Sample, Sample> referredTo = sample.join(Sample.REFERRED_TO, JoinType.LEFT);
+        Join<Case, Region> caseRegion = caze.join(Case.REGION, JoinType.LEFT);
+        Join<Case, District> caseDistrict = caze.join(Case.DISTRICT, JoinType.LEFT);
+        Join<Case, Community> caseCommunity = caze.join(Case.COMMUNITY, JoinType.LEFT);
+        Join<Case, Facility> caseFacility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+        Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
 
-	@Override
-	public void deleteSample(SampleReferenceDto sampleRef) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
-		
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.delete(sample);
+        cq.multiselect(
+                sample.get(Sample.ID),
+                sample.get(Sample.UUID),
+                sample.get(Sample.LAB_SAMPLE_ID),
+                caze.get(Case.EPID_NUMBER),
+                person.get(Person.FIRST_NAME),
+                person.get(Person.LAST_NAME),
+                caze.get(Case.DISEASE),
+                caze.get(Case.DISEASE_DETAILS),
+                sample.get(Sample.SAMPLE_DATE_TIME),
+                sample.get(Sample.SAMPLE_MATERIAL),
+                sample.get(Sample.SAMPLE_MATERIAL_TEXT),
+                sample.get(Sample.SAMPLE_PURPOSE),
+                sample.get(Sample.SAMPLE_SOURCE),
+                laboratory.get(Facility.UUID),
+                laboratory.get(Facility.NAME),
+                sample.get(Sample.LAB_DETAILS),
+                sample.get(Sample.PATHOGEN_TEST_RESULT),
+                sample.get(Sample.PATHOGEN_TESTING_REQUESTED),
+                sample.get(Sample.REQUESTED_PATHOGEN_TESTS_STRING),
+                sample.get(Sample.REQUESTED_OTHER_PATHOGEN_TESTS),
+                sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
+                sample.get(Sample.REQUESTED_ADDITIONAL_TESTS_STRING),
+                sample.get(Sample.REQUESTED_OTHER_ADDITIONAL_TESTS),
+                sample.get(Sample.SHIPPED),
+                sample.get(Sample.SHIPMENT_DATE),
+                sample.get(Sample.SHIPMENT_DETAILS),
+                sample.get(Sample.RECEIVED),
+                sample.get(Sample.RECEIVED_DATE),
+                sample.get(Sample.SPECIMEN_CONDITION),
+                sample.get(Sample.NO_TEST_POSSIBLE_REASON),
+                sample.get(Sample.COMMENT),
+                referredTo.get(Sample.UUID),
+                caze.get(Case.UUID),
+                person.get(Person.APPROXIMATE_AGE),
+                person.get(Person.APPROXIMATE_AGE_TYPE),
+                person.get(Person.SEX),
+                personAddress.get(Location.ID),
+                caze.get(Case.REPORT_DATE),
+                caze.get(Case.CASE_CLASSIFICATION),
+                caze.get(Case.OUTCOME),
+                caseRegion.get(Region.NAME),
+                caseDistrict.get(District.NAME),
+                caseCommunity.get(Community.NAME),
+                caseFacility.get(Facility.UUID),
+                caseFacility.get(Facility.NAME),
+                caze.get(Case.HEALTH_FACILITY_DETAILS)
+        );
 
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(sample.getAssociatedCase()), sample.getAssociatedCase());
-	}
+        Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
-	@Override
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-		return sampleService.getNewTestResultCountByResultType(caseIds);
-	}
+        if (sampleCriteria != null) {
+            Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, new QueryContext(cb, cq,
+                    sample));
+            filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+        } else if (caseCriteria != null) {
+            Join<Case, Case> casePath = sample.join(Sample.ASSOCIATED_CASE);
+            Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, casePath);
+            filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+            filter = AbstractAdoService.and(cb, filter, cb.isFalse(sample.get(Sample.DELETED)));
+        }
 
-	public Sample fromDto(@NotNull SampleDto source) {
+        if (filter != null) {
+            cq.where(filter);
+        }
 
-		Sample target = sampleService.getByUuid(source.getUuid());
-		if(target == null) {
-			target = new Sample();
-			target.setUuid(source.getUuid());
-			if(source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
+        cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)));
 
-		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
-		target.setLabSampleID(source.getLabSampleID());
-		target.setFieldSampleID(source.getFieldSampleID());
-		target.setSampleDateTime(source.getSampleDateTime());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setSampleMaterialText(source.getSampleMaterialText());
-		target.setSamplePurpose(source.getSamplePurpose());
-		target.setLab(facilityService.getByReferenceDto(source.getLab()));
-		target.setLabDetails(source.getLabDetails());
-		target.setShipmentDate(source.getShipmentDate());
-		target.setShipmentDetails(source.getShipmentDetails());
-		target.setReceivedDate(source.getReceivedDate());
-		target.setSpecimenCondition(source.getSpecimenCondition());
-		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
-		target.setComment(source.getComment());
-		target.setSampleSource(source.getSampleSource());
-		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
-		target.setShipped(source.isShipped());
-		target.setReceived(source.isReceived());
-		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
-		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
-		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
-		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
-		target.setPathogenTestResult(source.getPathogenTestResult());
-		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
-		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+        List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+        for (SampleExportDto exportDto : resultList) {
+            exportDto.setCaseAddress(locationService.getById(exportDto.getCaseAddressId()).toString());
 
-		return target;
-	}
+            List<PathogenTest> pathogenTests =
+                    pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
+            int count = 0;
+            for (PathogenTest pathogenTest : pathogenTests) {
+                switch (++count) {
+                    case 1:
+                        exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(),
+                                pathogenTest.getTestTypeText()));
+                        exportDto.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(),
+                                pathogenTest.getTestedDiseaseDetails()));
+                        exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
+                        if (pathogenTest.getLab() != null) {
+                            exportDto
+                                    .setPathogenTestLab1(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+                                            pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+                        }
+                        exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
+                        exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
+                        break;
+                    case 2:
+                        exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(),
+                                pathogenTest.getTestTypeText()));
+                        exportDto.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(),
+                                pathogenTest.getTestedDiseaseDetails()));
+                        exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
+                        if (pathogenTest.getLab() != null) {
+                            exportDto
+                                    .setPathogenTestLab2(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+                                            pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+                        }
+                        exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
+                        exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
+                        break;
+                    case 3:
+                        exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(),
+                                pathogenTest.getTestTypeText()));
+                        exportDto.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(),
+                                pathogenTest.getTestedDiseaseDetails()));
+                        exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
+                        if (pathogenTest.getLab() != null) {
+                            exportDto
+                                    .setPathogenTestLab3(FacilityHelper.buildFacilityString(pathogenTest.getLab().getUuid(),
+                                            pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
+                        }
+                        exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
+                        exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
+                        break;
+                    default:
+                        StringBuilder sb = new StringBuilder();
+                        if (!exportDto.getOtherPathogenTestsDetails().isEmpty()) {
+                            sb.append(", ");
+                        }
+                        sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime())).append(" (")
+                                .append(PathogenTestType.toString(pathogenTest.getTestType(),
+                                        pathogenTest.getTestTypeText()))
+                                .append(", ").append(DiseaseHelper.toString(pathogenTest.getTestedDisease(),
+                                pathogenTest.getTestedDiseaseDetails()))
+                                .append(", ").append(pathogenTest.getTestResult()).append(")");
+                        exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
+                        break;
+                }
+            }
 
-	public static SampleDto toDto(Sample source) {
-		if(source == null) {
-			return null;
-		}
-		SampleDto target = new SampleDto();
-		DtoHelper.fillDto(target, source);
+            List<AdditionalTest> additionalTests =
+                    additionalTestService.getAllBySample(sampleService.getById(exportDto.getId()));
+            if (additionalTests.size() > 0) {
+                exportDto.setAdditionalTest(additionalTestFacade.toDto(additionalTests.get(0)));
+            }
+            if (additionalTests.size() > 1) {
+                exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.yes));
+            } else {
+                exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
+            }
+        }
 
-		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
-		target.setLabSampleID(source.getLabSampleID());
-		target.setFieldSampleID(source.getFieldSampleID());
-		target.setSampleDateTime(source.getSampleDateTime());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setSampleMaterialText(source.getSampleMaterialText());
-		target.setSamplePurpose(source.getSamplePurpose());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setLabDetails(source.getLabDetails());
-		target.setShipmentDate(source.getShipmentDate());
-		target.setShipmentDetails(source.getShipmentDetails());
-		target.setReceivedDate(source.getReceivedDate());
-		target.setSpecimenCondition(source.getSpecimenCondition());
-		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
-		target.setComment(source.getComment());
-		target.setSampleSource(source.getSampleSource());
-		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
-		target.setShipped(source.isShipped());
-		target.setReceived(source.isReceived());
-		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
-		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
-		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
-		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
-		target.setPathogenTestResult(source.getPathogenTestResult());
-		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
-		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+        return resultList;
+    }
 
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+    @Override
+    public List<SampleExportDto> getExportList(SampleCriteria criteria, int first, int max) {
+        return getExportList(criteria, null, first, max);
+    }
 
-		return target;
-	}
+    @Override
+    public List<SampleExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+        return getExportList(null, criteria, first, max);
+    }
 
-	public static SampleReferenceDto toReferenceDto(Sample entity) {
-		if(entity == null) {
-			return null;
-		}
-		SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
-	}
+    @Override
+    public long count(SampleCriteria sampleCriteria) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        final Root<Sample> root = cq.from(Sample.class);
+        final QueryContext qc = new QueryContext(cb, cq, root);
+        sampleService.buildJoins(qc, sampleCriteria);
+        Predicate filter = sampleService.createUserFilter(qc);
+        if (sampleCriteria != null) {
+            Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc);
+            filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+        }
+        if (filter != null) {
+            cq.where(filter);
+        }
+        cq.select(cb.count(root));
+        Long count = em.createQuery(cq).getSingleResult();
+        return count;
+    }
 
-	private void onSampleChanged(SampleDto existingSample, Sample newSample) {
-		// Change pathogenTestResultChangeDate if the pathogen test result has changed
-		if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
-			Date latestPathogenTestDate = pathogenTestFacade.getLatestPathogenTestDate(newSample.getUuid());
-			if (latestPathogenTestDate != null) {
-				newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
-			}
-		}
-		
-		caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
-		
-		// Send an email to the lab user when a sample has been shipped to his lab
-		if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
-			List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+    @Override
+    public SampleReferenceDto getReferredFrom(String sampleUuid) {
+        return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
+    }
 
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED), 
-						String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT), 
-							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid())), 
-							MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about the shipment of a lab sample. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
-				}
-			}
-		}
-	}
+    @Override
+    public void deleteSample(SampleReferenceDto sampleRef) {
+        User user = userService.getCurrentUser();
+        if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
+            throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
+        }
 
-	@Override
-	public boolean isDeleted(String sampleUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Sample> from = cq.from(Sample.class);
+        Sample sample = sampleService.getByReferenceDto(sampleRef);
+        sampleService.delete(sample);
 
-		cq.where(cb.and(
-				cb.isTrue(from.get(Sample.DELETED)),
-				cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
+        final Case associatedCase = sample.getAssociatedCase();
+        if (associatedCase != null) {
+            caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
+        }
+    }
 
-	@LocalBean
-	@Stateless
-	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+    @Override
+    public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
+        return sampleService.getNewTestResultCountByResultType(caseIds);
+    }
 
-	}
+    public Sample fromDto(@NotNull SampleDto source) {
+
+        Sample target = sampleService.getByUuid(source.getUuid());
+        if (target == null) {
+            target = new Sample();
+            target.setUuid(source.getUuid());
+            if (source.getCreationDate() != null) {
+                target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+            }
+        }
+        DtoHelper.validateDto(source, target);
+
+        target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
+        target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
+        target.setLabSampleID(source.getLabSampleID());
+        target.setFieldSampleID(source.getFieldSampleID());
+        target.setSampleDateTime(source.getSampleDateTime());
+        target.setReportDateTime(source.getReportDateTime());
+        target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+        target.setSampleMaterial(source.getSampleMaterial());
+        target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
+        target.setLab(facilityService.getByReferenceDto(source.getLab()));
+        target.setLabDetails(source.getLabDetails());
+        target.setShipmentDate(source.getShipmentDate());
+        target.setShipmentDetails(source.getShipmentDetails());
+        target.setReceivedDate(source.getReceivedDate());
+        target.setSpecimenCondition(source.getSpecimenCondition());
+        target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+        target.setComment(source.getComment());
+        target.setSampleSource(source.getSampleSource());
+        target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
+        target.setShipped(source.isShipped());
+        target.setReceived(source.isReceived());
+        target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+        target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+        target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+        target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+        target.setPathogenTestResult(source.getPathogenTestResult());
+        target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
+        target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+        return target;
+    }
+
+    public static SampleDto toDto(Sample source) {
+        if (source == null) {
+            return null;
+        }
+        SampleDto target = new SampleDto();
+        DtoHelper.fillDto(target, source);
+
+        target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
+        target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
+        target.setLabSampleID(source.getLabSampleID());
+        target.setFieldSampleID(source.getFieldSampleID());
+        target.setSampleDateTime(source.getSampleDateTime());
+        target.setReportDateTime(source.getReportDateTime());
+        target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+        target.setSampleMaterial(source.getSampleMaterial());
+        target.setSampleMaterialText(source.getSampleMaterialText());
+        target.setSamplePurpose(source.getSamplePurpose());
+        target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+        target.setLabDetails(source.getLabDetails());
+        target.setShipmentDate(source.getShipmentDate());
+        target.setShipmentDetails(source.getShipmentDetails());
+        target.setReceivedDate(source.getReceivedDate());
+        target.setSpecimenCondition(source.getSpecimenCondition());
+        target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+        target.setComment(source.getComment());
+        target.setSampleSource(source.getSampleSource());
+        target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
+        target.setShipped(source.isShipped());
+        target.setReceived(source.isReceived());
+        target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+        target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+        target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+        target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+        target.setPathogenTestResult(source.getPathogenTestResult());
+        target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
+        target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+
+        target.setReportLat(source.getReportLat());
+        target.setReportLon(source.getReportLon());
+        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+        return target;
+    }
+
+    public static SampleReferenceDto toReferenceDto(Sample entity) {
+        if (entity == null) {
+            return null;
+        }
+        SampleReferenceDto dto = new SampleReferenceDto(entity.getUuid(), entity.toString());
+        return dto;
+    }
+
+    private void onSampleChanged(SampleDto existingSample, Sample newSample) {
+        // Change pathogenTestResultChangeDate if the pathogen test result has changed
+        if (existingSample != null && existingSample.getPathogenTestResult() != null && existingSample.getPathogenTestResult() != newSample.getPathogenTestResult()) {
+            Date latestPathogenTestDate = pathogenTestFacade.getLatestPathogenTestDate(newSample.getUuid());
+            if (latestPathogenTestDate != null) {
+                newSample.setPathogenTestResultChangeDate(latestPathogenTestDate);
+            }
+        }
+
+        if (newSample.getAssociatedCase() != null) {
+            caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase());
+        }
+
+        // Send an email to the lab user when a sample has been shipped to his lab
+        if (newSample.isShipped() && (existingSample == null || !existingSample.isShipped())) {
+            List<User> messageRecipients = userService.getLabUsersOfLab(newSample.getLab());
+
+            for (User recipient : messageRecipients) {
+                try {
+                    String messageContent = null;
+                    if (newSample.getAssociatedCase() != null) {
+                        messageContent =
+                                String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+                                        DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
+                    } else if (newSample.getAssociatedContact() != null) {
+                        messageContent =
+                                String.format(I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOT_CONTACT),
+                                        DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
+                    }
+                    messagingService.sendMessage(recipient,
+                            I18nProperties.getString(MessagingService.SUBJECT_LAB_SAMPLE_SHIPPED),
+                            messageContent, MessageType.EMAIL, MessageType.SMS);
+
+                } catch (NotificationDeliveryFailedException e) {
+                    logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about " +
+                            "the shipment of a lab sample. "
+                            + "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isDeleted(String sampleUuid) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Sample> from = cq.from(Sample.class);
+
+        cq.where(cb.and(
+                cb.isTrue(from.get(Sample.DELETED)),
+                cb.equal(from.get(AbstractDomainObject.UUID), sampleUuid)));
+        cq.select(cb.count(from));
+        long count = em.createQuery(cq).getSingleResult();
+        return count > 0;
+    }
+
+    @LocalBean
+    @Stateless
+    public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+
+    }
 }

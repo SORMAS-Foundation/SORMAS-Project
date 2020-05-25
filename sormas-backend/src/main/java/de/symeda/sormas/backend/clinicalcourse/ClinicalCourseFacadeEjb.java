@@ -119,6 +119,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setFormerSmoker(source.getFormerSmoker());
 		target.setAsthma(source.getAsthma());
 		target.setSickleCellDisease(source.getSickleCellDisease());
+		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		return target;
 	}
@@ -158,6 +159,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setFormerSmoker(source.getFormerSmoker());
 		target.setAsthma(source.getAsthma());
 		target.setSickleCellDisease(source.getSickleCellDisease());
+		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		return target;
 	}

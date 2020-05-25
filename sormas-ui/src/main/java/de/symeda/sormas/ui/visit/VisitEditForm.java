@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -57,8 +56,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
     private final PersonDto person;
     private SymptomsForm symptomsForm;
 
-    public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, UserRight editOrCreateUserRight) {
-        super(VisitDto.class, VisitDto.I18N_PREFIX, editOrCreateUserRight);
+    public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+        super(VisitDto.class, VisitDto.I18N_PREFIX);
         if (create) {
         	hideValidationUntilNextCommit();
         }
@@ -91,7 +90,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
     	addField(VisitDto.VISIT_REMARKS, TextField.class);
     	
-    	symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, UserRight.VISIT_EDIT, null);
+    	symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
     	

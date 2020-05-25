@@ -2,7 +2,7 @@
 name: Feature Request
 about: Suggest a new feature that you'd like to see in SORMAS.
 title: ''
-labels: ''
+labels: feature
 assignees: ''
 
 ---

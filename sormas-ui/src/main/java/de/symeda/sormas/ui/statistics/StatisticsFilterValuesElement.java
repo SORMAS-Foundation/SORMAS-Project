@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.explicatis.ext_token_field.ExtTokenField;
@@ -64,7 +65,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	 */
 	private StatisticsFilterRegionDistrictElement regionDistrictElement;
 
-	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, int rowIndex) {
 		setSpacing(true);
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
@@ -72,8 +73,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		this.attribute = attribute;
 		this.subAttribute = subAttribute;
 
-		ExtTokenField tokenField = createTokenField(caption);
-		VerticalLayout utilityButtonsLayout = createUtilityButtonsLayout();
+		ExtTokenField tokenField = createTokenField(caption, rowIndex);
+		VerticalLayout utilityButtonsLayout = createUtilityButtonsLayout(rowIndex);
 		addComponent(tokenField);
 		addComponent(utilityButtonsLayout);
 		setExpandRatio(tokenField, 1);
@@ -81,8 +82,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		setComponentAlignment(utilityButtonsLayout, Alignment.MIDDLE_RIGHT);
 	}
 
-	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, StatisticsFilterRegionDistrictElement regionDistrictElement) {
-		this(caption, attribute, subAttribute);
+	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, StatisticsFilterRegionDistrictElement regionDistrictElement, int rowIndex) {
+		this(caption, attribute, subAttribute, rowIndex);
 		this.regionDistrictElement = regionDistrictElement;
 	}
 
@@ -90,13 +91,15 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		addDropdown.setItems(getFilterValues());
 	}
 
-	private ExtTokenField createTokenField(String caption) {
+	private ExtTokenField createTokenField(String caption, int rowIndex) {
 		tokenField = new ExtTokenField();
+		tokenField.setId("tokens-" + rowIndex);
 		tokenField.setCaption(caption);
 		tokenField.setWidth(100, Unit.PERCENTAGE);
 		tokenField.setEnableDefaultDeleteTokenAction(true);
 
 		addDropdown = new ComboBox<TokenizableValue>("", getFilterValues());
+		addDropdown.setId("select-" + rowIndex);
 		addDropdown.addStyleName(CssStyles.VSPACE_NONE);
 		addDropdown.setPlaceholder(I18nProperties.getString(Strings.promptTypeToAdd));
 		tokenField.setInputField(addDropdown);
@@ -111,27 +114,23 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		return tokenField;
 	}
 
-	private VerticalLayout createUtilityButtonsLayout() {
+	private VerticalLayout createUtilityButtonsLayout(int rowIndex) {
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
 		utilityButtonsLayout.setMargin(false);
 		utilityButtonsLayout.setSpacing(false);
 		utilityButtonsLayout.setSizeUndefined();
 
-		Button addAllButton = new Button(I18nProperties.getCaption(Captions.all), VaadinIcons.PLUS_CIRCLE);
-		CssStyles.style(addAllButton, ValoTheme.BUTTON_LINK);
-		addAllButton.addClickListener(e -> {
+		Button addAllButton = ButtonHelper.createIconButtonWithCaption(Captions.all + "-" + rowIndex, I18nProperties.getCaption(Captions.all), VaadinIcons.PLUS_CIRCLE, e -> {
 			for (TokenizableValue tokenizable : getFilterValues()) {
 				tokenField.addTokenizable(tokenizable);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
 
-		Button removeAllButton = new Button(I18nProperties.getCaption(Captions.actionClear), VaadinIcons.CLOSE_CIRCLE);
-		CssStyles.style(removeAllButton, ValoTheme.BUTTON_LINK);
-		removeAllButton.addClickListener(e -> {
+		Button removeAllButton = ButtonHelper.createIconButtonWithCaption(Captions.actionClear + "-" + rowIndex, I18nProperties.getCaption(Captions.actionClear), VaadinIcons.CLOSE_CIRCLE, e -> {
 			for (Tokenizable tokenizable : tokenField.getValue()) {
 				tokenField.removeTokenizable(tokenizable);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
 
 		utilityButtonsLayout.addComponent(addAllButton);
 		utilityButtonsLayout.addComponent(removeAllButton);

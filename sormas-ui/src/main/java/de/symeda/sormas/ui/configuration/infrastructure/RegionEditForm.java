@@ -22,7 +22,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
@@ -34,8 +33,8 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 			fluidRowLocs(RegionDto.EXTERNAL_ID);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 
-	public RegionEditForm(UserRight editOrCreateUserRight, boolean create) {
-		super(RegionDto.class, RegionDto.I18N_PREFIX, editOrCreateUserRight);
+	public RegionEditForm(boolean create) {
+		super(RegionDto.class, RegionDto.I18N_PREFIX);
 		
 		setWidth(540, Unit.PIXELS);
 		

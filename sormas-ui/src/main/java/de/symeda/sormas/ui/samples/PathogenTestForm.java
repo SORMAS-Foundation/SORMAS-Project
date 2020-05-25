@@ -43,7 +43,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -69,8 +68,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final SampleDto sample;
 	private int caseSampleCount;
 	
-	public PathogenTestForm(SampleDto sample, boolean create, UserRight editOrCreateUserRight, int caseSampleCount) {
-		super(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX, editOrCreateUserRight);
+	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount) {
+		super(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX);
 		
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;

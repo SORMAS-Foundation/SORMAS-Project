@@ -139,6 +139,7 @@ public interface Strings {
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
+	String forContact = "forContact";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";
@@ -542,7 +543,6 @@ public interface Strings {
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
 	String messageSampleErrors = "messageSampleErrors";
-	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
@@ -550,6 +550,7 @@ public interface Strings {
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";
 	String messageSymptomsHint = "messageSymptomsHint";
 	String messageSymptomsVisitHint = "messageSymptomsVisitHint";
+	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
 	String messageTreatmentCreated = "messageTreatmentCreated";
@@ -575,8 +576,10 @@ public interface Strings {
 	String notificationDiseaseChanged = "notificationDiseaseChanged";
 	String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	String notificationLabResultArrived = "notificationLabResultArrived";
+	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedSubject = "notificationLabResultArrivedSubject";
 	String notificationLabResultSpecified = "notificationLabResultSpecified";
+	String notificationLabResultSpecifiedContact = "notificationLabResultSpecifiedContact";
 	String notificationLabResultSpecifiedSubject = "notificationLabResultSpecifiedSubject";
 	String notificationLabSampleShipped = "notificationLabSampleShipped";
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
@@ -626,6 +629,11 @@ public interface Strings {
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
 	String promptSamplesSearchField = "promptSamplesSearchField";
+	String promptSampleDateFrom = "promptSampleDateFrom";
+	String promptSampleDateTo = "promptSampleDateTo";
+	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
+	String promptSampleEpiWeekTo = "promptSampleEpiWeekTo";
+	String promtSampleDataType = "promtSampleDataType";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";

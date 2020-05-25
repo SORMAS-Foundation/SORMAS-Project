@@ -215,6 +215,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
+		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFastHeartRate(source.getFastHeartRate());
+		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 
 		return symptoms;
 	}
@@ -395,6 +399,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
 		target.setOtherComplications(source.getOtherComplications());
 		target.setOtherComplicationsText(source.getOtherComplicationsText());
+		target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+		target.setFastHeartRate(source.getFastHeartRate());
+		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
 
 		return target;
 	}

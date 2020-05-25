@@ -2,6 +2,8 @@ package de.symeda.sormas.api.clinicalcourse;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -33,28 +35,45 @@ public class HealthConditionsDto extends EntityDto {
 	public static final String FORMER_SMOKER = "formerSmoker";
 	public static final String ASTHMA = "asthma";
 	public static final String SICKLE_CELL_DISEASE = "sickleCellDisease";
+	public static final String IMMUNODEFICIENCY_INCLUDING_HIV = "immunodeficiencyIncludingHiv";
 
+	@HideForCountries
 	private YesNoUnknown tuberculosis;
+	@HideForCountries
 	private YesNoUnknown asplenia;
+	@HideForCountries
 	private YesNoUnknown hepatitis;
 	private YesNoUnknown diabetes;
+	@HideForCountries
 	private YesNoUnknown hiv;
+	@HideForCountries
 	private YesNoUnknown hivArt;
 	private YesNoUnknown chronicLiverDisease;
 	private YesNoUnknown malignancyChemotherapy;
+	@HideForCountries
 	private YesNoUnknown chronicHeartFailure;
 	private YesNoUnknown chronicPulmonaryDisease;
 	private YesNoUnknown chronicKidneyDisease;
 	private YesNoUnknown chronicNeurologicCondition;
+	@HideForCountries
 	private YesNoUnknown downSyndrome;
+	@HideForCountries
 	private YesNoUnknown congenitalSyphilis;
+	@HideForCountries
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
 	private YesNoUnknown cardiovascularDiseaseIncludingHypertension;
+	@HideForCountries
 	private YesNoUnknown obesity;
+	@HideForCountries
 	private YesNoUnknown currentSmoker;
+	@HideForCountries
 	private YesNoUnknown formerSmoker;
+	@HideForCountries
 	private YesNoUnknown asthma;
+	@HideForCountries
 	private YesNoUnknown sickleCellDisease;
+	@HideForCountriesExcept
+	private YesNoUnknown immunodeficiencyIncludingHiv;
 	private String otherConditions;
 	
 	public static HealthConditionsDto build() {
@@ -97,6 +116,13 @@ public class HealthConditionsDto extends EntityDto {
 	}
 	public void setImmunodeficiencyOtherThanHiv(YesNoUnknown immunodeficiencyOtherThanHiv) {
 		this.immunodeficiencyOtherThanHiv = immunodeficiencyOtherThanHiv;
+	}
+	@Order(6)
+	public YesNoUnknown getImmunodeficiencyIncludingHiv() {
+		return immunodeficiencyIncludingHiv;
+	}
+	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
+		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
 	@Order(10)
 	public YesNoUnknown getHiv() {

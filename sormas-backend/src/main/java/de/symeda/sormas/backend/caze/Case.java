@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.caze;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,6 +47,7 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.ReportingType;
+import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -62,6 +64,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -139,6 +142,8 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String REPORTING_TYPE = "reportingType";
+	public static final String POSTPARTUM = "postpartum";
+	public static final String TRIMESTER = "trimester";
 
 	private Person person;
 	private String description;
@@ -236,7 +241,11 @@ public class Case extends CoreAdo {
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
 
+	private YesNoUnknown postpartum;
+	private Trimester trimester;
+
 	private List<Task> tasks;
+	private Set<Sample> samples;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -681,6 +690,14 @@ public class Case extends CoreAdo {
 		this.tasks = tasks;
 	}
 
+	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
@@ -992,5 +1009,23 @@ public class Case extends CoreAdo {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 }

@@ -30,13 +30,10 @@ import java.util.Date;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.CheckBox;
@@ -73,6 +70,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -128,8 +126,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
 
-	public ContactDataForm(UserRight editOrCreateUserRight) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
+	public ContactDataForm() {
+		super(ContactDto.class, ContactDto.I18N_PREFIX);
 	}
 
 	@Override
@@ -277,22 +275,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
 					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-						Button toCaseButton = new Button(I18nProperties.getCaption(Captions.contactCreateContactCase));
-						toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
-						final FieldGroup fieldGroup = getFieldGroup();
-
-						toCaseButton.addClickListener(new ClickListener() {
-							@Override
-							public void buttonClick(ClickEvent event) {
-								if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
-									VaadinUiUtil.showSimplePopupWindow(
-											I18nProperties.getString(Strings.headingContactConfirmationRequired),
-											I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
-								} else {
-									ControllerProvider.getCaseController().createFromContact(getValue());
-								}
+						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
+							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
+								VaadinUiUtil.showSimplePopupWindow(
+										I18nProperties.getString(Strings.headingContactConfirmationRequired),
+										I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
+							} else {
+								ControllerProvider.getCaseController().createFromContact(getValue());
 							}
-						});
+						}, ValoTheme.BUTTON_LINK);
 
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
@@ -385,50 +376,38 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			FollowUpStatus followUpStatus = statusField.getValue();
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
-				Button cancelButton = new Button(I18nProperties.getCaption(Captions.contactCancelFollowUp));
-				cancelButton.setWidth(100, Unit.PERCENTAGE);
-				cancelButton.addClickListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-						statusField.setReadOnly(false);
-						statusField.setValue(FollowUpStatus.CANCELED);
-						statusField.setReadOnly(true);
-						updateFollowUpStatusComponents();
-					}
+				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {
+					Field<FollowUpStatus> statusField1 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
+					statusField1.setReadOnly(false);
+					statusField1.setValue(FollowUpStatus.CANCELED);
+					statusField1.setReadOnly(true);
+					updateFollowUpStatusComponents();
 				});
+				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-				Button lostButton = new Button(I18nProperties.getCaption(Captions.contactLostToFollowUp));
-				lostButton.setWidth(100, Unit.PERCENTAGE);
-				lostButton.addClickListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-						statusField.setReadOnly(false);
-						statusField.setValue(FollowUpStatus.LOST);
-						statusField.setReadOnly(true);
-						updateFollowUpStatusComponents();
-					}
+				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp,  event -> {
+					Field<FollowUpStatus> statusField12 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
+					statusField12.setReadOnly(false);
+					statusField12.setValue(FollowUpStatus.LOST);
+					statusField12.setReadOnly(true);
+					updateFollowUpStatusComponents();
 				});
+				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
 
 			} else if (followUpStatus == FollowUpStatus.CANCELED
 					|| followUpStatus == FollowUpStatus.LOST) {
 
-				Button resumeButton = new Button(I18nProperties.getCaption(Captions.contactResumeFollowUp));
-				resumeButton.addStyleName(CssStyles.FORCE_CAPTION);
+				Button resumeButton = ButtonHelper.createButton(Captions.contactResumeFollowUp, event -> {
+					Field<FollowUpStatus> statusField13 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
+					statusField13.setReadOnly(false);
+					statusField13.setValue(FollowUpStatus.FOLLOW_UP);
+					statusField13.setReadOnly(true);
+					updateFollowUpStatusComponents();
+				}, CssStyles.FORCE_CAPTION);
 				resumeButton.setWidth(100, Unit.PERCENTAGE);
-				resumeButton.addClickListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						Field<FollowUpStatus> statusField = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
-						statusField.setReadOnly(false);
-						statusField.setValue(FollowUpStatus.FOLLOW_UP);
-						statusField.setReadOnly(true);
-						updateFollowUpStatusComponents();
-					}
-				});
+
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
 		}		
