@@ -21,12 +21,12 @@ import de.symeda.sormas.api.visit.ExternalVisitDto;
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
-	public static final String EXTERNAL_VISITS_API_VERSION = "1.40.0";
+	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
 
     @GET
-    @Path("/contact/{contactUuid}/isValid")
-    public Boolean isValidContactUuid(@PathParam("contactUuid") String contactUuid) {
-        return FacadeProvider.getContactFacade().isValidContactUuid(contactUuid);
+    @Path("/contact/{personUuid}/isValid")
+    public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
+        return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
     }
 
     @POST
@@ -45,6 +45,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
     @Override
     protected <T> String createErrorMessage(T dto) {
         final ExternalVisitDto externalVisitDto = (ExternalVisitDto) dto;
-        return dto.getClass().getSimpleName() + " #contactUUID: " + externalVisitDto.getContactUuid() + "\n";
+        return dto.getClass().getSimpleName() + " #personUUID: " + externalVisitDto.getPersonUuid() + "\n";
     }
 }
