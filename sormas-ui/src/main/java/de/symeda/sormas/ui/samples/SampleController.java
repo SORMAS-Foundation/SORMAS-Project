@@ -39,6 +39,7 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -79,19 +80,24 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+	}
+
+	public void create(ContactReferenceDto contactRef, Runnable callback) {
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	private void crateSample(Runnable callback, SampleDto sampleDto) {
 		SampleEditForm createForm = new SampleEditForm();
-		createForm.setValue(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, 
+		createForm.setValue(sampleDto);
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					SampleDto dto = createForm.getValue();
-					FacadeProvider.getSampleFacade().saveSample(dto);
-					callback.run();
-				}
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				SampleDto dto = createForm.getValue();
+				FacadeProvider.getSampleFacade().saveSample(dto);
+				callback.run();
 			}
 		});
 
@@ -102,7 +108,7 @@ public class SampleController {
 		SampleEditForm createForm = new SampleEditForm();
 		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, 
+		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
@@ -134,7 +140,7 @@ public class SampleController {
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, 
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
@@ -235,7 +241,15 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, dto.getAssociatedCase(), dto);
+				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				if (associatedCase != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
+							associatedCase, dto);
+				} else if (associatedContact != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT,
+							associatedContact, dto);
+				}
 			}
 		});
 		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {

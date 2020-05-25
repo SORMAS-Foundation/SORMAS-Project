@@ -70,9 +70,9 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -80,6 +80,31 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import org.apache.commons.collections.CollectionUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -90,11 +115,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	VisitService visitService;
 	@EJB
-	PersonFacadeEjbLocal personFacade;
-	@EJB
 	DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	TaskService taskService;
+	@EJB
+	SampleService sampleService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -686,8 +711,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		} else {
 			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
 			LocalDate beginDate = DateHelper8.toLocalDate(ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()));
-			LocalDate untilDate = contact.isOverwriteFollowUpUntil() || 
-					(contact.getFollowUpUntil() != null && DateHelper8.toLocalDate(contact.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration))) ? 
+			LocalDate untilDate = contact.isOverwriteFollowUpUntil() ||
+					(contact.getFollowUpUntil() != null && DateHelper8.toLocalDate(contact.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration))) ?
 							DateHelper8.toLocalDate(contact.getFollowUpUntil()) : beginDate.plusDays(followUpDuration);
 
 							Visit lastVisit = null;
@@ -940,6 +965,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
+
+		contact.getSamples().stream()
+				.filter(sample -> sample.getAssociatedCase() == null)
+				.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(contact);
 	}

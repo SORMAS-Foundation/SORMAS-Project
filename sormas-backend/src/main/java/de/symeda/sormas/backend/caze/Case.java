@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.caze;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -243,6 +245,7 @@ public class Case extends CoreAdo {
 	private Trimester trimester;
 
 	private List<Task> tasks;
+	private Set<Sample> samples;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -685,6 +688,14 @@ public class Case extends CoreAdo {
 
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
 	}
 
 	@Enumerated(EnumType.STRING)

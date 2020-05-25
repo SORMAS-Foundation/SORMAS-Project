@@ -246,6 +246,7 @@
     <string name="error_synchronization">La synchronisation a échoué. Veuillez réessayer plus tard.</string>
     <string name="error_server_communication">Impossible de communiquer avec le serveur SORMAS. Réessayez plus tard.</string>
     <string name="error_no_pathogentest_labuser">le test de l\'agent pathogène n\'a pas d\'utilisateur en laboratoire</string>
+    <string name="heading_additional_details">Commentaire général</string>
     <string name="heading_additional_medical_information">Informations médicales supplémentaires</string>
     <string name="heading_animal_contacts">Contacts avec les animaux</string>
     <string name="heading_app_download_failed">Échec du téléchargement de l\'application</string>
@@ -444,7 +445,7 @@
     <string name="message_report_not_sent">Impossible d\'envoyer le rapport pour le moment.</string>
     <string name="message_report_sent">Rapport de problème envoyé avec succès.</string>
     <string name="message_save_error">%1$s n\'a pas pu être enregistré en raison d\'une erreur interne.</string>
-    <string name="message_edit_forbidden">You do not have permission to edit the record from this jurisdiction.</string>
+    <string name="message_edit_forbidden">Vous n\'avez pas la permission de modifier l\'enregistrement de cette juridiction.</string>
     <string name="message_save_success">%1$s enregistré avec succès.</string>
     <string name="message_settings_saved">Les paramètres de l\'application ont été modifiés.</string>
     <string name="message_settings_server_url">Bienvenue! Veuillez commencer par entrer l\'URL de votre serveur SORMAS. Ensuite, vous pourrez vous connecter avec votre nom d\'utilisateur et votre mot de passe.</string>
@@ -553,8 +554,8 @@
     <string name="value_visit_time_unknown">Date de visite N/A</string>
     <string name="value_visiting_person_unknown">Clinicien traitant N/A</string>
     <string name="value_investigation_status_unknown">Statut d\'Investigation N/A</string>
-    <string name="sample_not_found">Could not find sample</string>
-    <string name="no_camera_permission">No camera permission</string>
-    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="scan_field_sample_id">Scan field sample id</string>
+    <string name="sample_not_found">Échantillon introuvable</string>
+    <string name="no_camera_permission">Pas de permission caméra</string>
+    <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour la détection</string>
+    <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
 </resources>

@@ -33,6 +33,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -119,39 +121,45 @@ public class PathogenTestController {
 	}
 
 	private void savePathogenTest(PathogenTestDto dto, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
-		CaseDataDto preSaveCaseDto = FacadeProvider.getCaseFacade()
-				.getCaseDataByUuid(sample.getAssociatedCase().getUuid());
-		facade.savePathogenTest(dto);
-		CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(sample.getAssociatedCase().getUuid());
-		showSaveNotification(preSaveCaseDto, postSaveCaseDto);
+		final SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
+		final CaseReferenceDto associatedCase = sample.getAssociatedCase();
+		final ContactReferenceDto associatedContact = sample.getAssociatedContact();
+		if (associatedCase != null) {
+			CaseDataDto preSaveCaseDto = FacadeProvider.getCaseFacade()
+					.getCaseDataByUuid(associatedCase.getUuid());
+			facade.savePathogenTest(dto);
+			CaseDataDto postSaveCaseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			showSaveNotification(preSaveCaseDto, postSaveCaseDto);
 
-		Runnable confirmCaseCallback = () -> {
-			if (dto.getTestedDisease() == postSaveCaseDto.getDisease()
-					&& PathogenTestResultType.POSITIVE.equals(dto.getTestResult())
-					&& dto.getTestResultVerified().booleanValue() == true
-					&& postSaveCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
-					&& postSaveCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
-				showConfirmCaseDialog(postSaveCaseDto);
-			}
-		};
+			Runnable confirmCaseCallback = () -> {
+				if (dto.getTestedDisease() == postSaveCaseDto.getDisease()
+						&& PathogenTestResultType.POSITIVE.equals(dto.getTestResult())
+						&& dto.getTestResultVerified().booleanValue() == true
+						&& postSaveCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
+						&& postSaveCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
+					showConfirmCaseDialog(postSaveCaseDto);
+				}
+			};
 
-		Runnable caseCloningCallback = () -> {
-			if (dto.getTestedDisease() != postSaveCaseDto.getDisease() 
-					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
-					&& dto.getTestResultVerified().booleanValue() == true) {
-				showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
-			}
-		};
-		
-		if (onSavedPathogenTest != null) {
-			onSavedPathogenTest.accept(dto, () -> {
+			Runnable caseCloningCallback = () -> {
+				if (dto.getTestedDisease() != postSaveCaseDto.getDisease()
+						&& dto.getTestResult() == PathogenTestResultType.POSITIVE
+						&& dto.getTestResultVerified().booleanValue() == true) {
+					showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
+				}
+			};
+
+			if (onSavedPathogenTest != null) {
+				onSavedPathogenTest.accept(dto, () -> {
+					confirmCaseCallback.run();
+					caseCloningCallback.run();
+				});
+			} else {
 				confirmCaseCallback.run();
 				caseCloningCallback.run();
-			});
-		} else {
-			confirmCaseCallback.run();
-			caseCloningCallback.run();
+			}
+		} else if (associatedContact != null) {
+			facade.savePathogenTest(dto);
 		}
 	}
 

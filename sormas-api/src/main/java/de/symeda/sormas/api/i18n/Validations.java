@@ -64,7 +64,8 @@ public interface Validations {
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
-	String validCase = "validCase";
+	String validCaseOrContact = "validCaseOrContact";
+	String validCommunity = "validCommunity";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validFacility = "validFacility";

@@ -63,8 +63,10 @@ public class CaseDataView extends AbstractCaseView {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
-		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+		String htmlLayout = LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
