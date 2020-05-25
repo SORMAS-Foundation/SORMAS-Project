@@ -37,6 +37,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -322,6 +323,16 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 		if (criteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), criteria.getCaze().getUuid()));
+		}
+		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(),
+					criteria.getSampleReportDateTo()));
+		} else if (criteria.getSampleReportDateFrom() != null) {
+			filter = and(cb, filter,
+					cb.greaterThanOrEqualTo(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+		} else if (criteria.getSampleReportDateTo() != null) {
+			filter = and(cb, filter,
+					cb.lessThanOrEqualTo(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
