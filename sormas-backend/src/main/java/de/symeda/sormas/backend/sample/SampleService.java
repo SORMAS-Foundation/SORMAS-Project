@@ -378,14 +378,14 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			filter = and(cb, filter, cb.equal(contact.get(Contact.UUID), criteria.getContact().getUuid()));
 		}
 		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(),
+			filter = and(cb, filter, cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(),
 					criteria.getSampleReportDateTo()));
 		} else if (criteria.getSampleReportDateFrom() != null) {
 			filter = and(cb, filter,
-					cb.greaterThanOrEqualTo(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+					cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
 		} else if (criteria.getSampleReportDateTo() != null) {
 			filter = and(cb, filter,
-					cb.lessThanOrEqualTo(from.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
+					cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));

@@ -16,6 +16,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
     private Date testDateTime = new Date();
 
     @Test
-    public void testGetBySampleUuids() throws Exception {
+    public void testGetBySampleUuids() {
         RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
         UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
         PersonDto person = creator.createPerson();
@@ -66,7 +67,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
         final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
         final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 
-        final PathogenTestDto newPathogenTest = createPathogenTestDto(rdcf, user, sample, caze.getDisease());
+        final PathogenTestDto newPathogenTest = creator.buildPathogenTestDto(rdcf, user, sample, caze.getDisease(),
+                testDateTime);
 
         testSaveAndUpdatePathogenTest(newPathogenTest);
     }
@@ -82,7 +84,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
         final SampleDto sample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(),
                 SampleMaterial.BLOOD, rdcf.facility);
 
-        final PathogenTestDto newPathogenTest = createPathogenTestDto(rdcf, user, sample, contact.getDisease());
+        final PathogenTestDto newPathogenTest = creator.buildPathogenTestDto(rdcf, user, sample, contact.getDisease()
+                , testDateTime);
 
         testSaveAndUpdatePathogenTest(newPathogenTest);
     }
@@ -107,7 +110,8 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 
         getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
 
-        final PathogenTestDto newPathogenTest = createPathogenTestDto(rdcf, user, sample, caseConvertedFromContact.getDisease());
+        final PathogenTestDto newPathogenTest = creator.buildPathogenTestDto(rdcf, user, sample,
+                caseConvertedFromContact.getDisease(), testDateTime);
 
         testSaveAndUpdatePathogenTest(newPathogenTest);
     }
@@ -135,21 +139,5 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
         assertEquals("all good!", updatedPathogen.getTestResultText());
         assertEquals(testDateTime, updatedPathogen.getTestDateTime());
         assertTrue(updatedPathogen.getTestResultVerified());
-    }
-
-    private PathogenTestDto createPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease) {
-        final PathogenTestDto newPathogenTest = new PathogenTestDto();
-
-        newPathogenTest.setSample(sample.toReference());
-        newPathogenTest.setTestedDisease(disease);
-        newPathogenTest.setTestType(PathogenTestType.ISOLATION);
-
-        newPathogenTest.setTestDateTime(testDateTime);
-        newPathogenTest.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
-        newPathogenTest.setLabUser(user.toReference());
-        newPathogenTest.setTestResult(PathogenTestResultType.PENDING);
-        newPathogenTest.setTestResultText("all bad!");
-        newPathogenTest.setTestResultVerified(false);
-        return newPathogenTest;
     }
 }

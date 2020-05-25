@@ -35,7 +35,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.contact.Contact;
@@ -319,62 +318,65 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
         final Sample sample = sampleService.getByUuid(sampleUuid);
         final Case caze = sample.getAssociatedCase();
         final Contact contact = sample.getAssociatedContact();
-        final Region region;
-        final Disease disease;
-        final List<User> messageRecipients;
 
         if (caze != null) {
-            region = caze.getRegion();
-            disease = caze.getDisease();
-            messageRecipients = userService.getAllByRegionAndUserRoles(region,
+            final Region region = caze.getRegion();
+            final Disease disease = caze.getDisease();
+            final List<User> messageRecipients = userService.getAllByRegionAndUserRoles(region,
                     UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
-        } else {
-            region = contact.getRegion();
-            disease = contact.getDisease();
-            messageRecipients = userService.getAllByRegionAndUserRoles(region,
-                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
         }
 
-        if (caze != null || contact != null) {
-            if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-                final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_ARRIVED :
-                        MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT;
-                for (User recipient : messageRecipients) {
-                    try {
-                        messagingService.sendMessage(recipient,
-                                I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
-                                String.format(I18nProperties.getString(contentString),
-                                        newPathogenTest.getTestResult().toString(), disease,
-                                        DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
-                                        newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
-                                MessageType.EMAIL, MessageType.SMS);
-                    } catch (NotificationDeliveryFailedException e) {
-                        logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
-                                        "about the arrival of a lab result. "
-                                        + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-                                recipient.getUuid()));
-                    }
+        if (contact != null){
+            final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
+            final Disease disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
+            final List<User> messageRecipients = userService.getAllByRegionAndUserRoles(region,
+                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
+        }
+    }
+
+    private void sendMessageOnPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest,
+                                                  Case caze, Contact contact, Disease disease,
+                                                  List<User> messageRecipients) {
+        if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+            final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_ARRIVED :
+                    MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT;
+            for (User recipient : messageRecipients) {
+                try {
+                    messagingService.sendMessage(recipient,
+                            I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
+                            String.format(I18nProperties.getString(contentString),
+                                    newPathogenTest.getTestResult().toString(), disease,
+                                    DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
+                                    newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
+                            MessageType.EMAIL, MessageType.SMS);
+                } catch (NotificationDeliveryFailedException e) {
+                    logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
+                                    "about the arrival of a lab result. "
+                                    + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+                            recipient.getUuid()));
                 }
-            } else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING &&
-                    newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-                final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED :
-                        MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
-                for (User recipient : messageRecipients) {
-                    try {
-                        messagingService.sendMessage(recipient,
-                                I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
-                                String.format(I18nProperties.getString(contentString),
-                                        disease, DataHelper.getShortUuid(caze != null ? caze.getUuid() :
-                                                contact.getUuid()),
-                                        newPathogenTest.getTestResult().toString(),
-                                        newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
-                                MessageType.EMAIL, MessageType.SMS);
-                    } catch (NotificationDeliveryFailedException e) {
-                        logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
-                                        "about the specification of a lab result. "
-                                        + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-                                recipient.getUuid()));
-                    }
+            }
+        } else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING &&
+                newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+            final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED :
+                    MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
+            for (User recipient : messageRecipients) {
+                try {
+                    messagingService.sendMessage(recipient,
+                            I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
+                            String.format(I18nProperties.getString(contentString),
+                                    disease, DataHelper.getShortUuid(caze != null ? caze.getUuid() :
+                                            contact.getUuid()),
+                                    newPathogenTest.getTestResult().toString(),
+                                    newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
+                            MessageType.EMAIL, MessageType.SMS);
+                } catch (NotificationDeliveryFailedException e) {
+                    logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
+                                    "about the specification of a lab result. "
+                                    + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+                            recipient.getUuid()));
                 }
             }
         }

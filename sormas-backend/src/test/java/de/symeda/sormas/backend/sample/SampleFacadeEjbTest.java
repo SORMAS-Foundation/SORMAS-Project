@@ -271,7 +271,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
 	}
-	
 
 	@Test
 	public void testGetByCaseUuids() throws Exception {

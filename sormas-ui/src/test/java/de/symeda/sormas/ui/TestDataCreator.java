@@ -253,8 +253,7 @@ public class TestDataCreator {
 		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestType(testType);
 		sampleTest.setTestDateTime(testDateTime);
-		sampleTest.
-				setLab(lab);
+		sampleTest.setLab(lab);
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);

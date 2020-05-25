@@ -411,6 +411,23 @@ public class TestDataCreator {
 		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
 	}
+
+	public PathogenTestDto buildPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease,
+												Date testDateTime) {
+		final PathogenTestDto newPathogenTest = new PathogenTestDto();
+
+		newPathogenTest.setSample(sample.toReference());
+		newPathogenTest.setTestedDisease(disease);
+		newPathogenTest.setTestType(PathogenTestType.ISOLATION);
+
+		newPathogenTest.setTestDateTime(testDateTime);
+		newPathogenTest.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		newPathogenTest.setLabUser(user.toReference());
+		newPathogenTest.setTestResult(PathogenTestResultType.PENDING);
+		newPathogenTest.setTestResultText("all bad!");
+		newPathogenTest.setTestResultVerified(false);
+		return newPathogenTest;
+	}
 	
 	public AdditionalTestDto createAdditionalTest(SampleReferenceDto sample) {
 		AdditionalTestDto test = AdditionalTestDto.build(sample);
