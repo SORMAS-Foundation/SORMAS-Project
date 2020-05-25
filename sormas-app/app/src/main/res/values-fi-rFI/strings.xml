@@ -246,6 +246,7 @@
     <string name="error_synchronization">Synkronisointi epäonnistui. Yritä myöhemmin uudelleen.</string>
     <string name="error_server_communication">Ongelma SORMAS-palvelinyhteydessä. Yritä myöhemmin uudelleen.</string>
     <string name="error_no_pathogentest_labuser">patogeenitestillä ei ole laboratorion käyttäjää</string>
+    <string name="heading_additional_details">Yleinen kommentti</string>
     <string name="heading_additional_medical_information">Muita lääketieteellisiä tietoja</string>
     <string name="heading_animal_contacts">Eläinkontaktit</string>
     <string name="heading_app_download_failed">Sovelluksen lataus epäonnistui</string>
