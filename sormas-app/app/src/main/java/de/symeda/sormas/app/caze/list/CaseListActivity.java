@@ -117,7 +117,9 @@ public class CaseListActivity extends PagedBaseListActivity {
         super.onResume();
         if (getIntent().getBooleanExtra("refreshOnResume", false)) {
             showPreloader();
-            model.getCases().getValue().getDataSource().invalidate();
+            if (model.getCases().getValue() != null) {
+                model.getCases().getValue().getDataSource().invalidate();
+            }
         }
     }
 
