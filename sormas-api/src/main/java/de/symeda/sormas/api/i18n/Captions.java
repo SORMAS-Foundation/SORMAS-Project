@@ -1100,6 +1100,7 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String sampleAssociationType = "sampleAssociationType";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";
