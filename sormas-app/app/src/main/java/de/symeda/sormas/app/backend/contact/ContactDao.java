@@ -30,6 +30,7 @@ import com.j256.ormlite.stmt.Where;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -190,43 +191,47 @@ public class ContactDao extends AbstractAdoDao<Contact> {
         QueryBuilder<Contact, Long> queryBuilder = queryBuilder();
         QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
-        Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+        List<Where<Contact, Long>> whereStatements = new ArrayList<>();
+        Where<Contact, Long> where = queryBuilder.where();
+        whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
         if (criteria.getCaze() != null) {
-            where.and().eq(Contact.CASE_UUID, criteria.getCaze().getUuid());
+            whereStatements.add(where.eq(Contact.CASE_UUID, criteria.getCaze().getUuid()));
         } else {
             if (criteria.getFollowUpStatus() != null) {
-                where.and().eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus());
+                whereStatements.add(where.eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus()));
             }
             if (criteria.getContactClassification() != null) {
-                where.and().eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification());
+                whereStatements.add(where.eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification()));
             }
             if (criteria.getDisease() != null) {
-                where.and().eq("caseDisease", criteria.getDisease());
+                whereStatements.add(where.eq("caseDisease", criteria.getDisease()));
             }
             if (criteria.getReportDateFrom() != null) {
-                where.and().ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom()));
+                whereStatements.add(where.ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom())));
             }
             if (criteria.getReportDateTo() != null) {
-                where.and().le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo()));
+                whereStatements.add(where.le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo())));
             }
             if (!StringUtils.isEmpty(criteria.getTextFilter())) {
                 String[] textFilters = criteria.getTextFilter().split("\\s+");
                 for (String filter : textFilters) {
-                    where.and();
                     String textFilter = "%" + filter.toLowerCase() + "%";
                     if (!StringUtils.isEmpty(textFilter)) {
-                        where.or(
+                        whereStatements.add(where.or(
                                 where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter + "'"),
                                 where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter + "'"),
                                 where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter + "'")
-                        );
+                        ));
                     }
                 }
             }
         }
 
-        queryBuilder.setWhere(where);
+        if (!whereStatements.isEmpty()) {
+            Where<Contact, Long> whereStatement = where.and(whereStatements.size());
+            queryBuilder.setWhere(whereStatement);
+        }
         queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
         return queryBuilder;
     }
