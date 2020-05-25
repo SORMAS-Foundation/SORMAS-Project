@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Collection;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -36,7 +34,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -44,7 +42,9 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -64,6 +64,9 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import java.util.Collection;
+import java.util.Date;
+
 public class SampleController {
 
 	public SampleController() {
@@ -80,22 +83,23 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
 	}
 
 	public void create(ContactReferenceDto contactRef, Runnable callback) {
-		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
 	}
 
-	private void crateSample(Runnable callback, SampleDto sampleDto) {
-		SampleEditForm createForm = new SampleEditForm();
+	private void createSample(Runnable callback, SampleDto sampleDto) {
+		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				SampleDto dto = createForm.getValue();
+				final SampleDto dto = createForm.getValue();
+				fillPathogenFields(createForm, dto);
 				FacadeProvider.getSampleFacade().saveSample(dto);
 				callback.run();
 			}
@@ -105,22 +109,20 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleEditForm createForm = new SampleEditForm();
-		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
+		final SampleCreateForm createForm = new SampleCreateForm();
+		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm,
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
-		createView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					SampleDto newSample = createForm.getValue();
-					FacadeProvider.getSampleFacade().saveSample(newSample);
-					sample.setReferredTo(FacadeProvider.getSampleFacade().getReferenceByUuid(newSample.getUuid()));
-					FacadeProvider.getSampleFacade().saveSample(sample);
-					navigateToData(newSample.getUuid());
-				}
+		createView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final SampleDto newSample = createForm.getValue();
+				fillPathogenFields(createForm, newSample);
+				FacadeProvider.getSampleFacade().saveSample(newSample);
+				sample.setReferredTo(FacadeProvider.getSampleFacade().getReferenceByUuid(newSample.getUuid()));
+				FacadeProvider.getSampleFacade().saveSample(sample);
+				navigateToData(newSample.getUuid());
 			}
 		});
 
@@ -133,6 +135,23 @@ public class SampleController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
+	}
+
+	private void fillPathogenFields(SampleCreateForm createForm, SampleDto dto) {
+		final PathogenTestResultType testResult =
+				(PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
+		if (testResult != null) {
+			final PathogenTestDto defaultTest = PathogenTestDto.build(dto, UserProvider.getCurrent().getUser());
+			defaultTest.setLab(dto.getLab());
+			defaultTest.setTestResult(testResult);
+			defaultTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
+			defaultTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			defaultTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			defaultTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
+			defaultTest.setTestedDiseaseDetails((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
+			dto.setDefaultTest(defaultTest);
+			dto.setPathogenTestResult(testResult);
+		}
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {

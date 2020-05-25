@@ -63,7 +63,7 @@ public class SampleDto extends EntityDto {
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
-	
+
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
 	private String labSampleID;
@@ -105,6 +105,8 @@ public class SampleDto extends EntityDto {
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	private String requestedOtherPathogenTests;
 	private String requestedOtherAdditionalTests;
+
+	private PathogenTestDto defaultTest;
 
 	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
@@ -345,6 +347,15 @@ public class SampleDto extends EntityDto {
 
 	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
+	}
+
+	@ImportIgnore
+	public PathogenTestDto getDefaultTest() {
+		return defaultTest;
+	}
+
+	public void setDefaultTest(PathogenTestDto defaultTest) {
+		this.defaultTest = defaultTest;
 	}
 
 	public static SampleDto build(UserReferenceDto userRef, CaseReferenceDto caseRef) {
