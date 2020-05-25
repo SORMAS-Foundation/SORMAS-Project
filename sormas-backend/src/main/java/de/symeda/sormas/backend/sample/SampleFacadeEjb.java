@@ -41,7 +41,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.backend.caze.CaseEditAuthorization;
+import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +127,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PseudonymizationService pseudonymizationService;
 	@EJB
-	private CaseEditAuthorization caseEditAuthorization;
+	private CaseJurisdictionChecker caseJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -304,7 +304,7 @@ public class SampleFacadeEjb implements SampleFacade {
 						return true;
 					}
 
-					return caseEditAuthorization.isInJurisdiction(s.getAssociatedCase().getJurisdiction());
+					return caseJurisdictionChecker.isInJurisdiction(s.getAssociatedCase().getJurisdiction());
 				},
 				(s, isInJurisdiction) -> {
 					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
@@ -590,7 +590,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		SampleDto dto = toDto(source);
 
 		if (dto != null) {
-			Boolean isInJurisdiction = caseEditAuthorization.isInJurisdiction(source.getAssociatedCase());
+			Boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getAssociatedCase());
 			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
 				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, s.getAssociatedCase(), isInJurisdiction, null);
 			});

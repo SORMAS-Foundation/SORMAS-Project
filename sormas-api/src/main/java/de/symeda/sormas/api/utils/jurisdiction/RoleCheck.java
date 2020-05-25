@@ -16,21 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils.fieldvisibility.checkers;
+package de.symeda.sormas.api.utils.jurisdiction;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.user.UserRole;
 
-public class DiseaseFieldVisibilityChecker implements FieldVisibilityCheckers.FieldNameBaseChecker {
-	private final Disease disease;
+import java.util.Set;
 
-	public DiseaseFieldVisibilityChecker(Disease disease) {
-		this.disease = disease;
-	}
-
-	@Override
-	public boolean isVisible(Class<?> parentType, String propertyId) {
-		return Diseases.DiseasesConfiguration.isDefinedOrMissing(parentType, propertyId, disease);
-	}
+public interface RoleCheck {
+	boolean hasAnyRole(Set<UserRole> roles);
 }

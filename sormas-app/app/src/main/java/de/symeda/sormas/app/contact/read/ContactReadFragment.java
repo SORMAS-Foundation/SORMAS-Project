@@ -21,6 +21,7 @@ package de.symeda.sormas.app.contact.read;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -38,7 +39,8 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     private Case sourceCase;
 
     public static ContactReadFragment newInstance(Contact activityRootData) {
-        return newInstance(ContactReadFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(ContactReadFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
     }
 
     private void setUpControlListeners(FragmentContactReadLayoutBinding contentBinding) {
@@ -47,7 +49,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     }
 
     private void setUpFieldVisibilities(FragmentContactReadLayoutBinding contentBinding) {
-        setVisibilityByDisease(ContactDto.class, record.getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(ContactDto.class, contentBinding.mainContent);
 
         if (record.getResultingCaseUuid() == null
                 || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {

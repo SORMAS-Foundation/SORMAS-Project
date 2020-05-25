@@ -46,7 +46,6 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;

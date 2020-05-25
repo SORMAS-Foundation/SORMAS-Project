@@ -32,9 +32,16 @@ public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
-	private PersonName contactPersonName;
-	private PersonName casePersonName;
-	private ContactJurisdictionDto contactJurisdiction;
+	@PersonalData
+	private String contactFirstName;
+	@PersonalData
+	private String contactLastName;
+	@PersonalData
+	private String caseFirstName;
+	@PersonalData
+	private String caseLastName;
+
+	ContactJurisdictionDto contactJurisdiction;
 
 	public ContactReferenceDto() {
 
@@ -48,23 +55,17 @@ public class ContactReferenceDto extends ReferenceDto {
 							   String caseFirstName, String caseLastName,
 							   ContactJurisdictionDto contactJurisdiction) {
 		setUuid(uuid);
-		contactPersonName = new PersonName(contactFirstName, contactLastName);
-		casePersonName = new PersonName(caseFirstName, caseLastName);
+		this.contactFirstName = contactFirstName;
+		this.contactLastName = contactLastName;
+		this.caseFirstName = caseFirstName;
+		this.caseLastName = caseLastName;
 
 		this.contactJurisdiction = contactJurisdiction;
 	}
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactPersonName.firstName, contactPersonName.lastName, casePersonName.firstName, casePersonName.lastName);
-	}
-
-	public PersonName getContactPersonName() {
-		return contactPersonName;
-	}
-
-	public PersonName getCasePersonName() {
-		return casePersonName;
+		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName);
 	}
 
 	public ContactJurisdictionDto getContactJurisdiction() {
@@ -76,26 +77,12 @@ public class ContactReferenceDto extends ReferenceDto {
 		builder.append(DataHelper.toStringNullable(contactFirstName))
 			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
 
-		if (caseFirstName != null || caseLastName != null) {
+		if (!DataHelper.isNullOrEmpty(caseFirstName) || !DataHelper.isNullOrEmpty(caseLastName)) {
 			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		}
 
 		return builder.toString();
-	}
-
-	public static class PersonName implements Serializable {
-		private static final long serialVersionUID = -6077306945043270617L;
-
-		@PersonalData
-		private String firstName;
-		@PersonalData
-		private String lastName;
-
-		public PersonName(String firstName, String lastName) {
-			this.firstName = firstName;
-			this.lastName = lastName;
-		}
 	}
 }

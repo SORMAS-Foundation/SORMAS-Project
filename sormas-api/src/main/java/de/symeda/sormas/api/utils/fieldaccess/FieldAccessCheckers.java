@@ -18,7 +18,7 @@
 
 package de.symeda.sormas.api.utils.fieldaccess;
 
-import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,6 +68,20 @@ public class FieldAccessCheckers {
 		} catch (NoSuchFieldException e) {
 			return null;
 		}
+	}
+
+	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction){
+		return withCheckers(new PersonalDataFieldAccessChecker(rightCheck, isInJurisdiction));
+	}
+
+	public static FieldAccessCheckers withCheckers(Checker... checkers) {
+		FieldAccessCheckers ret = new FieldAccessCheckers();
+
+		for (Checker checker : checkers) {
+			ret.add(checker);
+		}
+
+		return ret;
 	}
 
 	public interface Checker {

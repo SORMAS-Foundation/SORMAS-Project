@@ -19,16 +19,10 @@
 package de.symeda.sormas.app.person.read;
 
 import android.os.Bundle;
-import android.view.View;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -37,7 +31,6 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
@@ -54,37 +47,19 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     // Instance methods
 
     public static PersonReadFragment newInstance(Case activityRootData) {
-        PersonReadFragment fragment = newInstance(PersonReadFragment.class, null, activityRootData);
-        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
-                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
-                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
-        return fragment;
+        return newInstanceWithFieldCheckers(PersonReadFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
     }
 
     public static PersonReadFragment newInstance(Contact activityRootData) {
-        PersonReadFragment fragment = newInstance(PersonReadFragment.class, null, activityRootData);
-        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
-                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
-                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, ContactEditAuthorization.isContactEditAllowed(activityRootData))));
-
-        return fragment;
+        return newInstanceWithFieldCheckers(PersonReadFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, ContactEditAuthorization.isContactEditAllowed(activityRootData)));
     }
 
     public static void setUpFieldVisibilities(BaseReadFragment fragment, FragmentPersonReadLayoutBinding contentBinding, AbstractDomainObject rootData) {
-        Disease rootDisease = null;
-        if (rootData instanceof Case) {
-            rootDisease = ((Case) rootData).getDisease();
-        } else if (rootData instanceof Contact) {
-            rootDisease = ((Contact) rootData).getDisease();
-        } else if (rootData instanceof Event) {
-            rootDisease = ((Event) rootData).getDisease();
-        }
-
-            fragment.setVisibilityByDisease(PersonDto.class, null, contentBinding.mainContent);
-
-        if (!fragment.isVisibleAllowed(LocationDto.class, LocationDto.ADDRESS)) {
-            contentBinding.personAddress.setVisibility(View.GONE);
-        }
+        fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personPlaceOfBirthFacility, contentBinding.personPlaceOfBirthFacilityDetails);
@@ -112,7 +87,6 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
     @Override
     public void onLayoutBinding(FragmentPersonReadLayoutBinding contentBinding) {
         contentBinding.setData(record);
-        contentBinding.setBirthDayVisibility(isVisibleAllowed(PersonDto.class, PersonDto.BIRTH_DATE_DD));
     }
 
     @Override

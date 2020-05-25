@@ -39,13 +39,17 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-								   CaseClassification caseClassification, int visitCount,
+								   CaseClassification caseClassification,
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String address, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName) {
-		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification, visitCount, caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+								   String reportingUserFirstName, String reportingUserLastName,
+								   int visitCount) {
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
+				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
+				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;

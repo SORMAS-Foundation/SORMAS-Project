@@ -21,6 +21,7 @@ package de.symeda.sormas.app.caze.read;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -37,7 +38,8 @@ public class CaseReadHealthConditionsFragment extends BaseReadFragment<FragmentC
     // Static methods
 
     public static CaseReadHealthConditionsFragment newInstance(Case activityRootData) {
-        return newInstance(CaseReadHealthConditionsFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(CaseReadHealthConditionsFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
     }
 
     // Overrides
@@ -55,7 +57,7 @@ public class CaseReadHealthConditionsFragment extends BaseReadFragment<FragmentC
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadHealthConditionsLayoutBinding contentBinding) {
-        setVisibilityByDisease(HealthConditionsDto.class, caze.getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(HealthConditionsDto.class, contentBinding.mainContent);
     }
 
     @Override

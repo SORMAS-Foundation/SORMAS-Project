@@ -1,42 +1,43 @@
 package de.symeda.sormas.app.backend.contact;
 
-import java.util.Set;
-
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.JurisdictionHelper;
 
 public class ContactEditAuthorization {
 
     public static boolean isContactEditAllowed(Contact contact) {
         User user = ConfigProvider.getUser();
 
-        if (user.getUuid().equals(contact.getReportingUser().getUuid())){
-            return true;
+        return ContactJurisdictionHelper.isInJurisdiction(ConfigProvider::hasRole, JurisdictionHelper.createUserJurisdiction(user),
+                createContactJurisdictionDto(contact));
+    }
+
+    private static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+        if (contact == null) {
+            return null;
+        }
+        ContactJurisdictionDto dto = new ContactJurisdictionDto();
+
+        if (contact.getReportingUser() != null) {
+            dto.setReportingUserUuid(contact.getReportingUser().getUuid());
+        }
+        if (contact.getRegion() != null) {
+            dto.setRegionUuId(contact.getRegion().getUuid());
+        }
+        if (contact.getDistrict() != null) {
+            dto.setDistrictUuid(contact.getDistrict().getUuid());
         }
 
         if (contact.getCaseUuid() != null) {
             Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-            if (caseOfContact != null && CaseEditAuthorization.isCaseEditAllowed(caseOfContact)) {
-                return true;
-            }
+            JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
         }
 
-        if (contact.getRegion() != null && ConfigProvider.hasRole(UserRole.getSupervisorRoles())) {
-            return contact.getRegion().equals(user.getRegion());
-        }
-
-        if (contact.getDistrict() != null && ConfigProvider.hasRole(UserRole.getOfficerRoles())) {
-            return contact.getDistrict().equals(user.getDistrict());
-        }
-
-        if (ConfigProvider.hasRole(UserRole.NATIONAL_USER)) {
-            return true;
-        }
-
-        return false;
+        return dto;
     }
 }

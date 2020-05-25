@@ -58,7 +58,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseEditAuthorization;
+import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -155,9 +155,9 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
-	private ContactEditAuthorization contactEditAuthorization;
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
-	private CaseEditAuthorization caseEditAuthorization;
+	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private PseudonymizationService pseudonymizationService;
 
@@ -410,7 +410,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					exportContact.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
-				pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportContact, contactEditAuthorization.isInJurisdiction(exportContact.getJurisdiction()), null);
+				pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportContact, contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()), null);
 			}
 		}
 
@@ -605,7 +605,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
 				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, contactFollowUpDto.getPerson(),
-						contactEditAuthorization.isInJurisdiction(contactFollowUpDto.getJurisdiction()), null);
+						contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()), null);
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
@@ -642,7 +642,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDto.class, dtos,
-				c -> contactEditAuthorization.isInJurisdiction(c.getJurisdiction()), null);
+				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), null);
 
 		return dtos;
 	}
@@ -659,7 +659,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos,
-				c -> contactEditAuthorization.isInJurisdiction(c.getJurisdiction()), null);
+				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), null);
 
 		return dtos;
 	}
@@ -847,10 +847,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		ContactDto dto = toDto(source);
 
 		if(dto != null) {
-			boolean isInJurisdiction = contactEditAuthorization.isInJurisdiction(source);
+			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
 			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
 				if (c.getCaze() != null) {
-					Boolean isCaseInJurisdiction = caseEditAuthorization.isInJurisdiction(source.getCaze());
+					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
 					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
 				}
 
@@ -1095,10 +1095,10 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> contactEditAuthorization.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+		pseudonymizationService.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
 			CaseReferenceDto contactCase = c.getCaze();
 			if (contactCase != null) {
-				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, contactCase, caseEditAuthorization.isInJurisdiction(contactCase.getJurisdiction()), null);
+				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, contactCase, caseJurisdictionChecker.isInJurisdiction(contactCase.getJurisdiction()), null);
 			}
 		});
 
@@ -1114,7 +1114,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean isContactEditAllowed(String contactUuid) {
 		Contact contact = contactService.getByUuid(contactUuid);
-		return contactEditAuthorization.isInJurisdiction(contact);
+		return contactJurisdictionChecker.isInJurisdiction(contact);
 	}
 
 }

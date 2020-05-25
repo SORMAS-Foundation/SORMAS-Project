@@ -52,11 +52,11 @@ import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
 
-	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;	
+		private static final long serialVersionUID = 1L;
+
+
+	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 
@@ -64,7 +64,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 	private DateField intensiveCareUnitStart;
 	private DateField intensiveCareUnitEnd;
 
-	private static final String HTML_LAYOUT = 
+	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingHospitalization)) +
 			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
@@ -125,12 +125,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		}
 
 		// Validations
-		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, caze.getSymptoms().getOnsetDate(), false, false, 
+		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, caze.getSymptoms().getOnsetDate(), false, false,
 				I18nProperties.getValidationError(Validations.afterDateSoft, admissionDateField.getCaption(), I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE))));
-		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, dischargeDateField, true, false, 
+		admissionDateField.addValidator(new DateComparisonValidator(admissionDateField, dischargeDateField, true, false,
 				I18nProperties.getValidationError(Validations.beforeDate, admissionDateField.getCaption(), dischargeDateField.getCaption())));
 		admissionDateField.setInvalidCommitted(true);
-		dischargeDateField.addValidator(new DateComparisonValidator(dischargeDateField, admissionDateField, false, false, 
+		dischargeDateField.addValidator(new DateComparisonValidator(dischargeDateField, admissionDateField, false, false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
 		intensiveCareUnitStart.addValidator(new DateComparisonValidator(intensiveCareUnitStart, admissionDateField, false, true, I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
 		intensiveCareUnitStart.addValidator(new DateComparisonValidator(intensiveCareUnitStart, intensiveCareUnitEnd, true, true, I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));

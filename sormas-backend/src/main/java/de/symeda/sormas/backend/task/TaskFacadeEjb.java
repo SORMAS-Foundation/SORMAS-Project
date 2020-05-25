@@ -34,7 +34,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseEditAuthorization;
+import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -45,7 +45,7 @@ import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactEditAuthorization;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -116,9 +116,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	@EJB
 	private PseudonymizationService pseudonymizationService;
 	@EJB
-	private CaseEditAuthorization caseEditAuthorization;
+	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
-	private ContactEditAuthorization contactEditAuthorization;
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 
 	public Task fromDto(TaskDto source) {
@@ -227,10 +227,10 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		boolean isInJurisdiction;
 		if (target.getContact() == null) {
-			isInJurisdiction = target.getCaze() == null || caseEditAuthorization.isInJurisdiction(target.getCaze().getJurisdiction());
+			isInJurisdiction = target.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(target.getCaze().getJurisdiction());
 		}
 		else {
-			isInJurisdiction = contactEditAuthorization.isInJurisdiction(target.getContact().getContactJurisdiction());
+			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(target.getContact().getContactJurisdiction());
 		}
 
 		pseudonymizationService.pseudonymizeDto(TaskDto.class, target, isInJurisdiction,
@@ -241,12 +241,11 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	private void pseudonymizeEmbeddedFields(ContactReferenceDto contact, CaseReferenceDto caze) {
 		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, contact.getContactPersonName(), contactEditAuthorization.isInJurisdiction(contact.getContactJurisdiction()), null);
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, contact.getCasePersonName(), caseEditAuthorization.isInJurisdiction(contact.getContactJurisdiction().getCaseJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contact.getContactJurisdiction()), null);
 		}
 
 		if (caze != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseEditAuthorization.isInJurisdiction(caze.getJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caze.getJurisdiction()), null);
 		}
 	}
 
@@ -421,10 +420,10 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		pseudonymizationService.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
 					if (t.getContact() == null) {
-						return t.getCaze() == null || caseEditAuthorization.isInJurisdiction(t.getCaze().getJurisdiction());
+						return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaze().getJurisdiction());
 					}
 
-					return contactEditAuthorization.isInJurisdiction(t.getContact().getContactJurisdiction());
+					return contactJurisdictionChecker.isInJurisdiction(t.getContact().getContactJurisdiction());
 				},
 				(t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getCaze())
 		);

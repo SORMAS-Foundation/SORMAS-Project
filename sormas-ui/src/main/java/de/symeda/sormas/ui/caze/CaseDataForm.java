@@ -86,9 +86,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -149,7 +147,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
 			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
-			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) + 
+			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
 			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
@@ -182,11 +180,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, false,
-				new FieldVisibilityCheckers()
-						.add(new DiseaseFieldVisibilityChecker(disease))
-						.add(new OutbreakFieldVisibilityChecker(viewMode)),
-				new FieldAccessCheckers()
-						.add(new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
+				FieldVisibilityCheckers.withDisease(disease).add(
+						new OutbreakFieldVisibilityChecker(viewMode)),
+				FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)
 		);
 
 		this.person = person;

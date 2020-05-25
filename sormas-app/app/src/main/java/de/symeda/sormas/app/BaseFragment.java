@@ -19,7 +19,6 @@
 package de.symeda.sormas.app;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,14 +27,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -49,6 +45,7 @@ public class BaseFragment extends Fragment {
     private FirebaseAnalytics firebaseAnalytics;
 
     private FieldVisibilityCheckers fieldVisibilityCheckers;
+    private FieldAccessCheckers fieldAccessCheckers;
 
     public BaseActivity getBaseActivity() {
         return (BaseActivity) getActivity();
@@ -88,32 +85,46 @@ public class BaseFragment extends Fragment {
         this.fieldVisibilityCheckers = fieldVisibilityCheckers;
     }
 
-    public void setVisibilityByDisease(Class<?> dtoClass, Disease disease, ViewGroup viewGroup) {
+    public void setFieldAccessCheckers(FieldAccessCheckers fieldAccessCheckers) {
+        this.fieldAccessCheckers = fieldAccessCheckers;
+    }
+
+    public void setFieldVisibilitiesAndAccesses(Class<?> dtoClass, ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ControlPropertyField) {
-                boolean visibleAllowed = isVisibleAllowed(dtoClass, disease, (ControlPropertyField) child);
+                String propertyId = ((ControlPropertyField) child).getSubPropertyId();
+                boolean visibleAllowed = isVisibleAllowed(dtoClass, propertyId);
+
                 child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
+                if(child.isEnabled()  && !isFieldAccessible(dtoClass, propertyId)) {
+                    child.setEnabled(false);
+                }
             } else if (child instanceof ViewGroup) {
-                setVisibilityByDisease(dtoClass, disease, (ViewGroup) child);
+                setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) child);
             }
         }
     }
 
-    public boolean isVisibleAllowed(Class<?> dtoClass, Disease disease, ControlPropertyField field) {
+    protected boolean isVisibleAllowed(Class<?> dtoClass, ControlPropertyField field) {
         String propertyId = field.getSubPropertyId();
-//        final boolean definedOrMissingForDisease = Diseases.DiseasesConfiguration.isDefinedOrMissing(dtoClass, propertyId, disease);
-//        final boolean fieldHiddenForCurrentCountry = isFieldHiddenForCurrentCountry(propertyId, dtoClass);
-//        return definedOrMissingForDisease && !fieldHiddenForCurrentCountry;
         return isVisibleAllowed(dtoClass, propertyId);
     }
 
-    public boolean isVisibleAllowed(Class<?> dtoClass, String propertyId) {
+    private boolean isVisibleAllowed(Class<?> dtoClass, String propertyId) {
         if(fieldVisibilityCheckers == null){
             return true;
         }
 
         return fieldVisibilityCheckers.isVisible(dtoClass, propertyId);
+    }
+
+    private boolean isFieldAccessible(Class<?> dtoClass, String propertyId){
+        if(fieldAccessCheckers == null){
+            return true;
+        }
+
+        return fieldAccessCheckers.isAccessible(dtoClass, propertyId);
     }
 
     private boolean isFieldHiddenForCurrentCountry(Object propertyId, Class<?> dtoClass) {

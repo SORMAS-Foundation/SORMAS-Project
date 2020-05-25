@@ -28,9 +28,8 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.PersonalDataFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -52,24 +51,21 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
     private Case record;
 
     public static CaseReadFragment newInstance(Case activityRootData) {
-        CaseReadFragment fragment = newInstance(CaseReadFragment.class, null, activityRootData);
-        fragment.setFieldVisibilityCheckers(new FieldVisibilityCheckers()
-                .add(new DiseaseFieldVisibilityChecker(activityRootData.getDisease()))
-                .add(new PersonalDataFieldVisibilityChecker(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)))
-        );
-        return fragment;
+        return newInstanceWithFieldCheckers(CaseReadFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
     }
 
     private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
-        setVisibilityByDisease(CaseDataDto.class, record.getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(CaseDataDto.class, contentBinding.mainContent);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
         InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
         // Vaccination date
-        if (isVisibleAllowed(CaseDataDto.class, record.getDisease(), contentBinding.caseDataVaccination)) {
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccination)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
         }
-        if (isVisibleAllowed(CaseDataDto.class, record.getDisease(), contentBinding.caseDataSmallpoxVaccinationReceived)) {
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataSmallpoxVaccinationReceived)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
         }
 

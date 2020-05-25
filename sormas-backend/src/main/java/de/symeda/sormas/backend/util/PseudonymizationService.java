@@ -76,8 +76,10 @@ public class PseudonymizationService {
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field) {
 		try {
+			Object emptyValue = field.getType().equals(String.class) ? "" : null;
+
 			field.setAccessible(true);
-			field.set(dto, null);
+			field.set(dto, emptyValue);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}

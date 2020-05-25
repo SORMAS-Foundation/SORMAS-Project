@@ -32,12 +32,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
@@ -60,7 +60,8 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
     // Static methods
 
     public static CaseReadEpidemiologicalDataFragment newInstance(Case activityRootData) {
-        return newInstance(CaseReadEpidemiologicalDataFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(CaseReadEpidemiologicalDataFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
     }
 
     // Instance methods
@@ -161,7 +162,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
-        setVisibilityByDisease(EpiDataDto.class, getActivityRootData().getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 
         if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease()) > 0) {
             contentBinding.epiDataTraveled.setCaption(String.format(I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),

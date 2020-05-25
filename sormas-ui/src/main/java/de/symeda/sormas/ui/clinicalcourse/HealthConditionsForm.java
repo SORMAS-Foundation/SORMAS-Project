@@ -65,8 +65,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	public HealthConditionsForm() {
 		super(HealthConditionsDto.class, I18N_PREFIX,
-				new FieldVisibilityCheckers()
-						.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())));
+				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
