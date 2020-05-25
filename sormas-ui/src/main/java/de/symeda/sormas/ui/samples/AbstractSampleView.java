@@ -61,7 +61,7 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		}
 
 		final ContactReferenceDto contactRef = sampleByUuid.getAssociatedContact();
-		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
+		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);

@@ -261,12 +261,11 @@ public class SampleController {
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
 				if (associatedCase != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
 							associatedCase, dto);
-				}
-				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
-				if (associatedContact != null) {
+				} else if (associatedContact != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT,
 							associatedContact, dto);
 				}

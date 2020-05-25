@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
@@ -28,6 +29,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class SampleCriteria extends BaseCriteria implements Serializable {
@@ -59,6 +61,10 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
 	private SampleAssociationType sampleAssociationType;
+
+	private Date sampleReportDateFrom;
+	private Date sampleReportDateTo;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public RegionReferenceDto getRegion() {
 		return region;
@@ -109,6 +115,38 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public SampleCriteria referred(Boolean referred) {
 		this.referred = referred;
 		return this;
+	}
+
+	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
+		this.sampleReportDateFrom = reportDateFrom;
+		this.sampleReportDateTo = reportDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public SampleCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public Date getSampleReportDateFrom() {
+		return sampleReportDateFrom;
+	}
+
+	public void setSampleReportDateFrom(Date sampleReportDateFrom) {
+		this.sampleReportDateFrom = sampleReportDateFrom;
+	}
+
+	public Date getSampleReportDateTo() {
+		return sampleReportDateTo;
+	}
+
+	public void setSampleReportDateTo(Date sampleReportDateTo) {
+		this.sampleReportDateTo = sampleReportDateTo;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {

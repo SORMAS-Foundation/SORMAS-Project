@@ -29,7 +29,7 @@
     <string name="yes">Si</string>
     <string name="all">Todo</string>
     <string name="completed">completado</string>
-    <string name="action_add_missing_case">Agregar caso faltante</string>
+    <string name="action_add_missing_case">Agregar caso que falta</string>
     <string name="action_allow_gps_access">Permitir acceso GPS</string>
     <string name="action_apply_filters">Aplicar filtros</string>
     <string name="action_back_to_settings">Volver a la configuración</string>
@@ -246,6 +246,7 @@
     <string name="error_synchronization">La sincronización ha fallado. Inténtalo de nuevo más tarde.</string>
     <string name="error_server_communication">No se pudo conectar al servidor SORMAS. Inténtalo de nuevo más tarde.</string>
     <string name="error_no_pathogentest_labuser">la prueba del patógeno no tiene usuario de laboratorio</string>
+    <string name="heading_additional_details">General comment</string>
     <string name="heading_additional_medical_information">Información médica adicional</string>
     <string name="heading_animal_contacts">Contactos animales</string>
     <string name="heading_app_download_failed">Descarga de la aplicación fallida</string>

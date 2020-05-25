@@ -468,8 +468,8 @@
     <string name="notification_channel_case_changes_description">Erhalten Sie eine Benachrichtigung, wenn sich wichtige Details Ihrer Fälle geändert haben</string>
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Ihre: </string>
-    <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
-    <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
+    <string name="tag_row_item_select_or_create_person">Person auswählen oder anlegen</string>
+    <string name="tag_row_item_case_pick_or_create">Person auswählen oder anlegen</string>
     <string name="time_future_almost_two_years">innerhalb von fast zwei Jahren</string>
     <string name="time_future_one_day">morgen</string>
     <string name="time_future_one_hour">innerhalb von etwa einer Stunde</string>

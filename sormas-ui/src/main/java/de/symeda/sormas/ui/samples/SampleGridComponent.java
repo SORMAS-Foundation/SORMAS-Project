@@ -100,6 +100,7 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName("wrap");
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {

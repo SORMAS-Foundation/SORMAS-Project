@@ -31,6 +31,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -375,6 +376,16 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 		if (criteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(contact.get(Contact.UUID), criteria.getContact().getUuid()));
+		}
+		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
+			filter = and(cb, filter, cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(),
+					criteria.getSampleReportDateTo()));
+		} else if (criteria.getSampleReportDateFrom() != null) {
+			filter = and(cb, filter,
+					cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
+		} else if (criteria.getSampleReportDateTo() != null) {
+			filter = and(cb, filter,
+					cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
 		}
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
