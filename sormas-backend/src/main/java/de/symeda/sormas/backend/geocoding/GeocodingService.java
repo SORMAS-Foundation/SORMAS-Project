@@ -90,7 +90,7 @@ public class GeocodingService {
 			
 			url = ub.build();
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e); 
+			throw new IllegalArgumentException(e); 
 		}
 		
 		
@@ -107,11 +107,11 @@ public class GeocodingService {
 	    FeatureCollection fc = response.readEntity(FeatureCollection.class);
 	    
 	    return Optional.of(fc)
-	    		.map(c -> c.getFeatures())
+	    		.map(FeatureCollection::getFeatures)
 	    		.filter(ArrayUtils::isNotEmpty)
 	    		.map(a -> a[0])
-	    		.map(f -> f.getGeometry())
-	    		.map(g -> g.getCoordinates())
+	    		.map(Feature::getGeometry)
+	    		.map(Geometry::getCoordinates)
 	    		//reverse coordinates
 	    		.map(g -> new GeoLatLon(g[1], g[0]))
 	    		.orElse(null);  
@@ -151,7 +151,7 @@ public class GeocodingService {
 	public static class Feature implements Serializable {
 		private static final long serialVersionUID = -1;
 		private Geometry geometry;
-		public FeatureProperties properties;
+		private FeatureProperties properties;
 
 		@Override
 		public String toString() {
