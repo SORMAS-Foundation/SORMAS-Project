@@ -38,12 +38,22 @@ public class FieldAccessCheckers {
 
 	public boolean isAccessible(Field field) {
 		for (Checker checker : checkers) {
-			if (!checker.isAccessible(field)) {
+			if (checker.isConfiguredForCheck(field) && !checker.hasRight()) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	public boolean isConfiguredForCheck(Field field) {
+		for (Checker checker : checkers) {
+			if (checker.isConfiguredForCheck(field)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public boolean hasRigths() {
@@ -70,7 +80,7 @@ public class FieldAccessCheckers {
 		}
 	}
 
-	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction){
+	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
 		return withCheckers(new PersonalDataFieldAccessChecker(rightCheck, isInJurisdiction));
 	}
 
@@ -85,7 +95,7 @@ public class FieldAccessCheckers {
 	}
 
 	public interface Checker {
-		boolean isAccessible(Field field);
+		boolean isConfiguredForCheck(Field field);
 
 		boolean hasRight();
 	}

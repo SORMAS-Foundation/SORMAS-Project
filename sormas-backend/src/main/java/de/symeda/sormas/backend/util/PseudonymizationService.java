@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.backend.util;
 
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.backend.user.UserService;
@@ -54,9 +55,26 @@ public class PseudonymizationService {
 		pseudonymizeDto(dto, declaredFields, isInJurisdiction, customPseudonymization);
 	}
 
+	public <DTO extends PseudonymizableDto> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
+		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction);
+
+		if (accessCheckers.hasRigths()) {
+			return;
+		}
+
+		List<Field> declaredFields = getDeclaredFields(type);
+
+		declaredFields.forEach(field -> {
+			if (accessCheckers.isConfiguredForCheck(field)) {
+				if (!accessCheckers.isAccessible(field) || dto.isPseudonymized()) {
+					restoreOriginalValue(dto, field, originalDto);
+				}
+			}
+		});
+	}
+
 	private <DTO> void pseudonymizeDto(DTO dto, List<Field> declaredFields, boolean isInJurisdiction, Consumer<DTO> customPseudonymization) {
-		FieldAccessCheckers accessCheckers = new FieldAccessCheckers()
-				.add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction));
+		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction);
 
 		if (accessCheckers.hasRigths()) {
 			return;
@@ -68,10 +86,18 @@ public class PseudonymizationService {
 			}
 		});
 
+		if (PseudonymizableDto.class.isAssignableFrom(dto.getClass())) {
+			((PseudonymizableDto) dto).setPseudonymized(true);
+		}
 
 		if (customPseudonymization != null) {
 			customPseudonymization.accept(dto);
 		}
+	}
+
+	private FieldAccessCheckers createFieldAccessCheckers(boolean isInJurisdiction) {
+		return new FieldAccessCheckers()
+				.add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction));
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field) {
@@ -80,6 +106,17 @@ public class PseudonymizationService {
 
 			field.setAccessible(true);
 			field.set(dto, emptyValue);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private <DTO extends PseudonymizableDto> void restoreOriginalValue(DTO dto, Field field, DTO originalDto) {
+		try {
+			field.setAccessible(true);
+
+			Object originalValue = field.get(originalDto);
+			field.set(dto, originalValue);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}

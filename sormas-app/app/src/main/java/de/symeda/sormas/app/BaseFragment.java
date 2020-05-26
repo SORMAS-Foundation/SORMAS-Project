@@ -27,15 +27,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.Objects;
-
-import de.symeda.sormas.api.utils.HideForCountries;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -85,77 +81,28 @@ public class BaseFragment extends Fragment {
         this.fieldVisibilityCheckers = fieldVisibilityCheckers;
     }
 
+    public FieldAccessCheckers getFieldAccessCheckers() {
+        return fieldAccessCheckers;
+    }
+
     public void setFieldAccessCheckers(FieldAccessCheckers fieldAccessCheckers) {
         this.fieldAccessCheckers = fieldAccessCheckers;
     }
 
     public void setFieldVisibilitiesAndAccesses(Class<?> dtoClass, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ControlPropertyField) {
-                String propertyId = ((ControlPropertyField) child).getSubPropertyId();
-                boolean visibleAllowed = isVisibleAllowed(dtoClass, propertyId);
-
-                child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
-                if(child.isEnabled()  && !isFieldAccessible(dtoClass, propertyId)) {
-                    child.setEnabled(false);
-                }
-            } else if (child instanceof ViewGroup) {
-                setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) child);
-            }
-        }
+        FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(dtoClass, viewGroup,
+                fieldVisibilityCheckers, fieldAccessCheckers);
     }
 
     protected boolean isVisibleAllowed(Class<?> dtoClass, ControlPropertyField field) {
         String propertyId = field.getSubPropertyId();
-        return isVisibleAllowed(dtoClass, propertyId);
+        return FieldVisibilityAndAccessHelper.isVisibleAllowed(dtoClass, propertyId, fieldVisibilityCheckers);
     }
 
-    private boolean isVisibleAllowed(Class<?> dtoClass, String propertyId) {
-        if(fieldVisibilityCheckers == null){
-            return true;
-        }
+    protected boolean isFieldAccessible(Class<?> dtoClass, ControlPropertyField field){
+        String propertyId = field.getSubPropertyId();
 
-        return fieldVisibilityCheckers.isVisible(dtoClass, propertyId);
-    }
-
-    private boolean isFieldAccessible(Class<?> dtoClass, String propertyId){
-        if(fieldAccessCheckers == null){
-            return true;
-        }
-
-        return fieldAccessCheckers.isAccessible(dtoClass, propertyId);
-    }
-
-    private boolean isFieldHiddenForCurrentCountry(Object propertyId, Class<?> dtoClass) {
-        try {
-            final java.lang.reflect.Field declaredField =
-                    dtoClass.getDeclaredField(propertyId.toString());
-            final String countryLocale = ConfigProvider.getServerLocale().toLowerCase();
-            if (declaredField.isAnnotationPresent(HideForCountries.class)) {
-                final String[] hideForCountries = Objects.requireNonNull(declaredField.getAnnotation(HideForCountries.class)).countries();
-                for (String country : hideForCountries) {
-                    if (countryLocale.startsWith(country)) {
-                        return true;
-                    }
-                }
-            }
-            if (declaredField.isAnnotationPresent(HideForCountriesExcept.class)) {
-                final String[] hideForCountriesExcept = Objects.requireNonNull(declaredField.getAnnotation(HideForCountriesExcept.class)).countries();
-                boolean countryIncluded = false;
-                for (String country : hideForCountriesExcept) {
-                    if (countryLocale.startsWith(country)) {
-                        countryIncluded = true;
-                    }
-                }
-                if (!countryIncluded) {
-                    return true;
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            return false;
-        }
-        return false;
+        return FieldVisibilityAndAccessHelper.isFieldAccessible(dtoClass, propertyId, fieldAccessCheckers);
     }
 
     protected void setVisibleWhen(final ControlPropertyField targetField, ControlPropertyField sourceField, final Object sourceValue) {

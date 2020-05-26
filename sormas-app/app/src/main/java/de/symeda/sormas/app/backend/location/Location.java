@@ -32,8 +32,8 @@ import javax.persistence.Entity;
 
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableDomainObject;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -41,7 +41,7 @@ import de.symeda.sormas.app.backend.region.Region;
 @Entity(name=Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
 @EmbeddedAdo
-public class Location extends AbstractDomainObject {
+public class Location extends PseudonymizableDomainObject {
 
 	private static final long serialVersionUID = 392776645668778670L;
 

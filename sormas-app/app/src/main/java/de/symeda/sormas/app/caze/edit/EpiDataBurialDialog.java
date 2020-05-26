@@ -20,11 +20,11 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
+
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
@@ -65,7 +65,7 @@ public class EpiDataBurialDialog extends AbstractDialog {
     private void openAddressPopup() {
         final Location location = (Location) contentBinding.epiDataBurialBurialAddress.getValue();
         final Location locationClone = (Location) location.clone();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, null);
         locationDialog.show();
 
         locationDialog.setPositiveCallback(() -> {

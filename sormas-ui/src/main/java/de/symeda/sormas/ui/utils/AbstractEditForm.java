@@ -34,7 +34,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -304,8 +303,10 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setRequired(boolean required, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			Field<?> field = getField(propertyId);
-			field.setRequired(required);
+			if (!required || isEditableAllowed(propertyId)) {
+				Field<?> field = getField(propertyId);
+				field.setRequired(required);
+			}
 		}
 	}
 
@@ -422,6 +423,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 				editableAllowedFields.add(field);
 			} else {
 				field.setReadOnly(true);
+				field.setRequired(false);
 			}
 		}
 	}

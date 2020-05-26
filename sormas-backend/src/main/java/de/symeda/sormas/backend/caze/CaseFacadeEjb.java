@@ -1117,6 +1117,9 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
+		boolean inJurisdiction = existingCaseDto == null ? true : caseJurisdictionChecker.isInJurisdiction(existingCaseDto.getJurisdiction());
+		pseudonymizationService.restorePseudonymizedValues(CaseDataDto.class, dto, existingCaseDto, inJurisdiction);
+
 		validate(dto);
 
 		caze = fillOrBuildEntity(dto, caze);
@@ -1131,7 +1134,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			onCaseChanged(existingCaseDto, caze);
 		}
 
-		return toDto(caze);
+		return convertToDto(caze);
 	}
 
 	@Override

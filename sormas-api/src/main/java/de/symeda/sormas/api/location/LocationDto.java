@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 
-public class LocationDto extends EntityDto {
+public class LocationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -1399197327930368752L;
 
@@ -62,14 +62,14 @@ public class LocationDto extends EntityDto {
 	private Float latLonAccuracy;
 	@PersonalData
 	private String postalCode;
-	
+
 	public String getAddress() {
 		return address;
 	}
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 	public String getDetails() {
 		return details;
 	}
@@ -119,34 +119,34 @@ public class LocationDto extends EntityDto {
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
+
 	@Override
 	public String toString() {
 		return LocationReferenceDto.buildCaption(
-				region != null ? region.getCaption() : null, 
-				district != null ? district.getCaption() : null, 
+				region != null ? region.getCaption() : null,
+				district != null ? district.getCaption() : null,
 				community != null ? community.getCaption() : null, city, address);
 	}
-	
+
 	public LocationReferenceDto toReference() {
-		return new LocationReferenceDto(getUuid(), 
-				region != null ? region.getCaption() : null, 
-				district != null ? district.getCaption() : null, 
+		return new LocationReferenceDto(getUuid(),
+				region != null ? region.getCaption() : null,
+				district != null ? district.getCaption() : null,
 				community != null ? community.getCaption() : null, city, address);
 	}
-	
+
 	public boolean isEmptyLocation() {
-		return address == null && details == null && city == null && areaType == null 
+		return address == null && details == null && city == null && areaType == null
 				&& region == null && district == null && community == null;
 	}
-	
+
 	public Float getLatLonAccuracy() {
 		return latLonAccuracy;
 	}
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
-	
+
 	public String getPostalCode() {
 		return postalCode;
 	}

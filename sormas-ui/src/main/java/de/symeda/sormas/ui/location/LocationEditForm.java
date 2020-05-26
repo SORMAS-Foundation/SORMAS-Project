@@ -137,6 +137,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
+		if(!isEditableAllowed(LocationDto.COMMUNITY)){
+			setReadOnly(true, LocationDto.REGION, LocationDto.DISTRICT);
+		}
+
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);

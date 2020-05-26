@@ -106,6 +106,11 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
         InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
+        if(!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataCommunity)){
+            contentBinding.caseDataRegion.setEnabled(false);
+            contentBinding.caseDataDistrict.setEnabled(false);
+        }
+
         // Vaccination date
         if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccination)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);

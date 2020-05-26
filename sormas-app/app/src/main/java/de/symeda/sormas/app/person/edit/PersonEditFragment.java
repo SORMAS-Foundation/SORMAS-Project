@@ -48,7 +48,6 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
@@ -87,7 +86,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     }
 
     public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding, AbstractDomainObject rootData) {
-        setUpControlListeners(record, contentBinding);
+        setUpControlListeners(record, fragment, contentBinding);
 
         fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
@@ -175,8 +174,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
     }
 
-    public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
-        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, contentBinding));
+    public static void setUpControlListeners(final Person record, final BaseEditFragment fragment, final FragmentPersonEditLayoutBinding contentBinding) {
+        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, fragment, contentBinding));
     }
 
     public static Date calculateBirthDateValue(FragmentPersonEditLayoutBinding contentBinding) {
@@ -218,10 +217,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         }
     }
 
-    private static void openAddressPopup(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+    private static void openAddressPopup(final Person record, final BaseEditFragment fragment, final FragmentPersonEditLayoutBinding contentBinding) {
         final Location location = record.getAddress();
         final Location locationClone = (Location) location.clone();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fragment.getFieldAccessCheckers());
         locationDialog.show();
 
         locationDialog.setPositiveCallback(() -> {

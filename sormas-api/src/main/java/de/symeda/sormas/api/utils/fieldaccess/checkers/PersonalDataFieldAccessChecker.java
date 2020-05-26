@@ -34,12 +34,8 @@ public class PersonalDataFieldAccessChecker implements FieldAccessCheckers.Check
 	}
 
 	@Override
-	public boolean isAccessible(Field field) {
-		if (!field.isAnnotationPresent(PersonalData.class)) {
-			return true;
-		}
-
-		return hasRight();
+	public boolean isConfiguredForCheck(Field field) {
+		return field.isAnnotationPresent(PersonalData.class);
 	}
 
 	@Override
