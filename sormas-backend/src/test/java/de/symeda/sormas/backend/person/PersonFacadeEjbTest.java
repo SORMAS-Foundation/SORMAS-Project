@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.hasSize;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -78,4 +79,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 	}
 
+	@Test
+	public void testIsValidPersonUuid() {
+		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
+		Assert.assertTrue(getPersonFacade().isValidPersonUuid(person.getUuid()));
+		Assert.assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
+	}
 }
