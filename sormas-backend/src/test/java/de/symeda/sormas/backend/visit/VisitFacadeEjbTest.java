@@ -55,8 +55,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
         ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
         final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
-        final String contactUuid = contact.getUuid();
-        externalVisitDto.setContactUuid(contactUuid);
+        externalVisitDto.setPersonUuid(contactPerson.getUuid());
+        externalVisitDto.setDisease(contact.getDisease());
         externalVisitDto.setVisitDateTime(new Date());
         externalVisitDto.setVisitStatus(VisitStatus.COOPERATIVE);
         final String visitRemarks = "Everything good";

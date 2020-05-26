@@ -608,46 +608,50 @@ public class CaseDao extends AbstractAdoDao<Case> {
         QueryBuilder<Case, Long> queryBuilder = queryBuilder();
         QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
-        Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+        List<Where<Case, Long>> whereStatements = new ArrayList<>();
+        Where<Case, Long> where = queryBuilder.where();
+        whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
         if (criteria.getInvestigationStatus() != null) {
-            where.and().eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus());
+            whereStatements.add(where.eq(Case.INVESTIGATION_STATUS, criteria.getInvestigationStatus()));
         }
         if (criteria.getDisease() != null) {
-            where.and().eq(Case.DISEASE, criteria.getDisease());
+            whereStatements.add(where.eq(Case.DISEASE, criteria.getDisease()));
         }
         if (criteria.getCaseClassification() != null) {
-            where.and().eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification());
+            whereStatements.add(where.eq(Case.CASE_CLASSIFICATION, criteria.getCaseClassification()));
         }
         if (criteria.getOutcome() != null) {
-            where.and().eq(Case.OUTCOME, criteria.getOutcome());
+            whereStatements.add(where.eq(Case.OUTCOME, criteria.getOutcome()));
         }
         if (criteria.getEpiWeekFrom() != null) {
-            where.and().ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom()));
+            whereStatements.add(where.ge(Case.REPORT_DATE, DateHelper.getEpiWeekStart(criteria.getEpiWeekFrom())));
         }
         if (criteria.getEpiWeekTo() != null) {
-            where.and().le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo()));
+            whereStatements.add(where.le(Case.REPORT_DATE, DateHelper.getEpiWeekEnd(criteria.getEpiWeekTo())));
         }
         if (criteria.getCaseOrigin() != null) {
-            where.and().eq(Case.CASE_ORIGIN, criteria.getCaseOrigin());
+            whereStatements.add(where.eq(Case.CASE_ORIGIN, criteria.getCaseOrigin()));
         }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");
             for (String filter : textFilters) {
-                where.and();
                 String textFilter = "%" + filter.toLowerCase() + "%";
                 if (!StringUtils.isEmpty(textFilter)) {
-                    where.or(
+                    whereStatements.add(where.or(
                             where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter + "'"),
                             where.raw(Case.TABLE_NAME + "." + Case.EPID_NUMBER + " LIKE '" + textFilter + "'"),
                             where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter + "'"),
                             where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter + "'")
-                    );
+                    ));
                 }
             }
         }
 
-        queryBuilder.setWhere(where);
+        if (!whereStatements.isEmpty()) {
+            Where<Case, Long> whereStatement = where.and(whereStatements.size());
+            queryBuilder.setWhere(whereStatement);
+        }
         queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
         return queryBuilder;
     }

@@ -168,7 +168,6 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
 	 */
-	@SuppressWarnings("rawtypes")
 	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
 		ComboBox field = addField(fieldId, ComboBox.class);
 		if (showNonPrimaryDiseases) {
@@ -191,22 +190,24 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		field.addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			if (value != null && !field.containsId(value)) {
-				Item newItem = field.addItem(value);
+				field.addItem(value);
 			}
 		});
 		return field;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
 
-	@SuppressWarnings("rawtypes")
 	/**
 	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
 	 * -1 for no restriction at all
 	 */
+	@SuppressWarnings("rawtypes")
+	@Override
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
@@ -217,6 +218,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	protected <T extends Field> void formatField(T field, String propertyId) {
 
 		super.formatField(field, propertyId);
@@ -225,14 +227,12 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		field.setCaption(caption);
 
 		if (field instanceof AbstractField) {
-			AbstractField abstractField = (AbstractField) field;
+			AbstractField<?> abstractField = (AbstractField) field;
 			abstractField.setDescription(I18nProperties.getPrefixDescription(
 					propertyI18nPrefix, propertyId, abstractField.getDescription()));
 
-			if (hideValidationUntilNextCommit) {
-				if (!abstractField.isInvalidCommitted()) {
-					abstractField.setValidationVisible(false);
-				}
+			if (hideValidationUntilNextCommit && !abstractField.isInvalidCommitted()) {
+				abstractField.setValidationVisible(false);
 			}
 		}
 
@@ -264,7 +264,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setVisible(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			if (visible == false || isVisibleAllowed(propertyId)) {
+			if (!visible || isVisibleAllowed(propertyId)) {
 				getField(propertyId).setVisible(visible);
 			}
 		}
@@ -272,7 +272,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			if (visible == false || isVisibleAllowed(propertyId)) {
+			if (!visible || isVisibleAllowed(propertyId)) {
 				Field<?> field = getField(propertyId);
 				if (!visible) {
 					field.clear();
@@ -322,6 +322,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
 	}
 
+	@Override
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
 	}
@@ -371,24 +372,18 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	protected void initializeVisibilitiesAndAllowedVisibilities(Disease disease, ViewMode viewMode) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			Field<?> field = getFieldGroup().getField(propertyId);
-			boolean diseaseVisibility = true;
-			boolean outbreakVisibility = true;
 
-			if (disease != null) {
-				if (!Diseases.DiseasesConfiguration.isDefinedOrMissing(getType(), (String) propertyId, disease)) {
-					diseaseVisibility = false;
-				}
-			}
-
-			if (viewMode != null && viewMode == ViewMode.SIMPLE) {
-				if (!Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId)) {
-					outbreakVisibility = false;
-				}
-			}
-
+			boolean diseaseVisibility;
 			if (isFieldHiddenForCurrentCountry(propertyId)) {
 				diseaseVisibility = false;
+			} else if (disease == null || Diseases.DiseasesConfiguration.isDefinedOrMissing(getType(), (String) propertyId, disease)) {
+				diseaseVisibility = true;
+			} else {
+				diseaseVisibility = false;
 			}
+
+			boolean outbreakVisibility = viewMode != ViewMode.SIMPLE || 
+					Outbreaks.OutbreaksConfiguration.isDefined(getType(), (String) propertyId);
 
 			if (diseaseVisibility && outbreakVisibility) {
 				visibleAllowedFields.add(field);
@@ -400,21 +395,22 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected boolean isFieldHiddenForCurrentCountry(Object propertyId) {
 		try {
-			final java.lang.reflect.Field declaredField =
-					getType().getDeclaredField(propertyId.toString());
+			final java.lang.reflect.Field declaredField = getType().getDeclaredField(propertyId.toString());
+			
 			final String countryLocale = FacadeProvider.getConfigFacade().getCountryLocale();
-			final Predicate<String> currentCountryIsHiddenForField =
-					country -> countryLocale.startsWith(country);
-					if (declaredField.isAnnotationPresent(HideForCountries.class) &&
-							Arrays.asList(declaredField.getAnnotation(HideForCountries.class).countries())
-							.stream().anyMatch(currentCountryIsHiddenForField)) {
-						return true;
-					}
-					if (declaredField.isAnnotationPresent(HideForCountriesExcept.class) &&
-							Arrays.asList(declaredField.getAnnotation(HideForCountriesExcept.class).countries())
-							.stream().noneMatch(currentCountryIsHiddenForField)) {
-						return true;
-					}
+			
+			final Predicate<String> currentCountryIsHiddenForField = countryLocale::startsWith;
+
+			if (declaredField.isAnnotationPresent(HideForCountries.class) &&
+					Arrays.stream(declaredField.getAnnotation(HideForCountries.class).countries())
+					.anyMatch(currentCountryIsHiddenForField)) {
+				return true;
+			}
+			if (declaredField.isAnnotationPresent(HideForCountriesExcept.class) &&
+					Arrays.stream(declaredField.getAnnotation(HideForCountriesExcept.class).countries())
+					.noneMatch(currentCountryIsHiddenForField)) {
+				return true;
+			}
 		} catch (NoSuchFieldException e) {
 			// This exception is fine because it should only happen for UUID fields
 		}
