@@ -109,6 +109,16 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	String Campaign = "Campaign";
+	String Campaign_creatingUser = "Campaign.creatingUser";
+	String Campaign_description = "Campaign.description";
+	String Campaign_endDate = "Campaign.endDate";
+	String Campaign_name = "Campaign.name";
+	String Campaign_startDate = "Campaign.startDate";
+	String campaignActiveCampaigns = "campaignActiveCampaigns";
+	String campaignAllCampaigns = "campaignAllCampaigns";
+	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
+	String campaignNewCampaign = "campaignNewCampaign";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -792,6 +802,7 @@ public interface Captions {
 	String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	String mainMenuAbout = "mainMenuAbout";
 	String mainMenuAggregateReports = "mainMenuAggregateReports";
+	String mainMenuCampaigns = "mainMenuCampaigns";
 	String mainMenuCases = "mainMenuCases";
 	String mainMenuConfiguration = "mainMenuConfiguration";
 	String mainMenuContacts = "mainMenuContacts";
@@ -1361,6 +1372,7 @@ public interface Captions {
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
+	String View_campaigns = "View.campaigns";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";
@@ -1445,6 +1457,7 @@ public interface Captions {
 	String WeeklyReportOfficerSummary_informantReports = "WeeklyReportOfficerSummary.informantReports";
 	String WeeklyReportOfficerSummary_informants = "WeeklyReportOfficerSummary.informants";
 	String WeeklyReportOfficerSummary_informantZeroReports = "WeeklyReportOfficerSummary.informantZeroReports";
+	String WeeklyReportOfficerSummary_officer = "WeeklyReportOfficerSummary.officer";
 	String WeeklyReportOfficerSummary_officerReportDate = "WeeklyReportOfficerSummary.officerReportDate";
 	String WeeklyReportOfficerSummary_totalCaseCount = "WeeklyReportOfficerSummary.totalCaseCount";
 	String weeklyReportRegionInformants = "weeklyReportRegionInformants";

@@ -4302,8 +4302,12 @@ CREATE TABLE campaigns(
 	primary key(id)
 );
 
+ALTER TABLE campaigns OWNER TO sormas_user;
 ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
 CREATE TABLE campaigns_history (LIKE campaigns);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigns
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+ALTER TABLE campaigns_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (212, 'Add campaigns #1984');
 

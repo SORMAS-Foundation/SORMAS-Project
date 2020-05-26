@@ -1,15 +1,11 @@
 package de.symeda.sormas.backend.campaign;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "campaigns")
 @Audited
@@ -23,13 +19,15 @@ public class Campaign extends CoreAdo {
 	public static final String DESCRIPTION = "description";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
-	public static final String CREATION_USER = "creationUser";
+	public static final String CREATING_USER = "creatingUser";
+	public static final String ARCHIVED = "archived";
 
 	private String name;
 	private String description;
 	private Date startDate;
 	private Date endDate;
 	private User creatingUser;
+	private boolean archived;
 
 	@Column(length = 255)
 	public String getName() {
@@ -67,11 +65,22 @@ public class Campaign extends CoreAdo {
 		this.endDate = endDate;
 	}
 
+	@ManyToOne(cascade = {})
+	@JoinColumn(nullable = false)
 	public User getCreatingUser() {
 		return creatingUser;
 	}
 
 	public void setCreatingUser(User creatingUser) {
 		this.creatingUser = creatingUser;
+	}
+
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
 	}
 }
