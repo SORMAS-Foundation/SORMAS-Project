@@ -44,11 +44,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.Required;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.visit.VisitDto;
 
 public class CaseDataDto extends EntityDto {
@@ -254,9 +250,13 @@ public class CaseDataDto extends EntityDto {
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
+	@HideForCountriesExcept(countries = {"de", "fr", "ch", "fi", "fj"})
 	private YesNoUnknown quarantineHomePossible;
+	@HideForCountriesExcept(countries = {"de", "fr", "ch", "fi", "fj"})
 	private String quarantineHomePossibleComment;
+	@HideForCountriesExcept(countries = {"de", "fr", "ch", "fi", "fj"})
 	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@HideForCountriesExcept(countries = {"de", "fr", "ch", "fi", "fj"})
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
