@@ -31,10 +31,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -51,6 +54,8 @@ public class GeocodingService {
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public boolean isEnabled() {
 		return configFacade.getGeocodingOsgtsEndpoint() != null; 
@@ -92,6 +97,13 @@ public class GeocodingService {
 	    WebTarget target = client.target(url);
 	    Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
 	    
+	    if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
+	    	if (logger.isErrorEnabled()) {
+				logger.error("geosearch query '{}' returned {} - {}:\n{}", query, response.getStatus(), response.getStatusInfo(), readAsText(response));
+			}
+	    	return null;
+	    }
+	    
 	    FeatureCollection fc = response.readEntity(FeatureCollection.class);
 	    
 	    return Optional.of(fc)
@@ -105,6 +117,14 @@ public class GeocodingService {
 	    		.orElse(null);  
 	}
 	
+	private String readAsText(Response response) {
+		try {
+			return response.readEntity(String.class).trim();
+		} catch (RuntimeException e) {
+			return "(Exception when retrieving body: " + e + ")";
+		}
+	}
+
 	@XmlRootElement
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class FeatureCollection implements Serializable {
