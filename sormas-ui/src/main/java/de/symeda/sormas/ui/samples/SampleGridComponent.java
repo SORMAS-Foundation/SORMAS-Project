@@ -17,29 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.HashMap;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -48,6 +37,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+
+import java.util.HashMap;
+import de.symeda.sormas.api.sample.SampleCriteria;
 
 @SuppressWarnings("serial")
 public class SampleGridComponent extends VerticalLayout {
@@ -68,6 +60,7 @@ public class SampleGridComponent extends VerticalLayout {
 	private SampleGridFilterForm filterForm;
 	MenuBar bulkOperationsDropdown;
 	private ComboBox relevanceStatusFilter;
+	private ComboBox sampleTypeFilter;
 
 	private VerticalLayout gridLayout;
 
@@ -86,7 +79,9 @@ public class SampleGridComponent extends VerticalLayout {
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
-
+		if (criteria.getSampleAssociationType() == null) {
+			criteria.sampleAssociationType(SampleAssociationType.ALL);
+		}
 		grid = new SampleGrid(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -105,18 +100,13 @@ public class SampleGridComponent extends VerticalLayout {
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
+		filterLayout.addStyleName("wrap");
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if(!samplesView.navigateTo(criteria, false)){
 				filterForm.updateResetButtonState();
 				grid.reload();
-
-				//open sample if it's the only one
-				if (grid.getItemCount() == 1) {
-					ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
-					Notification.show(I18nProperties.getString(Strings.messageSampleOpened) + " \"" + criteria.getCaseCodeIdLike() + "\"", Type.WARNING_MESSAGE);
-				}
 			}
 		});
 		filterForm.addResetHandler(e -> {
@@ -195,6 +185,20 @@ public class SampleGridComponent extends VerticalLayout {
 
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
+
+			sampleTypeFilter = new ComboBox();
+			sampleTypeFilter.setWidth(140, Unit.PERCENTAGE);
+			sampleTypeFilter.setId("sampleTypeFilter");
+			sampleTypeFilter.setNullSelectionAllowed(false);
+			sampleTypeFilter.addItems((Object[]) SampleAssociationType.values());
+			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
+			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
+			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
+			sampleTypeFilter.addValueChangeListener(e -> {
+				criteria.sampleAssociationType(((SampleAssociationType)e.getProperty().getValue()));
+				samplesView.navigateTo(criteria);
+			});
+			actionButtonsLayout.addComponent(sampleTypeFilter);
 		}
 		shipmentFilterLayout.addComponent(actionButtonsLayout);
 		shipmentFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
@@ -229,6 +233,11 @@ public class SampleGridComponent extends VerticalLayout {
 		samplesView.setApplyingCriteria(true);
 
 		updateStatusButtons();
+
+		if (sampleTypeFilter != null) {
+			sampleTypeFilter.setValue(criteria.getSampleAssociationType());
+		}
+
 		if (relevanceStatusFilter != null) {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}

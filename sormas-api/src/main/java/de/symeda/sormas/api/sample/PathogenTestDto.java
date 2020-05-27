@@ -69,6 +69,7 @@ public class PathogenTestDto extends EntityDto {
 	private PathogenTestResultType testResult;
 	@Required
 	private String testResultText;
+	@Required
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
 	private String serotype;

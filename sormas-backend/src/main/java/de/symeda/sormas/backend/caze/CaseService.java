@@ -17,30 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import de.symeda.sormas.backend.region.Community;
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -52,7 +28,6 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -70,6 +45,7 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -88,6 +64,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
@@ -102,6 +79,27 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -637,11 +635,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(contact);
 		}
 
-		// Mark all samples associated with this case as deleted
-		List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(caze.toReference()), null);
-		for (Sample sample : samples) {
-			sampleService.delete(sample);
-		}
+		caze.getSamples().stream()
+				.filter(sample -> sample.getAssociatedContact() == null)
+				.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));
@@ -789,7 +785,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			// get all cases based on the user's sample association
 			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 			Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, cq, sampleRoot));
+			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(new QueryContext(cb, cq, sampleRoot)));
 			sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 		}

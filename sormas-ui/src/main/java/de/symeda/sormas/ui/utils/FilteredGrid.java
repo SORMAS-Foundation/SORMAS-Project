@@ -67,10 +67,6 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		return getDataProvider().size(new Query<>());
 	}
 
-	public T getFirstItem() {
-		return getDataProvider().fetch(new Query<>(0, 1, Collections.emptyList(), null, null)).findFirst().orElse(null);
-	}
-
 	protected void addEditColumn(Consumer<ItemClick<T>> handler) {
 		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);

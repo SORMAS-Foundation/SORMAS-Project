@@ -17,36 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -86,6 +56,33 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -165,18 +162,18 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
-		final String contactUuid = dto.getContactUuid();
-		final Contact contact = contactService.getByUuid(contactUuid);
-		final PersonReferenceDto contactPerson = new PersonReferenceDto(contact.getPerson().getUuid());
-		final Disease disease = contact.getDisease();
+		final String personUuid = dto.getPersonUuid();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
 
-		final VisitDto visitDto = VisitDto.build(contactPerson, disease, dto.getVisitDateTime(), currentUser, dto.getVisitStatus(), 
-				dto.getVisitRemarks(), dto.getSymptoms(), dto.getReportLat(), dto.getReportLon(), dto.getReportLatLonAccuracy());
+		final VisitDto visitDto = VisitDto.build(new PersonReferenceDto(personUuid), dto.getDisease(),
+				dto.getVisitDateTime(), currentUser, dto.getVisitStatus(),
+				dto.getVisitRemarks(), dto.getSymptoms(), dto.getReportLat(), dto.getReportLon(),
+				dto.getReportLatLonAccuracy());
 
 		saveVisit(visitDto);
 
-		return ExternalVisitDto.build(contactUuid, visitDto.getVisitDateTime(), visitDto.getVisitStatus(), visitDto.getVisitRemarks(), visitDto.getSymptoms(), 
+		return ExternalVisitDto.build(personUuid, visitDto.getDisease(), visitDto.getVisitDateTime(),
+				visitDto.getVisitStatus(), visitDto.getVisitRemarks(), visitDto.getSymptoms(),
 				visitDto.getReportLat(), visitDto.getReportLon(), visitDto.getReportLatLonAccuracy());
 	}
 

@@ -126,7 +126,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 205;
+	public static final int DATABASE_VERSION = 206;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1543,11 +1543,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN immunodeficiencyIncludingHiv varchar(255);");
 				case 204:
 					currentVersion = 204;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedContact_id bigint REFERENCES contact (id);");
+				case 205:
+					currentVersion = 204;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN pseudonymized boolean;");
 					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN pseudonymized boolean;");
 					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN pseudonymized boolean;");
 
-					// ATTENTION: break should only be done after last version
+						// ATTENTION: break should only be done after last version
 					break;
 				default:
 					throw new IllegalStateException(

@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -35,12 +36,13 @@ public class SampleIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String ASSOCIATED_CASE = "associatedCase";
+	public static final String ASSOCIATED_CONTACT = "associatedContact";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String CASE_REGION_UUID = "caseRegionUuid";
-	public static final String CASE_DISTRICT = "caseDistrict";
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT = "district";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -56,12 +58,13 @@ public class SampleIndexDto implements Serializable {
 
 	private String uuid;
 	private CaseReferenceDto associatedCase;
+	private ContactReferenceDto associatedContact;
 	private String epidNumber;
 	private String labSampleID;
 	private Disease disease;
 	private String diseaseDetails;
-	private String caseRegionUuid;
-	private DistrictReferenceDto caseDistrict;
+	private String regionUuid;
+	private DistrictReferenceDto district;
 	private boolean shipped;
 	private boolean received;
 	private boolean referred;
@@ -80,19 +83,26 @@ public class SampleIndexDto implements Serializable {
 			SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 			String labUuid, String labName, String referredSampleUuid,
 			String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
-			Disease disease, String diseaseDetails, String caseRegionUuid,
-			String caseDistrictUuid, String caseDistrictName, PathogenTestResultType pathogenTestResult,
+			String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
+			Disease disease, String diseaseDetails, String regionUuid,
+			String districtUuid, String districtName, PathogenTestResultType pathogenTestResult,
 			Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-			String caseReportingUserUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
+						  String caseReportingUserUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid) {
 		this.uuid = uuid;
-		this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName,
-				new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
+		if(associatedCaseUuid != null) {
+			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
+		}
+		if(associatedContactUuid != null) {
+			this.associatedContact = new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
+		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.caseRegionUuid = caseRegionUuid;
-		this.caseDistrict = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
+		this.regionUuid = regionUuid;
+		if (districtUuid != null) {
+			this.district = new DistrictReferenceDto(districtUuid, districtName);
+		}
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -120,6 +130,12 @@ public class SampleIndexDto implements Serializable {
 	public void setAssociatedCase(CaseReferenceDto associatedCase) {
 		this.associatedCase = associatedCase;
 	}
+	public ContactReferenceDto getAssociatedContact() {
+		return associatedContact;
+	}
+	public void setAssociatedContact(ContactReferenceDto associatedContact) {
+		this.associatedContact = associatedContact;
+	}
 	public Disease getDisease() {
 		return disease;
 	}
@@ -144,11 +160,11 @@ public class SampleIndexDto implements Serializable {
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
-	public DistrictReferenceDto getCaseDistrict() {
-		return caseDistrict;
+	public DistrictReferenceDto getDistrict() {
+		return district;
 	}
-	public void setCaseDistrict(DistrictReferenceDto caseDistrict) {
-		this.caseDistrict = caseDistrict;
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
 	}
 	public Date getShipmentDate() {
 		return shipmentDate;
@@ -198,11 +214,11 @@ public class SampleIndexDto implements Serializable {
 	public void setReferred(boolean referred) {
 		this.referred = referred;
 	}
-	public String getCaseRegionUuid() {
-		return caseRegionUuid;
+	public String getRegionUuid() {
+		return regionUuid;
 	}
-	public void setCaseRegionUuid(String caseRegionUuid) {
-		this.caseRegionUuid = caseRegionUuid;
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
 	}
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
@@ -211,7 +227,9 @@ public class SampleIndexDto implements Serializable {
 		this.specimenCondition = specimenCondition;
 	}
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(uuid, getSampleMaterial(), getAssociatedCase().getUuid());
+		return new SampleReferenceDto(uuid, getSampleMaterial(),
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;

@@ -59,5 +59,6 @@ public interface PersonFacade {
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 	
 	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
-	
+
+    Boolean isValidPersonUuid(String personUuid);
 }

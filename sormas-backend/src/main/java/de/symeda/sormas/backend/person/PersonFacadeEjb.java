@@ -155,6 +155,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
+	@Override
+	public Boolean isValidPersonUuid(String personUuid) {
+		return personService.exists(personUuid);
+	}
+
 	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
 	//	@Override
 	//	public List<PersonIndexDto> getIndexList(UserReferenceDto userRef) {

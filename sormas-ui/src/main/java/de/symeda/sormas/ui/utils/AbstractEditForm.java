@@ -175,7 +175,6 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
 	 */
-	@SuppressWarnings("rawtypes")
 	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
 		ComboBox field = addField(fieldId, ComboBox.class);
 		if (showNonPrimaryDiseases) {
@@ -198,22 +197,24 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		field.addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			if (value != null && !field.containsId(value)) {
-				Item newItem = field.addItem(value);
+				field.addItem(value);
 			}
 		});
 		return field;
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
 
-	@SuppressWarnings("rawtypes")
 	/**
 	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
 	 * -1 for no restriction at all
 	 */
+	@SuppressWarnings("rawtypes")
+	@Override
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
@@ -224,6 +225,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	@SuppressWarnings("rawtypes")
+	@Override
 	protected <T extends Field> void formatField(T field, String propertyId) {
 
 		super.formatField(field, propertyId);
@@ -232,14 +234,12 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		field.setCaption(caption);
 
 		if (field instanceof AbstractField) {
-			AbstractField abstractField = (AbstractField) field;
+			AbstractField<?> abstractField = (AbstractField) field;
 			abstractField.setDescription(I18nProperties.getPrefixDescription(
 					propertyI18nPrefix, propertyId, abstractField.getDescription()));
 
-			if (hideValidationUntilNextCommit) {
-				if (!abstractField.isInvalidCommitted()) {
-					abstractField.setValidationVisible(false);
-				}
+			if (hideValidationUntilNextCommit && !abstractField.isInvalidCommitted()) {
+				abstractField.setValidationVisible(false);
 			}
 		}
 
@@ -277,7 +277,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setVisible(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			if (visible == false || isVisibleAllowed(propertyId)) {
+			if (!visible || isVisibleAllowed(propertyId)) {
 				getField(propertyId).setVisible(visible);
 			}
 		}
@@ -285,7 +285,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			if (visible == false || isVisibleAllowed(propertyId)) {
+			if (!visible || isVisibleAllowed(propertyId)) {
 				Field<?> field = getField(propertyId);
 				if (!visible) {
 					field.clear();
@@ -337,6 +337,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		return Stream.of(propertyIds).allMatch(p -> getField(p).isValid());
 	}
 
+	@Override
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
 	}

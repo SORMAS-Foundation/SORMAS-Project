@@ -382,6 +382,20 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
 			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
@@ -417,6 +431,23 @@ public class TestDataCreator {
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
 		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
+	}
+
+	public PathogenTestDto buildPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease,
+												Date testDateTime) {
+		final PathogenTestDto newPathogenTest = new PathogenTestDto();
+
+		newPathogenTest.setSample(sample.toReference());
+		newPathogenTest.setTestedDisease(disease);
+		newPathogenTest.setTestType(PathogenTestType.ISOLATION);
+
+		newPathogenTest.setTestDateTime(testDateTime);
+		newPathogenTest.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		newPathogenTest.setLabUser(user.toReference());
+		newPathogenTest.setTestResult(PathogenTestResultType.PENDING);
+		newPathogenTest.setTestResultText("all bad!");
+		newPathogenTest.setTestResultVerified(false);
+		return newPathogenTest;
 	}
 	
 	public AdditionalTestDto createAdditionalTest(SampleReferenceDto sample) {

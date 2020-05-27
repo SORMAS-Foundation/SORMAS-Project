@@ -175,8 +175,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private DateField quarantineTo;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
-	private OptionGroup pregnant;
-	private OptionGroup trimester;
+
 
 	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, false,
@@ -184,7 +183,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 						new OutbreakFieldVisibilityChecker(viewMode)),
 				FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)
 		);
-
 		this.person = person;
 		this.disease = disease;
 
@@ -328,11 +326,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
-		pregnant = addField(CaseDataDto.PREGNANT, OptionGroup.class);
-		pregnant.addValueChangeListener(e -> handleTrimesterField());
+		addField(CaseDataDto.PREGNANT, OptionGroup.class);
 		addField(CaseDataDto.POSTPARTUM, OptionGroup.class);
-		trimester = addField(CaseDataDto.TRIMESTER, OptionGroup.class);
-		trimester.setVisible(false);
+		addField(CaseDataDto.TRIMESTER, OptionGroup.class);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT,
+				Arrays.asList(YesNoUnknown.YES), true);
 
 		addFields(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
 				CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
@@ -536,15 +534,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
 			}
 		});
-	}
-
-	private void handleTrimesterField() {
-		if (YesNoUnknown.YES.equals(pregnant.getValue())) {
-			trimester.setVisible(true);
-		} else {
-			trimester.setVisible(false);
-			trimester.clear();
-		}
 	}
 
 	private void updateQuarantineFields() {
