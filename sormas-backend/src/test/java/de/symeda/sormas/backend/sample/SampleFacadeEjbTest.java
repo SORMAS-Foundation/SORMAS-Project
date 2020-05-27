@@ -273,7 +273,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetByCaseUuids() throws Exception {
+	public void testGetByCaseUuids() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto person = creator.createPerson();
@@ -290,6 +290,30 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		
 		assertThat(samples, hasSize(3));
 		assertThat(samples, contains(sample, sample2, sample3));
+	}
+
+	@Test
+	public void testCreateSampleWithPathogenTest() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person1");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+
+		final SampleDto sampleDto = SampleDto.build(user.toReference(), caze.toReference());
+		sampleDto.setSampleDateTime(new Date());
+		sampleDto.setSampleMaterial(SampleMaterial.BLOOD);
+		sampleDto.setSamplePurpose(SamplePurpose.EXTERNAL );
+		sampleDto.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		sampleDto.setDefaultTest(creator.buildPathogenTestDto(rdcf, user, sampleDto, caze.getDisease(), new Date()));
+		final SampleDto savedSample = getSampleFacade().saveSample(sampleDto);
+		Assert.assertNotNull(savedSample);
+
+		final List<PathogenTestDto> pathogenTests = getPathogenTestFacade().getAllBySample(savedSample.toReference());
+		Assert.assertNotNull(pathogenTests);
+		Assert.assertEquals(1, pathogenTests.size());
+		final PathogenTestDto pathogenTestDto = pathogenTests.get(0);
+		Assert.assertEquals("all bad!", pathogenTestDto.getTestResultText());
 	}
 
 }

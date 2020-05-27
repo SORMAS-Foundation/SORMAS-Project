@@ -148,7 +148,7 @@ public class SampleController {
 			defaultTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
 			defaultTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			defaultTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
-			defaultTest.setTestedDiseaseDetails((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
+			defaultTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
 			dto.setDefaultTest(defaultTest);
 			dto.setPathogenTestResult(testResult);
 		}
@@ -162,22 +162,19 @@ public class SampleController {
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT), form.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!form.getFieldGroup().isModified()) {
-					SampleDto dto = form.getValue();
-					SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getUuid());
-					FacadeProvider.getSampleFacade().saveSample(dto);
-					SormasUI.refreshView();
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				SampleDto dto1 = form.getValue();
+				SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto1.getUuid());
+				FacadeProvider.getSampleFacade().saveSample(dto1);
+				SormasUI.refreshView();
 
-					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
-							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
-							UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-						requestSampleCollectionTaskCreation(dto, form);
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
-					}
+				if (dto1.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
+						dto1.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
+						UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+					requestSampleCollectionTaskCreation(dto1, form);
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 				}
 			}
 		});
