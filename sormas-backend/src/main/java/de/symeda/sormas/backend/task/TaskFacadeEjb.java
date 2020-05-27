@@ -230,7 +230,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			isInJurisdiction = target.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(target.getCaze().getJurisdiction());
 		}
 		else {
-			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(target.getContact().getContactJurisdiction());
+			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(target.getContact().getJurisdiction());
 		}
 
 		pseudonymizationService.pseudonymizeDto(TaskDto.class, target, isInJurisdiction,
@@ -241,7 +241,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	private void pseudonymizeEmbeddedFields(ContactReferenceDto contact, CaseReferenceDto caze) {
 		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contact.getContactJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contact.getJurisdiction()), null);
 		}
 
 		if (caze != null) {
@@ -423,7 +423,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaze().getJurisdiction());
 					}
 
-					return contactJurisdictionChecker.isInJurisdiction(t.getContact().getContactJurisdiction());
+					return contactJurisdictionChecker.isInJurisdiction(t.getContact().getJurisdiction());
 				},
 				(t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getCaze())
 		);

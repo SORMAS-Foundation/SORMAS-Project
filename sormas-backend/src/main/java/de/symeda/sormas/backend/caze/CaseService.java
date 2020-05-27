@@ -426,7 +426,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
+	public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
 		Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
 		Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
 		Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
@@ -722,7 +722,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return dateFilter;
 	}
 
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case,Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?,Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
 		// National users can access all cases in the system
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -838,7 +838,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	private Predicate createNewCaseFilter(CriteriaBuilder cb, From<Case, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
+	private Predicate createNewCaseFilter(CriteriaBuilder cb, From<?, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
 		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
 		toDate = DateHelper.getEndOfDay(toDate);

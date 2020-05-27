@@ -19,8 +19,10 @@
 package de.symeda.sormas.backend.sample;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -43,6 +45,23 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Case, Community> caseCommunity;
 	private Join<Case, Facility> caseFacility;
 	private Join<Case, PointOfEntry> casePointOfEntry;
+	private Join<Sample, Contact> contact;
+	private Join<Contact, Person> contactPerson;
+	private Join<Contact, User> contactReportingUser;
+	private Join<Contact, Region> contactRegion;
+	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Case> contactCase;
+	private Join<Case, User> contactCaseReportingUser;
+	private Join<Case, Region> contactCaseRegion;
+	private Join<Case, District> contactCaseDistrict;
+	private Join<Case, Community> contactCaseCommunity;
+	private Join<Case, Facility> contactCaseHealthFacility;
+	private Join<Case, PointOfEntry> contactCasePointOfEntry;
+	private Join<Person, Location> casePersonAddress;
+	private Join<Location, Region> casePersonAddressRegion;
+	private Join<Location, District> casePersonAddressDistrict;
+	private Join<Location, Community> casePersonAddressCommunity;
+
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
@@ -126,5 +145,133 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	private void setCasePointOfEntry(Join<Case, PointOfEntry> casePointOfEntry) {
 		this.casePointOfEntry = casePointOfEntry;
+	}
+
+	public Join<Sample, Contact> getContact() {
+		return getOrCreate(contact, Sample.ASSOCIATED_CONTACT, JoinType.LEFT, this::setContact);
+	}
+
+	private void setContact(Join<Sample, Contact> contact) {
+		this.contact = contact;
+	}
+
+	public Join<Contact, Person> getContactPerson() {
+		return getOrCreate(contactPerson, Contact.PERSON, JoinType.LEFT, getContact(), this::setContactPerson);
+	}
+
+	private void setContactPerson(Join<Contact, Person> contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+
+	public Join<Contact, User> getContactReportingUser() {
+		return getOrCreate(contactReportingUser, Contact.REPORTING_USER, JoinType.LEFT, getContact(), this::setContactReportingUser);
+	}
+
+	private void setContactReportingUser(Join<Contact, User> contactReportingUser) {
+		this.contactReportingUser = contactReportingUser;
+	}
+
+	public Join<Contact, Region> getContactRegion() {
+		return getOrCreate(contactRegion, Contact.REGION, JoinType.LEFT, getContact(), this::setContactRegion);
+	}
+
+	private void setContactRegion(Join<Contact, Region> contactRegion) {
+		this.contactRegion = contactRegion;
+	}
+
+	public Join<Contact, District> getContactDistrict() {
+		return getOrCreate(contactDistrict, Contact.DISTRICT, JoinType.LEFT, getContact(), this::setContactDistrict);
+	}
+
+	private void setContactDistrict(Join<Contact, District> contactDistrict) {
+		this.contactDistrict = contactDistrict;
+	}
+
+	public Join<Contact, Case> getContactCase() {
+		return getOrCreate(contactCase, Contact.CAZE, JoinType.LEFT, getContact(), this::setContactCase);
+	}
+
+	private void setContactCase(Join<Contact, Case> contactCase) {
+		this.contactCase = contactCase;
+	}
+
+	public Join<Case, User> getContactCaseReportingUser() {
+		return getOrCreate(contactCaseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getContactCase(), this::setContactCaseReportingUser);
+	}
+
+	private void setContactCaseReportingUser(Join<Case, User> contactCaseReportingUser) {
+		this.contactCaseReportingUser = contactCaseReportingUser;
+	}
+
+	public Join<Case, Region> getContactCaseRegion() {
+		return getOrCreate(contactCaseRegion, Case.REGION, JoinType.LEFT, getContactCase(), this::setContactCaseRegion);
+	}
+
+	private void setContactCaseRegion(Join<Case, Region> contactCaseRegion) {
+		this.contactCaseRegion = contactCaseRegion;
+	}
+
+	public Join<Case, District> getContactCaseDistrict() {
+		return getOrCreate(contactCaseDistrict, Case.DISTRICT, JoinType.LEFT, getContactCase(), this::setContactCaseDistrict);
+	}
+
+	private void setContactCaseDistrict(Join<Case, District> contactCaseDistrict) {
+		this.contactCaseDistrict = contactCaseDistrict;
+	}
+
+	public Join<Case, Community> getContactCaseCommunity() {
+		return getOrCreate(contactCaseCommunity, Case.COMMUNITY, JoinType.LEFT, getContactCase(), this::setContactCaseCommunity);
+	}
+
+	private void setContactCaseCommunity(Join<Case, Community> contactCaseCommunity) {
+		this.contactCaseCommunity = contactCaseCommunity;
+	}
+
+	public Join<Case, Facility> getContactCaseHealthFacility() {
+		return getOrCreate(contactCaseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getContactCase(), this::setContactCaseHealthFacility);
+	}
+
+	private void setContactCaseHealthFacility(Join<Case, Facility> contactCaseHealthFacility) {
+		this.contactCaseHealthFacility = contactCaseHealthFacility;
+	}
+
+	public Join<Case, PointOfEntry> getContactCasePointOfEntry() {
+		return getOrCreate(contactCasePointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getContactCase(), this::setContactCasePointOfEntry);
+	}
+
+	private void setContactCasePointOfEntry(Join<Case, PointOfEntry> contactCasePointOfEntry) {
+		this.contactCasePointOfEntry = contactCasePointOfEntry;
+	}
+
+	public Join<Person, Location> getCasePersonAddress() {
+		return getOrCreate(casePersonAddress, Person.ADDRESS, JoinType.LEFT, getCasePerson(), this::setCasePersonAddress);
+	}
+
+	private void setCasePersonAddress(Join<Person, Location> casePersonAddress) {
+		this.casePersonAddress = casePersonAddress;
+	}
+
+	public Join<Location, Region> getCasePersonAddressRegion() {
+		return getOrCreate(casePersonAddressRegion, Location.REGION, JoinType.LEFT, getCasePersonAddress(), this::setCasePersonAddressRegion);
+	}
+
+	private void setCasePersonAddressRegion(Join<Location, Region> casePersonAddressRegion) {
+		this.casePersonAddressRegion = casePersonAddressRegion;
+	}
+
+	public Join<Location, District> getCasePersonAddressDistrict() {
+		return getOrCreate(casePersonAddressDistrict, Location.DISTRICT, JoinType.LEFT, getCasePersonAddress(), this::setCasePersonAddressDistrict);
+	}
+
+	private void setCasePersonAddressDistrict(Join<Location, District> casePersonAddressDistrict) {
+		this.casePersonAddressDistrict = casePersonAddressDistrict;
+	}
+
+	public Join<Location, Community> getCasePersonAddressCommunity() {
+		return getOrCreate(casePersonAddressCommunity, Location.COMMUNITY, JoinType.LEFT, getCasePersonAddress(), this::setCasePersonAddressCommunity);
+	}
+
+	private void setCasePersonAddressCommunity(Join<Location, Community> casePersonAddressCommunity) {
+		this.casePersonAddressCommunity = casePersonAddressCommunity;
 	}
 }

@@ -19,8 +19,10 @@
 package de.symeda.sormas.backend.util;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.user.User;
 
 public class JurisdictionHelper {
@@ -74,5 +76,28 @@ public class JurisdictionHelper {
 		}
 
 		return dto;
+	}
+
+	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+		ContactJurisdictionDto jurisdiction = new ContactJurisdictionDto();
+
+		if(contact.getReportingUser() != null){
+			jurisdiction.setReportingUserUuid(contact.getReportingUser().getUuid());
+		}
+
+		if(contact.getRegion() != null){
+			jurisdiction.setRegionUuId(contact.getRegion().getUuid());
+		}
+
+		if(contact.getDistrict() != null){
+			jurisdiction.setDistrictUuid(contact.getDistrict().getUuid());
+		}
+
+		Case caze = contact.getCaze();
+		if (caze != null) {
+			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+		}
+
+		return jurisdiction;
 	}
 }

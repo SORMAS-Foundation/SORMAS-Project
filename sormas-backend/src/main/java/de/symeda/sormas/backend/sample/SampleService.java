@@ -72,10 +72,10 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
+		SampleJoins joins = new SampleJoins(from);
 
 		final QueryContext qc = new QueryContext(cb, cq, from);
-		buildJoins(qc, criteria);
-		Predicate filter = buildCriteriaFilter(criteria, qc);
+		Predicate filter = buildCriteriaFilter(criteria, qc, joins);
 
 		if (user != null) {
 			filter = and(cb, filter, createUserFilter(cb, cq, from));
@@ -260,17 +260,13 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	@Override
 	@SuppressWarnings({ "rawtypes" })
-	public Predicate createUserFilter(QueryContext qc) {
+	public Predicate createUserFilter(QueryContext qc, SampleJoins joins) {
 		Predicate filter = createUserFilterWithoutCase(qc);
 
-		final Path<Case> caseJoin = qc.getJoin(Sample.class, Case.class);
-		final Path<Contact> contactJoin = qc.getJoin(Sample.class, Contact.class);
-
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		Predicate caseFilter = caseService.createUserFilter(cb, qc.getQuery(), (From<Case, Case>) caseJoin);
-		Predicate contactFilter = contactService.createUserFilter(cb, qc.getQuery(), (From<Contact, Contact>) contactJoin);
+		Predicate caseFilter = caseService.createUserFilter(cb, qc.getQuery(), joins.getCaze(), null);
+		Predicate contactFilter = contactService.createUserFilterForJoin(cb, qc.getQuery(), joins.getContact());
 		filter = or(cb, filter, caseFilter, contactFilter);
 
 		return filter;
@@ -301,34 +297,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return filter;
 	}
 
-	public QueryContext buildJoins(QueryContext qc, SampleCriteria criteria) {
-
-		final From<?, ?> sample = qc.getRoot();
-
-		qc.addJoin(() -> sample.join(Sample.REFERRED_TO, JoinType.LEFT));
-
-		qc.addJoin(() -> sample.join(Sample.LAB, JoinType.LEFT));
-
-		final Join<Sample, Case> caze = qc.addJoin(() -> sample.join(Sample.ASSOCIATED_CASE, JoinType.LEFT));
-		qc.addJoin(() -> caze.join(Case.PERSON, JoinType.LEFT));
-		qc.addJoin(() -> caze.join(Case.REGION, JoinType.LEFT));
-		qc.addJoin(() -> caze.join(Case.DISTRICT, JoinType.LEFT));
-
-		final Join<Sample, Contact> contact = qc.addJoin(() -> sample.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT));
-		qc.addJoin(() -> contact.join(Contact.PERSON, JoinType.LEFT));
-		qc.addJoin(() -> contact.join(Contact.REGION, JoinType.LEFT));
-		qc.addJoin(() -> contact.join(Contact.DISTRICT, JoinType.LEFT));
-
-		final Join<Contact, Case> contactCase = qc.addJoin(() -> contact.join(Contact.CAZE, JoinType.LEFT));
-		qc.addJoin(() -> contactCase.join(Case.REGION, JoinType.LEFT), "contactCaseRegion");
-		qc.addJoin(() -> contactCase.join(Case.DISTRICT, JoinType.LEFT), "contactCaseDistrict");
-
-		return qc;
-	}
-
-	public Predicate buildCriteriaFilter(SampleCriteria criteria, QueryContext qc) {
-		final Join<Sample, Case> caze = qc.getJoin(Sample.class, Case.class);
-		final Join<Sample, Contact> contact = qc.getJoin(Sample.class, Contact.class);
+	public Predicate buildCriteriaFilter(SampleCriteria criteria, QueryContext qc, SampleJoins joins) {
+		final Join<Sample, Case> caze = joins.getCaze();
+		final Join<Sample, Contact> contact = joins.getContact();
 		final From<?, ?> sample = qc.getRoot();
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 

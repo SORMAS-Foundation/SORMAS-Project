@@ -55,6 +55,7 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
@@ -333,7 +334,7 @@ public class Contact extends CoreAdo {
 	public String toString() {
 		Person contactPerson = getPerson();
 		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
-				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null, getUuid());
 	}
 
 	public ContactReferenceDto toReference() {
@@ -347,7 +348,7 @@ public class Contact extends CoreAdo {
 		}
 
 		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName,
-				createContactJurisdiction());
+				JurisdictionHelper.createContactJurisdictionDto(this));
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
@@ -638,53 +639,5 @@ public class Contact extends CoreAdo {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
-	}
-
-	private ContactJurisdictionDto createContactJurisdiction() {
-		ContactJurisdictionDto jurisdiction = new ContactJurisdictionDto();
-
-		if(getReportingUser() != null){
-			jurisdiction.setReportingUserUuid(getReportingUser().getUuid());
-		}
-
-		if(getRegion() != null){
-			jurisdiction.setRegionUuId(getRegion().getUuid());
-		}
-
-		if(getDistrict() != null){
-			jurisdiction.setDistrictUuid(getDistrict().getUuid());
-		}
-
-		CaseJurisdictionDto caseJurisdiction = new CaseJurisdictionDto();
-		Case caze = getCaze();
-		if (caze != null) {
-			if (caze.getReportingUser() != null) {
-				caseJurisdiction.setReportingUserUuid(caze.getReportingUser().getUuid());
-			}
-
-			if (caze.getRegion() != null) {
-				caseJurisdiction.setRegionUui(caze.getRegion().getUuid());
-			}
-
-			if (caze.getDistrict() != null) {
-				caseJurisdiction.setDistrictUud(caze.getDistrict().getUuid());
-			}
-
-			if (caze.getCommunity() != null) {
-				caseJurisdiction.setCommunityUuid(caze.getCommunity().getUuid());
-			}
-
-			if (caze.getHealthFacility() != null) {
-				caseJurisdiction.setHealthFacilityUuid(caze.getHealthFacility().getUuid());
-			}
-
-			if (caze.getPointOfEntry() != null) {
-				caseJurisdiction.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
-			}
-		}
-
-		jurisdiction.setCaseJurisdiction(caseJurisdiction);
-
-		return jurisdiction;
 	}
 }

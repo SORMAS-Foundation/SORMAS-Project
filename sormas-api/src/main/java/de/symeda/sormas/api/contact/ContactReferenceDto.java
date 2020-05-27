@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,8 +24,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
-
-import java.io.Serializable;
 
 public class ContactReferenceDto extends ReferenceDto {
 
@@ -41,7 +38,7 @@ public class ContactReferenceDto extends ReferenceDto {
 	@PersonalData
 	private String caseLastName;
 
-	ContactJurisdictionDto contactJurisdiction;
+	ContactJurisdictionDto jurisdiction;
 
 	public ContactReferenceDto() {
 
@@ -53,34 +50,40 @@ public class ContactReferenceDto extends ReferenceDto {
 
 	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
 							   String caseFirstName, String caseLastName,
-							   ContactJurisdictionDto contactJurisdiction) {
+							   ContactJurisdictionDto jurisdiction) {
 		setUuid(uuid);
 		this.contactFirstName = contactFirstName;
 		this.contactLastName = contactLastName;
 		this.caseFirstName = caseFirstName;
 		this.caseLastName = caseLastName;
 
-		this.contactJurisdiction = contactJurisdiction;
+		this.jurisdiction = jurisdiction;
 	}
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName);
+		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName, getUuid());
 	}
 
-	public ContactJurisdictionDto getContactJurisdiction() {
-		return contactJurisdiction;
+	public ContactJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 
-	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName, String contactUuid) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(DataHelper.toStringNullable(contactFirstName))
-			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
+		if (!DataHelper.isNullOrEmpty(contactFirstName) || !DataHelper.isNullOrEmpty(contactLastName)) {
+			builder.append(DataHelper.toStringNullable(contactFirstName))
+					.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
+		}
 
 		if (!DataHelper.isNullOrEmpty(caseFirstName) || !DataHelper.isNullOrEmpty(caseLastName)) {
 			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
+		}
+
+		if(builder.length() == 0){
+			builder.append(DataHelper.getShortUuid(contactUuid));
 		}
 
 		return builder.toString();
