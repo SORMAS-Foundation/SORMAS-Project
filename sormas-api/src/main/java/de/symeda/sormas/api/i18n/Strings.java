@@ -170,6 +170,7 @@ public interface Strings {
 	String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	String headingContactConfirmationRequired = "headingContactConfirmationRequired";
 	String headingContactData = "headingContactData";
+	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
 	String headingContactsDeleted = "headingContactsDeleted";
@@ -543,8 +544,10 @@ public interface Strings {
 	String messageRegionsArchivingNotPossible = "messageRegionsArchivingNotPossible";
 	String messageRegionsDearchived = "messageRegionsDearchived";
 	String messageSampleErrors = "messageSampleErrors";
+	String messageSampleOpened = "messageSampleOpened";
 	String messageSampleSaved = "messageSampleSaved";
 	String messageSamplesDeleted = "messageSamplesDeleted";
+	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";
@@ -583,6 +586,7 @@ public interface Strings {
 	String notificationLabResultSpecifiedSubject = "notificationLabResultSpecifiedSubject";
 	String notificationLabSampleShipped = "notificationLabSampleShipped";
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
+	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
 	String notificationLabSampleShippedSubject = "notificationLabSampleShippedSubject";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
@@ -628,17 +632,17 @@ public interface Strings {
 	String promptNewCaseDateType = "promptNewCaseDateType";
 	String promptPrescriptionTextFilter = "promptPrescriptionTextFilter";
 	String promptRegion = "promptRegion";
-	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
 	String promptSampleEpiWeekTo = "promptSampleEpiWeekTo";
-	String promtSampleDataType = "promtSampleDataType";
+	String promptSamplesSearchField = "promptSamplesSearchField";
 	String promptSearch = "promptSearch";
 	String promptSelectPeriod = "promptSelectPeriod";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
 	String promptUserSearch = "promptUserSearch";
+	String promtSampleDataType = "promtSampleDataType";
 	String quarantineEnd = "quarantineEnd";
 	String quarterShort = "quarterShort";
 	String reportedBy = "reportedBy";
