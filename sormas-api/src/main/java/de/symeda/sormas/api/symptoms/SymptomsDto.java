@@ -717,12 +717,16 @@ public class SymptomsDto extends EntityDto {
 	@HideForCountries
 	private SymptomState inDrawingOfChestWall;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountriesExcept
 	private SymptomState respiratoryDiseaseVentilation;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountriesExcept
 	private SymptomState generalSignsOfDisease;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountriesExcept
 	private SymptomState fastHeartRate;
 	@Diseases({CORONAVIRUS, UNDEFINED, OTHER})
+	@HideForCountriesExcept
 	private SymptomState oxygenSaturationLower94;
 
 	private Integer weight;
