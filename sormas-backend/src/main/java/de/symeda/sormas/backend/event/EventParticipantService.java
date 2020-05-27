@@ -36,6 +36,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
+import org.hibernate.criterion.Projections;
 
 @Stateless
 @LocalBean
@@ -153,6 +154,19 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	public Long countByPerson(Person person){
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<EventParticipant> from = cq.from(getElementClass());
+
+		Predicate userFilter = eventService.createUserFilter(cb, cq, from.join(EventParticipant.EVENT, JoinType.INNER));
+		cq.where(userFilter, cb.equal(from.get(EventParticipant.PERSON), person));
+
+		cq.select(cb.count(from));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 	
 }

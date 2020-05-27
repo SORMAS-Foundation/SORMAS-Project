@@ -267,9 +267,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person person = personService.getByUuid(source.getUuid());
 		PersonDto existingPerson = toDto(person);
 
-		boolean isInJurisdiction = person == null || isPersonInJurisdiction(person);
-		pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-		pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+		if (person != null && existingPerson != null) {
+			boolean isInJurisdiction = isPersonInJurisdiction(person);
+			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
+			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+		}
 
 		validate(source);
 
@@ -470,6 +472,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private boolean isPersonInJurisdiction(Person person) {
+
 		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
 		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
 
@@ -479,7 +482,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		if (!isInJurisdiction) {
-			isInJurisdiction = eventParticipantSerice.getAllByPerson(person).size() > 0;
+			isInJurisdiction = eventParticipantSerice.countByPerson(person) > 0;
 		}
 
 		return isInJurisdiction;
