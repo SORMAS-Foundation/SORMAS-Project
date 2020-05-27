@@ -41,6 +41,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -123,8 +124,12 @@ public class TestDataCreator {
 
 		return cazePerson;
 	}
-	
+
 	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD, LocationDto address) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
@@ -132,6 +137,11 @@ public class TestDataCreator {
 		person.setBirthdateYYYY(birthdateYYYY);
 		person.setBirthdateMM(birthdateMM);
 		person.setBirthdateDD(birthdateDD);
+
+		if(address != null){
+			person.setAddress(address);
+		}
+
 		person = beanTest.getPersonFacade().savePerson(person);
 		
 		return person;
@@ -147,6 +157,10 @@ public class TestDataCreator {
 	}
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCFEntities rdcf) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
@@ -210,30 +224,37 @@ public class TestDataCreator {
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
-		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null);
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
-		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease);
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
-		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null);
+		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null, null);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
-		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null);
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null, null);
 	}
-	
+
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+		return createContact(reportingUser, contactOfficer, contactPerson, caze, reportDateTime, lastContactDate, disease, null);
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf) {
 		ContactDto contact;
 		
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
 			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
-			RDCF rdcf = createRDCF();
+			if(rdcf == null) {
+				rdcf = createRDCF();
+			}
 			contact.setRegion(rdcf.region);
 			contact.setDistrict(rdcf.district);
 		}
