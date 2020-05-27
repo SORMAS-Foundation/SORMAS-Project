@@ -2,7 +2,7 @@
 name: Change Request
 about: Suggest the change of an existing feature.
 title: ''
-labels: ''
+labels: change
 assignees: ''
 
 ---

@@ -14,6 +14,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 
 @SuppressWarnings("serial")
 public class CaseExportConfigurationsLayout extends VerticalLayout {
@@ -28,22 +29,17 @@ public class CaseExportConfigurationsLayout extends VerticalLayout {
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblDescription);
 
-		btnNewExportConfiguration = new Button(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
-		btnNewExportConfiguration.setIcon(VaadinIcons.PLUS);
-		btnNewExportConfiguration.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		btnNewExportConfiguration = ButtonHelper.createIconButton(Captions.exportNewExportConfiguration, VaadinIcons.PLUS, e -> {
+			ControllerProvider.getCaseController().openEditExportConfigurationWindow(grid, null);
+		}, ValoTheme.BUTTON_PRIMARY);
 		addComponent(btnNewExportConfiguration);
 		setComponentAlignment(btnNewExportConfiguration, Alignment.MIDDLE_RIGHT);
-
-		btnNewExportConfiguration.addClickListener(e -> {
-			ControllerProvider.getCaseController().openEditExportConfigurationWindow(grid, null);
-		});
 
 		grid = new CaseExportConfigurationsGrid();
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 
-		Button btnClose = new Button(I18nProperties.getCaption(Captions.actionClose));
-		btnClose.addClickListener(e -> closeCallback.run());
+		Button btnClose = ButtonHelper.createButton(Captions.actionClose, e -> closeCallback.run());
 		addComponent(btnClose);
 		setComponentAlignment(btnClose, Alignment.MIDDLE_RIGHT);
 	}

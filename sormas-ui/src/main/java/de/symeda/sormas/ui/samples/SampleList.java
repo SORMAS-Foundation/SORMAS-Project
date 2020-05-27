@@ -25,6 +25,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -38,6 +39,12 @@ import de.symeda.sormas.ui.utils.PaginationList;
 public class SampleList extends PaginationList<SampleIndexDto> {
 
 	private final SampleCriteria sampleCriteria = new SampleCriteria();
+
+	public SampleList(ContactReferenceDto contactRef) {
+		super(5);
+
+		sampleCriteria.contact(contactRef);
+	}
 
 	public SampleList(CaseReferenceDto caseRef) {
 		super(5);
@@ -62,15 +69,12 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (SampleIndexDto sample : getDisplayedEntries()) {
+		List<SampleIndexDto> displayedEntries = getDisplayedEntries();
+		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
+			SampleIndexDto sample = displayedEntries.get(i);
 			SampleListEntry listEntry = new SampleListEntry(sample);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-				listEntry.addEditListener(new ClickListener() {
-					@Override
-					public void buttonClick(ClickEvent event) {
-						ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid());
-					}
-				});
+				listEntry.addEditListener(i, (ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
 			}
 			listLayout.addComponent(listEntry);
 		}

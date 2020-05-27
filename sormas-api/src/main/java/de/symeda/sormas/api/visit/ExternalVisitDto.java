@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
 
@@ -15,7 +16,9 @@ import de.symeda.sormas.api.utils.Required;
 public class ExternalVisitDto implements Serializable, Cloneable {
 
     @Required
-    private String contactUuid;
+    private String personUuid;
+    @Required
+    private Disease disease;
     @Required
     private Date visitDateTime;
     @Required
@@ -29,10 +32,11 @@ public class ExternalVisitDto implements Serializable, Cloneable {
     private Double reportLon;
     private Float reportLatLonAccuracy;
 
-    public static ExternalVisitDto build(String contactUuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms, Double reportLat, Double reportLon,
+    public static ExternalVisitDto build(String personUuid, Disease disease, Date visitDateTime, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms, Double reportLat, Double reportLon,
                                          Float reportLatLonAccuracy) {
         final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
-        externalVisitDto.setContactUuid(contactUuid);
+        externalVisitDto.setPersonUuid(personUuid);
+        externalVisitDto.setDisease(disease);
         externalVisitDto.setVisitDateTime(visitDateTime);
         externalVisitDto.setVisitStatus(visitStatus);
         externalVisitDto.setVisitRemarks(visitRemarks);
@@ -99,11 +103,19 @@ public class ExternalVisitDto implements Serializable, Cloneable {
         this.reportLatLonAccuracy = reportLatLonAccuracy;
     }
 
-    public String getContactUuid() {
-        return contactUuid;
+    public String getPersonUuid() {
+        return personUuid;
     }
 
-    public void setContactUuid(String contactUuid) {
-        this.contactUuid = contactUuid;
+    public void setPersonUuid(String personUuid) {
+        this.personUuid = personUuid;
+    }
+
+    public Disease getDisease() {
+        return disease;
+    }
+
+    public void setDisease(Disease disease) {
+        this.disease = disease;
     }
 }

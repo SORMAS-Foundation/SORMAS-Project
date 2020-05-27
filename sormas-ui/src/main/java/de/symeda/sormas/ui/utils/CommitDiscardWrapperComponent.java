@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 import com.vaadin.event.Action.Notifier;
@@ -51,8 +52,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 
 
-public class CommitDiscardWrapperComponent<C extends Component> extends
-VerticalLayout implements Buffered {
+public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -100,7 +100,14 @@ VerticalLayout implements Buffered {
 	}
 
 	public CommitDiscardWrapperComponent(C component, FieldGroup ...fieldGroups) {
+		this(component, null, fieldGroups);
+	}
+
+	public CommitDiscardWrapperComponent(C component, Boolean isEditingAllowed, FieldGroup ...fieldGroups) {
 		setWrappedComponent(component, fieldGroups);
+		if (isEditingAllowed != null) {
+			setEnabled(isEditingAllowed);
+		}
 	}
 
 	protected void setWrappedComponent(C component, FieldGroup ...fieldGroups) {
@@ -167,8 +174,8 @@ VerticalLayout implements Buffered {
 
 		if (fieldGroups != null) {
 			return Arrays.stream(fieldGroups)
-			.map(FieldGroup::getFields)
-			.flatMap(Collection::stream);
+					.map(FieldGroup::getFields)
+					.flatMap(Collection::stream);
 		} else {
 			return Stream.empty();
 		}
@@ -230,18 +237,15 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getCommitButton() {
 		if (commitButton == null) {
-			commitButton = new Button(I18nProperties.getCaption(Captions.actionSave));
-			commitButton.setId("commit");
-			commitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
-			commitButton.addClickListener(new ClickListener() { 
+			commitButton = ButtonHelper.createButtonWithCaption("commit", I18nProperties.getCaption(Captions.actionSave), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
 					commitAndHandle();
 				}
-			});
+			}, ValoTheme.BUTTON_PRIMARY);
 		}
+
 		return commitButton;
 	}
 
@@ -253,10 +257,7 @@ VerticalLayout implements Buffered {
 	 */
 	public Button getDiscardButton() {
 		if (discardButton == null) {
-			discardButton = new Button(I18nProperties.getCaption(Captions.actionDiscard));
-			discardButton.setId("discard");
-
-			discardButton.addClickListener(new ClickListener() {
+			discardButton = ButtonHelper.createButtonWithCaption("discard", I18nProperties.getCaption(Captions.actionDiscard), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -264,15 +265,13 @@ VerticalLayout implements Buffered {
 				}
 			});
 		}
+
 		return discardButton;
 	}
 
 	public Button getDeleteButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = new Button(I18nProperties.getCaption(Captions.actionDelete));
-			deleteButton.setId("delete");
-			CssStyles.style(deleteButton, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
-			deleteButton.addClickListener(new ClickListener() {
+			deleteButton = ButtonHelper.createButtonWithCaption("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
 				private static final long serialVersionUID = 1L;
 				@Override
 				public void buttonClick(ClickEvent event) {
@@ -282,7 +281,7 @@ VerticalLayout implements Buffered {
 						}
 					});
 				}
-			});
+			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 		}
 
 		return deleteButton;
@@ -322,7 +321,7 @@ VerticalLayout implements Buffered {
 					}
 				});
 			}
-			
+
 			try {
 				for (FieldGroup fieldGroup : fieldGroups) {
 					fieldGroup.commit();
@@ -534,21 +533,21 @@ VerticalLayout implements Buffered {
 		} catch (IllegalStateException e) {
 			super.setEnabled(readOnly);
 		}
-//
-//		getWrappedComponent().setReadOnly(readOnly);
-//		if (fieldGroups != null) {
-//			for (FieldGroup fieldGroup : fieldGroups) {
-//				fieldGroup.setReadOnly(readOnly);
-//			}
-//		}
-//
-//		buttonsPanel.setVisible(!readOnly);
+		//
+		//		getWrappedComponent().setReadOnly(readOnly);
+		//		if (fieldGroups != null) {
+		//			for (FieldGroup fieldGroup : fieldGroups) {
+		//				fieldGroup.setReadOnly(readOnly);
+		//			}
+		//		}
+		//
+		//		buttonsPanel.setVisible(!readOnly);
 	}
 
-//	@Override
-//	public boolean isReadOnly() {
-//		return getWrappedComponent().isReadOnly();
-//	}
+	//	@Override
+	//	public boolean isReadOnly() {
+	//		return getWrappedComponent().isReadOnly();
+	//	}
 
 	protected static class ClickShortcut extends Button.ClickShortcut {
 		private static final long serialVersionUID = 1L;
@@ -621,4 +620,5 @@ VerticalLayout implements Buffered {
 			contentPanel.setHeight(100, Unit.PERCENTAGE);
 		}
 	}
+
 }

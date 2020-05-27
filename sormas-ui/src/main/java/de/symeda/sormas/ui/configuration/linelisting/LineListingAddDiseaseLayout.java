@@ -12,6 +12,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -47,6 +48,7 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 
 	private void buildLayout() {
 		cbDiseases = new ComboBox<>();
+		cbDiseases.setId("disease");
 		cbDiseases.setItems(diseases);
 		cbDiseases.setItemCaptionGenerator(disease -> disease.toString());
 		cbDiseases.setPlaceholder(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
@@ -56,14 +58,13 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 		});
 		addComponent(cbDiseases);
 
-		btnAddDisease = new Button(I18nProperties.getCaption(Captions.lineListingEnableForDisease));
-		btnAddDisease.addClickListener(e -> {
+		btnAddDisease = ButtonHelper.createButton(Captions.lineListingEnableForDisease, e -> {
 			if (addDiseaseCallback != null) {
 				addDiseaseCallback.accept(cbDiseases.getValue());
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
 		btnAddDisease.setEnabled(false);
-		CssStyles.style(btnAddDisease, ValoTheme.BUTTON_PRIMARY);
+
 		addComponent(btnAddDisease);
 
 		setExpandRatio(btnAddDisease, 1);

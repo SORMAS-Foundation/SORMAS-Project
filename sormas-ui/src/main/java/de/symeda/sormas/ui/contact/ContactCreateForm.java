@@ -55,11 +55,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -100,8 +100,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(UserRight editOrCreateUserRight, Disease disease, boolean hasCaseRelation) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX, editOrCreateUserRight);
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation) {
+		super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		this.disease = disease;
 		this.hasCaseRelation = new Boolean(hasCaseRelation);
@@ -191,13 +191,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		if (!hasCaseRelation) {
 			Label caseInfoLabel = new Label(I18nProperties.getString(Strings.infoNoSourceCaseSelected), ContentMode.HTML);
-			Button chooseCaseButton = new Button(I18nProperties.getCaption(Captions.contactChooseCase));
-			Button removeCaseButton = new Button(I18nProperties.getCaption(Captions.contactRemoveCase));
+			Button chooseCaseButton = ButtonHelper.createButton(Captions.contactChooseCase, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
+			Button removeCaseButton = ButtonHelper.createButton(Captions.contactRemoveCase, null, ValoTheme.BUTTON_LINK);
 
 			CssStyles.style(caseInfoLabel, CssStyles.VSPACE_TOP_4);
 			getContent().addComponent(caseInfoLabel, CASE_INFO_LOC);
 
-			CssStyles.style(chooseCaseButton, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
 			chooseCaseButton.addClickListener(e -> {
 				ControllerProvider.getContactController().openSelectCaseForContactWindow((Disease) cbDisease.getValue(), selectedCase -> {
 					if (selectedCase != null) {
@@ -217,7 +216,6 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			});
 			getContent().addComponent(chooseCaseButton, CHOOSE_CASE_LOC);
 
-			CssStyles.style(removeCaseButton, ValoTheme.BUTTON_LINK);
 			removeCaseButton.addClickListener(e -> {
 				this.selectedCase = null;
 				getValue().setCaze(null);

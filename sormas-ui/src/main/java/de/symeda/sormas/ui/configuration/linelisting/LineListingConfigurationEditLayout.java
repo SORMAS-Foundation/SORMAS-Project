@@ -22,6 +22,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -66,30 +67,28 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 		controlLayout = new HorizontalLayout();
 		controlLayout.setMargin(false);
 
-		btnEnableAll = new Button(I18nProperties.getCaption(Captions.lineListingEnableAll));
-		CssStyles.style(btnEnableAll, ValoTheme.BUTTON_PRIMARY);
-		btnEnableAll.addClickListener(e -> {
+		btnEnableAll = ButtonHelper.createButton(Captions.lineListingEnableAll, e -> {
 			grid.enableAll();
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		controlLayout.addComponent(btnEnableAll);
 
-		btnDisableAll = new Button(I18nProperties.getCaption(Captions.lineListingDisableAllShort));
-		CssStyles.style(btnDisableAll, ValoTheme.BUTTON_PRIMARY, CssStyles.HSPACE_RIGHT_2);
-		btnDisableAll.addClickListener(e -> {
+		btnDisableAll = ButtonHelper.createButton(Captions.lineListingDisableAllShort, e -> {
 			grid.disableAll();
-		});
+		}, ValoTheme.BUTTON_PRIMARY, CssStyles.HSPACE_RIGHT_2);
+
 		controlLayout.addComponent(btnDisableAll);
 
 		dfEndDate = new DateField();
+		dfEndDate.setId("endDate");
 		dfEndDate.setPlaceholder(I18nProperties.getCaption(Captions.lineListingEndDate));
 		dfEndDate.setRangeStart(LocalDate.now());
 		controlLayout.addComponent(dfEndDate);
 
-		btnSetEndDateForAll = new Button(I18nProperties.getCaption(Captions.lineListingSetEndDateForAll));
-		CssStyles.style(btnSetEndDateForAll, ValoTheme.BUTTON_PRIMARY);
-		btnSetEndDateForAll.addClickListener(e -> {
+		btnSetEndDateForAll = ButtonHelper.createButton(Captions.lineListingSetEndDateForAll, e -> {
 			grid.setEndDateForAll(dfEndDate.getValue());
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		controlLayout.addComponent(btnSetEndDateForAll);
 
 		addComponent(controlLayout);
@@ -107,17 +106,15 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setMargin(false);
 
-		Button btnDiscard = new Button(I18nProperties.getCaption(Captions.actionDiscardChanges));
-		btnDiscard.addClickListener(e -> {
+		Button btnDiscard = ButtonHelper.createButton(Captions.actionDiscardChanges, e -> {
 			if (discardCallback != null) {
 				discardCallback.run();
 			}
 		});
+
 		buttonLayout.addComponent(btnDiscard);
 
-		Button btnSave = new Button(I18nProperties.getCaption(Captions.actionSaveChanges));
-		btnSave.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnSave.addClickListener(e -> {
+		Button btnSave = ButtonHelper.createButton(Captions.actionSaveChanges, e -> {
 			if (grid.validateDates()) {
 				FacadeProvider.getFeatureConfigurationFacade().saveFeatureConfigurations(grid.getChangedConfigurations(), FeatureType.LINE_LISTING);
 				if (saveCallback != null) {
@@ -126,7 +123,8 @@ public class LineListingConfigurationEditLayout extends VerticalLayout {
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageInvalidDatesLineListing), Type.ERROR_MESSAGE);
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		buttonLayout.addComponent(btnSave);
 
 		return buttonLayout;

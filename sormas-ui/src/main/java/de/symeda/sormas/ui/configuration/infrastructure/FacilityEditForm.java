@@ -30,7 +30,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
@@ -49,8 +48,8 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	private boolean laboratory;
 	private boolean create;
 
-	public FacilityEditForm(UserRight editOrCreateUserRight, boolean create, boolean laboratory) {
-		super(FacilityDto.class, FacilityDto.I18N_PREFIX, editOrCreateUserRight, false);
+	public FacilityEditForm(boolean create, boolean laboratory) {
+		super(FacilityDto.class, FacilityDto.I18N_PREFIX, false);
 		this.create = create;
 		this.laboratory = laboratory;
 

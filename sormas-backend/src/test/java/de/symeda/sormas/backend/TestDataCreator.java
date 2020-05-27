@@ -91,6 +91,10 @@ public class TestDataCreator {
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
+	
+	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
+	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
 			String lastName, UserRole... roles) {
@@ -224,10 +228,14 @@ public class TestDataCreator {
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
 			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
 		ContactDto contact;
+		
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
 			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			RDCF rdcf = createRDCF();
+			contact.setRegion(rdcf.region);
+			contact.setDistrict(rdcf.district);
 		}
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);
@@ -270,6 +278,10 @@ public class TestDataCreator {
 		task = beanTest.getTaskFacade().saveTask(task);
 
 		return task;
+	}
+	
+	public VisitDto createVisit(PersonReferenceDto person) {
+		return createVisit(Disease.EVD, person);
 	}
 	
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
@@ -349,6 +361,20 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
 			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
@@ -384,6 +410,23 @@ public class TestDataCreator {
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
 		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
+	}
+
+	public PathogenTestDto buildPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease,
+												Date testDateTime) {
+		final PathogenTestDto newPathogenTest = new PathogenTestDto();
+
+		newPathogenTest.setSample(sample.toReference());
+		newPathogenTest.setTestedDisease(disease);
+		newPathogenTest.setTestType(PathogenTestType.ISOLATION);
+
+		newPathogenTest.setTestDateTime(testDateTime);
+		newPathogenTest.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		newPathogenTest.setLabUser(user.toReference());
+		newPathogenTest.setTestResult(PathogenTestResultType.PENDING);
+		newPathogenTest.setTestResultText("all bad!");
+		newPathogenTest.setTestResultVerified(false);
+		return newPathogenTest;
 	}
 	
 	public AdditionalTestDto createAdditionalTest(SampleReferenceDto sample) {

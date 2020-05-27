@@ -35,7 +35,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -51,8 +50,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 			fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS) +
 			fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
-	public PreviousHospitalizationEditForm(boolean create, UserRight editOrCreateUserRight) {
-		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
+	public PreviousHospitalizationEditForm(boolean create) {
+		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX);
 
 		setWidth(540, Unit.PIXELS);
 		

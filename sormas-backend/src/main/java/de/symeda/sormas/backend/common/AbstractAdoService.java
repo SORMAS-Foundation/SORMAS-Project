@@ -225,12 +225,16 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO, ADO> from);
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Timestamp date) {		
+	public Predicate createUserFilter(QueryContext qe) {
+		return null;
+	};
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
 	}
-	
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Date date) {
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 

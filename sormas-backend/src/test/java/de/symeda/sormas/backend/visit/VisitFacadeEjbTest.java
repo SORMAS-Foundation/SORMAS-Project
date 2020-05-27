@@ -1,13 +1,17 @@
 package de.symeda.sormas.backend.visit;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -38,7 +42,7 @@ import de.symeda.sormas.backend.contact.Contact;
 /**
  * The class VisitFacadeEjbTest.
  */
-public class VisitFacadeEjbTest  extends AbstractBeanTest {
+public class VisitFacadeEjbTest extends AbstractBeanTest {
 
     @Test
     public void testCreateExternalVisit() {
@@ -51,8 +55,8 @@ public class VisitFacadeEjbTest  extends AbstractBeanTest {
         ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
         final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
-        final String contactUuid = contact.getUuid();
-        externalVisitDto.setContactUuid(contactUuid);
+        externalVisitDto.setPersonUuid(contactPerson.getUuid());
+        externalVisitDto.setDisease(contact.getDisease());
         externalVisitDto.setVisitDateTime(new Date());
         externalVisitDto.setVisitStatus(VisitStatus.COOPERATIVE);
         final String visitRemarks = "Everything good";
@@ -162,4 +166,86 @@ public class VisitFacadeEjbTest  extends AbstractBeanTest {
 		
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(2));
 	}
+
+	@Test
+	public void testGetAllActiveUuids() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		creator.createContact(user.toReference(), person.toReference());
+		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
+		getContactFacade().deleteContact(deletedContact.getUuid());
+
+		creator.createVisit(person.toReference());
+		creator.createVisit(person.toReference());
+		VisitDto visitOfDeletedContact = creator.createVisit(person2.toReference());
+
+		List<String> visitUuids = getVisitFacade().getAllActiveUuids();
+		assertThat(visitUuids, hasSize(2));
+		assertThat(visitUuids, not(contains(visitOfDeletedContact.getUuid())));
+	}
+
+	@Test
+	public void testGetAllActiveVisitsAfter() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		Date date = new Date();
+		
+		PersonDto person = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		creator.createContact(user.toReference(), person.toReference());
+		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
+		getContactFacade().deleteContact(deletedContact.getUuid());
+
+		creator.createVisit(person.toReference());
+		VisitDto visitWithChanges = creator.createVisit(person.toReference());
+		VisitDto visitOfDeletedContact = creator.createVisit(person2.toReference());
+
+		List<VisitDto> visits = getVisitFacade().getAllActiveVisitsAfter(date);
+		assertThat(visits, hasSize(2));
+		assertThat(visits, not(contains(visitOfDeletedContact)));
+		
+		date = new Date();
+		
+		visitWithChanges.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visitWithChanges);
+		
+		visits = getVisitFacade().getAllActiveVisitsAfter(date);
+		assertThat(visits, hasSize(1));
+		assertThat(visits, contains(visitWithChanges));
+	}
+
+	@Test
+	public void testGetLastVisitByContact() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person = creator.createPerson();
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		
+		VisitDto visit = creator.createVisit(Disease.EVD, person.toReference(), new Date());
+		creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(new Date(), 1));
+		
+		assertThat(getVisitFacade().getLastVisitByContact(contact.toReference()), is(visit));
+	}
+
+	@Test
+	public void testGetIndexList() throws Exception {
+		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+		creator.createContact(user.toReference(), person2.toReference());
+		
+		creator.createVisit(person.toReference());
+		creator.createVisit(person.toReference());
+		VisitDto otherVisit = creator.createVisit(person2.toReference());
+		
+		List<VisitIndexDto> indexVisits = getVisitFacade().getIndexList(new VisitCriteria().contact(contact.toReference()), null, null, null);
+		
+		assertThat(indexVisits, hasSize(2));
+		assertThat(indexVisits.stream().map(v -> v.getUuid()).collect(Collectors.toList()), not(contains(otherVisit.getUuid())));
+	}
+	
 }

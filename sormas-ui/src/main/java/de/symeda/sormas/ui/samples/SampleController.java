@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Collection;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -34,8 +36,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,6 +56,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -59,11 +64,10 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import java.util.Collection;
-
 public class SampleController {
 
-	public SampleController() { }
+	public SampleController() {
+	}
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
@@ -76,18 +80,24 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
-		createForm.setValue(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+	}
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if( !createForm.getFieldGroup().isModified()) {
-					SampleDto dto = createForm.getValue();
-					FacadeProvider.getSampleFacade().saveSample(dto);
-					callback.run();
-				}
+	public void create(ContactReferenceDto contactRef, Runnable callback) {
+		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	private void crateSample(Runnable callback, SampleDto sampleDto) {
+		SampleEditForm createForm = new SampleEditForm();
+		createForm.setValue(sampleDto);
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				SampleDto dto = createForm.getValue();
+				FacadeProvider.getSampleFacade().saveSample(dto);
+				callback.run();
 			}
 		});
 
@@ -95,10 +105,11 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleEditForm createForm = new SampleEditForm(UserRight.SAMPLE_CREATE);
+		SampleEditForm createForm = new SampleEditForm();
 		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm, createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		createView.addCommitListener(new CommitListener() {
 			@Override
@@ -125,11 +136,12 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
-		SampleEditForm form = new SampleEditForm(UserRight.SAMPLE_EDIT);
-		form.setWidth(form.getWidth() * 10/12, Unit.PIXELS);
+		SampleEditForm form = new SampleEditForm();
+		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form,
+				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -159,13 +171,12 @@ public class SampleController {
 		}
 
 		// Initialize 'Refer to another laboratory' button or link to referred sample
-		Button referOrLinkToOtherLabButton = new Button();
-		referOrLinkToOtherLabButton.addStyleName(ValoTheme.BUTTON_LINK);
+		Button referOrLinkToOtherLabButton = null;
 		if (dto.getReferredTo() == null) {
 			if (dto.getSamplePurpose() == SamplePurpose.EXTERNAL && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_TRANSFER)) {
-				referOrLinkToOtherLabButton.setCaption(I18nProperties.getCaption(Captions.sampleRefer));
-				referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
+				referOrLinkToOtherLabButton = ButtonHelper.createButtonWithCaption("referOrLinkToOtherLab", I18nProperties.getCaption(Captions.sampleRefer), new ClickListener() {
 					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 						try {
@@ -177,10 +188,7 @@ public class SampleController {
 							Notification.show(I18nProperties.getString(Strings.messageSampleErrors), Type.ERROR_MESSAGE);
 						}
 					}
-				});
-
-				editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
-				editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
+				}, ValoTheme.BUTTON_LINK);
 			}
 		} else {
 			SampleDto referredDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getReferredTo().getUuid());
@@ -188,15 +196,19 @@ public class SampleController {
 			String referOrLinkToOtherLabButtonCaption = referredDtoLab == null
 					? I18nProperties.getCaption(Captions.sampleReferredToInternal) + " (" + DateFormatHelper.formatLocalDateTime(referredDto.getSampleDateTime()) + ")"
 					: I18nProperties.getCaption(Captions.sampleReferredTo) + " " + referredDtoLab.toString();
-			referOrLinkToOtherLabButton.setCaption(referOrLinkToOtherLabButtonCaption);
-			referOrLinkToOtherLabButton.addClickListener(new ClickListener() {
+
+			referOrLinkToOtherLabButton = ButtonHelper.createButtonWithCaption("referOrLinkToOtherLab", referOrLinkToOtherLabButtonCaption, new ClickListener() {
 				private static final long serialVersionUID = 1L;
+
 				@Override
 				public void buttonClick(ClickEvent event) {
 					navigateToData(dto.getReferredTo().getUuid());
 				}
 			});
 
+		}
+
+		if(referOrLinkToOtherLabButton != null) {
 			editView.getButtonsPanel().addComponentAsFirst(referOrLinkToOtherLabButton);
 			editView.getButtonsPanel().setComponentAlignment(referOrLinkToOtherLabButton, Alignment.BOTTOM_LEFT);
 		}
@@ -225,14 +237,24 @@ public class SampleController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingCreateNewTaskQuestion));
 		requestTaskComponent.getConfirmButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, dto.getAssociatedCase(), dto);
+				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
+				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				if (associatedCase != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE,
+							associatedCase, dto);
+				} else if (associatedContact != null) {
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT,
+							associatedContact, dto);
+				}
 			}
 		});
 		requestTaskComponent.getCancelButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
@@ -259,6 +281,7 @@ public class SampleController {
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePathogenTestResult));
 		confirmationComponent.getConfirmButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				editComponent.commit();
@@ -272,6 +295,7 @@ public class SampleController {
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();

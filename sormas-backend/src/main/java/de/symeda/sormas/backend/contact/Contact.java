@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +50,7 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -168,8 +170,9 @@ public class Contact extends CoreAdo {
 	private String additionalDetails;
 
 	private List<Task> tasks;
-	private Set<Visit> visits;
-	
+	private Set<Sample> samples;
+	private Set<Visit> visits = new HashSet<>();
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Person getPerson() {
@@ -351,6 +354,14 @@ public class Contact extends CoreAdo {
 	}
 	public void setVisits(Set<Visit> visits) {
 		this.visits = visits;
+	}
+
+	@OneToMany(mappedBy = Sample.ASSOCIATED_CONTACT, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
 	}
 
 	public Double getReportLat() {

@@ -93,7 +93,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 
 		Column<IndexDTO, String> visitsColumn = addColumn(entry -> {
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
-				int numberOfVisits = FacadeProvider.getVisitFacade().getNumberOfVisits(entry.toReference(), null);
+				int numberOfVisits = entry.getVisitCount();
 				int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
 				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
 				// Set number of missed visits to 0 when more visits than expected have been done

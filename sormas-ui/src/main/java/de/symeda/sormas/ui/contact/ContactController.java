@@ -34,7 +34,11 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -96,11 +100,6 @@ public class ContactController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);	
 	}
 
-	public void editPerson(String contactUuid) {
-		String navigationState = ContactPersonView.VIEW_NAME + "/" + contactUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
-	}
-
 	public void overview() {
 		String navigationState = ContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
@@ -137,11 +136,13 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE, caze != null ?
+		ContactCreateForm createForm = new ContactCreateForm(caze != null ?
 				caze.getDisease() : null, caze != null);
 		createForm.setValue(createNewContact(caze));
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
-				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
+				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, 
+						UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE), 
+						createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -228,11 +229,13 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-		ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
+		ContactDataForm editForm = new ContactDataForm();
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), 
+				editForm.getFieldGroup());
 
 		editComponent.addCommitListener(new CommitListener() {
 			@Override

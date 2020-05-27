@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -84,9 +85,12 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setId(PATHOGEN_TEST_RESULT);
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
-		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
-				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER,
+				SampleIndexDto.ASSOCIATED_CASE, SampleIndexDto.ASSOCIATED_CONTACT, DISEASE_SHORT,
+				SampleIndexDto.DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED,
+				SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT,
+				SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -107,7 +111,15 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
-		} 
+		}
+
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
+			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+		}
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+		}
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(

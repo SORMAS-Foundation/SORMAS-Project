@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 
@@ -149,10 +150,10 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	private void addShowMoreAndLessButtons() {
-		showMoreButton = new Button(I18nProperties.getCaption(Captions.dashboardShowAllDiseases), VaadinIcons.CHEVRON_DOWN);
-		CssStyles.style(showMoreButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = new Button(I18nProperties.getCaption(Captions.dashboardShowFirstDiseases), VaadinIcons.CHEVRON_UP);
-		CssStyles.style(showLessButton, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
+		showMoreButton = ButtonHelper.createIconButton(Captions.dashboardShowAllDiseases, VaadinIcons.CHEVRON_DOWN, null,
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
+		showLessButton = ButtonHelper.createIconButton(Captions.dashboardShowFirstDiseases, VaadinIcons.CHEVRON_UP, null,
+				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {
 			showMoreButton.setVisible(false);

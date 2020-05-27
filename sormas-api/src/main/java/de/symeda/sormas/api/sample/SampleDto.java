@@ -23,6 +23,7 @@ import java.util.Set;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -63,8 +64,8 @@ public class SampleDto extends EntityDto {
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	
-	@Required
 	private CaseReferenceDto associatedCase;
+	private ContactReferenceDto associatedContact;
 	private String labSampleID;
 	private String fieldSampleID;
 	@Required
@@ -112,6 +113,15 @@ public class SampleDto extends EntityDto {
 
 	public void setAssociatedCase(CaseReferenceDto associatedCase) {
 		this.associatedCase = associatedCase;
+	}
+
+	@ImportIgnore
+	public ContactReferenceDto getAssociatedContact() {
+		return associatedContact;
+	}
+
+	public void setAssociatedContact(ContactReferenceDto associatedContact) {
+		this.associatedContact = associatedContact;
 	}
 
 	public String getLabSampleID() {
@@ -338,9 +348,21 @@ public class SampleDto extends EntityDto {
 	}
 
 	public static SampleDto build(UserReferenceDto userRef, CaseReferenceDto caseRef) {
+		final SampleDto sampleDto = getSampleDto(userRef);
+		sampleDto.setAssociatedCase(caseRef);
+		return sampleDto;
+	}
+
+	public static SampleDto build(UserReferenceDto userRef, ContactReferenceDto contactRef) {
+		final SampleDto sampleDto = getSampleDto(userRef);
+		sampleDto.setAssociatedContact(contactRef);
+		return sampleDto;
+	}
+
+	private static SampleDto getSampleDto(UserReferenceDto userRef) {
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
-		sample.setAssociatedCase(caseRef);
+
 		sample.setReportingUser(userRef);
 		sample.setReportDateTime(new Date());
 		sample.setPathogenTestResult(PathogenTestResultType.PENDING);
@@ -349,7 +371,14 @@ public class SampleDto extends EntityDto {
 	}
 
 	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
-		SampleDto sample = build(userRef, referredSample.getAssociatedCase());
+		final SampleDto sample;
+		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
+		if (associatedCase != null) {
+			sample = build(userRef, associatedCase);
+		} else {
+			final ContactReferenceDto associatedContact = referredSample.getAssociatedContact();
+			sample = build(userRef, associatedContact);
+		}
 		sample.setSampleDateTime(referredSample.getSampleDateTime());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());
 		sample.setSampleMaterialText(referredSample.getSampleMaterialText());

@@ -16,7 +16,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -34,8 +33,8 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 			fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS) +
 			loc(PrescriptionDto.ADDITIONAL_NOTES);
 
-	public PrescriptionForm(boolean create, UserRight editOrCreateUserRight, boolean readOnly) {
-		super(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX, editOrCreateUserRight);
+	public PrescriptionForm(boolean create, boolean readOnly) {
+		super(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX);
 
 		getFieldGroup().setReadOnly(readOnly);
 

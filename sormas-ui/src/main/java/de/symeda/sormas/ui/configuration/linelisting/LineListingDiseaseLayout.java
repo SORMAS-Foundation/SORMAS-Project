@@ -8,6 +8,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -44,24 +45,22 @@ public class LineListingDiseaseLayout extends VerticalLayout {
 		CssStyles.style(lblDisease, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BOLD, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.ALIGN_CENTER);
 		addComponent(lblDisease);
 		
-		btnEdit = new Button(I18nProperties.getCaption(Captions.lineListingEdit));
-		btnEdit.addClickListener(e -> {
-			if (editCallback != null) { 
+		btnEdit = ButtonHelper.createButton(Captions.lineListingEdit, e -> {
+			if (editCallback != null) {
 				editCallback.run();
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
 		btnEdit.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(btnEdit, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+
 		addComponent(btnEdit);
 		
-		btnDisableAll = new Button(I18nProperties.getCaption(Captions.lineListingDisableAll));
-		btnDisableAll.addClickListener(e ->  {
+		btnDisableAll = ButtonHelper.createButton(Captions.lineListingDisableAll, e ->  {
 			if (disableAllCallback != null) {
 				disableAllCallback.run();
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_4);
 		btnDisableAll.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(btnDisableAll, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_4);
+
 		addComponent(btnDisableAll);
 	}
 

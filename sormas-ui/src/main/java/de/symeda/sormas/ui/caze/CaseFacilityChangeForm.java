@@ -34,7 +34,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -53,8 +52,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			);
 
-	public CaseFacilityChangeForm(UserRight editOrCreateUserRight) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
+	public CaseFacilityChangeForm() {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 	}
 	
 	@Override

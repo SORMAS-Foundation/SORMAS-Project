@@ -77,8 +77,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 			;		
 
-	public HospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, editOrCreateUserRight);
+	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode) {
+		super(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX);
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();

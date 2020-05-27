@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 /**
@@ -92,10 +93,9 @@ public class UsersView extends AbstractView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
-			createButton = new Button(I18nProperties.getCaption(Captions.userNewUser));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getUserController().create());
+			createButton = ButtonHelper.createIconButton(Captions.userNewUser, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getUserController().create(), ValoTheme.BUTTON_PRIMARY);
+
 			addHeaderComponent(createButton);
 		}
 	}
@@ -108,6 +108,7 @@ public class UsersView extends AbstractView {
 		filterLayout.addStyleName(CssStyles.VSPACE_3);
 
 		activeFilter = new ComboBox();
+		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
@@ -119,6 +120,7 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(activeFilter);
 
 		userRolesFilter = new ComboBox();
+		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
 		userRolesFilter.addItems(UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles()));
@@ -131,6 +133,8 @@ public class UsersView extends AbstractView {
 		UserDto user = UserProvider.getCurrent().getUser();
 
 		regionFilter = new ComboBox();
+		regionFilter.setId(CaseDataDto.REGION);
+
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
@@ -149,6 +153,7 @@ public class UsersView extends AbstractView {
 		}
 
 		districtFilter = new ComboBox();
+		districtFilter.setId(CaseDataDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
@@ -160,6 +165,7 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(districtFilter);
 
 		searchField = new TextField();
+		searchField.setId("search");
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptUserSearch));
