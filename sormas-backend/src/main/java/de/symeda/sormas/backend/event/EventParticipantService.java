@@ -161,8 +161,13 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<EventParticipant> from = cq.from(getElementClass());
 
+		Predicate filter = cb.equal(from.get(EventParticipant.PERSON), person);
 		Predicate userFilter = eventService.createUserFilter(cb, cq, from.join(EventParticipant.EVENT, JoinType.INNER));
-		cq.where(userFilter, cb.equal(from.get(EventParticipant.PERSON), person));
+		if(userFilter != null){
+			filter = cb.and(filter, userFilter);
+		}
+
+		cq.where(filter);
 
 		cq.select(cb.count(from));
 
