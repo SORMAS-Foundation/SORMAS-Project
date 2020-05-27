@@ -15,6 +15,7 @@ public interface Validations {
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
+	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String exportNoNameSpecified = "exportNoNameSpecified";
@@ -81,6 +82,4 @@ public interface Validations {
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
-	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
-	
 }
