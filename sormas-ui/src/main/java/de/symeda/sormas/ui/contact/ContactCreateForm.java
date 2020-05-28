@@ -72,22 +72,22 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
-	private static final String HTML_LAYOUT = 
+	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-			LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					fluidRowLocs(PersonDto.SEX)) +
-			LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
-			LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-			LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
-			LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
-			LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
-			LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
-			LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+							fluidRowLocs(PersonDto.SEX)) +
+					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
+					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
+					LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
+					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY)
 					+
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-			LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
 
 	private OptionGroup contactProximity;
 	private Disease disease;
@@ -165,7 +165,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
-		
+
 		CssStyles.style(CssStyles.SOFT_REQUIRED, firstName, lastName, lastContactDate, contactProximity, relationToCase);
 
 		region.addValueChangeListener(e -> {
@@ -201,7 +201,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				ControllerProvider.getContactController().openSelectCaseForContactWindow((Disease) cbDisease.getValue(), selectedCase -> {
 					if (selectedCase != null) {
 						this.selectedCase = selectedCase.toReference();
-						caseInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoContactCreationSourceCase), 
+						caseInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoContactCreationSourceCase),
 								selectedCase.getPersonFirstName() + " " + selectedCase.getPersonLastName() + " " + "(" +
 										DataHelper.getShortUuid(selectedCase.getUuid()) + ")"));
 						caseInfoLabel.removeStyleName(CssStyles.VSPACE_TOP_4);
@@ -223,7 +223,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				caseInfoLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 				removeCaseButton.setVisible(false);
 				chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChooseCase));
-				
+
 				updateFieldVisibilitiesByCase(false);
 			});
 			getContent().addComponent(removeCaseButton, REMOVE_CASE_LOC);
@@ -250,22 +250,27 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private void updateContactCategory(ContactProximity proximity) {
 		if (proximity != null) {
 			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-			case MEDICAL_UNSAVE:
-				contactCategory.setValue(ContactCategory.HIGH_RISK);
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(ContactCategory.LOW_RISK);
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAVE:
-				contactCategory.setValue(ContactCategory.NO_RISK);
-				break;
-			default:
+				case FACE_TO_FACE_LONG:
+				case TOUCHED_FLUID:
+				case AEROSOL:
+					contactCategory.setValue(ContactCategory.HIGH_RISK);
+					break;
+				case MEDICAL_UNSAFE:
+					contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+					break;
+				case MEDICAL_LIMITED:
+					contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
+					break;
+				case SAME_ROOM:
+				case FACE_TO_FACE_SHORT:
+				case MEDICAL_SAME_ROOM:
+					contactCategory.setValue(ContactCategory.LOW_RISK);
+					break;
+				case MEDICAL_DISTANT:
+				case MEDICAL_SAFE:
+					contactCategory.setValue(ContactCategory.NO_RISK);
+					break;
+				default:
 			}
 		}
 	}
@@ -289,8 +294,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			}
 		}
 		if (getValue() != null) {
-			dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, 
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE), 
+			dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate,
+					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE),
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
 					null, new LocalDate(getValue().getReportDateTime()).toDate(), Resolution.SECOND));
 		}
@@ -333,7 +338,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	public String getPersonLastName() {
 		return (String) getField(PersonDto.LAST_NAME).getValue();
 	}
-	
+
 	public Integer getBirthdateDD() {
 		return (Integer) getField(PersonDto.BIRTH_DATE_DD).getValue();
 	}

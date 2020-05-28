@@ -21,58 +21,62 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ContactProximity {
-	
-	TOUCHED_FLUID,		
+
+	TOUCHED_FLUID,
 	PHYSICAL_CONTACT,
 	CLOTHES_OR_OTHER,
-	CLOSE_CONTACT,		
-	FACE_TO_FACE_LONG,	
-	MEDICAL_UNSAVE,		
+	CLOSE_CONTACT,
+	FACE_TO_FACE_LONG,
+	MEDICAL_UNSAFE,
 	SAME_ROOM,
 	AIRPLANE,
 	FACE_TO_FACE_SHORT,
-	MEDICAL_SAVE, MEDICAL_SAME_ROOM, AEROSOL, MEDICAL_DISTANT;
-	
+	MEDICAL_SAFE,
+	MEDICAL_SAME_ROOM,
+	AEROSOL,
+	MEDICAL_DISTANT,
+	MEDICAL_LIMITED;
+
 	public boolean hasFollowUp() {
 		switch (this) {
-		case AIRPLANE:
-		case CLOSE_CONTACT:
-		case CLOTHES_OR_OTHER:
-		case FACE_TO_FACE_LONG:
-		case MEDICAL_UNSAVE:
-		case PHYSICAL_CONTACT:
-		case SAME_ROOM:
-		case TOUCHED_FLUID:
-		case MEDICAL_SAME_ROOM:
-		case AEROSOL:
-			return true;
+			case AIRPLANE:
+			case CLOSE_CONTACT:
+			case CLOTHES_OR_OTHER:
+			case FACE_TO_FACE_LONG:
+			case MEDICAL_UNSAFE:
+			case MEDICAL_LIMITED:
+			case PHYSICAL_CONTACT:
+			case SAME_ROOM:
+			case TOUCHED_FLUID:
+			case MEDICAL_SAME_ROOM:
+			case AEROSOL:
+				return true;
+			case FACE_TO_FACE_SHORT:
+			case MEDICAL_SAFE:
+			case MEDICAL_DISTANT:
+				return false;
 
-		case FACE_TO_FACE_SHORT:
-		case MEDICAL_SAVE:
-		case MEDICAL_DISTANT:
-			return false;
-			
-		default:
-			throw new IllegalArgumentException(this.name());
+			default:
+				throw new IllegalArgumentException(this.name());
 		}
 	}
-	
+
 	/**
 	 * TODO Replace locale with customizable solution or whatever is needed based on #1503
 	 */
 	public static ContactProximity[] getValues(Disease disease, String serverLocale) {
 		if (disease != null && serverLocale != null && serverLocale.startsWith("de")) {
 			switch (disease) {
-			case CORONAVIRUS:
-				return new ContactProximity[] { FACE_TO_FACE_LONG, TOUCHED_FLUID, AEROSOL, MEDICAL_UNSAVE, SAME_ROOM,
-						FACE_TO_FACE_SHORT, MEDICAL_SAME_ROOM, MEDICAL_SAVE, MEDICAL_DISTANT };
-			default:
-				break;
+				case CORONAVIRUS:
+					return new ContactProximity[] { FACE_TO_FACE_LONG, TOUCHED_FLUID, AEROSOL, MEDICAL_UNSAFE, MEDICAL_LIMITED, SAME_ROOM,
+							FACE_TO_FACE_SHORT, MEDICAL_SAME_ROOM, MEDICAL_SAFE, MEDICAL_DISTANT };
+				default:
+					break;
 			}
 		}
 		return new ContactProximity[] { TOUCHED_FLUID, PHYSICAL_CONTACT, CLOTHES_OR_OTHER, CLOSE_CONTACT, SAME_ROOM };
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

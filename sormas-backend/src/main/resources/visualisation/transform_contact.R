@@ -117,7 +117,7 @@ nlist$Classification[is.na(nlist$Classification)] <- caseClass[1]
 highRiskProximity = paste("ContactProximity", c(
 		"FACE_TO_FACE_LONG",
 		"TOUCHED_FLUID",
-		"MEDICAL_UNSAVE",
+		"MEDICAL_UNSAFE",
 		"CLOTHES_OR_OTHER",
 		"PHYSICAL_CONTACT"), sep=("."))
 elist$label = NA

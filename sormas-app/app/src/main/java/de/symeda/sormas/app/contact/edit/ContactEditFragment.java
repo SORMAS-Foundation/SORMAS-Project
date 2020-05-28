@@ -230,8 +230,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                 case FACE_TO_FACE_LONG:
                 case TOUCHED_FLUID:
                 case AEROSOL:
-                case MEDICAL_UNSAVE:
                     contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK);
+                    break;
+                case MEDICAL_UNSAFE:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+                    break;
+                case MEDICAL_LIMITED:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
                     break;
                 case SAME_ROOM:
                 case FACE_TO_FACE_SHORT:
@@ -239,7 +244,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                     contentBinding.contactContactCategory.setValue(ContactCategory.LOW_RISK);
                     break;
                 case MEDICAL_DISTANT:
-                case MEDICAL_SAVE:
+                case MEDICAL_SAFE:
                     contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
                     break;
                 default:
