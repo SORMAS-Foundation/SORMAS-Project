@@ -58,7 +58,6 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
@@ -98,9 +97,7 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				final SampleDto dto = createForm.getValue();
-				fillPathogenFields(createForm, dto);
-				FacadeProvider.getSampleFacade().saveSample(dto);
+				saveSample(createForm);
 				callback.run();
 			}
 		});
@@ -117,12 +114,7 @@ public class SampleController {
 
 		createView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				final SampleDto newSample = createForm.getValue();
-				fillPathogenFields(createForm, newSample);
-				FacadeProvider.getSampleFacade().saveSample(newSample);
-				sample.setReferredTo(FacadeProvider.getSampleFacade().getReferenceByUuid(newSample.getUuid()));
-				FacadeProvider.getSampleFacade().saveSample(sample);
-				navigateToData(newSample.getUuid());
+				saveSample(createForm);
 			}
 		});
 
@@ -137,20 +129,24 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	private void fillPathogenFields(SampleCreateForm createForm, SampleDto dto) {
+	private void saveSample(SampleCreateForm createForm) {
+		final SampleDto newSample = createForm.getValue();
 		final PathogenTestResultType testResult =
 				(PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
 		if (testResult != null) {
-			final PathogenTestDto defaultTest = PathogenTestDto.build(dto, UserProvider.getCurrent().getUser());
-			defaultTest.setLab(dto.getLab());
-			defaultTest.setTestResult(testResult);
-			defaultTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
-			defaultTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
-			defaultTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
-			defaultTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
-			defaultTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
-			dto.setDefaultTest(defaultTest);
-			dto.setPathogenTestResult(testResult);
+			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
+			pathogenTest.setLab(newSample.getLab());
+			pathogenTest.setTestResult(testResult);
+			pathogenTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
+			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
+			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
+			newSample.setPathogenTestResult(testResult);
+			FacadeProvider.getSampleFacade().saveSample(newSample);
+			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+		} else {
+			FacadeProvider.getSampleFacade().saveSample(newSample);
 		}
 	}
 
@@ -164,15 +160,15 @@ public class SampleController {
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
-				SampleDto dto1 = form.getValue();
-				SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto1.getUuid());
-				FacadeProvider.getSampleFacade().saveSample(dto1);
+				SampleDto changedDto = form.getValue();
+				SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(changedDto.getUuid());
+				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
 
-				if (dto1.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
-						dto1.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
+				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
+						changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
 						UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-					requestSampleCollectionTaskCreation(dto1, form);
+					requestSampleCollectionTaskCreation(changedDto, form);
 				} else {
 					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 				}

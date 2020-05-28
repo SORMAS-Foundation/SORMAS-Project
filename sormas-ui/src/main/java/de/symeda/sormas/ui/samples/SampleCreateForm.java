@@ -1,9 +1,11 @@
 package de.symeda.sormas.ui.samples;
 
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -24,6 +26,7 @@ public class SampleCreateForm extends AbstractSampleForm {
 
     private static final String HTML_LAYOUT =
             SAMPLE_COMMON_HTML_LAYOUT +
+                    fluidRowLocs(Captions.sampleIncludeTestOnCreation) +
                     fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
                     fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
                     fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT_TEXT);
@@ -38,6 +41,7 @@ public class SampleCreateForm extends AbstractSampleForm {
     protected void addFields() {
 
         addCommonFields();
+        CheckBox includeTestField = addCustomField(Captions.sampleIncludeTestOnCreation, Boolean.class, CheckBox.class);
         ComboBox pathogenTestResultField = addCustomField(PathogenTestDto.TEST_RESULT, PathogenTestResultType.class,
                 ComboBox.class);
         OptionGroup testVerifiedField = addCustomField(PathogenTestDto.TEST_RESULT_VERIFIED, Boolean.class,
@@ -54,24 +58,26 @@ public class SampleCreateForm extends AbstractSampleForm {
         setVisibilities();
 
         FieldHelper.setVisibleWhen(getField(SampleDto.SAMPLE_PURPOSE),
-                Arrays.asList(pathogenTestResultField),
+                Arrays.asList(includeTestField),
                 Arrays.asList(SamplePurpose.EXTERNAL, null), true);
 
-        FieldHelper.setVisibleWhen(pathogenTestResultField,
-                Arrays.asList(testVerifiedField, testTypeField, testDiseaseField, testDateField, testDetailsField),
-                Arrays.asList(PathogenTestResultType.POSITIVE, PathogenTestResultType.NEGATIVE,
-                        PathogenTestResultType.PENDING, PathogenTestResultType.INDETERMINATE), true);
+        FieldHelper.setVisibleWhen(includeTestField,
+                Arrays.asList(pathogenTestResultField, testVerifiedField, testTypeField, testDiseaseField, testDateField, testDetailsField),
+                Arrays.asList(true), true);
+
+        FieldHelper.setRequiredWhen(includeTestField,
+                Arrays.asList(pathogenTestResultField),
+                Arrays.asList(true), false, null);
 
         FieldHelper.setRequiredWhen(pathogenTestResultField,
                 Arrays.asList(testVerifiedField, testTypeField, testDiseaseField, testDateField),
                 Arrays.asList(PathogenTestResultType.POSITIVE, PathogenTestResultType.NEGATIVE,
                         PathogenTestResultType.PENDING, PathogenTestResultType.INDETERMINATE), false, null);
 
-
         addValueChangeListener(e -> {
-
             defaultValueChangeListener();
             testVerifiedField.setEnabled(true);
+            pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
             getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
         });
     }

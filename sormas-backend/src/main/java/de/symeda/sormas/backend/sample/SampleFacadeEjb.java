@@ -213,11 +213,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
         sampleService.ensurePersisted(sample);
 
-        final PathogenTestDto defaultTest = dto.getDefaultTest();
-        if (defaultTest != null) {
-            pathogenTestFacade.savePathogenTest(defaultTest);
-        }
-
         if (handleChanges) {
             onSampleChanged(existingSample, sample);
         }

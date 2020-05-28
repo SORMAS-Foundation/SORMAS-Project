@@ -1086,6 +1086,7 @@ public interface Captions {
 	String SampleExport_totalBilirubin = "SampleExport.totalBilirubin";
 	String SampleExport_urea = "SampleExport.urea";
 	String SampleExport_wbcCount = "SampleExport.wbcCount";
+	String sampleIncludeTestOnCreation = "sampleIncludeTestOnCreation";
 	String sampleNewSample = "sampleNewSample";
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
