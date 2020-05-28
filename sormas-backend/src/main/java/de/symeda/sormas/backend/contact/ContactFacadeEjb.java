@@ -229,7 +229,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
 		Root<Contact> contact = cq.from(Contact.class);
 		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
@@ -271,6 +271,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				addressDistrict.get(District.NAME),
 				address.get(Location.CITY),
 				address.get(Location.ADDRESS),
+				address.get(Location.LATITUDE),
+				address.get(Location.LONGITUDE),
 				address.get(Location.POSTAL_CODE),
 				contactPerson.get(Person.PHONE),
 				contactPerson.get(Person.PHONE_OWNER),

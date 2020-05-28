@@ -63,6 +63,8 @@ public class ContactExportDto implements Serializable {
 	private String addressDistrict;
 	private String city;
 	private String address;
+	private Double latitude;
+	private Double longitude;
 	private String postalCode;
 	private String phone;
 	private String occupationType;
@@ -84,7 +86,7 @@ public class ContactExportDto implements Serializable {
 			ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
 			QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 			PresentCondition presentCondition, Date deathDate,
-			String addressRegion, String addressDistrict, String city, String address, String postalCode,
+			String addressRegion, String addressDistrict, String city, String address, Double latitude, Double longitude, String postalCode,
 			String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 			String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
 			String region, String district
@@ -117,6 +119,8 @@ public class ContactExportDto implements Serializable {
 		this.addressDistrict = addressDistrict;
 		this.city = city;
 		this.address = address;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
@@ -307,6 +311,16 @@ public class ContactExportDto implements Serializable {
 	@Order(40)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
+	}
+	
+	@Order(41)
+	public Double getLatitude() {
+		return latitude;
+	}
+	
+	@Order(42)
+	public Double getLongitude() {
+		return longitude;
 	}
 
 	public void setId(long id) {
