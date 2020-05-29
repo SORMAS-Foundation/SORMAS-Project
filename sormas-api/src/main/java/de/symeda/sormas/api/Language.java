@@ -82,7 +82,6 @@ public enum Language {
 		Language language = languageLookup.get(key);
 		
 		if (language == null) {
-			LoggerFactory.getLogger(Language.class).warn("Unknown locale '{}'. Falling back to 'en'.", locale);
 			language = EN;
 		}
 		
