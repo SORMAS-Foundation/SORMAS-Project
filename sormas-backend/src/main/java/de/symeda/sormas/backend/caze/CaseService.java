@@ -68,6 +68,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -785,9 +786,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			// get all cases based on the user's sample association
 			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 			Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-			QueryContext<Sample> sampleQueryContext = new QueryContext<>(cb, cq, sampleRoot);
-			sampleService.buildJoins(sampleQueryContext, null);
-			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(sampleQueryContext));
+			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
 			sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 		}

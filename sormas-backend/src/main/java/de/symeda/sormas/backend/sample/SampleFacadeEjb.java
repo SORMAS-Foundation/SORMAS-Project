@@ -257,15 +257,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
 		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
 
-		final Expression<?> diseaseSelect = qc.addExpression(DISEASE,
-				cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE)));
-		final Expression<?> diseaseDetailsSelect = qc.addExpression(DISEASE_DETAILS,
-				cb.selectCase().when(cb.isNotNull(caze),
-						caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS)));
+		Expression<Object> diseaseSelect = cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE));
+		Expression<Object> diseaseDetailsSelect = cb.selectCase().when(cb.isNotNull(caze),
+				caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS));
 
-		final Expression<?> districtSelect = qc.addExpression(DISTRICT, cb.selectCase().when(cb.isNotNull(caseDistrict),
+		Expression<Object> districtSelect = cb.selectCase().when(cb.isNotNull(caseDistrict),
 				caseDistrict.get(District.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
-				contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID))));
+				contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID)));
 
 		List<Selection<?>> selections = new ArrayList<>(Arrays.asList(sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER), sample.get(Sample.LAB_SAMPLE_ID), sample.get(Sample.SAMPLE_DATE_TIME),
@@ -285,10 +283,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(qc, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 
@@ -474,8 +472,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, new QueryContext(cb, cq,
-					sample), joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		} else if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, joins.getCaze());
@@ -595,13 +592,12 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
-		final QueryContext qc = new QueryContext(cb, cq, root);
 
 		SampleJoins joins = new SampleJoins(root);
 
-		Predicate filter = sampleService.createUserFilter(qc, joins);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, qc, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
 		if (filter != null) {
