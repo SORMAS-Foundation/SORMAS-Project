@@ -785,7 +785,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			// get all cases based on the user's sample association
 			Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 			Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(new QueryContext(cb, cq, sampleRoot)));
+			QueryContext<Sample> sampleQueryContext = new QueryContext<>(cb, cq, sampleRoot);
+			sampleService.buildJoins(sampleQueryContext, null);
+			sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(sampleQueryContext));
 			sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 			filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
 		}

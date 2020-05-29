@@ -1,13 +1,11 @@
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum Language {
 	
@@ -82,7 +80,6 @@ public enum Language {
 		Language language = languageLookup.get(key);
 		
 		if (language == null) {
-			LoggerFactory.getLogger(Language.class).warn("Unknown locale '{}'. Falling back to 'en'.", locale);
 			language = EN;
 		}
 		

@@ -1057,6 +1057,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (contact.isOverwriteFollowUpUntil() && contact.getFollowUpUntil() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.emptyOverwrittenFollowUpUntilDate));
 		}
+		if (contact.getCaze() == null && (contact.getRegion() == null || contact.getDistrict() == null)) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.contactWithoutInfrastructureData));
+		}
 	}
 
 	@Override
