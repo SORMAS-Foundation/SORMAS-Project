@@ -77,7 +77,7 @@ public class ContactReferenceDto extends ReferenceDto {
 		}
 
 		if (!DataHelper.isNullOrEmpty(caseFirstName) || !DataHelper.isNullOrEmpty(caseLastName)) {
-			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
+			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), " "))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		}

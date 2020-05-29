@@ -20,6 +20,7 @@ package de.symeda.sormas.backend;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
@@ -39,6 +40,8 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.location.LocationDto;
@@ -177,10 +180,15 @@ public class TestDataCreator {
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
 		return beanTest.getCaseFacade().saveCase(aCase);
 	}
-	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
-			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
-			RDCF rdcf) {
+								  CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+								  RDCF rdcf) {
+		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, rdcf, null);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+								  CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+								  RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
 		caze.setReportDate(reportAndOnsetDate);
 		caze.setReportingUser(user);
@@ -191,6 +199,11 @@ public class TestDataCreator {
 		caze.setDistrict(rdcf.district);
 		caze.setCommunity(rdcf.community);
 		caze.setHealthFacility(rdcf.facility);
+		caze.setPointOfEntry(rdcf.pointOfEntry);
+
+		if(setCustomFields != null){
+			setCustomFields.accept(caze);
+		}
 
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
@@ -464,15 +477,25 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
+		return createRDCF(regionName, districtName, communityName, facilityName, null);
+	}
+
+	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName, String pointOfEntryName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);
 		Community community = createCommunity(communityName, district);
 		Facility facility = createFacility(facilityName, region, district, community);
 
+		PointOfEntry pointOfEntry = null;
+		if(pointOfEntryName != null){
+			pointOfEntry = createPointOfEntry(pointOfEntryName, region, district);
+		}
+
 		return new RDCF(new RegionReferenceDto(region.getUuid(), region.getName()),
 				new DistrictReferenceDto(district.getUuid(), district.getName()),
 				new CommunityReferenceDto(community.getUuid(), community.getName()),
-				new FacilityReferenceDto(facility.getUuid(), facility.getName()));
+				new FacilityReferenceDto(facility.getUuid(), facility.getName()),
+				pointOfEntry != null ? new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName()) : null);
 	}
 
 	public RDCFEntities createRDCFEntities() {
@@ -566,6 +589,18 @@ public class TestDataCreator {
 		return pointOfEntry;
 	}
 
+	public PointOfEntryDto createPointOfEntry(String pointOfEntryName, RegionReferenceDto region, DistrictReferenceDto district) {
+		PointOfEntryDto pointOfEntry = PointOfEntryDto.build();
+		pointOfEntry.setUuid(DataHelper.createUuid());
+		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+		pointOfEntry.setName(pointOfEntryName);
+		pointOfEntry.setDistrict(district);
+		pointOfEntry.setRegion(region);
+		beanTest.getPointOfEntryFacade().save(pointOfEntry);
+
+		return pointOfEntry;
+	}
+
 	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
 		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
 		populationData.setRegion(region);
@@ -608,14 +643,20 @@ public class TestDataCreator {
 		public DistrictReferenceDto district;
 		public CommunityReferenceDto community;
 		public FacilityReferenceDto facility;
+		public PointOfEntryReferenceDto pointOfEntry;
 
 		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
+			this(region, district, community, facility, null);
+		}
+
+		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, PointOfEntryReferenceDto pointOfEntry) {
 			this.region = region;
 			this.district = district;
 			this.community = community;
 			this.facility = facility;
+			this.pointOfEntry = pointOfEntry;
 		}
-		
+
 		public RDCF(RDCFEntities rdcfEntities) {
 			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName());
 			this.district = new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName());

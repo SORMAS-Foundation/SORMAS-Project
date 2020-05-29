@@ -19,6 +19,7 @@
 package de.symeda.sormas.backend.person;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
@@ -34,7 +35,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -74,32 +78,41 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetCasePersonInSameJurisdiction() {
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 
-		assertNotPseudonomyzed(person);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testGetCasePersonInOtherJurisdiction() {
+	public void testGetCasePersonOutsideJurisdiction() {
 		creator.createCase(user1.toReference(), person.toReference(), rdcf1);
 
-		assertPsoudonimysed(person);
+		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateCasePersonInJurisdiction() {
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 
-		updatePerson();
+		updatePerson(false);
 
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateCasePersonOutsideJurisdiction() {
+		creator.createCase(user1.toReference(), person.toReference(), rdcf1);
+
+		updatePerson(true);
+
+		assertPersonNotUpdated();
+	}
+
+	@Test
+	public void testUpdateCasePersonInJurisdictionWithPseudonymizedDto() {
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 
-		updatePerson();
+		updatePersonPseudonymisedDto();
 
-		assertPersonUpdated();
+		assertPersonNotUpdated();
 	}
 
 
@@ -107,14 +120,32 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetContactPersonInSameJurisdiction() {
 		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
 
-		assertNotPseudonomyzed(person);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testGetContactPersonInOtherJurisdiction() {
+	public void testGetContactPersonOutsideJurisdiction() {
 		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
 
-		assertPsoudonimysed(person);
+		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
+	}
+
+	@Test
+	public void testUpdateContactPersonInJurisdiction() {
+		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
+
+		updatePerson(false);
+
+		assertPersonUpdated();
+	}
+
+	@Test
+	public void testUpdateContactPersonOutsideJurisdiction() {
+		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
+
+		updatePerson(true);
+
+		assertPersonNotUpdated();
 	}
 
 	@Test
@@ -122,16 +153,67 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user2.toReference());
 		creator.createEventParticipant(event.toReference(), person);
 
-		assertNotPseudonomyzed(person);
+		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
-	public void testGetEventParticipantPersonInOtherJurisdiction() {
+	public void testGetEventParticipantPersonInOutsideJurisdiction() {
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person);
 
-		assertPsoudonimysed(person);
+		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
+
+	@Test
+	public void testUpdateEventParticipantPersonInJurisdiction() {
+		EventDto event = creator.createEvent(user2.toReference());
+		creator.createEventParticipant(event.toReference(), person);
+
+		updatePerson(false);
+
+		assertPersonUpdated();
+	}
+
+	@Test
+	public void testUpdateEventParticipantPersonPersonOutsideJurisdiction() {
+		EventDto event = creator.createEvent(user1.toReference());
+		creator.createEventParticipant(event.toReference(), person);
+
+		updatePerson(true);
+
+		assertPersonNotUpdated();
+	}
+
+	@Test
+	public void testPseudonymizeGetByUuids(){
+		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+
+		PersonDto person2 = createPerson();
+
+		List<PersonDto> persons = getPersonFacade().getByUuids(Arrays.asList(person.getUuid(), person2.getUuid()));
+
+		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
+		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
+	}
+
+	@Test
+	public void testPseudonymizeGetAllAfter(){
+		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
+
+		PersonDto person2 = createPerson();
+		//create redonly case with person2 --> person2 should be pseudonymized
+		CaseDataDto caze = creator.createCase(user1.toReference(), person2.toReference(), rdcf1);
+		creator.createContact(user2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(),
+				Disease.CORONAVIRUS, rdcf2);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 2019);
+		List<PersonDto> persons = getPersonFacade().getPersonsAfter(calendar.getTime());
+
+		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
+		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
+	}
+
 
 	private PersonDto createPerson() {
 		LocationDto address = new LocationDto();
@@ -150,15 +232,17 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, address);
 	}
 
-	private void updatePerson() {
+	private void updatePerson(boolean pseudonymized) {
+		person.setPseudonymized(pseudonymized);
 		person.setFirstName("Newfirstname");
 		person.setLastName("Newlastname");
 		person.setBirthdateDD(23);
 
 		LocationDto newAddress = new LocationDto();
-		newAddress.setRegion(rdcf2.region);
-		newAddress.setDistrict(rdcf2.district);
-		newAddress.setCommunity(rdcf2.community);
+		person.setPseudonymized(pseudonymized);
+		newAddress.setRegion(rdcf1.region);
+		newAddress.setDistrict(rdcf1.district);
+		newAddress.setCommunity(rdcf1.community);
 		newAddress.setCity("New City");
 		newAddress.setAddress("New address");
 		newAddress.setPostalCode("938");
@@ -173,46 +257,67 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		getPersonFacade().savePerson(person);
 	}
 
-	private void assertNotPseudonomyzed(PersonDto person) {
-		PersonDto personForUser2 = getPersonFacade().getPersonByUuid(person.getUuid());
+	private void updatePersonPseudonymisedDto() {
+		person.setPseudonymized(true);
+		person.setFirstName("");
+		person.setLastName("");
+		person.setBirthdateDD(null);
 
-		assertThat(personForUser2.isPseudonymized(), is(false));
-		assertThat(personForUser2.getFirstName(), is("James"));
-		assertThat(personForUser2.getLastName(), is("Smith"));
-		assertThat(personForUser2.getBirthdateDD(), is(1));
+		LocationDto newAddress = new LocationDto();
+		newAddress.setPseudonymized(true);
+		newAddress.setRegion(rdcf1.region);
+		newAddress.setDistrict(rdcf1.district);
+		newAddress.setCommunity(null);
+		newAddress.setCity("");
+		newAddress.setAddress("");
+		newAddress.setPostalCode("");
+		newAddress.setAreaType(null);
+		newAddress.setDetails("");
+		newAddress.setLongitude(null);
+		newAddress.setLatitude(null);
+		newAddress.setLatLonAccuracy(null);
 
-		assertThat(personForUser2.getAddress().getRegion().getCaption(), is("Region 1"));
-		assertThat(personForUser2.getAddress().getDistrict().getCaption(), is("District 1"));
-		assertThat(personForUser2.getAddress().getCommunity(), is(rdcf1.community));
-		assertThat(personForUser2.getAddress().getCity(), is("Test City"));
-		assertThat(personForUser2.getAddress().getAddress(), is("Test address"));
-		assertThat(personForUser2.getAddress().getPostalCode(), is("12345"));
-		assertThat(personForUser2.getAddress().getAreaType(), is(AreaType.URBAN));
-		assertThat(personForUser2.getAddress().getDetails(), is("Test address details"));
-		assertThat(personForUser2.getAddress().getLongitude(), is(46.233));
-		assertThat(personForUser2.getAddress().getLatitude(), is(26.533));
-		assertThat(personForUser2.getAddress().getLatLonAccuracy(), is(10F));
+		person.setAddress(newAddress);
+
+		getPersonFacade().savePerson(person);
 	}
 
-	private void assertPsoudonimysed(PersonDto person) {
-		PersonDto personForUser2 = getPersonFacade().getPersonByUuid(person.getUuid());
+	private void assertNotPseudonymized(PersonDto person) {
+		assertThat(person.isPseudonymized(), is(false));
+		assertThat(person.getFirstName(), is("James"));
+		assertThat(person.getLastName(), is("Smith"));
+		assertThat(person.getBirthdateDD(), is(1));
 
-		assertThat(personForUser2.isPseudonymized(), is(true));
-		assertThat(personForUser2.getFirstName(), isEmptyString());
-		assertThat(personForUser2.getLastName(), isEmptyString());
-		assertThat(personForUser2.getBirthdateDD(), is(nullValue()));
+		assertThat(person.getAddress().getRegion().getCaption(), is("Region 1"));
+		assertThat(person.getAddress().getDistrict().getCaption(), is("District 1"));
+		assertThat(person.getAddress().getCommunity(), is(rdcf1.community));
+		assertThat(person.getAddress().getCity(), is("Test City"));
+		assertThat(person.getAddress().getAddress(), is("Test address"));
+		assertThat(person.getAddress().getPostalCode(), is("12345"));
+		assertThat(person.getAddress().getAreaType(), is(AreaType.URBAN));
+		assertThat(person.getAddress().getDetails(), is("Test address details"));
+		assertThat(person.getAddress().getLongitude(), is(46.233));
+		assertThat(person.getAddress().getLatitude(), is(26.533));
+		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
+	}
 
-		assertThat(personForUser2.getAddress().getRegion().getCaption(), is("Region 1"));
-		assertThat(personForUser2.getAddress().getDistrict().getCaption(), is("District 1"));
-		assertThat(personForUser2.getAddress().getCommunity(), is(nullValue()));
-		assertThat(personForUser2.getAddress().getCity(), isEmptyString());
-		assertThat(personForUser2.getAddress().getAddress(), isEmptyString());
-		assertThat(personForUser2.getAddress().getPostalCode(), isEmptyString());
-		assertThat(personForUser2.getAddress().getAreaType(), is(nullValue()));
-		assertThat(personForUser2.getAddress().getDetails(), isEmptyString());
-		assertThat(personForUser2.getAddress().getLongitude(), is(nullValue()));
-		assertThat(personForUser2.getAddress().getLatitude(), is(nullValue()));
-		assertThat(personForUser2.getAddress().getLatLonAccuracy(), is(nullValue()));
+	private void assertPseudonymised(PersonDto person) {
+		assertThat(person.isPseudonymized(), is(true));
+		assertThat(person.getFirstName(), isEmptyString());
+		assertThat(person.getLastName(), isEmptyString());
+		assertThat(person.getBirthdateDD(), is(nullValue()));
+
+		assertThat(person.getAddress().getRegion().getCaption(), is("Region 1"));
+		assertThat(person.getAddress().getDistrict().getCaption(), is("District 1"));
+		assertThat(person.getAddress().getCommunity(), is(nullValue()));
+		assertThat(person.getAddress().getCity(), isEmptyString());
+		assertThat(person.getAddress().getAddress(), isEmptyString());
+		assertThat(person.getAddress().getPostalCode(), isEmptyString());
+		assertThat(person.getAddress().getAreaType(), is(nullValue()));
+		assertThat(person.getAddress().getDetails(), isEmptyString());
+		assertThat(person.getAddress().getLongitude(), is(nullValue()));
+		assertThat(person.getAddress().getLatitude(), is(nullValue()));
+		assertThat(person.getAddress().getLatLonAccuracy(), is(nullValue()));
 	}
 
 	private void assertPersonUpdated() {
@@ -221,9 +326,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getFirstName(), is("Newfirstname"));
 		assertThat(savedPerson.getLastName(), is("Newlastname"));
 		assertThat(savedPerson.getBirthdateDD(), is(23));
-		assertThat(savedPerson.getAddress().getRegion().getName(), is(rdcf2.region.getCaption()));
-		assertThat(savedPerson.getAddress().getDistrict().getName(), is(rdcf2.district.getCaption()));
-		assertThat(savedPerson.getAddress().getCommunity().getName(), is(rdcf2.community.getCaption()));
+		assertThat(savedPerson.getAddress().getRegion().getName(), is(rdcf1.region.getCaption()));
+		assertThat(savedPerson.getAddress().getDistrict().getName(), is(rdcf1.district.getCaption()));
+		assertThat(savedPerson.getAddress().getCommunity().getName(), is(rdcf1.community.getCaption()));
 		assertThat(savedPerson.getAddress().getCity(), is("New City"));
 		assertThat(savedPerson.getAddress().getAddress(), is("New address"));
 		assertThat(savedPerson.getAddress().getPostalCode(), is("938"));
@@ -233,4 +338,23 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getAddress().getLatitude(), is(36.533));
 		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(8F));
 	}
+
+	private void assertPersonNotUpdated() {
+		Person savedPerson = getPersonService().getByUuid(person.getUuid());
+
+		assertThat(savedPerson.getFirstName(), is("James"));
+		assertThat(savedPerson.getLastName(), is("Smith"));
+		assertThat(savedPerson.getBirthdateDD(), is(1));
+
+		assertThat(savedPerson.getAddress().getRegion().getName(), is("Region 1"));
+		assertThat(savedPerson.getAddress().getDistrict().getName(), is("District 1"));
+		assertThat(savedPerson.getAddress().getCommunity().getName(), is("Community 1"));
+		assertThat(savedPerson.getAddress().getCity(), is("Test City"));
+		assertThat(savedPerson.getAddress().getAddress(), is("Test address"));
+		assertThat(savedPerson.getAddress().getPostalCode(), is("12345"));
+		assertThat(savedPerson.getAddress().getAreaType(), is(AreaType.URBAN));
+		assertThat(savedPerson.getAddress().getDetails(), is("Test address details"));
+		assertThat(savedPerson.getAddress().getLongitude(), is(46.233));
+		assertThat(savedPerson.getAddress().getLatitude(), is(26.533));
+		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(10F));	}
 }

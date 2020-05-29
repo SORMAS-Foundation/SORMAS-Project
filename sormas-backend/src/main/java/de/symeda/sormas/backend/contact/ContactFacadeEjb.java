@@ -383,13 +383,13 @@ public class ContactFacadeEjb implements ContactFacade {
 			visitsCq.where(ContactService.and(cb,
 					contact.get(AbstractDomainObject.ID).in(exportContactIds),
 					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)))
-					);
+			);
 			visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin
-					);
+			);
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
@@ -452,13 +452,13 @@ public class ContactFacadeEjb implements ContactFacade {
 			visitsCq.where(ContactService.and(cb,
 					contactRoot.get(AbstractDomainObject.UUID).in(visitSummaryUuids),
 					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)))
-					);
+			);
 			visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin
-					);
+			);
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
 
 			List<VisitSummaryExportDetails> visitSummaryDetails = em.createQuery(visitsCq).getResultList();
@@ -591,13 +591,13 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(AbstractDomainObject.UUID).in(contactUuids),
 					cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS)),
 					cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end))
-					);
+			);
 			visitsCq.multiselect(
 					visitsCqRoot.get(Contact.UUID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC)
-					);
+			);
 
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, ContactFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
@@ -630,8 +630,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
-    @Override
-    public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	@Override
+	public List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaQuery<ContactIndexDto> query = listCriteriaBuilder.buildIndexCriteria(contactCriteria, sortProperties);
 
 		List<ContactIndexDto> dtos;
@@ -642,7 +642,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDto.class, dtos,
-				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), null);
+				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+					if (c.getCaze() != null) {
+						pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), caseJurisdictionChecker.isInJurisdiction(c.getCaze().getJurisdiction()), null);
+					}
+				});
 
 		return dtos;
 	}
@@ -846,7 +850,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	private ContactDto convertToDto(Contact source) {
 		ContactDto dto = toDto(source);
 
-		if(dto != null) {
+		if (dto != null) {
 			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
 			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
 				if (c.getCaze() != null) {

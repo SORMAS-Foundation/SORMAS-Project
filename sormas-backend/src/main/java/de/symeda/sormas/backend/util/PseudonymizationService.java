@@ -58,7 +58,7 @@ public class PseudonymizationService {
 	public <DTO extends PseudonymizableDto> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
 		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction);
 
-		if (accessCheckers.hasRigths()) {
+		if (accessCheckers.hasRigths() && !dto.isPseudonymized()) {
 			return;
 		}
 
