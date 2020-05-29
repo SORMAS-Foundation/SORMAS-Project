@@ -310,11 +310,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
+		return getAllActiveCasesAfter(date, false);
+	}
+
+	@Override
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeAdditionalParams) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-
-		return caseService.getAllActiveCasesAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return caseService.getAllActiveCasesAfter(date, includeAdditionalParams).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -2159,7 +2163,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				sampleFacade.saveSample(newSample, false);
 
 				// 2.2.1 Pathogen Tests
-				for (PathogenTest pathogenTest : sample.getSampleTests()) {
+				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(),
 							pathogenTest.getLabUser().toReference());
 					fillDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning);
@@ -2266,7 +2270,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Case.ARCHIVED), false),
-				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 

@@ -42,6 +42,8 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeAdditionalParams);
+
 	long count(CaseCriteria caseCriteria);
 	
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import org.junit.Rule;
 import org.junit.Test;
@@ -509,6 +510,68 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// getArchivedUuidsSince should return length 0
 		assertEquals(0, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
+	}
+
+	@Test
+	public void testAllActiveCaseIncludeAdditionalParamsSample() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		Date date = new Date();
+
+		sample.setComment("one comment");
+		getSampleFacade().saveSample(sample);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+	@Test
+	public void testAllActiveCaseIncludeAdditionalParamsPathogenTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
+
+		Date date = new Date();
+
+		pathogenTestDto.setTestResultText("test result changed");
+		getPathogenTestFacade().savePathogenTest(pathogenTestDto);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+	@Test
+	public void testAllActiveCaseIncludeAdditionalParamsPatientTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
+
+		Date date = new Date();
+
+		cazePerson.setBurialDate(new Date());
+		getPersonFacade().savePerson(cazePerson);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
 	}
 
 	@Test
