@@ -32,6 +32,8 @@ import javax.persistence.Query;
 import javax.persistence.criteria.*;
 
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -341,10 +343,22 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		}
 
 		if (criteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(qc.getExpression("region"), criteria.getRegion().getUuid()));
+			final Join<Case, Region> caseRegion = qc.getJoin(Case.class, Region.class);
+			final Join<Contact, Region> contactRegion = qc.getJoin(Contact.class, Region.class);
+			final Join<Case, Region> contactCaseRegion = qc.getJoin(Case.class, Region.class, SampleFacadeEjb.CONTACT_CASE_REGION);
+			qc.addExpression(SampleFacadeEjb.REGION, cb.selectCase().when(cb.isNotNull(caseRegion),
+					caseRegion.get(Region.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactRegion),
+					contactRegion.get(Region.UUID)).otherwise(contactCaseRegion.get(Region.UUID))));
+			filter = and(cb, filter, cb.equal(qc.getExpression(SampleFacadeEjb.REGION), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(qc.getExpression("district"), criteria.getDistrict().getUuid()));
+			final Join<Case, District> caseDistrict = qc.getJoin(Case.class, District.class);
+			final Join<Contact, District> contactDistrict = qc.getJoin(Contact.class, District.class);
+			final Join<Case, District> contactCaseDistrict = qc.getJoin(Case.class, District.class, SampleFacadeEjb.CONTACT_CASE_DISTRICT);
+			qc.addExpression(SampleFacadeEjb.DISTRICT, cb.selectCase().when(cb.isNotNull(caseDistrict),
+					caseDistrict.get(District.UUID)).otherwise(cb.selectCase().when(cb.isNotNull(contactDistrict),
+					contactDistrict.get(District.UUID)).otherwise(contactCaseDistrict.get(District.UUID))));
+			filter = and(cb, filter, cb.equal(qc.getExpression(SampleFacadeEjb.DISTRICT), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter = and(cb, filter, cb.equal(qc.getJoin(Sample.class, Facility.class).get(Facility.UUID), criteria.getLaboratory().getUuid()));
@@ -369,7 +383,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			filter = and(cb, filter, cb.equal(caze.get(Case.CASE_CLASSIFICATION), criteria.getCaseClassification()));
 		}		
 		if (criteria.getDisease() != null) {
-			filter = and(cb, filter, cb.equal(qc.getExpression("disease"), criteria.getDisease()));
+			qc.addExpression(SampleFacadeEjb.DISEASE,
+					cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE)));
+			filter = and(cb, filter, cb.equal(qc.getExpression(SampleFacadeEjb.DISEASE), criteria.getDisease()));
 		}
 		if (criteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(caze.get(Case.UUID), criteria.getCaze().getUuid()));
