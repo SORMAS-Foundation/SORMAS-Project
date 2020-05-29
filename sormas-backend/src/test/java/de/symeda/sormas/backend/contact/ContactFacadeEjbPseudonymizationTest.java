@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -185,6 +186,25 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SimilarContactDto matching2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
 		assertThat(matching2.getFirstName(), isEmptyString());
 		assertThat(matching2.getLastName(), isEmptyString());
+
+	}
+
+	@Test
+	public void testPseudonymizeGetFollowupList(){
+		CaseDataDto caze = createCase(user1, rdcf1);
+		ContactDto contact1 = createContact(user2, caze, rdcf2);
+		// contact of case on other jurisdiction --> should be pseudonymized
+		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		List<ContactFollowUpDto> matchingContacts = getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
+
+		ContactFollowUpDto followup1 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
+		assertThat(followup1.getPerson().getFirstName(), is("James"));
+		assertThat(followup1.getPerson().getLastName(), is("Smith"));
+
+		ContactFollowUpDto followup2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
+		assertThat(followup2.getPerson().getFirstName(), isEmptyString());
+		assertThat(followup2.getPerson().getLastName(), isEmptyString());
 
 	}
 

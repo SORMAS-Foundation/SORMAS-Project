@@ -38,8 +38,6 @@ public class ContactReferenceDto extends ReferenceDto {
 	@PersonalData
 	private String caseLastName;
 
-	ContactJurisdictionDto jurisdiction;
-
 	public ContactReferenceDto() {
 
 	}
@@ -49,24 +47,17 @@ public class ContactReferenceDto extends ReferenceDto {
 	}
 
 	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
-							   String caseFirstName, String caseLastName,
-							   ContactJurisdictionDto jurisdiction) {
+							   String caseFirstName, String caseLastName) {
 		setUuid(uuid);
 		this.contactFirstName = contactFirstName;
 		this.contactLastName = contactLastName;
 		this.caseFirstName = caseFirstName;
 		this.caseLastName = caseLastName;
-
-		this.jurisdiction = jurisdiction;
-	}
+}
 
 	@Override
 	public String getCaption() {
 		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName, getUuid());
-	}
-
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
 	}
 
 	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName, String contactUuid) {

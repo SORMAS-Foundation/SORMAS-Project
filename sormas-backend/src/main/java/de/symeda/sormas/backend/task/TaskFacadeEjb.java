@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,6 +63,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
@@ -225,27 +228,29 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
+		CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
+		ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getContact());
+
 		boolean isInJurisdiction;
-		if (target.getContact() == null) {
-			isInJurisdiction = target.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(target.getCaze().getJurisdiction());
-		}
-		else {
-			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(target.getContact().getJurisdiction());
+		if (source.getContact() == null) {
+			isInJurisdiction = source.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(caseJurisdiction);
+		} else {
+			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
 		}
 
 		pseudonymizationService.pseudonymizeDto(TaskDto.class, target, isInJurisdiction,
-				(t) -> pseudonymizeEmbeddedFields(t.getContact(), t.getCaze()) );
+				(t) -> pseudonymizeEmbeddedFields(t.getContact(), contactJurisdiction, t.getCaze(), caseJurisdiction));
 
 		return target;
 	}
 
-	private void pseudonymizeEmbeddedFields(ContactReferenceDto contact, CaseReferenceDto caze) {
+	private void pseudonymizeEmbeddedFields(ContactReferenceDto contact, ContactJurisdictionDto contactJurisdiction, CaseReferenceDto caze, CaseJurisdictionDto caseJurisdiction) {
 		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contact.getJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contactJurisdiction), null);
 		}
 
 		if (caze != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caze.getJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
 		}
 	}
 
@@ -420,12 +425,12 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		pseudonymizationService.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
 					if (t.getContact() == null) {
-						return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaze().getJurisdiction());
+						return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction());
 					}
 
-					return contactJurisdictionChecker.isInJurisdiction(t.getContact().getJurisdiction());
+					return contactJurisdictionChecker.isInJurisdiction(t.getContactJurisdiction());
 				},
-				(t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getCaze())
+				(t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getContactJurisdiction(), t.getCaze(), t.getCaseJurisdiction())
 		);
 
 		return tasks;

@@ -17,29 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
@@ -55,8 +36,23 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.visit.Visit;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Audited
@@ -347,8 +343,7 @@ public class Contact extends CoreAdo {
 			casePersonLastName = getCaze().getPerson().getLastName();
 		}
 
-		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName,
-				JurisdictionHelper.createContactJurisdictionDto(this));
+		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName);
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)

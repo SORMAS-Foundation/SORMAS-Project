@@ -50,7 +50,7 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 		getColumn(ContactIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(ContactIndexDetailedDto.PHONE).setWidth(100);
 		((Column<ContactIndexDetailedDto, CaseReferenceDto>)getColumn(ContactIndexDetailedDto.CAZE)).setWidth(150)
-				.setRenderer(entry -> entry.getUuid(), new UuidRenderer());
+				.setRenderer(entry -> entry != null ? entry.getUuid() : null, new UuidRenderer());
 		getColumn(ContactIndexDetailedDto.REPORTING_USER).setWidth(150);
 
 		addItemClickListener(e -> {

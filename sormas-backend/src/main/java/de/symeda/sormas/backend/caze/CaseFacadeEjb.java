@@ -173,6 +173,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.apache.commons.lang3.StringUtils;
@@ -1116,7 +1117,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		boolean inJurisdiction = existingCaseDto == null ? true : caseJurisdictionChecker.isInJurisdiction(existingCaseDto.getJurisdiction());
+		boolean inJurisdiction = existingCaseDto == null ? true : caseJurisdictionChecker.isInJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caze));
 		pseudonymizationService.restorePseudonymizedValues(CaseDataDto.class, dto, existingCaseDto, inJurisdiction);
 
 		validate(dto);
@@ -1689,7 +1690,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseDataDto dto = toDto(source);
 
 		if (dto != null) {
-			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(dto.getJurisdiction());
+			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(source));
 			pseudonymizationService.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), inJurisdiction, null);
 			});

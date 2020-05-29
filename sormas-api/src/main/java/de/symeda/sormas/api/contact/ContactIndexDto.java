@@ -58,8 +58,6 @@ public class ContactIndexDto implements Serializable {
 	private CaseReferenceDto caze;
 	private Disease disease;
 	private String diseaseDetails;
-	private String regionUuid;
-	private String districtUuid;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
@@ -67,13 +65,13 @@ public class ContactIndexDto implements Serializable {
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
 	private String contactOfficerUuid;
-	private String reportingUserUuid;
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
 	private int visitCount;
 
 	private ContactJurisdictionDto jurisdiction;
+	private CaseJurisdictionDto caseJurisdiction;
 
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
@@ -86,12 +84,15 @@ public class ContactIndexDto implements Serializable {
 		this.uuid = uuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
-		this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName, new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud,
-				caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
+
+		if(cazeUuid != null) {
+			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
+			this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud,
+					caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		}
+
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
 		this.lastContactDate = lastContactDate;
 		this.contactCategory = contactCategory;
 		this.contactProximity = contactProximity;
@@ -100,13 +101,10 @@ public class ContactIndexDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
-		this.reportingUserUuid = reportingUserUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
 
-		CaseJurisdictionDto caseJurisdiction = cazeUuid == null ? null : new CaseJurisdictionDto(
-				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 
@@ -206,20 +204,8 @@ public class ContactIndexDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 	}
 
-	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public void setRegionUuid(String regionUuid) {
-		this.regionUuid = regionUuid;
-	}
-
 	public String getDistrictUuid() {
-		return districtUuid;
-	}
-
-	public void setDistrictUuid(String districtUuid) {
-		this.districtUuid = districtUuid;
+		return jurisdiction.getDistrictUuid();
 	}
 
 	public String getContactOfficerUuid() {
@@ -228,14 +214,6 @@ public class ContactIndexDto implements Serializable {
 
 	public void setContactOfficerUuid(String contactOfficerUuid) {
 		this.contactOfficerUuid = contactOfficerUuid;
-	}
-
-	public String getReportingUserUuid() {
-		return reportingUserUuid;
-	}
-
-	public void setReportingUserUuid(String reportingUserUuid) {
-		this.reportingUserUuid = reportingUserUuid;
 	}
 
 	public Date getReportDateTime() {
@@ -276,5 +254,9 @@ public class ContactIndexDto implements Serializable {
 
 	public ContactJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
 	}
 }

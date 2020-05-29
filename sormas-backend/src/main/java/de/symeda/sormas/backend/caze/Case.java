@@ -682,7 +682,7 @@ public class Case extends CoreAdo {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName(), createJurisdictionDto());
+		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CAZE)
@@ -1031,35 +1031,5 @@ public class Case extends CoreAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
-	}
-
-	private CaseJurisdictionDto createJurisdictionDto(){
-		CaseJurisdictionDto jurisdiction = new CaseJurisdictionDto();
-
-		if (reportingUser != null) {
-			jurisdiction.setReportingUserUuid(reportingUser.getUuid());
-		}
-
-		if (region != null) {
-			jurisdiction.setRegionUui(region.getUuid());
-		}
-
-		if (district != null) {
-			jurisdiction.setDistrictUud(district.getUuid());
-		}
-
-		if (community != null) {
-			jurisdiction.setCommunityUuid(community.getUuid());
-		}
-
-		if (healthFacility != null) {
-			jurisdiction.setHealthFacilityUuid(healthFacility.getUuid());
-		}
-
-		if (pointOfEntry != null) {
-			jurisdiction.setPointOfEntryUuid(pointOfEntry.getUuid());
-		}
-
-		return jurisdiction;
 	}
 }

@@ -84,7 +84,8 @@ public class SampleExportDto implements Serializable {
 	private AdditionalTestDto additionalTest;
 	private String otherAdditionalTestsDetails = "";
 
-	private ContactJurisdictionDto contactJurisdiction;
+	private CaseJurisdictionDto associatedCaseJurisdiction;
+	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String casePersonFirstName, String casePersonLastName,
 						   Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
@@ -97,7 +98,7 @@ public class SampleExportDto implements Serializable {
 						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressAddress,
 						   Date caseReportDate,
 						   CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
-						   String caseCommunity, String caseFacilityUuid, String caseFacility, String caseFacilityDetails,
+						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails,
 						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
@@ -109,15 +110,16 @@ public class SampleExportDto implements Serializable {
 
 		if (caseUuid != null) {
 			this.associatedCase = new AssociatedCase(caseUuid, casePersonFirstName, casePersonLastName, caseRegion, caseDistrict,
-					caseCommunity, caseFacilityUuid, caseFacility, caseFacilityDetails, new CaseJurisdictionDto(
-					caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseFacilityUuid, casePointOfEntryUuid
-			));
+					caseCommunity, caseHealthFacilityUuid, caseHealthFacility, caseFacilityDetails);
+			this.associatedCaseJurisdiction = new CaseJurisdictionDto(
+					caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid
+			);
 		}
 		if (contactReportingUserUuid != null) {
 			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
 					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid
 			);
-			this.contactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			this.associatedContactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
@@ -683,8 +685,12 @@ public class SampleExportDto implements Serializable {
 		this.otherAdditionalTestsDetails = otherAdditionalTestsDetails;
 	}
 
-	public ContactJurisdictionDto getContactJurisdiction() {
-		return contactJurisdiction;
+	public CaseJurisdictionDto getAssociatedCaseJurisdiction() {
+		return associatedCaseJurisdiction;
+	}
+
+	public ContactJurisdictionDto getAssociatedContactJurisdiction() {
+		return associatedContactJurisdiction;
 	}
 
 	public static class AssociatedCase extends CaseReferenceDto {
@@ -696,8 +702,8 @@ public class SampleExportDto implements Serializable {
 		private String facility;
 
 		public AssociatedCase(String uuid, String firstName, String lastName, String region, String district, String community,
-							  String facilityUuid, String facility, String facilityDetails, CaseJurisdictionDto jurisdiction) {
-			super(uuid, firstName, lastName, jurisdiction);
+							  String facilityUuid, String facility, String facilityDetails) {
+			super(uuid, firstName, lastName);
 
 			this.region = region;
 			this.district = district;

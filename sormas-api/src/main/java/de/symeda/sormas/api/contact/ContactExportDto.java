@@ -85,9 +85,6 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
 
-	private String reportingUserUuid;
-	private String regionUuid;
-	private String districtUuid;
 	private ContactJurisdictionDto jurisdiction;
 
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
@@ -137,10 +134,6 @@ public class ContactExportDto implements Serializable {
 				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
-
-		this.reportingUserUuid = reportingUserUuid;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null ? null : new CaseJurisdictionDto(
 				caseReportingUserUuid, caseRegionUui, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
@@ -442,15 +435,15 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public String getReportingUserUuid() {
-		return reportingUserUuid;
+		return jurisdiction.getReportingUserUuid();
 	}
 
 	public String getRegionUuid() {
-		return regionUuid;
+		return jurisdiction.getRegionUuId();
 	}
 
 	public String getDistrictUuid() {
-		return districtUuid;
+		return jurisdiction.getDistrictUuid();
 	}
 
 	public ContactJurisdictionDto getJurisdiction() {

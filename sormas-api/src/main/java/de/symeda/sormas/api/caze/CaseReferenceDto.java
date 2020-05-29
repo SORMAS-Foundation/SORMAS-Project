@@ -31,8 +31,6 @@ public class CaseReferenceDto extends ReferenceDto {
 	@PersonalData
 	private String lastName;
 
-	private CaseJurisdictionDto jurisdiction;
-
 	public CaseReferenceDto() {
 
 	}
@@ -41,12 +39,11 @@ public class CaseReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public CaseReferenceDto(String uuid, String firstName, String lastName, CaseJurisdictionDto jurisdiction) {
+	public CaseReferenceDto(String uuid, String firstName, String lastName) {
 		setUuid(uuid);
 
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.jurisdiction = jurisdiction;
 	}
 
 	@Override
@@ -71,9 +68,5 @@ public class CaseReferenceDto extends ReferenceDto {
 		}
 
 		return shortUuid;
-	}
-
-	public CaseJurisdictionDto getJurisdiction() {
-		return jurisdiction;
 	}
 }

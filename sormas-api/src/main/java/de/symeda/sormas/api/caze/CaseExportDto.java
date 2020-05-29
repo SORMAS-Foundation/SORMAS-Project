@@ -262,7 +262,7 @@ public class CaseExportDto implements Serializable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, firstName, lastName, jurisdiction);
+		return new CaseReferenceDto(uuid, firstName, lastName);
 	}
 
 	@Order(0)

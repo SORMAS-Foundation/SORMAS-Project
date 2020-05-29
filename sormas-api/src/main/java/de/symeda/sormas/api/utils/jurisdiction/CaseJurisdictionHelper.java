@@ -22,9 +22,7 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 public class CaseJurisdictionHelper {
 
@@ -36,7 +34,7 @@ public class CaseJurisdictionHelper {
 		}
 
 		if (roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
-			return DataHelper.equal(caseJurisdictionDto.getRegionUui(), userJurisdiction.getRegionUuid());
+			return DataHelper.equal(caseJurisdictionDto.getRegionUuid(), userJurisdiction.getRegionUuid());
 		}
 
 		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {

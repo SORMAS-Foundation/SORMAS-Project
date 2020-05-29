@@ -75,11 +75,7 @@ public class CaseIndexDto implements Serializable {
 	private PresentCondition presentCondition;
 	private Date reportDate;
 	private Date creationDate;
-	private String regionUuid;
-	private String districtUuid;
 	private String districtName;
-	@PersonalData
-	private String healthFacilityUuid;
 	@PersonalData
 	private String healthFacilityName;
 	@PersonalData
@@ -112,10 +108,7 @@ public class CaseIndexDto implements Serializable {
 		this.presentCondition = presentCondition;
 		this.reportDate = reportDate;
 		this.creationDate = creationDate;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
 		this.districtName = districtName;
-		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
@@ -210,19 +203,11 @@ public class CaseIndexDto implements Serializable {
 	}
 
 	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public void setRegionUuid(String regionUuid) {
-		this.regionUuid = regionUuid;
+		return jurisdiction.getRegionUuid();
 	}
 
 	public String getDistrictUuid() {
-		return districtUuid;
-	}
-
-	public void setDistrictUuid(String districtUuid) {
-		this.districtUuid = districtUuid;
+		return jurisdiction.getDistrictUud();
 	}
 
 	public String getSurveillanceOfficerUuid() {
@@ -247,14 +232,6 @@ public class CaseIndexDto implements Serializable {
 
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
-	}
-
-	public String getHealthFacilityUuid() {
-		return healthFacilityUuid;
-	}
-
-	public void setHealthFacilityUuid(String healthFacilityUuid) {
-		this.healthFacilityUuid = healthFacilityUuid;
 	}
 
 	public String getHealthFacilityName() {
@@ -306,7 +283,7 @@ public class CaseIndexDto implements Serializable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, personFirstName, personLastName, jurisdiction);
+		return new CaseReferenceDto(uuid, personFirstName, personLastName);
 	}
 
 	@Override

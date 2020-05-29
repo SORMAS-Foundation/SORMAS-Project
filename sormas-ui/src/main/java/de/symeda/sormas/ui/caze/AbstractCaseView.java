@@ -230,8 +230,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	public void setCaseEditPermission(Component component) {
 		Boolean isCaseEditAllowed  = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
 		if (!isCaseEditAllowed){
-			// TODO lgal uncomment before commit
-//			component.setEnabled(false);
+			component.setEnabled(false);
     	}		
 	}
 }

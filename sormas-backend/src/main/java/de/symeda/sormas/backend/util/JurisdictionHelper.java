@@ -54,6 +54,7 @@ public class JurisdictionHelper {
 		if (caze == null) {
 			return null;
 		}
+
 		CaseJurisdictionDto dto = new CaseJurisdictionDto();
 
 		if (caze.getReportingUser() != null) {
@@ -79,6 +80,10 @@ public class JurisdictionHelper {
 	}
 
 	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+		if(contact == null){
+			return null;
+		}
+
 		ContactJurisdictionDto jurisdiction = new ContactJurisdictionDto();
 
 		if(contact.getReportingUser() != null){

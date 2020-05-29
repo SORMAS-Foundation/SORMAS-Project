@@ -43,7 +43,6 @@ public class SampleIndexDto implements Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
-	public static final String REGION_UUID = "regionUuid";
 	public static final String DISTRICT = "district";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";
@@ -65,7 +64,6 @@ public class SampleIndexDto implements Serializable {
 	private String labSampleID;
 	private Disease disease;
 	private String diseaseDetails;
-	private String regionUuid;
 	private DistrictReferenceDto district;
 	private boolean shipped;
 	private boolean received;
@@ -79,6 +77,9 @@ public class SampleIndexDto implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
+
+	private CaseJurisdictionDto associatedCaseJurisdiction;
+	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
@@ -94,21 +95,21 @@ public class SampleIndexDto implements Serializable {
 	) {
 		this.uuid = uuid;
 		if (associatedCaseUuid != null) {
-			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName,
-					new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid));
+			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
+			this.associatedCaseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 		}
 		if (associatedContactUuid != null) {
+			this.associatedContact = new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
+
 			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
 					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid
 			);
-			this.associatedContact = new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null,
-					new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction));
+			this.associatedContactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.regionUuid = findNotNull(caseRegionUuid, contactRegionUuid, contactCaseRegionUuid);
 		this.district = createDistrictReference(caseDistrictName, contactDistrictName, contactCaseDistrictName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid);
 		this.shipped = shipped;
 		this.received = received;
@@ -266,14 +267,6 @@ public class SampleIndexDto implements Serializable {
 		this.referred = referred;
 	}
 
-	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public void setRegionUuid(String regionUuid) {
-		this.regionUuid = regionUuid;
-	}
-
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
@@ -312,13 +305,11 @@ public class SampleIndexDto implements Serializable {
 		this.additionalTestingStatus = additionalTestingStatus;
 	}
 
-	private String findNotNull(String... values) {
-		for (String value : values) {
-			if (value != null) {
-				return value;
-			}
-		}
+	public CaseJurisdictionDto getAssociatedCaseJurisdiction() {
+		return associatedCaseJurisdiction;
+	}
 
-		return null;
+	public ContactJurisdictionDto getAssociatedContactJurisdiction() {
+		return associatedContactJurisdiction;
 	}
 }

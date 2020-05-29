@@ -74,7 +74,7 @@ public class CaseJurisdictionDto implements Serializable {
 		this.reportingUserUuid = reportingUserUuid;
 	}
 
-	public String getRegionUui() {
+	public String getRegionUuid() {
 		return regionUui;
 	}
 

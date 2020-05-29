@@ -25,7 +25,6 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -268,7 +267,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
-	private CaseJurisdictionDto jurisdiction;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -323,8 +321,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName(),
-				new CaseJurisdictionDto(this));
+		return new CaseReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName());
 	}
 
 	/**
@@ -928,9 +925,5 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
-	}
-
-	public CaseJurisdictionDto getJurisdiction() {
-		return new CaseJurisdictionDto(this);
 	}
 }

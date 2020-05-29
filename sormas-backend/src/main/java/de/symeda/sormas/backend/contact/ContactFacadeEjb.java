@@ -644,7 +644,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDto.class, dtos,
 				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
 					if (c.getCaze() != null) {
-						pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), caseJurisdictionChecker.isInJurisdiction(c.getCaze().getJurisdiction()), null);
+						pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(),
+								caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()), null);
 					}
 				});
 
@@ -1102,7 +1103,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		pseudonymizationService.pseudonymizeDtoCollection(SimilarContactDto.class, contacts, c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
 			CaseReferenceDto contactCase = c.getCaze();
 			if (contactCase != null) {
-				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, contactCase, caseJurisdictionChecker.isInJurisdiction(contactCase.getJurisdiction()), null);
+				pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, contactCase, caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()), null);
 			}
 		});
 
