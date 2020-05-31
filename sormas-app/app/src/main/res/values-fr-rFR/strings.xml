@@ -118,7 +118,7 @@
     <string name="caption_case_contacts">Contacts de cas</string>
     <string name="caption_case_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_case_fatality_rate">Taux de Fatalité de Cas</string>
-    <string name="caption_case_health_conditions">Conditions Préexistantes</string>
+    <string name="caption_case_health_conditions">Problèmes de santé pré-existants</string>
     <string name="caption_case_hospitalization">Infos sur l\'hospitalisation</string>
     <string name="caption_case_information">Informations sur le cas</string>
     <string name="caption_case_maternal_history">Histoire maternelle</string>
