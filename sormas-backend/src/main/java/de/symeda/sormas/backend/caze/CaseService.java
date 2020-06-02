@@ -153,7 +153,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return resultList;	
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, Boolean includeAdditionalParams) {
+	public List<Case> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
@@ -168,7 +168,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeAdditionalParams);
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);	
 			}
@@ -657,7 +657,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return createChangeDateFilter(cb, casePath, date, false);
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, Boolean includeAdditionalParams) {
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, Boolean includeExtendedChangeDateFilters) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
@@ -711,7 +711,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		dateFilter = cb.or(dateFilter,
 				greaterThanAndNotNull(cb, portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
 
-		if (includeAdditionalParams) {
+		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
 			dateFilter = cb.or(dateFilter,
 					greaterThanAndNotNull(cb, caseSampleJoin.get(AbstractDomainObject.CHANGE_DATE), date));

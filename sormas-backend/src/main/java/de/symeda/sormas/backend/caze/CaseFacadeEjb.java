@@ -314,11 +314,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeAdditionalParams) {
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		return caseService.getAllActiveCasesAfter(date, includeAdditionalParams).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return caseService.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
