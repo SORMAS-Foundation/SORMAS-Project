@@ -27,6 +27,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.utils.*;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -69,11 +71,6 @@ import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -117,6 +114,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
 					+ fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
 
+	private final ViewMode viewMode;
+	private final Disease disease;
 	private OptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
@@ -126,12 +125,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
 
-	public ContactDataForm() {
+	public ContactDataForm(Disease disease, ViewMode viewMode) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX);
+		this.viewMode = viewMode;
+		this.disease = disease;
+		addFields();
 	}
 
 	@Override
 	protected void addFields() {
+		if (viewMode == null) {
+			return;
+		}
 		addField(ContactDto.CONTACT_CLASSIFICATION, OptionGroup.class);
 		addField(ContactDto.CONTACT_STATUS, OptionGroup.class);
 		addField(ContactDto.UUID, TextField.class);
@@ -246,6 +251,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
+
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
