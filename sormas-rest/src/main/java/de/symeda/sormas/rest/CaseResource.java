@@ -45,6 +45,12 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/allWithExtendedChangeDateFilters/{since}")
+	public List<CaseDataDto> getAllCasesWithExtendedChangeDateFilters(@PathParam("since") long since) {
+		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), true);
+	}
+
 	@POST
 	@Path("/query")
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
