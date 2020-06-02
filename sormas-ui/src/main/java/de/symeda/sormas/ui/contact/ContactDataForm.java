@@ -247,6 +247,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
 
+		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
+			Field<?> field = getFieldGroup().getField(propertyId);
+			if (isFieldHiddenForCurrentCountry(propertyId)) {
+				field.setVisible(false);
+			}
+		}
+
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
 				CaseDataDto caseDto = null;
