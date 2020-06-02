@@ -129,8 +129,6 @@ public class SampleDataView extends AbstractSampleView {
 			editComponent.getWrappedComponent().makePathogenTestResultRequired();
 		};
 
-
-
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> {
 			return editComponent.getWrappedComponent().getFieldGroup().isValid();

@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -80,22 +81,14 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.DetachedCriteria;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.*;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
@@ -160,7 +153,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return resultList;	
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date) {
+	public List<Case> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
@@ -175,7 +168,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), includeExtendedChangeDateFilters);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);	
 			}
@@ -661,6 +654,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date) {
+		return createChangeDateFilter(cb, casePath, date, false);
+	}
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, Boolean includeExtendedChangeDateFilters) {
 		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
 
 		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
@@ -713,6 +710,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, PortHealthInfo> portHealthInfo = casePath.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter,
 				greaterThanAndNotNull(cb, portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
+
+		if (includeExtendedChangeDateFilters) {
+			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter,
+					greaterThanAndNotNull(cb, caseSampleJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+
+			Join<Sample, PathogenTest> samplePathogenTestJoin = caseSampleJoin.join(Sample.PATHOGENTESTS, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter,
+					greaterThanAndNotNull(cb, samplePathogenTestJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+
+			Join<Case, Person> casePersonJoin = casePath.join(Case.PERSON, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, casePersonJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+
+			Join<Person, Location> personLocationJoin = casePersonJoin.join(Person.ADDRESS, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, personLocationJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+		}
 
 		return dateFilter;
 	}

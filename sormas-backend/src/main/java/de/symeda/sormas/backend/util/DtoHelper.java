@@ -70,7 +70,7 @@ public final class DtoHelper {
 
 				Object targetValue = pd.getReadMethod().invoke(target);
 				Object sourceValue = pd.getReadMethod().invoke(source);
-				
+
 				if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
 					
 					if (targetValue == null) {
