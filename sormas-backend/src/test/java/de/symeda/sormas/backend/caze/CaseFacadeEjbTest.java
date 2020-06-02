@@ -562,9 +562,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
-		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
-
 		Date date = new Date();
 
 		cazePerson.setBurialDate(new Date());
@@ -573,6 +570,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
 	}
+
+	@Test
+	public void testAllActiveCaseIncludeAdditionalParamsLocationTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		Date date = new Date();
+
+		cazePerson.getAddress().setAddress("new Address");
+		getPersonFacade().savePerson(cazePerson);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
 
 	@Test
 	public void testGenerateEpidNumber() {

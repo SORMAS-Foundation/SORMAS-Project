@@ -42,7 +42,7 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeAdditionalParams);
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
 
 	long count(CaseCriteria caseCriteria);
 	

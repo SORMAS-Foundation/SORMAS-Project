@@ -722,6 +722,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			Join<Case, Person> casePersonJoin = casePath.join(Case.PERSON, JoinType.LEFT);
 			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, casePersonJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+
+			Join<Person, Location> personLocationJoin = casePersonJoin.join(Person.ADDRESS, JoinType.LEFT);
+			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, personLocationJoin.get(AbstractDomainObject.CHANGE_DATE), date));
 		}
 
 		return dateFilter;
