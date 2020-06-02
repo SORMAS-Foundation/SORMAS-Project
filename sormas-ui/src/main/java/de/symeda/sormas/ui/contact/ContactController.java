@@ -233,7 +233,7 @@ public class ContactController {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		ContactDataForm editForm = new ContactDataForm(viewMode);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, 
 				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), 

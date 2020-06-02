@@ -115,6 +115,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					+ fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
 
 	private final ViewMode viewMode;
+	private final Disease disease;
 	private OptionGroup contactProximity;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
@@ -124,9 +125,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
 
-	public ContactDataForm(ViewMode viewMode) {
+	public ContactDataForm(Disease disease, ViewMode viewMode) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX);
 		this.viewMode = viewMode;
+		this.disease = disease;
 		addFields();
 	}
 
@@ -250,7 +252,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
 
-		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
+		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
 
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
