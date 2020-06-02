@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.region;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -31,6 +32,8 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.CommunityCriteria;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 

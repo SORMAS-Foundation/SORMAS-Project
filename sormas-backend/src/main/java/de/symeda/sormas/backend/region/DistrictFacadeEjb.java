@@ -17,11 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -39,6 +35,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictCriteria;
@@ -214,6 +211,24 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
 		return toReferenceDto(districtService.getById(id));
+	}
+
+	@Override
+	public Map<String, String> getRegionUuidsForDistricts(List<DistrictReferenceDto> districts) {
+		if (districts.isEmpty()) {
+			return new HashMap<>();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<District> root = cq.from(District.class);
+		Join<District, Region> regionJoin = root.join(District.REGION, JoinType.LEFT);
+
+		Predicate filter = root.get(District.UUID).in(districts.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+		cq.where(filter);
+		cq.multiselect(root.get(District.UUID), regionJoin.get(Region.UUID));
+
+		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(e -> (String) e[0], e -> (String) e[1]));
 	}
 
 	@Override
