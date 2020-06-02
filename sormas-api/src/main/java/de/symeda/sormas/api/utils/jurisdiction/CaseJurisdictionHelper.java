@@ -29,7 +29,7 @@ public class CaseJurisdictionHelper {
 	public static Boolean isInJurisdiction(RoleCheck roleCheck, UserJurisdiction userJurisdiction, CaseJurisdictionDto caseJurisdictionDto) {
 
 		if (roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER)) ||
-				caseJurisdictionDto.getDistrictUud() != null && DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getDistrictUud())) {
+				caseJurisdictionDto.getReportingUserUuid() != null && DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid())) {
 			return true;
 		}
 
