@@ -273,7 +273,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetByCaseUuids() throws Exception {
+	public void testGetByCaseUuids() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto person = creator.createPerson();
@@ -291,5 +291,4 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(samples, hasSize(3));
 		assertThat(samples, contains(sample, sample2, sample3));
 	}
-
 }
