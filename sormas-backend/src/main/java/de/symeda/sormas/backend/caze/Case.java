@@ -144,6 +144,7 @@ public class Case extends CoreAdo {
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
+	public static final String SAMPLES = "samples";
 
 	private Person person;
 	private String description;
