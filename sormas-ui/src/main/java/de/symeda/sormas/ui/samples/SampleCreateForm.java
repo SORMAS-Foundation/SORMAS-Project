@@ -10,7 +10,6 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -57,10 +56,6 @@ public class SampleCreateForm extends AbstractSampleForm {
 
         setVisibilities();
 
-        FieldHelper.setVisibleWhen(getField(SampleDto.SAMPLE_PURPOSE),
-                Arrays.asList(includeTestField),
-                Arrays.asList(SamplePurpose.EXTERNAL, null), true);
-
         FieldHelper.setVisibleWhen(includeTestField,
                 Arrays.asList(pathogenTestResultField, testVerifiedField, testTypeField, testDiseaseField, testDateField, testDetailsField),
                 Arrays.asList(true), true);
@@ -74,10 +69,19 @@ public class SampleCreateForm extends AbstractSampleForm {
                 Arrays.asList(PathogenTestResultType.POSITIVE, PathogenTestResultType.NEGATIVE,
                         PathogenTestResultType.PENDING, PathogenTestResultType.INDETERMINATE), false, null);
 
+        includeTestField.addValueChangeListener(e -> {
+            final Boolean includeTest = (Boolean) e.getProperty().getValue();
+            if (includeTest) {
+                pathogenTestResultField.setNullSelectionAllowed(false);
+                pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
+            } else {
+                pathogenTestResultField.setNullSelectionAllowed(true);
+                pathogenTestResultField.setValue(null);
+            }
+        });
+
         addValueChangeListener(e -> {
             defaultValueChangeListener();
-            testVerifiedField.setEnabled(true);
-            pathogenTestResultField.setValue(PathogenTestResultType.PENDING);
             getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
         });
     }
