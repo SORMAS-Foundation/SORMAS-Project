@@ -84,36 +84,36 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
-	private static final String HTML_LAYOUT = 
+	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingContactData)) +
-			fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
-			locCss(VSPACE_3, TO_CASE_BTN_LOC) +
-			fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
-			fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-			fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
-			fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
-			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
-			fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
-			loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
-			fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
-			fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
-			fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
-			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-			fluidRowLocs(ContactDto.DESCRIPTION) +
-			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
-			fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
-			fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) + 
-			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
-			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
-			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
-			locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
-			fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
-			loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
-			h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
-			fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
-			fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
-			fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
+					fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
+					locCss(VSPACE_3, TO_CASE_BTN_LOC) +
+					fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.DISEASE) +
+					fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+					fluidRowLocs(ContactDto.UUID, ContactDto.EXTERNAL_ID) +
+					fluidRowLocs(ContactDto.REPORTING_USER, ContactDto.REPORT_DATE_TIME) +
+					fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
+					loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
+					fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
+					fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					fluidRowLocs(ContactDto.DESCRIPTION) +
+					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+					fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+					fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
+					locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
+					fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
+					loc(ContactDto.CARE_FOR_PEOPLE_OVER_60) +
+					h3(I18nProperties.getString(Strings.headingFollowUpStatus)) +
+					fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+					fluidRowLocs(4, ContactDto.FOLLOW_UP_UNTIL, 8, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+					fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 					fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
 					+ fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
 
@@ -165,7 +165,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			quarantineOrderedOfficialDocument = addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
 			CssStyles.style(quarantineOrderedOfficialDocument, CssStyles.FORCE_CAPTION);
 			addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
-			setVisible(false, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, 
+			setVisible(false, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
 					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
 		}
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
@@ -270,7 +270,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				getContent().removeComponent(TO_CASE_BTN_LOC);
 				if (getValue().getResultingCase() != null) {
 					// link to case
-					Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(), 
+					Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(),
 							I18nProperties.getCaption(Captions.contactOpenContactCase));
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
@@ -300,7 +300,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
 						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
-				dfFollowUpUntil.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.contactFollowUpUntilDate), 
+				dfFollowUpUntil.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
 						minimumFollowUpUntilDate, null, Resolution.DAY));
 			}
 		});
@@ -315,22 +315,27 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private void updateContactCategory(ContactProximity proximity) {
 		if (proximity != null) {
 			switch (proximity) {
-			case FACE_TO_FACE_LONG:
-			case TOUCHED_FLUID:
-			case AEROSOL:
-			case MEDICAL_UNSAVE:
-				contactCategory.setValue(ContactCategory.HIGH_RISK);
-				break;
-			case SAME_ROOM:
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAME_ROOM:
-				contactCategory.setValue(ContactCategory.LOW_RISK);
-				break;
-			case MEDICAL_DISTANT:
-			case MEDICAL_SAVE:
-				contactCategory.setValue(ContactCategory.NO_RISK);
-				break;
-			default:
+				case FACE_TO_FACE_LONG:
+				case TOUCHED_FLUID:
+				case AEROSOL:
+					contactCategory.setValue(ContactCategory.HIGH_RISK);
+					break;
+				case MEDICAL_UNSAFE:
+					contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+					break;
+				case MEDICAL_LIMITED:
+					contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
+					break;
+				case SAME_ROOM:
+				case FACE_TO_FACE_SHORT:
+				case MEDICAL_SAME_ROOM:
+					contactCategory.setValue(ContactCategory.LOW_RISK);
+					break;
+				case MEDICAL_DISTANT:
+				case MEDICAL_SAFE:
+					contactCategory.setValue(ContactCategory.NO_RISK);
+					break;
+				default:
 			}
 		}
 	}
@@ -410,7 +415,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 				getContent().addComponent(resumeButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 			}
-		}		
+		}
 	}
 
 	protected void updateLastContactDateValidator() {

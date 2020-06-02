@@ -4247,7 +4247,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table f
 ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
+INSERT INTO schema_version (version_number, comment) VALUES (208, 'Add additionalDetails to contact #1933');
 
 -- 2020-05-18 Add Trimester and Postpartum selection to case #1981
 ALTER TABLE cases ADD COLUMN postpartum varchar(255);
@@ -4283,5 +4283,12 @@ ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
 ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
 ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (211, '2020-05-07 Add samples to contacts #1753');
+INSERT INTO schema_version (version_number, comment) VALUES (211, 'Add samples to contacts #1753');
+
+-- 2020-05-28 Rename misspelled enum values #2094
+UPDATE contact SET contactproximity = 'MEDICAL_UNSAFE' WHERE contactproximity = 'MEDICAL_UNSAVE';
+UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'MEDICAL_SAVE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');
+
 -- *** Insert new sql commands BEFORE this line ***
