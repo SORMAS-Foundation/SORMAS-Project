@@ -44,11 +44,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.*;
 
 public class ContactDataView extends AbstractContactView {
 
@@ -91,7 +87,7 @@ public class ContactDataView extends AbstractContactView {
 		container.addComponent(layout);
 
 		CommitDiscardWrapperComponent<?> editComponent = ControllerProvider.getContactController()
-				.getContactDataEditComponent(getContactRef().getUuid());
+				.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

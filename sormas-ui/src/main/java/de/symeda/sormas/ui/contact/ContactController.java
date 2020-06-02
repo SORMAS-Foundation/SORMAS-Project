@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactController {
 
@@ -228,10 +229,11 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-		ContactDataForm editForm = new ContactDataForm();
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode) {
+
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		ContactDataForm editForm = new ContactDataForm(viewMode);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, 
 				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), 
