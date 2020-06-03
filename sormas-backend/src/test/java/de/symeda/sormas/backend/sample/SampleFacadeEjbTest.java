@@ -143,7 +143,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, getSampleFacade().count(samplesConnectedToConvertedCaseCriteria));
 
 		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
-		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.ASSOCIATED_CONTACT));
 		final List<SampleIndexDto> samplesOfConvertedCase = getSampleFacade().getIndexList(samplesConnectedToConvertedCaseCriteria, 0, 100,
 				sortProperties);
 		assertEquals(2, samplesOfConvertedCase.size());
