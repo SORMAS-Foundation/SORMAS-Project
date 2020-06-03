@@ -35,6 +35,8 @@ import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
+import static de.symeda.sormas.api.user.UserRole.REST_USER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
@@ -972,7 +974,30 @@ public enum UserRight {
 	),
 	SEE_PERSONAL_DATA_IN_JURISDICTION(ADMIN, SURVEILLANCE_SUPERVISOR, SURVEILLANCE_OFFICER, CONTACT_SUPERVISOR),
 	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(ADMIN),
-	SEE_SENSITIVE_DATA_IN_JURISDICTION(ADMIN),
+	SEE_SENSITIVE_DATA_IN_JURISDICTION(
+			ADMIN,
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
+			CASE_SUPERVISOR,
+			CASE_OFFICER,
+			CONTACT_SUPERVISOR,
+			CONTACT_OFFICER,
+			EVENT_OFFICER,
+			LAB_USER,
+			EXTERNAL_LAB_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			NATIONAL_CLINICIAN,
+			POE_INFORMANT,
+			POE_SUPERVISOR,
+			POE_NATIONAL_USER,
+			IMPORT_USER,
+			REST_EXTERNAL_VISITS_USER,
+			REST_USER),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(ADMIN);
 
 	private final Set<UserRole> defaultUserRoles;

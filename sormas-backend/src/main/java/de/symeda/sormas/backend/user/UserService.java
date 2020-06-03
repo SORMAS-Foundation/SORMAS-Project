@@ -329,4 +329,32 @@ public class UserService extends AbstractAdoService<User> {
 
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
+
+	public Predicate createJurisdictionFilter(CriteriaBuilder cb, Join<?, User> userPath){
+		Predicate filter = cb.conjunction();
+
+		if(hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)){
+			return filter;
+		}
+
+		User currentUser = getCurrentUser();
+
+		if(currentUser.getDistrict() != null) {
+			filter = cb.equal(userPath.get(User.DISTRICT), currentUser.getDistrict());
+		}
+
+		if(currentUser.getCommunity() != null) {
+			filter = cb.equal(userPath.get(User.COMMUNITY), currentUser.getCommunity());
+		}
+
+		if(currentUser.getHealthFacility() != null) {
+			filter = cb.and(filter, cb.equal(userPath.get(User.HEALTH_FACILITY), currentUser.getHealthFacility()));
+		}
+
+		if(currentUser.getPointOfEntry() != null) {
+			filter = cb.and(filter, cb.equal(userPath.get(User.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
+		}
+
+		return filter;
+	}
 }

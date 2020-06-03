@@ -101,7 +101,12 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
-			String lastName, UserRole... roles) {
+							  String lastName, UserRole... roles) {
+		return createUser(regionUuid, districtUuid, null, facilityUuid, firstName, lastName, roles);
+	}
+
+	public UserDto createUser(String regionUuid, String districtUuid, String communityUuid, String facilityUuid,
+							  String firstName, String lastName, UserRole... roles) {
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
@@ -109,6 +114,7 @@ public class TestDataCreator {
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
 		user.setRegion(beanTest.getRegionFacade().getRegionReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getDistrictReferenceByUuid(districtUuid));
+		user.setCommunity(beanTest.getCommunityFacade().getCommunityReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getFacilityReferenceByUuid(facilityUuid));
 		user = beanTest.getUserFacade().saveUser(user);
 
