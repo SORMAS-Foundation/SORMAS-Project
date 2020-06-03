@@ -10,6 +10,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
@@ -82,6 +83,8 @@ public class SampleCreateForm extends AbstractSampleForm {
 
         addValueChangeListener(e -> {
             defaultValueChangeListener();
+            final OptionGroup samplePurposeField = (OptionGroup) getField(SampleDto.SAMPLE_PURPOSE);
+            samplePurposeField.setValue(SamplePurpose.EXTERNAL);
             getField(SampleDto.PATHOGEN_TEST_RESULT).setVisible(false);
         });
     }
