@@ -196,8 +196,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -376,8 +374,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	@Transactional(value = TxType.REQUIRES_NEW)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage) {
+
 		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.setMustHaveCaseManagementData(Boolean.TRUE);
