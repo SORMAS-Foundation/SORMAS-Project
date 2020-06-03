@@ -43,11 +43,6 @@
                 android:icon="@drawable/ic_sync_option_menu_24dp"
                 android:title="@string/action_sync"
                 app:showAsAction="always|withText"/>
-            <item
-                android:id="@+id/action_report"
-                android:icon="@drawable/ic_report_problem_option_menu_24dp"
-                android:title="@string/action_report"
-                app:showAsAction="always|withText"/>
         </menu>
 
     </item>
