@@ -156,7 +156,7 @@
     <string name="caption_sex">Sexe</string>
     <string name="caption_inadequate_specimen">Spécimen Inadéquat</string>
     <string name="caption_indeterminate">Indéterminé</string>
-    <string name="caption_informant_reports">Rapports informants</string>
+    <string name="caption_informant_reports">Rapports d\'informateurs</string>
     <string name="caption_issued_on">Émis le </string>
     <string name="caption_last_case">Dernier cas</string>
     <string name="caption_last_name">Nom De Famille</string>
@@ -294,7 +294,7 @@
     <string name="heading_gps_permission">Autoriser l\'accès GPS</string>
     <string name="heading_health_conditions">Conditions Préexistantes</string>
     <string name="heading_help">Aide</string>
-    <string name="heading_informant_reports">Rapports informants</string>
+    <string name="heading_informant_reports">Rapports d\'informateurs</string>
     <string name="heading_install_app">Prêt à installer</string>
     <string name="heading_install_app_failed">L\'installation de l\'application a échoué</string>
     <string name="heading_location">Localisation</string>
