@@ -136,7 +136,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
         final Field<?> receivedField = getField(SampleDto.RECEIVED);
         final Field<?> shippedField = getField(SampleDto.SHIPPED);
 
-        samplePurposeField.setValue(SamplePurpose.EXTERNAL);
         samplePurposeField.setRequired(true);
 
         Disease disease = null;
