@@ -5,7 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class PseudonymizableDomainObject extends AbstractDomainObject {
+public abstract class PseudonymizableAdo extends AbstractDomainObject {
     @DatabaseField
     private boolean pseudonymized;
 

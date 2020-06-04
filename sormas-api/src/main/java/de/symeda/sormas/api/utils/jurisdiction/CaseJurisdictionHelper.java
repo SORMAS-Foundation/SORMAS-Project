@@ -38,7 +38,7 @@ public class CaseJurisdictionHelper {
 		}
 
 		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
-			return DataHelper.equal(caseJurisdictionDto.getDistrictUud(), userJurisdiction.getDistrictUuid());
+			return DataHelper.equal(caseJurisdictionDto.getDistrictUuid(), userJurisdiction.getDistrictUuid());
 		}
 
 		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.COMMUNITY_INFORMANT)))) {

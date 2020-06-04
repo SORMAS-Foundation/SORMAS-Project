@@ -37,6 +37,7 @@ import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -203,7 +204,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     public void saveData() {
         Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(getStoredRootEntity().getUuid());
 
-        if(true) {
+        if(CaseEditAuthorization.isCaseEditAllowed(existingCase)) {
             if (existingCase.getHealthFacility() != null && !existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
                 ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_infrastructure_data_changed, R.string.message_case_infrastructure_data_changed, R.string.action_transfer_case, R.string.action_edit_data);
                 transferCaseDialog.setPositiveCallback(() -> {

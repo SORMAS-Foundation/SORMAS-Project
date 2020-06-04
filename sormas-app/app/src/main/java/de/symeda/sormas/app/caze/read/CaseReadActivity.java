@@ -176,8 +176,6 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
         final MenuItem editMenu = getEditMenu();
 
         if (editMenu != null) {
-            editMenu.setVisible(true);
-
             if (CaseEditAuthorization.isCaseEditAllowed(selectedCase) || (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment)) {
                 editMenu.setVisible(true);
             } else {

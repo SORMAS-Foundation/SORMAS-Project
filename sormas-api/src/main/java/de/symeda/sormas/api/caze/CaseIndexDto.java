@@ -207,7 +207,7 @@ public class CaseIndexDto implements Serializable {
 	}
 
 	public String getDistrictUuid() {
-		return jurisdiction.getDistrictUud();
+		return jurisdiction.getDistrictUuid();
 	}
 
 	public String getSurveillanceOfficerUuid() {

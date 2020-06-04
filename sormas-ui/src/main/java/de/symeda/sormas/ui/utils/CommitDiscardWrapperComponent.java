@@ -365,7 +365,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
-			ex.printStackTrace();
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
 			if (message != null && !message.isEmpty()) {

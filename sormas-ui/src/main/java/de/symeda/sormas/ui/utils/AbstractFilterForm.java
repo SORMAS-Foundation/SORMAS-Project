@@ -167,7 +167,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				this.getFieldGroup().commit();
 				this.fireValueChange(true);
 			} catch (FieldGroup.CommitException ex) {
-				ex.printStackTrace();
+				// do nothing
 			}
 		}
 	}

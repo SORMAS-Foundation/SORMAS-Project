@@ -211,7 +211,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	/**
 	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
-	 * -1 for no restriction at all
+	 *                            -1 for no restriction at all
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -257,13 +257,9 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	protected void setReadOnly(boolean readOnly, String... fieldOrPropertyIds) {
 		for (String propertyId : fieldOrPropertyIds) {
-			setReadonly(readOnly, propertyId);
-		}
-	}
-
-	protected void setReadonly(boolean readOnly, String propertyId) {
-		if (readOnly || isEditableAllowed(propertyId)) {
-			getField(propertyId).setReadOnly(readOnly);
+			if (readOnly || isEditableAllowed(propertyId)) {
+				getField(propertyId).setReadOnly(readOnly);
+			}
 		}
 	}
 

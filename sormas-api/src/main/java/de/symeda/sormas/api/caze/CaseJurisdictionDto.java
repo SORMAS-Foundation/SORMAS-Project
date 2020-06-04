@@ -25,8 +25,8 @@ public class CaseJurisdictionDto implements Serializable {
 	private static final long serialVersionUID = -5412823431238056752L;
 
 	private String reportingUserUuid;
-	private String regionUui;
-	private String districtUud;
+	private String regionUuid;
+	private String districtUuid;
 	private String communityUuid;
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
@@ -34,26 +34,24 @@ public class CaseJurisdictionDto implements Serializable {
 	public CaseJurisdictionDto() {
 	}
 
-	public CaseJurisdictionDto(String reportingUserUuid, String regionUui, String districtUud, String communityUuid, String healthFacilityUuid, String pointOfEntryUuid) {
+	public CaseJurisdictionDto(String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, String healthFacilityUuid, String pointOfEntryUuid) {
 		this.reportingUserUuid = reportingUserUuid;
-		this.regionUui = regionUui;
-		this.districtUud = districtUud;
+		this.regionUuid = regionUuid;
+		this.districtUuid = districtUuid;
 		this.communityUuid = communityUuid;
 		this.healthFacilityUuid = healthFacilityUuid;
 		this.pointOfEntryUuid = pointOfEntryUuid;
 	}
 
 	public CaseJurisdictionDto(CaseDataDto caseDto) {
-		this();
-
 		if (caseDto.getReportingUser() != null) {
 			reportingUserUuid = caseDto.getReportingUser().getUuid();
 		}
 		if (caseDto.getRegion() != null) {
-			regionUui = caseDto.getRegion().getUuid();
+			regionUuid = caseDto.getRegion().getUuid();
 		}
 		if (caseDto.getDistrict() != null) {
-			districtUud = caseDto.getDistrict().getUuid();
+			districtUuid = caseDto.getDistrict().getUuid();
 		}
 		if (caseDto.getCommunity() != null) {
 			communityUuid = caseDto.getCommunity().getUuid();
@@ -75,19 +73,19 @@ public class CaseJurisdictionDto implements Serializable {
 	}
 
 	public String getRegionUuid() {
-		return regionUui;
+		return regionUuid;
 	}
 
-	public void setRegionUui(String regionUui) {
-		this.regionUui = regionUui;
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
 	}
 
-	public String getDistrictUud() {
-		return districtUud;
+	public String getDistrictUuid() {
+		return districtUuid;
 	}
 
-	public void setDistrictUud(String districtUud) {
-		this.districtUud = districtUud;
+	public void setDistrictUuid(String districtUuid) {
+		this.districtUuid = districtUuid;
 	}
 
 	public String getCommunityUuid() {

@@ -48,7 +48,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
-import de.symeda.sormas.app.backend.common.PseudonymizableDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -63,7 +63,7 @@ import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Case.TABLE_NAME)
 @DatabaseTable(tableName = Case.TABLE_NAME)
-public class Case extends PseudonymizableDomainObject {
+public class Case extends PseudonymizableAdo {
 
     private static final long serialVersionUID = -2697795184163562129L;
 

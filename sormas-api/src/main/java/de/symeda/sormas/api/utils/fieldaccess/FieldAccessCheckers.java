@@ -56,7 +56,7 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
-	public boolean hasRigths() {
+	public boolean hasRights() {
 		for (Checker checker : checkers) {
 			if (!checker.hasRight()) {
 				return false;
