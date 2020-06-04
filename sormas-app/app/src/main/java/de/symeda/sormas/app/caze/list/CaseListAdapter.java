@@ -113,7 +113,7 @@ public class CaseListAdapter extends BindingPagedListAdapter<Case, RowCaseListIt
         if (item.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
             drw.setColorFilter(resources.getColor(R.color.indicatorCaseNotYetClassified), PorterDuff.Mode.SRC_OVER);
         } else if (item.getCaseClassification() == CaseClassification.SUSPECT) {
-            drw.setColorFilter(resources.getColor(R.color.indicatorCaseSuspected), PorterDuff.Mode.SRC_OVER);
+            drw.setColorFilter(resources.getColor(R.color.indicatorCaseSuspect), PorterDuff.Mode.SRC_OVER);
         } else if (item.getCaseClassification() == CaseClassification.PROBABLE) {
             drw.setColorFilter(resources.getColor(R.color.indicatorCaseProbable), PorterDuff.Mode.SRC_OVER);
         } else if (item.getCaseClassification() == CaseClassification.CONFIRMED) {

@@ -42,6 +42,10 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
+	//Created for the SurvNet interface in order to track additional change dates.
+	//additional change dates filters for: sample, pathogenTests, patient and location.
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
+
 	long count(CaseCriteria caseCriteria);
 	
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

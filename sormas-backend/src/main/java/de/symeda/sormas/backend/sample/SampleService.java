@@ -31,6 +31,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
 
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -46,8 +50,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.*;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
@@ -401,7 +403,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 	@Override
 	public void delete(Sample sample) {
 		// Mark all pathogen tests of this sample as deleted
-		for (PathogenTest pathogenTest : sample.getSampleTests()) {
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 			pathogenTestService.delete(pathogenTest);
 		}
 

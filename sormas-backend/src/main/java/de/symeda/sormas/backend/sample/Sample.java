@@ -82,6 +82,7 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_ADDITIONAL_TESTS_STRING = "requestedAdditionalTestsString";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
+	public static final String PATHOGENTESTS = "pathogenTests";
 	
 	private Case associatedCase;
 	private Contact associatedContact;
@@ -269,14 +270,15 @@ public class Sample extends CoreAdo {
 		this.noTestPossibleReason = noTestPossibleReason;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = PathogenTest.SAMPLE)
-	public List<PathogenTest> getSampleTests() {
+	@OneToMany(mappedBy = PathogenTest.SAMPLE, fetch = FetchType.LAZY)
+	public List<PathogenTest> getPathogenTests() {
 		return pathogenTests;
 	}
-	public void setSampleTests(List<PathogenTest> pathogenTests) {
+
+	public void setPathogenTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = AdditionalTest.SAMPLE)
 	public List<AdditionalTest> getAdditionalTests() {
 		return additionalTests;

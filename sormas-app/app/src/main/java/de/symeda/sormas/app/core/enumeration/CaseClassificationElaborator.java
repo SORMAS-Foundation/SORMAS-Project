@@ -45,7 +45,7 @@ public class CaseClassificationElaborator implements StatusElaborator {
         if (status == CaseClassification.NOT_CLASSIFIED) {
             return R.color.indicatorCaseNotYetClassified;
         } else if (status == CaseClassification.SUSPECT) {
-            return R.color.indicatorCaseSuspected;
+            return R.color.indicatorCaseSuspect;
         } else if (status == CaseClassification.PROBABLE) {
             return R.color.indicatorCaseProbable;
         } else if (status == CaseClassification.CONFIRMED) {

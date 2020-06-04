@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -139,9 +140,13 @@ public class ContactDto extends EntityDto {
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
+	@HideForCountriesExcept
 	private String quarantineHomePossibleComment;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@HideForCountriesExcept
 	private String quarantineHomeSupplyEnsuredComment;
 	private String additionalDetails;
 

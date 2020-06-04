@@ -25,7 +25,8 @@ public enum StatisticsCaseAttribute {
 			StatisticsCaseSubAttribute.QUARTER_OF_YEAR,StatisticsCaseSubAttribute.MONTH_OF_YEAR,StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,StatisticsCaseSubAttribute.DATE_RANGE),
 	REPORT_TIME(StatisticsCaseAttributeGroup.TIME, false, false, StatisticsCaseSubAttribute.YEAR,StatisticsCaseSubAttribute.QUARTER,StatisticsCaseSubAttribute.MONTH,StatisticsCaseSubAttribute.EPI_WEEK,
 			StatisticsCaseSubAttribute.QUARTER_OF_YEAR,StatisticsCaseSubAttribute.MONTH_OF_YEAR,StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR,StatisticsCaseSubAttribute.DATE_RANGE),
-	REGION_DISTRICT(StatisticsCaseAttributeGroup.PLACE, true, false, StatisticsCaseSubAttribute.REGION,StatisticsCaseSubAttribute.DISTRICT),
+	JURISDICTION(StatisticsCaseAttributeGroup.PLACE, true, false, StatisticsCaseSubAttribute.REGION, StatisticsCaseSubAttribute.DISTRICT,
+			StatisticsCaseSubAttribute.COMMUNITY, StatisticsCaseSubAttribute.HEALTH_FACILITY),
 	SEX(StatisticsCaseAttributeGroup.PERSON, true, true),
 	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false, true),
 	AGE_INTERVAL_5_YEARS(StatisticsCaseAttributeGroup.PERSON, false, true),
@@ -75,7 +76,7 @@ public enum StatisticsCaseAttribute {
 	}
 	
 	public boolean isPopulationData() {
-		return this == REGION_DISTRICT || this == SEX || this.isAgeGroup();
+		return this == JURISDICTION || this == SEX || this.isAgeGroup();
 	}
 	
 }

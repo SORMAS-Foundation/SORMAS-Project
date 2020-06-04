@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.function.Consumer;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -79,6 +74,10 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 
 public class TestDataCreator {
 

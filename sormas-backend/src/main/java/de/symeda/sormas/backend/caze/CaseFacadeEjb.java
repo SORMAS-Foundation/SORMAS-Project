@@ -199,8 +199,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -315,11 +313,15 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
+		return getAllActiveCasesAfter(date, false);
+	}
+
+	@Override
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters) {
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-
-		return caseService.getAllActiveCasesAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		return caseService.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -391,8 +393,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	@Transactional(value = TxType.REQUIRES_NEW)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage) {
+
 		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.setMustHaveCaseManagementData(Boolean.TRUE);
@@ -2189,7 +2192,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				sampleFacade.saveSample(newSample, false);
 
 				// 2.2.1 Pathogen Tests
-				for (PathogenTest pathogenTest : sample.getSampleTests()) {
+				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
 					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(),
 							pathogenTest.getLabUser().toReference());
 					fillDto(newPathogenTest, sampleTestFacade.toDto(pathogenTest), cloning);
@@ -2296,7 +2299,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Case.ARCHIVED), false),
-				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+				cb.not(caseService.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
 		cq.select(from.get(Case.UUID));
 		List<String> uuids = em.createQuery(cq).getResultList();
 

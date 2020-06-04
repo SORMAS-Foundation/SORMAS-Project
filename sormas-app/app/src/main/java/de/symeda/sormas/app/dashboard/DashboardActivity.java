@@ -28,7 +28,6 @@ import java.util.List;
 import de.symeda.sormas.app.BaseDashboardActivity;
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 import de.symeda.sormas.app.dashboard.contact.ContactSummaryFragment;
 import de.symeda.sormas.app.dashboard.event.EventSummaryFragment;
@@ -76,13 +75,6 @@ public class DashboardActivity extends BaseDashboardActivity {
 
             case R.id.action_sync:
                 synchronizeChangedData();
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, this.getClass().getSimpleName(), null);
-                userReportDialog.show();
-
                 return true;
 
             default:

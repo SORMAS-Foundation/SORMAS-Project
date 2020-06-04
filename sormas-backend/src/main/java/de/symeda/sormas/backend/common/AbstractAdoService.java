@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -45,6 +46,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.backend.facility.Facility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -453,6 +456,16 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		}
 		filterBuilder.append(")");
 		return filterBuilder;
+	}
+
+	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(from.get(AbstractDomainObject.UUID).in(references.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
+		cq.select(from.get(AbstractDomainObject.ID));
+		return em.createQuery(cq).getResultList();
 	}
 
 }

@@ -117,7 +117,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
 		criteria.regions(Arrays.asList(rdcf.region));
 
-		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, null);
+		List<StatisticsCaseCountDto> results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.JURISDICTION, StatisticsCaseSubAttribute.REGION, null, null, true, false, null);
 		assertNull(results.get(0).getPopulation());
 		
 		PopulationDataDto populationData = PopulationDataDto.build(new Date());
@@ -128,7 +128,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		populationData.setPopulation(new Integer(10000));
 		getPopulationDataFacade().savePopulationData(Arrays.asList(populationData));
 
-		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.REGION_DISTRICT, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
+		results = getCaseStatisticsFacade().queryCaseCount(criteria, StatisticsCaseAttribute.JURISDICTION, StatisticsCaseSubAttribute.REGION, null, null, true, false, LocalDate.now().getYear() + 2);
 		// List should have one entry
 		assertEquals(Integer.valueOf(12214), results.get(0).getPopulation());
 

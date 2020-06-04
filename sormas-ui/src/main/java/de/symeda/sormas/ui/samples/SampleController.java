@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Collection;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -36,7 +34,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
-
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -44,7 +42,9 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -58,11 +58,13 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
+import java.util.Date;
 
 public class SampleController {
 
@@ -80,23 +82,22 @@ public class SampleController {
 	}
 
 	public void create(CaseReferenceDto caseRef, Runnable callback) {
-		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef));
 	}
 
 	public void create(ContactReferenceDto contactRef, Runnable callback) {
-		crateSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
 	}
 
-	private void crateSample(Runnable callback, SampleDto sampleDto) {
-		SampleEditForm createForm = new SampleEditForm();
+	private void createSample(Runnable callback, SampleDto sampleDto) {
+		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
-		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
-				SampleDto dto = createForm.getValue();
-				FacadeProvider.getSampleFacade().saveSample(dto);
+				saveSample(createForm);
 				callback.run();
 			}
 		});
@@ -105,22 +106,15 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleEditForm createForm = new SampleEditForm();
-		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
+		final SampleCreateForm createForm = new SampleCreateForm();
+		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
-		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm,
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
 
-		createView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					SampleDto newSample = createForm.getValue();
-					FacadeProvider.getSampleFacade().saveSample(newSample);
-					sample.setReferredTo(FacadeProvider.getSampleFacade().getReferenceByUuid(newSample.getUuid()));
-					FacadeProvider.getSampleFacade().saveSample(sample);
-					navigateToData(newSample.getUuid());
-				}
+		createView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				saveSample(createForm);
 			}
 		});
 
@@ -135,6 +129,27 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
+	private void saveSample(SampleCreateForm createForm) {
+		final SampleDto newSample = createForm.getValue();
+		final PathogenTestResultType testResult =
+				(PathogenTestResultType) createForm.getField(PathogenTestDto.TEST_RESULT).getValue();
+		if (testResult != null) {
+			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
+			pathogenTest.setLab(newSample.getLab());
+			pathogenTest.setTestResult(testResult);
+			pathogenTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
+			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
+			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
+			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
+			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
+			newSample.setPathogenTestResult(testResult);
+			FacadeProvider.getSampleFacade().saveSample(newSample);
+			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+		} else {
+			FacadeProvider.getSampleFacade().saveSample(newSample);
+		}
+	}
+
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
 		SampleEditForm form = new SampleEditForm();
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
@@ -143,22 +158,19 @@ public class SampleController {
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<SampleEditForm>(form,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT), form.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!form.getFieldGroup().isModified()) {
-					SampleDto dto = form.getValue();
-					SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getUuid());
-					FacadeProvider.getSampleFacade().saveSample(dto);
-					SormasUI.refreshView();
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				SampleDto changedDto = form.getValue();
+				SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(changedDto.getUuid());
+				FacadeProvider.getSampleFacade().saveSample(changedDto);
+				SormasUI.refreshView();
 
-					if (dto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
-							dto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
-							UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-						requestSampleCollectionTaskCreation(dto, form);
-					} else {
-						Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
-					}
+				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition() &&
+						changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE &&
+						UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+					requestSampleCollectionTaskCreation(changedDto, form);
+				} else {
+					Notification.show(I18nProperties.getString(Strings.messageSampleSaved), Type.TRAY_NOTIFICATION);
 				}
 			}
 		});
