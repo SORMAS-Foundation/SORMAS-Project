@@ -524,6 +524,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 
 		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
 		sample.setComment("one comment");
@@ -546,6 +547,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
 
 		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
 		pathogenTestDto.setTestResultText("test result changed");
@@ -565,6 +567,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
 		cazePerson.setBurialDate(new Date());
@@ -584,6 +587,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
 		cazePerson.getAddress().setAddress("new Address");
