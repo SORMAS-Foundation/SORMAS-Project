@@ -264,7 +264,13 @@ public class TestDataCreator {
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf) {
+									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf) {
+		return createContact(reportingUser, contactOfficer, contactPerson, caze, reportDateTime, lastContactDate, disease, rdcf, null);
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf,
+									Consumer<ContactDto> customConfig) {
 		ContactDto contact;
 		
 		if (caze != null) {
@@ -282,6 +288,10 @@ public class TestDataCreator {
 		contact.setPerson(contactPerson);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
+
+		if(customConfig != null){
+			customConfig.accept(contact);
+		}
 
 		contact = beanTest.getContactFacade().saveContact(contact);
 
@@ -382,19 +392,32 @@ public class TestDataCreator {
 
 		return eventParticipant;
 	}
-	
+
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
-		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
+		return createSample(associatedCase, reportingUser, lab, null);
+	}
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab, Consumer<SampleDto> customConfig) {
+		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab, customConfig);
+	}
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
+								  UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		return createSample(associatedCase, sampleDateTime, reportDateTime, reportingUser, sampleMaterial, lab, null);
 	}
 	
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
-			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab, Consumer<SampleDto> customConfig) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(sampleDateTime);
 		sample.setReportDateTime(reportDateTime);
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		if(customConfig != null){
+			customConfig.accept(sample);
+		}
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 

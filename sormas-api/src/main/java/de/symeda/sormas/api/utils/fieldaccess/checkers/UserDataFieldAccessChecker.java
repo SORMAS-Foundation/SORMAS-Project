@@ -18,25 +18,18 @@
 
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.PersonnelData;
 
 import java.lang.reflect.Field;
 
-public class UserDataFieldAccessChecker extends SensitiveDataFieldAccessChecker {
+public class UserDataFieldAccessChecker extends RightBasedFieldAccessChecker {
 	private UserJurisdictionCheck jurisdictionCheck;
 
 	public UserDataFieldAccessChecker(RightCheck rightCheck, UserJurisdictionCheck jurisdictionCheck) {
-		super(rightCheck, true);
+		super(PersonnelData.class, rightCheck);
 
 		this.jurisdictionCheck = jurisdictionCheck;
-	}
-
-	@Override
-	public boolean isConfiguredForCheck(Field field) {
-		return super.isConfiguredForCheck(field)
-				&& UserReferenceDto.class.isAssignableFrom(field.getType());
 	}
 
 	@Override
@@ -46,6 +39,11 @@ public class UserDataFieldAccessChecker extends SensitiveDataFieldAccessChecker 
 				: UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION;
 
 		return rightCheck.check(userRight);
+	}
+
+	@Override
+	protected UserRight getUserRight() {
+		return null;
 	}
 
 	public interface UserJurisdictionCheck {

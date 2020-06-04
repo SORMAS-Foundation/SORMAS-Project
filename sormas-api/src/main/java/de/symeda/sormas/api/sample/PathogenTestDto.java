@@ -22,14 +22,16 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class PathogenTestDto extends EntityDto {
+public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
 
@@ -62,10 +64,11 @@ public class PathogenTestDto extends EntityDto {
 	@Required
 	private Date testDateTime;
 	@Required
+	@SensitiveData
 	private FacilityReferenceDto lab;
 	private String labDetails;
 	@Required
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto labUser;
 	@Required
 	private PathogenTestResultType testResult;
@@ -121,7 +124,7 @@ public class PathogenTestDto extends EntityDto {
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
-	
+
 	public void setTestedDiseaseDetails(String testedDiseaseDetails) {
 		this.testedDiseaseDetails = testedDiseaseDetails;
 	}

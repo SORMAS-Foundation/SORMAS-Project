@@ -42,6 +42,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -159,7 +160,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date reportDate;
 	@Outbreaks
 	@Required
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
@@ -169,7 +170,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Required
 	private CaseClassification caseClassification;
 	@Outbreaks
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto classificationUser;
 	@Outbreaks
 	private Date classificationDate;
@@ -229,7 +230,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto surveillanceOfficer;
 	private String clinicianName;
 	private String clinicianPhone;
@@ -239,7 +240,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private String notifyingClinicDetails;
 	@Deprecated
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
 	private Double reportLat;

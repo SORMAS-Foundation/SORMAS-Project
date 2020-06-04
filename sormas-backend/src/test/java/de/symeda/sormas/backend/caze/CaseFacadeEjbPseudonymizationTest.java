@@ -37,7 +37,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -201,18 +200,18 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateCaseInJurisdiction() {
 		CaseDataDto caze = createCase(rdcf2, user2);
 
-		updateCase(caze);
+		updateCase(caze, user1);
 
-		assertPersonalDataUpdated(caze);
+		assertPseudonymizedDataUpdated(caze);
 	}
 
 	@Test
 	public void testUpdateCaseOutsideJurisdiction() {
 		CaseDataDto caze = createCase(rdcf1, user1);
 
-		updateCase(caze);
+		updateCase(caze, user2);
 
-		assertPersonalDataNotUpdated(caze, rdcf1);
+		assertPseudonymizedDataNotUpdated(caze, rdcf1, user1);
 	}
 
 	@Test
@@ -226,9 +225,18 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setPointOfEntry(null);
 		caze.setPointOfEntryDetails("");
 
+		//sensitive data
+		caze.setReportingUser(null);
+		caze.setSurveillanceOfficer(null);
+		caze.setClassificationUser(null);
+
+		caze.setReportLat(null);
+		caze.setReportLon(null);
+		caze.setReportLatLonAccuracy(null);
+
 		getCaseFacade().saveCase(caze);
 
-		assertPersonalDataNotUpdated(caze, rdcf2);
+		assertPseudonymizedDataNotUpdated(caze, rdcf2, user2);
 	}
 
 	private CaseDataDto createCase(TestDataCreator.RDCF rdcf, UserDto reportingUser) {
@@ -239,6 +247,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		return creator.createCase(user1.toReference(), person, Disease.CORONAVIRUS,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf, (c) -> {
 					c.setReportingUser(reportingUser.toReference());
+					c.setClassificationUser(reportingUser.toReference());
+					c.setSurveillanceOfficer(reportingUser.toReference());
 
 					c.setHealthFacilityDetails("Test Facility details");
 					c.setPointOfEntryDetails("Test point of entry details");
@@ -279,6 +289,10 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getPerson().getLastName(), is("Smith"));
 
 		//sensitive data
+		assertThat(caze.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(caze.getSurveillanceOfficer().getUuid(), is(user2.getUuid()));
+		assertThat(caze.getClassificationUser().getUuid(), is(user2.getUuid()));
+
 		assertThat(caze.getReportLat(), is(43.2344));
 		assertThat(caze.getReportLon(), is(26.6422));
 		assertThat(caze.getReportLatLonAccuracy(), is(10F));
@@ -297,32 +311,53 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));
 
 		//sensitive data
+		assertThat(caze.getReportingUser(), is(nullValue()));
+		assertThat(caze.getSurveillanceOfficer(), is(nullValue()));
+		assertThat(caze.getClassificationUser(), is(nullValue()));
+
 		assertThat(caze.getReportLat(), is(nullValue()));
 		assertThat(caze.getReportLon(), is(nullValue()));
 		assertThat(caze.getReportLatLonAccuracy(), is(nullValue()));
-
 	}
 
-	private void updateCase(CaseDataDto caze) {
+	private void updateCase(CaseDataDto caze, UserDto user) {
 		caze.setCommunity(rdcf2NewCommunity.toReference());
 		caze.setHealthFacility(rdcf2NewFacility.toReference());
 		caze.setHealthFacilityDetails("New HF details");
 		caze.setPointOfEntry(new PointOfEntryReferenceDto(rdcf2NewPointOfEntry.getUuid()));
 		caze.setPointOfEntryDetails("New PoE detail");
 
+		//sensitive data
+		caze.setReportingUser(user.toReference());
+		caze.setSurveillanceOfficer(user.toReference());
+		caze.setClassificationUser(user.toReference());
+
+		caze.setReportLat(23.234);
+		caze.setReportLon(43.432);
+		caze.setReportLatLonAccuracy(20F);
+
 		getCaseFacade().saveCase(caze);
 	}
 
-	private void assertPersonalDataUpdated(CaseDataDto caze) {
+	private void assertPseudonymizedDataUpdated(CaseDataDto caze) {
 		Case savedCase = getCaseService().getByUuid(caze.getUuid());
 		assertThat(savedCase.getCommunity().getUuid(), is(rdcf2NewCommunity.getUuid()));
 		assertThat(savedCase.getHealthFacility().getUuid(), is(rdcf2NewFacility.getUuid()));
 		assertThat(savedCase.getHealthFacilityDetails(), is("New HF details"));
 		assertThat(savedCase.getPointOfEntry().getUuid(), is(rdcf2NewPointOfEntry.getUuid()));
 		assertThat(savedCase.getPointOfEntryDetails(), is("New PoE detail"));
+
+		//sensitive data
+		assertThat(caze.getReportingUser(), is(user1));
+		assertThat(caze.getSurveillanceOfficer(), is(user1));
+		assertThat(caze.getClassificationUser(), is(user1));
+
+		assertThat(caze.getReportLat(), is(23.234));
+		assertThat(caze.getReportLon(), is(43.432));
+		assertThat(caze.getReportLatLonAccuracy(), is(20F));
 	}
 
-	private void assertPersonalDataNotUpdated(CaseDataDto caze, TestDataCreator.RDCF rdfc) {
+	private void assertPseudonymizedDataNotUpdated(CaseDataDto caze, TestDataCreator.RDCF rdfc, UserDto user) {
 		Case savedCase = getCaseService().getByUuid(caze.getUuid());
 
 		assertThat(savedCase.getCommunity().getUuid(), is(rdfc.community.getUuid()));
@@ -330,5 +365,14 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedCase.getHealthFacilityDetails(), is("Test Facility details"));
 		assertThat(savedCase.getPointOfEntry().getUuid(), is(rdfc.pointOfEntry.getUuid()));
 		assertThat(savedCase.getPointOfEntryDetails(), is("Test point of entry details"));
+
+		//sensitive data
+		assertThat(caze.getReportingUser(), is(user));
+		assertThat(caze.getSurveillanceOfficer(), is(user));
+		assertThat(caze.getClassificationUser(), is(user));
+
+		assertThat(caze.getReportLat(), is(43.2344));
+		assertThat(caze.getReportLon(), is(26.6422));
+		assertThat(caze.getReportLatLonAccuracy(), is(10F));
 	}
 }

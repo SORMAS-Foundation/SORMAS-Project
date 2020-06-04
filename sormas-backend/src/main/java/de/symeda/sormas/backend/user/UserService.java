@@ -277,11 +277,11 @@ public class UserService extends AbstractAdoService<User> {
 		User currentUser = getCurrentUser();
 
 		if (currentUser.getDistrict() != null) {
-			filter = cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
+			filter = cb.and(filter, cb.equal(from.get(User.DISTRICT), currentUser.getDistrict()));
 		}
 
 		if (currentUser.getCommunity() != null) {
-			filter = cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity());
+			filter = cb.and(filter, cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity()));
 		}
 
 		if (currentUser.getHealthFacility() != null) {

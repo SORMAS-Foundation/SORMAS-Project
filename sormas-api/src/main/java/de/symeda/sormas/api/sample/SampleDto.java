@@ -17,20 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import java.util.Date;
-import java.util.Set;
-
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class SampleDto extends EntityDto {
+import java.util.Date;
+import java.util.Set;
+
+public class SampleDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -75,7 +76,7 @@ public class SampleDto extends EntityDto {
 	@Required
 	private Date reportDateTime;
 	@Required
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	private Double reportLat;

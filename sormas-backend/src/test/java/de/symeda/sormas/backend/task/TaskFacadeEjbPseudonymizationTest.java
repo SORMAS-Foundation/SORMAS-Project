@@ -217,7 +217,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeGetByCContact() {
+	public void testPseudonymizeGetByContact() {
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 		TaskDto task3 = createContactTask(contact1);

@@ -225,10 +225,15 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
-		validate(dto);
+		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
+		final ContactDto existingContactDto = toDto(existingContact);
 
-		final String contactUuid = dto.getUuid();
-		final ContactDto existingContact = contactUuid != null ? toDto(contactService.getByUuid(contactUuid)) : null;
+		if(existingContactDto != null) {
+			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(existingContact);
+			pseudonymizationService.restorePseudonymizedValues(ContactDto.class, dto, existingContactDto, isInJurisdiction);
+		}
+
+		validate(dto);
 
 		// taking this out because it may lead to server problems
 		// case disease can change over time and there is currently no mechanism that would delete all related contacts
@@ -243,7 +248,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		contactService.ensurePersisted(entity);
 
 		if (handleChanges) {
-			updateContactVisitAssociations(existingContact, entity);
+			updateContactVisitAssociations(existingContactDto, entity);
 
 			contactService.updateFollowUpUntilAndStatus(entity);
 			contactService.udpateContactStatus(entity);
@@ -664,7 +669,12 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		pseudonymizationService.pseudonymizeDtoCollection(ContactIndexDetailedDto.class, dtos,
-				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), null);
+				c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()), (c, isInJurisdiction) -> {
+					if (c.getCaze() != null) {
+						pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(),
+								caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()), null);
+					}
+				});
 
 		return dtos;
 	}

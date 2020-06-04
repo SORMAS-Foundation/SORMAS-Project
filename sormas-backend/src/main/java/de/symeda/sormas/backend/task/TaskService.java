@@ -113,7 +113,9 @@ public class TaskService extends AbstractAdoService<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task, Task> taskPath) {
 
-		Predicate assigneeJurisdictionFilter = userService.createUserFilter(cb, taskPath.join(Task.ASSIGNEE_USER));
+		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser.get(User.UUID)), userService.createUserFilter(cb, assigneeUser));
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
@@ -122,12 +124,12 @@ public class TaskService extends AbstractAdoService<Task> {
 				UserRole.NATIONAL_CLINICIAN,
 				UserRole.NATIONAL_OBSERVER,
 				UserRole.REST_USER)) {
-			return assigneeJurisdictionFilter;
+			return assigneeFilter;
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), currentUser));
+		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
 		if (caseFilter != null) {
@@ -142,7 +144,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = cb.or(filter, eventFilter);
 		}
 
-		return cb.and(filter, assigneeJurisdictionFilter);
+		return and(cb, filter, assigneeFilter);
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {
@@ -242,9 +244,9 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 
-		Predicate jurisdictionFilter = userService.createUserFilter(cb, assigneeUser);
+		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser), userService.createUserFilter(cb, assigneeUser));
 
-		return cb.and(filter, jurisdictionFilter);
+		return and(cb, filter, assigneeFilter);
 	}
 
 	private Predicate buildActiveTasksFilter(CriteriaBuilder cb, Root<Task> from) {
@@ -260,13 +262,13 @@ public class TaskService extends AbstractAdoService<Task> {
 						cb.or(
 								cb.equal(caze.get(Case.ARCHIVED), false),
 								cb.isNull(caze.get(Case.ARCHIVED)))
-						),
+				),
 				cb.and(
 						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
 						cb.or(
 								cb.equal(contactCaze.get(Case.ARCHIVED), false),
 								cb.isNull(contactCaze.get(Case.ARCHIVED)))
-						),
+				),
 				cb.and(
 						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
 						cb.or(

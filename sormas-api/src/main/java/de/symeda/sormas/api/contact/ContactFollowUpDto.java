@@ -8,6 +8,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.visit.VisitResult;
 
@@ -26,7 +27,7 @@ public class ContactFollowUpDto implements Serializable {
 
 	private String uuid;
 	private PersonReferenceDto person;
-	@SensitiveData
+	@PersonnelData
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
 	private Date reportDateTime;

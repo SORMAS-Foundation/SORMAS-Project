@@ -25,6 +25,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -50,6 +51,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,7 +81,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ContactDto contact = createContact(user2, caze, rdcf2);
 
-		assertNotPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertNotPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()), true);
 	}
 
 	@Test
@@ -93,7 +95,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeGetByUuids(){
+	public void testPseudonymizeGetByUuids() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
@@ -101,27 +103,30 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<ContactDto> contacts = getContactFacade().getByUuids(Arrays.asList(contact1.getUuid(), contact2.getUuid()));
 
-		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get());
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), false);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
 	}
 
 	@Test
-	public void testPseudonymizeGetAllAfter(){
-		CaseDataDto caze = createCase(user1, rdcf1);
-		ContactDto contact1 = createContact(user2, caze, rdcf2);
+	public void testPseudonymizeGetAllAfter() {
+		CaseDataDto caze1 = createCase(user2, rdcf2);
+		ContactDto contact1 = createContact(user2, caze1, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		CaseDataDto caze2 = createCase(user1, rdcf1);
+		ContactDto contact3 = createContact(user2, caze2, rdcf2);
+		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
 		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(calendar.getTime());
 
-		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get());
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), true);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
+		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact3.getUuid())).findFirst().get(), false);
 	}
 
 	@Test
-	public void testPseudonymizeIndexData(){
+	public void testPseudonymizeIndexData() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
@@ -132,8 +137,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactIndexDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
 		assertThat(index1.getLastName(), is("Smith"));
-		assertThat(index1.getCaze().getFirstName(), is("James"));
-		assertThat(index1.getCaze().getLastName(), is("Smith"));
+		assertThat(index1.getCaze().getFirstName(), is(isEmptyString()));
+		assertThat(index1.getCaze().getLastName(), is(isEmptyString()));
 
 		ContactIndexDto index2 = indexList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
 		assertThat(index2.getFirstName(), isEmptyString());
@@ -143,7 +148,31 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeExportData(){
+	public void testPseudonymizeIndexDetailedData() {
+		CaseDataDto caze = createCase(user1, rdcf1);
+		ContactDto contact1 = createContact(user2, caze, rdcf2);
+		// contact of case on other jurisdiction --> should be pseudonymized
+		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		List<ContactIndexDetailedDto> indexList = getContactFacade().getIndexDetailedList(new ContactCriteria(), null, null, Collections.emptyList());
+
+		ContactIndexDetailedDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
+		assertThat(index1.getFirstName(), is("James"));
+		assertThat(index1.getLastName(), is("Smith"));
+		assertThat(index1.getCaze().getFirstName(), is(isEmptyString()));
+		assertThat(index1.getCaze().getLastName(), is(isEmptyString()));
+		assertThat(index1.getReportingUser().getUuid(), is(user2.getUuid()));
+
+		ContactIndexDetailedDto index2 = indexList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
+		assertThat(index2.getFirstName(), isEmptyString());
+		assertThat(index2.getLastName(), isEmptyString());
+		assertThat(index2.getCaze().getFirstName(), isEmptyString());
+		assertThat(index2.getCaze().getLastName(), isEmptyString());
+		assertThat(index2.getReportingUser(), is(nullValue()));
+	}
+
+	@Test
+	public void testPseudonymizeExportData() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
@@ -167,7 +196,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeGetMatchingContacts(){
+	public void testPseudonymizeGetMatchingContacts() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
@@ -190,7 +219,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeGetFollowupList(){
+	public void testPseudonymizeGetFollowupList() {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
@@ -208,12 +237,73 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	}
 
-	private void assertNotPseudonymized(ContactDto contact) {
+	@Test
+	public void testUpdateContactOutsideJurisdiction() {
+		CaseDataDto caze = createCase(user1, rdcf1);
+		ContactDto contact = createContact(user1, caze, rdcf1);
+		// contact of case on other jurisdiction --> should be pseudonymized
+		creator.createContact(user1.toReference(), null, createPerson().toReference(), getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()), new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+
+		contact.setReportingUser(null);
+		contact.setContactOfficer(null);
+		contact.setResultingCaseUser(null);
+		contact.setReportLat(null);
+		contact.setReportLon(null);
+		contact.setReportLatLonAccuracy(null);
+
+		getContactFacade().saveContact(contact);
+
+		Contact updatedContact = getContactService().getByUuid(contact.getUuid());
+
+		assertThat(updatedContact.getReportingUser().getUuid(), is(user1.getUuid()));
+		assertThat(updatedContact.getContactOfficer().getUuid(), is(user1.getUuid()));
+		assertThat(updatedContact.getResultingCaseUser(), is(nullValue()));
+
+		assertThat(updatedContact.getReportLat(), is(43.4354));
+		assertThat(updatedContact.getReportLon(), is(23.4354));
+		assertThat(updatedContact.getReportLatLonAccuracy(), is(10F));
+	}
+
+	@Test
+	public void testUpdateContactInJurisdictionWithPseudonymizedDto() {
+		CaseDataDto caze = createCase(user2, rdcf2);
+		ContactDto contact = createContact(user2, caze, rdcf2);
+
+		contact.setPseudonymized(true);
+		contact.setReportingUser(null);
+		contact.setContactOfficer(null);
+		contact.setResultingCaseUser(null);
+		contact.setReportLat(null);
+		contact.setReportLon(null);
+		contact.setReportLatLonAccuracy(null);
+
+		getContactFacade().saveContact(contact);
+
+		Contact updatedContact = getContactService().getByUuid(contact.getUuid());
+
+		assertThat(updatedContact.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(updatedContact.getContactOfficer().getUuid(), is(user2.getUuid()));
+		assertThat(updatedContact.getResultingCaseUser(), is(nullValue()));
+
+		assertThat(updatedContact.getReportLat(), is(43.4354));
+		assertThat(updatedContact.getReportLon(), is(23.4354));
+		assertThat(updatedContact.getReportLatLonAccuracy(), is(10F));
+	}
+
+	private void assertNotPseudonymized(ContactDto contact, boolean caseInJurisdiction) {
 		assertThat(contact.getPerson().getFirstName(), is("James"));
 		assertThat(contact.getPerson().getLastName(), is("Smith"));
 
-		assertThat(contact.getCaze().getFirstName(), is("James"));
-		assertThat(contact.getCaze().getLastName(), is("Smith"));
+		assertThat(contact.getCaze().getFirstName(), caseInJurisdiction ? is("James") : isEmptyString());
+		assertThat(contact.getCaze().getLastName(), caseInJurisdiction ? is("Smith") : isEmptyString());
+
+		// sensitive data
+		assertThat(contact.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(contact.getContactOfficer().getUuid(), is(user2.getUuid()));
+		assertThat(contact.getResultingCaseUser(), is(nullValue()));
+		assertThat(contact.getReportLat(), is(43.4354));
+		assertThat(contact.getReportLon(), is(23.4354));
+		assertThat(contact.getReportLatLonAccuracy(), is(10F));
 	}
 
 	private void assertPseudonymized(ContactDto contact) {
@@ -222,14 +312,28 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		assertThat(contact.getCaze().getFirstName(), isEmptyString());
 		assertThat(contact.getCaze().getLastName(), isEmptyString());
+
+		// sensitive data
+		assertThat(contact.getReportingUser(), is(nullValue()));
+		assertThat(contact.getContactOfficer(), is(nullValue()));
+		assertThat(contact.getResultingCaseUser(), is(nullValue()));
+		assertThat(contact.getReportLat(), is(nullValue()));
+		assertThat(contact.getReportLon(), is(nullValue()));
+		assertThat(contact.getReportLatLonAccuracy(), is(nullValue()));
 	}
 
 	private ContactDto createContact(UserDto reportingUser, CaseDataDto caze, TestDataCreator.RDCF rdcf) {
-		return creator.createContact(reportingUser.toReference(), null, createPerson().toReference(), caze,
-				new Date(), new Date(), Disease.CORONAVIRUS, rdcf);
+		return creator.createContact(reportingUser.toReference(), reportingUser.toReference(), createPerson().toReference(), caze,
+				new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
+					c.setResultingCaseUser(reportingUser.toReference());
+
+					c.setReportLat(43.4354);
+					c.setReportLon(23.4354);
+					c.setReportLatLonAccuracy(10F);
+				});
 	}
 
-	private CaseDataDto createCase(UserDto reportingUser, TestDataCreator.RDCF rdcf){
+	private CaseDataDto createCase(UserDto reportingUser, TestDataCreator.RDCF rdcf) {
 		return creator.createCase(reportingUser.toReference(), createPerson().toReference(), rdcf);
 	}
 

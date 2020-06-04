@@ -21,11 +21,13 @@ package de.symeda.sormas.backend.sample;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -47,6 +49,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -74,15 +78,15 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testGetSampleWithCaseInJurisdiction() {
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample = createCaseSample(caze);
+		SampleDto sample = createCaseSample(caze, user2);
 
 		assertNotPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
 	}
 
 	@Test
-	public void testGetSamplekWithCaseOutsideJurisdiction() {
+	public void testGetSampleWithCaseOutsideJurisdiction() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		SampleDto sample = createCaseSample(caze);
+		SampleDto sample = createCaseSample(caze, user1);
 
 		assertPseudonymized(getSampleFacade().getSampleByUuid(sample.getUuid()));
 	}
@@ -110,11 +114,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testPseudonymizeIndexList() {
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample1 = createCaseSample(caze1);
+		SampleDto sample1 = createCaseSample(caze1, user2);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
-		SampleDto sample2 = createCaseSample(caze2);
+		SampleDto sample2 = createCaseSample(caze2, user1);
 		SampleDto sample3 = createContactSample(contact1);
 
 		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
@@ -139,11 +143,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testPseudonymizeExportList() {
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample1 = createCaseSample(caze1);
+		SampleDto sample1 = createCaseSample(caze1, user2);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
-		SampleDto sample2 = createCaseSample(caze2);
+		SampleDto sample2 = createCaseSample(caze2, user1);
 		SampleDto sample3 = createContactSample(contact1);
 
 		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
@@ -153,10 +157,12 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
 		assertThat(export1.getAssociatedCase().getFirstName(), is("John"));
 		assertThat(export1.getAssociatedCase().getLastName(), is("Smith"));
+		assertThat(export1.getLab(), is("Lab"));
 
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
 		assertThat(export2.getAssociatedCase().getFirstName(), isEmptyString());
 		assertThat(export2.getAssociatedCase().getLastName(), isEmptyString());
+		assertThat(export2.getLab(), isEmptyString());
 
 		// export contact sample not yet implemented
 		Optional<SampleExportDto> export3 = exportList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
@@ -169,11 +175,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testPseudonymizeGetAllAfter() {
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
-		SampleDto sample1 = createCaseSample(caze1);
+		SampleDto sample1 = createCaseSample(caze1, user2);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
-		SampleDto sample2 = createCaseSample(caze2);
+		SampleDto sample2 = createCaseSample(caze2, user1);
 		SampleDto sample3 = createContactSample(contact1);
 
 		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
@@ -197,11 +203,57 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active4.isPresent(), is(false));
 	}
 
-	private SampleDto createCaseSample(CaseDataDto caze) {
+	@Test
+	public void testUpdateSampleOutsideJurisdiction() {
+		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
+		SampleDto sample = createCaseSample(caze, user1);
+
+		sample.setReportLat(null);
+		sample.setReportLon(null);
+		sample.setReportLatLonAccuracy(null);
+		sample.setLab(null);
+
+		getSampleFacade().saveSample(sample);
+
+		Sample updatedSample = getSampleService().getByUuid(sample.getUuid());
+
+		assertThat(updatedSample.getReportLat(), is(43.4321));
+		assertThat(updatedSample.getReportLon(), is(23.4321));
+		assertThat(updatedSample.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedSample.getLab().getName(), is("Lab"));
+	}
+
+	@Test
+	public void testUpdateSampleInJurisdictionWithPseudonymizedDto() {
+		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
+		SampleDto sample = createCaseSample(caze, user2);
+
+		sample.setPseudonymized(true);
+		sample.setReportLat(null);
+		sample.setReportLon(null);
+		sample.setReportLatLonAccuracy(null);
+		sample.setLab(null);
+
+		getSampleFacade().saveSample(sample);
+
+		Sample updatedSample = getSampleService().getByUuid(sample.getUuid());
+
+		assertThat(updatedSample.getReportLat(), is(43.4321));
+		assertThat(updatedSample.getReportLon(), is(23.4321));
+		assertThat(updatedSample.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedSample.getLab().getName(), is("Lab"));
+	}
+
+	private SampleDto createCaseSample(CaseDataDto caze, UserDto reportingUser) {
 		Facility lab = new Facility();
+		lab.setName("Lab");
 		getFacilityService().persist(lab);
 
-		return creator.createSample(caze.toReference(), user1.toReference(), lab);
+		return creator.createSample(caze.toReference(), reportingUser.toReference(), lab, s -> {
+			s.setReportLat(43.4321);
+			s.setReportLon(23.4321);
+			s.setReportLatLonAccuracy(10f);
+		});
 	}
 
 	private SampleDto createContactSample(ContactDto contactDto) {
@@ -214,11 +266,25 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private void assertNotPseudonymized(SampleDto sample) {
 		assertThat(sample.getAssociatedCase().getFirstName(), is("John"));
 		assertThat(sample.getAssociatedCase().getLastName(), is("Smith"));
+
+		//sensitive data
+		assertThat(sample.getReportingUser().getUuid(), is(user2.getUuid()));
+		assertThat(sample.getReportLat(), is(43.4321));
+		assertThat(sample.getReportLon(), is(23.4321));
+		assertThat(sample.getReportLatLonAccuracy(), is(10f));
+		assertThat(sample.getLab(), is(notNullValue()));
 	}
 
 	private void assertPseudonymized(SampleDto sample) {
 		assertThat(sample.getAssociatedCase().getFirstName(), isEmptyString());
 		assertThat(sample.getAssociatedCase().getLastName(), isEmptyString());
+
+		//sensitive data
+		assertThat(sample.getReportingUser(), is(nullValue()));
+		assertThat(sample.getReportLat(), is(nullValue()));
+		assertThat(sample.getReportLon(), is(nullValue()));
+		assertThat(sample.getReportLatLonAccuracy(), is(nullValue()));
+		assertThat(sample.getLab(), is(nullValue()));
 	}
 
 }

@@ -40,6 +40,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,319 +73,339 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-    private EntityManager em;
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
-    @EJB
-    private CaseFacadeEjbLocal caseFacade;
-    @EJB
-    private PathogenTestService pathogenTestService;
-    @EJB
-    private SampleService sampleService;
-    @EJB
-    private FacilityService facilityService;
-    @EJB
-    private UserService userService;
-    @EJB
-    private MessagingService messagingService;
-    @EJB
-    private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private PathogenTestService pathogenTestService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
+	private FacilityService facilityService;
+	@EJB
+	private UserService userService;
+	@EJB
+	private MessagingService messagingService;
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
-    @Override
-    public List<String> getAllActiveUuids() {
-        User user = userService.getCurrentUser();
+	@Override
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
-        if (user == null) {
-            return Collections.emptyList();
-        }
+		if (user == null) {
+			return Collections.emptyList();
+		}
 
-        return pathogenTestService.getAllActiveUuids(user);
-    }
+		return pathogenTestService.getAllActiveUuids(user);
+	}
 
-    @Override
-    public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
-        User user = userService.getCurrentUser();
+	@Override
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
-        if (user == null) {
-            return Collections.emptyList();
-        }
+		if (user == null) {
+			return Collections.emptyList();
+		}
 
-        return pathogenTestService.getAllActivePathogenTestsAfter(date, user).stream()
-                .map(e -> toDto(e))
-                .collect(Collectors.toList());
-    }
+		return pathogenTestService.getAllActivePathogenTestsAfter(date, user).stream()
+				.map(e -> convertToDto(e))
+				.collect(Collectors.toList());
+	}
 
-    @Override
-    public List<PathogenTestDto> getByUuids(List<String> uuids) {
-        return pathogenTestService.getByUuids(uuids)
-                .stream()
-                .map(c -> toDto(c))
-                .collect(Collectors.toList());
-    }
+	@Override
+	public List<PathogenTestDto> getByUuids(List<String> uuids) {
+		return pathogenTestService.getByUuids(uuids)
+				.stream()
+				.map(c -> convertToDto(c))
+				.collect(Collectors.toList());
+	}
 
-    @Override
-    public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
-        return pathogenTestService.getBySampleUuids(sampleUuids)
-                .stream()
-                .map(p -> toDto(p))
-                .collect(Collectors.toList());
-    }
+	@Override
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		return pathogenTestService.getBySampleUuids(sampleUuids)
+				.stream()
+				.map(p -> convertToDto(p))
+				.collect(Collectors.toList());
+	}
 
-    @Override
-    public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {
-        if (sampleRef == null) {
-            return Collections.emptyList();
-        }
+	@Override
+	public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {
+		if (sampleRef == null) {
+			return Collections.emptyList();
+		}
 
-        Sample sample = sampleService.getByUuid(sampleRef.getUuid());
+		Sample sample = sampleService.getByUuid(sampleRef.getUuid());
 
-        return pathogenTestService.getAllBySample(sample).stream()
-                .map(s -> toDto(s))
-                .collect(Collectors.toList());
-    }
+		return pathogenTestService.getAllBySample(sample).stream()
+				.map(s -> convertToDto(s))
+				.collect(Collectors.toList());
+	}
 
-    @Override
-    public List<String> getDeletedUuidsSince(Date since) {
-        User user = userService.getCurrentUser();
+	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+		User user = userService.getCurrentUser();
 
-        if (user == null) {
-            return Collections.emptyList();
-        }
+		if (user == null) {
+			return Collections.emptyList();
+		}
 
-        return pathogenTestService.getDeletedUuidsSince(user, since);
-    }
+		return pathogenTestService.getDeletedUuidsSince(user, since);
+	}
 
-    @Override
-    public PathogenTestDto getByUuid(String uuid) {
-        return toDto(pathogenTestService.getByUuid(uuid));
-    }
+	@Override
+	public PathogenTestDto getByUuid(String uuid) {
+		return convertToDto(pathogenTestService.getByUuid(uuid));
+	}
 
-    @Override
-    public PathogenTestDto savePathogenTest(PathogenTestDto dto) {
-        PathogenTestDto existingSampleTest = toDto(pathogenTestService.getByUuid(dto.getUuid()));
-        PathogenTest pathogenTest = fromDto(dto);
-        pathogenTestService.ensurePersisted(pathogenTest);
+	@Override
+	public PathogenTestDto savePathogenTest(PathogenTestDto dto) {
+		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
+		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 
-        onPathogenTestChanged(existingSampleTest, pathogenTest);
+		if(existingSampleTestDto != null){
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSampleTest.getSample());
+			pseudonymizationService.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
+		}
 
-        // Update case classification if necessary
-        final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
-        if (associatedCase != null) {
-            caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
-        }
+		PathogenTest pathogenTest = fromDto(dto);
+		pathogenTestService.ensurePersisted(pathogenTest);
 
-        return toDto(pathogenTest);
-    }
+		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 
-    @Override
-    public void deletePathogenTest(String pathogenTestUuid) {
-        User user = userService.getCurrentUser();
-        if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
-            throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen " +
-                    "tests.");
-        }
+		// Update case classification if necessary
+		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
+		if (associatedCase != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
+		}
 
-        PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
-        pathogenTestService.delete(pathogenTest);
+		return convertToDto(pathogenTest);
+	}
 
-        final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
-        if (associatedCase != null) {
-            caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
-        }
-    }
+	@Override
+	public void deletePathogenTest(String pathogenTestUuid) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen " +
+					"tests.");
+		}
 
-    @Override
-    public boolean hasPathogenTest(SampleReferenceDto sample) {
-        Sample sampleEntity = sampleService.getByReferenceDto(sample);
-        return pathogenTestService.hasPathogenTest(sampleEntity);
-    }
+		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
+		pathogenTestService.delete(pathogenTest);
 
-    @Override
-    public void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException {
-        if (pathogenTest.getSample() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validSample));
-        }
-        if (pathogenTest.getTestType() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
-        }
-        if (pathogenTest.getTestedDisease() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE)));
-        }
-        if (pathogenTest.getTestDateTime() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
-        }
-        if (pathogenTest.getLab() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB)));
-        }
-        if (pathogenTest.getTestResult() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
-        }
-        if (pathogenTest.getTestResultVerified() == null) {
-            throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
-                    I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX,
-                            PathogenTestDto.TEST_RESULT_VERIFIED)));
-        }
-    }
+		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
+		if (associatedCase != null) {
+			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase);
+		}
+	}
 
-    @Override
-    public Date getLatestPathogenTestDate(String sampleUuid) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Date> cq = cb.createQuery(Date.class);
-        Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
-        Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
+	@Override
+	public boolean hasPathogenTest(SampleReferenceDto sample) {
+		Sample sampleEntity = sampleService.getByReferenceDto(sample);
+		return pathogenTestService.hasPathogenTest(sampleEntity);
+	}
 
-        Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
-        cq.where(filter);
-        cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME)));
-        cq.select(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME));
+	@Override
+	public void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException {
+		if (pathogenTest.getSample() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validSample));
+		}
+		if (pathogenTest.getTestType() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_TYPE)));
+		}
+		if (pathogenTest.getTestedDisease() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE)));
+		}
+		if (pathogenTest.getTestDateTime() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME)));
+		}
+		if (pathogenTest.getLab() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.LAB)));
+		}
+		if (pathogenTest.getTestResult() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_RESULT)));
+		}
+		if (pathogenTest.getTestResultVerified() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.required,
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX,
+							PathogenTestDto.TEST_RESULT_VERIFIED)));
+		}
+	}
 
-        try {
-            return em.createQuery(cq).setMaxResults(1).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+	@Override
+	public Date getLatestPathogenTestDate(String sampleUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
+		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
 
-    public PathogenTest fromDto(@NotNull PathogenTestDto source) {
-        PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
-        if (target == null) {
-            target = new PathogenTest();
-            target.setUuid(source.getUuid());
-            if (source.getCreationDate() != null) {
-                target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-            }
-        }
-        DtoHelper.validateDto(source, target);
+		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		cq.where(filter);
+		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME)));
+		cq.select(pathogenTestRoot.get(PathogenTest.TEST_DATE_TIME));
 
-        target.setSample(sampleService.getByReferenceDto(source.getSample()));
-        target.setTestedDisease(source.getTestedDisease());
-        target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-        target.setTestType(source.getTestType());
-        target.setTestTypeText(source.getTestTypeText());
-        target.setTestDateTime(source.getTestDateTime());
-        target.setLab(facilityService.getByReferenceDto(source.getLab()));
-        target.setLabDetails(source.getLabDetails());
-        target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
-        target.setTestResult(source.getTestResult());
-        target.setTestResultText(source.getTestResultText());
-        target.setTestResultVerified(source.getTestResultVerified());
-        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-        target.setSerotype(source.getSerotype());
-        target.setCqValue(source.getCqValue());
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 
-        return target;
-    }
+	public PathogenTest fromDto(@NotNull PathogenTestDto source) {
+		PathogenTest target = pathogenTestService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new PathogenTest();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+		DtoHelper.validateDto(source, target);
 
-    public PathogenTestDto toDto(PathogenTest source) {
-        if (source == null) {
-            return null;
-        }
-        PathogenTestDto target = new PathogenTestDto();
-        DtoHelper.fillDto(target, source);
+		target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestType(source.getTestType());
+		target.setTestTypeText(source.getTestTypeText());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setLab(facilityService.getByReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
+		target.setLabUser(userService.getByReferenceDto(source.getLabUser()));
+		target.setTestResult(source.getTestResult());
+		target.setTestResultText(source.getTestResultText());
+		target.setTestResultVerified(source.getTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+		target.setSerotype(source.getSerotype());
+		target.setCqValue(source.getCqValue());
 
-        target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
-        target.setTestedDisease(source.getTestedDisease());
-        target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-        target.setTestType(source.getTestType());
-        target.setTestTypeText(source.getTestTypeText());
-        target.setTestDateTime(source.getTestDateTime());
-        target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-        target.setLabDetails(source.getLabDetails());
-        target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
-        target.setTestResult(source.getTestResult());
-        target.setTestResultText(source.getTestResultText());
-        target.setTestResultVerified(source.getTestResultVerified());
-        target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-        target.setSerotype(source.getSerotype());
-        target.setCqValue(source.getCqValue());
+		return target;
+	}
 
-        return target;
-    }
+	private PathogenTestDto convertToDto(PathogenTest source){
+		PathogenTestDto target = toDto(source);
 
-    private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {
-        // Send an email to all responsible supervisors when a new non-pending sample test is created or the status of
-        // a formerly pending test result has changed
-        final String sampleUuid = newPathogenTest.getSample().getUuid();
-        final Sample sample = sampleService.getByUuid(sampleUuid);
-        final Case caze = sample.getAssociatedCase();
-        final Contact contact = sample.getAssociatedContact();
-        final List<User> messageRecipients = new ArrayList<>();
+		pseudonymizationService.pseudonymizeDto(PathogenTestDto.class, target,
+				sampleJurisdictionChecker.isInJurisdiction(source.getSample()), null);
 
-        if (caze != null) {
-            final Region region = caze.getRegion();
-            final Disease disease = caze.getDisease();
-            messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
-                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
-            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
-        }
+		return target;
+	}
 
-        if (contact != null) {
-            final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
-            final Disease disease = contact.getDisease() != null ? contact.getDisease() :
-                    contact.getCaze().getDisease();
-            messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
-                    UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR).stream()
-                    .filter(user -> !messageRecipients.contains(user)).collect(Collectors.toList()));
-            sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease,
-                    messageRecipients);
-        }
-    }
+	public static PathogenTestDto toDto(PathogenTest source) {
+		if (source == null) {
+			return null;
+		}
+		PathogenTestDto target = new PathogenTestDto();
+		DtoHelper.fillDto(target, source);
 
-    private void sendMessageOnPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest,
-                                                  Case caze, Contact contact, Disease disease,
-                                                  List<User> messageRecipients) {
-        if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-            final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_ARRIVED :
-                    MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT;
-            for (User recipient : messageRecipients) {
-                try {
-                    messagingService.sendMessage(recipient,
-                            I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
-                            String.format(I18nProperties.getString(contentString),
-                                    newPathogenTest.getTestResult().toString(), disease,
-                                    DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
-                                    newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
-                            MessageType.EMAIL, MessageType.SMS);
-                } catch (NotificationDeliveryFailedException e) {
-                    logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
-                                    "about the arrival of a lab result. "
-                                    + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-                            recipient.getUuid()));
-                }
-            }
-        } else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING &&
-                newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-            final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED :
-                    MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
-            for (User recipient : messageRecipients) {
-                try {
-                    messagingService.sendMessage(recipient,
-                            I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
-                            String.format(I18nProperties.getString(contentString),
-                                    disease, DataHelper.getShortUuid(caze != null ? caze.getUuid() :
-                                            contact.getUuid()),
-                                    newPathogenTest.getTestResult().toString(),
-                                    newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
-                            MessageType.EMAIL, MessageType.SMS);
-                } catch (NotificationDeliveryFailedException e) {
-                    logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
-                                    "about the specification of a lab result. "
-                                    + "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-                            recipient.getUuid()));
-                }
-            }
-        }
-    }
+		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestType(source.getTestType());
+		target.setTestTypeText(source.getTestTypeText());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
+		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
+		target.setTestResult(source.getTestResult());
+		target.setTestResultText(source.getTestResultText());
+		target.setTestResultVerified(source.getTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+		target.setSerotype(source.getSerotype());
+		target.setCqValue(source.getCqValue());
 
-    @LocalBean
-    @Stateless
-    public static class PathogenTestFacadeEjbLocal extends PathogenTestFacadeEjb {
-    }
+		return target;
+	}
+
+	private void onPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest) {
+		// Send an email to all responsible supervisors when a new non-pending sample test is created or the status of
+		// a formerly pending test result has changed
+		final String sampleUuid = newPathogenTest.getSample().getUuid();
+		final Sample sample = sampleService.getByUuid(sampleUuid);
+		final Case caze = sample.getAssociatedCase();
+		final Contact contact = sample.getAssociatedContact();
+		final List<User> messageRecipients = new ArrayList<>();
+
+		if (caze != null) {
+			final Region region = caze.getRegion();
+			final Disease disease = caze.getDisease();
+			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
+			sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
+		}
+
+		if (contact != null) {
+			final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
+			final Disease disease = contact.getDisease() != null ? contact.getDisease() :
+					contact.getCaze().getDisease();
+			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region,
+					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR).stream()
+					.filter(user -> !messageRecipients.contains(user)).collect(Collectors.toList()));
+			sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease,
+					messageRecipients);
+		}
+	}
+
+	private void sendMessageOnPathogenTestChanged(PathogenTestDto existingPathogenTest, PathogenTest newPathogenTest,
+												  Case caze, Contact contact, Disease disease,
+												  List<User> messageRecipients) {
+		if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_ARRIVED :
+					MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT;
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
+							String.format(I18nProperties.getString(contentString),
+									newPathogenTest.getTestResult().toString(), disease,
+									DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
+									newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
+									"about the arrival of a lab result. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							recipient.getUuid()));
+				}
+			}
+		} else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING &&
+				newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED :
+					MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
+			for (User recipient : messageRecipients) {
+				try {
+					messagingService.sendMessage(recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
+							String.format(I18nProperties.getString(contentString),
+									disease, DataHelper.getShortUuid(caze != null ? caze.getUuid() :
+											contact.getUuid()),
+									newPathogenTest.getTestResult().toString(),
+									newPathogenTest.getTestType(), newPathogenTest.getTestedDisease()),
+							MessageType.EMAIL, MessageType.SMS);
+				} catch (NotificationDeliveryFailedException e) {
+					logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " +
+									"about the specification of a lab result. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+							recipient.getUuid()));
+				}
+			}
+		}
+	}
+
+	@LocalBean
+	@Stateless
+	public static class PathogenTestFacadeEjbLocal extends PathogenTestFacadeEjb {
+	}
 }

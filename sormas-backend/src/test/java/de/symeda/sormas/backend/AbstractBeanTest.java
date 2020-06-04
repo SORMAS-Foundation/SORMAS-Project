@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.sample.PathogenTestService;
+import de.symeda.sormas.backend.sample.SampleService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -224,6 +226,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SampleFacadeEjbLocal.class);
 	}
 
+	public SampleService getSampleService() {
+		return getBean(SampleService.class);
+	}
+
 	public PathogenTestFacade getSampleTestFacade() {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
@@ -354,6 +360,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	
 	public PathogenTestFacade getPathogenTestFacade() {
 		return getBean(PathogenTestFacadeEjbLocal.class);
+	}
+
+	public PathogenTestService getPathogenTestService() {
+		return getBean(PathogenTestService.class);
 	}
 
 }
