@@ -17,27 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.visualisation;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 @SuppressWarnings("serial")
 public class DashboardNetworkComponent extends VerticalLayout {
@@ -60,7 +60,7 @@ public class DashboardNetworkComponent extends VerticalLayout {
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
 		
-		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(region, district, diseases);
+		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
 		return networkJson;
 	}
 

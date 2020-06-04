@@ -17,43 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visualization;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -70,6 +35,27 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Stateless(name = "VisualizationFacade")
 public class VisualizationFacadeEjb implements VisualizationFacade {
@@ -89,8 +75,8 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
-	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
-		
+	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases, Language language) {
+
 		String rExecutable = configFacade.getRScriptExecutable();
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
@@ -106,7 +92,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		//working dir is the config directory of the domain
 		Path domainXmlPath = Paths.get("domain.xml");
 		
-		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds);
+		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds, language);
 	}
 	
 
@@ -170,7 +156,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 	}
 	
-	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, Collection<Long> contactIds) {
+	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, Collection<Long> contactIds, Language language) {
 
 		Path tempDir;
 		try {
@@ -231,7 +217,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				
 				if (exitCode == 0) {
 					String html = new String(Files.readAllBytes(outputFile));
-					return extractJson(html);
+					return extractJson(html, language);
 				} else {
 					LoggerFactory
 						.getLogger(VisualizationFacadeEjb.class)
@@ -268,7 +254,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		}
 	}
 	
-	static String extractJson(String html) {
+	static String extractJson(String html, Language language) {
 		
 		final Parser parser = Parser.htmlParser();
 		final Document doc = parser.parseInput(html, "");
@@ -276,7 +262,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		Element jsonScripElement = doc.select("script[type='application/json']").first();
 		
 		String json = jsonScripElement.html();
-		json = doI18n(json);
+		json = doI18n(json, language);
 		return json;
 	}
 	
@@ -290,7 +276,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 	private static final Pattern ENUM_PATTERN = Pattern.compile("\"(([A-Za-z]+)\\.([A-Z_]+))\"");
 	
-	private static String doI18n(String json) {
+	private static String doI18n(String json, Language language) {
 		
 		Matcher m = ENUM_PATTERN.matcher(json);
 		
@@ -298,7 +284,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		 while (m.find()) {
 			String replacement = Optional.of(m.group(1))
 			.map(supportedEnums::get)
-			.map(I18nProperties::getEnumCaption)
+			.map(c -> I18nProperties.getEnumCaption(language, c))
 			//TODO real json escaping
 			.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
 			.orElseGet(() -> {
