@@ -30,7 +30,9 @@ public enum StatisticsCaseSubAttribute {
 	EPI_WEEK_OF_YEAR(true, true),
 	DATE_RANGE(true, false),
 	REGION(false, true),
-	DISTRICT(false, true);
+	DISTRICT(false, true),
+	COMMUNITY(false, true),
+	HEALTH_FACILITY(false, true);
 	
 	private boolean usedForFilters;
 	private boolean usedForGrouping;

@@ -1143,7 +1143,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			if (dateTo != null && !(caze.getReportDate() == dateTo || caze.getReportDate().before(dateTo) || dateTo.after(caze.getReportDate())))
 				continue;
 			boolean hasCaseGps = (caze.getAddressLat() != null && caze.getAddressLon() != null)
-					|| (caze.getReportLat() != null || caze.getReportLon() != null);
+					|| (caze.getReportLat() != null && caze.getReportLon() != null);
 			boolean hasFacilityGps = caze.getHealthFacilityLat() != null && caze.getHealthFacilityLon() != null;
 			if (!hasCaseGps && !hasFacilityGps) {
 				continue; // no gps at all

@@ -128,7 +128,6 @@ public class StatisticsFilterComponent extends VerticalLayout {
 	}
 
 	private void updateFilterElement(int rowIndex) {
-		
 		if (filterElement != null) {
 			removeComponent(filterElement);
 			filterElement = null;
@@ -136,8 +135,8 @@ public class StatisticsFilterComponent extends VerticalLayout {
 		
 		if (selectedSubAttribute == StatisticsCaseSubAttribute.DATE_RANGE) {
 			filterElement = new StatisticsFilterDateRangeElement(rowIndex);
-		} else if (selectedAttribute == StatisticsCaseAttribute.REGION_DISTRICT) {
-			filterElement = new StatisticsFilterRegionDistrictElement(rowIndex);
+		} else if (selectedAttribute == StatisticsCaseAttribute.JURISDICTION) {
+			filterElement = new StatisticsFilterJurisdictionElement(rowIndex);
 		} else if (selectedAttribute.getSubAttributes().length == 0 
 				|| selectedSubAttribute != null) {
 			filterElement = new StatisticsFilterValuesElement(

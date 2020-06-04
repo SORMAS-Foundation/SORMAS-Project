@@ -63,7 +63,7 @@ public class SampleDto extends EntityDto {
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
-	
+
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
 	private String labSampleID;

@@ -24,8 +24,6 @@ import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -171,7 +169,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	public StatisticsCaseAttribute getRowsAttribute() {
 		switch (visualizationType) {
 		case MAP:
-			return StatisticsCaseAttribute.REGION_DISTRICT;
+			return StatisticsCaseAttribute.JURISDICTION;
 		default:
 			break;
 		}
@@ -263,6 +261,11 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		default:
 			throw new IllegalArgumentException(visualizationType.toString());
 		}
+	}
+
+	public boolean hasIncidenceIncompatibleGrouping() {
+		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY ||
+				rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY;
 	}
 	
 	public boolean hasSexGrouping() {

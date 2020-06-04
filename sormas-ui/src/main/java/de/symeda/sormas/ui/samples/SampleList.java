@@ -62,7 +62,8 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 			showPage(1);
 		} else {
 			updatePaginationLayout();
-			Label noSamplesLabel = new Label(I18nProperties.getCaption(Captions.sampleNoSamples));
+			Label noSamplesLabel = new Label(I18nProperties.getCaption(sampleCriteria.getCaze() != null ?
+					Captions.sampleNoSamplesForCase : Captions.sampleNoSamplesForContact));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}

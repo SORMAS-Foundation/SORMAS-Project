@@ -143,7 +143,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, getSampleFacade().count(samplesConnectedToConvertedCaseCriteria));
 
 		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
-		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.ASSOCIATED_CONTACT));
 		final List<SampleIndexDto> samplesOfConvertedCase = getSampleFacade().getIndexList(samplesConnectedToConvertedCaseCriteria, 0, 100,
 				sortProperties);
 		assertEquals(2, samplesOfConvertedCase.size());
@@ -273,7 +274,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetByCaseUuids() throws Exception {
+	public void testGetByCaseUuids() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto person = creator.createPerson();
@@ -291,5 +292,4 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertThat(samples, hasSize(3));
 		assertThat(samples, contains(sample, sample2, sample3));
 	}
-
 }

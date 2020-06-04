@@ -20,6 +20,7 @@ package de.symeda.sormas.api.facility;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -43,6 +44,8 @@ public interface FacilityFacade {
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);
 	
 	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
+
+	FacilityReferenceDto getFacilityReferenceById(long id);
 	
 	FacilityDto getByUuid(String uuid);
 	
@@ -61,5 +64,9 @@ public interface FacilityFacade {
 	void dearchive(String facilityUuid);
 	
 	boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids);
+
+	Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities);
+
+	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
 	
 }

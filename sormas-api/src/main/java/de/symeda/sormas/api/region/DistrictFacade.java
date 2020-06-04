@@ -20,6 +20,7 @@ package de.symeda.sormas.api.region;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -66,5 +67,7 @@ public interface DistrictFacade {
 	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
 	
 	boolean hasArchivedParentInfrastructure(Collection<String> districtUuids);
+
+	Map<String, String> getRegionUuidsForDistricts(List<DistrictReferenceDto> districts);
 	
 }

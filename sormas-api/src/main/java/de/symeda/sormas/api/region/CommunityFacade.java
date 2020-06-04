@@ -20,6 +20,7 @@ package de.symeda.sormas.api.region;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -42,6 +43,8 @@ public interface CommunityFacade {
 	List<String> getAllUuids();
 
 	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);
+
+	CommunityReferenceDto getCommunityReferenceById(long id);
 	
 	List<CommunityDto> getByUuids(List<String> uuids);
 	
@@ -56,5 +59,7 @@ public interface CommunityFacade {
 	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
 	
 	boolean hasArchivedParentInfrastructure(Collection<String> communityUuids);
+
+	Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities);
 	
 }

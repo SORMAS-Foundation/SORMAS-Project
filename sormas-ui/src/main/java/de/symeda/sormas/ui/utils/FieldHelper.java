@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -130,32 +131,41 @@ public final class FieldHelper {
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Field sourceField, final List<Object> sourceValues, final boolean clearOnHidden) {
 
-		if (sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
-		}
+		final List<? extends Field<?>> targetFields =
+				targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
 
-		// initialize
-		{
-			boolean visible = sourceValues.contains(sourceField.getValue());
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
-				}
-			}
-		}
+		setVisibleWhen(sourceField, targetFields, sourceValues, clearOnHidden);
+	}
 
-		sourceField.addValueChangeListener(event -> {
-			boolean visible = sourceValues.contains(event.getProperty().getValue());
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				targetField.setVisible(visible);
-				if (!visible && clearOnHidden && targetField.getValue() != null) {
-					targetField.clear();
-				}
+	public static void setVisibleWhen(Field sourceField, List<? extends Field<?>> targetFields,
+									  List<Object> sourceValues, boolean clearOnHidden) {
+		if (sourceField != null) {
+			if (sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
 			}
-		});
+
+			// initialize
+			{
+				boolean visible = sourceValues.contains(sourceField.getValue());
+
+				targetFields.forEach(targetField -> {
+					targetField.setVisible(visible);
+					if (!visible && clearOnHidden && targetField.getValue() != null) {
+						targetField.clear();
+					}
+				});
+			}
+
+			sourceField.addValueChangeListener(event -> {
+				boolean visible = sourceValues.contains(event.getProperty().getValue());
+				targetFields.forEach(targetField -> {
+					targetField.setVisible(visible);
+					if (!visible && clearOnHidden && targetField.getValue() != null) {
+						targetField.clear();
+					}
+				});
+			});
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -230,44 +240,52 @@ public final class FieldHelper {
 	public static void setRequiredWhen(FieldGroup fieldGroup, Field sourceField, List<String> targetPropertyIds,
 			final List<Object> sourceValues, boolean requiredWhenNot, Disease disease) {
 
-		if (sourceField instanceof AbstractField<?>) {
-			((AbstractField) sourceField).setImmediate(true);
-		}
+		final List<? extends Field<?>> targetFields =
+				targetPropertyIds.stream().map(id -> fieldGroup.getField(id)).collect(Collectors.toList());
 
-		// initialize
-		{
-			boolean required = sourceValues.contains(sourceField.getValue());
-			required = required != requiredWhenNot;
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				if (!targetField.isVisible()) {
-					targetField.setRequired(false);
-					continue;
-				}
+		setRequiredWhen(sourceField, targetFields, sourceValues, requiredWhenNot, disease);
+	}
 
-				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
-						(String) targetPropertyId, disease)) {
-					targetField.setRequired(required);
+	public static void setRequiredWhen(Field sourceField, List<? extends Field<?>> targetFields,
+									  List<Object> sourceValues, boolean requiredWhenNot, Disease disease) {
+		if (sourceField != null) {
+			if (sourceField instanceof AbstractField<?>) {
+				((AbstractField) sourceField).setImmediate(true);
+			}
+
+			// initialize
+			{
+				boolean required = sourceValues.contains(sourceField.getValue());
+
+				for (Field targetField : targetFields) {
+					if (!targetField.isVisible()) {
+						targetField.setRequired(false);
+						continue;
+					}
+
+					if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+							targetField.getId(), disease)) {
+						targetField.setRequired(required);
+					}
 				}
 			}
+
+			sourceField.addValueChangeListener(event -> {
+				boolean required = sourceValues.contains(event.getProperty().getValue());
+				required = required != requiredWhenNot;
+				for (Field targetField : targetFields) {
+					if (!targetField.isVisible()) {
+						targetField.setRequired(false);
+						continue;
+					}
+
+					if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
+							targetField.getId(), disease)) {
+						targetField.setRequired(required);
+					}
+				}
+			});
 		}
-
-		sourceField.addValueChangeListener(event -> {
-			boolean required = sourceValues.contains(event.getProperty().getValue());
-			required = required != requiredWhenNot;
-			for (Object targetPropertyId : targetPropertyIds) {
-				Field targetField = fieldGroup.getField(targetPropertyId);
-				if (!targetField.isVisible()) {
-					targetField.setRequired(false);
-					continue;
-				}
-
-				if (disease == null || Diseases.DiseasesConfiguration.isDefined(SymptomsDto.class,
-						(String) targetPropertyId, disease)) {
-					targetField.setRequired(required);
-				}
-			}
-		});
 	}
 
 	/**

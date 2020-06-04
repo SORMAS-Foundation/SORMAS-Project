@@ -62,6 +62,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -71,7 +73,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -271,7 +272,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@Transactional(value = Transactional.TxType.REQUIRES_NEW)
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
 			VisitExportType exportType, int first, int max,
 			ExportConfigurationDto exportConfiguration) {
