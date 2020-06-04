@@ -731,7 +731,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
     }
 
     public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
-        // National users can access all cases in the system
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return null;

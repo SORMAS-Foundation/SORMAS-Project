@@ -200,16 +200,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -989,55 +980,31 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.multiselect(root.get(Case.ID), root2.get(Case.ID));
 		cq.orderBy(cb.desc(root.get(Case.CREATION_DATE)));
 
-		List<Object[]> foundIds = (List<Object[]>) em.createQuery(cq).setParameter("date_type", "epoch")
-				.getResultList();
+		List<Object[]> foundIds = em.createQuery(cq).setParameter("date_type", "epoch").getResultList();
 		List<CaseIndexDto[]> resultList = new ArrayList<>();
 
 		if (!foundIds.isEmpty()) {
-			// List<Object> parentIds = foundIds.stream().map(ids ->
-			// ids[0]).collect(Collectors.toList());
-			// List<Object> childrenIds = foundIds.stream().map(ids ->
-			// ids[1]).collect(Collectors.toList());
-			// List<CaseIndexDto> parentList = new ArrayList<>();
-			// List<CaseIndexDto> childrenList = new ArrayList<>();
-			//
-			// CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-			// Root<Case> indexRoot = indexCq.from(Case.class);
-			// selectIndexDtoFields(indexCq, indexRoot);
-			// indexCq.where(indexRoot.get(Case.ID).in(parentIds));
-			// parentList = em.createQuery(indexCq).getResultList();
-			// indexCq.where(indexRoot.get(Case.ID).in(childrenIds));
-			// childrenList = em.createQuery(indexCq).getResultList();
-			//
-			// for (Object[] idPair : foundIds) {
-			// CaseIndexDto parent = parentList.stream().filter(c -> c.getId() == (long)
-			// idPair[0]).findFirst().get();
-			// CaseIndexDto child = childrenList.stream().filter(c -> c.getId() == (long)
-			// idPair[1]).findFirst().get();
-			//
-			// if (parent.getCompleteness() == null && child.getCompleteness() == null
-			// || parent.getCompleteness() != null && (child.getCompleteness() == null
-			// || (parent.getCompleteness() >= child.getCompleteness()))) {
-			// resultList.add(new CaseIndexDto[] {parent, child});
-			// } else {
-			// resultList.add(new CaseIndexDto[] {child, parent});
-			// }
-			// }
-			for (Object[] idPair : foundIds) {
-				CriteriaQuery<CaseIndexDto> indexCq = cb.createQuery(CaseIndexDto.class);
-				Root<Case> indexRoot = indexCq.from(Case.class);
-				selectIndexDtoFields(indexCq, indexRoot);
-				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[0]));
-				CaseIndexDto parent = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
-				indexCq.where(cb.equal(indexRoot.get(Case.ID), idPair[1]));
-				CaseIndexDto child = em.createQuery(indexCq).setMaxResults(1).getSingleResult();
+			CriteriaQuery<CaseIndexDto> indexCasesCq = cb.createQuery(CaseIndexDto.class);
+			Root<Case> indexRoot = indexCasesCq.from(Case.class);
+			selectIndexDtoFields(indexCasesCq, indexRoot);
+			indexCasesCq.where(indexRoot.get(Case.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
+			Map<Long, CaseIndexDto> indexCases = em.createQuery(indexCasesCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
-				if (parent.getCompleteness() == null && child.getCompleteness() == null
-						|| parent.getCompleteness() != null && (child.getCompleteness() == null
-						|| (parent.getCompleteness() >= child.getCompleteness()))) {
-					resultList.add(new CaseIndexDto[] { parent, child });
-				} else {
-					resultList.add(new CaseIndexDto[] { child, parent });
+			for (Object[] idPair : foundIds) {
+				try {
+					// Cloning is necessary here to allow us to add the same CaseIndexDto to the grid multiple times
+					CaseIndexDto parent = (CaseIndexDto) indexCases.get(idPair[0]).clone();
+					CaseIndexDto child = (CaseIndexDto) indexCases.get(idPair[1]).clone();
+
+					if (parent.getCompleteness() == null && child.getCompleteness() == null
+							|| parent.getCompleteness() != null && (child.getCompleteness() == null
+							|| (parent.getCompleteness() >= child.getCompleteness()))) {
+						resultList.add(new CaseIndexDto[]{parent, child});
+					} else {
+						resultList.add(new CaseIndexDto[]{child, parent});
+					}
+				} catch (CloneNotSupportedException e) {
+					throw new RuntimeException(e);
 				}
 			}
 		}

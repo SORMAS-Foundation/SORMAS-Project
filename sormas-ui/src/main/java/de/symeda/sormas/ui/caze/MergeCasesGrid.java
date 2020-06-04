@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
@@ -241,9 +242,9 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 
 			data.addItem(null, casePair[0]);
 			data.addItem(casePair[0], casePair[1]);
-			expand(casePair[0]);
 		}
 
+		expandRecursively(data.getRootItems(), 0);
 		dataProvider.refreshAll();
 	}
 
