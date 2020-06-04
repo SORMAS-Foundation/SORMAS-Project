@@ -129,7 +129,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		reportingUserField
 				.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
 
-		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
+		Field quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
+		quarantineTo.removeAllValidators();
 
 		addField(moreFiltersContainer, CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
