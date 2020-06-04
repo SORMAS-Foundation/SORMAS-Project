@@ -40,10 +40,10 @@ public class JurisdictionHelper {
             dto.setReportingUserUuid(caze.getReportingUser().getUuid());
         }
         if (caze.getRegion() != null) {
-            dto.setRegionUui(caze.getRegion().getUuid());
+            dto.setRegionUuid(caze.getRegion().getUuid());
         }
         if (caze.getDistrict() != null) {
-            dto.setDistrictUud(caze.getDistrict().getUuid());
+            dto.setDistrictUuid(caze.getDistrict().getUuid());
         }
         if (caze.getCommunity() != null) {
             dto.setCommunityUuid(caze.getCommunity().getUuid());
