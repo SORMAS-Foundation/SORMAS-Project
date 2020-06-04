@@ -34,8 +34,6 @@ import de.symeda.sormas.api.region.DistrictCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
-import de.symeda.sormas.backend.user.User;
-
 
 
 @Stateless
@@ -76,17 +74,20 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
-	public List<District> getByName(String name, Region region) {
+	public List<District> getByName(String name, Region region, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());
 		Root<District> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(from.get(District.NAME), name),
-				cb.equal(cb.lower(from.get(District.NAME)), name.toLowerCase())
+				cb.equal(cb.trim(from.get(District.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(District.NAME))), name.trim().toLowerCase())
 				);
 		if (region != null) {
 			filter = cb.and(filter, cb.equal(from.get(District.REGION), region));
+		}
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
 		cq.where(filter);
@@ -106,7 +107,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from) {
 		// no filter by user needed
 		return null;
 	}	

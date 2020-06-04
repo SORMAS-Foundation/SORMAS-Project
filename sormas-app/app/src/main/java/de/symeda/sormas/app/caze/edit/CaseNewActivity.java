@@ -32,7 +32,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -48,12 +47,12 @@ import de.symeda.sormas.app.caze.CasePickOrCreateDialog;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.Bundler;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -139,9 +138,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
         Case _case;
         if (!DataHelper.isNullOrEmpty(contactUuid)) {
             Contact sourceContact = DatabaseHelper.getContactDao().queryUuid(contactUuid);
-            _person = sourceContact.getPerson();
-            _case = DatabaseHelper.getCaseDao().build(_person,
-                    DatabaseHelper.getCaseDao().queryUuidBasic(sourceContact.getCaseUuid()));
+            _case = DatabaseHelper.getCaseDao().build(sourceContact);
         } else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
             EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().queryUuid(eventParticipantUuid);
             _case = DatabaseHelper.getCaseDao().build(eventParticipant);
@@ -316,7 +313,7 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
     void setNewSubHeading(Person person) {
         StringBuilder lastCaseText = new StringBuilder();
         lastCaseText.append(getResources().getString(R.string.caption_last_case)).append(": ").append(person.getFirstName()).append(" ").append(person.getLastName());
-        String dobText = PersonHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+        String dobText = DateFormatHelper.getAgeAndBirthdateString(person.getApproximateAge(), person.getApproximateAgeType(), person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
         if (!DataHelper.isNullOrEmpty(dobText)){
             lastCaseText.append(" | ").append(dobText);
         }

@@ -46,20 +46,50 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+/**
+ * Base class for all importers that are used to get data from CSV files into SORMAS.
+ * 
+ * These are the steps performed by the data importer (sub classes might add additional logic):
+ * 1) Read the CSV file from the passed file path and open an error report file
+ * 2) Read the header row(s) from the CSV and build a list of properties based on its columns
+ * 3) Insert every line of data into the object using a callback
+ * 4) Present the result of the import and, if errors occurred, an error report file to the user
+ */
 public abstract class DataImporter {
 
 	protected static final String ERROR_COLUMN_NAME = I18nProperties.getCaption(Captions.importErrorDescription);
-	protected static final Logger logger = LoggerFactory.getLogger(DataImporter.class);
 
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	/**
+	 * The input CSV file that contains the data to be imported.
+	 */
 	private File inputFile;
+	/**
+	 * Whether or not the import file is supposed to have an additional row on top containing the entity name.
+	 * This is necessary for importers that also import data that is not referenced in the root entity,
+	 * e.g. samples for cases.
+	 */
 	private boolean hasEntityClassRow;
-	protected UserReferenceDto currentUser;
+	/**
+	 * The file path to the generated error report file that lists all problems that occurred during the import.
+	 */
 	protected String errorReportFilePath;
-	
+	/**
+	 * Called whenever one line of the import file has been processed. Used e.g. to update the progress bar.
+	 */
 	private Consumer<ImportLineResult> importedLineCallback;
-	private CSVWriter errorReportCsvWriter;
+	/**
+	 * Whether the import should be canceled after the current line.
+	 */
 	private boolean cancelAfterCurrent;
+	/**
+	 * Whether or not the current import has resulted in at least one error.
+	 */
 	private boolean hasImportError;
+	
+	protected UserReferenceDto currentUser;
+	private CSVWriter errorReportCsvWriter;
 
 	public DataImporter(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
 		this.inputFile = inputFile;
@@ -74,7 +104,7 @@ public abstract class DataImporter {
 	}
 
 	/**
-	 * Opens a progress layout and runs the import in a separate thread
+	 * Opens a progress layout and runs the import logic in a separate thread.
 	 */
 	public void startImport(Consumer<StreamResource> errorReportConsumer, UI currentUI, boolean duplicatesPossible)
 			throws IOException {
@@ -104,6 +134,7 @@ public abstract class DataImporter {
 
 						ImportResultStatus importResult = runImport();
 
+						// Display a window presenting the import result
 						currentUI.access(new Runnable() {
 							@Override
 							public void run() {
@@ -149,8 +180,7 @@ public abstract class DataImporter {
 								currentUI.setPollInterval(-1);
 							}
 						});
-					} catch (Exception e) { //IOException | InterruptedException e) {
-						
+					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 						
 						currentUI.access(new Runnable() {
@@ -168,6 +198,7 @@ public abstract class DataImporter {
 					} 
 			}
 		};
+		
 		importThread.start();
 	}
 
@@ -175,7 +206,6 @@ public abstract class DataImporter {
 	 * To be called by async import thread or unit test 
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
-
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
 		
 		CSVReader csvReader = null;
@@ -209,6 +239,7 @@ public abstract class DataImporter {
 			}
 			errorReportCsvWriter.writeNext(columnNames);
 	
+			// Read and import all lines from the import file
 			String[] nextLine = csvReader.readNext();
 			int lineCounter = 0;
 			while (nextLine != null) {
@@ -236,8 +267,7 @@ public abstract class DataImporter {
 			} else {
 				return ImportResultStatus.COMPLETED;
 			}
-		}
-		finally {
+		} finally {
 			if (csvReader != null) {
 				csvReader.close();
 			}
@@ -253,7 +283,6 @@ public abstract class DataImporter {
 	}
 	
 	protected Writer createErrorReportWriter() throws IOException {
-		
 		File errorReportFile = new File(errorReportFilePath.toString());
 		if (errorReportFile.exists()) {
 			errorReportFile.delete();
@@ -263,17 +292,15 @@ public abstract class DataImporter {
 	}
 
 	protected StreamResource createErrorReportStreamResource() {
-		
 		return DownloadUtil.createFileStreamResource(errorReportFilePath, "sormas_import_error_report.csv", "text/csv",
 				I18nProperties.getString(Strings.headingErrorReportNotAvailable), I18nProperties.getString(Strings.messageErrorReportNotAvailable));
 	}
 
 	/**
-	 * Reads the actual CSV lines in the file.
-	 * This is different from "normal" lines, because CSV may have escaped multi-line text blocks
+	 * Reads the number of actual CSV lines in the file minus the header line(s).
+	 * This is different from "normal" lines, because CSV may have escaped multi-line text blocks.
 	 */
 	protected int readImportFileLength(File inputFile) throws IOException {
-	
 		int importFileLength = 0;
 		try (CSVReader caseCountReader = CSVUtils.createCSVReader(new FileReader(inputFile),
 				FacadeProvider.getConfigFacade().getCsvSeparator())) {
@@ -290,9 +317,23 @@ public abstract class DataImporter {
 		return importFileLength;
 	}
 
+	/**
+	 * Import the data from a line in the import file into new objects of the associated entities.
+	 * 
+	 * @param values The contents of the line
+	 * @param entityClasses The contents of the entity class row, if present
+	 * @param entityProperties The contents of the entity properties row
+	 * @param entityPropertyPaths The contents of the entity properties row, split by entities
+	 * @param firstLine Whether the imported line is the first data line in the document (which alters some logic)
+	 */
 	protected abstract ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties,
 			String[][] entityPropertyPaths, boolean firstLine) throws IOException, InvalidColumnException, InterruptedException;
 
+	/**
+	 * Contains checks for the most common data types for entries in the import file. This method should be called
+	 * in every subclass whenever data from the import file is supposed to be written to the entity in question.
+	 * Additional invokes need to be executed manually in the subclass.
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry,
 			String[] entryHeaderPath)
@@ -325,7 +366,7 @@ public abstract class DataImporter {
 			return true;
 		}
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry);
+			List<RegionReferenceDto> region = FacadeProvider.getRegionFacade().getByName(entry, false);
 			if (region.isEmpty()) {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist,
 						entry, buildEntityProperty(entryHeaderPath)));
@@ -355,6 +396,15 @@ public abstract class DataImporter {
 		return false;
 	}
 
+	/**
+	 * Provides the structure to insert a whole line into the object entity. The actual inserting has to take
+	 * place in a callback.
+	 * 
+	 * @param ignoreEmptyEntries If true, invokes won't be performed for empty values
+	 * @param insertCallback The callback that is used to actually do the inserting
+	 * 
+	 * @return True if the import succeeded without errors, false if not
+	 */
 	protected boolean insertRowIntoData(String[] values, String[] entityClasses, String[][] entityPropertyPaths,
 			boolean ignoreEmptyEntries, Function<ImportCellData, Exception> insertCallback)
 			throws IOException, InvalidColumnException {
@@ -402,4 +452,5 @@ public abstract class DataImporter {
 	protected String buildEntityProperty(String[] entityPropertyPath) {
 		return String.join(".", entityPropertyPath);
 	}
+	
 }

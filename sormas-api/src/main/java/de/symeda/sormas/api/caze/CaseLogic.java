@@ -26,8 +26,12 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class CaseLogic {
-	
+public final class CaseLogic {
+
+	private CaseLogic() {
+		// Hide Utility Class Constructor
+	}
+
 	private static final String EPID_PATTERN_COMPLETE = "([A-Z]{3}-){3}[0-9]{2}-[0-9]+";
 	private static final String EPID_PATTERN_PREFIX = "([A-Z]{3}-){3}[0-9]{2}-";
 
@@ -36,7 +40,7 @@ public class CaseLogic {
 			throw new ValidationException("Not allowed to set investigation status to done for an unclassified case.");
 		}
 	}
-	
+
 	public static Date getStartDate(Date onsetDate, Date reportDate) {
 		if (onsetDate != null) {
 			return onsetDate;
@@ -44,23 +48,23 @@ public class CaseLogic {
 			return reportDate;
 		}
 	}
-	
+
 	public static boolean isEpidNumberPrefix(String s) {
 		if (StringUtils.isEmpty(s)) {
 			return false;
 		}
-		
+
 		return Pattern.matches(EPID_PATTERN_PREFIX, s);
 	}
-	
+
 	public static boolean isCompleteEpidNumber(String s) {
 		if (StringUtils.isEmpty(s)) {
 			return false;
 		}
-		
+
 		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
 	}
-	
+
 	public static void createPreviousHospitalizationAndUpdateHospitalization(CaseDataDto caze, CaseDataDto oldCase) {
 		PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
 		caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
@@ -69,5 +73,5 @@ public class CaseLogic {
 		caze.getHospitalization().setDischargeDate(null);
 		caze.getHospitalization().setIsolated(null);
 	}
-	
+
 }

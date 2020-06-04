@@ -42,6 +42,10 @@ import de.symeda.sormas.api.person.Sex;
 
 public final class DataHelper {
 
+	private DataHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	public static String createUuid() {
 		//uuid = java.util.UUID.randomUUID().toString();
 		java.util.UUID randomUuid = java.util.UUID.randomUUID();
@@ -134,11 +138,11 @@ public final class DataHelper {
 		return buffer.array();
 	}
 
-	public static final String getShortUuid(EntityDto domainObject) {
+	public static String getShortUuid(EntityDto domainObject) {
 		return getShortUuid(domainObject.getUuid());
 	}
 
-	public static final String getShortUuid(String uuid) {
+	public static String getShortUuid(String uuid) {
 		if (uuid == null)
 			return null;
 		return uuid.substring(0, 6).toUpperCase();
@@ -276,5 +280,36 @@ public final class DataHelper {
 		String className = classType.getSimpleName();
 		className = className.replaceAll("Dto$", "");
 		return className;
+	}
+	
+	/**
+	 * @return null when NumberFormatException is thrown
+	 */
+	public static Integer tryParseInt(String value) {
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @return null when NumberFormatException is thrown
+	 */
+	public static Long tryParseLong(String value) {
+		try {
+			return Long.parseLong(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	public static boolean isParseableInt(String value) {
+		try {
+			Integer.parseInt(value);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

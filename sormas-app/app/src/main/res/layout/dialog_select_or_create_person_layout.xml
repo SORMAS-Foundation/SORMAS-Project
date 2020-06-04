@@ -24,6 +24,8 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.person.PersonHelper" />
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
         <variable name="availablePersons" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.person.Person&gt;" />
@@ -57,28 +59,40 @@
                     android:textColor="@color/pageHintText"
                     android:textSize="@dimen/defaultPageHintTextSize"/>
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/person_firstName"
-                    android:nextFocusForward="@+id/person_lastName"
-                    app:required="true"
-                    app:value="@={data.firstName}"
-                    app:imeOptions="actionNext"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/person_lastName"
-                    app:required="true"
-                    app:value="@={data.lastName}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlButton
-                    android:id="@+id/update_search"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/action_update_search"
-                    app:buttonType="@{ControlButtonType.LINE_SECONDARY}"
-                    app:rounded="true"
-                    app:slim="true" />
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_firstName"
+                        app:value="@{data.firstName}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_lastName"
+                        app:value="@{data.lastName}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_sex"
+                        app:value="@{data.sex}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/person_birthdate"
+                        app:caption="@string/caption_date_of_birth"
+                        app:value="@{DateFormatHelper.formatBirthdate(data.birthdateDD, data.birthdateMM, data.birthdateYYYY)}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -109,13 +123,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/info_pick_person"
-                        style="@style/SubHeadingDescriptionStyle" />
-
-                    <TextView
-                        android:id="@+id/no_records_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/message_no_matching_persons"
                         style="@style/SubHeadingDescriptionStyle" />
 
                 </LinearLayout>

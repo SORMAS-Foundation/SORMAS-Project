@@ -19,19 +19,22 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -93,10 +96,15 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS, COLUMN_ACTIONS);
 
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
-				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
-				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, AgeAndBirthDateDto>)getColumn(CaseIndexDto.AGE_AND_BIRTH_DATE))
+				.setRenderer(value -> value == null ? ""
+								: PersonHelper.getAgeAndBirthdateString(value.getAge(), value.getAgeType(), value.getBirthdateDD(), value.getBirthdateMM(), value.getBirthdateYYYY(), I18nProperties.getUserLanguage())
+						, new TextRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, column.getId().toString(),
@@ -146,7 +154,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 									: data.getChildren(caze).get(0);
 							FacadeProvider.getCaseFacade().mergeCase(caze.getUuid(), caseToMergeAndDelete.getUuid());
 							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(),
-									caze.getUuid(), UserProvider.getCurrent().getUuid());
+									caze.getUuid());
 
 							if (FacadeProvider.getCaseFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
 								reload();
@@ -168,8 +176,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 						if (confirmed.booleanValue()) {
 							CaseIndexDto caseToDelete = data.getParent(caze) != null ? data.getParent(caze)
 									: data.getChildren(caze).get(0);
-							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid(),
-									UserProvider.getCurrent().getUuid());
+							FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToDelete.getUuid(), caze.getUuid());
 
 							if (FacadeProvider.getCaseFacade().isDeleted(caseToDelete.getUuid())) {
 								data.removeItem(data.getParent(caze) == null ? caze : data.getParent(caze));
@@ -223,8 +230,7 @@ public class MergeCasesGrid extends TreeGrid<CaseIndexDto> {
 			hiddenUuidPairs = new ArrayList<>();
 		}
 
-		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria,
-				UserProvider.getCurrent().getUuid(), ignoreRegion);
+		List<CaseIndexDto[]> casePairs = FacadeProvider.getCaseFacade().getCasesForDuplicateMerging(criteria, ignoreRegion);
 		for (CaseIndexDto[] casePair : casePairs) {
 			boolean uuidPairExists = false;
 			for (String[] hiddenUuidPair : hiddenUuidPairs) {

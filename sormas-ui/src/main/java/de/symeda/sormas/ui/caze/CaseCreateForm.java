@@ -17,6 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Date;
@@ -50,31 +59,32 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.LayoutUtil.FluidColumn;
 
-@SuppressWarnings("serial")
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	private ComboBox birthDateDay;
 
-	private static final String HTML_LAYOUT = LayoutUtil.fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
-			+ LayoutUtil.fluidRow(new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
-					new FluidColumn(null, 6, 0, null,
-							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.RABIES_TYPE)))
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
-			+ LayoutUtil.fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-			+ LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
-			+ LayoutUtil.fluidRow(
-					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					LayoutUtil.fluidRowLocs(PersonDto.SEX))
-			+ LayoutUtil.fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
+	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
+			fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER) +
+			fluidRow(
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+					fluidColumn(6, 0,
+							locs(CaseDataDto.DISEASE_DETAILS, 
+									CaseDataDto.PLAGUE_TYPE,
+									CaseDataDto.DENGUE_FEVER_TYPE, 
+									CaseDataDto.RABIES_TYPE))) +
+			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
+			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
+			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
+			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			fluidRow(
+					fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					fluidRowLocs(PersonDto.SEX)) +
+			fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
 
 	public CaseCreateForm(UserRight editOrCreateUserRight) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
@@ -88,7 +98,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	protected void addFields() {
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
-		CssStyles.style(epidField, CssStyles.ERROR_COLOR_PRIMARY);
+		style(epidField, ERROR_COLOR_PRIMARY);
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox disease = addDiseaseField(CaseDataDto.DISEASE, false);
@@ -102,14 +112,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateDay.setNullSelectionAllowed(true);
-		birthDateDay.addStyleName(CssStyles.FORCE_CAPTION);
+		birthDateDay.addStyleName(FORCE_CAPTION);
 		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
 		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
 		birthDateMonth.setNullSelectionAllowed(true);
 		birthDateMonth.addItems(DateHelper.getMonthsInYear());
 		birthDateMonth.setPageLength(12);
-		birthDateMonth.addStyleName(CssStyles.FORCE_CAPTION);
+		birthDateMonth.addStyleName(FORCE_CAPTION);
 		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
 		setItemCaptionsForMonths(birthDateMonth);
 		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
@@ -346,9 +356,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		if (person != null) {
 			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
 			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
 			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
 			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 		} else {
@@ -370,9 +380,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setNameReadOnly(boolean readOnly) {
+	public void setPersonalDetailsReadOnly(boolean readOnly) {
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		getField(PersonDto.SEX).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {

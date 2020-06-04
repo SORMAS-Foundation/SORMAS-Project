@@ -25,8 +25,11 @@ package de.symeda.sormas.ui.utils;
  * @author HReise
  *
  */
-public class LayoutUtil {
+public final class LayoutUtil {
 
+	private LayoutUtil() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String locCss(String cssClasses, String location) {
 		StringBuilder sb = new StringBuilder();
@@ -276,6 +279,10 @@ public class LayoutUtil {
 		return fluidColumnLoc(9, 0, loc);
 	}
 	
+	public static FluidColumn oneOfSixCol(String loc) {
+		return fluidColumnLoc(2, 0, loc);
+	}
+
 	public static final class FluidColumn {
 
 		private final String str;

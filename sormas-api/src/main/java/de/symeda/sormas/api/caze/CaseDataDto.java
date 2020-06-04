@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -113,7 +114,20 @@ public class CaseDataDto extends EntityDto {
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
-	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";	
+	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_FROM = "quarantineFrom";
+	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
+	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String REPORTING_TYPE = "reportingType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -229,6 +243,19 @@ public class CaseDataDto extends EntityDto {
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
+	private QuarantineType quarantine;
+	private Date quarantineFrom;
+	private Date quarantineTo;
+	private String quarantineHelpNeeded;
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
+	private YesNoUnknown quarantineHomePossible;
+	private String quarantineHomePossibleComment;
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	private String quarantineHomeSupplyEnsuredComment;
+	private ReportingType reportingType;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -250,7 +277,7 @@ public class CaseDataDto extends EntityDto {
 	}
 	
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getCaseDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
@@ -769,4 +796,107 @@ public class CaseDataDto extends EntityDto {
 		this.sharedToCountry = sharedToCountry;
 	}
 
+	public QuarantineType getQuarantine() {
+		return quarantine;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	public Date getQuarantineFrom() {
+		return quarantineFrom;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	public Date getQuarantineTo() {
+		return quarantineTo;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+
+	public ReportingType getReportingType() {
+		return reportingType;
+	}
+
+	public void setReportingType(ReportingType reportingType) {
+		this.reportingType = reportingType;
+	}
 }

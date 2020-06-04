@@ -1,19 +1,20 @@
 package de.symeda.sormas.ui.user;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class UserSettingsForm extends AbstractEditForm<UserDto> {
 
 	private static final long serialVersionUID = -928337100277917699L;
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.loc(UserDto.LANGUAGE);
+			loc(UserDto.LANGUAGE);
 	
 	public UserSettingsForm() {
 		super(UserDto.class, UserDto.I18N_PREFIX, null);

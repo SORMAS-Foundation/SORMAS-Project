@@ -17,29 +17,30 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_DATE_FROM, EpiDataBurialDto.BURIAL_DATE_TO) +
-			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_PERSON_NAME, EpiDataBurialDto.BURIAL_RELATION) +
-			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS) +
-			LayoutUtil.fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING)
-	;
+			fluidRowLocs(EpiDataBurialDto.BURIAL_DATE_FROM, EpiDataBurialDto.BURIAL_DATE_TO) +
+			fluidRowLocs(EpiDataBurialDto.BURIAL_PERSON_NAME, EpiDataBurialDto.BURIAL_RELATION) +
+			fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS) +
+			fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
 	
 	public EpiDataBurialEditForm(boolean create, UserRight editOrCreateUserRight) {
 		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, editOrCreateUserRight);

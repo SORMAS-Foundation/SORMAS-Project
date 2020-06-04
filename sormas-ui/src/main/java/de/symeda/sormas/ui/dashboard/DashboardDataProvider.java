@@ -39,7 +39,6 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.ui.UserProvider;
 
 public class DashboardDataProvider {
 
@@ -73,36 +72,33 @@ public class DashboardDataProvider {
 
 	public void refreshData() {
 		// Update the entities lists according to the filters
-		String userUuid = UserProvider.getCurrent().getUuid();
-
 		// Disease burden
 		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
-				toDate, previousFromDate, previousToDate, userUuid));
+				toDate, previousFromDate, previousToDate));
 
 		this.refreshDataForSelectedDisease();
 	}
 
 	private void refreshDataForSelectedDisease () {
 		// Update the entities lists according to the filters
-		String userUuid = UserProvider.getCurrent().getUuid();
 
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
 			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
-					toDate, userUuid));
+					toDate));
 			setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
-					previousFromDate, previousToDate, userUuid));
+					previousFromDate, previousToDate));
 		}
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
 			// Cases
 			CaseCriteria caseCriteria = new CaseCriteria();
 			caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, NewCaseDateType.MOST_RELEVANT);
-			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
-			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, userUuid));
+			setCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
+			setLastReportedDistrict(FacadeProvider.getCaseFacade().getLastReportedDistrictName(caseCriteria, false));
 
 			caseCriteria.newCaseDateBetween(previousFromDate, previousToDate, NewCaseDateType.MOST_RELEVANT);
-			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria, userUuid));
+			setPreviousCases(FacadeProvider.getCaseFacade().getCasesForDashboard(caseCriteria));
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
@@ -120,13 +116,13 @@ public class DashboardDataProvider {
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);	
-		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));
+		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
 
 		eventCriteria.reportedBetween(previousFromDate, previousToDate);
-		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria, userUuid));		
+		setPreviousEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
 
 		eventCriteria.reportedBetween(fromDate, toDate);
-		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria, userUuid));
+		setEventCountByStatus(FacadeProvider.getEventFacade().getEventCountByStatus(eventCriteria));
 
 		// Test results
 		//		setTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district, disease,
@@ -134,7 +130,7 @@ public class DashboardDataProvider {
 		//		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 		//				disease, previousFromDate, previousToDate, userUuid));
 
-		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate), userUuid));
+		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
 	}
 
 	public List<DashboardCaseDto> getCases() {

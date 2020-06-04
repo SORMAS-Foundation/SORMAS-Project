@@ -26,6 +26,7 @@ import de.symeda.sormas.ui.dashboard.DashboardController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
+import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
 import de.symeda.sormas.ui.samples.PathogenTestController;
 import de.symeda.sormas.ui.samples.SampleController;
@@ -55,6 +56,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final DashboardController dashboardController;
 	private final TherapyController therapyController;
 	private final ClinicalCourseController clinicalCourseController;
+	private final AggregateReportController aggregateReportController;
 
 	public ControllerProvider() {
 		super();
@@ -76,6 +78,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		dashboardController = new DashboardController();
 		therapyController = new TherapyController();
 		clinicalCourseController = new ClinicalCourseController();
+		aggregateReportController = new AggregateReportController();
 	}
 
 	protected static ControllerProvider get() {
@@ -148,6 +151,10 @@ public class ControllerProvider extends BaseControllerProvider {
 	
 	public static ClinicalCourseController getClinicalCourseController() {
 		return get().clinicalCourseController;
+	}
+
+	public static AggregateReportController getAggregateReportController() {
+		return get().aggregateReportController;
 	}
 
 }

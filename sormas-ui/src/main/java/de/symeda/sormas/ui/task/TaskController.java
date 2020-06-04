@@ -124,7 +124,7 @@ public class TaskController {
 			editView.addDeleteListener(new DeleteListener() {
 				@Override
 				public void onDelete() {
-					FacadeProvider.getTaskFacade().deleteTask(newDto, UserProvider.getCurrent().getUserReference().getUuid());
+					FacadeProvider.getTaskFacade().deleteTask(newDto);
 					UI.getCurrent().removeWindow(popupWindow);
 					callback.run();
 				}
@@ -151,7 +151,7 @@ public class TaskController {
 			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), new Runnable() {
 				public void run() {
 					for (TaskIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()), UserProvider.getCurrent().getUuid());
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()));
 					}
 					callback.run();
 					new Notification(I18nProperties.getString(Strings.headingTasksDeleted), 

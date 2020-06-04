@@ -37,11 +37,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		if (dto == null) {
 			return null;
 		}
-		
-		Symptoms symptoms = service.getByUuid(dto.getUuid());
+
+		final String uuid = dto.getUuid();
+		Symptoms symptoms = uuid != null ? service.getByUuid(uuid) : null;
 		if (symptoms == null) {
 			symptoms = new Symptoms();
-			symptoms.setUuid(dto.getUuid());
+			symptoms.setUuid(uuid);
 			if (dto.getCreationDate() != null) {
 				symptoms.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
@@ -203,6 +204,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setConjunctivalInjection(source.getConjunctivalInjection());
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
+		target.setLossOfTaste(source.getLossOfTaste());
+		target.setLossOfSmell(source.getLossOfSmell());
 		
 		return symptoms;
 	}
@@ -372,6 +375,8 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setConjunctivalInjection(source.getConjunctivalInjection());
 		target.setAcuteRespiratoryDistressSyndrome(source.getAcuteRespiratoryDistressSyndrome());
 		target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
+		target.setLossOfTaste(source.getLossOfTaste());
+		target.setLossOfSmell(source.getLossOfSmell());
 
 		return target;
 	}

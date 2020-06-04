@@ -14,7 +14,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.user.User;
@@ -40,7 +39,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -66,7 +65,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -95,11 +94,10 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AdditionalTest, AdditionalTest> additionalTestPath,
-			User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AdditionalTest, AdditionalTest> additionalTestPath) {
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
 
 		return filter;
 	}

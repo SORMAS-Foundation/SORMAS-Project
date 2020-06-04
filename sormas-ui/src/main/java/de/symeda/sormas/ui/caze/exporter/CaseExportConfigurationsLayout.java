@@ -14,7 +14,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class CaseExportConfigurationsLayout extends VerticalLayout {
@@ -39,7 +38,7 @@ public class CaseExportConfigurationsLayout extends VerticalLayout {
 			ControllerProvider.getCaseController().openEditExportConfigurationWindow(grid, null);
 		});
 
-		grid = new CaseExportConfigurationsGrid(UserProvider.getCurrent().getUuid());
+		grid = new CaseExportConfigurationsGrid();
 		grid.setWidth(100, Unit.PERCENTAGE);
 		addComponent(grid);
 

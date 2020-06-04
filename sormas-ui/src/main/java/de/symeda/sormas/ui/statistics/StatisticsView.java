@@ -746,10 +746,10 @@ public class StatisticsView extends AbstractStatisticsView {
 		map.setZoom(FacadeProvider.getConfigFacade().getMapZoom());
 		GeoLatLon mapCenter = FacadeProvider.getGeoShapeProvider().getCenterOfAllRegions();
 		if (mapCenter != null) {
-			map.setCenter(mapCenter.getLon(), mapCenter.getLat());
+			map.setCenter(mapCenter);
 		} else {
 			GeoLatLon countryCenter = FacadeProvider.getConfigFacade().getCountryCenter();
-			map.setCenter(countryCenter.getLon(), countryCenter.getLat());
+			map.setCenter(countryCenter);
 		}
 
 		if (cbHideOtherCountries.getValue()) {

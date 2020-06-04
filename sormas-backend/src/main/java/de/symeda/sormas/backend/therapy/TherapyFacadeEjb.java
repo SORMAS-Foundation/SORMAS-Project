@@ -20,10 +20,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class TherapyFacadeEjb implements TherapyFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
-	TherapyService service;
+	private TherapyService service;
 	@EJB
 	private UserService userService;
 

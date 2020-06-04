@@ -24,10 +24,20 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
+/**
+ * Data importer that is used to import population data.
+ */
 public class PopulationDataImporter extends DataImporter {
 
+	/**
+	 * The pattern that entries in the header row must match in order for the importer to determine how to fill its entries.
+	 */
 	private static final String HEADER_PATTERN = "[A-Z]+_[A-Z]{3}_\\d+_(\\d+|PLUS)";
+	/**
+	 * The pattern that entries in the header row representing total counts must match in order for the importer to determine how to fill its entries.
+	 */
 	private static final String TOTAL_HEADER_PATTERN = "[A-Z]+_TOTAL";
+	
 	private final Date collectionDate;
 
 	public PopulationDataImporter(File inputFile, UserReferenceDto currentUser, Date collectionDate) {
@@ -47,9 +57,10 @@ public class PopulationDataImporter extends DataImporter {
 		RegionReferenceDto region = null;
 		DistrictReferenceDto district = null;
 
-		for (int i=0; i<entityProperties.length; i++) {
+		// Retrieve the region and district from the database or throw an error if more or less than one entry have been retrieved
+		for (int i = 0; i < entityProperties.length; i++) {
 			if (PopulationDataDto.REGION.equalsIgnoreCase(entityProperties[i])) {
-				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByName(values[i]);
+				List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getByName(values[i], false);
 				if (regions.size() != 1) {
 					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 					return ImportLineResult.ERROR;
@@ -60,7 +71,7 @@ public class PopulationDataImporter extends DataImporter {
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					district = null;
 				} else {
-					List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getByName(values[i], region);
+					List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getByName(values[i], region, false);
 					if (districts.size() != 1) {
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
 						return ImportLineResult.ERROR;
@@ -70,9 +81,11 @@ public class PopulationDataImporter extends DataImporter {
 			} 
 		}
 
+		// The region and district that will be used to save the population data to the database
 		final RegionReferenceDto finalRegion = region;
 		final DistrictReferenceDto finalDistrict = district;
 
+		// Retrieve the existing population data for the region and district
 		PopulationDataCriteria criteria = new PopulationDataCriteria().region(finalRegion);
 		if (district == null) {
 			criteria.districtIsNull(true);
@@ -82,14 +95,16 @@ public class PopulationDataImporter extends DataImporter {
 		List<PopulationDataDto> existingPopulationDataList = FacadeProvider.getPopulationDataFacade().getPopulationData(criteria);
 		List<PopulationDataDto> modifiedPopulationDataList = new ArrayList<PopulationDataDto>();
 		
+		
 		boolean populationDataHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, new Function<ImportCellData, Exception>() {
 			@Override
 			public Exception apply(ImportCellData cellData) {
 				try {
 					if (PopulationDataDto.REGION.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
 							|| PopulationDataDto.DISTRICT.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
-						// do nothing
+						// Ignore the region and district columns
 					} else if (RegionDto.GROWTH_RATE.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
+						// Update the growth rate of the region or district
 						if (!DataHelper.isNullOrEmpty(cellData.value)) {
 							Float growthRate = Float.parseFloat(cellData.value);
 							if (finalDistrict != null) {
@@ -103,6 +118,7 @@ public class PopulationDataImporter extends DataImporter {
 							}
 						}
 					} else {
+						// Add the data from the currently processed cell to a new population data object
 						PopulationDataDto newPopulationData = PopulationDataDto.build(collectionDate);
 						insertCellValueIntoData(newPopulationData, cellData.getValue(), cellData.getEntityPropertyPath());
 
@@ -129,6 +145,7 @@ public class PopulationDataImporter extends DataImporter {
 			}
 		});
 
+		// Validate and save the population data object into the database if the import has no errors
 		if (!populationDataHasImportError) {
 			try {
 				FacadeProvider.getPopulationDataFacade().savePopulationData(modifiedPopulationDataList);
@@ -142,8 +159,11 @@ public class PopulationDataImporter extends DataImporter {
 		}
 	}
 
+	/**
+	 * Inserts the entry of a single cell into the population data object. Checks whether the entity property accords to one of the patterns defined in this class
+	 * and sets the according sex and age group to the population data object.
+	 */
 	private void insertCellValueIntoData(PopulationDataDto populationData, String value, String[] entityPropertyPaths) throws InvalidColumnException, ImportErrorException {
-
 		String entityProperty = buildEntityProperty(entityPropertyPaths);
 		
 		if (entityPropertyPaths.length != 1) {

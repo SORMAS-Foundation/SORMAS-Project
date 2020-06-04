@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.outbreak;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_2;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
+import static de.symeda.sormas.ui.utils.CssStyles.style;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,9 +29,9 @@ import java.util.Set;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -36,12 +41,13 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-@SuppressWarnings("serial")
 public class OutbreakRegionConfigurationForm extends VerticalLayout {
+		
+	private static final long serialVersionUID = 1L;
 
 	// Outbreak mode statics
-	private final static String OUTBREAK = I18nProperties.getCaption(Captions.outbreakOutbreak);
-	private final static String NORMAL = I18nProperties.getCaption(Captions.outbreakNormal);
+	private static final String OUTBREAK = I18nProperties.getCaption(Captions.outbreakOutbreak);
+	private static final String NORMAL = I18nProperties.getCaption(Captions.outbreakNormal);
 
 	// Data
 	private final Set<DistrictReferenceDto> affectedDistricts;
@@ -74,12 +80,12 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth(100, Unit.PERCENTAGE);
 		headerLayout.setSpacing(true);
-		CssStyles.style(headerLayout, CssStyles.VSPACE_2);
+		style(headerLayout, VSPACE_2);
 
 		// Headline and info text
 		Label infoTextLabel = new Label(I18nProperties.getString(Strings.headingDefineOutbreakDistricts));
 		infoTextLabel.setWidthUndefined();
-		CssStyles.style(infoTextLabel, CssStyles.VSPACE_TOP_4);
+		style(infoTextLabel, VSPACE_TOP_4);
 		headerLayout.addComponent(infoTextLabel);
 
 		// Number of affected districts and options to toggle outbreak mode for all districts	
@@ -89,11 +95,11 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		{
 			Label allDistrictsLabel = new Label(I18nProperties.getString(Strings.headingSetOutbreakStatus));
 			allDistrictsLabel.setWidthUndefined();
-			CssStyles.style(allDistrictsLabel, CssStyles.VSPACE_TOP_4);
+			style(allDistrictsLabel, VSPACE_TOP_4);
 			allDistrictsLayout.addComponent(allDistrictsLabel);
 
 			OptionGroup outbreakToggle = new OptionGroup();
-			CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL);
+			style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL);
 			outbreakToggle.addItem(OUTBREAK);
 			outbreakToggle.addItem(NORMAL);
 
@@ -128,7 +134,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		HorizontalLayout affectedDistrictsComponent = new HorizontalLayout();
 		affectedDistrictsComponent.setWidth(100, Unit.PERCENTAGE);
 		affectedDistrictsComponent.setMargin(false);
-		CssStyles.style(affectedDistrictsComponent, CssStyles.VSPACE_3);
+		style(affectedDistrictsComponent, VSPACE_3);
 
 		// Create two columns to display the districts
 		VerticalLayout leftColumn = new VerticalLayout();
@@ -176,7 +182,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 	private OptionGroup createOutbreakToggle(DistrictReferenceDto district) {
 		OptionGroup outbreakToggle = new OptionGroup();
-		CssStyles.style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 		outbreakToggle.setCaption(district.toString());
 		outbreakToggle.addItem(OUTBREAK);
 		outbreakToggle.addItem(NORMAL);
@@ -206,11 +212,11 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 		CssStyles.removeStyles(affectedDistrictsNumberLabel, 
 				CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_WARNING);
 		if (affectedDistricts.size() == 0) {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR);
+			style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR);
 		} else if (affectedDistricts.size() >= totalDistricts / 2.0f) {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL);
+			style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL);
 		} else {
-			CssStyles.style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_WARNING);
+			style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_WARNING);
 		}
 	}
 	

@@ -17,21 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
-	private static final long serialVersionUID = 7858602578903198825L;
+	private static final long serialVersionUID = -1;
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE)
-					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID)
-			;//+ LayoutUtil.fluidRowLocs(RegionDto.GROWTH_RATE);
+			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
+			fluidRowLocs(RegionDto.EXTERNAL_ID);
+			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 
 	public RegionEditForm(UserRight editOrCreateUserRight, boolean create) {
 		super(RegionDto.class, RegionDto.I18N_PREFIX, editOrCreateUserRight);

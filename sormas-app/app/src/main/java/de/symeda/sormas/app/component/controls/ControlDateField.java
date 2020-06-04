@@ -51,12 +51,13 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.VisualState;
 import de.symeda.sormas.app.component.VisualStateControlType;
+import de.symeda.sormas.app.util.DateFormatHelper;
 
 public class ControlDateField extends ControlPropertyEditField<Date> {
 
     // Views
 
-    private EditText input;
+    protected EditText input;
 
     // Listeners
 
@@ -239,12 +240,13 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 
     @Override
     public void setHint(String value) {
+        this.hint = value;
         input.setHint(value);
     }
 
     @Override
     protected void initialize(Context context, AttributeSet attrs, int defStyle) {
-        dateFormat = DateHelper.getLocalShortDateFormat();
+        dateFormat = DateFormatHelper.getLocalDateFormat();
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(

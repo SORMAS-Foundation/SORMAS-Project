@@ -25,8 +25,12 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 
-public class CSVUtils {
-	
+public final class CSVUtils {
+
+	private CSVUtils() {
+		// Hide Utility Class Constructor
+	}
+
 	public static CSVReader createCSVReader(Reader reader, char separator) {
 		return new CSVReaderBuilder(reader).withCSVParser(new CSVParserBuilder().withSeparator(separator).build()).build();
 	}

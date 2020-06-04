@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,7 +42,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 @SuppressWarnings("serial")
@@ -59,13 +57,14 @@ public class V7GridExportStreamResource extends StreamResource {
 				columns.removeIf(c -> ignoredPropertyIdsList.contains(c.getPropertyId()));
 				Collection<?> itemIds = container.getItemIds();
 
+				List<String> headerRow = new ArrayList<>();
+				columns.forEach(c -> {
+					headerRow.add(c.getHeaderCaption());
+				});
+
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
 		
-						List<String> headerRow = new ArrayList<>();
-						columns.forEach(c -> {
-							headerRow.add(c.getHeaderCaption());
-						});
 						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
 						
 						itemIds.forEach(i -> {
@@ -74,7 +73,7 @@ public class V7GridExportStreamResource extends StreamResource {
 								Property<?> property = container.getItem(i).getItemProperty(c.getPropertyId());
 								if (property.getValue() != null) {
 									if (property.getType() == Date.class) {
-										row.add(DateHelper.formatLocalDateTime((Date) property.getValue()));
+										row.add(DateFormatHelper.formatLocalDateTime((Date) property.getValue()));
 									} else if (property.getType() == Boolean.class) {
 										if ((Boolean) property.getValue() == true) {
 											row.add(I18nProperties.getEnumCaption(YesNoUnknown.YES));
@@ -93,7 +92,7 @@ public class V7GridExportStreamResource extends StreamResource {
 		
 						writer.flush();
 					}					
-					return new BufferedInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
+					return new ByteArrayInputStream(byteStream.toByteArray());
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)

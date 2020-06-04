@@ -1,9 +1,12 @@
 package de.symeda.sormas.ui.caze.porthealthinfo;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -24,44 +27,41 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
-
-	private static final String LOC_POINT_OF_ENTRY_TYPE = PointOfEntryDto.POINT_OF_ENTRY_TYPE;
-	private static final String LOC_POINT_OF_ENTRY = CaseDataDto.POINT_OF_ENTRY;
+	
+	private static final long serialVersionUID = 1L;
+	
+	private static final String POINT_OF_ENTRY_LAYOUT_HTML = 
+			h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
+			fluidRowLocs(PointOfEntryDto.POINT_OF_ENTRY_TYPE, CaseDataDto.POINT_OF_ENTRY);
 	
 	private static final String HTML_LAYOUT_AIRPORT =
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
-			LayoutUtil.fluidRowLocs(LOC_POINT_OF_ENTRY_TYPE, LOC_POINT_OF_ENTRY) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.AIRLINE_NAME, PortHealthInfoDto.FLIGHT_NUMBER) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.DEPARTURE_AIRPORT, PortHealthInfoDto.DEPARTURE_DATE_TIME) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.FREE_SEATING, PortHealthInfoDto.SEAT_NUMBER) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.ARRIVAL_DATE_TIME, PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS) +
-			LayoutUtil.loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_1) +
-			LayoutUtil.loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_2) +
-			LayoutUtil.loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_3) +
-			LayoutUtil.loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_4) +
-			LayoutUtil.loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_5);
+			POINT_OF_ENTRY_LAYOUT_HTML +
+			fluidRowLocs(PortHealthInfoDto.AIRLINE_NAME, PortHealthInfoDto.FLIGHT_NUMBER) +
+			fluidRowLocs(PortHealthInfoDto.DEPARTURE_AIRPORT, PortHealthInfoDto.DEPARTURE_DATE_TIME) +
+			fluidRowLocs(PortHealthInfoDto.FREE_SEATING, PortHealthInfoDto.SEAT_NUMBER) +
+			fluidRowLocs(PortHealthInfoDto.ARRIVAL_DATE_TIME, PortHealthInfoDto.NUMBER_OF_TRANSIT_STOPS) +
+			loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_1) +
+			loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_2) +
+			loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_3) +
+			loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_4) +
+			loc(PortHealthInfoDto.TRANSIT_STOP_DETAILS_5);
 
 	private static final String HTML_LAYOUT_SEAPORT =
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
-			LayoutUtil.fluidRowLocs(LOC_POINT_OF_ENTRY_TYPE, LOC_POINT_OF_ENTRY) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.VESSEL_NAME, PortHealthInfoDto.VESSEL_DETAILS) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.PORT_OF_DEPARTURE, PortHealthInfoDto.LAST_PORT_OF_CALL) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.DEPARTURE_DATE_TIME, PortHealthInfoDto.ARRIVAL_DATE_TIME);
+			POINT_OF_ENTRY_LAYOUT_HTML +
+			fluidRowLocs(PortHealthInfoDto.VESSEL_NAME, PortHealthInfoDto.VESSEL_DETAILS) +
+			fluidRowLocs(PortHealthInfoDto.PORT_OF_DEPARTURE, PortHealthInfoDto.LAST_PORT_OF_CALL) +
+			fluidRowLocs(PortHealthInfoDto.DEPARTURE_DATE_TIME, PortHealthInfoDto.ARRIVAL_DATE_TIME);
 
 	private static final String HTML_LAYOUT_GROUND_CROSSING =
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
-			LayoutUtil.fluidRowLocs(LOC_POINT_OF_ENTRY_TYPE, LOC_POINT_OF_ENTRY) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.CONVEYANCE_TYPE, PortHealthInfoDto.CONVEYANCE_TYPE_DETAILS) +
-			LayoutUtil.fluidRowLocs(PortHealthInfoDto.DEPARTURE_LOCATION, PortHealthInfoDto.FINAL_DESTINATION);
+			POINT_OF_ENTRY_LAYOUT_HTML +
+			fluidRowLocs(PortHealthInfoDto.CONVEYANCE_TYPE, PortHealthInfoDto.CONVEYANCE_TYPE_DETAILS) +
+			fluidRowLocs(PortHealthInfoDto.DEPARTURE_LOCATION, PortHealthInfoDto.FINAL_DESTINATION);
 
 	private static final String HTML_LAYOUT_OTHER =
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
-			LayoutUtil.fluidRowLocs(LOC_POINT_OF_ENTRY_TYPE, LOC_POINT_OF_ENTRY) +
-			LayoutUtil.loc(PortHealthInfoDto.DETAILS);
+			POINT_OF_ENTRY_LAYOUT_HTML +
+			loc(PortHealthInfoDto.DETAILS);
 
 	private PointOfEntryDto pointOfEntry;
 	private String pointOfEntryDetails;
@@ -80,11 +80,11 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 			return;
 		}
 
-		TextField tfPointOfEntryType = addCustomField(LOC_POINT_OF_ENTRY_TYPE, String.class, TextField.class);
+		TextField tfPointOfEntryType = addCustomField(PointOfEntryDto.POINT_OF_ENTRY_TYPE, String.class, TextField.class);
 		tfPointOfEntryType.setValue(pointOfEntry.getPointOfEntryType().toString());
 		tfPointOfEntryType.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, PointOfEntryDto.POINT_OF_ENTRY_TYPE));
 		tfPointOfEntryType.setReadOnly(true);
-		TextField tfPointOfEntry = addCustomField(LOC_POINT_OF_ENTRY, PointOfEntryReferenceDto.class, TextField.class);
+		TextField tfPointOfEntry = addCustomField(CaseDataDto.POINT_OF_ENTRY, PointOfEntryReferenceDto.class, TextField.class);
 		tfPointOfEntry.setValue(InfrastructureHelper.buildPointOfEntryString(pointOfEntry.getUuid(), pointOfEntry.getName(), pointOfEntryDetails));
 		tfPointOfEntry.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.POINT_OF_ENTRY));
 		tfPointOfEntry.setReadOnly(true);

@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private ClinicalVisitService service;
@@ -181,8 +181,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
-	public void deleteClinicalVisit(String clinicalVisitUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteClinicalVisit(String clinicalVisitUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper right call #944
 		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
 			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete clinical visits");
@@ -193,14 +193,12 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		
-		if (user == null) {
+	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date) {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 		
-		return service.getAllActiveClinicalVisitsAfter(date, user).stream()
+		return service.getAllActiveClinicalVisitsAfter(date).stream()
 				.map(t -> toDto(t))
 				.collect(Collectors.toList());
 	}
@@ -214,8 +212,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -225,7 +223,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 	
 	@Override
-	public List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
+	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
 		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
@@ -244,8 +242,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 				clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
 				symptoms.get(Symptoms.ID));
 		
-		User user = userService.getByUuid(userUuid);
-		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit, user);
+		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);

@@ -22,15 +22,13 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.util.ReflectTools;
 
+import de.symeda.sormas.api.region.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 
@@ -44,17 +42,15 @@ import elemental.json.JsonArray;
 @StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
-	final static Logger logger = LoggerFactory.getLogger(LeafletMap.class);
-
 	private static final long serialVersionUID = 1671451734103288729L;
 
-	protected static int currMapId = 0;
+	private static int currMapId = 0;
 
 	public static int nextMapId() {
 		return ++currMapId;
 	}
 
-	protected int mapId = nextMapId();
+	private int mapId = nextMapId();
 
 	/**
 	 * Creates the chart object.
@@ -63,8 +59,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	public LeafletMap() {
 		setId(getDomId());
 		getState().setZoom(5);
-		getState().setCenterLatitude(51.505);
-		getState().setCenterLongitude(-0.09);
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
@@ -104,9 +98,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		return getState().getZoom();
 	}
 
-	public void setCenter(double lat, double lon) {
-		getState().setCenterLatitude(lat);
-		getState().setCenterLongitude(lon);
+	public void setCenter(GeoLatLon coordinates) {
+		getState().setCenterLatitude(coordinates.getLat());
+		getState().setCenterLongitude(coordinates.getLon());
 	}
 	
 	public void setTileLayerVisible(boolean tileLayerVisible) {
@@ -143,11 +137,9 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public interface MarkerClickListener extends Serializable {
 
-		public static final Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class,
-				"markerClick", MarkerClickEvent.class);
+		Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class, "markerClick", MarkerClickEvent.class);
 
-		public void markerClick(MarkerClickEvent event);
-
+		void markerClick(MarkerClickEvent event);
 	}
 
 	public static class MarkerClickEvent extends EventObject {

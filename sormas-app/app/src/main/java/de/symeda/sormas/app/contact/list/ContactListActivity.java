@@ -21,28 +21,40 @@ package de.symeda.sormas.app.contact.list;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.AdapterView;
+
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.joda.time.DateTime;
 
 import java.util.List;
 import java.util.Random;
 
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
 import de.symeda.sormas.app.PagedBaseListFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.contact.edit.ContactNewActivity;
+import de.symeda.sormas.app.databinding.FilterContactListLayoutBinding;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class ContactListActivity extends PagedBaseListActivity {
 
     private static FollowUpStatus[] statusFilters = new FollowUpStatus[]{null, FollowUpStatus.FOLLOW_UP, FollowUpStatus.COMPLETED,
             FollowUpStatus.CANCELED, FollowUpStatus.LOST, FollowUpStatus.NO_FOLLOW_UP};
     private ContactListViewModel model;
+    private FilterContactListLayoutBinding filterBinding;
 
     public static void startActivity(Context context, FollowUpStatus listFilter) {
         BaseListActivity.startActivity(context, ContactListActivity.class, buildBundle(getStatusFilterPosition(statusFilters, listFilter)));
@@ -79,6 +91,9 @@ public class ContactListActivity extends PagedBaseListActivity {
             adapter.submitList(contacts);
             hidePreloader();
         });
+
+        filterBinding.setCriteria(model.getContactCriteria());
+
         setOpenPageCallback(p -> {
             showPreloader();
             ((ContactListAdapter) adapter).setCurrentListFilter(statusFilters[((PageMenuItem) p).getPosition()]);
@@ -140,13 +155,53 @@ public class ContactListActivity extends PagedBaseListActivity {
     }
 
     @Override
+    public void goToNewView() {
+        ContactNewActivity.startActivity(getContext(), null);
+    }
+
+    @Override
+    public boolean isEntryCreateAllowed() {
+        return ConfigProvider.hasUserRight(UserRight.CONTACT_CREATE);
+    }
+
+    @Override
     protected int getActivityTitle() {
         return R.string.heading_contacts_list;
     }
 
     @Override
     public void addFiltersToPageMenu() {
-        // Not supported yet
+        View contactListFilterView = getLayoutInflater().inflate(R.layout.filter_contact_list_layout, null);
+        filterBinding = DataBindingUtil.bind(contactListFilterView);
+
+        List<Item> diseases = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
+        filterBinding.diseaseFilter.initializeSpinner(diseases);
+        List<Item> contactClassifications = DataUtils.getEnumItems(ContactClassification.class);
+        filterBinding.contactClassificationFilter.initializeSpinner(contactClassifications);
+
+        filterBinding.reportDateFromFilter.initializeDateField(getSupportFragmentManager());
+        filterBinding.reportDateToFilter.initializeDateField(getSupportFragmentManager());
+
+        pageMenu.addFilter(contactListFilterView);
+
+        filterBinding.applyFilters.setOnClickListener(e -> {
+            showPreloader();
+            pageMenu.hideAll();
+            model.notifyCriteriaUpdated();
+        });
+
+        filterBinding.resetFilters.setOnClickListener(e -> {
+            showPreloader();
+            pageMenu.hideAll();
+            model.getContactCriteria().setTextFilter(null);
+            model.getContactCriteria().setContactClassification(null);
+            model.getContactCriteria().setDisease(null);
+            model.getContactCriteria().setReportDateFrom(null);
+            model.getContactCriteria().setReportDateTo(null);
+            filterBinding.invalidateAll();
+            filterBinding.executePendingBindings();
+            model.notifyCriteriaUpdated();
+        });
     }
 
 }

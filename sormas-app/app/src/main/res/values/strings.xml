@@ -224,12 +224,6 @@
     <string name="caption_visit_time">Time of Visit</string>
     <string name="caption_year">Year</string>
     <string name="caption_latest_submission">Latest Submission: %1$s</string>
-    <string name="caption_aggregate_new_cases">New cases</string>
-    <string name="caption_aggregate_lab_confirmations">Lab confirmations</string>
-    <string name="caption_aggregate_deaths">Deaths</string>
-    <string name="caption_aggregate_new_cases_abbr">C</string>
-    <string name="caption_aggregate_lab_confirmations_abbr">L</string>
-    <string name="caption_aggregate_deaths_abbr">D</string>
 
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
@@ -321,7 +315,7 @@
     <string name="heading_outbreak_response">Outbreak Response</string>
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
-    <string name="heading_pick_or_create_person">Pick or create person</string>
+    <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
@@ -397,6 +391,7 @@
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>
+    <string name="hint_contact_text_filter">Contact ID or contact person name</string>
 
     <string name="indicator_error">ERROR</string>
     <string name="indicator_required">*</string>
@@ -405,23 +400,22 @@
 
     <string name="info_add_cases_before_report_submit">Are you sure you want to submit these case numbers for the selected epi week?</string>
     <string name="info_app_download">Downloading new SORMAS version... Depending on your internet connection, this may take a while.</string>
-    <string name="info_create_person">If the person you have created is <b>not</b> among the suggested list of existing persons, click the \"Create\" button.</string>
+    <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="info_initial_synchronization">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="info_no_additional_test">No additional tests performed on this sample yet</string>
     <string name="info_no_sample_test">Sample has not been tested yet</string>
-    <string name="info_pick_person">If applicable, select a matching person by tapping on them and then clicking the \"Select\" button below. <b>Do this only if you are absolutely sure that the person you have specified is the same as one of the persons in this list.</b></string>
+    <string name="info_pick_person">Please look through this list of persons. <b>If you feel certain</b> that the personal details you have entered belong to one of these persons, select that person by tapping on them and then click the \"Select\" button below.</string>
     <string name="info_reset_pin">To reset your PIN you will <b>need your SORMAS user password.</b></string>
     <string name="info_resync_duration">Re-sync will probably take several minutes.</string>
     <string name="info_select_create_person">Please select a person or click \'Create\' to create a new one.</string>
     <string name="info_sign_in">Sign into SORMAS to continue the journey of saving lives.</string>
-    <string name="info_similar_persons_found">The name of at least one person already existing in SORMAS is similar to the name you entered.</string>
+    <string name="info_similar_persons_found">SORMAS already contains at least one person that seems to be very similar to the personal details you have entered.</string>
     <string name="info_symptoms">Please select an answer for ALL symptoms indicating if they occurred during this illness between symptom onset and case detection:</string>
     <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="info_pick_or_create_case">There is at least one existing case in the database that seems very similar to the one you are about to create. Please do one of the following:\n\n\u2022 Tap on a case that you <b>are sure</b> is the same case that you were about to create\n\u2022 Scroll to the bottom of this window and check the check box if you <b>are sure</b> that your case is a new case\n\nClick on the button in the bottom right to confirm your choice.</string>
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
-    <string name="info_aggregate_report_legend">C = New cases; L = Lab confirmations; D = Deaths</string>
 
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
@@ -465,6 +459,7 @@
     <string name="message_report_not_sent">Unable to send report at this time.</string>
     <string name="message_report_sent">Problem report successfully sent.</string>
     <string name="message_save_error">%1$s could not be saved because of an internal error.</string>
+    <string name="message_edit_forbidden">You do not have permission to edit the record from this jurisdiction.</string>
     <string name="message_save_success">%1$s saved successfully.</string>
     <string name="message_settings_saved">Application settings has been changed.</string>
     <string name="message_settings_server_url">Welcome! Please start by entering the URL of your SORMAS server. Afterwards you can log-in with your user name and password.</string>
@@ -579,5 +574,9 @@
     <string name="value_visit_time_unknown">Visit Time N/A</string>
     <string name="value_visiting_person_unknown">Attending Clinician N/A</string>
     <string name="value_investigation_status_unknown">Investigation Status N/A</string>
+    <string name="sample_not_found">Could not find sample</string>
+    <string name="no_camera_permission">No camera permission</string>
+    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="scan_field_sample_id">Scan field sample id</string>
 
 </resources>

@@ -17,15 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -85,13 +90,25 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @RunAs(UserRole._SYSTEM)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
+	
+	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
+	
+	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 
+	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
+
+	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
+			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
+			"\\(\\s*version_number\\s*,[^)]+\\)\\s*" +
+			"VALUES\\s*\\(\\s*([0-9]+)\\s*,.+");
+	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME_AUDITLOG)
-	protected EntityManager emAudit;
+	private EntityManager emAudit;
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
@@ -129,13 +146,14 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		logger.info("Initiating automatic database update of main database...");
 
-		updateDatabase(em, "/sql/sormas_schema.sql");
+		checkDatabaseConfig(em);
+		
+		logger.info("Initiating automatic database update of main database...");
+		updateDatabase(em, SORMAS_SCHEMA);
 
 		logger.info("Initiating automatic database update of audit database...");
-
-		updateDatabase(emAudit, "/sql/sormas_audit_schema.sql");
+		updateDatabase(emAudit, AUDIT_SCHEMA);
 
 		I18nProperties.setDefaultLanguage(Language.fromLocaleString(configFacade.getCountryLocale()));
 
@@ -398,39 +416,70 @@ public class StartupShutdownService {
 		}
 	}
 
+	/**
+	 * Checks if the PostgreSQL server is configured correctly to run SORMAS.
+	 */
+	private void checkDatabaseConfig(EntityManager entityManager) {
+
+		List<String> errors = new ArrayList<>();
+
+		// Check postgres version
+		String versionRegexp = Stream.of("9\\.5", "9\\.6", "10\\.\\d+").collect(Collectors.joining(")|(", "(", ")"));
+		String versionString = entityManager.createNativeQuery("SHOW server_version").getSingleResult().toString();
+		if (!versionString.matches(versionRegexp)) {
+			logger.warn("Your PostgreSQL Version ({}) is currently not supported.", versionString);
+		}
+
+		// Check setting "max_prepared_transactions"
+		int maxPreparedTransactions =
+			Integer.parseInt(entityManager.createNativeQuery("select current_setting('max_prepared_transactions')").getSingleResult().toString());
+		if (maxPreparedTransactions < 1) {
+			errors.add("max_prepared_transactions is not set. A value of at least 64 is recommended.");
+		} else if (maxPreparedTransactions < 64) {
+			logger.info("max_prepared_transactions is set to {}. A value of at least 64 is recommended.", maxPreparedTransactions);
+		}
+
+		// Check that required extensions are installed
+		Stream.of("temporal_tables", "pg_trgm").filter(t -> {
+			String q = "select count(*) from pg_extension where extname = '" + t + "'";
+			int count = ((Number) entityManager.createNativeQuery(q).getSingleResult()).intValue();
+			return count == 0;
+		}).map(t -> "extension '" + t + "' has to be installed").forEach(errors::add);
+
+		if (!errors.isEmpty()) {
+			// List all config problems and stop deployment
+			throw new RuntimeException(errors.stream().collect(Collectors.joining("\n * ", "Postgres setup is not compatible:\n * ", "")));
+		}
+	}
+
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
 		logger.info("Starting automatic database update...");
 
 		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
-		Integer currentVersion;
+		Integer databaseVersion;
 		if (hasSchemaVersion) {
-			currentVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
+			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
 		} else {
-			currentVersion = null;
+			databaseVersion = null;
 		}
-		File schemaFile = new File(getClass().getClassLoader().getResource(schemaFileName).getFile());
-		Scanner scanner = null;
 
-		try {
-			scanner = new Scanner(schemaFile);
+		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
+				Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
-			boolean currentVersionReached = currentVersion == null;
+			boolean currentVersionReached = databaseVersion == null;
 
 			while (scanner.hasNextLine()) {
 				String nextLine = scanner.nextLine();
 
-				if (nextLine.isEmpty()) {
+				if (isBlankOrSqlComment(nextLine)) {
 					continue;
 				}
+				
+				Integer schemaLineVersion = extractSchemaVersion(nextLine);
 
-				if (nextLine.trim().startsWith("--")) {
-					continue;
-				}
-
+				//skip until current version of database is reached
 				if (!currentVersionReached) {
-					if (nextLine.startsWith("INSERT INTO schema_version (version_number, comment) VALUES (" + currentVersion)) {
-						currentVersionReached = true;
-					}
+					currentVersionReached = databaseVersion.equals(schemaLineVersion);
 					continue;
 				}
 
@@ -440,20 +489,31 @@ public class StartupShutdownService {
 				nextUpdateBuilder.append(nextLine).append("\n");
 
 				// Perform the current update when the INSERT INTO schema_version statement is reached
-				if (nextLine.startsWith("INSERT INTO schema_version")) {
-					String newVersion = nextLine.substring(61, nextLine.indexOf(",", 61));
-					logger.info("Updating database to version " + newVersion + "...");
+				if (schemaLineVersion != null) {
+					logger.info("Updating database to version {}...", schemaLineVersion);
 					entityManager.createNativeQuery(nextUpdateBuilder.toString()).executeUpdate();
-					nextUpdateBuilder = new StringBuilder();
+					nextUpdateBuilder.setLength(0);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			logger.error("Could not find " + schemaFileName + " file. Database update not performed.");
-			throw new RuntimeException(e);
+		} catch (IOException e) {
+			logger.error("Could not load {} file. Database update not performed.", schemaFileName);
+			throw new UncheckedIOException(e);
 		} finally {
-			scanner.close();
 			logger.info("Database update completed.");
 		}
+	}
+
+	static boolean isBlankOrSqlComment(String sqlLine) {
+		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
+	}
+	
+	static Integer extractSchemaVersion(String sqlLine) {
+		return Optional.ofNullable(sqlLine)
+				.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+				.filter(Matcher::matches)
+				.map(m -> m.group(1))
+				.map(Integer::parseInt)
+				.orElse(null);
 	}
 
 	private void upgrade() {
@@ -500,6 +560,12 @@ public class StartupShutdownService {
 			importFacade.generateCaseContactImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create case contact import template .csv file.");
+		}
+
+		try {
+			importFacade.generateContactImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create contact import template .csv file.");
 		}
 
 		try {

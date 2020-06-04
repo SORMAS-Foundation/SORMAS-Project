@@ -18,13 +18,13 @@ public interface ClinicalVisitFacade {
 	
 	ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit);
 	
-	void deleteClinicalVisit(String clinicalVisitUuid, String userUuid);
+	void deleteClinicalVisit(String clinicalVisitUuid);
 	
-	List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, String userUuid);
+	List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date);
 	
 	List<ClinicalVisitDto> getByUuids(List<String> uuids);
 	
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 	
-	List<ClinicalVisitExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max);
+	List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max);
 }

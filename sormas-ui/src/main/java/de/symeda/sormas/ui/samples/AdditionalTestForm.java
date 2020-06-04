@@ -1,5 +1,11 @@
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -10,29 +16,30 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.TEST_DATE_TIME, "") +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.HAEMOGLOBINURIA, AdditionalTestDto.PROTEINURIA) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.HEMATURIA, "") +
-			LayoutUtil.h4(I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS)) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.ARTERIAL_VENOUS_GAS_PH, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PCO2,
+			fluidRowLocs(AdditionalTestDto.TEST_DATE_TIME, "") +
+			fluidRowLocs(AdditionalTestDto.HAEMOGLOBINURIA, AdditionalTestDto.PROTEINURIA) +
+			fluidRowLocs(AdditionalTestDto.HEMATURIA, "") +
+			
+			h4(I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS)) +
+			fluidRowLocs(AdditionalTestDto.ARTERIAL_VENOUS_GAS_PH, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PCO2,
 					AdditionalTestDto.ARTERIAL_VENOUS_GAS_PAO2, AdditionalTestDto.ARTERIAL_VENOUS_GAS_HCO3) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.GAS_OXYGEN_THERAPY, "") +
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, AdditionalTestDto.ALT_SGPT, AdditionalTestDto.TOTAL_BILIRUBIN) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.AST_SGOT, AdditionalTestDto.CONJ_BILIRUBIN) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.CREATININE, AdditionalTestDto.WBC_COUNT) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.POTASSIUM, AdditionalTestDto.PLATELETS) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.UREA, AdditionalTestDto.PROTHROMBIN_TIME) +
-			LayoutUtil.fluidRowLocs(AdditionalTestDto.HAEMOGLOBIN, "") +
-			LayoutUtil.loc(AdditionalTestDto.OTHER_TEST_RESULTS);
+			fluidRowLocs(AdditionalTestDto.GAS_OXYGEN_THERAPY, "") +
+			fluidRowLocsCss(VSPACE_TOP_3, AdditionalTestDto.ALT_SGPT, AdditionalTestDto.TOTAL_BILIRUBIN) +
+			fluidRowLocs(AdditionalTestDto.AST_SGOT, AdditionalTestDto.CONJ_BILIRUBIN) +
+			fluidRowLocs(AdditionalTestDto.CREATININE, AdditionalTestDto.WBC_COUNT) +
+			fluidRowLocs(AdditionalTestDto.POTASSIUM, AdditionalTestDto.PLATELETS) +
+			fluidRowLocs(AdditionalTestDto.UREA, AdditionalTestDto.PROTHROMBIN_TIME) +
+			fluidRowLocs(AdditionalTestDto.HAEMOGLOBIN, "") +
+			loc(AdditionalTestDto.OTHER_TEST_RESULTS);
 
 	private final SampleDto sample;
 

@@ -26,8 +26,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -223,6 +225,12 @@ public class SampleGridComponent extends VerticalLayout {
 		searchField.addTextChangeListener(e -> {
 			criteria.caseCodeIdLike(e.getText());
 			grid.reload();
+			
+			//open sample if it's the only one
+			if (grid.getItemCount() == 1) {
+				ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
+				Notification.show(I18nProperties.getString(Strings.messageSampleOpened) + " \"" + criteria.getCaseCodeIdLike() + "\"", Type.WARNING_MESSAGE);
+			}
 		});
 		filterLayout.addComponent(searchField);
 

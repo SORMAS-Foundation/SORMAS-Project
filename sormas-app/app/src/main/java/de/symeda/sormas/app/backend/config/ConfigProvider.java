@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -78,7 +79,7 @@ public final class ConfigProvider {
     private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
     private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
     private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
-    private static String LOCALE = "locale";
+    private static String SERVER_LOCALE = "locale";
     private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
 
     public static ConfigProvider instance = null;
@@ -103,7 +104,7 @@ public final class ConfigProvider {
     private Date lastDeletedSyncDate;
     private Long currentAppDownloadId;
     private Boolean accessGranted;
-    private String locale;
+    private String serverLocale;
     private Boolean repullNeeded;
     private Boolean initialSyncRequired;
 
@@ -510,7 +511,7 @@ public final class ConfigProvider {
         }
 
         instance.lastNotificationDate = lastNotificationDate;
-        saveConfigEntry(LAST_NOTIFICATION_DATE, String.valueOf(lastNotificationDate.getTime()));
+        saveConfigEntry(LAST_NOTIFICATION_DATE, lastNotificationDate != null ? String.valueOf(lastNotificationDate.getTime()) : null);
     }
 
     public static Date getLastArchivedSyncDate() {
@@ -535,7 +536,7 @@ public final class ConfigProvider {
         }
 
         instance.lastArchivedSyncDate = lastArchivedSyncDate;
-        saveConfigEntry(LAST_ARCHIVED_SYNC_DATE, String.valueOf(lastArchivedSyncDate.getTime()));
+        saveConfigEntry(LAST_ARCHIVED_SYNC_DATE, lastArchivedSyncDate != null ? String.valueOf(lastArchivedSyncDate.getTime()) : null);
     }
 
     public static Date getLastDeletedSyncDate() {
@@ -560,7 +561,7 @@ public final class ConfigProvider {
         }
 
         instance.lastDeletedSyncDate = lastDeletedSyncDate;
-        saveConfigEntry(LAST_DELETED_SYNC_DATE, String.valueOf(lastDeletedSyncDate.getTime()));
+        saveConfigEntry(LAST_DELETED_SYNC_DATE, lastDeletedSyncDate != null ? String.valueOf(lastDeletedSyncDate.getTime()) : null);
     }
 
     public static Long getCurrentAppDownloadId() {
@@ -569,7 +570,7 @@ public final class ConfigProvider {
                 if (instance.currentAppDownloadId == null) {
                     Config config = DatabaseHelper.getConfigDao().queryForId(CURRENT_APP_DOWNLOAD_ID);
                     if (config != null) {
-                        instance.currentAppDownloadId = Long.parseLong(config.getValue());
+                        instance.currentAppDownloadId = DataHelper.tryParseLong(config.getValue());
                     }
                 }
             }
@@ -583,7 +584,7 @@ public final class ConfigProvider {
         }
 
         instance.currentAppDownloadId = currentAppDownloadId;
-        saveConfigEntry(CURRENT_APP_DOWNLOAD_ID, String.valueOf(currentAppDownloadId));
+        saveConfigEntry(CURRENT_APP_DOWNLOAD_ID, currentAppDownloadId != null ? String.valueOf(currentAppDownloadId) : null);
     }
 
     public static Boolean isAccessGranted() {
@@ -611,22 +612,24 @@ public final class ConfigProvider {
 
     /**
      * When no locale is set Locale.getDefault is set.
+     * (Actually not relevant, because the locale is always updated to the server's, so this is just a fallback).
+     * @return Will never be null.
      */
     public static String getServerLocale() {
-        if (instance.locale == null)
+        if (instance.serverLocale == null)
             synchronized (ConfigProvider.class) {
-                if (instance.locale == null) {
-                    Config config = DatabaseHelper.getConfigDao().queryForId(LOCALE);
+                if (instance.serverLocale == null) {
+                    Config config = DatabaseHelper.getConfigDao().queryForId(SERVER_LOCALE);
                     if (config != null) {
-                        instance.locale = config.getValue();
+                        instance.serverLocale = config.getValue();
                     }
 
-                    if (instance.locale == null) {
-                        setLocale(Locale.getDefault().toString());
+                    if (instance.serverLocale == null) {
+                        setServerLocale(Locale.getDefault().toString());
                     }
                 }
             }
-        return instance.locale;
+        return instance.serverLocale;
     }
 
     public static boolean isGermanServer() {
@@ -636,17 +639,17 @@ public final class ConfigProvider {
     /**
      * Note: This will only take effect after the app has been restarted
      */
-    public static void setLocale(String locale) {
-        if (locale != null && locale.isEmpty()) {
-            locale = null;
+    public static void setServerLocale(String serverLocale) {
+        if (serverLocale != null && serverLocale.isEmpty()) {
+            serverLocale = null;
         }
 
-        if (locale == instance.locale
-                || (locale != null && locale.equals(instance.locale)))
+        if (serverLocale == instance.serverLocale
+                || (serverLocale != null && serverLocale.equals(instance.serverLocale)))
             return;
 
-        instance.locale = locale;
-        saveConfigEntry(LOCALE, locale);
+        instance.serverLocale = serverLocale;
+        saveConfigEntry(SERVER_LOCALE, serverLocale);
     }
 
     public static boolean isRepullNeeded() {
@@ -685,6 +688,18 @@ public final class ConfigProvider {
 
         instance.initialSyncRequired = initialSyncRequired;
         DatabaseHelper.getConfigDao().createOrUpdate(new Config(INITIAL_SYNC_REQUIRED, String.valueOf(initialSyncRequired)));
+    }
+
+    public static boolean hasRole (UserRole userRoleName){
+        User user = ConfigProvider.getUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> userRole.name().equals(userRoleName.toString())).collect(Collectors.toList()).isEmpty();
+    }
+
+    public static boolean hasRole(Set<UserRole> typeRoles) {
+        User user = ConfigProvider.getUser();
+        Set<UserRole> userRoles = user.getUserRoles();
+        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }
 
 }

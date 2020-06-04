@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.contact.read;
 
 import android.os.Bundle;
-import android.view.View;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -43,27 +42,23 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     }
 
     private void setUpControlListeners(FragmentContactReadLayoutBinding contentBinding) {
-        contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CaseReadActivity.startActivity(getContext(), sourceCase.getUuid(), true);
-            }
-        });
-
-        contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CaseReadActivity.startActivity(getContext(), record.getResultingCaseUuid(), true);
-            }
-        });
+        contentBinding.openSourceCase.setOnClickListener(v -> CaseReadActivity.startActivity(getContext(), sourceCase.getUuid(), true));
+        contentBinding.openResultingCase.setOnClickListener(v -> CaseReadActivity.startActivity(getContext(), record.getResultingCaseUuid(), true));
     }
 
     private void setUpFieldVisibilities(FragmentContactReadLayoutBinding contentBinding) {
-        setVisibilityByDisease(ContactDto.class, sourceCase.getDisease(), contentBinding.mainContent);
+        setVisibilityByDisease(ContactDto.class, record.getDisease(), contentBinding.mainContent);
 
         if (record.getResultingCaseUuid() == null
                 || DatabaseHelper.getCaseDao().queryUuidBasic(record.getResultingCaseUuid()) == null) {
             contentBinding.openResultingCase.setVisibility(GONE);
+        }
+        if (sourceCase == null) {
+            contentBinding.openSourceCase.setVisibility(GONE);
+        } else {
+            contentBinding.contactDisease.setVisibility(GONE);
+            contentBinding.contactCaseIdExternalSystem.setVisibility(GONE);
+            contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
         }
 
         if (!ConfigProvider.isGermanServer()) {
@@ -71,6 +66,10 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
             contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
             contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
             contentBinding.contactExternalID.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+            contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
         }
     }
 
@@ -79,7 +78,9 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
     @Override
     protected void prepareFragmentData(Bundle savedInstanceState) {
         record = getActivityRootData();
-        sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
+        if (record.getCaseUuid() != null) {
+            sourceCase = DatabaseHelper.getCaseDao().queryUuidBasic(record.getCaseUuid());
+        }
     }
 
     @Override

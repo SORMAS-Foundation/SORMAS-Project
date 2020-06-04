@@ -30,6 +30,8 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 
 	ADO getByUuid(@NotNull String uuid);
 
+	Boolean exists(@NotNull String uuid);
+
 	/**
 	 * <b>DELETES</b> an entity from the database!
 	 * 

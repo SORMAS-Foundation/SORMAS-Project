@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+
 import java.util.Set;
 
 import com.vaadin.ui.Label;
@@ -42,29 +47,32 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-@SuppressWarnings("serial")
 public class UserEditForm extends AbstractEditForm<UserDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 	
 	private static final String USER_EMAIL_DESC_LOC = "userEmailDescLoc";
 	private static final String USER_PHONE_DESC_LOC = "userPhoneDescLoc";
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonData))+
-			LayoutUtil.fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME)+
-			LayoutUtil.fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE)+
-			LayoutUtil.fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC)+
-			LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_TOP_3, UserDto.LANGUAGE, "")+
-			LayoutUtil.h3(I18nProperties.getString(Strings.address)) +
-			LayoutUtil.fluidRowLocs(UserDto.ADDRESS) +
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingUserData)) +
-			LayoutUtil.fluidRowLocs(UserDto.ACTIVE) +
-			LayoutUtil.fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
-			LayoutUtil.fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
-			LayoutUtil.fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
-			LayoutUtil.fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
+    		h3(I18nProperties.getString(Strings.headingPersonData)) +
+			fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
+			fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
+			fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC) +
+			fluidRowLocsCss(VSPACE_TOP_3, UserDto.LANGUAGE, "") +
+			
+			h3(I18nProperties.getString(Strings.address)) +
+			fluidRowLocs(UserDto.ADDRESS) +
+			
+			h3(I18nProperties.getString(Strings.headingUserData)) +
+			fluidRowLocs(UserDto.ACTIVE) +
+			fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
+			fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
+			fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
+			fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     
     public UserEditForm(boolean create, UserRight editOrCreateUserRight) {
         super(UserDto.class, UserDto.I18N_PREFIX, editOrCreateUserRight);
@@ -231,7 +239,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 	}
 
 	class UserNameValidator implements Validator {
-	    @Override
+		
+		private static final long serialVersionUID = 1L;
+		
+		@Override
 	    public void validate(Object value)
 	            throws InvalidValueException {
 	    	UserDto dto = getValue();

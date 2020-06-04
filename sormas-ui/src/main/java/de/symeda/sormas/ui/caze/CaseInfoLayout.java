@@ -22,18 +22,17 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
 public class CaseInfoLayout extends HorizontalLayout {
@@ -106,7 +105,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(rightColumnLayout, caseDto.getCaseClassification(),
 						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
-				addDescLabel(rightColumnLayout, DateHelper.formatLocalShortDate(caseDto.getSymptoms().getOnsetDate()),
+				addDescLabel(rightColumnLayout, DateFormatHelper.formatDate(caseDto.getSymptoms().getOnsetDate()),
 						I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			}
 		}

@@ -29,6 +29,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -95,7 +96,7 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 				CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS, 
 				CaseIndexDto.PERSON_FIRST_NAME, CaseIndexDto.PERSON_LAST_NAME, 
 				CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
-				CaseIndexDto.REPORT_DATE, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
+				CaseIndexDto.REPORT_DATE, CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS);
 		
 		if (FacadeProvider.getConfigFacade().isGermanServer()) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
@@ -107,11 +108,13 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
+		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+			((Column<CaseIndexDto, Date>)getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
@@ -161,19 +164,17 @@ public class CaseGrid extends FilteredGrid<CaseIndexDto, CaseCriteria> {
 	public void setLazyDataProvider() {
 		DataProvider<CaseIndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getCaseFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), UserProvider.getCurrent().getUuid(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getCaseFacade().count(
-						query.getFilter().orElse(null), UserProvider.getCurrent().getUuid());
-				});
+				query -> (int) FacadeProvider.getCaseFacade().count(
+					query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(getCriteria(), null, null, UserProvider.getCurrent().getUuid(), null).stream());
+		ListDataProvider<CaseIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getCaseFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

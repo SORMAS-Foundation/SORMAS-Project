@@ -19,7 +19,7 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/task_list_filters">
+    android:id="@+id/case_list_filters">
 
     <data>
         <import type="de.symeda.sormas.api.task.TaskAssignee" />

@@ -1,15 +1,17 @@
 package de.symeda.sormas.ui.clinicalcourse;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(ClinicalCourseDto.HEALTH_CONDITIONS);
+			fluidRowLocs(ClinicalCourseDto.HEALTH_CONDITIONS);
 	
 	public ClinicalCourseForm(UserRight editOrCreateUserRight) {
 		super(ClinicalCourseDto.class, ClinicalCourseDto.I18N_PREFIX, editOrCreateUserRight);

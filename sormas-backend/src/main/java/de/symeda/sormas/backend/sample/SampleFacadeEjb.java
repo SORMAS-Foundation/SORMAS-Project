@@ -74,18 +74,13 @@ import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.user.User;
@@ -98,8 +93,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private SampleService sampleService;
@@ -114,21 +111,9 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private CaseService caseService;
 	@EJB
-	private RegionService regionService;
-	@EJB
-	private DistrictService districtService;
-	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private RegionFacadeEjbLocal regionFacade;
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private PathogenTestFacadeEjbLocal sampleTestFacade;
 	@EJB
 	private MessagingService messagingService;
 	@EJB
@@ -138,11 +123,9 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 
-	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
-
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -152,8 +135,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}	
 
 	@Override
-	public List<SampleDto> getAllActiveSamplesAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<SampleDto> getAllActiveSamplesAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if(user == null) {
 			return Collections.emptyList();
@@ -171,10 +154,18 @@ public class SampleFacadeEjb implements SampleFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
+		return sampleService.getByCaseUuids(caseUuids)
+				.stream()
+				.map(c -> toDto(c))
+				.collect(Collectors.toList());
+	}
 
 	@Override
-	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuidsSince(Date since) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -220,7 +211,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -242,11 +233,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				caseRegion.get(Region.UUID), caseDistrict.get(District.UUID), caseDistrict.get(District.NAME), sample.get(Sample.PATHOGEN_TEST_RESULT), 
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED), cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)));
 
-		Predicate filter = null;
-		if (userUuid != null) {
-			User user = userService.getByUuid(userUuid);
-			filter = sampleService.createUserFilter(cb, cq, sample, user);
-		}
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
@@ -332,7 +319,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 	
-	private List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
+	private List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, CaseCriteria caseCriteria, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sample = cq.from(Sample.class);
@@ -395,8 +382,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				caze.get(Case.HEALTH_FACILITY_DETAILS)
 				);
 
-		User user = userService.getByUuid(userUuid);
-		Predicate filter = sampleService.createUserFilter(cb, cq, sample, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, sample);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, sample);
@@ -488,22 +474,21 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(String userUuid, SampleCriteria criteria, int first, int max) {
-		return getExportList(userUuid, criteria, null, first, max);
+	public List<SampleExportDto> getExportList(SampleCriteria criteria, int first, int max) {
+		return getExportList(criteria, null, first, max);
 	}
 
 	@Override
-	public List<SampleExportDto> getExportList(String userUuid, CaseCriteria criteria, int first, int max) {
-		return getExportList(userUuid, null, criteria, first, max);
+	public List<SampleExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+		return getExportList(null, criteria, first, max);
 	}
 
 	@Override
-	public long count(String userUuid, SampleCriteria sampleCriteria) {
+	public long count(SampleCriteria sampleCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Sample> root = cq.from(Sample.class);
-		User user = userService.getByUuid(userUuid);
-		Predicate filter = sampleService.createUserFilter(cb, cq, root, user);
+		Predicate filter = sampleService.createUserFilter(cb, cq, root);
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -521,10 +506,10 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void deleteSample(SampleReferenceDto sampleRef, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteSample(SampleReferenceDto sampleRef) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete samples.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
 		}
 		
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
@@ -552,6 +537,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setLabSampleID(source.getLabSampleID());
+		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -594,6 +580,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setLabSampleID(source.getLabSampleID());
+		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));

@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Link;

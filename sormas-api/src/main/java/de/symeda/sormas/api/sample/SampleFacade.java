@@ -30,15 +30,15 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface SampleFacade {
 
-	List<SampleDto> getAllActiveSamplesAfter(Date date, String userUuid);
+	List<SampleDto> getAllActiveSamplesAfter(Date date);
 	
-	List<SampleIndexDto> getIndexList(String userUuid, SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
-	List<SampleExportDto> getExportList(String userUuid, SampleCriteria sampleCriteria, int first, int max);
+	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, int first, int max);
 	
-	List<SampleExportDto> getExportList(String userUuid, CaseCriteria caseCriteria, int first, int max);
+	List<SampleExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
 	
-	long count(String userUuid, SampleCriteria sampleCriteria);
+	long count(SampleCriteria sampleCriteria);
 	
 	SampleDto getSampleByUuid(String uuid);
 	
@@ -48,18 +48,20 @@ public interface SampleFacade {
 	
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	List<SampleDto> getByUuids(List<String> uuids);
 	
-	void deleteSample(SampleReferenceDto sampleRef, String userUuid);
+	void deleteSample(SampleReferenceDto sampleRef);
 	
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String sampleUuid);
 	
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
+	
+	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 	
 }

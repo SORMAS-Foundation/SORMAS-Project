@@ -27,35 +27,36 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/pathogentests")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PathogenTestDto> getAllPathogenTests(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<PathogenTestDto> sampleTests = FacadeProvider.getPathogenTestFacade()
-				.getAllActivePathogenTestsAfter(new Date(since), userDto.getUuid());
-		return sampleTests;
+	public List<PathogenTestDto> getAllPathogenTests(@PathParam("since") long since) {
+		return FacadeProvider.getPathogenTestFacade()
+				.getAllActivePathogenTestsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PathogenTestDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PathogenTestDto> getByUuids(List<String> uuids) {
 		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getByUuids(uuids);
+		return result;
+	}
+	
+	@POST
+	@Path("/query/samples")
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		List<PathogenTestDto> result = FacadeProvider.getPathogenTestFacade().getBySampleUuids(sampleUuids);
 		return result;
 	}
 
@@ -68,20 +69,13 @@ public class PathogenTestResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getPathogenTestFacade().getAllActiveUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getPathogenTestFacade().getAllActiveUuids();
 	}
 	
 	@GET
 	@Path("/deleted/{since}")
-	public List<String> getDeletedUuidsSince(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getPathogenTestFacade().getDeletedUuidsSince(userDto.getUuid(), new Date(since));
-		return uuids;
+	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getPathogenTestFacade().getDeletedUuidsSince(new Date(since));
 	}
-	
 }

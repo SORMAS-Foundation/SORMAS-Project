@@ -19,12 +19,17 @@ package de.symeda.sormas.api.epidata;
 
 import java.util.Date;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
-public class EpiDataTravelHelper {
+public final class EpiDataTravelHelper {
 
-	public static String buildTravelString(TravelType travelType,  String travelDestination, Date travelDateFrom, Date travelDateTo) {
+	private EpiDataTravelHelper() {
+		// Hide Utility Class Constructor
+	}
+
+	public static String buildTravelString(TravelType travelType,  String travelDestination, Date travelDateFrom, Date travelDateTo, Language language) {
 		StringBuilder resultString = new StringBuilder();
 		
 		if (!DataHelper.isNullOrEmpty(travelDestination)) {
@@ -42,7 +47,7 @@ public class EpiDataTravelHelper {
 			if (resultString.length() > 0) {
 				resultString.append(" ");
 			}
-			resultString.append(DateHelper.formatLocalShortDate(travelDateFrom));
+			resultString.append(DateHelper.formatLocalDate(travelDateFrom, language));
 		}
 
 		if (travelDateTo != null) {
@@ -51,10 +56,10 @@ public class EpiDataTravelHelper {
 			} else if (resultString.length() > 0) {
 				resultString.append(" ");
 			}
-			resultString.append(DateHelper.formatLocalShortDate(travelDateTo));
+			resultString.append(DateHelper.formatLocalDate(travelDateTo, language));
 		}
 		
 		return resultString.toString();
 	}
-	
+
 }

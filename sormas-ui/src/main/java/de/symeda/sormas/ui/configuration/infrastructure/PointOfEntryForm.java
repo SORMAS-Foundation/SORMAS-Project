@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -13,17 +15,18 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
 public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE)
-			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT)
-			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE)
-					+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID)
-			+ LayoutUtil.fluidRowLocs(PointOfEntryDto.ACTIVE, "");
+			fluidRowLocs(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE) +
+			fluidRowLocs(PointOfEntryDto.REGION, PointOfEntryDto.DISTRICT) +
+			fluidRowLocs(PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE) +
+			fluidRowLocs(RegionDto.EXTERNAL_ID) +
+			fluidRowLocs(PointOfEntryDto.ACTIVE, "");
 	
 	private boolean create;
 	

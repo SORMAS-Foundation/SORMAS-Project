@@ -19,12 +19,15 @@
 package de.symeda.sormas.app.backend.contact;
 
 import android.location.Location;
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -33,6 +36,7 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -93,7 +97,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
             where.and(where.eq(Contact.PERSON, person),
                     where.eq(AbstractDomainObject.SNAPSHOT, false));
             if (disease != null) {
-                where.and(where, where.eq(Contact.CASE_DISEASE, disease));
+                where.and(where, where.eq(Contact.DISEASE, disease));
             }
             qb.orderBy(Contact.LAST_CONTACT_DATE, false);
             return (int) qb.countOf();
@@ -150,7 +154,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
      * @param contact
      */
     private void updateFollowUpStatus(Contact contact) {
-        Disease disease = contact.getCaseDisease();
+        Disease disease = contact.getDisease();
         boolean changeStatus = contact.getFollowUpStatus() != FollowUpStatus.CANCELED
                 && contact.getFollowUpStatus() != FollowUpStatus.LOST;
 
@@ -187,6 +191,8 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
     private QueryBuilder<Contact, Long> buildQueryBuilder(ContactCriteria criteria) throws SQLException {
         QueryBuilder<Contact, Long> queryBuilder = queryBuilder();
+        QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
+
         Where<Contact, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 
         if (criteria.getCaze() != null) {
@@ -195,9 +201,36 @@ public class ContactDao extends AbstractAdoDao<Contact> {
             if (criteria.getFollowUpStatus() != null) {
                 where.and().eq(Contact.FOLLOW_UP_STATUS, criteria.getFollowUpStatus());
             }
+            if (criteria.getContactClassification() != null) {
+                where.and().eq(Contact.CONTACT_CLASSIFICATION, criteria.getContactClassification());
+            }
+            if (criteria.getDisease() != null) {
+                where.and().eq("caseDisease", criteria.getDisease());
+            }
+            if (criteria.getReportDateFrom() != null) {
+                where.and().ge(Contact.REPORT_DATE_TIME, DateHelper.getStartOfDay(criteria.getReportDateFrom()));
+            }
+            if (criteria.getReportDateTo() != null) {
+                where.and().le(Contact.REPORT_DATE_TIME, DateHelper.getEndOfDay(criteria.getReportDateTo()));
+            }
+            if (!StringUtils.isEmpty(criteria.getTextFilter())) {
+                String[] textFilters = criteria.getTextFilter().split("\\s+");
+                for (String filter : textFilters) {
+                    where.and();
+                    String textFilter = "%" + filter.toLowerCase() + "%";
+                    if (!StringUtils.isEmpty(textFilter)) {
+                        where.or(
+                                where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter + "'"),
+                                where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter + "'"),
+                                where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter + "'")
+                        );
+                    }
+                }
+            }
         }
 
         queryBuilder.setWhere(where);
+        queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
         return queryBuilder;
     }
 

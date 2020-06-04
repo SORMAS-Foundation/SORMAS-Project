@@ -39,12 +39,8 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -55,15 +51,12 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
@@ -75,8 +68,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -97,11 +92,9 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
-	private static final Logger logger = LoggerFactory.getLogger(PathogenTestFacadeEjb.class);
-
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -111,8 +104,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}	
 
 	@Override
-	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if(user == null) {
 			return Collections.emptyList();
@@ -130,6 +123,14 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				.map(c -> toDto(c))
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids) {
+		return pathogenTestService.getBySampleUuids(sampleUuids)
+				.stream()
+				.map(p -> toDto(p))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef) {
@@ -145,23 +146,14 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public List<String> getDeletedUuidsSince(String userUuid, Date since) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getDeletedUuidsSince(Date since) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		return pathogenTestService.getDeletedUuidsSince(user, since);
-	}
-
-	@Override
-	public List<DashboardTestResultDto> getNewTestResultsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-
-		return pathogenTestService.getNewTestResultsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -184,10 +176,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public void deletePathogenTest(String pathogenTestUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deletePathogenTest(String pathogenTestUuid) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.PATHOGEN_TEST_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete pathogen tests.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen tests.");
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);

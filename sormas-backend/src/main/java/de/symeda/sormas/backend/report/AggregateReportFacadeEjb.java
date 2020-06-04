@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.report;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,8 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -36,6 +39,7 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -44,8 +48,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
+
 	@EJB
 	private AggregateReportService service;
 	@EJB
@@ -60,10 +64,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	
+	@EJB
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+
 	@Override
-	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -85,25 +91,21 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return service.getAllUuids(user);
+		return service.getAllUuids();
 	}
 	
 	@Override
-	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
+	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 		
-		Predicate filter = service.createUserFilter(cb, cq, root, user);
+		Predicate filter = service.createUserFilter(cb, cq, root);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
@@ -131,10 +133,17 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 		
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet.values());
-		reportList.sort((r1, r2) -> r1.getDisease().toString().compareTo(r2.getDisease().toString()));
+		reportList.sort(Comparator.comparing(r -> r.getDisease().toString()));
 		return reportList;
 	}
 	
+	@Override
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
+		User user = userService.getCurrentUser();
+		
+		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
 	public AggregateReport fromDto(@NotNull AggregateReportDto source) {
 		AggregateReport target = service.getByUuid(source.getUuid());
 		if (target == null) {
@@ -180,9 +189,42 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return target;
 	}
 	
+	@Override
+	public void deleteReport(String reportUuid) {
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade
+				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+				.contains(UserRight.AGGREGATE_REPORT_EDIT)) {
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to edit aggregate reports.");
+		}
+
+		AggregateReport aggregateReport = service.getByUuid(reportUuid);
+		service.delete(aggregateReport);
+	}
+
+	@Override
+	public long countWithCriteria(AggregateReportCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<AggregateReport> root = cq.from(AggregateReport.class);
+
+		Predicate filter = service.createUserFilter(cb, cq, root);
+		if (criteria != null) {
+			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	@LocalBean
 	@Stateless
 	public static class AggregateReportFacadeEjbLocal extends AggregateReportFacadeEjb {
 	}
-	
 }

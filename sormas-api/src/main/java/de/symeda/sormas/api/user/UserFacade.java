@@ -65,7 +65,7 @@ public interface UserFacade {
 
 	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	List<UserDto> getByUuids(List<String> uuids);
 	

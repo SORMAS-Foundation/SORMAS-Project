@@ -17,23 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +
-			LayoutUtil.fluidRowLocs(FIRST_NAME, LAST_NAME);
+			fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +
+			fluidRowLocs(FIRST_NAME, LAST_NAME);
 	
 	public EventParticipantCreateForm(UserRight editOrCreateUserRight) {
 		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, editOrCreateUserRight);

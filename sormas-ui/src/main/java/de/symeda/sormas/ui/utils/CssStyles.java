@@ -27,6 +27,10 @@ import de.symeda.sormas.api.Disease;
 
 public final class CssStyles {
 
+	private CssStyles() {
+		// Hide Utility Class Constructor
+	}
+
 	// Headlines
 	public static final String H1 = "h1";
 	public static final String H2 = "h2";

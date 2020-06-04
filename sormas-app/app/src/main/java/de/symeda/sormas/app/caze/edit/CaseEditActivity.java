@@ -37,6 +37,7 @@ import de.symeda.sormas.app.BaseEditActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -202,18 +203,23 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
     @Override
     public void saveData() {
         Case existingCase = DatabaseHelper.getCaseDao().queryUuidBasic(getStoredRootEntity().getUuid());
-        if (existingCase.getHealthFacility() != null && !existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
-            ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_infrastructure_data_changed, R.string.message_case_infrastructure_data_changed, R.string.action_transfer_case, R.string.action_edit_data);
-            transferCaseDialog.setPositiveCallback(() -> {
-                DatabaseHelper.getCaseDao().createPreviousHospitalizationAndUpdateHospitalization(getStoredRootEntity(), existingCase);
+
+        if(CaseEditAuthorization.isCaseEditAllowed(existingCase)) {
+            if (existingCase.getHealthFacility() != null && !existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
+                ConfirmationDialog transferCaseDialog = new ConfirmationDialog(this, R.string.heading_case_infrastructure_data_changed, R.string.message_case_infrastructure_data_changed, R.string.action_transfer_case, R.string.action_edit_data);
+                transferCaseDialog.setPositiveCallback(() -> {
+                    DatabaseHelper.getCaseDao().createPreviousHospitalizationAndUpdateHospitalization(getStoredRootEntity(), existingCase);
+                    saveData(parameter -> goToNextPage());
+                });
+                transferCaseDialog.setNegativeCallback(() -> {
+                    saveData(parameter -> goToNextPage());
+                });
+                transferCaseDialog.show();
+            } else {
                 saveData(parameter -> goToNextPage());
-            });
-            transferCaseDialog.setNegativeCallback(() -> {
-                saveData(parameter -> goToNextPage());
-            });
-            transferCaseDialog.show();
-        } else {
-            saveData(parameter -> goToNextPage());
+            }
+        }else{
+            NotificationHelper.showNotification(this, WARNING, getString(R.string.message_edit_forbidden));
         }
     }
 

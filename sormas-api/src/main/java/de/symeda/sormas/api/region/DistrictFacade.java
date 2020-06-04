@@ -47,13 +47,13 @@ public interface DistrictFacade {
 
 	List<DistrictReferenceDto> getAllActiveAsReference();
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 	
 	List<DistrictDto> getByUuids(List<String> uuids);
 	
 	void saveDistrict(DistrictDto dto) throws ValidationRuntimeException;
 	
-	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef);
+	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 	
 	List<String> getNamesByIds(List<Long> districtIds);
 
@@ -62,7 +62,6 @@ public interface DistrictFacade {
 	void archive(String districtUuid);
 	
 	void dearchive(String districtUuid);
-	
 	
 	boolean isUsedInOtherInfrastructureData(Collection<String> districtUuids);
 	

@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.core;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -53,13 +52,9 @@ import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.report.ReportActivity;
-import de.symeda.sormas.app.rest.ApiVersionException;
 import de.symeda.sormas.app.rest.RetroProvider;
-import de.symeda.sormas.app.rest.ServerCommunicationException;
-import de.symeda.sormas.app.rest.ServerConnectionException;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
 import de.symeda.sormas.app.task.edit.TaskEditActivity;
-import de.symeda.sormas.app.util.SyncCallback;
 
 public class TaskNotificationService extends Service {
 
@@ -161,7 +156,7 @@ public class TaskNotificationService extends Service {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NotificationHelper.NOTIFICATION_CHANNEL_TASKS_ID)
                     .setTicker(r.getString(R.string.heading_task_notification))
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                    .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getCaseDisease().toShortString() + ")" : ""))
+                    .setContentTitle(task.getTaskType().toString() + (caze != null ? " (" + caze.getDisease().toShortString() + ")" : contact != null ? " (" + contact.getDisease().toShortString() + ")" : ""))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(content.toString())))
                     .setContentIntent(pi)
                     .setAutoCancel(true)

@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.report;
 
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -8,6 +10,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.UserRole;
@@ -59,35 +62,50 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from, User user) {
-		if (user == null || user.getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from) {
+		User currentUser = getCurrentUser();
+		if (currentUser == null 
+			|| currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 
 		// Whoever created the weekly report is allowed to access it
 		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
-		Predicate filter = cb.equal(reportingUser, user);
+		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		// Allow access based on user role
-		for (UserRole userRole : user.getUserRoles()) {
-			switch (userRole) {
-			case SURVEILLANCE_SUPERVISOR:
-			case CONTACT_SUPERVISOR:
-			case CASE_SUPERVISOR:
-			case STATE_OBSERVER:
+		if(currentUser.hasAnyUserRole(
+				UserRole.SURVEILLANCE_SUPERVISOR,
+				UserRole.CONTACT_SUPERVISOR,
+				UserRole.CASE_SUPERVISOR,
+				UserRole.STATE_OBSERVER) 
+			&& currentUser.getRegion() != null) {
 				// Supervisors see all reports from their region
-				if (user.getRegion() != null) {
-					filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), user.getRegion()));
-				}
-				break;
-			default:
-				break;
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
 			}
-		}
 
 		return filter;
 	}
 	
+	public List<AggregateReport> findBy(AggregateReportCriteria aggregateReportCriteria, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<AggregateReport> cq = cb.createQuery(getElementClass());
+		Root<AggregateReport> from = cq.from(getElementClass());
+
+		Predicate filter = createCriteriaFilter(aggregateReportCriteria, cb, cq, from);
+
+		if (user != null) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
 }

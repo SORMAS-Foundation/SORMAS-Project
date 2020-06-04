@@ -17,6 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,14 +44,12 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.LayoutUtil.FluidColumn;
 
-@SuppressWarnings("serial")
 public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	private static final String DISEASE_CHECKBOX = "diseaseCheckbox";
 	private static final String CLASSIFICATION_CHECKBOX = "classificationCheckbox";
 	private static final String INVESTIGATION_STATUS_CHECKBOX = "investigationStatusCheckbox";
@@ -51,21 +57,28 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private static final String SURVEILLANCE_OFFICER_CHECKBOX = "surveillanceOfficerCheckbox";
 	private static final String HEALTH_FACILITY_CHECKBOX = "healthFacilityCheckbox";
 
-	private static final String HTML_LAYOUT = LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, DISEASE_CHECKBOX)
-			+ LayoutUtil.fluidRow(new FluidColumn(null, 6, 0, CaseDataDto.DISEASE, null),
-					new FluidColumn(null, 6, 0, null,
-							LayoutUtil.locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE, CaseDataDto.RABIES_TYPE)))
-			+ LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, CLASSIFICATION_CHECKBOX)
-			+ LayoutUtil.fluidRowLocs(CaseBulkEditData.CASE_CLASSIFICATION)
-			+ LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, INVESTIGATION_STATUS_CHECKBOX)
-			+ LayoutUtil.fluidRowLocs(CaseBulkEditData.INVESTIGATION_STATUS)
-			+ LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, OUTCOME_CHECKBOX)
-			+ LayoutUtil.fluidRowLocs(CaseBulkEditData.OUTCOME)
-			+ LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, SURVEILLANCE_OFFICER_CHECKBOX)
-			+ LayoutUtil.fluidRowLocs(CaseBulkEditData.SURVEILLANCE_OFFICER, "")
-			+ LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_4, HEALTH_FACILITY_CHECKBOX)
-			+ LayoutUtil.fluidRowLocs(CaseBulkEditData.REGION, CaseBulkEditData.DISTRICT, CaseBulkEditData.COMMUNITY,
+	private static final String HTML_LAYOUT = 
+			fluidRowLocsCss(VSPACE_4, DISEASE_CHECKBOX) +
+			fluidRow(
+					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+					fluidColumn(6, 0,locs(
+							CaseDataDto.DISEASE_DETAILS, 
+							CaseDataDto.PLAGUE_TYPE,
+							CaseDataDto.DENGUE_FEVER_TYPE, 
+							CaseDataDto.RABIES_TYPE))) +
+			fluidRowLocsCss(VSPACE_4, CLASSIFICATION_CHECKBOX) +
+			fluidRowLocs(CaseBulkEditData.CASE_CLASSIFICATION) +
+			fluidRowLocsCss(VSPACE_4, INVESTIGATION_STATUS_CHECKBOX) +
+			fluidRowLocs(CaseBulkEditData.INVESTIGATION_STATUS) +
+			fluidRowLocsCss(VSPACE_4, OUTCOME_CHECKBOX) +
+			fluidRowLocs(CaseBulkEditData.OUTCOME) +
+			fluidRowLocsCss(VSPACE_4, SURVEILLANCE_OFFICER_CHECKBOX) +
+			fluidRowLocs(CaseBulkEditData.SURVEILLANCE_OFFICER, "") +
+			fluidRowLocsCss(VSPACE_4, HEALTH_FACILITY_CHECKBOX) +
+			fluidRowLocs(
+					CaseBulkEditData.REGION, 
+					CaseBulkEditData.DISTRICT, 
+					CaseBulkEditData.COMMUNITY,
 					CaseBulkEditData.HEALTH_FACILITY);
 
 	private final DistrictReferenceDto singleSelectedDistrict;

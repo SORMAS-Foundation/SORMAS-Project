@@ -37,7 +37,6 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -94,6 +93,20 @@ public class TestDataCreator {
 		return cazePerson;
 	}
 
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
+		ContactDto contact = ContactDto.build(caze);
+		contact.setReportingUser(reportingUser);
+		contact.setContactOfficer(contactOfficer);
+		contact.setPerson(contactPerson);
+		contact.setReportDateTime(reportDateTime);
+		contact.setLastContactDate(lastContactDate);
+
+		contact = FacadeProvider.getContactFacade().saveContact(contact);
+
+		return contact;
+	}
+
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv",
@@ -105,8 +118,11 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
-			RDCF rdcf) {
+			RDCF rdcf, String caseUuid) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
+		if (caseUuid != null) {
+			caze.setUuid(caseUuid);
+		}
 		caze.setReportDate(reportDate);
 		caze.setReportingUser(user);
 		caze.setCaseClassification(caseClassification);
@@ -120,19 +136,11 @@ public class TestDataCreator {
 
 		return caze;
 	}
-
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseReferenceDto caze, Date reportDateTime, Date lastContactDate) {
-		ContactDto contact = ContactDto.build(caze);
-		contact.setReportingUser(reportingUser);
-		contact.setContactOfficer(contactOfficer);
-		contact.setPerson(contactPerson);
-		contact.setReportDateTime(reportDateTime);
-		contact.setLastContactDate(lastContactDate);
-
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
-
-		return contact;
+	
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportDate,
+			RDCF rdcf) {
+		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportDate, rdcf, null);
 	}
 
 	public TaskDto createTask(TaskContext context, TaskType type, TaskStatus status, CaseReferenceDto caze,
@@ -307,7 +315,6 @@ public class TestDataCreator {
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
-		facility.setType(FacilityType.PRIMARY);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

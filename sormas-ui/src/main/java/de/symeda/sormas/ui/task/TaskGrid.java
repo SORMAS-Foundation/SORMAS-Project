@@ -30,6 +30,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -95,9 +96,10 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
         		TaskIndexDto.SUGGESTED_START, TaskIndexDto.DUE_DATE,
         		TaskIndexDto.ASSIGNEE_USER, TaskIndexDto.ASSIGNEE_REPLY, 
         		TaskIndexDto.CREATOR_USER, TaskIndexDto.CREATOR_COMMENT, TaskIndexDto.TASK_STATUS);
-        
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat()));
+
+		Language userLanguage = I18nProperties.getUserLanguage();
+		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<TaskIndexDto, String>)getColumn(TaskIndexDto.CREATOR_COMMENT)).setRenderer(new ShortStringRenderer(50));
         
 		Column<TaskIndexDto, ReferenceDto> contextColumn = (Column<TaskIndexDto, ReferenceDto>) getColumn(TaskIndexDto.CONTEXT_REFERENCE);
@@ -189,19 +191,16 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 	public void setLazyDataProvider() {
 		DataProvider<TaskIndexDto,TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getTaskFacade().getIndexList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
+						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int)FacadeProvider.getTaskFacade().count(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int)FacadeProvider.getTaskFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 	
 	public void setEagerDataProvider() {
-		ListDataProvider<TaskIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(UserProvider.getCurrent().getUuid(), getCriteria(), null, null, null).stream());
+		ListDataProvider<TaskIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}

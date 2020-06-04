@@ -13,13 +13,14 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -54,19 +55,19 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			}).setId(DAY_RESULTS[i]);
 			
 			final int index = i;
-			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i])).setSortable(false).setStyleGenerator(
+			getColumn(DAY_RESULTS[i]).setCaption(DateFormatHelper.formatDate(dates[i])).setSortable(false).setStyleGenerator(
 					new StyleGenerator<ContactFollowUpDto>() {
 						@Override
 						public String apply(ContactFollowUpDto item) {
-							return getVisitResultCssStyle(item.getVisitResults()[index], dates[index], item.getReportDateTime(), item.getFollowUpUntil());
+							return getVisitResultCssStyle(item.getVisitResults()[index], dates[index], ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()), item.getFollowUpUntil());
 						}
 					});
 		}
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateHelper.getLocalShortDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
@@ -81,8 +82,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		});
 	}
 
-	private String getVisitResultCssStyle(VisitResult result, Date date, Date reportDateTime, Date followUpUntil) {
-		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(reportDateTime), DateHelper.getEndOfDay(followUpUntil))) {
+	private String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
 			return "";
 		}
 		
@@ -109,13 +110,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	public void setDataProvider() {
 		DataProvider<ContactFollowUpDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 				query -> FacadeProvider.getContactFacade().getContactFollowUpList(
-						UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(), 
+						 query.getFilter().orElse(null), referenceDate, query.getOffset(), query.getLimit(),
 						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getContactFacade().count(
-							UserProvider.getCurrent().getUuid(), query.getFilter().orElse(null));
-				});
+				query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
@@ -133,7 +131,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 	
 	private void setColumnCaptions() {
 		for (int i = 0; i < DAY_RESULTS.length; i++) {
-			getColumn(DAY_RESULTS[i]).setCaption(DateHelper.formatLocalShortDate(dates[i]));
+			getColumn(DAY_RESULTS[i]).setCaption(DateFormatHelper.formatDate(dates[i]));
 		}
 	}
 	

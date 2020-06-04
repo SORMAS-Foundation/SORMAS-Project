@@ -38,9 +38,6 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-/**
- * Created by Stefan Szczesny on 29.11.2016.
- */
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
     public ContactDtoHelper() {
@@ -74,7 +71,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
     @Override
     public void fillInnerFromDto(Contact target, ContactDto source) {
         target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
         target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
         target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
@@ -110,6 +108,19 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+
+        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
     }
 
     @Override
@@ -143,7 +154,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
             target.setResultingCase(null);
         }
 
-        target.setCaseDisease(source.getCaseDisease());
+        target.setDisease(source.getDisease());
+        target.setDiseaseDetails(source.getDiseaseDetails());
 
         if (source.getReportingUser() != null) {
             User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
@@ -184,6 +196,19 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
         target.setQuarantine(source.getQuarantine());
         target.setQuarantineFrom(source.getQuarantineFrom());
         target.setQuarantineTo(source.getQuarantineTo());
+
+        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+
+        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
     }
 
     public static ContactReferenceDto toReferenceDto(Contact ado) {

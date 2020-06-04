@@ -22,15 +22,15 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.IndexedContainer;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.NewItemHandler;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -53,7 +53,7 @@ public class DateTimeField extends CustomField<Date> {
 
 		dateField = new DateField();
 		dateField.setWidth(100, Unit.PERCENTAGE);
-		dateField.setDateFormat(DateHelper.getLocalDatePattern());
+		dateField.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		dateField.setLenient(true);
 		layout.addComponent(dateField);
 		layout.setExpandRatio(dateField, 0.5f);

@@ -30,15 +30,16 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
@@ -56,7 +57,7 @@ public class Contact extends AbstractDomainObject {
 
 	public static final String PERSON = "person_id";
 	public static final String CASE_UUID = "caseUuid";
-	public static final String CASE_DISEASE = "caseDisease";
+	public static final String DISEASE = "disease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -92,8 +93,10 @@ public class Contact extends AbstractDomainObject {
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
-	@Enumerated(EnumType.STRING)
-	private Disease caseDisease;
+	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
+	private Disease disease;
+	@Column(length=512)
+	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
 	@Enumerated(EnumType.STRING)
@@ -140,34 +143,66 @@ public class Contact extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineTo;
 
+	@Column
+	private String caseIdExternalSystem;
+	@Column(length = 512)
+	private String caseOrEventInformation;
+
+	@Enumerated(EnumType.STRING)
+	private ContactCategory contactCategory;
+	@Column(length = 512)
+	private String contactProximityDetails;
+
+	@Enumerated(EnumType.STRING)
+	@Deprecated
+	private OrderMeans quarantineOrderMeans;
+	@Column(length = 512)
+	private String quarantineHelpNeeded;
+	@DatabaseField
+	private boolean quarantineOrderedVerbally;
+	@DatabaseField
+	private boolean quarantineOrderedOfficialDocument;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOrderedVerballyDate;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOrderedOfficialDocumentDate;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown quarantineHomePossible;
+	@Column(length = 512)
+	private String quarantineHomePossibleComment;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@Column(length = 512)
+	private String quarantineHomeSupplyEnsuredComment;
+
 	public Person getPerson() {
 		return person;
 	}
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	public User getReportingUser() {
 		return reportingUser;
 	}
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
-	
+
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
@@ -310,12 +345,20 @@ public class Contact extends AbstractDomainObject {
 		this.caseUuid = caseUuid;
 	}
 
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
 
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {
@@ -396,5 +439,118 @@ public class Contact extends AbstractDomainObject {
 
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
+	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	@Deprecated
+	public OrderMeans getQuarantineOrderMeans() {
+		return quarantineOrderMeans;
+	}
+
+	@Deprecated
+	public void setQuarantineOrderMeans(OrderMeans quarantineOrderMeans) {
+		this.quarantineOrderMeans = quarantineOrderMeans;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 }

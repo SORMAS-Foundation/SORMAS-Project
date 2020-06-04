@@ -27,18 +27,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +64,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.util.AppUpdateController;
 import de.symeda.sormas.app.util.BiConsumer;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.Consumer;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -222,7 +216,7 @@ public final class RetroProvider {
         if (localeResponse.isSuccessful()) {
             // success - now check compatibility
             String localeStr = localeResponse.body();
-            ConfigProvider.setLocale(localeStr);
+            ConfigProvider.setServerLocale(localeStr);
         } else {
             throwException(localeResponse);
         }

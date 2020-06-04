@@ -20,7 +20,6 @@ package de.symeda.sormas.app.caze.read;
 
 import androidx.databinding.ObservableArrayList;
 
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;

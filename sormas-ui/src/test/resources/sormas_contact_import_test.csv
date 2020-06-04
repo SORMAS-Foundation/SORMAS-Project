@@ -1,0 +1,4 @@
+"caseIdExternalSystem","caseOrEventInformation","disease","diseaseDetails","reportDateTime","region","district","lastContactDate","person.firstName","person.lastName","person.sex","person.birthdateDD","person.birthdateMM","person.birthdateYYYY"
+ABCDEF-GHIJKL-MNOPQR,,CORONAVIRUS,,14.03.2020,Abia,Umuahia North,,Number,One
+" aBCDEF-GHIJKL-MNOPQR ",,,,15.03.2020,,,,Number,Two
+Unknown,Other System,CORONAVIRUS,,16.03.2020,Abia,Umuahia North,,Number,Three

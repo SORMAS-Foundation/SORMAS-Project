@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -41,23 +47,34 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;	
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
 
+	private OptionGroup intensiveCareUnit;
+	private DateField intensiveCareUnitStart;
+	private DateField intensiveCareUnitEnd;
+
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingHospitalization)) +
-			LayoutUtil.fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "") +
-			LayoutUtil.fluidRow(LayoutUtil.fluidColumnLocCss(CssStyles.VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
-			LayoutUtil.fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
+			h3(I18nProperties.getString(Strings.headingHospitalization)) +
+			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
+			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
+					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
+							HospitalizationDto.INTENSIVE_CARE_UNIT_START,
+							3,
+							HospitalizationDto.INTENSIVE_CARE_UNIT_END)
+					+ fluidRowLocs(HospitalizationDto.ISOLATED, HospitalizationDto.ISOLATION_DATE, "")
+					+
+			fluidRow(
+					fluidColumnLocCss(VSPACE_TOP_3, 6, 0, HospitalizationDto.HOSPITALIZED_PREVIOUSLY)) +
+			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS)
 			;		
 
 	public HospitalizationForm(CaseDataDto caze, UserRight editOrCreateUserRight, ViewMode viewMode) {
@@ -80,7 +97,13 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
 		DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
 		DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
-		addFields(HospitalizationDto.ACCOMMODATION, HospitalizationDto.ISOLATION_DATE);
+		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, OptionGroup.class);
+		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
+		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
+		intensiveCareUnitStart.setVisible(false);
+		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
+		intensiveCareUnitEnd.setVisible(false);
+		addField(HospitalizationDto.ISOLATION_DATE);
 		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
 		addField(HospitalizationDto.LEFT_AGAINST_ADVICE, OptionGroup.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
@@ -104,6 +127,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		admissionDateField.setInvalidCommitted(true);
 		dischargeDateField.addValidator(new DateComparisonValidator(dischargeDateField, admissionDateField, false, false, 
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDateField.getCaption(), admissionDateField.getCaption())));
+		intensiveCareUnitStart.addValidator(new DateComparisonValidator(intensiveCareUnitStart, admissionDateField, false, true, I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitStart.getCaption(), admissionDateField.getCaption())));
+		intensiveCareUnitStart.addValidator(new DateComparisonValidator(intensiveCareUnitStart, intensiveCareUnitEnd, true, true, I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
+		intensiveCareUnitEnd.addValidator(new DateComparisonValidator(intensiveCareUnitEnd, intensiveCareUnitStart, false, true, I18nProperties.getValidationError(Validations.afterDate, intensiveCareUnitEnd.getCaption(), intensiveCareUnitStart.getCaption())));
+		intensiveCareUnitEnd.addValidator(new DateComparisonValidator(intensiveCareUnitEnd, dischargeDateField, true, true, I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitEnd.getCaption(), dischargeDateField.getCaption())));
 
 		hospitalizedPreviouslyField.addValueChangeListener(e -> {
 			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
@@ -111,6 +138,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		previousHospitalizationsField.addValueChangeListener(e -> {
 			updatePrevHospHint(hospitalizedPreviouslyField, previousHospitalizationsField);
 		});
+	}
+
+	private void setDateFieldVisibilties() {
+		boolean visible = YesNoUnknown.YES.equals(intensiveCareUnit.getValue());
+		intensiveCareUnitStart.setVisible(visible);
+		intensiveCareUnitEnd.setVisible(visible);
 	}
 
 	private void updatePrevHospHint(OptionGroup hospitalizedPreviouslyField, PreviousHospitalizationsField previousHospitalizationsField) {

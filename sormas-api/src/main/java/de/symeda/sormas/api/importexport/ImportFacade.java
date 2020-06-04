@@ -47,6 +47,8 @@ public interface ImportFacade {
 
 	void generateFacilityLaboratoryImportTemplateFile() throws IOException;
 
+	void generateContactImportTemplateFile() throws IOException;
+
 	String getCaseImportTemplateFilePath();
 	
 	String getPointOfEntryImportTemplateFilePath();
@@ -64,4 +66,6 @@ public interface ImportFacade {
 	String getFacilityLaboratoryImportTemplateFilePath();
 
 	String getCaseContactImportTemplateFilePath();
+
+	String getContactImportTemplateFilePath();
 }

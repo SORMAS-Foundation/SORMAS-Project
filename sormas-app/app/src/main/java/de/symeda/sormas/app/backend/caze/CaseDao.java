@@ -268,6 +268,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
         return newCase;
     }
 
+    public Case build(Contact contact) {
+        Case newCase = build(contact.getPerson());
+        newCase.setDisease(contact.getDisease());
+        newCase.setDiseaseDetails(contact.getDiseaseDetails());
+        return newCase;
+    }
+
     public Case build(EventParticipant eventParticipant) {
         Case newCase = build(eventParticipant.getPerson());
         Event event = eventParticipant.getEvent();
@@ -391,7 +398,6 @@ public class CaseDao extends AbstractAdoDao<Case> {
     }
 
     private void onCaseChanged(Case existingCase, Case changedCase) {
-
         changedCase.setCompleteness(calculateCompleteness(changedCase));
         if (existingCase == null) {
             // If a new case is created, use the last available location to update its report latitude and longitude
@@ -406,6 +412,20 @@ public class CaseDao extends AbstractAdoDao<Case> {
             if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
                 changedCase.setClassificationDate(new Date());
                 changedCase.setClassificationUser(ConfigProvider.getUser());
+            }
+
+            // change the disease of all contacts if the case disease or disease details have changed
+            if (existingCase.getDisease() != changedCase.getDisease() ||
+                    !StringUtils.equals(existingCase.getDiseaseDetails(), changedCase.getDiseaseDetails())) {
+                for (Contact contact : DatabaseHelper.getContactDao().getByCase(changedCase)) {
+                    contact.setDisease(changedCase.getDisease());
+                    contact.setDiseaseDetails(changedCase.getDiseaseDetails());
+                    try {
+                        DatabaseHelper.getContactDao().saveAndSnapshot(contact);
+                    } catch (DaoException e) {
+                        Log.e(getTableName(), "Failed to save an updated contact in onCaseChanged");
+                    }
+                }
             }
 
             // If the district has changed, assign a new surveillance officer and re-assign tasks
@@ -613,9 +633,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
         }
         if (!StringUtils.isEmpty(criteria.getTextFilter())) {
             String[] textFilters = criteria.getTextFilter().split("\\s+");
-            for (int i = 0; i < textFilters.length; i++) {
+            for (String filter : textFilters) {
                 where.and();
-                String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+                String textFilter = "%" + filter.toLowerCase() + "%";
                 if (!StringUtils.isEmpty(textFilter)) {
                     where.or(
                             where.raw(Case.TABLE_NAME + "." + Case.UUID + " LIKE '" + textFilter + "'"),

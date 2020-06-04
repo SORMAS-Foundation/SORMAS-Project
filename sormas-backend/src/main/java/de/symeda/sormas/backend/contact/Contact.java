@@ -31,6 +31,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -86,6 +88,22 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
+	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -98,6 +116,8 @@ public class Contact extends CoreAdo {
 	
 	private Person person;
 	private Case caze;
+	private Disease disease;
+	private String diseaseDetails;
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private Date lastContactDate;
@@ -107,6 +127,7 @@ public class Contact extends CoreAdo {
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
 	private User contactOfficer;
 	private String description;
 	private String externalID;
@@ -122,6 +143,22 @@ public class Contact extends CoreAdo {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
+
+	private String quarantineHelpNeeded;
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
+	private YesNoUnknown quarantineHomePossible;
+	private String quarantineHomePossibleComment;
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	private String quarantineHomeSupplyEnsuredComment;
 
 	private List<Task> tasks;
 	
@@ -136,14 +173,32 @@ public class Contact extends CoreAdo {
 	}
 	
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn
 	public Case getCaze() {
 		return caze;
 	}
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-	
+
+	@Enumerated(EnumType.STRING)
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	@Column(length=512)
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)
 	public Date getReportDateTime() {
@@ -264,16 +319,14 @@ public class Contact extends CoreAdo {
 	@Override
 	public String toString() {
 		Person contactPerson = getPerson();
-		Person casePerson = getCaze().getPerson();
 		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
-				casePerson.getFirstName(), casePerson.getLastName());
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 	
 	public ContactReferenceDto toReference() {
 		Person contactPerson = getPerson();
-		Person casePerson = getCaze().getPerson();
 		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(),
-				casePerson.getFirstName(), casePerson.getLastName());
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 	
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
@@ -414,4 +467,131 @@ public class Contact extends CoreAdo {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
+
+	@Column(length=255)
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	@Column(length=512)
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	@Column
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+	
+	@Column(length = 512)
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	@Column
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	@Column
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	@Column(length = 512)
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+	
 }

@@ -415,7 +415,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
                 caseMenu.setVisible(ConfigProvider.hasUserRight(UserRight.CASE_VIEW));
 
             if (aggregateReportsMenu != null)
-                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_VIEW) && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
+                aggregateReportsMenu.setVisible(ConfigProvider.hasUserRight(UserRight.AGGREGATE_REPORT_EDIT) && !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.AGGREGATE_REPORTING));
 
             if (sampleMenu != null)
                 sampleMenu.setVisible(ConfigProvider.hasUserRight(UserRight.SAMPLE_VIEW));

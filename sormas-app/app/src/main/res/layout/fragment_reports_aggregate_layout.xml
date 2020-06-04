@@ -114,8 +114,7 @@
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
                     android:paddingStart="4dp"
-                    android:paddingEnd="2dp"
-                    android:text="@string/caption_aggregate_new_cases_abbr" />
+                    android:paddingEnd="2dp"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -125,8 +124,7 @@
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
                     android:paddingStart="4dp"
-                    android:paddingEnd="2dp"
-                    android:text="@string/caption_aggregate_lab_confirmations_abbr" />
+                    android:paddingEnd="2dp"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -135,8 +133,7 @@
                     android:textSize="16sp"
                     android:textColor="@color/listActivityRowTertiaryText"
                     android:fontFamily="sans-serif-medium"
-                    android:paddingStart="4dp"
-                    android:text="@string/caption_aggregate_deaths_abbr" />
+                    android:paddingStart="4dp"/>
 
             </LinearLayout>
 
@@ -157,8 +154,7 @@
                 android:paddingStart="24dp"
                 android:paddingEnd="24dp"
                 android:layout_marginTop="14dp"
-                android:layout_marginBottom="6dp"
-                android:text="@string/info_aggregate_report_legend" />
+                android:layout_marginBottom="6dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

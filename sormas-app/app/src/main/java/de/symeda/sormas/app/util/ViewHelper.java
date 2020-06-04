@@ -31,15 +31,6 @@ import java.util.ArrayList;
 
 public class ViewHelper {
 
-    public static View inflateView(Context context, int layout) {
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        return inflater.inflate(layout, null);
-    }
-
-    public static ArrayList<View> getViewsByTag(ViewGroup root){
-        return getViewsByTag(root, null);
-    }
-
     public static ArrayList<View> getViewsByTag(ViewGroup root, String tag){
         ArrayList<View> views = new ArrayList<View>();
         final int childCount = root.getChildCount();

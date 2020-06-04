@@ -48,8 +48,8 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 	@Override
 	public void reload() {
 		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade()
-				.getIndexList(UserProvider.getCurrent().getUuid(), sampleCriteria, 0, maxDisplayedEntries * 20, null);
-				
+				.getIndexList(sampleCriteria, 0, maxDisplayedEntries * 20, null);
+
 		setEntries(samples);
 		if (!samples.isEmpty()) {
 			showPage(1);
@@ -59,7 +59,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}
-	
+
 	@Override
 	protected void drawDisplayedEntries() {
 		for (SampleIndexDto sample : getDisplayedEntries()) {
@@ -75,5 +75,5 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 			listLayout.addComponent(listEntry);
 		}
 	}
-	
+
 }

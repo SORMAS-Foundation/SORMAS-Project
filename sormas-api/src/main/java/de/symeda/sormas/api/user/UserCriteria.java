@@ -3,7 +3,6 @@ package de.symeda.sormas.api.user;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;

@@ -27,31 +27,27 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 @Path("/prescriptions")
 @Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
 @Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class PrescriptionResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<PrescriptionDto> getAllPrescriptions(@Context SecurityContext sc, @PathParam("since") long since) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since), userDto.getUuid());
+	public List<PrescriptionDto> getAllPrescriptions(@PathParam("since") long since) {
+		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since));
 	}
 
 	@POST
 	@Path("/query")
-	public List<PrescriptionDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PrescriptionDto> getByUuids(List<String> uuids) {
 		return FacadeProvider.getPrescriptionFacade().getByUuids(uuids);
 	}
 
@@ -63,10 +59,8 @@ public class PrescriptionResource extends EntityDtoResource {
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllActiveUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade()
-				.getByUserNameAsReference(sc.getUserPrincipal().getName());	
-		return FacadeProvider.getPrescriptionFacade().getAllActiveUuids(userDto.getUuid());
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getPrescriptionFacade().getAllActiveUuids();
 	}
 
 }

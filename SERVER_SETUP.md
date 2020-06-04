@@ -12,7 +12,8 @@
   * [Apache Web Server](#apache-web-server)
   * [Firewall](#firewall)
   * [Postfix Mail Server](#postfix-mail-server)
-  * [Security](#security)
+  * [Testing the Server Setup](#testing-the-server-setup)
+* [R Software Environment](#r-software-environment)
 * [Troubleshooting](#troubleshooting)
 
 ## Related
@@ -35,33 +36,34 @@
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
-* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``)
+* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
     * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
         * ``sudo apt-get install libpq-dev``
         * ``sudo apt-get install postgresql-server-dev-all``
         * ``sudo apt install pgxnclient``
-		* Check for GCC: ``gcc --version`` and install if missing
-        * ``pgxn install temporal_tables``
-	
+        * Check for GCC: ``gcc --version`` and install if missing
+        * ``sudo pgxn install temporal_tables``
+        * The packages can be removed afterward
+	   
 ## SORMAS Server	
 
-* Get the latest SORMAS build by downloading the deploy.zip file from GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
+* Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
   * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
   * ``cd /root/deploy/sormas/$(date +%F)``
   * Make the setup script executable with ``chmod +x server-setup.sh``
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
-  * Unzip the deploy.zip archive (e.g. into you download directory)
+  * Unzip the ZIP archive (e.g. into you download directory)
   * Open Git Bash and navigate to the setup sub-directory
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin)
-* Set up the database and a Payara domain for SORMAS by executing the setup script: ``./server-setup.sh`` Press enter whenever asked for it
+* Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties
-* Adjust the logging configuration in /opt/domains/sormas/config/logback.xml based on your needs (e.g. configure and activate email appender)
-* [Update the SORMAS domain](SERVER_UPDATE.md)
+* Adjust the logging configuration in ``/opt/domains/sormas/config/logback.xml`` based on your needs (e.g. configure and activate email appender)
+* Linux: [Update the SORMAS domain](SERVER_UPDATE.md)
 
 ## Web Server Setup
 
@@ -111,10 +113,10 @@ Here are some things that you should do to configure the Apache server as a prox
 * Add a proxy pass to the local port:
 
 		ProxyRequests Off
-		ProxyPass /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPassReverse /sormas-ui http://localhost:5080/sormas-ui
-		ProxyPass /sormas-rest http://localhost:5080/sormas-rest
-		ProxyPassReverse /sormas-rest http://localhost:5080/sormas-rest
+		ProxyPass /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPassReverse /sormas-ui http://localhost:6080/sormas-ui
+		ProxyPass /sormas-rest http://localhost:6080/sormas-rest
+		ProxyPassReverse /sormas-rest http://localhost:6080/sormas-rest
 * Configure security settings:
 
 		Header always set X-Content-Type-Options "nosniff"
@@ -213,6 +215,20 @@ Here are some things that you should do to configure the Apache server as a prox
 ### Testing the Server Setup
 
 Use SSL Labs to test your server security config: https://www.ssllabs.com/ssltest
+
+## R Software Environment
+
+In order to enable disease network diagrams in the contact dashboard, R and several extension packages are required.
+Then the Rscript executable has to be configured in the ``sormas.properties`` file.
+This can be conveniently accomplished by executing the R setup script from the SORMAS ZIP archive (see [SORMAS Server](#sormas-server)):
+
+* If the SORMAS installation has been customized, ``r-setup.sh`` the install paths may have to be adjusted accordingly with a text editor.
+* Execute R setup script:
+
+	chmod +x r-setup.sh
+	./r-setup.sh
+	
+* Follow the instructions of the script.
 
 
 ## Troubleshooting

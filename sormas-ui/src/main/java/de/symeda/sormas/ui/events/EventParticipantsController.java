@@ -36,6 +36,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -44,7 +45,6 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsController {
@@ -63,12 +63,16 @@ public class EventParticipantsController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					final EventParticipantDto dto = createForm.getValue();
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
 					
 					ControllerProvider.getPersonController().selectOrCreatePerson(
-							createForm.getPersonFirstName(), createForm.getPersonLastName(),
-							person -> {
-								if (person != null) {
-									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(person.getUuid()));
+							person,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());
@@ -108,13 +112,10 @@ public class EventParticipantsController {
 		});
 		
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference(), UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().removeWindow(window);
-					refreshView();
-				}
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
+				UI.getCurrent().removeWindow(window);
+				refreshView();
 			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
 		}
 	}
@@ -132,15 +133,13 @@ public class EventParticipantsController {
 			new Notification(I18nProperties.getString(Strings.headingNoEventParticipantsSelected), 
 					I18nProperties.getString(Strings.messageNoEventParticipantsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()), UserProvider.getCurrent().getUuid());
-					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted), 
-							I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
+			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), () -> {
+				for (Object selectedRow : selectedRows) {
+					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()));
 				}
+				callback.run();
+				new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted),
+						I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
 			});
 		}
 	}

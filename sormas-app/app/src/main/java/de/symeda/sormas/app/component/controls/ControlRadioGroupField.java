@@ -108,6 +108,11 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
         setChildViewEnabledState(button);
     }
 
+    public void clear() {
+        input.removeAllViews();
+        radioGroupElements.clear();
+    }
+
     private RadioButton createRadioButton(int index) {
         RadioButton button = new RadioButton(getContext());
         button.setId(index);

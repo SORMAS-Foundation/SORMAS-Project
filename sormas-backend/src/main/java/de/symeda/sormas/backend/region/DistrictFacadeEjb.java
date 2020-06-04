@@ -52,7 +52,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -61,7 +60,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class DistrictFacadeEjb implements DistrictFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private DistrictService districtService;
@@ -70,7 +69,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@EJB
 	private RegionService regionService;
 	@EJB
-	protected PopulationDataFacadeEjbLocal populationDataFacade;
+	private PopulationDataFacadeEjbLocal populationDataFacade;
 
 	@Override
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
@@ -136,6 +135,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 				case District.NAME:
 				case District.EPID_CODE:
 				case District.GROWTH_RATE:
+				case District.EXTERNAL_ID:
 					expression = district.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -177,14 +177,12 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return districtService.getAllUuids(user);
+		return districtService.getAllUuids();
 	}
 
 	@Override	
@@ -221,6 +219,10 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	@Override
 	public void saveDistrict(DistrictDto dto) throws ValidationRuntimeException {
 		District district = districtService.getByUuid(dto.getUuid());
+		
+		if (district == null && !getByName(dto.getName(), dto.getRegion(), true).isEmpty()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importDistrictAlreadyExists));
+		}
 
 		if (dto.getRegion() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
@@ -231,8 +233,8 @@ public class DistrictFacadeEjb implements DistrictFacade {
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef) {
-		return districtService.getByName(name, regionService.getByReferenceDto(regionRef)).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
+	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
+		return districtService.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities).stream().map(d -> toReferenceDto(d)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -307,7 +309,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(dto.getExternalID());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}	
@@ -324,7 +326,7 @@ public class DistrictFacadeEjb implements DistrictFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setExternalID(dto.getExternalID());
+		dto.setExternalID(entity.getExternalID());
 
 		return dto;
 	}	
@@ -349,7 +351,6 @@ public class DistrictFacadeEjb implements DistrictFacade {
 
 	@Override
 	public String getFullEpidCodeForDistrict(String districtUuid) {
-
 		District district = districtService.getByUuid(districtUuid);
 		String fullEpidCode = (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "")
 				+ "-" + (district.getEpidCode() != null ? district.getEpidCode() : "");

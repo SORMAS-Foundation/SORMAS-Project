@@ -92,7 +92,6 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -104,24 +103,27 @@ public class CaseController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
 		navigator.addView(CasesView.VIEW_NAME, CasesView.class);
-		navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
+		if (userProvider.hasUserRight(UserRight.CASE_MERGE)) {
+			navigator.addView(MergeCasesView.VIEW_NAME, MergeCasesView.class);
+		}
 		navigator.addView(CaseDataView.VIEW_NAME, CaseDataView.class);
 		navigator.addView(CasePersonView.VIEW_NAME, CasePersonView.class);
 		navigator.addView(MaternalHistoryView.VIEW_NAME, MaternalHistoryView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 			navigator.addView(PortHealthInfoView.VIEW_NAME, PortHealthInfoView.class);
 		}
 		navigator.addView(CaseSymptomsView.VIEW_NAME, CaseSymptomsView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.CONTACT_VIEW)) {
 			navigator.addView(CaseContactsView.VIEW_NAME, CaseContactsView.class);
 		}
 		navigator.addView(HospitalizationView.VIEW_NAME, HospitalizationView.class);
 		navigator.addView(EpiDataView.VIEW_NAME, EpiDataView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.THERAPY_VIEW)) {
 			navigator.addView(TherapyView.VIEW_NAME, TherapyView.class);
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
+		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
 	}
@@ -319,7 +321,7 @@ public class CaseController {
 		createForm.setSymptoms(symptoms);
 
 		if (convertedContact != null || convertedEventParticipant != null) {
-			createForm.setNameReadOnly(true);
+			createForm.setPersonalDetailsReadOnly(true);
 			createForm.setDiseaseReadOnly(true);
 		}
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
@@ -400,8 +402,7 @@ public class CaseController {
 		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(personFirstName)
 				.lastName(personLastName).caseCriteria(caseCriteria).reportDate(caseDto.getReportDate());
 
-		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria,
-				UserProvider.getCurrent().getUuid());
+		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {
 			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
@@ -524,8 +525,8 @@ public class CaseController {
 				break;
 		}
 
-		RegionReferenceDto region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);
-		DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid);
+		RegionReferenceDto region = regionUuid != null ? FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid) : null;
+		DistrictReferenceDto district = districtUuid != null ? FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(districtUuid) : null;
 
 		// Create a temporary case in order to use the CommitDiscardWrapperComponent
 		CaseBulkEditData bulkEditData = new CaseBulkEditData();
@@ -654,13 +655,9 @@ public class CaseController {
 
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-				@Override
-				public void onDelete() {
-					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid(),
-							UserProvider.getCurrent().getUserReference().getUuid());
-					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				}
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCase));
 		}
 
@@ -949,18 +946,14 @@ public class CaseController {
 							.show(Page.getCurrent());
 		} else {
 			VaadinUiUtil.showDeleteConfirmationWindow(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
-					new Runnable() {
-						public void run() {
-							for (CaseIndexDto selectedRow : selectedRows) {
-								FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid(),
-										UserProvider.getCurrent().getUuid());
-							}
-							callback.run();
-							new Notification(I18nProperties.getString(Strings.headingCasesDeleted),
-									I18nProperties.getString(Strings.messageCasesDeleted), Type.HUMANIZED_MESSAGE,
-									false).show(Page.getCurrent());
+					String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
+						for (CaseIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
 						}
+						callback.run();
+						new Notification(I18nProperties.getString(Strings.headingCasesDeleted),
+								I18nProperties.getString(Strings.messageCasesDeleted), Type.HUMANIZED_MESSAGE,
+								false).show(Page.getCurrent());
 					});
 		}
 	}

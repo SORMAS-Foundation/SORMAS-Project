@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import com.vaadin.ui.UI;
@@ -54,6 +55,16 @@ public class UserProvider {
 
 	public boolean hasUserRole(UserRole userRole) {
 		return getUser().getUserRoles().contains(userRole);
+	}
+
+	
+	/**
+	 * Checks if the User possesses any of the specified userRoles
+	 */
+	public boolean hasAnyUserRole(UserRole ... userRoles) {
+		Set<UserRole> currentUserRoles = getUser().getUserRoles();
+		return Arrays.stream(userRoles)
+				.anyMatch(currentUserRoles::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {

@@ -25,7 +25,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 	
 	@EJB
 	private AdditionalTestService service;
@@ -62,8 +62,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 	
 	@Override
-	public void deleteAdditionalTest(String additionalTestUuid, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteAdditionalTest(String additionalTestUuid) {
+		User user = userService.getCurrentUser();
 		// TODO replace this with a proper user right call #944
 		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
 			throw new UnsupportedOperationException("Only admins are allowed to delete entities");
@@ -74,8 +74,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}	
 
 	@Override
-	public List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if(user == null) {
 			return Collections.emptyList();
@@ -95,8 +95,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 	
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();

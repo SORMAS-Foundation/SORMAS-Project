@@ -25,7 +25,6 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.v7.data.Property.ValueChangeListener;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,7 +39,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -54,81 +52,39 @@ public class PersonController {
 
 	}
 
-	public void create(Consumer<PersonReferenceDto> doneConsumer) {
-		create("", "", doneConsumer);
-	}
-
-	public void create(String firstName, String lastName, Consumer<PersonReferenceDto> doneConsumer) {
-		PersonDto person = PersonDto.build();
-		person.setFirstName(firstName);
-		person.setLastName(lastName);
-
-		person = personFacade.savePerson(person);
-		doneConsumer.accept(person.toReference()); 
-	}
-
-	public void selectOrCreatePerson(String firstName, String lastName, Consumer<PersonReferenceDto> resultConsumer) {
-		PersonSelectField personSelect = new PersonSelectField(false);
-		personSelect.setFirstName(firstName);
-		personSelect.setLastName(lastName);
+	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer) {
+		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
 		if (personSelect.hasMatches()) {
-			personSelect.selectBestMatch();
 			// TODO add user right parameter
-			final CommitDiscardWrapperComponent<PersonSelectField> selectOrCreateComponent = 
-					new CommitDiscardWrapperComponent<PersonSelectField>(personSelect);
-
-			ValueChangeListener nameChangeListener = e -> {
-				selectOrCreateComponent.getCommitButton().setEnabled(!(personSelect.getFirstName() == null || personSelect.getFirstName().isEmpty()
-						|| personSelect.getLastName() == null || personSelect.getLastName().isEmpty()));
-
-			};
-			personSelect.getFirstNameField().addValueChangeListener(nameChangeListener);
-			personSelect.getLastNameField().addValueChangeListener(nameChangeListener);
-
-			selectOrCreateComponent.addCommitListener(new CommitListener() {
+			final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
+			component.addCommitListener(new CommitListener() {
 				@Override
 				public void onCommit() {
-					PersonIndexDto person = personSelect.getValue();
-					if (person != null) {
+					PersonIndexDto selectedPerson = personSelect.getValue();
+					if (selectedPerson != null) {
 						if (resultConsumer != null) {
-							resultConsumer.accept(person.toReference());
+							resultConsumer.accept(selectedPerson.toReference());
 						}
 					} else {	
-						create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+						PersonDto savedPerson = personFacade.savePerson(person);
+						resultConsumer.accept(savedPerson.toReference()); 
 					}
 				}
 			});
 
 			personSelect.setSelectionChangeCallback((commitAllowed) -> {
-				selectOrCreateComponent.getCommitButton().setEnabled(commitAllowed);
+				component.getCommitButton().setEnabled(commitAllowed);
 			});
 
-			VaadinUiUtil.showModalPopupWindow(selectOrCreateComponent, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+			personSelect.selectBestMatch();
 		} else {
-			create(personSelect.getFirstName(), personSelect.getLastName(), resultConsumer);
+			PersonDto savedPerson = personFacade.savePerson(person);
+			resultConsumer.accept(savedPerson.toReference()); 
 		}
 	}
-
-	public CommitDiscardWrapperComponent<PersonCreateForm> getPersonCreateComponent(PersonDto person, UserRight editOrCreateUserRight) {
-		PersonCreateForm createForm = new PersonCreateForm(editOrCreateUserRight);
-		createForm.setValue(person);
-		final CommitDiscardWrapperComponent<PersonCreateForm> editComponent = new CommitDiscardWrapperComponent<PersonCreateForm>(createForm, createForm.getFieldGroup());
-
-		editComponent.addCommitListener(new CommitListener() {
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					PersonDto dto = createForm.getValue();
-					personFacade.savePerson(dto);
-				}
-			}
-		});
-
-		return editComponent;
-	}  
-
 
 	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editOrCreateUserRight, final ViewMode viewMode) {
 		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, editOrCreateUserRight, viewMode);
@@ -152,9 +108,8 @@ public class PersonController {
 	}
 
 	private void savePerson(PersonDto personDto) {
-
 		PersonDto existingPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personDto.getUuid());
-		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid(), UserProvider.getCurrent().getUserReference().getUuid());
+		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
 
 		onPersonChanged(existingPerson, personDto);
 		

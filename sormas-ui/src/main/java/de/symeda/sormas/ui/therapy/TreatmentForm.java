@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.therapy;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.ComboBox;
@@ -15,18 +18,19 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String HTML_LAYOUT =
-			LayoutUtil.fluidRowLocs(TreatmentDto.TREATMENT_TYPE, TreatmentDto.TREATMENT_DETAILS) +
-			LayoutUtil.loc(TreatmentDto.TYPE_OF_DRUG) +
-			LayoutUtil.fluidRowLocs(TreatmentDto.TREATMENT_DATE_TIME, TreatmentDto.EXECUTING_CLINICIAN) +
-			LayoutUtil.fluidRowLocs(TreatmentDto.DOSE, TreatmentDto.ROUTE) +
-			LayoutUtil.loc(TreatmentDto.ROUTE_DETAILS) +
-			LayoutUtil.loc(TreatmentDto.ADDITIONAL_NOTES);
+			fluidRowLocs(TreatmentDto.TREATMENT_TYPE, TreatmentDto.TREATMENT_DETAILS) +
+			loc(TreatmentDto.TYPE_OF_DRUG) +
+			fluidRowLocs(TreatmentDto.TREATMENT_DATE_TIME, TreatmentDto.EXECUTING_CLINICIAN) +
+			fluidRowLocs(TreatmentDto.DOSE, TreatmentDto.ROUTE) +
+			loc(TreatmentDto.ROUTE_DETAILS) +
+			loc(TreatmentDto.ADDITIONAL_NOTES);
 	
 	public TreatmentForm(boolean create, UserRight editOrCreateUserRight) {
 		super(TreatmentDto.class, TreatmentDto.I18N_PREFIX, editOrCreateUserRight);

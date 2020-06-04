@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app;
 
-import com.googlecode.openbeans.PropertyDescriptor;
-
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -44,18 +42,18 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDao;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
-import de.symeda.sormas.app.backend.common.AdoPropertyHelper;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
@@ -76,10 +74,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Mate Strysewske on 14.06.2017.
- */
 @RunWith(AndroidJUnit4.class)
 public class CaseBackendTest {
 
@@ -448,4 +444,26 @@ public class CaseBackendTest {
         assertThat(DatabaseHelper.getTaskDao().queryForAll().size(), is(0));
     }
 
+    @Test
+    public void testEditCasePermissionWhenRegionMatch() throws DaoException, SQLException {
+        Case caze = TestEntityCreator.createCase();
+        assertTrue(CaseEditAuthorization.isCaseEditAllowed(caze));
+    }
+
+    @Test
+    public void testEditCasePermissionWhenRegionDoesNotMatchAndCaseNotCreatedByUser() throws DaoException, SQLException {
+        Case caze = TestEntityCreator.createCase();
+        caze.setRegion(null);
+        caze.setDistrict(null);
+        caze.setHealthFacility(null);
+
+        UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+        Set<UserRole> userRoles = new HashSet<>();
+        userRoles.add(userRole);
+
+        ConfigProvider.getUser().setUserRoles(userRoles);
+        ConfigProvider.getUser().setUuid("");
+
+        assertFalse(CaseEditAuthorization.isCaseEditAllowed(caze));
+    }
 }

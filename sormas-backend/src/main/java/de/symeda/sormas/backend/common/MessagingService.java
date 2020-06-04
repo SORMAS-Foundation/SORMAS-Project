@@ -62,6 +62,7 @@ public class MessagingService {
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShipped";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "notificationLabSampleShippedShort";
 	public static final String CONTENT_CONTACT_SYMPTOMATIC = "notificationContactSymptomatic";
+	public static final String CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC = "notificationContactWithoutCaseSymptomatic";
 	public static final String CONTENT_TASK_START_GENERAL = "notificationTaskStartGeneral";
 	public static final String CONTENT_TASK_START_SPECIFIC = "notificationTaskStartSpecific";
 	public static final String CONTENT_TASK_DUE_GENERAL = "notificationTaskDueGeneral";
@@ -69,7 +70,7 @@ public class MessagingService {
 	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
 	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
 	
-	private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private UserService userService;

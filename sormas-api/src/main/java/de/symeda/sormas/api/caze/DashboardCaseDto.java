@@ -107,6 +107,6 @@ public class DashboardCaseDto implements Serializable {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
 	public Boolean wasFatal() {
-		return getCauseOfDeathDisease() == getDisease();
+		return getCasePersonCondition() != null && getCasePersonCondition() != PresentCondition.ALIVE && getCauseOfDeathDisease() == getDisease();
 	}
 }

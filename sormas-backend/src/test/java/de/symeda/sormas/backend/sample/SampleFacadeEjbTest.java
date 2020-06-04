@@ -17,11 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +40,6 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
-import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -47,28 +50,11 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
-
-	@Test
-	public void testDashboardTestResultListCreation() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf);
-		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
-
-		List<DashboardTestResultDto> dashboardTestResultDtos = getSampleTestFacade().getNewTestResultsForDashboard(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), user.getUuid());
-
-		// List should have one entry
-		assertEquals(1, dashboardTestResultDtos.size());
-	}
 
 	@Test
 	public void testGetIndexList() {
@@ -83,7 +69,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 		
-		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(user.getUuid(), null, 0, 100, null);
+		List<SampleIndexDto> sampleIndexDtos = getSampleFacade().getIndexList(null, 0, 100, null);
 		
 		// List should have one entry
 		assertEquals(2, sampleIndexDtos.size());
@@ -110,11 +96,11 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference(), adminUuid);
+		getSampleFacade().deleteSample(sample.toReference());
 
 		// Sample and pathogen test should be marked as deleted
-		assertTrue(getSampleFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sample.getUuid()));
-		assertTrue(getSampleTestFacade().getDeletedUuidsSince(user.getUuid(), since).contains(sampleTest.getUuid()));
+		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
 	}
 	
 	@Test
@@ -128,31 +114,30 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		creator.createPathogenTest(sample.toReference(), PathogenTestType.MICROSCOPY, caze.getDisease(), new Date(), rdcf.facility, user.toReference(), PathogenTestResultType.POSITIVE, "Positive", true);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 		
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
 		
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
-		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(0, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(0, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
 		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
-		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleFacade().getAllActiveUuids(user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null, user.getUuid()).size());
-		assertEquals(1, getSampleTestFacade().getAllActiveUuids(user.getUuid()).size());
+		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
+		assertEquals(1, getSampleFacade().getAllActiveUuids().size());
+		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
+		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 	}
 
 	@Test
 	public void testGetNewTestResultCountByResultType() {
-
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
@@ -204,6 +189,27 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
 		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+	}
+	
+
+	@Test
+	public void testGetByCaseUuids() throws Exception {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze3 = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample3 = creator.createSample(caze2.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze3.toReference(), user.toReference(), rdcf.facility);
+		
+		List<SampleDto> samples = getSampleFacade().getByCaseUuids(Arrays.asList(caze.getUuid(), caze2.getUuid()));
+		
+		assertThat(samples, hasSize(3));
+		assertThat(samples, contains(sample, sample2, sample3));
 	}
 
 }

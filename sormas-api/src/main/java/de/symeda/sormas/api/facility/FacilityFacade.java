@@ -48,13 +48,13 @@ public interface FacilityFacade {
 	
 	List<FacilityDto> getByUuids(List<String> uuids);
 
-	List<String> getAllUuids(String userUuid);
+	List<String> getAllUuids();
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
 	
-	List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef);
+	List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef, boolean includeArchivedEntities);
 	
-	List<FacilityReferenceDto> getLaboratoriesByName(String name);
+	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);
 	
 	void archive(String facilityUuid);
 	

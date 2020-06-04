@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,22 +52,23 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
-@SuppressWarnings("serial")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 	
     private static final String HTML_LAYOUT = 
-    		LayoutUtil.fluidRow(LayoutUtil.loc(TaskDto.TASK_CONTEXT), 
-    				LayoutUtil.locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT))+
-			LayoutUtil.fluidRowLocs(TaskDto.TASK_TYPE)+
-			LayoutUtil.fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE)+
-			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY)+
-			LayoutUtil.fluidRowLocs(TaskDto.CREATOR_COMMENT)+
-			LayoutUtil.fluidRowLocs(TaskDto.ASSIGNEE_REPLY)+
-			LayoutUtil.fluidRowLocs(TaskDto.TASK_STATUS)
-			;
+    		fluidRow(
+    				loc(TaskDto.TASK_CONTEXT), 
+    				locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
+			fluidRowLocs(TaskDto.TASK_TYPE) +
+			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
+			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
+			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
+			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
+			fluidRowLocs(TaskDto.TASK_STATUS);
 
     private UserRight editOrCreateUserRight;
     
@@ -137,9 +143,14 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 	    		region = caseDto.getRegion();
 	    	} else if (taskDto.getContact() != null) {
 	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-	    		district = caseDto.getDistrict();
-	    		region = caseDto.getRegion();
+	    		if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
+	    			district = contactDto.getDistrict();
+	    			region = contactDto.getRegion();
+	    		} else {
+	    			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+		    		district = caseDto.getDistrict();
+		    		region = caseDto.getRegion();
+	    		}
 	    	} else if (taskDto.getEvent() != null) {
 	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
 	    		district = eventDto.getEventLocation().getDistrict();

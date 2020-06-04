@@ -25,6 +25,9 @@ import de.symeda.sormas.api.region.RegionDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
+/**
+ * Data importer that is used to import regions, districts, communities, facilities and points of entry.
+ */
 public class InfrastructureImporter extends DataImporter {
 
 	private InfrastructureType type;
@@ -68,6 +71,7 @@ public class InfrastructureImporter extends DataImporter {
 
 		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
 			try {
+				// If the cell entry is not empty, try to insert it into the current infrastructure object
 				if (!StringUtils.isEmpty(cellData.getValue())) {
 					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());
 				}
@@ -78,6 +82,8 @@ public class InfrastructureImporter extends DataImporter {
 			return null;
 		});
 
+		// Save the infrastructure object into the database if the import has no errors or throw an error
+		// if there is already an infrastructure object with this name in the database
 		if (!iHasImportError) {
 			try {
 				switch (type) {
@@ -109,6 +115,9 @@ public class InfrastructureImporter extends DataImporter {
 		}
 	}
 
+	/**
+	 * Inserts the entry of a single cell into the infrastructure object.
+	 */
 	private void insertColumnEntryIntoData(EntityDto newEntityDto, String value, String[] entityPropertyPath)
 			throws InvalidColumnException, ImportErrorException {
 		Object currentElement = newEntityDto;
@@ -123,6 +132,9 @@ public class InfrastructureImporter extends DataImporter {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
+					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
+					// according to the types of the infrastructure object's fields; additionally, throw an error if infrastructure data that
+					// is referenced in the imported object does not exist in the database
 					if (executeDefaultInvokings(pd, currentElement, value, entityPropertyPath)) {
 						continue;
 					} else if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
@@ -130,15 +142,15 @@ public class InfrastructureImporter extends DataImporter {
 						switch (type) {
 						case COMMUNITY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((CommunityDto) newEntityDto).getRegion());
+									((CommunityDto) newEntityDto).getRegion(), false);
 							break;
 						case FACILITY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((FacilityDto) newEntityDto).getRegion());
+									((FacilityDto) newEntityDto).getRegion(), false);
 							break;
 						case POINT_OF_ENTRY:
 							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((PointOfEntryDto) newEntityDto).getRegion());
+									((PointOfEntryDto) newEntityDto).getRegion(), false);
 							break;
 						default:
 							throw new UnsupportedOperationException(I18nProperties.getValidationError(
@@ -160,7 +172,7 @@ public class InfrastructureImporter extends DataImporter {
 						switch (type) {
 						case FACILITY:
 							community = FacadeProvider.getCommunityFacade().getByName(value,
-									((FacilityDto) newEntityDto).getDistrict());
+									((FacilityDto) newEntityDto).getDistrict(), false);
 							break;
 						default:
 							throw new UnsupportedOperationException(I18nProperties.getValidationError(

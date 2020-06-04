@@ -17,26 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO) +
-			LayoutUtil.fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION)
-	;
+			fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO) +
+			fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
 	
 	public EpiDataTravelEditForm(UserRight editOrCreateUserRight) {
 		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX, editOrCreateUserRight);

@@ -72,7 +72,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		cq.select(cb.count(from));
 		Predicate filter = and (cb, 
-			createUserFilter(cb, cq, from, userService.getCurrentUser()),
+			createUserFilter(cb, cq, from),
 			cb.equal(from.get(WeeklyReport.HEALTH_FACILITY), facility), 
 			cb.equal(from.get(WeeklyReport.YEAR), epiWeek.getYear()),
 			cb.equal(from.get(WeeklyReport.EPI_WEEK), epiWeek.getWeek()));
@@ -88,7 +88,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		Root<WeeklyReport> from = cq.from(getElementClass());
 
 		Predicate filter = and(cb,
-				createUserFilter(cb, cq, from, userService.getCurrentUser()),
+				createUserFilter(cb, cq, from),
 				cb.equal(from.get(WeeklyReport.HEALTH_FACILITY), facility),
 				cb.equal(from.get(WeeklyReport.YEAR), epiWeek.getYear()),
 				cb.equal(from.get(WeeklyReport.EPI_WEEK), epiWeek.getWeek()));
@@ -121,7 +121,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
 
 		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
-		officers = filterWeeklyReportUsers(userService.getCurrentUser(), officers);
+		officers = filterWeeklyReportUsers(getCurrentUser(), officers);
 
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers
 		.map(officer -> {
@@ -162,41 +162,42 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from,
-			User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReport, WeeklyReport> from) {
 
-		if (user == null) {
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
 			return null;
 		}
 
 		// National users can access all reports in the system
-		if (user.hasAnyUserRole(
+		if (currentUser.hasAnyUserRole(
 				UserRole.NATIONAL_USER,
 				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER)) {
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 
 		// Whoever created the weekly report is allowed to access it
 		Join<WeeklyReport, User> informant = from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT);
-		Predicate filter = cb.equal(informant, user);
+		Predicate filter = cb.equal(informant, currentUser);
 
 		// Allow access based on user role
 		
 		// Supervisors see all reports from users in their region
-		if (user.getRegion() != null && 
-			user.hasAnyUserRole(
+		if (currentUser.getRegion() != null &&
+				currentUser.hasAnyUserRole(
 				UserRole.SURVEILLANCE_SUPERVISOR,
 				UserRole.CONTACT_SUPERVISOR,
 				UserRole.CASE_SUPERVISOR,
 				UserRole.STATE_OBSERVER)) {
 				filter = cb.or(filter, cb.equal(
-						from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), user.getRegion()));
+						from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), currentUser.getRegion()));
 			 }
 		
 		// Officers see all reports from their assigned informants
-		if (user.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
-				filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), user));
+		if (currentUser.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+				filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), currentUser));
 		}
 
 		return filter;
@@ -256,7 +257,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		.ifPresent(cq::orderBy);
 		
 		and(cb, 
-			Optional.ofNullable(createUserFilter(cb, cq, from, user)),
+			Optional.ofNullable(createUserFilter(cb, cq, from)),
 			buildCriteriaFilter(criteria, cb, from)
 		)
 		.ifPresent(cq::where);
@@ -271,7 +272,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		Root<WeeklyReport> from = cq.from(WeeklyReport.class);
 
 		and(cb, 
-			Optional.ofNullable(createUserFilter(cb, cq, from, user)),
+			Optional.ofNullable(createUserFilter(cb, cq, from)),
 			buildCriteriaFilter(criteria, cb, from)
 		)
 		.ifPresent(cq::where);

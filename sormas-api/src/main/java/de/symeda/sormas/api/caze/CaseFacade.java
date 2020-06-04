@@ -26,6 +26,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -38,13 +39,13 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface CaseFacade {
 
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, String userUuid);
+	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
-	long count(CaseCriteria caseCriteria, String userUuid);
+	long count(CaseCriteria caseCriteria);
 	
-	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, String userUuid, List<SortProperty> sortProperties);
+	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 	
-	List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, String userUuid, ExportConfigurationDto exportConfiguration);
+	List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
@@ -54,31 +55,31 @@ public interface CaseFacade {
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
 	
-	List<String> getAllActiveUuids(String userUuid);
+	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
 	
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
 	
-	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria, String userUuid);
+	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
 
-	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to, String userUuid);
+	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
-	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, String userUuid);
+	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, String userUuid);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, String userUuid);
+	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
-	String getLastReportedDistrictName(CaseCriteria caseCriteria, String userUuid);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases);
 	
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
-	List<CaseDataDto> getAllCasesOfPerson(String personUuid, String userUuid);
+	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 	
-	void deleteCase(String caseUuid, String userUuid);
+	void deleteCase(String caseUuid);
 	
-	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid, String userUuid);
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 	
 	Date getOldestCaseOnsetDate();
 	
@@ -90,9 +91,9 @@ public interface CaseFacade {
 	
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 	
-	List<String> getArchivedUuidsSince(String userUuid, Date since);
+	List<String> getArchivedUuidsSince(Date since);
 	
-	List<String> getDeletedUuidsSince(String userUuid, Date since);
+	List<String> getDeletedUuidsSince(Date since);
 	
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
 	
@@ -100,13 +101,15 @@ public interface CaseFacade {
 
 	void mergeCase(String leadUuid, String otherUuid);
 	
-	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria, String userUuid);
+	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria);
 	
-	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, String userUuid, boolean showDuplicatesWithDifferentRegion);
+	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
 	
 	void updateCompleteness(String caseUuid);
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
+	
+	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 }

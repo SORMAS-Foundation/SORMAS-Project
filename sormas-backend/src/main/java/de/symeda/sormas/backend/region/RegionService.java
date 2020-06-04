@@ -33,7 +33,6 @@ import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -43,15 +42,19 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		super(Region.class);
 	}
 
-	public List<Region> getByName(String name) {
+	public List<Region> getByName(String name, boolean includeArchivedEntities) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 
-		cq.where(cb.or(
-				cb.equal(from.get(Region.NAME), name),
-				cb.equal(cb.lower(from.get(Region.NAME)), name.toLowerCase())
-				));
+		Predicate filter = cb.or(
+				cb.equal(cb.trim(from.get(Region.NAME)), name.trim()),
+				cb.equal(cb.lower(cb.trim(from.get(Region.NAME))), name.trim().toLowerCase()));
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+		
+		cq.where(filter);
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -68,7 +71,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Region, Region> from) {
 		// no filter by user needed
 		return null;
 	}

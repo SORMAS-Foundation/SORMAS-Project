@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -38,7 +39,6 @@ public class ContactDto extends EntityDto {
 	
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
-	public static final String CASE_DISEASE = "caseDisease";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
@@ -67,7 +67,29 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
-	
+	public static final String DISEASE = "disease";
+	public static final String DISEASE_DETAILS = "diseaseDetails";
+	public static final String CASE_ID_EXTERNAL_SYSTEM = "caseIdExternalSystem";
+	public static final String CASE_OR_EVENT_INFORMATION = "caseOrEventInformation";
+	public static final String CONTACT_PROXIMITY_DETAILS = "contactProximityDetails";
+	public static final String CONTACT_CATEGORY = "contactCategory";
+	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
+	public static final String QUARANTINE_ORDERED_VERBALLY = "quarantineOrderedVerbally";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT = "quarantineOrderedOfficialDocument";
+	public static final String QUARANTINE_ORDERED_VERBALLY_DATE = "quarantineOrderedVerballyDate";
+	public static final String QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE = "quarantineOrderedOfficialDocumentDate";
+	public static final String QUARANTINE_HOME_POSSIBLE = "quarantineHomePossible";
+	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
+	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+
+	private CaseReferenceDto caze;
+	private String caseIdExternalSystem;
+	private String caseOrEventInformation;
+	private Disease disease;
+	private String diseaseDetails;
+
 	@Required
 	private Date reportDateTime;
 	@Required
@@ -79,25 +101,20 @@ public class ContactDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	@Required
-	private PersonReferenceDto person;
-	@Required
-	private CaseReferenceDto caze;
-	private Disease caseDisease;
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
+	private String contactProximityDetails;
+	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
 	private String followUpComment;
 	private Date followUpUntil;
-	private UserReferenceDto contactOfficer;
+	private boolean overwriteFollowUpUntil;
 	private String description;
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private String externalID;
-	
-	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
-	private UserReferenceDto resultingCaseUser;
 	
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
@@ -108,12 +125,37 @@ public class ContactDto extends EntityDto {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
-	public static ContactDto build(CaseReferenceDto caze) {
+	@Required
+	private PersonReferenceDto person;
+
+	private UserReferenceDto contactOfficer;
+
+	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	private UserReferenceDto resultingCaseUser;
+
+	private String quarantineHelpNeeded;
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
+	private YesNoUnknown quarantineHomePossible;
+	private String quarantineHomePossibleComment;
+	private YesNoUnknown quarantineHomeSupplyEnsured;
+	private String quarantineHomeSupplyEnsuredComment;
+
+	public static ContactDto build() {
+		return build(null, null, null);
+	}
+	
+	public static ContactDto build(CaseDataDto caze) {
+		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
 
-		contact.setCaze(caze);
-
+		contact.assignCase(caze, disease, diseaseDetails);
 		contact.setPerson(new PersonReferenceDto(DataHelper.createUuid()));
 
 		contact.setReportDateTime(new Date());
@@ -121,6 +163,16 @@ public class ContactDto extends EntityDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 
 		return contact;
+	}
+	
+	public void assignCase(CaseDataDto caze) {
+		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
+	}
+	
+	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
+		setCaze(caze);
+		setDisease(disease);
+		setDiseaseDetails(diseaseDetails);
 	}
 	
 	public PersonReferenceDto getPerson() {
@@ -247,14 +299,19 @@ public class ContactDto extends EntityDto {
 	public void setResultingCaseUser(UserReferenceDto resultingCaseUser) {
 		this.resultingCaseUser = resultingCaseUser;
 	}
-	public Disease getCaseDisease() {
-		return caseDisease;
+	public Disease getDisease() {
+		return disease;
 	}
-	/**
-	 * Read-only
-	 */
-	public void setCaseDisease(Disease caseDisease) {
-		this.caseDisease = caseDisease;
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public String getDiseaseDetails() {
+		return diseaseDetails;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
 	}
 
 	public String getExternalID() {
@@ -336,4 +393,117 @@ public class ContactDto extends EntityDto {
 	public void setQuarantineTo(Date quarantineTo) {
 		this.quarantineTo = quarantineTo;
 	}
+
+	public String getCaseIdExternalSystem() {
+		return caseIdExternalSystem;
+	}
+
+	public void setCaseIdExternalSystem(String caseIdExternalSystem) {
+		this.caseIdExternalSystem = caseIdExternalSystem;
+	}
+
+	public String getCaseOrEventInformation() {
+		return caseOrEventInformation;
+	}
+
+	public void setCaseOrEventInformation(String caseOrEventInformation) {
+		this.caseOrEventInformation = caseOrEventInformation;
+	}
+
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+	
+	public String getContactProximityDetails() {
+		return contactProximityDetails;
+	}
+
+	public void setContactProximityDetails(String contactProximityDetails) {
+		this.contactProximityDetails = contactProximityDetails;
+	}
+
+	public ContactCategory getContactCategory() {
+		return contactCategory;
+	}
+
+	public void setContactCategory(ContactCategory contactCategory) {
+		this.contactCategory = contactCategory;
+	}
+
+	public String getQuarantineHelpNeeded() {
+		return quarantineHelpNeeded;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public YesNoUnknown getQuarantineHomePossible() {
+		return quarantineHomePossible;
+	}
+
+	public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+		this.quarantineHomePossible = quarantineHomePossible;
+	}
+
+	public String getQuarantineHomePossibleComment() {
+		return quarantineHomePossibleComment;
+	}
+
+	public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+		this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+	}
+
+	public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+		return quarantineHomeSupplyEnsured;
+	}
+
+	public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+	}
+
+	public String getQuarantineHomeSupplyEnsuredComment() {
+		return quarantineHomeSupplyEnsuredComment;
+	}
+
+	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+	
 }

@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 188;
+	public static final int DATABASE_VERSION = 200;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1442,6 +1442,75 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantine varchar(255);");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineFrom timestamp;");
 					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineTo timestamp;");
+				case 188:
+					currentVersion = 188;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN diseaseDetails varchar(512);");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET caseDisease = (SELECT disease FROM cases WHERE uuid = contacts.caseUuid);");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET diseaseDetails = (SELECT diseaseDetails FROM cases WHERE uuid = contacts.caseUuid);");
+				case 189:
+					currentVersion = 189;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN caseIdExternalSystem varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN caseOrEventInformation varchar(255);");
+				case 190:
+					currentVersion = 190;
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN emailAddress varchar(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN passportNumber varchar(255);");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN nationalHealthId varchar(255);");
+				case 191:
+					currentVersion = 191;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantine varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineFrom timestamp;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineTo timestamp;");
+				case 192:
+					currentVersion = 192;
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactCategory varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactProximityDetails varchar(512);");
+				case 193:
+					currentVersion = 193;
+					// Fill report date if necessary; required because the report date was not a mandatory field before
+					getDao(Contact.class).executeRaw("UPDATE contacts SET reportDateTime = creationDate WHERE reportDateTime IS NULL;");
+				case 194:
+					currentVersion = 194;
+					getDao(Contact.class).executeRaw("UPDATE contacts SET followUpUntil = quarantineTo WHERE quarantineTo > followUpUntil;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOrderMeans varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineHelpNeeded varchar(512);");
+				case 195:
+					currentVersion = 195;
+					getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN intensiveCareUnit varchar(255);");
+					getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN intensiveCareUnitStart timestamp;");
+					getDao(Hospitalization.class).executeRaw("ALTER TABLE hospitalizations ADD COLUMN intensiveCareUnitEnd timestamp");
+					getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET intensiveCareUnit = 'YES' WHERE accommodation = 'ICU';");
+				case 196:
+					currentVersion = 196;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineHelpNeeded varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOrderedVerbally SMALLINT DEFAULT 0;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOrderedOfficialDocument SMALLINT DEFAULT 0;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOrderedVerballyDate timestamp;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOrderedOfficialDocumentDate timestamp;");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineHomePossible varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineHomePossibleComment varchar(512);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineHomeSupplyEnsured varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineHomeSupplyEnsuredComment varchar(512);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOrderedVerbally SMALLINT DEFAULT 0;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOrderedOfficialDocument SMALLINT DEFAULT 0;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOrderedVerballyDate timestamp;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOrderedOfficialDocumentDate timestamp;");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineHomePossible varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineHomePossibleComment varchar(512);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineHomeSupplyEnsured varchar(255);");
+					getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineHomeSupplyEnsuredComment varchar(512);");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET quarantineOrderedVerbally = CASE WHEN quarantineOrderMeans = 'VERBALLY' THEN 1 ELSE 0 END;");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET quarantineOrderedOfficialDocument = CASE WHEN quarantineOrderMeans = 'OFFICIAL_DOCUMENT' THEN 1 ELSE 0 END;");
+				case 197:
+					currentVersion = 197;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN reportingType varchar(255);");
+				case 198:
+					currentVersion = 198;
+					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN fieldSampleID varchar(512);");
+				case 199:
+					currentVersion = 199;
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lossOfTaste varchar(255);");
+					getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN lossOfSmell varchar(255);");
 
 					// ATTENTION: break should only be done after last version
 					break;

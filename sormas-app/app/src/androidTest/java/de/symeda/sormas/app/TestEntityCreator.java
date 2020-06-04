@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -61,10 +62,22 @@ import de.symeda.sormas.app.backend.visit.Visit;
 
 public class TestEntityCreator {
 
+    public static Person createPerson() {
+       return createPerson("FirstName", "LastName");
+    }
+
     public static Person createPerson(String firstName, String lastName) {
+        return createPerson(firstName, lastName, null, null, null, null);
+    }
+
+    public static Person createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
         Person person = DatabaseHelper.getPersonDao().build();
         person.setFirstName(firstName);
         person.setLastName(lastName);
+        person.setSex(sex);
+        person.setBirthdateYYYY(birthdateYYYY);
+        person.setBirthdateMM(birthdateMM);
+        person.setBirthdateDD(birthdateDD);
 
         try {
             DatabaseHelper.getPersonDao().saveAndSnapshot(person);
@@ -76,7 +89,7 @@ public class TestEntityCreator {
         return DatabaseHelper.getPersonDao().queryForId(person.getId());
     }
 
-    public static Case createCase() {
+    public static Case createCase(Person person) {
         Disease disease = Disease.EVD;
         Region region = DatabaseHelper.getRegionDao().queryUuid(TestHelper.REGION_UUID);
         District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
@@ -85,7 +98,7 @@ public class TestEntityCreator {
         CaseClassification caseClassification = CaseClassification.SUSPECT;
         InvestigationStatus investigationStatus = InvestigationStatus.PENDING;
 
-        Case caze = DatabaseHelper.getCaseDao().build(createPerson("Salomon", "Kalou"));
+        Case caze = DatabaseHelper.getCaseDao().build(person);
         caze.setDisease(disease);
         caze.setRegion(region);
         caze.setDistrict(district);
@@ -105,8 +118,11 @@ public class TestEntityCreator {
         return DatabaseHelper.getCaseDao().queryForIdWithEmbedded(caze.getId());
     }
 
-    public static Contact createContact(Case caze) {
-        Person person = createPerson("Thierry", "Henry");
+    public static Case createCase() {
+        return createCase(createPerson());
+    }
+
+    public static Contact createContact(Person person, Case caze) {
         if (caze == null) {
             caze = createCase();
         }
@@ -114,7 +130,8 @@ public class TestEntityCreator {
         Contact contact = DatabaseHelper.getContactDao().build();
         contact.setPerson(person);
         contact.setCaseUuid(caze.getUuid());
-        contact.setCaseDisease(caze.getDisease());
+        contact.setDisease(caze.getDisease());
+        contact.setDiseaseDetails(caze.getDiseaseDetails());
 
         try {
             DatabaseHelper.getContactDao().saveAndSnapshot(contact);
@@ -124,6 +141,10 @@ public class TestEntityCreator {
         }
 
         return DatabaseHelper.getContactDao().queryForIdWithEmbedded(contact.getId());
+    }
+
+    public static Contact createContact(Case caze) {
+        return createContact(createPerson(), caze);
     }
 
     public static Event createEvent() {
@@ -236,9 +257,7 @@ public class TestEntityCreator {
         return DatabaseHelper.getVisitDao().queryForIdWithEmbedded(visit.getId());
     }
 
-    public static EventParticipant createEventParticipant(Event event) {
-        Person person = createPerson("Demba", "Ba");
-
+    public static EventParticipant createEventParticipant(Person person, Event event) {
         EventParticipant eventParticipant = DatabaseHelper.getEventParticipantDao().build();
         eventParticipant.setEvent(event);
         eventParticipant.setPerson(person);
@@ -251,6 +270,10 @@ public class TestEntityCreator {
         }
 
         return DatabaseHelper.getEventParticipantDao().queryForIdWithEmbedded(eventParticipant.getId());
+    }
+
+    public static EventParticipant createEventParticipant(Event event) {
+        return createEventParticipant(createPerson(), event);
     }
 
     public static PathogenTest createSampleTest(Sample sample) {

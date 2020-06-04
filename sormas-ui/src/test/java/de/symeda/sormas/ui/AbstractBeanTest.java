@@ -25,24 +25,30 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
+import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.PointOfEntryFacadeEjb.PointOfEntryFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
+
+import static org.mockito.Mockito.when;
 
 public class AbstractBeanTest extends BaseBeanTest {
 
@@ -56,6 +62,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
+
+		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName()	);
 	}
 
 	private void initH2Functions() {
@@ -99,6 +108,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 	
 	public FacilityFacade getFacilityFacade() {
 		return getBean(FacilityFacadeEjbLocal.class);
+	}
+	
+	public PointOfEntryFacade getPointOfEntryFacade() {
+		return getBean(PointOfEntryFacadeEjbLocal.class);
 	}
 
 	public EntityManager getEntityManager() {

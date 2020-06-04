@@ -146,10 +146,10 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>());
         contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
-            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
-            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
 
         int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -190,12 +190,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
             contentBinding.caseDataCommunity.setRequired(false);
         }
 
-        // Disable first and last name and disease fields when case is created from contact
+        // Disable personal details and disease fields when case is created from contact
         // or event person
         Bundler bundler = new Bundler(getArguments());
         if (bundler.getContactUuid() != null || bundler.getEventParticipantUuid() != null) {
             contentBinding.caseDataFirstName.setEnabled(false);
             contentBinding.caseDataLastName.setEnabled(false);
+            contentBinding.personSex.setEnabled(false);
+            contentBinding.personBirthdateYYYY.setEnabled(false);
+            contentBinding.personBirthdateMM.setEnabled(false);
+            contentBinding.personBirthdateDD.setEnabled(false);
             contentBinding.caseDataDisease.setEnabled(false);
             contentBinding.caseDataDiseaseDetails.setEnabled(false);
             contentBinding.caseDataPlagueType.setEnabled(false);
@@ -257,15 +261,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
         record.setCaseOrigin(lastCase.getCaseOrigin());
 
         getContentBinding().setData(record);
-    }
-
-    private static void updateListOfDays(FragmentCaseNewLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
-        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
-        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-        binding.personBirthdateDD.setSpinnerData(days);
-        if (currentlySelected != null) {
-            binding.personBirthdateDD.setValue(currentlySelected);
-        }
     }
 
 }

@@ -1,5 +1,9 @@
 package de.symeda.sormas.ui.caze.maternalhistory;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import java.util.Arrays;
 
 import com.vaadin.v7.ui.ComboBox;
@@ -17,26 +21,26 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 	
+	private static final long serialVersionUID = 1L;
+
 	private final ViewMode viewMode;
 	
 	private static final String HTML_LAYOUT =
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingMaternalHistory)) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.CHILDREN_NUMBER, MaternalHistoryDto.AGE_AT_BIRTH, "") +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.CONJUNCTIVITIS, MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.MACULOPAPULAR_RASH, MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.SWOLLEN_LYMPHS, MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET, MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.OTHER_COMPLICATIONS, MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET, MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH) +
-			LayoutUtil.loc(MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.RUBELLA, MaternalHistoryDto.RUBELLA_ONSET, "") +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE, MaternalHistoryDto.RASH_EXPOSURE_DATE, MaternalHistoryDto.RASH_EXPOSURE_MONTH) +
-			LayoutUtil.fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
+			h3(I18nProperties.getString(Strings.headingMaternalHistory)) +
+			fluidRowLocs(MaternalHistoryDto.CHILDREN_NUMBER, MaternalHistoryDto.AGE_AT_BIRTH, "") +
+			fluidRowLocs(MaternalHistoryDto.CONJUNCTIVITIS, MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH) +
+			fluidRowLocs(MaternalHistoryDto.MACULOPAPULAR_RASH, MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH) +
+			fluidRowLocs(MaternalHistoryDto.SWOLLEN_LYMPHS, MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET, MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH) +
+			fluidRowLocs(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH) +
+			fluidRowLocs(MaternalHistoryDto.OTHER_COMPLICATIONS, MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET, MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH) +
+			loc(MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS) +
+			fluidRowLocs(MaternalHistoryDto.RUBELLA, MaternalHistoryDto.RUBELLA_ONSET, "") +
+			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE, MaternalHistoryDto.RASH_EXPOSURE_DATE, MaternalHistoryDto.RASH_EXPOSURE_MONTH) +
+			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 	
 	public MaternalHistoryForm(UserRight editOrCreateUserRight, ViewMode viewMode) {
 		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, editOrCreateUserRight);

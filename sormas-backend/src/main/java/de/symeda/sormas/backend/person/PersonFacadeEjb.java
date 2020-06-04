@@ -54,6 +54,8 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -83,8 +85,8 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class PersonFacadeEjb implements PersonFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
-	
+	private EntityManager em;
+
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -106,26 +108,35 @@ public class PersonFacadeEjb implements PersonFacade {
 
 
 	@Override
-	public List<String> getAllUuids(String userUuid) {
-
-		User user = userService.getByUuid(userUuid);
-
-		if (user == null) {
+	public List<String> getAllUuids() {
+		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
-		return personService.getAllUuids(user);
+		return personService.getAllUuids();
 	}
 
 	@Override
-	public List<PersonNameDto> getNameDtos(UserReferenceDto userRef) {
-
+	public List<PersonNameDto> getMatchingNameDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
 		User user = userService.getByReferenceDto(userRef);
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<PersonNameDto>(personService.getNameDtos(user));
+		return new ArrayList<PersonNameDto>(personService.getMatchingNameDtos(user, criteria));
+	}
+
+	@Override
+	public List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids) {
+		List<Person> persons = personService.getByUuids(personUuids);
+
+		if (persons == null) {
+			return new ArrayList<>();
+		} else {
+			return persons.stream()
+					.map(c -> toIndexDto(c))
+					.collect(Collectors.toList());
+		}
 	}
 
 	// multiselect does not work for person, because getting all persons requires multiple querries and we currently don't have an abstraction for this
@@ -156,37 +167,36 @@ public class PersonFacadeEjb implements PersonFacade {
 	//		List<PersonIndexDto> resultList = em.createQuery(cq).getResultList();
 	//		return resultList;
 	//	}
-	
+
 	@Override
-	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 		
-		Predicate filter = caseService.createUserFilter(cb, cq, root, user);
+		Predicate filter = caseService.createUserFilter(cb, cq, root);
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.multiselect(person.get(Person.CAUSE_OF_DEATH_DISEASE), cb.count(person));
 		cq.groupBy(person.get(Person.CAUSE_OF_DEATH_DISEASE));
-		
+
 		List<Object[]> results = em.createQuery(cq).getResultList();
-		
+
 		Map<Disease, Long> outbreaks = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-		
+
 		return outbreaks;
 	}
 
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date, String uuid) {
+	public List<PersonDto> getPersonsAfter(Date date) {
 
-		User user = userService.getByUuid(uuid);
+		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
@@ -206,8 +216,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease, String uuid) {
-		User user = userService.getByUuid(uuid);
+	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
+		User user = userService.getCurrentUser();
 		District district = districtService.getByReferenceDto(districtRef);
 
 		if (user == null) {
@@ -242,7 +252,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		PersonDto existingPerson = toDto(person);
 
 		validate(source);
-		
+
 		person = fillOrBuildEntity(source, person);
 		personService.ensurePersisted(person);
 
@@ -250,7 +260,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		return toDto(person);
 	}
-	
+
 	@Override
 	public void validate(PersonDto source) throws ValidationRuntimeException {
 		if (StringUtils.isEmpty(source.getFirstName())) {
@@ -260,9 +270,29 @@ public class PersonFacadeEjb implements PersonFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
 	}
+	
+	/**
+	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
+	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
+	 */
+	private void cleanUp(Person person) {
+		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE) {
+			person.setDeathDate(null);
+			person.setCauseOfDeath(null);
+			person.setCauseOfDeathDisease(null);
+			person.setCauseOfDeathDetails(null);
+			person.setDeathPlaceType(null);
+			person.setDeathPlaceDescription(null);
+		}
+		if (!PresentCondition.BURIED.equals(person.getPresentCondition())) {
+			person.setBurialDate(null);
+			person.setBurialPlaceDescription(null);
+			person.setBurialConductor(null);
+		}
+	}
 
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
-		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
+		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 		// Call onCaseChanged once for every case to update case classification
 		// Attention: this may lead to infinite recursion when not properly implemented
 		for (Case personCase : personCases) {
@@ -275,7 +305,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			if (newPerson.getPresentCondition() != null 
 					&& existingPerson.getPresentCondition() != newPerson.getPresentCondition()) {
 				// Update case list after previous onCaseChanged
-				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
+				personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 				for (Case personCase : personCases) {
 					if (newPerson.getPresentCondition().isDeceased()) {
 						if (personCase.getOutcome() == CaseOutcome.NO_OUTCOME) {
@@ -295,7 +325,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				}
 			}
 		}
-		
+
 		// Set approximate age if it hasn't been set before
 		if (newPerson.getApproximateAge() == null && newPerson.getBirthdateYYYY() != null) {
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
@@ -310,7 +340,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if ((existingPerson == null && newPerson.getApproximateAge() != null) || 
 				(existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
 			// Update case list after previous onCaseChanged
-			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), null);
+			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 			for (Case personCase : personCases) {
 				CaseDataDto existingCase = CaseFacadeEjbLocal.toDto(personCase);
 				if (newPerson.getApproximateAge() == null) {
@@ -327,6 +357,8 @@ public class PersonFacadeEjb implements PersonFacade {
 				caseFacade.onCaseChanged(existingCase, personCase);
 			}
 		}
+		
+		cleanUp(newPerson);
 	}
 
 	@Override
@@ -376,7 +408,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
-		
+
 		target.setOccupationType(source.getOccupationType());
 		target.setOccupationDetails(source.getOccupationDetails());
 		target.setOccupationRegion(regionService.getByReferenceDto(source.getOccupationRegion()));
@@ -384,7 +416,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationCommunity(communityService.getByReferenceDto(source.getOccupationCommunity()));
 		target.setOccupationFacility(facilityService.getByReferenceDto(source.getOccupationFacility()));
 		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
-		
+
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());
 		target.setPlaceOfBirthRegion(regionService.getByReferenceDto(source.getPlaceOfBirthRegion()));
@@ -395,7 +427,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		
+
+		target.setEmailAddress(source.getEmailAddress());
+		target.setPassportNumber(source.getPassportNumber());
+		target.setNationalHealthId(source.getNationalHealthId());
+
 		return target;
 	}
 
@@ -412,9 +448,9 @@ public class PersonFacadeEjb implements PersonFacade {
 				entity.getPresentCondition(), entity.getBirthdateDD(), entity.getBirthdateMM(), entity.getBirthdateYYYY(),
 				entity.getApproximateAge(), entity.getApproximateAgeType(), entity.getDeathDate(), entity.getNickname(),
 				entity.getAddress().getRegion() != null ? entity.getAddress().getRegion().getName() : null,
-				entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null, 
-						entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null, 
-								entity.getAddress().getCity());
+						entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
+								entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
+										entity.getAddress().getCity());
 		return dto;
 	}
 
@@ -435,10 +471,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setBirthdateYYYY(source.getBirthdateYYYY());
 
 		if (source.getBirthdateYYYY() != null) {
-			
+
 			// calculate the approximate age based on the birth date
 			// still not sure whether this is a good solution
-			
+
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(
 					source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate()
 					);
@@ -491,7 +527,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setGestationAgeAtBirth(source.getGestationAgeAtBirth());
 		target.setBirthWeight(source.getBirthWeight());
 		target.setGeneralPractitionerDetails(source.getGeneralPractitionerDetails());
-		
+
+		target.setEmailAddress(source.getEmailAddress());
+		target.setPassportNumber(source.getPassportNumber());
+		target.setNationalHealthId(source.getNationalHealthId());
+
 		return target;
 	}
 

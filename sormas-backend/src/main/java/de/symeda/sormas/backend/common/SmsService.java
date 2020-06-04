@@ -43,10 +43,10 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 @LocalBean
 public class SmsService {
 
-	private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
-	ConfigFacadeEjbLocal configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Asynchronous
 	public void sendSms(String phoneNumber, String subject, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {

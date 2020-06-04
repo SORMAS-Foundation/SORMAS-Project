@@ -38,8 +38,10 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -250,6 +252,34 @@ public class Case extends AbstractDomainObject {
 
     @Column(length = 255)
     private String externalID;
+
+    @Enumerated(EnumType.STRING)
+    private QuarantineType quarantine;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineFrom;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineTo;
+    @Column(length = 512)
+    private String quarantineHelpNeeded;
+    @DatabaseField
+    private boolean quarantineOrderedVerbally;
+    @DatabaseField
+    private boolean quarantineOrderedOfficialDocument;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineOrderedVerballyDate;
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date quarantineOrderedOfficialDocumentDate;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown quarantineHomePossible;
+    @Column(length = 512)
+    private String quarantineHomePossibleComment;
+    @Enumerated(EnumType.STRING)
+    private YesNoUnknown quarantineHomeSupplyEnsured;
+    @Column(length = 512)
+    private String quarantineHomeSupplyEnsuredComment;
+    @Enumerated(EnumType.STRING)
+    private ReportingType reportingType;
+
 
     public boolean isUnreferredPortHealthCase() {
         return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -739,5 +769,109 @@ public class Case extends AbstractDomainObject {
 
     public void setExternalID(String externalID) {
         this.externalID = externalID;
+    }
+
+    public QuarantineType getQuarantine() {
+        return quarantine;
+    }
+
+    public void setQuarantine(QuarantineType quarantine) {
+        this.quarantine = quarantine;
+    }
+
+    public Date getQuarantineFrom() {
+        return quarantineFrom;
+    }
+
+    public void setQuarantineFrom(Date quarantineFrom) {
+        this.quarantineFrom = quarantineFrom;
+    }
+
+    public Date getQuarantineTo() {
+        return quarantineTo;
+    }
+
+    public void setQuarantineTo(Date quarantineTo) {
+        this.quarantineTo = quarantineTo;
+    }
+
+    public String getQuarantineHelpNeeded() {
+        return quarantineHelpNeeded;
+    }
+
+    public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+        this.quarantineHelpNeeded = quarantineHelpNeeded;
+    }
+
+    public boolean isQuarantineOrderedVerbally() {
+        return quarantineOrderedVerbally;
+    }
+
+    public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+        this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+    }
+
+    public boolean isQuarantineOrderedOfficialDocument() {
+        return quarantineOrderedOfficialDocument;
+    }
+
+    public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+        this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+    }
+
+    public Date getQuarantineOrderedVerballyDate() {
+        return quarantineOrderedVerballyDate;
+    }
+
+    public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+        this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+    }
+
+    public Date getQuarantineOrderedOfficialDocumentDate() {
+        return quarantineOrderedOfficialDocumentDate;
+    }
+
+    public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+        this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+    }
+
+    public YesNoUnknown getQuarantineHomePossible() {
+        return quarantineHomePossible;
+    }
+
+    public void setQuarantineHomePossible(YesNoUnknown quarantineHomePossible) {
+        this.quarantineHomePossible = quarantineHomePossible;
+    }
+
+    public String getQuarantineHomePossibleComment() {
+        return quarantineHomePossibleComment;
+    }
+
+    public void setQuarantineHomePossibleComment(String quarantineHomePossibleComment) {
+        this.quarantineHomePossibleComment = quarantineHomePossibleComment;
+    }
+
+    public YesNoUnknown getQuarantineHomeSupplyEnsured() {
+        return quarantineHomeSupplyEnsured;
+    }
+
+    public void setQuarantineHomeSupplyEnsured(YesNoUnknown quarantineHomeSupplyEnsured) {
+        this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
+    }
+
+    public String getQuarantineHomeSupplyEnsuredComment() {
+        return quarantineHomeSupplyEnsuredComment;
+    }
+
+    public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
+        this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+    }
+
+    public ReportingType getReportingType() {
+        return reportingType;
+    }
+
+    public void setReportingType(ReportingType reportingType) {
+        this.reportingType = reportingType;
     }
 }

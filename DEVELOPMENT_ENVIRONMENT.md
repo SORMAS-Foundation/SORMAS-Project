@@ -16,7 +16,7 @@
 	- If you're using Eclipse to clone, choose "File -> Import -> Git -> Projects from Git" and continue until you're asked to create a new project from the cloned repository; click cancel instead and use "File -> Import -> Maven -> Existing Maven Projects" to import the separate projects into your workspace
 	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
 - Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
-- Install the [Vaadin Plugin for Eclipise](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
+- Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the server
 
 ### Additional Steps
@@ -29,14 +29,37 @@
 - Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it, or use the "Add and Remove..."-function by right clicking on the server.
 - Open your browser and type in "http://localhost:6080/sormas-ui" or "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
 
+## IntelliJ
+- Install the latest Ultimate edition IntelliJ
+- Set the project SDK to use the installed Zulu Java SDK
+- Clone the SORMAS-Project repository and open the project in IntelliJ
+	- make sure the under "File -> Project Structure -> Modules" all the modules (except the android app - this should not be added) are recognized, if not add the modules with +
+- Make sure under "File -> Settings -> Plugins" Glassfish & Ant integrations are enabled
+- Install the Vaadin Designer plugin
+- Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
+- Run "Maven install" on the sormas-base project
+- Add a Payara server to IntelliJ:
+	- go to "Run -> Edit configurations"
+	- add new configuration and choose from the templates Glassfish server
+	- select the payara5 directory for application server - and name the application server field Payara5
+	- specify server domain and credentials from the server setup
+	- add "http://localhost:6080/sormas-ui" under open browser section and check After launch checkbox
+	- under Deployment tab add the artifacts "sormas-ear", "sormas-rest" and "sormas-ui"
+	- under Logs tab add new log with location pointing to the domain log (e.g.: payara5\glassfish\domains\sormas\logs\server.log)
+	- under Startup/Connection tab make sure you do not pass environment variables (it's a currently open bug in intellij) - ignore warning about debug config not being correct
+	- edit your domain config ..\payara5\glassfish\domains\sormas\config\domain.xml and make sure the java-config node contains:
+	 ``<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...``
+
 ## Android Studio
 **Note: This is only needed for development of the SORMAS Android app
 * Install the latest Android Studio version (to avoid errors, start the installation with admin rights)
 * Start the application
 * To avoid errors, ensure that the path for the Android SDK contains no whitespaces
 	* The path could be edited at ``Tools -> SDK Manager -> Android SDK Location``
-* Open Android Studio and import the "sormas-app" project from Eclipse
-* Create a keystore.properties file in sormas-app (see keystore.properties.example for reference).
+* Open Android Studio and import the "sormas-app" module from SORMAS-Project
+* Create a keystore.properties file in sormas-app (see keystore.properties.example for reference - needed only for app deployment).
 * Build the Android Studio project by executing the gradle build (this may be done automatically)
+* Add an emulator with SDK version between the minSdkVersion and targetSdkVersion properties from build.gradle
+* On first start of the application enter the Sormas rest service URL for the server URL: http://10.0.2.2:6080/sormas-rest/ (see: https://developer.android.com/studio/run/emulator-networking)
 
 

@@ -43,14 +43,18 @@ import de.symeda.sormas.api.utils.Diseases;
 
 public final class FieldHelper {
 
+	private FieldHelper() {
+		// Hide Utility Class Constructor
+	}
+
 	public static void setReadOnlyWhen(FieldGroup fieldGroup, Object targetPropertyId, Object sourcePropertyId,
-			List<Object> sourceValues, boolean clearOnReadOnly) {
-		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly);
+			List<Object> sourceValues, boolean clearOnReadOnly, boolean readOnlyWhenNull) {
+		setReadOnlyWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyId, sourceValues, clearOnReadOnly, readOnlyWhenNull);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setReadOnlyWhen(final FieldGroup fieldGroup, List<Object> targetPropertyIds,
-			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly) {
+			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnReadOnly, boolean readOnlyWhenNull) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
 		if (sourceField instanceof AbstractField<?>) {
@@ -59,7 +63,12 @@ public final class FieldHelper {
 
 		// initialize
 		{
-			boolean readOnly = sourceValues.contains(sourceField.getValue());
+			boolean readOnly;
+			if (sourceField.getValue() == null) {
+				readOnly = readOnlyWhenNull;
+			} else {
+				readOnly = sourceValues.contains(sourceField.getValue());
+			}
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (readOnly && clearOnReadOnly && targetField.getValue() != null) {
@@ -76,7 +85,12 @@ public final class FieldHelper {
 		}
 
 		sourceField.addValueChangeListener(event -> {
-			boolean readOnly = sourceValues.contains(event.getProperty().getValue());
+			boolean readOnly;
+			if (sourceField.getValue() == null) {
+				readOnly = readOnlyWhenNull;
+			} else {
+				readOnly = sourceValues.contains(event.getProperty().getValue());
+			}
 			for (Object targetPropertyId : targetPropertyIds) {
 				Field targetField = fieldGroup.getField(targetPropertyId);
 				if (readOnly && clearOnReadOnly && targetField.getValue() != null) {
@@ -103,15 +117,15 @@ public final class FieldHelper {
 			Object sourcePropertyId, final List<Object> sourceValues, final boolean clearOnHidden) {
 
 		Field sourceField = fieldGroup.getField(sourcePropertyId);
-		
+
 		setVisibleWhen(fieldGroup, targetPropertyIds, sourceField, sourceValues, clearOnHidden);
 	}
-	
+
 	public static void setVisibleWhen(FieldGroup fieldGroup, String targetPropertyId, Field sourceField,
 			List<Object> sourceValues, boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourceField, sourceValues, clearOnHidden);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Field sourceField, final List<Object> sourceValues, final boolean clearOnHidden) {
@@ -143,7 +157,7 @@ public final class FieldHelper {
 			}
 		});
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, List<String> targetPropertyIds,
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
@@ -154,26 +168,26 @@ public final class FieldHelper {
 			fieldGroup.getField(sourcePropertyId).addValueChangeListener(event -> onValueChangedSetVisible(fieldGroup, targetPropertyIds, sourcePropertyIdsAndValues, clearOnHidden));
 		});
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	public static void setVisibleWhen(final FieldGroup fieldGroup, String targetPropertyId,
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
 		setVisibleWhen(fieldGroup, Arrays.asList(targetPropertyId), sourcePropertyIdsAndValues, clearOnHidden);
 	}
-	
+
 	private static void onValueChangedSetVisible (final FieldGroup fieldGroup, List<String> targetPropertyIds, 
 			Map<Object, List<Object>> sourcePropertyIdsAndValues, final boolean clearOnHidden) {
-		
+
 		//a workaround variable to be modified in the forEach lambda
-		boolean[] visible_ = { true }; 
-		
+		boolean[] visibleArray = { true }; 
+
 		sourcePropertyIdsAndValues.forEach((sourcePropertyId, sourceValues) -> {
 			if (!sourceValues.contains(fieldGroup.getField(sourcePropertyId).getValue()))
-				visible_[0] = false;
+				visibleArray[0] = false;
 		});
-		
-		boolean visible = visible_[0];
-		
+
+		boolean visible = visibleArray[0];
+
 		for (Object targetPropertyId : targetPropertyIds) {
 			Field targetField = fieldGroup.getField(targetPropertyId);
 			targetField.setVisible(visible);
@@ -339,15 +353,15 @@ public final class FieldHelper {
 		}
 		select.setReadOnly(readOnly);
 	}
-	
-    public static void updateEnumData(AbstractSelect select, 
-            Iterable<? extends Enum> enumData) {
-        select.removeAllItems();
-        for (Object r : enumData) {
-            Item newItem = select.addItem(r);
-            newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
-        }
-    }
+
+	public static void updateEnumData(AbstractSelect select, 
+			Iterable<? extends Enum> enumData) {
+		select.removeAllItems();
+		for (Object r : enumData) {
+			Item newItem = select.addItem(r);
+			newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+		}
+	}
 
 	public static void removeItems(AbstractSelect select) {
 		boolean readOnly = select.isReadOnly();

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -31,18 +33,18 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 
 public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	private static final long serialVersionUID = 1952619382018965255L;
 
-	private static final String HTML_LAYOUT = LayoutUtil.fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION)
-			+ LayoutUtil.fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY)
-			+ LayoutUtil.fluidRowLocs(FacilityDto.CITY)
-			+ LayoutUtil.fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
-			+ LayoutUtil.fluidRowLocs(RegionDto.EXTERNAL_ID);
+	private static final String HTML_LAYOUT = 
+			fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION) +
+			fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY) +
+			fluidRowLocs(FacilityDto.CITY) +
+			fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE) +
+			fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean laboratory;
 	private boolean create;
@@ -79,7 +81,6 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		if (!laboratory) {
 			region.setRequired(true);
 			district.setRequired(true);
-			community.setRequired(true);
 		}
 
 		region.addValueChangeListener(e -> {

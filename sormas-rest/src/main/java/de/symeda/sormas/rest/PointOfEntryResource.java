@@ -26,13 +26,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey documentation</a>
@@ -43,7 +40,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 @Produces({
 	MediaType.APPLICATION_JSON + "; charset=UTF-8"
 	})
-@RolesAllowed("USER")
+@RolesAllowed({"USER", "REST_USER"})
 public class PointOfEntryResource {
 
 	@GET @Path("/all/{since}")
@@ -53,17 +50,15 @@ public class PointOfEntryResource {
 	
 	@POST
 	@Path("/query")
-	public List<PointOfEntryDto> getByUuids(@Context SecurityContext sc, List<String> uuids) {
+	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
 		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids); 
 		return result;
 	}
 
 	@GET
 	@Path("/uuids")
-	public List<String> getAllUuids(@Context SecurityContext sc) {
-		UserReferenceDto userDto = FacadeProvider.getUserFacade().getByUserNameAsReference(sc.getUserPrincipal().getName());
-		List<String> uuids = FacadeProvider.getPointOfEntryFacade().getAllUuids(userDto.getUuid());
-		return uuids;
+	public List<String> getAllUuids() {
+		return FacadeProvider.getPointOfEntryFacade().getAllUuids();
 	}
 	
 }

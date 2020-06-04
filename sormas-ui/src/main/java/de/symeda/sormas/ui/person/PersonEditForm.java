@@ -17,6 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfFourCol;
+import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
+
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -59,7 +69,6 @@ import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -85,50 +94,52 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox birthDateDay;
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingPersonInformation))+
-			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					LayoutUtil.fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
-					) +
-			LayoutUtil.fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-			LayoutUtil.fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
-			LayoutUtil.fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
-			LayoutUtil.fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfFourCol(PersonDto.DEATH_DATE),
-					LayoutUtil.oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
-					LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
-					LayoutUtil.oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
-					) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfFourCol(PersonDto.DEATH_PLACE_TYPE), 
-					LayoutUtil.oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
-					) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_DATE),
-					LayoutUtil.oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
-					LayoutUtil.oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
-					) +
-			LayoutUtil.loc( OCCUPATION_HEADER) +
-			LayoutUtil.divsCss(
-					CssStyles.VSPACE_3, 
-					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
-					LayoutUtil.fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY, PersonDto.OCCUPATION_FACILITY),
-					LayoutUtil.fluidRowLocs("","", PersonDto.OCCUPATION_FACILITY_DETAILS),
-					LayoutUtil.fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
-					) +
-			LayoutUtil.loc(ADDRESS_HEADER) +
-			LayoutUtil.divsCss(
-					CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(PersonDto.ADDRESS)) +
-			LayoutUtil.loc(CONTACT_INFORMATION_HEADER) +
-			LayoutUtil.divsCss(
-					CssStyles.VSPACE_3,
-					LayoutUtil.fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
-					LayoutUtil.fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
-					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
-					LayoutUtil.loc(PersonDto.GENERAL_PRACTITIONER_DETAILS))
+			h3(I18nProperties.getString(Strings.headingPersonInformation)) +
+			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			fluidRow(
+					fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
+			) +
+			fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
+			fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+			fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
+			fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
+			fluidRow(
+					oneOfFourCol(PersonDto.DEATH_DATE),
+					oneOfFourCol(PersonDto.CAUSE_OF_DEATH),
+					fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE),
+					oneOfFourCol(PersonDto.CAUSE_OF_DEATH_DETAILS)
+			) +
+			fluidRow(
+					oneOfFourCol(PersonDto.DEATH_PLACE_TYPE), 
+					oneOfFourCol(PersonDto.DEATH_PLACE_DESCRIPTION)
+			) +
+			fluidRow(
+					oneOfFourCol(PersonDto.BURIAL_DATE),
+					oneOfFourCol(PersonDto.BURIAL_CONDUCTOR),
+					oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
+			) +
+			fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+			
+			loc( OCCUPATION_HEADER) +
+			divsCss(VSPACE_3, 
+					fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
+					fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY, PersonDto.OCCUPATION_FACILITY),
+					fluidRowLocs("","", PersonDto.OCCUPATION_FACILITY_DETAILS),
+					fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
+			) +
+			
+			loc(ADDRESS_HEADER) +
+			divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
+			
+			loc(CONTACT_INFORMATION_HEADER) +
+			divsCss(
+					VSPACE_3,
+					fluidRowLocs(PersonDto.NICKNAME, PersonDto.MOTHERS_MAIDEN_NAME) +
+					fluidRowLocs(PersonDto.MOTHERS_NAME, PersonDto.FATHERS_NAME) +
+					fluidRowLocs(PersonDto.PHONE, PersonDto.PHONE_OWNER) +
+					fluidRowLocs(PersonDto.EMAIL_ADDRESS, "") +
+					loc(PersonDto.GENERAL_PRACTITIONER_DETAILS))
 			;
 
 	private boolean initialized = false;
@@ -203,11 +214,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
-		addField(PersonDto.PHONE, TextField.class);
-		addField(PersonDto.PHONE_OWNER, TextField.class);
 
 		addFields(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS,
-				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
+				PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS, 
+				PersonDto.PHONE, PersonDto.PHONE_OWNER, PersonDto.EMAIL_ADDRESS, 
+				PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID);
 
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);

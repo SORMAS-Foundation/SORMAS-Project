@@ -10,28 +10,24 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.importer.AbstractImportLayout;
 import de.symeda.sormas.ui.importer.ImportReceiver;
 
-/**
- * @author Christopher Riedel
- */
 public class CaseContactsImportLayout extends AbstractImportLayout {
 
 	private static final long serialVersionUID = 5037303173480715542L;
 
-	public CaseContactsImportLayout(CaseReferenceDto caseReferenceDto, Disease caseDisease) {
+	public CaseContactsImportLayout(CaseDataDto caze) {
 		super();
 		
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
 				new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
 		addDownloadImportTemplateComponent(2,
-				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath().toString(),
+				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath(),
 				"sormas_import_case_contact_template.csv");
 		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", new Consumer<File>() {
 			@Override
@@ -39,8 +35,7 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 				resetDownloadErrorReportButton();
 				
 				try {
-					CaseContactImporter importer = new CaseContactImporter(file, false, currentUser, caseReferenceDto,
-							caseDisease);
+					ContactImporter importer = new ContactImporter(file, false, currentUser, caze);
 					importer.startImport(new Consumer<StreamResource>() {
 						@Override
 						public void accept(StreamResource resource) {

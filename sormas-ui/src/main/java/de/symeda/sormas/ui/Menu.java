@@ -142,12 +142,8 @@ public class Menu extends CssLayout {
     	Window window = VaadinUiUtil.createPopupWindow();
     	window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
     	window.setModal(true);
-    	
-		CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(
-				UserProvider.getCurrent().getUuid(), 
-				() -> {
-					window.close();
-				});
+
+        CommitDiscardWrapperComponent<UserSettingsForm> component = ControllerProvider.getUserController().getUserSettingsComponent(() -> window.close());
 		
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);

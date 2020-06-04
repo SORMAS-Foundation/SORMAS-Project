@@ -37,7 +37,6 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -70,7 +69,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		Predicate filter = buildActiveTasksFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -94,7 +93,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		Predicate filter = buildActiveTasksFilter(cb, from);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from, user);
+			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -109,27 +108,30 @@ public class TaskService extends AbstractAdoService<Task> {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task,Task> taskPath, User user) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task, Task> taskPath) {
 		// National users can access all tasks in the system
-		if (user.getUserRoles().contains(UserRole.NATIONAL_USER)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_CLINICIAN)
-				|| user.getUserRoles().contains(UserRole.NATIONAL_OBSERVER)) {
+		User currentUser = getCurrentUser();
+		if (currentUser.hasAnyUserRole(
+				UserRole.NATIONAL_USER,
+				UserRole.NATIONAL_CLINICIAN,
+				UserRole.NATIONAL_OBSERVER,
+				UserRole.REST_USER)) {
 			return null;
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), user);
-		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), user));
+		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
+		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT), user);
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		} 
-		Predicate contactFilter = contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT), user);
+		Predicate contactFilter = contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT));
 		if (contactFilter != null) {
 			filter = cb.or(filter, contactFilter);
 		}
-		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT), user);
+		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}

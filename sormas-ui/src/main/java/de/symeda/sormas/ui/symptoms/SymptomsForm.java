@@ -17,6 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.symptoms;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,11 +73,12 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String BUTTONS_LOC = "buttonsLoc";
 	private static final String LESIONS_LOCATIONS_LOC = "lesionsLocationsLoc";
@@ -77,19 +90,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private static final String COMPLICATIONS_HEADING = "complicationsHeading";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingClinicalMeasurements)) +
-			LayoutUtil.fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE) +
-			LayoutUtil.fluidRowLocs(SymptomsDto.BLOOD_PRESSURE_SYSTOLIC, SymptomsDto.BLOOD_PRESSURE_DIASTOLIC, SymptomsDto.HEART_RATE, SymptomsDto.RESPIRATORY_RATE) +
-			LayoutUtil.fluidRowLocs(SymptomsDto.GLASGOW_COMA_SCALE, SymptomsDto.WEIGHT, SymptomsDto.HEIGHT, SymptomsDto.MID_UPPER_ARM_CIRCUMFERENCE) +
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingSignsAndSymptoms)) +
-			LayoutUtil.fluidRowCss(CssStyles.VSPACE_3,
-					LayoutUtil.fluidColumn(8, 0,
-							LayoutUtil.loc(SYMPTOMS_HINT_LOC)),
-					LayoutUtil.fluidColumn(4, 0,
-							LayoutUtil.locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+			h3(I18nProperties.getString(Strings.headingClinicalMeasurements)) +
+			fluidRowLocs(SymptomsDto.TEMPERATURE, SymptomsDto.TEMPERATURE_SOURCE) +
+			fluidRowLocs(SymptomsDto.BLOOD_PRESSURE_SYSTOLIC, SymptomsDto.BLOOD_PRESSURE_DIASTOLIC, SymptomsDto.HEART_RATE, SymptomsDto.RESPIRATORY_RATE) +
+			fluidRowLocs(SymptomsDto.GLASGOW_COMA_SCALE, SymptomsDto.WEIGHT, SymptomsDto.HEIGHT, SymptomsDto.MID_UPPER_ARM_CIRCUMFERENCE) +
+			h3(I18nProperties.getString(Strings.headingSignsAndSymptoms)) +
+			fluidRowCss(VSPACE_3,
+					//XXX #1620 fluidColumnLoc?
+					fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
+					fluidColumn(4, 0,locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
+			fluidRow(
+					fluidColumn(6, 0,
+							locsCss(VSPACE_3,
 									SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.ABNORMAL_LUNG_XRAY_FINDINGS, SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME, SymptomsDto.HEARINGLOSS, SymptomsDto.ANOREXIA_APPETITE_LOSS,
 									SymptomsDto.BACKACHE, SymptomsDto.BLACKENING_DEATH_OF_TISSUE, SymptomsDto.BLOOD_IN_STOOL, SymptomsDto.BUBOES_GROIN_ARMPIT_NECK, SymptomsDto.BULGING_FONTANELLE, 
 									SymptomsDto.BILATERAL_CATARACTS, SymptomsDto.UNILATERAL_CATARACTS, SymptomsDto.CHEST_PAIN, SymptomsDto.CHILLS_SWEATS, 
@@ -103,8 +115,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.NAUSEA, SymptomsDto.NECK_STIFFNESS, SymptomsDto.OEDEMA_FACE_NECK, SymptomsDto.OEDEMA_LOWER_EXTREMITY, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, 
 									SymptomsDto.PAINFUL_LYMPHADENITIS, SymptomsDto.ANXIETY_STATES, SymptomsDto.DELIRIUM, SymptomsDto.UPROARIOUSNESS, SymptomsDto.PARASTHESIA_AROUND_WOUND, 
 									SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.CONVULSION)),
-					LayoutUtil.fluidColumn(6, 0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+					fluidColumn(6, 0, 
+							locsCss(VSPACE_3,
 									SymptomsDto.PALPABLE_LIVER, SymptomsDto.PALPABLE_SPLEEN, SymptomsDto.PHARYNGEAL_ERYTHEMA, SymptomsDto.PHARYNGEAL_EXUDATE, SymptomsDto.PIGMENTARY_RETINOPATHY, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC,
 									SymptomsDto.PURPURIC_RASH, SymptomsDto.RADIOLUCENT_BONE_DISEASE, SymptomsDto.RAPID_BREATHING, SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.RUNNY_NOSE, 
 									SymptomsDto.ORAL_ULCERS, SymptomsDto.SIDE_PAIN, SymptomsDto.SORE_THROAT, SymptomsDto.SPLENOMEGALY, SymptomsDto.SUNKEN_EYES_FONTANELLE, SymptomsDto.SWOLLEN_GLANDS, 
@@ -117,23 +129,25 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									SymptomsDto.LESIONS_ARMS, SymptomsDto.LESIONS_GENITALS, SymptomsDto.LESIONS_ALL_OVER_BODY, SymptomsDto.LESIONS_RESEMBLE_IMG1, MONKEYPOX_LESIONS_IMG1, 
 									SymptomsDto.LESIONS_RESEMBLE_IMG2, MONKEYPOX_LESIONS_IMG2, SymptomsDto.LESIONS_RESEMBLE_IMG3, MONKEYPOX_LESIONS_IMG3, SymptomsDto.LESIONS_RESEMBLE_IMG4, MONKEYPOX_LESIONS_IMG4,
 									SymptomsDto.LESIONS_ONSET_DATE, SymptomsDto.VOMITING, SymptomsDto.HYDROPHOBIA, SymptomsDto.OPISTHOTONUS, SymptomsDto.HYPERACTIVITY, SymptomsDto.PARESIS, SymptomsDto.AGITATION, 
-									SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA,
-									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)
-							+ LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS))
-					) +
-					LayoutUtil.fluidRowLocsCss(CssStyles.VSPACE_3, SymptomsDto.ONSET_SYMPTOM, SymptomsDto.ONSET_DATE)
-					+
-			LayoutUtil.loc(COMPLICATIONS_HEADING) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+											SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR,
+											SymptomsDto.COMA, SymptomsDto.LOSS_OF_TASTE,
+											SymptomsDto.LOSS_OF_SMELL,
+									SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS, SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT) +
+							locsCss(VSPACE_3,
+									SymptomsDto.PATIENT_ILL_LOCATION, SymptomsDto.SYMPTOMS_COMMENTS)
+					)
+			) +
+			fluidRowLocsCss(VSPACE_3, SymptomsDto.ONSET_SYMPTOM, SymptomsDto.ONSET_DATE) +
+			loc(COMPLICATIONS_HEADING) +
+			fluidRow(
+					fluidColumn(6, 0,
+							locsCss(VSPACE_3,
 									SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME, 
 									SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA)),
-					LayoutUtil.fluidColumn(6, 0, 
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
+					fluidColumn(6, 0, 
+							locsCss(VSPACE_3,
 									SymptomsDto.MENINGEAL_SIGNS, SymptomsDto.SEIZURES, SymptomsDto.SEPSIS, SymptomsDto.SHOCK))
-					);
+			);
 
 	private final CaseDataDto caze;
 	private final Disease disease;
@@ -218,7 +232,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.ABDOMINAL_PAIN, SymptomsDto.HEADACHE, SymptomsDto.MUSCLE_PAIN, SymptomsDto.FATIGUE_WEAKNESS, SymptomsDto.SKIN_RASH, 
 				SymptomsDto.NECK_STIFFNESS, SymptomsDto.SORE_THROAT, SymptomsDto.COUGH, SymptomsDto.RUNNY_NOSE, 
 				SymptomsDto.DIFFICULTY_BREATHING, SymptomsDto.CHEST_PAIN, SymptomsDto.CONJUNCTIVITIS, SymptomsDto.EYE_PAIN_LIGHT_SENSITIVE, SymptomsDto.KOPLIKS_SPOTS,
-				SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION, SymptomsDto.ANOREXIA_APPETITE_LOSS, 
+				SymptomsDto.THROBOCYTOPENIA, SymptomsDto.OTITIS_MEDIA, SymptomsDto.HEARINGLOSS, SymptomsDto.DEHYDRATION,
+				SymptomsDto.ANOREXIA_APPETITE_LOSS, 
 				SymptomsDto.REFUSAL_FEEDOR_DRINK, SymptomsDto.JOINT_PAIN, SymptomsDto.HICCUPS, SymptomsDto.BACKACHE, SymptomsDto.EYES_BLEEDING,
 				SymptomsDto.JAUNDICE, SymptomsDto.DARK_URINE, SymptomsDto.STOMACH_BLEEDING, SymptomsDto.RAPID_BREATHING, SymptomsDto.SWOLLEN_GLANDS, SymptomsDto.SYMPTOMS_COMMENTS,
 				SymptomsDto.UNEXPLAINED_BLEEDING, SymptomsDto.GUMS_BLEEDING, SymptomsDto.INJECTION_SITE_BLEEDING, SymptomsDto.NOSE_BLEEDING, 
@@ -239,7 +254,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				SymptomsDto.EXCESS_SALIVATION, SymptomsDto.INSOMNIA, SymptomsDto.PARALYSIS, SymptomsDto.EXCITATION, SymptomsDto.DYSPHAGIA, SymptomsDto.AEROPHOBIA, SymptomsDto.HYPERACTIVITY, 
 				SymptomsDto.PARESIS, SymptomsDto.AGITATION, SymptomsDto.ASCENDING_FLACCID_PARALYSIS, SymptomsDto.ERRATIC_BEHAVIOUR, SymptomsDto.COMA, SymptomsDto.CONVULSION,
 				SymptomsDto.FLUID_IN_LUNG_CAVITY_AUSCULTATION, SymptomsDto.FLUID_IN_LUNG_CAVITY_XRAY, SymptomsDto.ABNORMAL_LUNG_XRAY_FINDINGS, SymptomsDto.CONJUNCTIVAL_INJECTION,
-				SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC);
+				SymptomsDto.ACUTE_RESPIRATORY_DISTRESS_SYNDROME, SymptomsDto.PNEUMONIA_CLINICAL_OR_RADIOLOGIC,
+				SymptomsDto.LOSS_OF_TASTE, SymptomsDto.LOSS_OF_SMELL);
 		addField(SymptomsDto.LESIONS_ONSET_DATE, DateField.class);
 
 		// complications
@@ -251,7 +267,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		for (String propertyId : monkeypoxImageFieldIds) {
 			@SuppressWarnings("rawtypes")
 			Field monkeypoxImageField = addField(propertyId);
-			CssStyles.style(monkeypoxImageField, CssStyles.VSPACE_NONE);
+			CssStyles.style(monkeypoxImageField, VSPACE_NONE);
 		}
 
 		// Set initial visibilities
@@ -312,7 +328,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 				// complications
 				SymptomsDto.ALTERED_CONSCIOUSNESS, SymptomsDto.CONFUSED_DISORIENTED, SymptomsDto.HEMORRHAGIC_SYNDROME,
 				SymptomsDto.HYPERGLYCEMIA, SymptomsDto.HYPOGLYCEMIA, SymptomsDto.MENINGEAL_SIGNS,
-				SymptomsDto.SEIZURES, SymptomsDto.SEPSIS, SymptomsDto.SHOCK);
+				SymptomsDto.SEIZURES, SymptomsDto.SEPSIS, SymptomsDto.SHOCK, SymptomsDto.LOSS_OF_TASTE,
+				SymptomsDto.LOSS_OF_SMELL);
 
 		// Set visibilities
 
@@ -363,7 +380,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Handle visibility of lesions locations caption
 		Label lesionsLocationsCaption = new Label(I18nProperties.getCaption(Captions.symptomsLesionsLocations));
-		CssStyles.style(lesionsLocationsCaption, CssStyles.VSPACE_3);
+		CssStyles.style(lesionsLocationsCaption, VSPACE_3);
 		getContent().addComponent(lesionsLocationsCaption, LESIONS_LOCATIONS_LOC);
 		getContent().getComponent(LESIONS_LOCATIONS_LOC).setVisible(getFieldGroup().getField(SymptomsDto.LESIONS).getValue() == SymptomState.YES);
 		getFieldGroup().getField(SymptomsDto.LESIONS).addValueChangeListener(e -> {
@@ -647,13 +664,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		// Set up images
 		Image lesionsImg1 = new Image(null, new ThemeResource("img/monkeypox-lesions-1.png"));
-		CssStyles.style(lesionsImg1, CssStyles.VSPACE_3);
+		CssStyles.style(lesionsImg1, VSPACE_3);
 		Image lesionsImg2 = new Image(null, new ThemeResource("img/monkeypox-lesions-2.png"));
-		CssStyles.style(lesionsImg2, CssStyles.VSPACE_3);
+		CssStyles.style(lesionsImg2, VSPACE_3);
 		Image lesionsImg3 = new Image(null, new ThemeResource("img/monkeypox-lesions-3.png"));
-		CssStyles.style(lesionsImg3, CssStyles.VSPACE_3);
+		CssStyles.style(lesionsImg3, VSPACE_3);
 		Image lesionsImg4 = new Image(null, new ThemeResource("img/monkeypox-lesions-4.png"));
-		CssStyles.style(lesionsImg4, CssStyles.VSPACE_3);
+		CssStyles.style(lesionsImg4, VSPACE_3);
 		getContent().addComponent(lesionsImg1, MONKEYPOX_LESIONS_IMG1);
 		getContent().addComponent(lesionsImg2, MONKEYPOX_LESIONS_IMG2);
 		getContent().addComponent(lesionsImg3, MONKEYPOX_LESIONS_IMG3);

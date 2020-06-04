@@ -18,7 +18,12 @@
 
 package de.symeda.sormas.app.sample.edit;
 
+import android.content.Intent;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,8 +33,8 @@ import java.util.List;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
@@ -41,13 +46,18 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
 import de.symeda.sormas.app.util.DataUtils;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
 
@@ -180,6 +190,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         // Initialize ControlSpinnerFields
         contentBinding.sampleSampleMaterial.initializeSpinner(sampleMaterialList);
         contentBinding.sampleSampleSource.initializeSpinner(sampleSourceList);
+        contentBinding.samplePurpose.setEnabled(referredSample == null || record.getSamplePurpose() != SamplePurpose.EXTERNAL);
         contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
             Facility laboratory = (Facility) field.getValue();
             if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
@@ -207,6 +218,12 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         contentBinding.sampleSampleDateTime.initializeDateTimeField(getFragmentManager());
         contentBinding.sampleShipmentDate.initializeDateField(getFragmentManager());
 
+        // Initialize on clicks
+        contentBinding.buttonScanFieldSampleId.setOnClickListener((View v)->{
+            Intent intent = new Intent(getContext(), BarcodeActivity.class);
+            startActivityForResult(intent, BarcodeActivity.RC_BARCODE_CAPTURE);
+        });
+
         // Disable fields the user doesn't have access to - this involves almost all fields when
         // the user is not the one that originally reported the sample
         if (!ConfigProvider.getUser().equals(record.getReportingUser())) {
@@ -220,6 +237,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
             contentBinding.sampleShipmentDate.setEnabled(false);
             contentBinding.sampleShipmentDetails.setEnabled(false);
             contentBinding.samplePurpose.setEnabled(false);
+            contentBinding.sampleReceived.setEnabled(false);
+            contentBinding.sampleLabSampleID.setEnabled(false);
             contentBinding.samplePathogenTestingRequested.setVisibility(GONE);
             contentBinding.sampleRequestedPathogenTests.setVisibility(GONE);
             contentBinding.sampleAdditionalTestingRequested.setVisibility(GONE);
@@ -266,4 +285,15 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
         return R.layout.fragment_sample_edit_layout;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == BarcodeActivity.RC_BARCODE_CAPTURE) {
+            if (resultCode == CommonStatusCodes.SUCCESS && data != null) {
+                getContentBinding().sampleFieldSampleID.setValue(data.getStringExtra(BarcodeActivity.BARCODE_RESULT));
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

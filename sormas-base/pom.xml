@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.36.2</version>
+	<version>1.40.0-SNAPSHOT</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -17,7 +17,8 @@
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.8.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<jersey.version>2.22.1</jersey.version>
+		<jersey.version>2.29.1</jersey.version>
+		<jackson.version>2.9.8</jackson.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -167,7 +168,37 @@
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-module-jaxm-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
 
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			
 			<!-- serverlibs -->
 
 			<dependency>
@@ -502,6 +533,7 @@
 						<pushHotfixes>true</pushHotfixes>
 						<useReleaseProfile>false</useReleaseProfile>
 						<noDeploy>true</noDeploy>
+						<noHotfixBuild>true</noHotfixBuild>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
 					</configuration>
@@ -539,9 +571,16 @@
 		<repository>
 			<id>osgeo</id>
 			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
+			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-	</repositories>
+	</repositories>	
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>gradle</id>
+			<url>https://repo.gradle.org/gradle/libs-releases-local/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<profiles>
 		<profile>

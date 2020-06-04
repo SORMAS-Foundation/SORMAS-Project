@@ -17,16 +17,29 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Objects;
+
+import de.symeda.sormas.api.utils.DateHelper;
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 
@@ -130,5 +143,54 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 	public void setApplyingCriteria(boolean applyingCriteria) {
 		this.applyingCriteria = applyingCriteria;
+	}
+
+	protected boolean isGermanServer() {
+		return FacadeProvider.getConfigFacade().isGermanServer();
+	}
+	
+	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout, String buttonId,
+			Resource icon, String captionKey, String descriptionKey) {
+		Button exportButton = new Button(I18nProperties.getCaption(captionKey), e -> {
+			
+			Button button = e.getButton();
+			int buttonPos = exportLayout.getComponentIndex(button);
+			
+			DownloadUtil.showExportWaitDialog(button, ce -> {
+				//restore the button
+				exportLayout.addComponent(button, buttonPos);
+				button.setEnabled(true);
+			});
+			exportPopupButton.setPopupVisible(false);
+		});
+		
+		exportButton.setDisableOnClick(true);
+		
+		exportButton.setId(buttonId);
+		exportButton.setDescription(I18nProperties.getDescription(descriptionKey));
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(icon);
+		exportButton.setWidth(100, Unit.PERCENTAGE);
+		exportLayout.addComponent(exportButton);
+
+		new FileDownloader(streamResource).extend(exportButton);
+	}
+
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	protected static String findPrefixCaption(String propertyId, String ... prefixes) {
+		return Arrays.stream(prefixes)
+				.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(propertyId);
+	}
+
+
+	protected String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
+		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
 	}
 }

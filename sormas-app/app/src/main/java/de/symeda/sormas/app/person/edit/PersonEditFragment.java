@@ -18,8 +18,6 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,7 +51,6 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentPersonEditLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -85,7 +82,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         if (rootData instanceof Case) {
             rootDisease = ((Case) rootData).getDisease();
         } else if (rootData instanceof Contact) {
-            rootDisease = ((Contact) rootData).getCaseDisease();
+            rootDisease = ((Contact) rootData).getDisease();
         } else if (rootData instanceof Event) {
             rootDisease = ((Event) rootData).getDisease();
         }
@@ -136,11 +133,11 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
         contentBinding.personBirthdateMM.initializeSpinner(monthList, field -> {
             updateApproximateAgeField(contentBinding);
-            updateListOfDays(contentBinding, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) contentBinding.personBirthdateYYYY.getValue(), (Integer) field.getValue());
         });
         contentBinding.personBirthdateYYYY.initializeSpinner(yearList, field -> {
             updateApproximateAgeField(contentBinding);
-            updateListOfDays(contentBinding, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
+            DataUtils.updateListOfDays(contentBinding.personBirthdateDD, (Integer) field.getValue(), (Integer) contentBinding.personBirthdateMM.getValue());
         });
         int year = Calendar.getInstance().get(Calendar.YEAR);
         contentBinding.personBirthdateYYYY.setSelectionOnOpen(year - 35);
@@ -176,15 +173,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         // Initialize ControlDateFields
         contentBinding.personDeathDate.initializeDateField(fragment.getFragmentManager());
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
-    }
-
-    private static void updateListOfDays(FragmentPersonEditLayoutBinding binding, Integer selectedYear, Integer selectedMonth) {
-        Integer currentlySelected = (Integer) binding.personBirthdateDD.getValue();
-        List<Item> days = DataUtils.toItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-        binding.personBirthdateDD.setSpinnerData(days);
-        if (currentlySelected != null) {
-            binding.personBirthdateDD.setValue(currentlySelected);
-        }
     }
 
     public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {

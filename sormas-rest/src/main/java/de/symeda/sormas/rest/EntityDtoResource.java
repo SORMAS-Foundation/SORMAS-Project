@@ -1,5 +1,6 @@
 package de.symeda.sormas.rest;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -12,17 +13,16 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 
 public abstract class EntityDtoResource {
 
-	@EJB
-	TransactionWrapper transactionWrapper;
-	
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected <T extends EntityDto> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
+	@EJB
+	private TransactionWrapper transactionWrapper;
+
+	protected <T extends Object> List<PushResult> savePushedDto(List<T> dtos, Function<T, T> saveEntityDto) {
 
 		List<PushResult> results = new ArrayList<>(dtos.size());
 		for (T dto : dtos) {
@@ -31,8 +31,7 @@ public abstract class EntityDtoResource {
 				dto = transactionWrapper.execute(saveEntityDto, dto);
 				result = PushResult.OK;
 			} catch (Exception e) {
-				String errorMessage = dto.getClass().getSimpleName()
-						+ " " + dto.getUuid() + " " + DateHelper.formatLocalShortDateTime(dto.getChangeDate()) + "\n";
+				String errorMessage = createErrorMessage(dto);
 				errorMessage += e.getMessage();
 				if (e instanceof OutdatedEntityException
 						|| ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
@@ -46,5 +45,10 @@ public abstract class EntityDtoResource {
 			results.add(result);
 		}
 		return results;
+	}
+
+	protected <T extends Object> String createErrorMessage(T dto) {
+		final EntityDto entityDto = (EntityDto) dto;
+		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate()) + "\n";
 	}
 }

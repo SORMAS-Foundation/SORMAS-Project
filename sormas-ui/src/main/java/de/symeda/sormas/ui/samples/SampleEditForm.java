@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Arrays;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -31,7 +29,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -50,19 +47,32 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+
 public class SampleEditForm extends AbstractEditForm<SampleDto> {
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	private static final String REPORT_INFORMATION_LOC = "reportInformationLoc";
 	private static final String PATHOGEN_TESTING_INFO_LOC = "pathogenTestingInfoLoc";
 	private static final String ADDITIONAL_TESTING_INFO_LOC = "additionalTestingInfoLoc";
@@ -72,32 +82,34 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 	private static final String REQUESTED_ADDITIONAL_TESTS_READ_LOC = "requestedAdditionalTestsReadLoc";
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
-			LayoutUtil.loc(REPORT_INFORMATION_LOC) +
-			LayoutUtil.divs(
-					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_PURPOSE),
-					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
-					LayoutUtil.fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
-					LayoutUtil.fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
-					) +
-			LayoutUtil.loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
-			LayoutUtil.loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
-			LayoutUtil.loc(PATHOGEN_TESTING_INFO_LOC) +
-			LayoutUtil.loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
-			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS) +
-			LayoutUtil.loc(REQUESTED_PATHOGEN_TESTS_READ_LOC) +
-			LayoutUtil.loc(SampleDto.ADDITIONAL_TESTING_REQUESTED) +
-			LayoutUtil.loc(ADDITIONAL_TESTING_READ_HEADLINE_LOC) +
-			LayoutUtil.loc(ADDITIONAL_TESTING_INFO_LOC) +
-			LayoutUtil.loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
-			LayoutUtil.loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
-			LayoutUtil.loc(REQUESTED_ADDITIONAL_TESTS_READ_LOC) +
-			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.SHIPPED) +
-			LayoutUtil.fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
-			LayoutUtil.locCss(CssStyles.VSPACE_TOP_3, SampleDto.RECEIVED) +
-			LayoutUtil.fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID) +
-			LayoutUtil.fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
-			LayoutUtil.fluidRowLocs(SampleDto.COMMENT, SampleDto.PATHOGEN_TEST_RESULT);
+			h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
+			loc(REPORT_INFORMATION_LOC) +
+			//XXX #1620 are the divs needed?
+			divs(
+					fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_PURPOSE),
+					fluidRowLocs(SampleDto.SAMPLE_MATERIAL, SampleDto.SAMPLE_MATERIAL_TEXT),
+					fluidRowLocs(SampleDto.SAMPLE_SOURCE, ""),
+					fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, ""),
+					fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS)
+			) +
+			loc(SampleDto.PATHOGEN_TESTING_REQUESTED) +
+			loc(PATHOGEN_TESTING_READ_HEADLINE_LOC) +
+			loc(PATHOGEN_TESTING_INFO_LOC) +
+			loc(SampleDto.REQUESTED_PATHOGEN_TESTS) +
+			loc(SampleDto.REQUESTED_OTHER_PATHOGEN_TESTS) +
+			loc(REQUESTED_PATHOGEN_TESTS_READ_LOC) +
+			loc(SampleDto.ADDITIONAL_TESTING_REQUESTED) +
+			loc(ADDITIONAL_TESTING_READ_HEADLINE_LOC) +
+			loc(ADDITIONAL_TESTING_INFO_LOC) +
+			loc(SampleDto.REQUESTED_ADDITIONAL_TESTS) +
+			loc(SampleDto.REQUESTED_OTHER_ADDITIONAL_TESTS) +
+			loc(REQUESTED_ADDITIONAL_TESTS_READ_LOC) +
+			locCss(VSPACE_TOP_3, SampleDto.SHIPPED) +
+			fluidRowLocs(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS) +
+			locCss(VSPACE_TOP_3, SampleDto.RECEIVED) +
+			fluidRowLocs(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID) +
+			fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
+			fluidRowLocs(SampleDto.COMMENT, SampleDto.PATHOGEN_TEST_RESULT);
 
 	public SampleEditForm(UserRight editOrCreateUserRight) {
 		super(SampleDto.class, SampleDto.I18N_PREFIX, editOrCreateUserRight);
@@ -111,6 +123,7 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL, ComboBox.class);
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		ComboBox sampleSource = addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
+		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
 		DateField shipmentDate = addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		DateField receivedDate = addField(SampleDto.RECEIVED_DATE, DateField.class);
@@ -195,9 +208,8 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 
 			// Initialize referral and report information
 			VerticalLayout reportInfoLayout = new VerticalLayout();
-
 			String reportInfoText = I18nProperties.getString(Strings.reportedOn) + " "
-					+ DateHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
+					+ DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
 					+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
 			Label reportInfoLabel = new Label(reportInfoText);
 			reportInfoLabel.setEnabled(false);
@@ -206,9 +218,13 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 			SampleReferenceDto referredFromRef = FacadeProvider.getSampleFacade().getReferredFrom(getValue().getUuid());
 			if (referredFromRef != null) {
 				SampleDto referredFrom = FacadeProvider.getSampleFacade().getSampleByUuid(referredFromRef.getUuid());
-				Button referredButton = new Button(I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFrom.getLab().toString());
+				FacilityReferenceDto referredFromLab = referredFrom.getLab();
+				String referredButtonCaption = referredFromLab == null
+						? I18nProperties.getCaption(Captions.sampleReferredFromInternal) + " (" +DateFormatHelper.formatLocalDateTime(referredFrom.getSampleDateTime()) + ")"
+						: I18nProperties.getCaption(Captions.sampleReferredFrom) + " " + referredFromLab.toString();
+				Button referredButton = new Button(referredButtonCaption);
 				referredButton.addStyleName(ValoTheme.BUTTON_LINK);
-				referredButton.addStyleName(CssStyles.VSPACE_NONE);
+				referredButton.addStyleName(VSPACE_NONE);
 				referredButton.addClickListener(s -> ControllerProvider.getSampleController().navigateToData(referredFrom.getUuid()));
 				reportInfoLayout.addComponent(referredButton);
 			}
@@ -271,12 +287,12 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		
 		if (getValue() != null && canOnlyReadRequests) {
 			CssLayout requestedPathogenTestsLayout = new CssLayout();
-			CssStyles.style(requestedPathogenTestsLayout, CssStyles.VSPACE_3);
+			CssStyles.style(requestedPathogenTestsLayout, VSPACE_3);
 			for (PathogenTestType testType : getValue().getRequestedPathogenTests()) {
 				Label testLabel = new Label(testType.toString());
 				testLabel.setWidthUndefined();
 				CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
-						CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+						VSPACE_4, HSPACE_RIGHT_4);
 				requestedPathogenTestsLayout.addComponent(testLabel);
 			}
 			getContent().addComponent(requestedPathogenTestsLayout, REQUESTED_PATHOGEN_TESTS_READ_LOC);
@@ -286,12 +302,12 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		
 		if (getValue() != null && canOnlyReadRequests && canUseAdditionalTests) {
 			CssLayout requestedAdditionalTestsLayout = new CssLayout();
-			CssStyles.style(requestedAdditionalTestsLayout, CssStyles.VSPACE_3);
+			CssStyles.style(requestedAdditionalTestsLayout, VSPACE_3);
 			for (AdditionalTestType testType : getValue().getRequestedAdditionalTests()) {
 				Label testLabel = new Label(testType.toString());
 				testLabel.setWidthUndefined();
 				CssStyles.style(testLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
-						CssStyles.VSPACE_4, CssStyles.HSPACE_RIGHT_4);
+						VSPACE_4, HSPACE_RIGHT_4);
 				requestedAdditionalTestsLayout.addComponent(testLabel);
 			}
 			getContent().addComponent(requestedAdditionalTestsLayout, REQUESTED_ADDITIONAL_TESTS_READ_LOC);
@@ -339,11 +355,11 @@ public class SampleEditForm extends AbstractEditForm<SampleDto> {
 		
 		// header for read view
 		Label pathogenTestsHeading = new Label(I18nProperties.getString(Strings.headingRequestedPathogenTests));
-		CssStyles.style(pathogenTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_4);
+		CssStyles.style(pathogenTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, VSPACE_4);
 		getContent().addComponent(pathogenTestsHeading, PATHOGEN_TESTING_READ_HEADLINE_LOC);
 
 		Label additionalTestsHeading = new Label(I18nProperties.getString(Strings.headingRequestedAdditionalTests));
-		CssStyles.style(additionalTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, CssStyles.VSPACE_4);
+		CssStyles.style(additionalTestsHeading, CssStyles.LABEL_BOLD, CssStyles.LABEL_SECONDARY, VSPACE_4);
 		getContent().addComponent(additionalTestsHeading, ADDITIONAL_TESTING_READ_HEADLINE_LOC);
 		
 		updateRequestedTestFields();

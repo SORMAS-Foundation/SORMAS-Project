@@ -48,7 +48,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.task.DashboardTaskDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -78,6 +77,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
@@ -89,8 +89,10 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	protected EntityManager em;
+	private EntityManager em;
 
 	@EJB
 	private TaskService taskService;
@@ -110,8 +112,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-
-	private static final Logger logger = LoggerFactory.getLogger(TaskFacadeEjb.class);
 
 	public Task fromDto(TaskDto source) {		
 		if (source == null) {
@@ -229,18 +229,21 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
 			caseFacade.updateInvestigationByTask(ado.getCaze());
 		}
-		
+
 		if (ado.getTaskType() == TaskType.CONTACT_FOLLOW_UP && ado.getTaskStatus() == TaskStatus.DONE && ado.getContact() != null) {
-			List<User> messageRecipients = userService.getAllByRegionAndUserRoles(ado.getContact().getCaze().getRegion(), 
-					UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
-			for (User recipient : messageRecipients) {
-				try {
-					messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED), 
-							String.format(I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
-							MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+			Region recipientRegion = ado.getContact().getRegion() != null ? ado.getContact().getRegion() : ado.getContact().getCaze() != null ? ado.getContact().getCaze().getRegion() : null;
+			if (recipientRegion != null) {
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(recipientRegion, 
+						UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+				for (User recipient : messageRecipients) {
+					try {
+						messagingService.sendMessage(recipient, I18nProperties.getString(MessagingService.SUBJECT_VISIT_COMPLETED), 
+								String.format(I18nProperties.getString(MessagingService.CONTENT_VISIT_COMPLETED), DataHelper.getShortUuid(ado.getContact().getUuid()), DataHelper.getShortUuid(ado.getAssigneeUser().getUuid())), 
+								MessageType.EMAIL, MessageType.SMS);
+					} catch (NotificationDeliveryFailedException e) {
+						logger.error(String.format("NotificationDeliveryFailedException when trying to notify supervisors about the completion of a follow-up visit. "
+								+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", recipient.getUuid()));
+					}
 				}
 			}
 		}
@@ -249,8 +252,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<String> getAllActiveUuids(String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<String> getAllActiveUuids() {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -260,8 +263,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<TaskDto> getAllActiveTasksAfter(Date date, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public List<TaskDto> getAllActiveTasksAfter(Date date) {
+		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
@@ -273,16 +276,14 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public long count(String userUuid, TaskCriteria taskCriteria) {
+	public long count(TaskCriteria taskCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> task = cq.from(Task.class);
 
 		Predicate filter = null;
-		if (userUuid != null 
-				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
-			User user = userService.getByUuid(userUuid);		
-			filter = taskService.createUserFilter(cb, cq, task, user);
+		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
+			filter = taskService.createUserFilter(cb, cq, task);
 		}
 
 		if (taskCriteria != null) {
@@ -293,13 +294,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(task));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	@Override
-	public List<TaskIndexDto> getIndexList(String userUuid, TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<TaskIndexDto> getIndexList(TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskIndexDto> cq = cb.createQuery(TaskIndexDto.class);
@@ -325,10 +326,8 @@ public class TaskFacadeEjb implements TaskFacade {
 				);
 
 		Predicate filter = null;
-		if (userUuid != null 
-				&& (taskCriteria == null || !taskCriteria.hasContextCriteria())) {
-			User user = userService.getByUuid(userUuid);		
-			filter = taskService.createUserFilter(cb, cq, task, user);
+		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
+			filter = taskService.createUserFilter(cb, cq, task);
 		}
 
 		if (taskCriteria != null) {
@@ -448,48 +447,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<DashboardTaskDto> getAllByUserForDashboard(TaskStatus taskStatus, Date from, Date to, String userUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<DashboardTaskDto> cq = cb.createQuery(DashboardTaskDto.class);
-		Root<Task> task = cq.from(Task.class);
-
-		TaskCriteria taskCriteria = new TaskCriteria().assigneeUser(new UserReferenceDto(userUuid));
-		if (taskStatus != null) {
-			taskCriteria.taskStatus(taskStatus);
-		}
-		if (from != null || to != null) {
-			taskCriteria.statusChangeDateBetween(from, to);
-		}
-
-		Predicate filter = taskService.buildCriteriaFilter(taskCriteria, cb, task);
-
-		List<DashboardTaskDto> result;
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-					task.get(Task.PRIORITY),
-					task.get(Task.TASK_STATUS)
-					);
-
-			result = em.createQuery(cq).getResultList();
-		} else {
-			result = Collections.emptyList();
-		}
-
-		return result;
-	}
-
-	@Override
-	public long getPendingTaskCountByCase(CaseReferenceDto caseRef) {
-		if(caseRef == null) {
-			return 0;
-		}
-
-		return taskService.getCount(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING));
-	}
-
-	@Override
 	public long getPendingTaskCountByContact(ContactReferenceDto contactRef) {
 		if(contactRef == null) {
 			return 0;
@@ -518,10 +475,10 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public void deleteTask(TaskDto taskDto, String userUuid) {
-		User user = userService.getByUuid(userUuid);
+	public void deleteTask(TaskDto taskDto) {
+		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException("User " + userUuid + " is not allowed to delete tasks.");
+			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete tasks.");
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());
@@ -541,48 +498,48 @@ public class TaskFacadeEjb implements TaskFacade {
 		for (Task task : startingTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
-					context == TaskContext.CONTACT ? task.getContact() : 
+				context == TaskContext.CONTACT ? task.getContact() : 
 					context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
-				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
-					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
-								context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
+					if (task.getAssigneeUser() != null && task.getAssigneeUser().isSupervisor() || task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER)) {
+						try {
+							String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_START);
+							String content = context == TaskContext.GENERAL ? 
+									String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_GENERAL), task.getTaskType().toString()) :
+										String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_START_SPECIFIC), task.getTaskType().toString(), 
+												context.toString() + " " + DataHelper.getShortUuid(associatedEntity.getUuid()));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-					logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				}
-			}
+									messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+						} catch (NotificationDeliveryFailedException e) {
+							logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a starting task. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
+						}
+					}
 		}
 
 		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now));
 		for (Task task : dueTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE ? task.getCaze() : 
-					context == TaskContext.CONTACT ? task.getContact() : 
+				context == TaskContext.CONTACT ? task.getContact() : 
 					context == TaskContext.EVENT ? task.getEvent() : null;
-			if (task.getAssigneeUser() != null && (task.getAssigneeUser().isSupervisor() 
-					|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
-				try {
-					String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
-					String content = context == TaskContext.GENERAL ? 
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
-								String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
-								context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
+					if (task.getAssigneeUser() != null && (task.getAssigneeUser().isSupervisor() 
+							|| task.getAssigneeUser().getUserRoles().contains(UserRole.NATIONAL_USER))) {
+						try {
+							String subject = I18nProperties.getString(MessagingService.SUBJECT_TASK_DUE);
+							String content = context == TaskContext.GENERAL ? 
+									String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString()) :
+										String.format(I18nProperties.getString(MessagingService.CONTENT_TASK_DUE_SPECIFIC), task.getTaskType().toString(), 
+												context.toString() + (associatedEntity != null ? (" " + DataHelper.getShortUuid(associatedEntity.getUuid())) : ""));
 
-					messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
-				} catch (NotificationDeliveryFailedException e) {
-						logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
-							+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
-				}
-			}
+									messagingService.sendMessage(userService.getByUuid(task.getAssigneeUser().getUuid()), subject, content, MessageType.EMAIL, MessageType.SMS);
+						} catch (NotificationDeliveryFailedException e) {
+							logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about a due task. "
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.", task.getAssigneeUser().getUuid()));
+						}
+					}
 		}
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class TaskFacadeEjbLocal extends TaskFacadeEjb {

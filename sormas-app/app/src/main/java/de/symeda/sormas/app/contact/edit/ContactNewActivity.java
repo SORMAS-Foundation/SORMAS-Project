@@ -22,6 +22,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
@@ -51,6 +52,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Consumer;
+import de.symeda.sormas.app.util.NavigationHelper;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
@@ -61,7 +63,6 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     private AsyncTask saveTask;
     private String caseUuid = null;
-
 
     public static <TActivity extends BaseActivity> void startActivity(Context context, String caseUuid) {
         BaseEditActivity.startActivity(context, ContactNewActivity.class, buildBundle(caseUuid));
@@ -90,14 +91,16 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
     @Override
     protected Contact buildRootEntity() {
-
         Person _person = DatabaseHelper.getPersonDao().build();
         Contact _contact = DatabaseHelper.getContactDao().build();
 
         // not null, because contact can only be created when the user has access to the case
-        Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
-        _contact.setCaseUuid(caseUuid);
-        _contact.setCaseDisease(contactCase.getDisease());
+        if (caseUuid != null) {
+            Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(caseUuid);
+            _contact.setCaseUuid(caseUuid);
+            _contact.setDisease(contactCase.getDisease());
+            _contact.setDiseaseDetails(contactCase.getDiseaseDetails());
+        }
 
         _contact.setPerson(_person);
         _contact.setReportDateTime(new Date());
@@ -114,6 +117,18 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
         boolean result = super.onCreateOptionsMenu(menu);
         getSaveMenu().setTitle(R.string.action_save_contact);
         return result;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home && caseUuid == null) {
+            NavigationHelper.goToContacts(getContext());
+            finish();
+        } else {
+            super.onOptionsItemSelected(item);
+        }
+
+        return true;
     }
 
     @Override
@@ -172,7 +187,8 @@ public class ContactNewActivity extends BaseEditActivity<Contact> {
 
                     @Override
                     protected void doInBackground(TaskResultHolder resultHolder) throws Exception {
-                        if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getPerson().getAddress().isEmptyLocation()) {
+                        if (contactToSave.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && contactToSave.getCaseUuid() != null
+                                && contactToSave.getPerson().getAddress().isEmptyLocation()) {
                             Case contactCase = DatabaseHelper.getCaseDao().queryUuidBasic(contactToSave.getCaseUuid());
                             if (contactCase != null) {
                                 contactToSave.getPerson().getAddress().setRegion(contactCase.getRegion());

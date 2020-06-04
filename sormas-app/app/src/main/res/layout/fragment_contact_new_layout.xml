@@ -23,8 +23,12 @@
     android:id="@+id/base_layout">
 
     <data>
+        <import type="de.symeda.sormas.api.Disease" />
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
-        <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
+        <import type="de.symeda.sormas.api.i18n.I18nProperties" />
+        <import type="de.symeda.sormas.api.i18n.Strings" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact" />
     </data>
 
     <ScrollView
@@ -43,6 +47,7 @@
             <de.symeda.sormas.app.component.controls.ControlDateField
                 android:id="@+id/contact_reportDateTime"
                 app:value="@={data.reportDateTime}"
+                app:required="true"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -57,6 +62,58 @@
                 android:id="@+id/person_lastName"
                 app:required="true"
                 app:value="@={data.person.lastName}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/person_sex"
+                app:value="@={data.person.sex}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <TextView
+                android:id="@+id/person_birthdateLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/caption_date_of_birth"
+                style="@style/ControlLabelStyle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_birthdateYYYY"
+                    app:showCaption="false"
+                    app:hint="@{I18nProperties.getString(Strings.year)}"
+                    app:value="@={data.person.birthdateYYYY}"
+                    style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_birthdateMM"
+                    app:showCaption="false"
+                    app:hint="@{I18nProperties.getString(Strings.month)}"
+                    app:value="@={data.person.birthdateMM}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/person_birthdateDD"
+                    app:showCaption="false"
+                    app:hint="@{I18nProperties.getString(Strings.day)}"
+                    app:value="@={data.person.birthdateDD}"
+                    style="@style/ControlSecondOfTwoColumnsStyle" />
+
+            </LinearLayout>
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/contact_disease"
+                app:value="@={data.disease}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_diseaseDetails"
+                app:value="@={data.diseaseDetails}"
+                app:dependencyParentField="@{contactDisease}"
+                app:dependencyParentValue="@{Disease.OTHER}"
                 style="@style/ControlSingleColumnStyle" />
 
             <LinearLayout
@@ -82,10 +139,36 @@
                 app:softRequired="true"
                 style="@style/ControlSingleColumnStyle" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_caseIdExternalSystem"
+                app:value="@={data.caseIdExternalSystem}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_caseOrEventInformation"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:textArea="true"
+                app:singleLine="false"
+                app:maxLines="3"
+                app:value="@={data.caseOrEventInformation}"
+                style="@style/ControlSingleColumnStyle" />
+
             <de.symeda.sormas.app.component.controls.ControlRadioGroupField
                 android:id="@+id/contact_contactProximity"
                 app:value="@={data.contactProximity}"
                 app:softRequired="true"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/contact_contactProximityDetails"
+                app:value="@={data.contactProximityDetails}"
+                style="@style/ControlSingleColumnStyle" />
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/contact_contactCategory"
+                app:value="@={data.contactCategory}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -103,6 +186,12 @@
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/contact_description"
+                app:inputType="textMultiLine"
+                app:textAlignment="gravity"
+                app:gravity="top|start"
+                app:textArea="true"
+                app:singleLine="false"
+                app:maxLines="3"
                 app:value="@={data.description}"
                 style="@style/ControlSingleColumnStyle" />
 

@@ -17,6 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,87 +49,89 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-@SuppressWarnings("serial")
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String EPI_DATA_CAPTION_LOC = "epiDataCaptionLoc";
 	private static final String ANIMAL_CAPTION_LOC = "animalCaptionLoc";
 	private static final String ENVIRONMENTAL_CAPTION_LOC = "environmentalLoc";
 	private static final String KIND_OF_EXPOSURE_LOC = "kindOfExposureLoc";
 	
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.loc(EPI_DATA_CAPTION_LOC) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE, EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE, EpiDataDto.AREA_CONFIRMED_CASES) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE, EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.CONTACT_WITH_SOURCE_RESPIRATORY_CASE, EpiDataDto.PERCUTANEOUS_CASE_BLOOD) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE, "") +
-			LayoutUtil.fluidRowLocs(EpiDataDto.VISITED_HEALTH_FACILIY, EpiDataDto.VISITED_ANIMAL_MARKET) +
-			LayoutUtil.fluidRowLoc(6, EpiDataDto.BURIAL_ATTENDED) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.BURIALS) +
-			LayoutUtil.fluidRowLoc(6, EpiDataDto.GATHERING_ATTENDED) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.GATHERINGS) +
-			LayoutUtil.fluidRowLoc(6, EpiDataDto.TRAVELED) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.TRAVELS) +
-			LayoutUtil.loc(ANIMAL_CAPTION_LOC) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.BATS,  EpiDataDto.BIRDS, EpiDataDto.CAMELS, EpiDataDto.CANIDAE, EpiDataDto.CATS, EpiDataDto.CATTLE,  
-									EpiDataDto.AREA_INFECTED_ANIMALS,
-									EpiDataDto.SICK_DEAD_ANIMALS, EpiDataDto.SICK_DEAD_ANIMALS_DETAILS,
-									EpiDataDto.SICK_DEAD_ANIMALS_DATE, EpiDataDto.SICK_DEAD_ANIMALS_LOCATION
-							)
-					),
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.DOGS, EpiDataDto.PRIMATES, EpiDataDto.SNAKES, EpiDataDto.SWINE,EpiDataDto.RABBITS, EpiDataDto.RODENTS, 
-									EpiDataDto.OTHER_ANIMALS, EpiDataDto.OTHER_ANIMALS_DETAILS, 
-									EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, EpiDataDto.EATING_RAW_ANIMALS, 
-									EpiDataDto.EATING_RAW_ANIMALS_DETAILS
-							)
-					)
+			loc(EPI_DATA_CAPTION_LOC) +
+			fluidRowLocs(EpiDataDto.DIRECT_CONTACT_CONFIRMED_CASE, EpiDataDto.CLOSE_CONTACT_PROBABLE_CASE) +
+			fluidRowLocs(EpiDataDto.DIRECT_CONTACT_PROBABLE_CASE, EpiDataDto.AREA_CONFIRMED_CASES) +
+			fluidRowLocs(EpiDataDto.PROCESSING_CONFIRMED_CASE_FLUID_UNSAFE, EpiDataDto.DIRECT_CONTACT_DEAD_UNSAFE) +
+			fluidRowLocs(EpiDataDto.CONTACT_WITH_SOURCE_RESPIRATORY_CASE, EpiDataDto.PERCUTANEOUS_CASE_BLOOD) +
+			fluidRowLocs(EpiDataDto.PROCESSING_SUSPECTED_CASE_SAMPLE_UNSAFE, "") +
+			fluidRowLocs(EpiDataDto.VISITED_HEALTH_FACILIY, EpiDataDto.VISITED_ANIMAL_MARKET) +
+			fluidRowLoc(6, EpiDataDto.BURIAL_ATTENDED) +
+			fluidRowLocs(EpiDataDto.BURIALS) +
+			fluidRowLoc(6, EpiDataDto.GATHERING_ATTENDED) +
+			fluidRowLocs(EpiDataDto.GATHERINGS) +
+			fluidRowLoc(6, EpiDataDto.TRAVELED) +
+			fluidRowLocs(EpiDataDto.TRAVELS) +
+			loc(ANIMAL_CAPTION_LOC) +
+			fluidRow(
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.BATS,  
+							EpiDataDto.BIRDS, 
+							EpiDataDto.CAMELS, 
+							EpiDataDto.CANIDAE, 
+							EpiDataDto.CATS, 
+							EpiDataDto.CATTLE,  
+							EpiDataDto.AREA_INFECTED_ANIMALS,
+							EpiDataDto.SICK_DEAD_ANIMALS, 
+							EpiDataDto.SICK_DEAD_ANIMALS_DETAILS,
+							EpiDataDto.SICK_DEAD_ANIMALS_DATE, 
+							EpiDataDto.SICK_DEAD_ANIMALS_LOCATION
+					)),
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.DOGS, 
+							EpiDataDto.PRIMATES, 
+							EpiDataDto.SNAKES,
+							EpiDataDto.SWINE,
+							EpiDataDto.RABBITS, 
+							EpiDataDto.RODENTS, 
+							EpiDataDto.OTHER_ANIMALS, 
+							EpiDataDto.OTHER_ANIMALS_DETAILS, 
+							EpiDataDto.EATING_RAW_ANIMALS_IN_INFECTED_AREA, 
+							EpiDataDto.EATING_RAW_ANIMALS, 
+							EpiDataDto.EATING_RAW_ANIMALS_DETAILS
+					))
 			) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.DATE_OF_LAST_EXPOSURE,
-									EpiDataDto.ANIMAL_CONDITION,
-									EpiDataDto.PROPHYLAXIS_STATUS
-							)
-					),
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.PLACE_OF_LAST_EXPOSURE,
-									EpiDataDto.ANIMAL_VACCINATION_STATUS,
-									EpiDataDto.DATE_OF_PROPHYLAXIS
-							)
-					)
+			fluidRow(
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.DATE_OF_LAST_EXPOSURE,
+							EpiDataDto.ANIMAL_CONDITION,
+							EpiDataDto.PROPHYLAXIS_STATUS
+					)),
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.PLACE_OF_LAST_EXPOSURE,
+							EpiDataDto.ANIMAL_VACCINATION_STATUS,
+							EpiDataDto.DATE_OF_PROPHYLAXIS
+					))
 			) +			
-			LayoutUtil.loc(KIND_OF_EXPOSURE_LOC) +
-			LayoutUtil.fluidRow(
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.KIND_OF_EXPOSURE_BITE, 
-									EpiDataDto.KIND_OF_EXPOSURE_TOUCH, 
-									EpiDataDto.KIND_OF_EXPOSURE_SCRATCH)
-					),
-					LayoutUtil.fluidColumn(6, 0,
-							LayoutUtil.locsCss(CssStyles.VSPACE_3,
-									EpiDataDto.KIND_OF_EXPOSURE_LICK,
-									EpiDataDto.KIND_OF_EXPOSURE_OTHER, 
-									EpiDataDto.KIND_OF_EXPOSURE_DETAILS
-							)
-					)
+			loc(KIND_OF_EXPOSURE_LOC) +
+			fluidRow(
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.KIND_OF_EXPOSURE_BITE, 
+							EpiDataDto.KIND_OF_EXPOSURE_TOUCH, 
+							EpiDataDto.KIND_OF_EXPOSURE_SCRATCH
+					)),
+					fluidColumn(6, 0, locsCss(VSPACE_3,
+							EpiDataDto.KIND_OF_EXPOSURE_LICK,
+							EpiDataDto.KIND_OF_EXPOSURE_OTHER, 
+							EpiDataDto.KIND_OF_EXPOSURE_DETAILS
+					))
 			) +
-					LayoutUtil.loc(ENVIRONMENTAL_CAPTION_LOC) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
-			LayoutUtil.fluidRowLocs(EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE)			
-	;
+			loc(ENVIRONMENTAL_CAPTION_LOC) +
+			fluidRowLocs(EpiDataDto.WATER_SOURCE, EpiDataDto.WATER_BODY) +
+			fluidRowLocs(EpiDataDto.WATER_SOURCE_OTHER, EpiDataDto.WATER_BODY_DETAILS) +
+			fluidRowLocs(EpiDataDto.TICK_BITE, EpiDataDto.FLEA_BITE);
 	
 	private final Disease disease;
 	private final ViewMode viewMode;
@@ -196,7 +208,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		
 		for (String epiDataField : epiDataFields) {
 			if (getFieldGroup().getField(epiDataField).isVisible()) {
-				String epiDataCaptionLayout = LayoutUtil.h3(I18nProperties.getCaption(EpiDataDto.I18N_PREFIX)) + LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageEpiDataHint));
+				String epiDataCaptionLayout = h3(I18nProperties.getCaption(EpiDataDto.I18N_PREFIX)) + divsCss(VSPACE_3, I18nProperties.getString(Strings.messageEpiDataHint));
 				Label epiDataCaptionLabel = new Label(epiDataCaptionLayout);
 				epiDataCaptionLabel.setContentMode(ContentMode.HTML);
 				getContent().addComponent(epiDataCaptionLabel, EPI_DATA_CAPTION_LOC);
@@ -204,8 +216,10 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			}
 		}
 		
-		String animalCaptionLayout = LayoutUtil.h3(I18nProperties.getString(Strings.headingAnimalContacts))
-				+ LayoutUtil.divsCss(CssStyles.VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
+		String animalCaptionLayout = 
+				h3(I18nProperties.getString(Strings.headingAnimalContacts)) +
+				divsCss(VSPACE_3, I18nProperties.getString(Strings.messageAnimalContactsHint));
+		
 		Label animalCaptionLabel = new Label(animalCaptionLayout);
 		animalCaptionLabel.setContentMode(ContentMode.HTML);
 		getContent().addComponent(animalCaptionLabel, ANIMAL_CAPTION_LOC);
@@ -216,7 +230,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 		updateAnimalExposureFields();
 
 		Label environmentalCaptionLabel = new Label(
-				LayoutUtil.h3(I18nProperties.getString(Strings.headingEnvironmentalExposure)));
+				h3(I18nProperties.getString(Strings.headingEnvironmentalExposure)));
 		environmentalCaptionLabel.setContentMode(ContentMode.HTML);
 		getContent().addComponent(environmentalCaptionLabel, ENVIRONMENTAL_CAPTION_LOC);
 

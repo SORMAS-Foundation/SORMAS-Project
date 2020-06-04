@@ -17,12 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -37,9 +42,6 @@ import de.symeda.sormas.ui.utils.ViewMode;
 /**
  * CaseDataView for reading and editing the case data fields. Contains the
  * {@link CaseDataForm}.
- * 
- * @author Stefan Szczesny
- *
  */
 public class CaseDataView extends AbstractCaseView {
 
@@ -59,7 +61,7 @@ public class CaseDataView extends AbstractCaseView {
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
 		setHeightUndefined();
-		
+
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
@@ -76,14 +78,14 @@ public class CaseDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		CommitDiscardWrapperComponent<?> editComponent;
-		if (getViewMode() == ViewMode.SIMPLE) {
-			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
-					ViewMode.SIMPLE);
-		} else {
-			editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
-		}
-		
+		CommitDiscardWrapperComponent<CaseDataForm> editComponent;
+		//		if (getViewMode() == ViewMode.SIMPLE) {
+		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
+		//					ViewMode.SIMPLE);
+		//		} else {
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
+		//		}
+
 		// setSubComponent(editComponent);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
@@ -96,9 +98,21 @@ public class CaseDataView extends AbstractCaseView {
 		layout.addComponent(taskList, TASKS_LOC);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
+			VerticalLayout sampleLocLayout = new VerticalLayout();
+			sampleLocLayout.setMargin(false);
+			sampleLocLayout.setSpacing(false);
+			
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(sampleList, SAMPLES_LOC);
+			sampleLocLayout.addComponent(sampleList);
+			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
+				sampleLocLayout.addComponent(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges), ContentMode.HTML));
+			}
+			
+			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+			
 		}
+		
 	}
 }

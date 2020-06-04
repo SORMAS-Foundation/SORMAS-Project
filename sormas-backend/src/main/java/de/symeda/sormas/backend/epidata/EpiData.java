@@ -79,6 +79,7 @@ public class EpiData extends AbstractDomainObject {
 	public static final String ANIMAL_CONDITION = "animalCondition";
 	public static final String ANIMAL_VACCINATION_STATUS = "animalVaccinationStatus";
 	public static final String DIRECT_CONTACT_CONFIRMED_CASE = "directContactConfirmedCase";
+	public static final String DIRECT_CONTACT_PROBABLE_CASE = "directContactProbableCase";
 	public static final String PROPHYLAXIS_STATUS = "prophylaxisStatus";
 	public static final String DATE_OF_PROPHYLAXIS = "dateOfProphylaxis";
 	

@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_4;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,21 +49,22 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
 
-@SuppressWarnings("serial")
 public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
+		
+		private static final long serialVersionUID = 1L;
+		
 
 	private static final String HTML_LAYOUT = 
-			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
-			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TESTED_DISEASE_DETAILS) +
-			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
-			LayoutUtil.fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
-			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
-			LayoutUtil.fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
-			LayoutUtil.fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
-			LayoutUtil.fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
-			LayoutUtil.fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
+			fluidRowLocs(PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE) +
+			fluidRowLocs(PathogenTestDto.TEST_TYPE_TEXT, PathogenTestDto.TESTED_DISEASE_DETAILS) +
+			fluidRowLocs(PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.LAB) +
+			fluidRowLocs("", PathogenTestDto.LAB_DETAILS) +
+			fluidRowLocs(PathogenTestDto.TEST_RESULT, PathogenTestDto.TEST_RESULT_VERIFIED) +
+			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") + 
+			fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
+			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
+			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
 
 	private final SampleDto sample;
 	private int caseSampleCount;
@@ -102,7 +107,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
-		CssStyles.style(fourFoldIncrease, CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
+		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);

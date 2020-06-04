@@ -20,6 +20,7 @@ package de.symeda.sormas.api.caze.classification;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.Language;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -34,9 +35,11 @@ import de.symeda.sormas.api.utils.InfoProvider;
 /**
  * Provides methods that create HTML Strings to visualize the automatic classification rules.
  */
-public class ClassificationHtmlRenderer {
+public final class ClassificationHtmlRenderer {
 
-	private ClassificationHtmlRenderer() { }
+	private ClassificationHtmlRenderer() {
+		// Hide Utility Class Constructor
+	}
 
 	public static String createSuspectHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
@@ -110,7 +113,7 @@ public class ClassificationHtmlRenderer {
 		return sb.toString();
 	}
 
-	public static String createHtmlForDownload(String sormasServerUrl, List<Disease> diseases) {
+	public static String createHtmlForDownload(String sormasServerUrl, List<Disease> diseases, Language language) {
 		StringBuilder html = new StringBuilder();
 		html.append("<html><header><style>");
 
@@ -166,7 +169,12 @@ public class ClassificationHtmlRenderer {
 				"}</style></header><body>");
 
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
-		html.append("<h4 style=\"text-align: center;\">").append(I18nProperties.getString(Strings.classificationGeneratedFor)).append(" ").append(InfoProvider.get().getVersion()).append(StringUtils.wrap(I18nProperties.getString(Strings.on), " ")).append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " ")).append(DateHelper.formatLocalShortDateTime(new Date())).append("</h4>");
+		html.append("<h4 style=\"text-align: center;\">")
+				.append(I18nProperties.getString(Strings.classificationGeneratedFor))
+				.append(" ").append(InfoProvider.get().getVersion())
+				.append(StringUtils.wrap(I18nProperties.getString(Strings.on), " "))
+				.append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " "))
+				.append(DateHelper.formatLocalDateTime(new Date(), language)).append("</h4>");
 
 		for (Disease disease : diseases) {
 			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
