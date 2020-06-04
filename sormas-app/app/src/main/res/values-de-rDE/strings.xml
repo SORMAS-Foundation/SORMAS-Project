@@ -97,7 +97,7 @@
     <string name="action_save_sample">Probe speichern</string>
     <string name="action_save_task">Aufgabe speichern</string>
     <string name="action_save_treatment">Behandlung speichern</string>
-    <string name="action_save_visit">Follow-up/Nachverfolgungs-Anruf speichern</string>
+    <string name="action_save_visit">Nachverfolgungs-Anruf speichern</string>
     <string name="action_select">Auswählen</string>
     <string name="action_send">Senden</string>
     <string name="action_set_cleared_to_no">Auf Nein setzen</string>
@@ -139,7 +139,7 @@
     <string name="caption_confirmed_events">Bestätigte Ereignisse</string>
     <string name="caption_contact_information">Kontaktinformationen</string>
     <string name="caption_contact_tasks">Kontakt-Aufgaben</string>
-    <string name="caption_contact_visits">Follow-Up/Nachverfolgung Informationen</string>
+    <string name="caption_contact_visits">Nachverfolgung Informationen</string>
     <string name="caption_converted_to_case">In Fall konvertiert</string>
     <string name="caption_date_of_birth">Geburtsdatum (Jahr / Monat / Tag)</string>
     <string name="caption_date_of_sampling">Datum der Probenentnahme</string>
@@ -229,7 +229,7 @@
     <string name="description_period_end">Zeitraum Ende</string>
     <string name="description_period_start">Zeitraum Beginn</string>
     <string name="description_report_message">Ihre Nachricht</string>
-    <string name="description_sormas_logo">SORMAS Logo</string>
+    <string name="description_sormas_logo">SORMAS-Logo</string>
     <string name="description_username">Benutzername</string>
     <string name="description_year">Jahr</string>
     <string name="entity_case">Fall</string>
@@ -507,7 +507,7 @@
     <string name="validation_soft_case_epid_number">Die EPID-Nummer stimmt nicht mit dem erforderlichen Muster überein. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_soft_case_epid_number_empty">Es muss eine EPID-Nummer angegeben werden. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_symptoms_fever">Die Temperatur liegt im Fieberbereich. Das Fieber sollte auf \"Ja\" gesetzt werden.</string>
-    <string name="validation_visit_date_time_after_followup">Der Anruf darf nicht länger als 30 Tage nach Ablauf des Follow-up/Nachverfolgungs-Zeitraums erfolgen.</string>
+    <string name="validation_visit_date_time_after_followup">Der Anruf darf nicht länger als 30 Tage nach Ablauf des Nachverfolgungs-Zeitraums erfolgen.</string>
     <string name="validation_visit_date_time_before_contact_date">Der Anruf darf nicht länger als 30 Tage vor dem letzten Kontaktdatum sein.</string>
     <string name="validation_visit_date_time_before_report_date">Der Anruf darf nicht mehr als 30 Tage vor dem Datum des Kontaktberichts liegen.</string>
     <string name="value_age_unknown">Alter N/A</string>
