@@ -45,6 +45,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -95,7 +96,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
     public static CaseEditFragment newInstance(Case activityRootData) {
         return newInstanceWithFieldCheckers(CaseEditFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
                 FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
     }
 

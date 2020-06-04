@@ -20,10 +20,12 @@ package de.symeda.sormas.app.caze.edit;
 
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHealthConditionsLayoutBinding;
 
 public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentCaseEditHealthConditionsLayoutBinding, HealthConditions, Case> {
@@ -37,7 +39,8 @@ public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentC
 
     public static CaseEditHealthConditionsFragment newInstance(Case activityRootData) {
         return newInstanceWithFieldCheckers(CaseEditHealthConditionsFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     // Overrides

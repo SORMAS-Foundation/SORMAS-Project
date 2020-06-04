@@ -36,11 +36,13 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentSymptomsReadLayoutBinding;
@@ -60,7 +62,8 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
 
     public static SymptomsReadFragment newInstance(Case activityRootData) {
         return newInstanceWithFieldCheckers(SymptomsReadFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     public static SymptomsReadFragment newInstance(Visit activityRootData) {

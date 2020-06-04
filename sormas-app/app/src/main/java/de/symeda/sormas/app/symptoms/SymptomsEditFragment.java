@@ -34,6 +34,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -41,6 +42,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -78,17 +80,20 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 
     public static SymptomsEditFragment newInstance(Case activityRootData) {
         return newInstanceWithFieldCheckers(SymptomsEditFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     public static SymptomsEditFragment newInstance(Visit activityRootData) {
         return newInstanceWithFieldCheckers(SymptomsEditFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     public static SymptomsEditFragment newInstance(ClinicalVisit activityRootData, String caseUuid) {
         return newInstanceWithFieldCheckers(SymptomsEditFragment.class, ClinicalVisitEditActivity.buildBundleWithCase(caseUuid).get(), activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     @Override

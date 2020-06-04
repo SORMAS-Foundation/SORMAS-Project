@@ -23,35 +23,12 @@ public class ContactJurisdictionChecker {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 
 	public boolean isInJurisdiction(Contact contact) {
-		return isInJurisdiction(createContactJurisdictionDto(contact));
+		return isInJurisdiction(JurisdictionHelper.createContactJurisdictionDto(contact));
 	}
 
 	public boolean isInJurisdiction(ContactJurisdictionDto contactJurisdiction) {
 		User user = userService.getCurrentUser();
 
 		return de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper.isInJurisdiction(userService::hasAnyRole, JurisdictionHelper.createUserJurisdiction(user), contactJurisdiction);
-	}
-
-	private ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
-		if (contact == null) {
-			return null;
-		}
-		ContactJurisdictionDto dto = new ContactJurisdictionDto();
-
-		if (contact.getReportingUser() != null) {
-			dto.setReportingUserUuid(contact.getReportingUser().getUuid());
-		}
-		if (contact.getRegion() != null) {
-			dto.setRegionUuId(contact.getRegion().getUuid());
-		}
-		if (contact.getDistrict() != null) {
-			dto.setDistrictUuid(contact.getDistrict().getUuid());
-		}
-
-		if (contact.getCaze() != null) {
-			JurisdictionHelper.createCaseJurisdictionDto(contact.getCaze());
-		}
-
-		return dto;
 	}
 }

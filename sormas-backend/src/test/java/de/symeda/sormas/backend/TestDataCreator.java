@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.region.Region;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 public class TestDataCreator {
 

@@ -32,6 +32,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -68,7 +69,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 
     public static ContactEditFragment newInstance(Contact activityRootData) {
         return newInstanceWithFieldCheckers(ContactEditFragment.class, null, activityRootData,
-                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {

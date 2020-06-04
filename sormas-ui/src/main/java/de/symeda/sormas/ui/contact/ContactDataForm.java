@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.*;
 import org.joda.time.LocalDate;
 
@@ -126,7 +128,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactCategory;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX);
+		super(ContactDto.class, ContactDto.I18N_PREFIX, false,
+				FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+				new FieldAccessCheckers());
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
@@ -252,7 +256,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
 
-		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
@@ -398,7 +402,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp,  event -> {
+				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp, event -> {
 					Field<FollowUpStatus> statusField12 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 					statusField12.setReadOnly(false);
 					statusField12.setValue(FollowUpStatus.LOST);
@@ -440,7 +444,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private void updateDiseaseConfiguration(Disease disease) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String)propertyId, disease);
+			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String) propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible && getFieldGroup().getField(propertyId).isVisible());
 		}
 
