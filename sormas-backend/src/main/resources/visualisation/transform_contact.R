@@ -51,7 +51,7 @@ con = dbConnect(PostgreSQL(), user=DB_USER, dbname=DB_NAME, password = DB_PASS, 
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
 	#for testing: get all valid contacts
-	idCont = as.character(dbGetQuery(con, "select ct.id 
+	idContString = as.character(dbGetQuery(con, "select ct.id
 from public.contact ct
 	join public.cases cs on (ct.caze_id = cs.id)
 where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
