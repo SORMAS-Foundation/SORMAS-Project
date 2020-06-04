@@ -38,7 +38,7 @@ public class FieldAccessCheckers {
 
 	public boolean isAccessible(Field field) {
 		for (Checker checker : checkers) {
-			if (checker.isConfiguredForCheck(field) && !checker.hasRight()) {
+			if (checker.isConfiguredForCheck(field) && !checker.hasRight(field)) {
 				return false;
 			}
 		}
@@ -56,10 +56,12 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
-	public boolean hasRigths() {
+	public boolean hasRights(List<Field> fields) {
 		for (Checker checker : checkers) {
-			if (!checker.hasRight()) {
-				return false;
+			for (Field field : fields) {
+				if (!checker.hasRight(field)) {
+					return false;
+				}
 			}
 		}
 
@@ -97,6 +99,6 @@ public class FieldAccessCheckers {
 	public interface Checker {
 		boolean isConfiguredForCheck(Field field);
 
-		boolean hasRight();
+		boolean hasRight(Field field);
 	}
 }

@@ -228,8 +228,8 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-		ContactDataForm editForm = new ContactDataForm();
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, boolean isInJurisdiction) {
+		ContactDataForm editForm = new ContactDataForm(isInJurisdiction);
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
 		editForm.setValue(contact);

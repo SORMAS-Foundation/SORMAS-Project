@@ -19,14 +19,13 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker {
+public class SensitiveDataFieldAccessChecker extends RightBasedFieldAccessChecker {
 	private final boolean isInJurisdiction;
 
-	public PersonalDataFieldAccessChecker(RightBasedFieldAccessChecker.RightCheck rightCheck,
-										  boolean isInJurisdiction) {
-		super(PersonalData.class, rightCheck);
+	public SensitiveDataFieldAccessChecker(RightCheck rightCheck, boolean isInJurisdiction) {
+		super(SensitiveData.class, rightCheck);
 
 		this.isInJurisdiction = isInJurisdiction;
 	}
@@ -34,7 +33,7 @@ public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker
 	@Override
 	protected UserRight getUserRight() {
 		return isInJurisdiction
-				? UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION
-				: UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION;
+				? UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION
+				: UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION;
 	}
 }

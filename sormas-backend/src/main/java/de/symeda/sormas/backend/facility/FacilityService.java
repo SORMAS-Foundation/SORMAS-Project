@@ -39,6 +39,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -46,6 +48,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@EJB
 	private RegionService regionService;
+
+	@EJB
+	private UserService userService;
 
 	public FacilityService() {
 		super(Facility.class);
@@ -100,13 +105,15 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
+
 		cq.where(
 				cb.and(
+						createUserFilter(cb, cq, from),
 						createBasicFilter(cb, from),
 						cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
 						cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)
-						)
-				);
+				)
+		);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
@@ -126,7 +133,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Predicate filter = cb.or(
 				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
 				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
-				);
+		);
 		// Additional null check is required because notEqual returns true if one of the
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)),
@@ -157,7 +164,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Predicate filter = cb.or(
 				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
 				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
-				);
+		);
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
@@ -171,12 +178,25 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
-		// no filter by user needed
-		return null;
+		User currentUser = getCurrentUser();
+		Predicate filter = cb.conjunction();
+
+		if (currentUser.getRegion() != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.REGION), currentUser.getRegion()));
+		}
+		if (currentUser.getDistrict() != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), currentUser.getDistrict()));
+		}
+
+		if (currentUser.getCommunity() != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), currentUser.getCommunity()));
+		}
+
+		return filter;
 	}
 
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb,
-			Root<Facility> from) {
+										 Root<Facility> from) {
 		Predicate filter = null;
 		if (facilityCriteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));

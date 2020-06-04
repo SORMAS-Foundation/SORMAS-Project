@@ -100,7 +100,7 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm(true);
+		EventDataForm eventCreateForm = new EventDataForm(true, true);
 		eventCreateForm.setValue(createNewEvent());
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, 
 				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
@@ -122,7 +122,7 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false);
+		EventDataForm eventEditForm = new EventDataForm(false, true);
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, 
 				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT), eventEditForm.getFieldGroup());

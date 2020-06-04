@@ -10,6 +10,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -38,6 +39,7 @@ public class SampleExportDto implements Serializable {
 	private String sampleMaterial;
 	private String samplePurpose;
 	private SampleSource sampleSource;
+	@SensitiveData
 	private String lab;
 	private PathogenTestResultType pathogenTestResult;
 	private Boolean pathogenTestingRequested;
@@ -733,10 +735,13 @@ public class SampleExportDto implements Serializable {
 		private String region;
 		private String district;
 		@PersonalData
+		@SensitiveData
 		private String community;
 		@PersonalData
+		@SensitiveData
 		private String city;
 		@PersonalData
+		@SensitiveData
 		private String address;
 
 		public CasePersonAddress(String region, String district, String community, String city, String address) {

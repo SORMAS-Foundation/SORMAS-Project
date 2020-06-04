@@ -27,6 +27,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -126,8 +130,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
 
-	public ContactDataForm() {
-		super(ContactDto.class, ContactDto.I18N_PREFIX);
+	public ContactDataForm(boolean isInJurisdiction) {
+		super(ContactDto.class, ContactDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
+				new FieldAccessCheckers()
+						.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
 	}
 
 	@Override
@@ -236,6 +242,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		initializeAccessAndAllowedAccesses();
 
 		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);
 

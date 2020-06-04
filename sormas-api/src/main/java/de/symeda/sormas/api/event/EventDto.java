@@ -25,6 +25,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class EventDto extends EntityDto {
 
@@ -59,6 +60,7 @@ public class EventDto extends EntityDto {
 	@Required
 	private Date reportDateTime;
 	@Required
+	@SensitiveData
 	private UserReferenceDto reportingUser;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
@@ -68,10 +70,14 @@ public class EventDto extends EntityDto {
 	private String srcEmail;
 	private Disease disease;
 	private String diseaseDetails;
+	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+	@SensitiveData
 	private Float reportLatLonAccuracy;
 	
 	public static EventDto build() {

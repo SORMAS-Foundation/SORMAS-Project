@@ -27,6 +27,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PathogenTestDto extends EntityDto {
 
@@ -64,6 +65,7 @@ public class PathogenTestDto extends EntityDto {
 	private FacilityReferenceDto lab;
 	private String labDetails;
 	@Required
+	@SensitiveData
 	private UserReferenceDto labUser;
 	@Required
 	private PathogenTestResultType testResult;

@@ -28,6 +28,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class SampleDto extends EntityDto {
 
@@ -74,9 +75,13 @@ public class SampleDto extends EntityDto {
 	@Required
 	private Date reportDateTime;
 	@Required
+	@SensitiveData
 	private UserReferenceDto reportingUser;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+	@SensitiveData
 	private Float reportLatLonAccuracy;
 
 	@Required
@@ -85,6 +90,7 @@ public class SampleDto extends EntityDto {
 	@Required
 	private SamplePurpose samplePurpose;
 	@Required
+	@SensitiveData
 	private FacilityReferenceDto lab;
 	private String labDetails;
 	private Date shipmentDate;

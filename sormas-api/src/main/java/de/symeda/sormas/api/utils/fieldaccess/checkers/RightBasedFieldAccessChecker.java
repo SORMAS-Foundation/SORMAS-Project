@@ -19,22 +19,33 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 
-public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker {
-	private final boolean isInJurisdiction;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
-	public PersonalDataFieldAccessChecker(RightBasedFieldAccessChecker.RightCheck rightCheck,
-										  boolean isInJurisdiction) {
-		super(PersonalData.class, rightCheck);
+public abstract class RightBasedFieldAccessChecker implements FieldAccessCheckers.Checker {
+	private Class<? extends Annotation> fieldAnnotation;
+	protected final RightCheck rightCheck;
 
-		this.isInJurisdiction = isInJurisdiction;
+	public RightBasedFieldAccessChecker(Class<? extends Annotation> fieldAnnotation, RightCheck rightCheck) {
+		this.fieldAnnotation = fieldAnnotation;
+		this.rightCheck = rightCheck;
 	}
 
 	@Override
-	protected UserRight getUserRight() {
-		return isInJurisdiction
-				? UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION
-				: UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION;
+	public boolean isConfiguredForCheck(Field field) {
+		return field.isAnnotationPresent(fieldAnnotation);
+	}
+
+	@Override
+	public boolean hasRight(Field field) {
+		return rightCheck.check(getUserRight());
+	}
+
+	protected abstract UserRight getUserRight();
+
+	public interface RightCheck {
+		boolean check(UserRight userRight);
 	}
 }

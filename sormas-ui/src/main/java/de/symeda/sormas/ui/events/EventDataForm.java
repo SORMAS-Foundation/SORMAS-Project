@@ -43,7 +43,10 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -76,8 +79,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
 
-	public EventDataForm(boolean create) {
-		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), new FieldAccessCheckers());
+	public EventDataForm(boolean create, boolean isInJurisdiction) {
+		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(),
+				new FieldAccessCheckers()
+						.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
 
 		isCreateForm = create;
 		if (create) {
@@ -126,6 +131,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.SRC_EMAIL, TextField.class);
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE,
 				Arrays.asList(TypeOfPlace.OTHER), true);

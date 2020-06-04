@@ -49,7 +49,7 @@ public class ContactJurisdictionChecker {
 		}
 
 		if (contact.getCaze() != null) {
-			JurisdictionHelper.createCaseJurisdictionDto(contact.getCaze());
+			dto.setCaseJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(contact.getCaze()));
 		}
 
 		return dto;

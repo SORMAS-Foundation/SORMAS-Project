@@ -49,6 +49,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 /**
@@ -108,10 +109,13 @@ public class CaseExportDto implements Serializable {
 	private String region;
 	private String district;
 	@PersonalData
+	@SensitiveData
 	private String community;
 	@PersonalData
+	@SensitiveData
 	private String healthFacility;
 	@PersonalData
+	@SensitiveData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;

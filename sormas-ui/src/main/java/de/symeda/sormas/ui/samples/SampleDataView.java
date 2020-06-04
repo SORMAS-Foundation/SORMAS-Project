@@ -83,6 +83,7 @@ public class SampleDataView extends AbstractSampleView {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 
 		Disease disease = null;
+		boolean isInJurisdiction = true;
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
 		if (associatedCase != null) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
@@ -92,6 +93,8 @@ public class SampleDataView extends AbstractSampleView {
 			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
+
+			isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
@@ -102,10 +105,12 @@ public class SampleDataView extends AbstractSampleView {
 			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(contactDto);
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
+
+			isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 		}
 
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent = ControllerProvider.getSampleController()
-				.getSampleEditComponent(getSampleRef().getUuid());
+				.getSampleEditComponent(getSampleRef().getUuid(), isInJurisdiction);
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

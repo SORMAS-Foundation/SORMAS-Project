@@ -19,8 +19,13 @@
 package de.symeda.sormas.backend.util;
 
 import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserDataFieldAccessChecker;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 import javax.ejb.EJB;
@@ -31,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -56,12 +62,7 @@ public class PseudonymizationService {
 	}
 
 	public <DTO extends PseudonymizableDto> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
-		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction);
-
-		if (accessCheckers.hasRigths() && !dto.isPseudonymized()) {
-			return;
-		}
-
+		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction, originalDto);
 		List<Field> declaredFields = getDeclaredFields(type);
 
 		declaredFields.forEach(field -> {
@@ -74,20 +75,18 @@ public class PseudonymizationService {
 	}
 
 	private <DTO> void pseudonymizeDto(DTO dto, List<Field> declaredFields, boolean isInJurisdiction, Consumer<DTO> customPseudonymization) {
-		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction);
+		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction, dto);
 
-		if (accessCheckers.hasRigths()) {
-			return;
-		}
-
+		AtomicBoolean didPseudonymization = new AtomicBoolean(false);
 		declaredFields.forEach(field -> {
 			if (!accessCheckers.isAccessible(field)) {
 				pseudonymizeField(dto, field);
+				didPseudonymization.set(true);
 			}
 		});
 
 		if (PseudonymizableDto.class.isAssignableFrom(dto.getClass())) {
-			((PseudonymizableDto) dto).setPseudonymized(true);
+			((PseudonymizableDto) dto).setPseudonymized(didPseudonymization.get());
 		}
 
 		if (customPseudonymization != null) {
@@ -95,9 +94,22 @@ public class PseudonymizationService {
 		}
 	}
 
-	private FieldAccessCheckers createFieldAccessCheckers(boolean isInJurisdiction) {
+	private <DTO> FieldAccessCheckers createFieldAccessCheckers(boolean isInJurisdiction, DTO dto) {
 		return new FieldAccessCheckers()
-				.add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction));
+				.add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction))
+				.add(new SensitiveDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction))
+				.add(new UserDataFieldAccessChecker(r -> userService.hasRight(r), field -> {
+					try {
+						field.setAccessible(true);
+						UserReferenceDto userRef = (UserReferenceDto) field.get(dto);
+
+						return userRef == null || isUserInJurisdiction(userRef);
+					} catch (IllegalAccessException e) {
+						// ignore
+					}
+
+					return true;
+				}));
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field) {
@@ -130,6 +142,29 @@ public class PseudonymizationService {
 		}
 
 		return declaredFields;
+	}
+
+	private boolean isUserInJurisdiction(UserReferenceDto userRef) {
+		User user = userService.getByUuid(userRef.getUuid());
+		User currentUser = userService.getCurrentUser();
+
+		if (currentUser.getDistrict() != null) {
+			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
+		}
+
+		if (currentUser.getCommunity() != null) {
+			return DataHelper.isSame(currentUser.getCommunity(), user.getCommunity());
+		}
+
+		if (currentUser.getHealthFacility() != null) {
+			return DataHelper.isSame(currentUser.getHealthFacility(), user.getHealthFacility());
+		}
+
+		if (currentUser.getPointOfEntry() != null) {
+			return DataHelper.isSame(currentUser.getPointOfEntry(), user.getPointOfEntry());
+		}
+
+		return true;
 	}
 
 	public interface CustomPseudonymization<DTO> {

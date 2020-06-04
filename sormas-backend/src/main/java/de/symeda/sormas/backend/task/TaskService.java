@@ -113,7 +113,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task, Task> taskPath) {
 
-		Predicate assigneeJurisdictionFilter = userService.createJurisdictionFilter(cb, taskPath.join(Task.ASSIGNEE_USER));
+		Predicate assigneeJurisdictionFilter = userService.createUserFilter(cb, taskPath.join(Task.ASSIGNEE_USER));
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
@@ -242,7 +242,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 
-		Predicate jurisdictionFilter = userService.createJurisdictionFilter(cb, assigneeUser);
+		Predicate jurisdictionFilter = userService.createUserFilter(cb, assigneeUser);
 
 		return cb.and(filter, jurisdictionFilter);
 	}

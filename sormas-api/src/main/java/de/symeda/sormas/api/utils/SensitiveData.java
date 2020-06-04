@@ -16,25 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils.fieldaccess.checkers;
+package de.symeda.sormas.api.utils;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.PersonalData;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker {
-	private final boolean isInJurisdiction;
-
-	public PersonalDataFieldAccessChecker(RightBasedFieldAccessChecker.RightCheck rightCheck,
-										  boolean isInJurisdiction) {
-		super(PersonalData.class, rightCheck);
-
-		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	@Override
-	protected UserRight getUserRight() {
-		return isInJurisdiction
-				? UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION
-				: UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION;
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface SensitiveData {
 }

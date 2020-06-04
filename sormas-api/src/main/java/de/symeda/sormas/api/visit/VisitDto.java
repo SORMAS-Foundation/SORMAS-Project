@@ -26,6 +26,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class VisitDto extends EntityDto {
 
@@ -50,6 +51,7 @@ public class VisitDto extends EntityDto {
 	@Required
 	private Date visitDateTime;
 	@Required
+	@SensitiveData
 	private UserReferenceDto visitUser;
 	@Required
 	private VisitStatus visitStatus;

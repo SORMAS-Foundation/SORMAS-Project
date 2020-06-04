@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class ContactDto extends EntityDto {
@@ -94,9 +95,13 @@ public class ContactDto extends EntityDto {
 	@Required
 	private Date reportDateTime;
 	@Required
+	@SensitiveData
 	private UserReferenceDto reportingUser;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+	@SensitiveData
 	private Float reportLatLonAccuracy;
 
 	private RegionReferenceDto region;
@@ -129,9 +134,11 @@ public class ContactDto extends EntityDto {
 	@Required
 	private PersonReferenceDto person;
 
+	@SensitiveData
 	private UserReferenceDto contactOfficer;
 
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	@SensitiveData
 	private UserReferenceDto resultingCaseUser;
 
 	private String quarantineHelpNeeded;

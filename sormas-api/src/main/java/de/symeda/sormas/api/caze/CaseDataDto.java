@@ -43,6 +43,7 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 
@@ -116,7 +117,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String POINT_OF_ENTRY_DETAILS = "pointOfEntryDetails";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EXTERNAL_ID = "externalID";
-	public static final String SHARED_TO_COUNTRY = "sharedToCountry";	
+	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String QUARANTINE = "quarantine";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
@@ -140,13 +141,13 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Disease disease;
 	@Outbreaks
 	private String diseaseDetails;
-	@Diseases({ Disease.PLAGUE })
+	@Diseases({Disease.PLAGUE})
 	@Outbreaks
 	private PlagueType plagueType;
-	@Diseases({ Disease.DENGUE })
+	@Diseases({Disease.DENGUE})
 	@Outbreaks
 	private DengueFeverType dengueFeverType;
-	@Diseases({ Disease.RABIES })
+	@Diseases({Disease.RABIES})
 	@Outbreaks
 	private RabiesType rabiesType;
 	@Required
@@ -158,6 +159,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date reportDate;
 	@Outbreaks
 	@Required
+	@SensitiveData
 	private UserReferenceDto reportingUser;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
@@ -167,6 +169,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Required
 	private CaseClassification caseClassification;
 	@Outbreaks
+	@SensitiveData
 	private UserReferenceDto classificationUser;
 	@Outbreaks
 	private Date classificationDate;
@@ -191,50 +194,58 @@ public class CaseDataDto extends PseudonymizableDto {
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 	@Outbreaks
 	@Required
 	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER})
 	@Outbreaks
 	private Vaccination vaccination;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.CSM, Disease.YELLOW_FEVER,
-			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.CSM, Disease.YELLOW_FEVER,
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER})
 	@Outbreaks
 	private String vaccinationDoses;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.MONKEYPOX, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.MONKEYPOX, Disease.UNSPECIFIED_VHF, Disease.RABIES, Disease.ANTHRAX, Disease.OTHER})
 	@Outbreaks
 	private Date vaccinationDate;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
-			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER })
+	@Diseases({Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
+			Disease.RABIES, Disease.UNSPECIFIED_VHF, Disease.ANTHRAX, Disease.OTHER})
 	private VaccinationInfoSource vaccinationInfoSource;
-	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.OTHER })
+	@Diseases({Disease.AFP, Disease.GUINEA_WORM, Disease.POLIO, Disease.RABIES, Disease.OTHER})
 	@Outbreaks
 	private String vaccine;
-	@Diseases({ Disease.MONKEYPOX })
+	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationScar;
-	@Diseases({ Disease.MONKEYPOX })
+	@Diseases({Disease.MONKEYPOX})
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
+	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	private String clinicianName;
 	private String clinicianPhone;
 	private String clinicianEmail;
-	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private HospitalWardType notifyingClinic;
-	@Diseases({ Disease.CONGENITAL_RUBELLA })
+	@Diseases({Disease.CONGENITAL_RUBELLA})
 	private String notifyingClinicDetails;
 	@Deprecated
+	@SensitiveData
 	private UserReferenceDto caseOfficer;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+	@SensitiveData
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
 	private SymptomsDto symptoms;
@@ -246,8 +257,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
+	@SensitiveData
 	private String pointOfEntryDetails;
 	private String additionalDetails;
 	private String externalID;
@@ -286,13 +299,13 @@ public class CaseDataDto extends PseudonymizableDto {
 		caze.setCaseOrigin(CaseOrigin.IN_COUNTRY);
 		return caze;
 	}
-	
+
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
-	
+
 			try {
 				// reflection to call the setters of the new symptoms object with the getters
 				// from the one in the visit
@@ -313,7 +326,7 @@ public class CaseDataDto extends PseudonymizableDto {
 		cazeData.setSymptoms(newSymptoms);
 		return cazeData;
 	}
-	
+
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
 		CaseDataDto cazeData = CaseDataDto.build(eventParticipant.getPerson().toReference(), eventDisease);
 		return cazeData;

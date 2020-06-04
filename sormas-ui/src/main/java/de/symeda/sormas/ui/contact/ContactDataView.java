@@ -90,8 +90,9 @@ public class ContactDataView extends AbstractContactView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
+		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
 		CommitDiscardWrapperComponent<?> editComponent = ControllerProvider.getContactController()
-				.getContactDataEditComponent(getContactRef().getUuid());
+				.getContactDataEditComponent(getContactRef().getUuid(), isInJurisdiction);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

@@ -88,7 +88,7 @@ public class SampleController {
 	}
 
 	private void crateSample(Runnable callback, SampleDto sampleDto) {
-		SampleEditForm createForm = new SampleEditForm();
+		SampleEditForm createForm = new SampleEditForm(true);
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleEditForm> editView = new CommitDiscardWrapperComponent<>(createForm,
 				UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE), createForm.getFieldGroup());
@@ -105,7 +105,7 @@ public class SampleController {
 	}
 
 	public void createReferral(SampleDto sample) {
-		SampleEditForm createForm = new SampleEditForm();
+		SampleEditForm createForm = new SampleEditForm(true);
 		SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleEditForm> createView = new CommitDiscardWrapperComponent<SampleEditForm>(createForm,
@@ -135,8 +135,8 @@ public class SampleController {
 		VaadinUiUtil.showModalPopupWindow(createView, I18nProperties.getString(Strings.headingReferSample));
 	}
 
-	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid) {
-		SampleEditForm form = new SampleEditForm();
+	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isInJurisdiction) {
+		SampleEditForm form = new SampleEditForm(isInJurisdiction);
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);

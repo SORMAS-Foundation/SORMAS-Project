@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
@@ -155,6 +156,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 						.add(new OutbreakFieldVisibilityChecker(viewMode)),
 				new FieldAccessCheckers()
 						.add(new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
+						.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
 		);
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;

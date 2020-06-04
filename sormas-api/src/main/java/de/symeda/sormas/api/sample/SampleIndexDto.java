@@ -29,6 +29,7 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class SampleIndexDto implements Serializable {
 
@@ -71,6 +72,7 @@ public class SampleIndexDto implements Serializable {
 	private Date sampleDateTime;
 	private Date shipmentDate;
 	private Date receivedDate;
+	@SensitiveData
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
 	private SamplePurpose samplePurpose;

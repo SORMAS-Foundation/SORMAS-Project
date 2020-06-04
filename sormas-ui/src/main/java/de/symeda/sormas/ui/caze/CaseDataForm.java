@@ -86,6 +86,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -182,6 +183,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				FieldVisibilityCheckers.withDisease(disease).add(
 						new OutbreakFieldVisibilityChecker(viewMode)),
 				FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)
+				.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
 		);
 		this.person = person;
 		this.disease = disease;
@@ -291,6 +293,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 			FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+
 			FieldHelper.updateItems(surveillanceOfficerField, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
 		});
 		community.addValueChangeListener(e -> {
