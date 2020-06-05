@@ -25,8 +25,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +38,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.backend.MockProducer;
+import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -220,7 +225,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 		String districtName = "District";
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", districtName, "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
+		useSurveillanceOfficerLogin(rdcf);
+
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
 				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		String lastName = "Person";
@@ -228,9 +235,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf, "abc");
+				InvestigationStatus.PENDING, new Date(), rdcf, c -> c.setHealthFacilityDetails("abc"));
 		creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING, new Date(), rdcf, "xyz");
+				InvestigationStatus.PENDING, new Date(), rdcf, c -> c.setHealthFacilityDetails("xyz"));
 
 		List<CaseIndexDto> results = getCaseFacade().getIndexList(null, 0, 100,
 				Arrays.asList(new SortProperty(CaseIndexDto.DISEASE), new SortProperty(CaseIndexDto.PERSON_FIRST_NAME),
@@ -579,17 +586,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersLocationTest() throws InterruptedException {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+
+		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson("Case", "Person").toReference(), Disease.EVD,
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 
 		Date date = new Date();
 		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
 		Thread.sleep(10L);
 
+		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
 		cazePerson.getAddress().setAddress("new Address");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -646,6 +653,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testMergeCase() {
+		useSurveillanceOfficerLogin(null);
 		// 1. Create
 
 		// Create leadCase

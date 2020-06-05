@@ -34,6 +34,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
 import org.junit.Assert;
@@ -72,8 +73,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListBySampleAssociationType() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person1");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);

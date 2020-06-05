@@ -380,6 +380,19 @@ public class TestDataCreator {
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
 		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
 	}
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
 	
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
@@ -395,6 +408,7 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	@Deprecated
 	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
@@ -403,6 +417,20 @@ public class TestDataCreator {
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
+	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
+								  UserReferenceDto reportingUser, SampleMaterial sampleMaterial, FacilityReferenceDto lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 

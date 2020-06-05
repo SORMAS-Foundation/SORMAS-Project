@@ -49,6 +49,8 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventJurisdictionChecker;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -122,6 +124,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -468,7 +472,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (dto != null) {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
 
-			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+ 			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
 				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
 			});
 		}
@@ -477,9 +481,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	private boolean isPersonInJurisdiction(Person person) {
-
 		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
-		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
+		boolean  isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
 
 		if (!isInJurisdiction) {
 			List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())), null);
@@ -487,7 +490,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		if (!isInJurisdiction) {
-			isInJurisdiction = eventParticipantSerice.countByPerson(person) > 0;
+			List<EventParticipant> personEventParticipants = eventParticipantSerice.getAllByPerson(person);
+			isInJurisdiction = personEventParticipants.stream().anyMatch(p -> eventJurisdictionChecker.isInJurisdiction(p.getEvent()));
 		}
 
 		return isInJurisdiction;
