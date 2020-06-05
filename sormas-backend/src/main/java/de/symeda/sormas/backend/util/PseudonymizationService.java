@@ -109,6 +109,9 @@ public class PseudonymizationService {
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+		finally {
+			field.setAccessible(false);
+		}
 	}
 
 	private <DTO extends PseudonymizableDto> void restoreOriginalValue(DTO dto, Field field, DTO originalDto) {
@@ -119,6 +122,9 @@ public class PseudonymizationService {
 			field.set(dto, originalValue);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
+		}
+		finally {
+			field.setAccessible(false);
 		}
 	}
 
