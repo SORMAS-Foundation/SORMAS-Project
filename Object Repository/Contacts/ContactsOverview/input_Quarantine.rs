@@ -7,10 +7,14 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>(//input[@type='text'])[10]</value>
+         <value>(//input[@type='text'])[11]</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;quarantineType&quot;)/input[@class=&quot;v-filterselect-input&quot;]</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -20,7 +24,7 @@
       <value>input</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>type</name>
       <type>Main</type>
@@ -38,7 +42,7 @@
       <matchCondition>equals</matchCondition>
       <name>autocomplete</name>
       <type>Main</type>
-      <value>0.45840984661451345</value>
+      <value>off</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -48,31 +52,31 @@
       <value>0</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-crud-main-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget crud-main-layout v-verticallayout-crud-main-layout v-has-width v-has-height v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-filterselect v-widget v-has-width v-filterselect-prompt&quot;]/input[@class=&quot;v-filterselect-input&quot;]</value>
+      <value>id(&quot;quarantineType&quot;)/input[@class=&quot;v-filterselect-input&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>(//input[@type='text'])[10]</value>
+      <value>(//input[@type='text'])[11]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div[3]/div/div/div/input</value>
+      <value>//div[@id='quarantineType']/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div/div/div/input</value>
+      <value>//div[2]/div/div/input</value>
    </webElementXpaths>
 </WebElementEntity>

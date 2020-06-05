@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[3]/div/div/div/div/div[3]/div</value>
+         <value>//div[@id='pathogenTestNewTest']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -43,6 +43,13 @@
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
+      <name>id</name>
+      <type>Main</type>
+      <value>pathogenTestNewTest</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
       <value>New test result</value>
@@ -52,14 +59,21 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot v-slot-root-component&quot;]/div[@class=&quot;v-customlayout v-layout v-widget root-component v-customlayout-root-component v-has-width&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-lg-4 col-xs-6&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget side-component v-verticallayout-side-component v-has-width v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-primary v-align-right v-align-middle&quot;]/div[@class=&quot;v-button v-widget primary v-button-primary&quot;]</value>
+      <value>id(&quot;pathogenTestNewTest&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
+      <name>xpath:attributes</name>
+      <type>Main</type>
+      <value>//div[@id='pathogenTestNewTest']</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[3]/div/div/div/div/div[3]/div</value>
+      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[4]/div/div/div/div/div[3]/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
@@ -73,13 +87,13 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Date of symptom onset'])[1]/following::div[11]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Date of symptom onset'])[1]/following::div[12]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[3]/div/div/div/div/div[3]/div/div/div/div/div[3]/div</value>
+      <value>//div[4]/div/div/div/div/div[3]/div</value>
    </webElementXpaths>
 </WebElementEntity>

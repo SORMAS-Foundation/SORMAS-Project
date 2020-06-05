@@ -25,11 +25,11 @@ String quarantineEnd = '03/05/2020'
 // TESTCASE
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible region_v-filterselect-button'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Berlin'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_reg1'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible district_v-filterselect-button'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_Berlin'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_dist11'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Relationship with case_v-filterselect-button'))
 
@@ -47,13 +47,14 @@ WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/
 
 // WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine end_gwt-uid-226'), quarantineEnd)
 
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'))
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     'this is a test')
 WebUI.delay(0.5)
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filtersel_edee33'))
+//WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filtersel_edee33'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Berlin CONTACT - Surveillance Officer _08c6e0'))
+//WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/span_Berlin CONTACT - Surveillance Officer _08c6e0'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Save'))
 
@@ -65,9 +66,9 @@ WebUI.delay(1)
 String region = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Responsible region_gwt-uid-207'), 'value')
 String district = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Responsible district_gwt-uid-203'), 'value')
 
-if (!region.equalsIgnoreCase("Berlin") || !district.equalsIgnoreCase("Berlin")) {
+if (!region.equalsIgnoreCase("reg1") || !district.equalsIgnoreCase("dist11")) {
 	WebUI.closeBrowser()
-	throw new StepFailedException('The region and/or district should equal "Berlin". region: ' + region + ' district:' + district)
+	throw new StepFailedException('The region and/or district should equal "reg1". region: ' + region + ' district:' + district)
 }
 
 String relation = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Relationship with case_gwt-uid-195'), 'value')
@@ -85,14 +86,14 @@ if (!contactDescription.contains("this is a test")) {
 String quarantine = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine_gwt-uid-205'), 'value')
 if (!quarantine.contains("Home")) {
 	WebUI.closeBrowser()
-	throw new StepFailedException('The qurantine should contain "Home". quarantine: ' + quarantine)
+	throw new StepFailedException('The qurantine should contain "Home". quarantine: ' +quarantine)
 }
 
-String startDate = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine start_gwt-uid-228'), 'value')
+/*String startDate = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Quarantine start_gwt-uid-228'), 'value')
 if (!startDate.contains(quarantineStart)) {
 	WebUI.closeBrowser()
-	throw new StepFailedException('The qurantine start-Date is wrong". expected: ' + quarantineStart + ' fouind:' + startDate)
-}
+	throw new StepFailedException('The qurantine start-Date is wrong. Expected:' +quarantineStart+ 'found:' +startDate)
+}*/
 
 String comment = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'), 'value')
 if (!comment.contains("this is a test")) {
@@ -100,11 +101,11 @@ if (!comment.contains("this is a test")) {
 	throw new StepFailedException('The comment should contain "this is a test". comment: ' + comment)
 }
 
-String contact = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Responsible contact officer_gwt-uid-199'), 'value')
+/*String contact = WebUI.getAttribute(findTestObject('Contacts/ContactInformationView/ChangeContactData/input_Responsible contact officer_gwt-uid-199'), 'value')
 if (!contact.contains("Berlin CONTACT - Surveillance Officer, Contact Officer")) {
 	WebUI.closeBrowser()
 	throw new StepFailedException('The contact should equal "Berlin CONTACT - Surveillance Officer, Contact Officer". contact: ' + contact)
-}
+}*/
 
 // CLEANUP
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible region_v-filterselect-button'))
@@ -125,9 +126,9 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td
 WebUI.setText(findTestObject('Contacts/ContactInformationView/ChangeContactData/textarea_Follow-up status comment_followUpComment'),
     '')
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filtersel_edee33'))
+/*WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Responsible contact officer_v-filtersel_edee33'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/td_'))*/
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactData/div_Save'))
 

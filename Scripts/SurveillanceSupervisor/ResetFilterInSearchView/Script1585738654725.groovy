@@ -5,10 +5,15 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/FilterCasesNotYetClasifiedInSearchView'), [('isStandalone') : false], FailureHandling.STOP_ON_FAILURE)
  
-WebUI.click(findTestObject('Surveillance/SearchView/Filter/div_ResetFilters_btn'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
  
 def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/table_SearchResult_table'), 'aria-rowcount')
  
 attribute = (attribute.toInteger() - 1).toString()
  
-WebUI.verifyNotMatch(attribute, '12', false, FailureHandling.OPTIONAL)
+WebUI.verifyMatch(attribute, '10', false, FailureHandling.OPTIONAL)
+
+if (isStandalone) {
+	WebUI.closeBrowser()
+}
+WebUI.closeBrowser()

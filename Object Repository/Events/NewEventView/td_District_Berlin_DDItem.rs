@@ -6,11 +6,15 @@
    <elementGuidId>cdfa9407-c35d-406e-8dc4-cc59225c3e42</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'Berlin' or . = 'Berlin')]</value>
+      </entry>
+      <entry>
          <key>XPATH</key>
          <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>

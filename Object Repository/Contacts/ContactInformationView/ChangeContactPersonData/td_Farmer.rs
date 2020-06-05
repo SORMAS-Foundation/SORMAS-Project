@@ -6,11 +6,15 @@
    <elementGuidId>ffbfdb98-6951-4ff8-855a-3ab10b9e0fa0</elementGuidId>
    <selectorCollection>
       <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'Farmer' or . = 'Farmer')]</value>
+      </entry>
+      <entry>
          <key>XPATH</key>
          <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>

@@ -15,7 +15,7 @@ WebUI.callTestCase(findTestCase('Samples/partials/switchToSamples'), [:], Failur
 
 String caseName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDataName, 'test-filter-by-name')
 println('searching for case: ' + caseName)
-WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_searchName'), caseName)
+WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_Export_caseCodeIdLike'), caseName)
 
 WebUI.delay(1)
 int numberOfRows = Table.getNumberOfTableRows()

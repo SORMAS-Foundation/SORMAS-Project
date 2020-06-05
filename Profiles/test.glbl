@@ -21,12 +21,12 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Username for second user in Surveillance Supervisor section</description>
-      <initValue>'SStest'</initValue>
+      <initValue>'SurvSup3'</initValue>
       <name>gUsernameSecondSurveillanceSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Password for second user in Surveillance Supervisor section</description>
-      <initValue>'4sdEk2C9snbg'</initValue>
+      <initValue>'whr4hwmTwJwZ'</initValue>
       <name>gPasswordSecondSurveillanceSupervisor</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -46,7 +46,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description></description>
-      <initValue>'CliNic'</initValue>
+      <initValue>'6mFGmqxiREMb'</initValue>
       <name>gPasswordClinician</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
@@ -105,8 +105,13 @@
       <name>gContactTestDataName</name>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
+      <description></description>
+      <initValue>'defaultSamplesTestData'</initValue>
+      <name>gSamplesTestDataName</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
       <description>Downloadpath for file download in browser</description>
-      <initValue>'/var/jenkins_home/downloads/'</initValue>
+      <initValue>'C:\\Users\\raghavender.pola\\Downloads'</initValue>
       <name>gDownloadPath</name>
    </GlobalVariableEntity>
 </GlobalVariableEntities>

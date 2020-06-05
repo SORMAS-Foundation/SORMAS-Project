@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='create']</value>
+         <value>//div[@id='caseNewCase']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -45,7 +45,7 @@
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>create</value>
+      <value>caseNewCase</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
@@ -59,21 +59,21 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;create&quot;)</value>
+      <value>id(&quot;caseNewCase&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//div[@id='create']</value>
+      <value>//div[@id='caseNewCase']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div/div/div/div[11]/div</value>
+      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div/div/div/div[7]/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
@@ -94,6 +94,6 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[11]/div</value>
+      <value>//div[7]/div</value>
    </webElementXpaths>
 </WebElementEntity>

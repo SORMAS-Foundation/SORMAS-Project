@@ -7,17 +7,35 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td/span</value>
+         <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[5]/td</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[@role = 'listitem' and (text() = 'COVID-19' or . = 'COVID-19')]</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
-      <value>span</value>
+      <value>td</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>class</name>
+      <type>Main</type>
+      <value>gwt-MenuItem gwt-MenuItem-selected</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>role</name>
+      <type>Main</type>
+      <value>listitem</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
@@ -31,48 +49,41 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;VAADIN_COMBOBOX_OPTIONLIST&quot;)/div[@class=&quot;popupContent&quot;]/div[@class=&quot;v-filterselect-suggestmenu&quot;]/table[1]/tbody[1]/tr[2]/td[@class=&quot;gwt-MenuItem gwt-MenuItem-selected&quot;]/span[1]</value>
+      <value>id(&quot;VAADIN_COMBOBOX_OPTIONLIST&quot;)/div[@class=&quot;popupContent&quot;]/div[@class=&quot;v-filterselect-suggestmenu&quot;]/table[1]/tbody[1]/tr[5]/td[@class=&quot;gwt-MenuItem gwt-MenuItem-selected&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td/span</value>
+      <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[5]/td</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Prev'])[1]/following::span[2]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Other Epidemic Disease'])[1]/following::td[1]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Pending'])[15]/following::span[3]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Acute Flaccid Paralysis'])[1]/following::td[2]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Not Yet Defined'])[1]/preceding::span[1]</value>
-   </webElementXpaths>
-   <webElementXpaths>
-      <isSelected>false</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>xpath:neighbor</name>
-      <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Other Epidemic Disease'])[1]/preceding::span[2]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Cholera'])[1]/preceding::td[1]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[2]/table/tbody/tr[2]/td/span</value>
+      <value>//div[2]/table/tbody/tr[5]/td</value>
    </webElementXpaths>
 </WebElementEntity>

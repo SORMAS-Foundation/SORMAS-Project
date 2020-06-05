@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div/div/div/div[11]/div/div</value>
+         <value>//div[@id='laboratory']/div</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -45,20 +45,20 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-crud-main-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget crud-main-layout v-verticallayout-crud-main-layout v-has-width v-has-height v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-filterselect v-widget v-has-width v-filterselect-prompt&quot;]/div[@class=&quot;v-filterselect-button&quot;]</value>
+      <value>id(&quot;laboratory&quot;)/div[@class=&quot;v-filterselect-button&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div/div/div/div/div/div[11]/div/div</value>
+      <value>//div[@id='laboratory']/div</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[11]/div/div</value>
+      <value>//div[7]/div/div</value>
    </webElementXpaths>
 </WebElementEntity>

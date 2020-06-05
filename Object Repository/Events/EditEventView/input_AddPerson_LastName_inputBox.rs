@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div/input</value>
+         <value>//input[@id='lastName']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -31,21 +31,21 @@
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
-      <value>v-textfield v-widget v-required v-textfield-required v-has-width v-textfield-focus</value>
+      <value>v-textfield v-widget v-required v-textfield-required v-has-width</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
-      <value>gwt-uid-67</value>
+      <value>lastName</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>aria-labelledby</name>
       <type>Main</type>
-      <value>gwt-uid-66</value>
+      <value>gwt-uid-119</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -66,14 +66,14 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;gwt-uid-67&quot;)</value>
+      <value>id(&quot;lastName&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>//input[@id='gwt-uid-67']</value>
+      <value>//input[@id='lastName']</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>

@@ -25,7 +25,7 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/td_COVID-19'
 
 Date now = new Date()
 
-String resultDate = now.format('dd/MM/yyyy')
+String resultDate = now.format('MM/dd/yyyy')
 
 String resultTime = now.format('HH:mm')
 
@@ -39,6 +39,7 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/div_Test res
 
 WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/td_Pending'))
 
+WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/label_No'))
 WebUI.click(findTestObject('Samples/NewTestResult/div_Discard'))
 
 WebUI.delay(1)

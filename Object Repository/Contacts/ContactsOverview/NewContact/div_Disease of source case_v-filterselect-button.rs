@@ -9,8 +9,12 @@
          <key>XPATH</key>
          <value>//div[@id='disease']/div</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;disease&quot;)/div[@class=&quot;v-filterselect-button&quot;][count(. | //*[@class = 'v-filterselect-button']) = count(//*[@class = 'v-filterselect-button'])]</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -20,7 +24,7 @@
       <value>div</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>

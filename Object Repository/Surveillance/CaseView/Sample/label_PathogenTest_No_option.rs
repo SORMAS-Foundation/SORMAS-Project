@@ -9,6 +9,10 @@
          <key>XPATH</key>
          <value>//div[@id='pathogenTestingRequested']/span[2]/label</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'No' or . = 'No')]</value>
+      </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>

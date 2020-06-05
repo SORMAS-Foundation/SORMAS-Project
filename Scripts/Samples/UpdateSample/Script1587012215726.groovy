@@ -31,7 +31,7 @@ String caseName = TestDataConnector.getValueByKey(GlobalVariable.gSamplesTestDat
 
 println('searching for case: ' + caseName)
 
-WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_searchName'), caseName)
+WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_Export_caseCodeIdLike'), caseName)
 
 WebUI.delay(1)
 
@@ -60,6 +60,7 @@ WebUI.setText(findTestObject('Object Repository/Samples/SampleInformation/input_
 WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), Keys.chord(Keys.TAB))
 
 // the sendKeys-Tab adds some strange characters to the comment field - this cleans it up
+WebUI.click(findTestObject('Samples/SampleInformation/textarea_Comment_comment'))
 WebUI.setText(findTestObject('Samples/SampleInformation/textarea_Comment_comment'), '')
 
 WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/save_Sample'))

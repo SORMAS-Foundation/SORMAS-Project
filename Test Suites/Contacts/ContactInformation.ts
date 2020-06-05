@@ -29,18 +29,6 @@
       </variableLink>
    </testCaseLink>
    <testCaseLink>
-      <guid>6c195d0d-a95b-4969-be10-6274af4f75f2</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/ChangeCaseOfContact_changeableEpid</testCaseId>
-      <variableLink>
-         <testDataLinkId></testDataLinkId>
-         <type>DEFAULT</type>
-         <value></value>
-         <variableId>ea472d73-c4a7-470b-9672-0b4309483aba</variableId>
-      </variableLink>
-   </testCaseLink>
-   <testCaseLink>
       <guid>ebb3e87b-506f-47e1-ae94-568d322f35a5</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>

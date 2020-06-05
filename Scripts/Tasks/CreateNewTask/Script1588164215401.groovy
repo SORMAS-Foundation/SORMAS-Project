@@ -13,15 +13,15 @@ WebUI.delay(1)
 
 int oldNumberOfRows = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Tasks/div_New task'))
+WebUI.click(findTestObject('Object Repository/Tasks/button_div_New task'))
 
 WebUI.click(findTestObject('Object Repository/Tasks/div_Task type_v-filterselect-button'))
 
 WebUI.click(findTestObject('Object Repository/Tasks/span_generate weekly report'))
 
 WebUI.click(findTestObject('Object Repository/Tasks/div_Assigned to_v-filterselect-button'))
-
-WebUI.click(findTestObject('Object Repository/Tasks/span_Contact SUPERVISOR - Contact Supervisor (0)'))
+//WebUI.setText(findTestObject('Object Repository/Tasks/div_Assigned to_v-filterselect-button'), 'Surveillance SUPERVISOR')
+WebUI.click(findTestObject('Object Repository/Tasks/span_Surveillance SUPERVISOR - berwachungsleitung (4)'))
 
 WebUI.click(findTestObject('Object Repository/Tasks/div_Save'))
 WebUI.delay(1)

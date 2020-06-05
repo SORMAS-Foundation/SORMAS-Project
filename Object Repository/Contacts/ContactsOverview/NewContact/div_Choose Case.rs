@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[5]/div[2]/div</value>
+         <value>//div[@id='contactChooseCase']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -43,6 +43,13 @@
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
+      <name>id</name>
+      <type>Main</type>
+      <value>contactChooseCase</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
       <value>Choose Case</value>
@@ -52,10 +59,17 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373-overlays&quot;)/div[@class=&quot;v-window v-widget&quot;]/div[@class=&quot;popupContent&quot;]/div[@class=&quot;v-window-wrap&quot;]/div[@class=&quot;v-window-contents&quot;]/div[@class=&quot;v-scrollable&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-panel v-widget&quot;]/div[@class=&quot;v-panel-content v-scrollable&quot;]/div[@class=&quot;v-customcomponent v-widget v-has-width&quot;]/div[@class=&quot;v-customlayout v-layout v-widget v-has-width&quot;]/div[@class=&quot;row&quot;]/div[@class=&quot;col-xs-3 col-md-3&quot;]/div[@class=&quot;v-button v-widget primary v-button-primary vspace-2 v-button-vspace-2&quot;]</value>
+      <value>id(&quot;contactChooseCase&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:attributes</name>
+      <type>Main</type>
+      <value>//div[@id='contactChooseCase']</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
@@ -87,6 +101,6 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[5]/div[2]/div</value>
+      <value>//div[2]/div/div/div[5]/div[2]/div</value>
    </webElementXpaths>
 </WebElementEntity>

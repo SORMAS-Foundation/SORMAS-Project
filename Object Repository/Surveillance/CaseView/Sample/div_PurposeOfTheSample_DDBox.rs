@@ -4,7 +4,17 @@
    <name>div_PurposeOfTheSample_DDBox</name>
    <tag></tag>
    <elementGuidId>ee2984cb-ae29-4811-b051-93fb52ab4d83</elementGuidId>
-   <selectorMethod>BASIC</selectorMethod>
+   <selectorCollection>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='samplePurpose']/div</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;samplePurpose&quot;)/div[@class=&quot;v-filterselect-button&quot;]</value>
+      </entry>
+   </selectorCollection>
+   <selectorMethod>XPATH</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>

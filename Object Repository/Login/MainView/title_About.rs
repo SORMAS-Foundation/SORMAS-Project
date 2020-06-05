@@ -9,8 +9,12 @@
          <key>XPATH</key>
          <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div/div/h1</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'About' or . = 'About')]</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>

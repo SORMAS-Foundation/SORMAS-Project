@@ -9,8 +9,12 @@
          <key>XPATH</key>
          <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[3]/td</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[@role = 'listitem' and (text() = 'case isolation' or . = 'case isolation')]</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -27,7 +31,7 @@
       <value>gwt-MenuItem gwt-MenuItem-selected</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>role</name>
       <type>Main</type>

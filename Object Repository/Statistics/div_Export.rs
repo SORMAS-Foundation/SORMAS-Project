@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[3]/div/div[5]/div</value>
+         <value>//div[@id='export']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -43,6 +43,13 @@
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
+      <name>id</name>
+      <type>Main</type>
+      <value>export</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
       <value>Export</value>
@@ -52,10 +59,17 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot v-slot-primary&quot;]/div[@class=&quot;v-button v-widget primary v-button-primary&quot;]</value>
+      <value>id(&quot;export&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:attributes</name>
+      <type>Main</type>
+      <value>//div[@id='export']</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
@@ -80,6 +94,6 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//div[2]/div/div/div/div[3]/div/div[5]/div</value>
+      <value>//div[5]/div</value>
    </webElementXpaths>
 </WebElementEntity>

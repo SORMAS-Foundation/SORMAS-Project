@@ -16,11 +16,11 @@ import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
 import internal.GlobalVariable as GlobalVariable
 import org.openqa.selenium.Keys as Keys
 
-WebUI.click(findTestObject('Login/MainView/menu_Parameters'))
+WebUI.click(findTestObject('Login/MainView/menu_Settings'))
 
-WebUI.click(findTestObject('Login/ParameterDialog/parameters_select_language_dropDown_button'))
+WebUI.click(findTestObject('Login/SettingsDialog/div_language_v-filterselect-button'))
 
-WebUI.click(findTestObject('Login/ParameterDialog/parameters_language_english'))
+WebUI.click(findTestObject('Login/SettingsDialog/td_English'))
 
-WebUI.click(findTestObject('Login/ParameterDialog/parameters_save_button'))
+WebUI.click(findTestObject('Login/SettingsDialog/div_Save_button'))
 

@@ -10,29 +10,32 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases')
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_NewCase_btn'))
 
+WebUI.click(findTestObject('Surveillance/NewCaseView/div_Disease_v-filterselect-button'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/td_COVID-19'))
+
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_Region_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_Region_Berlin_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellte Region'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_District_Berlin_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellter Landkreis'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_HealthFacility_BerlinNationHospital_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/td_Voreingestellte Gesundheitseinrichtung'))
 
 String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_case')
 
-WebUI.setText(findTestObject('Surveillance/NewCaseView/first_name_inputBox'), firstName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_First name'), firstName)
 
 String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_case')
 
-WebUI.setText(findTestObject('Surveillance/NewCaseView/last_name_inputBox'), lastName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Last name'), lastName)
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfReport_inputBox'), '01/04/2020')
 
-WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfSymptomOnset_inputBox'), '26/03/2020')
+WebUI.setText(findTestObject('Surveillance/NewCaseView/dateOfSymptomOnset_inputBox'), '03/26/2020')
 
 WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthYear_inputBox'), '2000')
 
@@ -42,7 +45,7 @@ WebUI.setText(findTestObject('Surveillance/NewCaseView/div_DateOfBirthDay_inputB
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_Sex_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/NewCaseView/div_Sex_Female_DDItem'))
+WebUI.click(findTestObject('Surveillance/NewCaseView/td_Female'))
 
 WebUI.click(findTestObject('Surveillance/NewCaseView/div_PresentConditionOfPerson_DDBox'))
 

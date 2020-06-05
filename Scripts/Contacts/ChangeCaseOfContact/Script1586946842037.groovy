@@ -30,9 +30,10 @@ String caseNameA = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDa
 
 String caseNameB = TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, 'caseName-B')
 
-String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
-
-println('saved epid-number in contact: ' + savedEpidNumber)
+WebUI.maximizeWindow()
+//String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+String savedEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))
+println('saved epid-number in contact: ' +savedEpidNumber)
 
 'determine the future epidNumber based on the saved one'
 String caseSearchString = 'none'
@@ -50,7 +51,7 @@ if (checkChangeableEpid) {
 println('case search string: ' + caseSearchString)
 
 // TESTCASE - change case
-WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Change Case'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
 
@@ -64,9 +65,10 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_search
 
 WebUI.delay(0.5)
 
-String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_epidNumber_field'))
+//String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/changeCaseDlg_epidNumber_field'))
+String oldCaseEpidNumber = WebUI.getText(findTestObject('Contacts/ContactInformationView/caseID_field'))
 
-println('new case - old-epid-number (from case search):' + oldCaseEpidNumber)
+println('new case - old-epid-number (from case search):' +oldCaseEpidNumber)
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_selectRow_action'))
 
@@ -75,15 +77,15 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_confir
 WebUI.delay(1)
 
 // CHECK
-String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+String epidNumberAfterChange = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))
 
 println('displayed epidnumber after change in contact: ' + epidNumberAfterChange)
 
 if (epidNumberAfterChange == savedEpidNumber) {
     WebUI.closeBrowser()
 
-    throw new StepFailedException((('The displayed EpidNumber should not be equal. displayed: ' + epidNumberAfterChange) + 
-    ' changed:') + caseSearchString)
+    throw new StepFailedException((('The displayed EpidNumber should not be equal. displayed:' + epidNumberAfterChange) + 
+    ' changed:') + caseSearchString) 
 }
 
 if (checkChangeableEpid) {
@@ -102,13 +104,13 @@ if (checkChangeableEpid) {
     if (epidNumberAfterChange != caseSearchString) {
         WebUI.closeBrowser()
 
-        throw new StepFailedException((('The displayed EpidNumber does not equal the changed EpidNumber. displayed: ' + 
-        epidNumberAfterChange) + ' changed:') + caseSearchString)
+       throw new StepFailedException((('The displayed EpidNumber does not equal the changed EpidNumber. displayed: ' + 
+        epidNumberAfterChange) + ' changed:') + caseSearchString) 
     }
 }
 
 // TESTCASE - discard changes in caseChange Dialog
-WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Change Case'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_confirmationDlg_yes'))
 
@@ -121,7 +123,7 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/changeCaseDlg_select
 WebUI.click(findTestObject('Contacts/ContactInformationView/div_Discard'))
 
 // CHECK
-String epidNumberAfterDiscard = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+String epidNumberAfterDiscard = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))
 
 println('displayed epidnumber after discard of changes: ' + epidNumberAfterDiscard)
 
@@ -133,12 +135,12 @@ if (epidNumberAfterDiscard != epidNumberAfterChange) {
 }
 
 // TESTCASE - discard after first confirmation dialog
-WebUI.click(findTestObject('Contacts/ContactInformationView/contactView_changeCase_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Change Case'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/div_No'))
 
 // CHECK
-epidNumberAfterDiscard = WebUI.getText(findTestObject('Contacts/ContactInformationView/contact_view_epidNumber'))
+epidNumberAfterDiscard = WebUI.getText(findTestObject('Contacts/ContactInformationView/div_CaseID info'))
 
 println('displayed epidnumber after discard of confirm dialog: ' + epidNumberAfterDiscard)
 
@@ -149,4 +151,4 @@ if (epidNumberAfterDiscard != epidNumberAfterChange) {
     ' after-first-change:') + epidNumberAfterChange)
 }
 
-
+WebUI.closeBrowser()

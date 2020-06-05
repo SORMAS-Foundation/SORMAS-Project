@@ -12,23 +12,25 @@ WebUI.callTestCase(findTestCase('Samples/partials/switchToSamples'), [:], Failur
 WebUI.delay(1)
 int allRows = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/filter_NotShipped'))
+WebUI.click(findTestObject('Samples/MainView/div_Not shipped'))
 WebUI.delay(1)
 int notShipped = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/filter_Shipped'))
+WebUI.click(findTestObject('Samples/MainView/div_Shipped'))
 WebUI.delay(1)
 int shipped = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/filter_Received'))
+WebUI.click(findTestObject('Samples/MainView/div_Received'))
 WebUI.delay(1)
 int received = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/filter_ReferredToOtherLab'))
+WebUI.click(findTestObject('Samples/MainView/div_Referred to other lab'))
 WebUI.delay(1)
 int referredToOtherLab = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/resetFilters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply date filter'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 WebUI.delay(1)
 int afterReset = Table.getNumberOfTableRows()
 

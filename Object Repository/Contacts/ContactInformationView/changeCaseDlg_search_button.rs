@@ -7,7 +7,7 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373-overlays']/div[3]/div/div/div[3]/div/div/div/div/div[2]/div/div/div[3]/div/div[3]/div</value>
+         <value>//div[@id='caseSearchCase']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
@@ -43,6 +43,13 @@
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
+      <name>id</name>
+      <type>Main</type>
+      <value>caseSearchCase</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
       <value>Search case</value>
@@ -52,10 +59,17 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373-overlays&quot;)/div[@class=&quot;v-window v-widget v-has-width&quot;]/div[@class=&quot;popupContent&quot;]/div[@class=&quot;v-window-wrap&quot;]/div[@class=&quot;v-window-contents&quot;]/div[@class=&quot;v-scrollable&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-panel v-widget&quot;]/div[@class=&quot;v-panel-content v-scrollable&quot;]/div[@class=&quot;v-customcomponent v-widget v-has-width&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot v-slot-primary&quot;]/div[@class=&quot;v-button v-widget primary v-button-primary&quot;]</value>
+      <value>id(&quot;caseSearchCase&quot;)</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:attributes</name>
+      <type>Main</type>
+      <value>//div[@id='caseSearchCase']</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
@@ -73,7 +87,7 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)=''])[5]/following::div[42]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)=concat('Select the person', &quot;'&quot;, 's relation to the case')])[1]/following::div[33]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>

@@ -20,7 +20,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/loginAsContactSupervisor'), [
 
 WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_New case_search'), findTestData(GlobalVariable.gContactTestDataName).getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_More_nameUuidEpidNumberLike'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 2))
 
 WebUI.delay(1)
@@ -31,3 +31,4 @@ WebUI.click(findTestObject('Contacts/CasesView/caseInfo_Contacts'))
 
 WebUI.callTestCase(findTestCase('Contacts/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
+WebUI.closeBrowser()

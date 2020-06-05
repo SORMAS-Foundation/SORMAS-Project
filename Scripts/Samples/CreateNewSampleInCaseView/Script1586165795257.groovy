@@ -27,9 +27,10 @@ WebUI.waitForElementPresent(findTestObject('Surveillance/CaseView/Sample/input_D
 
 WebUI.setText(findTestObject('Surveillance/CaseView/Sample/input_DateSampleWasCollected_date'), '01/04/2020')
 
-WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_PurposeOfTheSample_DDBox'))
+/*WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_PurposeOfTheSample_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Sample/td_PurposeOfTheSample_ExternalLabTesting_DDItem'))
+WebUI.click(findTestObject('Surveillance/CaseView/Sample/td_PurposeOfTheSample_ExternalLabTesting_DDItem'))*/
+WebUI.click(findTestObject('Surveillance/CaseView/Sample/label_External lab testing'))
 
 WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_TypeOfSample_DDBox'))
 
@@ -37,9 +38,9 @@ WebUI.click(findTestObject('Surveillance/CaseView/Sample/td_TypeOfSample_Blood_D
 
 WebUI.click(findTestObject('Surveillance/CaseView/Sample/div_Laboratory_DDBox'))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Sample/span_Laboratory_FirstElement_DDItem'))
+WebUI.click(findTestObject('Surveillance/CaseView/Sample/td_Voreingestelltes Labor'))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Sample/label_PathogenTest_No_option'))
+//WebUI.click(findTestObject('Surveillance/CaseView/Sample/label_PathogenTest_No_option'))
 
 WebUI.setText(findTestObject('Surveillance/CaseView/Sample/textarea_Comment_TArea'), Helper.generateString('comment', 6))
 

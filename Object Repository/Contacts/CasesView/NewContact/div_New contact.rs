@@ -7,7 +7,11 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[2]/div/div/div[11]/div</value>
+         <value>//*[@id=&quot;contactNewContact&quot;]</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'New contact' or . = 'New contact')]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

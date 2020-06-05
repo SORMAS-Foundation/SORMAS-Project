@@ -18,7 +18,7 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-testResult'))
 
 WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Pending'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Test Result')
 
@@ -26,7 +26,7 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-condition'))
 
 WebUI.click(findTestObject('Object Repository/Samples/MainView/td_Adequate'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Specimen Condition')
 
@@ -35,7 +35,7 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-classification'
 
 WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Not yet classified'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Case Classification')	
 
@@ -43,29 +43,29 @@ WebUI.click(findTestObject('Samples/MainView/filterselect-button-disease'))
 
 WebUI.click(findTestObject('Object Repository/Samples/MainView/span_COVID-19'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Disease')
 
 WebUI.click(findTestObject('Samples/MainView/filterselect-button-district'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/td_Berlin'))
+WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Voreingestellter Landkreis'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'District')
 
 WebUI.click(findTestObject('Samples/MainView/filterselect-button-laboratory'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/td_Berlin Lab'))
+WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Voreingestelltes Labor'))
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Laboratory')
 
-WebUI.setText(findTestObject('Object Repository/Samples/MainView/input_Export_v-textfield v-widget v-has-wid_378d06'), 'test')
+WebUI.setText(findTestObject('Samples/MainView/input_Export_caseCodeIdLike'), 'test')
 
-WebUI.click(findTestObject('Object Repository/Samples/MainView/div_Reset filters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Reset filters'))
 
 checkNumberOfRows(numberOfRows, Table.getNumberOfTableRows(), 'Free Text filter')
 

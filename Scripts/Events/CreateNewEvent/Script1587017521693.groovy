@@ -20,15 +20,15 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('Events/partials/switchToEvents'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Events/NewEventView/div_NewEvent_btn'))
+WebUI.click(findTestObject('Events/NewEventView/div_New event_btn'))
 
-WebUI.setText(findTestObject('Events/NewEventView/input_DateOfEvent_inputBox'), '15/04/2020')
+WebUI.setText(findTestObject('Events/NewEventView/input_DateOfEvent_inputBox'), '05/15/2020')
 
 WebUI.click(findTestObject('Events/NewEventView/label_Event_option'))
 
-WebUI.click(findTestObject('Events/NewEventView/div_Disease_DDBox'))
+WebUI.click(findTestObject('Events/NewEventView/div_Disease_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/td_Disease_COVID-19_DDItem'))
+WebUI.click(findTestObject('Events/NewEventView/td_Disease_COVID-19'))
 
 WebUI.setText(findTestObject('Events/NewEventView/textarea_EventDescription_TArea'), 'Sensless Event')
 
@@ -38,29 +38,29 @@ WebUI.setText(findTestObject('Events/NewEventView/input_SourceLastName_inputBox'
 
 WebUI.setText(findTestObject('Events/NewEventView/input_SourceTelephoneNo_inputBox'), '555-35271')
 
-WebUI.click(findTestObject('Events/NewEventView/div_TypeOfPlace_DDBox'))
+WebUI.click(findTestObject('Events/NewEventView/div_TypeOfPlace_v-filterselect-button'))
 
 WebUI.click(findTestObject('Events/NewEventView/td_TypeOfPlace_Festivities_DDItem'))
 
-WebUI.setText(findTestObject('Events/NewEventView/input_SourceTelephoneNo_inputBox'), '555-35271')
-
+//WebUI.setText(findTestObject('Events/NewEventView/input_SourceTelephoneNo_inputBox'), '555-35271')
+WebUI.click(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'))
 WebUI.setText(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'), 'Am Klammerberg 3')
 
 WebUI.setText(findTestObject('Events/NewEventView/input_PostalCode_inptBox'), '12345')
 
 WebUI.setText(findTestObject('Events/NewEventView/input_City_inputBox'), 'Klammhausen')
 
-WebUI.click(findTestObject('Events/NewEventView/div_AreaType_DDBox'))
+/*WebUI.click(findTestObject('Events/NewEventView/div_AreaType_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/td_AreaType_Urban_DDItem'))
+WebUI.click(findTestObject('Events/NewEventView/td_AreaType_Urban_DDItem'))*/
 
-WebUI.click(findTestObject('Events/NewEventView/div_District_DDBox'))
+WebUI.click(findTestObject('Events/NewEventView/div_District_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/td_District_Berlin_DDItem'))
+WebUI.click(findTestObject('Events/NewEventView/td_Voreingestellter Landkreis'))
 
-WebUI.click(findTestObject('Events/NewEventView/div_Community_DDBox'))
+/*WebUI.click(findTestObject('Events/NewEventView/div_Community_v-filterselect-button'))
 
-WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWilmersdorf-DDItem'))
+WebUI.click(findTestObject('Events/NewEventView/span_Community_CharlottenburgWilmersdorf-DDItem')) */
 
 WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 

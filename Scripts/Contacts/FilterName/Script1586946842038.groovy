@@ -24,9 +24,9 @@ WebUI.callTestCase(findTestCase('Contacts/partials/loginAsContactSupervisor'), [
 WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
 'userName\n'
-//WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), 
+//WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), 
 //    findTestData('defaultContactTestData').getValue(2, 1))
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, "userName-A"))
+WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), TestDataConnector.getValueByKey(GlobalVariable.gContactTestDataName, "userName-A"))
 
 WebUI.delay(1)
 

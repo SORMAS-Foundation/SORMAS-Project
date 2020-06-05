@@ -20,7 +20,8 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPer
 WebUI.click(findTestObject('Object Repository/Surveillance/CaseView/span_Symptoms_tab'))
 
 // Set random text in "comment" field
-WebUI.setText(findTestObject('Surveillance/CaseView/SymptomsTab/input_Symptoms_Comments_inputBox'), Helper.generateString(
+WebUI.click(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'))
+WebUI.setText(findTestObject('Surveillance/CaseView/SymptomsTab/input_Comments_symptomsComments'), Helper.generateString(
         'comment', 8))
 
 // Save change

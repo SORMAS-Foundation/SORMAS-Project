@@ -7,10 +7,14 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>(//input[@type='text'])[9]</value>
+         <value>(//input[@type='text'])[16]</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;testDateTime_time&quot;)/input[@class=&quot;v-filterselect-input&quot;]</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -20,7 +24,7 @@
       <value>input</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>type</name>
       <type>Main</type>
@@ -38,7 +42,7 @@
       <matchCondition>equals</matchCondition>
       <name>autocomplete</name>
       <type>Main</type>
-      <value>0.6710225257550525</value>
+      <value>off</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -48,25 +52,25 @@
       <value>0</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;testDateTime&quot;)/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-filterselect v-widget v-has-width v-filterselect-focus&quot;]/input[@class=&quot;v-filterselect-input&quot;]</value>
+      <value>id(&quot;testDateTime_time&quot;)/input[@class=&quot;v-filterselect-input&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>(//input[@type='text'])[9]</value>
+      <value>(//input[@type='text'])[16]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='testDateTime']/div/div/div[3]/div/input</value>
+      <value>//div[@id='testDateTime_time']/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>

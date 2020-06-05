@@ -22,15 +22,15 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Surveillance/SearchView/div_NewCase_btn'))
+WebUI.click(findTestObject('Samples/MainView/filterselect-button-classification'))
 
-WebUI.click(findTestObject('Surveillance/SearchView/Filter/span_Disease_NotYetClassified_DDItem'))
+WebUI.click(findTestObject('Object Repository/Samples/MainView/span_Not yet classified'))
 
 def attribute = WebUI.getAttribute(findTestObject('Surveillance/SearchView/table_SearchResult_table'), 'aria-rowcount')
 
 attribute = (attribute.toInteger() - 1).toString()
 
-WebUI.verifyMatch(attribute, '12', false, FailureHandling.OPTIONAL)
+WebUI.verifyMatch(attribute, '9', false, FailureHandling.OPTIONAL)
 
 if (isStandalone) {
     WebUI.closeBrowser()

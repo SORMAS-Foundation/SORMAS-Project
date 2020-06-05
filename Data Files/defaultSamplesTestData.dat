@@ -8,7 +8,7 @@
    <dataFileGUID>239990d2-b650-4f6d-a6d0-259afa89ae12</dataFileGUID>
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
-   <data>case-with-samples Hildegard+von+Bingen null</data>
+   <data>case-with-samples Gen1+Case null</data>
    <data>sample-type-blood Blood null</data>
    <data>sample-type-nasal Nasal+swab null</data>
    <data>sample-type-column Type+of+sample null</data>

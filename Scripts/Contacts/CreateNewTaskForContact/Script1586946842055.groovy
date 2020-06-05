@@ -21,7 +21,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], Fail
 WebUI.delay(1)
 
 'userName\n'
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'),
+WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'),
 	findTestData(GlobalVariable.gContactTestDataName).getValue(2, 1))
 
 WebUI.delay(1)

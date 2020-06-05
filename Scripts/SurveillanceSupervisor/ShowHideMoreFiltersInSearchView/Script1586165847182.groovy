@@ -21,9 +21,9 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsSurveillanceSupervisor'),
 WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/SwitchToCases'), [:], FailureHandling.STOP_ON_FAILURE)
 
 try {
-    WebUI.verifyElementNotPresent(findTestObject('Surveillance/SearchView/Filter/newCasesDate_inputBox'), 3)
+    //WebUI.verifyElementNotPresent(findTestObject('Surveillance/SearchView/Filter/newCasesDate_inputBox'), 3)
 
-    WebUI.verifyElementNotPresent(findTestObject('Surveillance/SearchView/Filter/label_OnlyCasesWithoutGeoCoordinates_checkBox'), 
+    WebUI.verifyElementNotPresent(findTestObject('Surveillance/SearchView/Filter/span_Only cases without geo coordinates'), 
         3)
 }
 catch (Exception e) {
@@ -34,14 +34,14 @@ catch (Exception e) {
 finally { 
 }
 
-if (WebUI.verifyElementPresent(findTestObject('Surveillance/SearchView/Filter/div_ShowMoreFilters_link'), 3)) {
-    WebUI.click(findTestObject('Surveillance/SearchView/Filter/div_ShowMoreFilters_link'))
+if (WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'), 3)) {
+    WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 
 	
 	try {
-		WebUI.verifyElementPresent(findTestObject('Surveillance/SearchView/Filter/newCasesDate_inputBox'), 3)
+		//WebUI.verifyElementPresent(findTestObject('Surveillance/SearchView/Filter/newCasesDate_inputBox'), 3)
 	
-		WebUI.verifyElementPresent(findTestObject('Surveillance/SearchView/Filter/label_OnlyCasesWithoutGeoCoordinates_checkBox'), 3)
+		WebUI.verifyElementPresent(findTestObject('Surveillance/SearchView/Filter/span_Only cases without geo coordinates'), 3)
 	}
 	catch (Exception e) {
 		WebUI.closeBrowser()

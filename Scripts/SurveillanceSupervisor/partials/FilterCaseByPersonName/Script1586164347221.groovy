@@ -3,7 +3,7 @@ import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 
 // Search for Person
-WebUI.setText(findTestObject('Surveillance/SearchView/Filter/input_search_person_inputBox'), personName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_More_nameUuidEpidNumberLike'), personName)
 
 // Wait one second for ui update
 WebUI.delay(1)

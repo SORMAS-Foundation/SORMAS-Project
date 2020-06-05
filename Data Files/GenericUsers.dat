@@ -8,10 +8,10 @@
    <dataFileGUID>46d2f8ab-2950-4d29-8545-e84b6857c653</dataFileGUID>
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
-   <data>surveillance first_name_case Jane</data>
-   <data>surveillance last_name_case Doe</data>
-   <data>surveillance first_name_contact John</data>
-   <data>surveillance last_name_contact Doe</data>
+   <data>surveillance first_name_case Gen1</data>
+   <data>surveillance last_name_case Case</data>
+   <data>surveillance first_name_contact UserC</data>
+   <data>surveillance last_name_contact test</data>
    <data>event first_name_event_community Barak</data>
    <data>event last_name_event_community Obama</data>
    <data>event first_name_event_person Donald</data>

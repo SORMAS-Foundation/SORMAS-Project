@@ -20,7 +20,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/loginAsContactSupervisor'), [
 
 WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), findTestData(GlobalVariable.gContactTestDataName).getValue(
+WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 1))
 
 WebUI.delay(1)
@@ -31,3 +31,4 @@ WebUI.click(findTestObject('Contacts/CasesView/span_Case contacts'))
 
 WebUI.callTestCase(findTestCase('Contacts/partials/createAndCheckNewContactFromCaseContacts'), [:], FailureHandling.STOP_ON_FAILURE)
 
+WebUI.closeBrowser()

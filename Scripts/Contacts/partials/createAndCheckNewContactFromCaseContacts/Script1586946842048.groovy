@@ -61,7 +61,7 @@ if (numberOfCaseContactsBefore != (numberOfCaseContactsAfter - 1)) {
 
 WebUI.click(findTestObject('Contacts/MainView/menu_Contacts'))
 
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'), newContactLastName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), newContactLastName)
 WebUI.delay(1)
 
 int numberOfFilteredContacts = CustomKeywords.'com.hzi.Table.getTableRowsByAttribute'(tableObject)

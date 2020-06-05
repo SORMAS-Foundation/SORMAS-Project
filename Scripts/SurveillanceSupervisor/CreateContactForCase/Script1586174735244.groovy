@@ -17,15 +17,15 @@ WebUI.callTestCase(findTestCase('SurveillanceSupervisor/partials/FilterCaseByPer
 
 WebUI.click(findTestObject('Surveillance/CaseView/Case/span_Contacts_tab'))
 
-WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/div_NewContact_btn'))
+WebUI.click(findTestObject('Contacts/CasesView/NewContact/div_New contact'))
 
 firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_contact')
 
-WebUI.setText(findTestObject('Surveillance/CaseView/Contacts/NewContact/input_FirstNameOfContactPerson_inputBox'), firstName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_First name'), firstName)
 
 lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_contact')
 
-WebUI.setText(findTestObject('Surveillance/CaseView/Contacts/NewContact/input_LastNameOfContactPerson_inputBox'), lastName)
+WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_Last name'), lastName)
 
 WebUI.click(findTestObject('Surveillance/CaseView/Contacts/NewContact/div_RelationshipWithCase_DDBox'))
 

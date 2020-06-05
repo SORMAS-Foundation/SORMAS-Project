@@ -9,25 +9,29 @@
          <key>XPATH</key>
          <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[3]/div/div[3]/div/div/div/div/div/div/div/div/div[2]/div/div/div[2]/div</value>
       </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//div[@class = 'v-label v-widget align-right v-label-align-right v-label-undef-w']</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
       <value>div</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
       <value>v-label v-widget align-right v-label-align-right v-label-undef-w</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>

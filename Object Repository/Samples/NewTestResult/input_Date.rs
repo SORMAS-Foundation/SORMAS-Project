@@ -7,10 +7,14 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>(//input[@type='text'])[8]</value>
+         <value>(//input[@type='text'])[15]</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>id(&quot;testDateTime_date&quot;)/input[@class=&quot;v-textfield v-datefield-textfield&quot;]</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -20,7 +24,7 @@
       <value>input</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>type</name>
       <type>Main</type>
@@ -31,21 +35,21 @@
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
-      <value>v-textfield v-datefield-textfield v-textfield-focus</value>
+      <value>v-textfield v-datefield-textfield</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>aria-describedby</name>
       <type>Main</type>
-      <value>gwt-uid-35</value>
+      <value>gwt-uid-301</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>aria-controls</name>
       <type>Main</type>
-      <value>gwt-uid-36</value>
+      <value>gwt-uid-302</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -55,25 +59,25 @@
       <value>0</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;testDateTime&quot;)/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-datefield v-datefield-popupcalendar v-widget v-has-width v-datefield-day&quot;]/input[@class=&quot;v-textfield v-datefield-textfield v-textfield-focus&quot;]</value>
+      <value>id(&quot;testDateTime_date&quot;)/input[@class=&quot;v-textfield v-datefield-textfield&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:attributes</name>
       <type>Main</type>
-      <value>(//input[@type='text'])[8]</value>
+      <value>(//input[@type='text'])[15]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='testDateTime']/div/div/div/div/input</value>
+      <value>//div[@id='testDateTime_date']/input</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>

@@ -17,7 +17,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], Fail
 WebUI.delay(1)
 
 'userName\n'
-WebUI.setText(findTestObject('Contacts/ContactsOverview/contact_search_field_name'),
+WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'),
 	findTestData(GlobalVariable.gContactTestDataName).getValue(2, 1))
 WebUI.delay(1)
 
@@ -25,23 +25,23 @@ WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
 
 // TESTCASE CREATE
-WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_Follow-up visits'))
 WebUI.delay(1)
 int numberOfCalls = Table.getNumberOfTableRows()
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls_newCall'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_New visit'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_label_nichtKooperativ'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_save_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Save'))
 int numberOfCallsAfterSave = Table.getNumberOfTableRows()
 
 // TESTCASE CANCEL
-WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_followUpCalls_newCall'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_New visit'))
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_label_nichtKooperativ'))
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/newCall_dlg_cancel_button'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/button_div_Discard'))
 
 
 // CHECK

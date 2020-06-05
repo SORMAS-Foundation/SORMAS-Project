@@ -17,7 +17,7 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 
 'Create new Task\n'
-WebUI.click(findTestObject('Contacts/ContactInformationView/button_kontakt_newTask'))
+WebUI.click(findTestObject('Tasks/button_div_New task'))
 
 WebUI.waitForElementPresent(findTestObject('Contacts/ContactInformationView/newTask_dlg_taskType'), 2)
 
@@ -29,11 +29,11 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/span_Kontaktuntersuc
 
 WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_Zugewiesen_dropDown'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'berlin')
+WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'Surveillance SUPERVISOR')
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_dropDown_selection_berlin'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/span_Surveillance SUPERVISOR - berwachungsleitung (2)'))
 
-WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'Berlin CONTACT - Surveillance Officer, Contact Officer (41)')
+//WebUI.setText(findTestObject('Contacts/ContactInformationView/newTask_dlg_zugewiesen_button'), 'Berlin CONTACT - Surveillance Officer, Contact Officer (41)')
 
 if (create){
 	WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_save_button'))

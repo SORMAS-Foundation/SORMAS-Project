@@ -10,16 +10,16 @@ WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], Fail
 
 WebUI.delay(1)
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/div_MoreLessFilters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 
 WebUI.delay(1)
 
-if (((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementPresent(
+if ((((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementPresent(
     findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_FollowUpUntil'), 
-    1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_Quarantine'), 1))) || 
-!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_ByDate'), 1))) || !(WebUI.verifyElementPresent(
+    1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
+        'Contacts/ContactsOverview/input_QuarantineEnd'), 1))) || !(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/input_ByDate'), 1))) || !(WebUI.verifyElementPresent(
     findTestObject('Contacts/ContactsOverview/input_ContactDate'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_NewContactsFrom'), 1))) || !(WebUI.verifyElementPresent(findTestObject(
         'Contacts/ContactsOverview/input_NewContactsTo'), 1))) {
@@ -28,15 +28,16 @@ if (((((((((!(WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOvervi
     throw new StepFailedException('Missing expected input field(s) in "More Filters" view')
 }
 
-WebUI.click(findTestObject('Contacts/ContactsOverview/div_MoreLessFilters'))
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Show More Less Filters'))
 
 WebUI.delay(1)
 
-if (((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementNotPresent(
+if ((((((((((!(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_Apply date filter'), 1)) || !(WebUI.verifyElementNotPresent(
     findTestObject('Contacts/ContactsOverview/input_ContactCaseDistrict'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_ResponsibleContact'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/input_ReportedBy'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_FollowUpUntil'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_Quarantine'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
+        'Contacts/ContactsOverview/input_QuarantineEnd'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_ByDate'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_ContactDate'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(
         'Contacts/ContactsOverview/input_NewContactsFrom'), 1))) || !(WebUI.verifyElementNotPresent(findTestObject(

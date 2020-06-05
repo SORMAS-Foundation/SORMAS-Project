@@ -46,7 +46,7 @@ WebUI.callTestCase(findTestCase('Login/partials/LoginAsNationalUser'), [:], Fail
 WebUI.click(findTestObject('Login/MainView/menu_Statistics'))
 
 // TESTCASE
-WebUI.click(findTestObject('Object Repository/Statistics/span_Database Export'))
+WebUI.click(findTestObject('Statistics/div_Database Export'))
 
 WebUI.click(findTestObject('Object Repository/Statistics/div_Select all'))
 

@@ -12,7 +12,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], Fail
 
 WebUI.callTestCase(findTestCase('Contacts/partials/searchAndSelectContact'), [('key') : 'userName-B'], FailureHandling.STOP_ON_FAILURE)
 
-WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/span_Contact person'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Contact person'))
 
 WebUI.waitForElementPresent(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'), 2)
 
@@ -44,6 +44,7 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_Nursery'))
 
+WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'))
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/textarea_Address or landmark_address'), 
     'this is a test')
 
@@ -219,6 +220,7 @@ WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_'))
 
+WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Nickname_nickname'))
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Nickname_nickname'), 
     '')
 

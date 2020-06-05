@@ -8,13 +8,13 @@
    <dataFileGUID>cc24f675-dd8f-45d3-b567-45ae339c4c2f</dataFileGUID>
    <dataSourceUrl></dataSourceUrl>
    <driver>InternalData</driver>
-   <data>userName-A Bat+Man null</data>
-   <data>defaultCaseName Cat+Woman null</data>
-   <data>caseName-A Cat+Woman casename+with+changeable+EpidNumber</data>
-   <data>caseName-B John+morkos casename+with+changeable+EpidNumber</data>
-   <data>unchangable-epid-number-A NIE-ABS-EZA-20-001 null</data>
-   <data>unchangable-epid-number-B NIE-ABS-EZA-20-003 null</data>
-   <data>userName-B Martin+Martinovich null</data>
+   <data>userName-A UserC+test null</data>
+   <data>defaultCaseName American+User null</data>
+   <data>caseName-A American+User casename+with+changeable+EpidNumber</data>
+   <data>caseName-B British+User casename+with+changeable+EpidNumber</data>
+   <data>unchangable-epid-number-A TTZEQU-N57LT3-FSPVE2-GBKQSJUU null</data>
+   <data>unchangable-epid-number-B XU7LM3-HZ4UNH-FEPVLU-ZIF7CMNE null</data>
+   <data>userName-B UserB+test null</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>
       <name>Key</name>

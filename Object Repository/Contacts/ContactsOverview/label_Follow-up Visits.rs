@@ -7,10 +7,14 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div/div/div/div[3]/div/span[2]/label</value>
+         <value>//div[@id='contactsViewSwitcher']/span[3]/label</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[(text() = 'Follow-up Visits' or . = 'Follow-up Visits')]</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -24,7 +28,7 @@
       <matchCondition>equals</matchCondition>
       <name>for</name>
       <type>Main</type>
-      <value>gwt-uid-3</value>
+      <value>gwt-uid-629</value>
    </webElementProperties>
    <webElementProperties>
       <isSelected>true</isSelected>
@@ -38,28 +42,28 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-view-header&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget view-header v-horizontallayout-view-header v-has-width v-margin-right v-margin-left&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-force-caption v-slot-horizontal v-slot-horizontal-primary v-align-right v-align-middle&quot;]/div[@class=&quot;v-select-optiongroup v-widget force-caption v-select-optiongroup-force-caption horizontal v-select-optiongroup-horizontal horizontal-primary v-select-optiongroup-horizontal-primary&quot;]/span[@class=&quot;v-radiobutton v-select-option&quot;]/label[1]</value>
+      <value>id(&quot;contactsViewSwitcher&quot;)/span[@class=&quot;v-radiobutton v-select-option&quot;]/label[1]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
-      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div/div/div/div[3]/div/span[2]/label</value>
+      <value>//div[@id='contactsViewSwitcher']/span[3]/label</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Contacts'])[2]/following::label[1]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Detailed'])[1]/following::label[1]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:neighbor</name>
       <type>Main</type>
-      <value>(.//*[normalize-space(text()) and normalize-space(.)='Contact Directory'])[1]/following::label[2]</value>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Contacts'])[2]/following::label[2]</value>
    </webElementXpaths>
    <webElementXpaths>
       <isSelected>false</isSelected>
@@ -87,6 +91,6 @@
       <matchCondition>equals</matchCondition>
       <name>xpath:position</name>
       <type>Main</type>
-      <value>//span[2]/label</value>
+      <value>//span[3]/label</value>
    </webElementXpaths>
 </WebElementEntity>

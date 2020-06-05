@@ -111,7 +111,7 @@
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Downloadpath for file download in browser</description>
-      <initValue>'/var/jenkins_home/downloads/'</initValue>
+      <initValue>'C:/Users/raghavender.pola/downloads/'</initValue>
       <name>gDownloadPath</name>
    </GlobalVariableEntity>
 </GlobalVariableEntities>

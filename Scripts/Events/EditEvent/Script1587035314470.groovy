@@ -28,13 +28,14 @@ String firstName = TestDataConnector.getValueByKey('GenericUsers', 'first_name_e
 
 String lastName = TestDataConnector.getValueByKey('GenericUsers', 'last_name_event_community')
 
+WebUI.click(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'))
 WebUI.setText(findTestObject('Events/EditEventView/input_CommunityContactPerson_inputBox'), (firstName + ' ') + lastName)
 
-WebUI.click(findTestObject('Events/EditEventView/div_SaveEvent_ btn'))
+WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 
 WebUI.delay(1)
 
-WebUI.click(findTestObject('Events/EditEventView/span_EventParticipants_link'))
+WebUI.click(findTestObject('Events/EditEventView/div_Event participants'))
 
 WebUI.click(findTestObject('Events/EditEventView/div_AddPerson_btn'))
 
@@ -48,15 +49,15 @@ WebUI.setText(findTestObject('Events/EditEventView/input_AddPerson_FirstName_inp
 
 WebUI.setText(findTestObject('Events/EditEventView/input_AddPerson_LastName_inputBox'), lastName)
 
-WebUI.click(findTestObject('Events/EditEventView/div_SavePerson_btn'))
+WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 
 WebUI.delay(1)
 
 if(WebUI.verifyElementPresent(findTestObject('Object Repository/Events/EditEventView/div_PickOrCreatePerson_lbl'), 2)) {
-	WebUI.click(findTestObject('Object Repository/Events/EditEventView/div_SaveExistingPerson_btn'))
+	WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 }
 
-WebUI.click(findTestObject('Events/EditEventView/div_SaveEvent_ btn'))
+WebUI.click(findTestObject('Events/NewEventView/div_Save_btn'))
 
 WebUI.delay(2)
 
