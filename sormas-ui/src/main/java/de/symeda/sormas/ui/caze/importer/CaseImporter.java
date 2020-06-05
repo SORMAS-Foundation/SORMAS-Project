@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -326,6 +327,8 @@ public class CaseImporter extends DataImporter {
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
+					// Reset the change date to avoid OutdatedEntityExceptions
+					newCase.setChangeDate(new Date());
 					FacadeProvider.getCaseFacade().saveCase(newCase);
 					for (SampleDto sample : samples) {
 						FacadeProvider.getSampleFacade().saveSample(sample);
