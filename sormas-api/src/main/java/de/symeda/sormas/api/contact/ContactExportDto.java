@@ -439,7 +439,7 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public String getRegionUuid() {
-		return jurisdiction.getRegionUuId();
+		return jurisdiction.getRegionUuid();
 	}
 
 	public String getDistrictUuid() {

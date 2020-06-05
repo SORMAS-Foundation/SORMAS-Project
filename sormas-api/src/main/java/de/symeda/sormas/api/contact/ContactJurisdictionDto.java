@@ -27,7 +27,7 @@ public class ContactJurisdictionDto implements Serializable {
 
 	private String reportingUserUuid;
 
-	private String regionUuId;
+	private String regionUuid;
 
 	private String districtUuid;
 
@@ -36,9 +36,9 @@ public class ContactJurisdictionDto implements Serializable {
 	public ContactJurisdictionDto() {
 	}
 
-	public ContactJurisdictionDto(String reportingUserUuid, String regionUuId, String districtUuid, CaseJurisdictionDto caseJurisdiction) {
+	public ContactJurisdictionDto(String reportingUserUuid, String regionUuid, String districtUuid, CaseJurisdictionDto caseJurisdiction) {
 		this.reportingUserUuid = reportingUserUuid;
-		this.regionUuId = regionUuId;
+		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
 		this.caseJurisdiction = caseJurisdiction;
 	}
@@ -51,12 +51,12 @@ public class ContactJurisdictionDto implements Serializable {
 		this.reportingUserUuid = reportingUserUuid;
 	}
 
-	public String getRegionUuId() {
-		return regionUuId;
+	public String getRegionUuid() {
+		return regionUuid;
 	}
 
-	public void setRegionUuId(String regionUuId) {
-		this.regionUuId = regionUuId;
+	public void setRegionUuid(String regionUuid) {
+		this.regionUuid = regionUuid;
 	}
 
 	public String getDistrictUuid() {

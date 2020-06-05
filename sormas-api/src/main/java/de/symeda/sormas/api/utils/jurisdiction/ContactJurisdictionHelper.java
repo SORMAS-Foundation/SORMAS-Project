@@ -35,7 +35,7 @@ public class ContactJurisdictionHelper {
 		}
 
 		if (roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
-			return DataHelper.equal(contactJurisdiction.getRegionUuId(), userJurisdiction.getRegionUuid());
+			return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
 		}
 
 		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {

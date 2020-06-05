@@ -91,7 +91,7 @@ public class JurisdictionHelper {
 		}
 
 		if(contact.getRegion() != null){
-			jurisdiction.setRegionUuId(contact.getRegion().getUuid());
+			jurisdiction.setRegionUuid(contact.getRegion().getUuid());
 		}
 
 		if(contact.getDistrict() != null){
