@@ -327,7 +327,8 @@ public class CaseImporter extends DataImporter {
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
-					// Reset the change date to avoid OutdatedEntityExceptions
+					// Workarround: Reset the change date to avoid OutdatedEntityExceptions
+					// Should be changed when doing #2265
 					newCase.setChangeDate(new Date());
 					FacadeProvider.getCaseFacade().saveCase(newCase);
 					for (SampleDto sample : samples) {
