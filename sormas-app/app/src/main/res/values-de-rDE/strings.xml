@@ -242,9 +242,9 @@
     <string name="error_changes_dropped_no_access">Änderungen wurden zurückgezogen, weil Sie keinen Zugriff mehr auf diese Einheit haben.</string>
     <string name="error_internal_error">Ein interner Fehler ist aufgetreten. Bitte kontaktieren Sie einen Administrator.</string>
     <string name="error_modified_list_entry_deleted">Ein Listeneintrag, den Sie bearbeitet haben, wurde gelöscht:</string>
-    <string name="error_server_connection">Konnte keine Verbindung zum SORMAS Server herstellen. Versuchen Sie es später erneut.</string>
+    <string name="error_server_connection">Konnte keine Verbindung zum SORMAS-Server herstellen. Versuchen Sie es später erneut.</string>
     <string name="error_synchronization">Synchronisierung fehlgeschlagen. Bitte versuchen Sie es später erneut.</string>
-    <string name="error_server_communication">Konnte nicht mit dem SORMAS Server kommunizieren. Versuchen Sie es später erneut.</string>
+    <string name="error_server_communication">Konnte nicht mit dem SORMAS-Server kommunizieren. Versuchen Sie es später erneut.</string>
     <string name="error_no_pathogentest_labuser">der Erregertest hat keinen Labornutzer</string>
     <string name="heading_additional_details">Allgemeiner Kommentar</string>
     <string name="heading_additional_medical_information">Zusätzliche medizinische Informationen</string>
@@ -302,7 +302,7 @@
     <string name="heading_most_recent_additional_tests">Neueste zusätzliche Tests</string>
     <string name="heading_most_recent_hospitalization">Neuester Krankenhausaufenthalt</string>
     <string name="heading_most_recent_test">Neuester Erregertest</string>
-    <string name="heading_new_sormas_version">Neue SORMAS Version</string>
+    <string name="heading_new_sormas_version">Neue SORMAS-Version</string>
     <string name="heading_outbreak_response">Ausbruchsantwort</string>
     <string name="heading_person_involved">Beteiligte Person</string>
     <string name="heading_person_involved_new">Neue Person beteiligt</string>
@@ -335,7 +335,7 @@
     <string name="heading_sync_conflicts">Synchronisierungskonflikte</string>
     <string name="heading_synchronization">Synchronisierung</string>
     <string name="heading_task_edit">Aufgabe</string>
-    <string name="heading_task_notification">Sormas-Aufgabe prüfen</string>
+    <string name="heading_task_notification">SORMAS-Aufgabe prüfen</string>
     <string name="heading_task_read">Aufgabe lesen</string>
     <string name="heading_task_summary">Aufgabenzusammenfassung</string>
     <string name="heading_tasks_list">Aufgabenliste</string>
@@ -361,7 +361,7 @@
     <string name="hint_last_name">Nachname</string>
     <string name="hint_login_password">Ihr Passwort</string>
     <string name="hint_login_username">Benutzername</string>
-    <string name="hint_new_pin">Bitte wählen Sie eine neue vierstellige PIN zur Authentifizierung, wenn Sie die SORMAS App in Zukunft öffnen.</string>
+    <string name="hint_new_pin">Bitte wählen Sie eine neue vierstellige PIN zur Authentifizierung, wenn Sie die SORMAS-App in Zukunft öffnen.</string>
     <string name="hint_new_pin_again">Bitte geben Sie die neue PIN erneut ein.</string>
     <string name="hint_no_coordinates">Keine Koordinaten ausgewählt</string>
     <string name="hint_no_entries">Keine Einträge</string>
@@ -390,7 +390,7 @@
     <string name="info_app_download">Lade neue SORMAS-Version herunter... Abhängig von Ihrer Internetverbindung kann dies eine Weile dauern.</string>
     <string name="info_create_person">Wenn Sie <b>keine</b> Person finden konnten, die Ihren eingetragenen persönlichen Daten gleicht, klicken Sie auf den \"Erstellen\" Button.</string>
     <string name="info_epidemiological_info">Bitte geben Sie an, ob einer der folgenden Punkte für den/die Patient*in während des Inkubationszeitraums oder der Erkrankung relevant ist.</string>
-    <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
+    <string name="info_initial_synchronization">Initialisiere Synchronisierung mit SORMAS-Server.\nDas Laden der Infrastrukturdaten wird einige Minuten dauern.</string>
     <string name="info_no_additional_test">Es wurden noch keine zusätzlichen Tests an dieser Probe durchgeführt</string>
     <string name="info_no_sample_test">Probe wurde noch nicht getestet</string>
     <string name="info_pick_person">Bitte schauen Sie sich die Liste der Personen an.<b>Wenn Sie sich sicher sind</b>, dass die von Ihnen eingebenen persönlichen Daten zu dieser Person gehören, wählen Sie die Person aus und klicken Sie anschließend auf \"Auswählen\".</string>
@@ -400,7 +400,7 @@
     <string name="info_sign_in">Melden Sie sich bei SORMAS an, um die Reise der Lebensrettung fortzusetzen.</string>
     <string name="info_similar_persons_found">SORMAS enthält bereits mindestens eine Person, die den von Ihnen eingegebenen persönlichen Daten sehr ähnlich zu sein scheint.</string>
     <string name="info_symptoms">Bitte wählen Sie eine Antwort für ALLE Symptome aus, um anzugeben, ob sie während dieser Krankheit zwischen Symptombeginn und Fallerkennung aufgetreten sind:</string>
-    <string name="info_synchronizing">Synchronisiere mit SORMAS Server...</string>
+    <string name="info_synchronizing">Synchronisiere mit SORMAS-Server...</string>
     <string name="info_user_report">Bitte beschreiben Sie kurz das aufgetretene Problem. Geben Sie keine persönlichen oder anderweitig sensiblen Daten ein!</string>
     <string name="info_pick_or_create_case">Es gibt mindestens einen vorhandenen Fall in der Datenbank, der dem, den Sie gerade erstellen, sehr ähnelt. Bitte tun Sie eins der folgenden Dinge:\n\n\u2022 Wählen Sie einen Fall, bei dem Sie <b>sicher sind</b>, dass es derselbe Fall ist wie der, den Sie gerade erstellen\n\u2022 Scrollen Sie zu dem Ende des Fensters und aktivieren Sie das Kontrollkästchen, wenn Sie <b>sicher sind</b>, dass der Fall ein neuer Fall ist\n\nklicken Sie auf die Schaltfläche rechts unten um Ihre Auswahl zu bestätigen.</string>
     <string name="info_case_creation_mark_check_box">Dieser Fall ist ein <b>neuer Fall</b> und <b>kein Duplikat</b> eines der obigen Fälle</string>
@@ -426,7 +426,7 @@
     <string name="message_gps_problem">Es konnten keine GPS-Koordinaten gefunden werden.</string>
     <string name="message_http_401">Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren Benutzernamen und Ihr Passwort.</string>
     <string name="message_http_403">Sie haben nicht die erforderlichen Berechtigungen. Bitte kontaktieren Sie den Support.</string>
-    <string name="message_http_404">Konnte keinen SORMAS Server auf \'%s \' finden</string>
+    <string name="message_http_404">Konnte keinen SORMAS-Server auf \'%s \' finden</string>
     <string name="message_http_404_empty">Kein SORMAS Server in den Einstellungen definiert.</string>
     <string name="message_http_503">SORMAS Server ist vorübergehend nicht verfügbar.</string>
     <string name="message_install_app">Eine neue SORMAS Version ist bereit zur Installation. Bitte klicken Sie auf \'Installieren\', um fortzufahren. Sie müssen die App neu starten, nachdem die Aktualisierung abgeschlossen ist.</string>
