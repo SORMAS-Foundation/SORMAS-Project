@@ -50,7 +50,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +120,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.backend.visit.VisitSummaryExportDetails;
@@ -688,13 +688,12 @@ public class ContactFacadeEjb implements ContactFacade {
 			return 0;
 		}
 
-		String inValues = caseUuids.stream().map(e -> StringUtils.wrap(e, "'")).collect(Collectors.joining(","));
 		Query query = em.createNativeQuery(
 			String.format(
 				"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (%s)",
 				Contact.RESULTING_CASE.toLowerCase(),
 				Case.UUID,
-				inValues));
+				QueryHelper.concatStrings(caseUuids)));
 
 		BigInteger count = (BigInteger) query.getSingleResult();
 		return count.intValue();
