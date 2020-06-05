@@ -43,6 +43,7 @@ import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -56,6 +57,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +108,10 @@ public class VisitFacadeEjb implements VisitFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	PseudonymizationService pseudonymizationService;
+	@EJB
+	ContactJurisdictionChecker contactJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -121,26 +127,26 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
 		return visitService.getAllActiveVisitsAfter(date).stream()
-				.map(c -> toDto(c))
+				.map(c -> convertToDto(c))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<VisitDto> getByUuids(List<String> uuids) {
-		return visitService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return visitService.getByUuids(uuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		return toDto(contact.getVisits().stream()
+		return convertToDto(contact.getVisits().stream()
 				.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
 				.orElse(null));
 	}
 
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
-		return toDto(visitService.getByUuid(uuid));
+		return convertToDto(visitService.getByUuid(uuid));
 	}
 
 	@Override
@@ -157,7 +163,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		onVisitChanged(existingVisit, entity);
 
-		return toDto(entity);
+		return convertToDto(entity);
 	}
 
 	@Override
@@ -228,18 +234,18 @@ public class VisitFacadeEjb implements VisitFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case VisitIndexDto.VISIT_DATE_TIME:
-				case VisitIndexDto.VISIT_STATUS:
-				case VisitIndexDto.VISIT_REMARKS:
-				case VisitIndexDto.DISEASE:
-					expression = visit.get(sortProperty.propertyName);
-					break;
-				case VisitIndexDto.SYMPTOMATIC:
-				case VisitIndexDto.TEMPERATURE:
-					expression = symptoms.get(sortProperty.propertyName);
-					break;
-				default:
-					throw new IllegalArgumentException(sortProperty.propertyName);
+					case VisitIndexDto.VISIT_DATE_TIME:
+					case VisitIndexDto.VISIT_STATUS:
+					case VisitIndexDto.VISIT_REMARKS:
+					case VisitIndexDto.DISEASE:
+						expression = visit.get(sortProperty.propertyName);
+						break;
+					case VisitIndexDto.SYMPTOMATIC:
+					case VisitIndexDto.TEMPERATURE:
+						expression = symptoms.get(sortProperty.propertyName);
+						break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -272,8 +278,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	@Transactional(value = Transactional.TxType.REQUIRES_NEW)
 	public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
-			VisitExportType exportType, int first, int max,
-			ExportConfigurationDto exportConfiguration) {
+													VisitExportType exportType, int first, int max,
+													ExportConfigurationDto exportConfiguration) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
@@ -344,11 +350,24 @@ public class VisitFacadeEjb implements VisitFacade {
 		return target;
 	}
 
+	public VisitDto convertToDto(Visit source) {
+		VisitDto visitDto = toDto(source);
+
+		if (visitDto != null) {
+			boolean isInJurisdiction = source.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+			pseudonymizationService.pseudonymizeDto(VisitDto.class, visitDto, isInJurisdiction, (v) -> {
+				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, visitDto.getPerson(), isInJurisdiction, null);
+			});
+		}
+
+		return visitDto;
+	}
+
 	public static VisitReferenceDto toReferenceDto(Visit source) {
 		if (source == null) {
 			return null;
 		}
-		
+
 		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
 		return target;
 	}
@@ -414,7 +433,7 @@ public class VisitFacadeEjb implements VisitFacade {
 						logger.error(String.format(
 								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
 										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-										recipient.getUuid()));
+								recipient.getUuid()));
 					}
 				}
 			}

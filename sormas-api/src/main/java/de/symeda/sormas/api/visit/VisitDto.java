@@ -58,9 +58,12 @@ public class VisitDto extends EntityDto {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private SymptomsDto symptoms;
-	
+
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+	@SensitiveData
 	private Float reportLatLonAccuracy;
 
 	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {
