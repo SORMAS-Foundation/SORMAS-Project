@@ -75,7 +75,7 @@
     <string name="action_not_executable">No ejecutable</string>
     <string name="action_ok">OK</string>
     <string name="action_open_event_person_case">Abrir caso de persona de evento</string>
-    <string name="action_open_prescription">Abrir receta</string>
+    <string name="action_open_prescription">Abrir prescripción</string>
     <string name="action_open_resulting_case">Abrir caso resultante</string>
     <string name="action_open_source_case">Abrir caso de origen</string>
     <string name="action_open_syncLog">Conflictos de sincronización</string>
@@ -93,14 +93,14 @@
     <string name="action_save_contact">Guardar contacto</string>
     <string name="action_save_event">Guardar evento</string>
     <string name="action_save_event_participant">Guardar participante de evento</string>
-    <string name="action_save_prescription">Guardar receta</string>
+    <string name="action_save_prescription">Guardar prescripción</string>
     <string name="action_save_sample">Guardar muestra</string>
     <string name="action_save_task">Guardar tarea</string>
     <string name="action_save_treatment">Guardar tratamiento</string>
     <string name="action_save_visit">Guardar visita de seguimiento</string>
     <string name="action_select">Seleccionar</string>
     <string name="action_send">Enviar</string>
-    <string name="action_set_cleared_to_no">Especificar vacíos como No</string>
+    <string name="action_set_cleared_to_no">Marcar limpios como No</string>
     <string name="action_show_classification_rules">Ver reglas de clasificación</string>
     <string name="action_submit_report">Enviar informe semanal</string>
     <string name="action_sync">Sincronizar</string>
@@ -123,7 +123,7 @@
     <string name="caption_case_information">Información del caso</string>
     <string name="caption_case_maternal_history">Historial materno</string>
     <string name="caption_case_port_health_info">Información de salud portuaria</string>
-    <string name="caption_case_prescriptions">Recetas</string>
+    <string name="caption_case_prescriptions">Prescripciones</string>
     <string name="caption_case_samples">Muestras del caso</string>
     <string name="caption_case_tasks">Tareas del caso</string>
     <string name="caption_case_treatments">Tratamientos</string>
@@ -308,9 +308,9 @@
     <string name="heading_person_involved_new">Nueva persona involucrada</string>
     <string name="heading_pick_or_create_person">Elegir o crear una persona</string>
     <string name="heading_pick_or_create_case">Elegir o crear un caso</string>
-    <string name="heading_prescription">Receta</string>
-    <string name="heading_prescription_edit">Editar receta</string>
-    <string name="heading_prescription_new">Nueva receta</string>
+    <string name="heading_prescription">Prescripción</string>
+    <string name="heading_prescription_edit">Editar prescripción</string>
+    <string name="heading_prescription_new">Nueva prescripción</string>
     <string name="heading_previous_hospitalization">Hospitalización anterior</string>
     <string name="heading_previous_hospitalizations">Hospitalizaciones anteriores</string>
     <string name="heading_refer_case_from_poe">Referir caso desde punto de entrada</string>
@@ -534,7 +534,7 @@
     <string name="value_person_unknown">Persona N/D</string>
     <string name="value_point_of_entry_unknown">Punto de entrada N/D</string>
     <string name="value_prescribing_clinician_unknown">Clínico que prescribe N/D</string>
-    <string name="value_prescription_date_unknown">Fecha de emisión de la receta N/D</string>
+    <string name="value_prescription_date_unknown">Fecha de la prescripción N/D</string>
     <string name="value_prescription_period_unknown">Período de prescripción N/D</string>
     <string name="value_report_date_unknown">Fecha del informe N/D</string>
     <string name="value_role_unassigned">Rol no asignado</string>
