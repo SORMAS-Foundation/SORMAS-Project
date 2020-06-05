@@ -105,9 +105,13 @@ public class PersonDto extends PseudonymizableDto {
 	@Required
 	@PersonalData
 	private String lastName;
+	@PersonalData
 	private String nickname;
+	@PersonalData
 	private String mothersName;
+	@PersonalData
 	private String mothersMaidenName;
+	@PersonalData
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;

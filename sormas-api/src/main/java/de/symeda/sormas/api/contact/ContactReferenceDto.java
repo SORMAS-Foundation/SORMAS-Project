@@ -25,18 +25,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+import java.io.Serializable;
+
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
-	@PersonalData
-	private String contactFirstName;
-	@PersonalData
-	private String contactLastName;
-	@PersonalData
-	private String caseFirstName;
-	@PersonalData
-	private String caseLastName;
+	private PersonName contactName;
+	private PersonName caseName;
 
 	public ContactReferenceDto() {
 
@@ -49,15 +45,21 @@ public class ContactReferenceDto extends ReferenceDto {
 	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
 							   String caseFirstName, String caseLastName) {
 		setUuid(uuid);
-		this.contactFirstName = contactFirstName;
-		this.contactLastName = contactLastName;
-		this.caseFirstName = caseFirstName;
-		this.caseLastName = caseLastName;
+		this.contactName = new PersonName(contactFirstName, contactLastName);
+		this.caseName = new PersonName(caseFirstName, caseLastName);
 }
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName, getUuid());
+		return buildCaption(contactName.firstName, contactName.lastName, caseName.firstName, caseName.lastName, getUuid());
+	}
+
+	public PersonName getContactName() {
+		return contactName;
+	}
+
+	public PersonName getCaseName() {
+		return caseName;
 	}
 
 	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName, String contactUuid) {
@@ -78,5 +80,17 @@ public class ContactReferenceDto extends ReferenceDto {
 		}
 
 		return builder.toString();
+	}
+
+	public static class PersonName implements Serializable {
+		@PersonalData
+		private String firstName;
+		@PersonalData
+		private String lastName;
+
+		public PersonName(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
 	}
 }

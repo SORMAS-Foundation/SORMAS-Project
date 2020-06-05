@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -520,11 +521,11 @@ public final class DownloadUtil {
 			return new DelayedInputStream((out) -> {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(
 							new OutputStreamWriter(out, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
-	
+
 						// 1. fields in order of declaration - not using Introspector here, because it gives properties in alphabetical order
 						List<Method> readMethods = new ArrayList<Method>();
 						readMethods.addAll(Arrays.stream(exportRowClass.getDeclaredMethods())
-								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
+								.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
 										&& m.isAnnotationPresent(Order.class)
 										&& (exportType == null || hasExportTarget(exportType, m))
 										&& (exportConfiguration == null || exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
@@ -611,6 +612,10 @@ public final class DownloadUtil {
 											fieldValues[i] = sb.toString();
 										} else if (value instanceof BurialInfoDto) {
 											fieldValues[i] = PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
+										} else if (value instanceof AgeAndBirthDateDto) {
+											AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+											fieldValues[i] = PersonHelper.getAgeAndBirthdateString(ageAndBirthDate.getAge(), ageAndBirthDate.getAgeType(),
+													ageAndBirthDate.getBirthdateDD(), ageAndBirthDate.getBirthdateMM(), ageAndBirthDate.getBirthdateYYYY(), userLanguage);
 										} else if (value instanceof BirthDateDto) {
 											BirthDateDto birthDate = (BirthDateDto) value;
 											fieldValues[i] = PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);

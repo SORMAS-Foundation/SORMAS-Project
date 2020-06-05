@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.visit;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -43,10 +44,17 @@ import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -56,6 +64,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +82,12 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -84,6 +96,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -107,6 +120,10 @@ public class VisitFacadeEjb implements VisitFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -287,7 +304,8 @@ public class VisitFacadeEjb implements VisitFacade {
 				personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
 				symptomsJoin.get(Symptoms.ID), userJoin.get(User.ID), visitRoot.get(Visit.DISEASE),
 				visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS),
-				visitRoot.get(Visit.VISIT_REMARKS), visitRoot.get(Visit.REPORT_LAT), visitRoot.get(Visit.REPORT_LON));
+				visitRoot.get(Visit.VISIT_REMARKS), visitRoot.get(Visit.REPORT_LAT), visitRoot.get(Visit.REPORT_LON),
+				personJoin.get(Person.UUID));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
@@ -309,6 +327,10 @@ public class VisitFacadeEjb implements VisitFacade {
 			}
 
 			for (VisitExportDto exportDto : resultList) {
+				List<Contact> visitContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(exportDto.getPersonUuid())), null);
+				boolean inJurisdiction = visitContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
+
 				if (symptoms != null) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 				}

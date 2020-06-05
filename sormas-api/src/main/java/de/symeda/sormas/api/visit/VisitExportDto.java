@@ -9,6 +9,7 @@ import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,7 +24,9 @@ public class VisitExportDto implements Serializable {
     private String uuid;
     private Long personId;
     private Long symptomsId;
+    @PersonalData
     private String firstName;
+    @PersonalData
     private String lastName;
     private String diseaseFormatted;
     private Date visitDateTime;
@@ -35,8 +38,11 @@ public class VisitExportDto implements Serializable {
     private Double reportLat;
     private Double reportLon;
 
+    private String personUuid;
+
     public VisitExportDto(Long id, String uuid, Long personId, String firstName, String lastName, Long symptomsId, Long visitUserId, Disease disease, Date visitDateTime,
-                          VisitStatus visitStatus, String visitRemarks, Double reportLat, Double reportLon) {
+                          VisitStatus visitStatus, String visitRemarks, Double reportLat, Double reportLon,
+                          String personUuid) {
         this.id = id;
         this.uuid = uuid;
         this.personId = personId;
@@ -50,6 +56,7 @@ public class VisitExportDto implements Serializable {
         this.visitRemarks = visitRemarks;
         this.reportLat = reportLat;
         this.reportLon = reportLon;
+        this.personUuid = personUuid;
     }
 
     public Long getId() {
@@ -190,5 +197,9 @@ public class VisitExportDto implements Serializable {
 
     public void setReportLon(Double reportLon) {
         this.reportLon = reportLon;
+    }
+
+    public String getPersonUuid() {
+        return personUuid;
     }
 }

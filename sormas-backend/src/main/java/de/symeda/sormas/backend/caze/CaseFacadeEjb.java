@@ -1073,7 +1073,7 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(caseService.getByUuid(uuid));
+		return convertToReferenceDto(caseService.getByUuid(uuid));
 	}
 
 	@Override
@@ -1666,6 +1666,17 @@ public class CaseFacadeEjb implements CaseFacade {
 			pseudonymizationService.pseudonymizeDto(CaseDataDto.class, dto, inJurisdiction, c -> {
 				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), inJurisdiction, null);
 			});
+		}
+
+		return dto;
+	}
+
+	public CaseReferenceDto convertToReferenceDto(Case source) {
+		CaseReferenceDto dto = toReferenceDto(source);
+
+		if (dto != null) {
+			boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(source));
+			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, dto, inJurisdiction, null);
 		}
 
 		return dto;

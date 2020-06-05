@@ -713,18 +713,20 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (sampleContact != null) {
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, sampleContact,
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, sampleContact.getContactName(),
 					isInJurisdiction(null, contactJurisdiction), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, sampleContact.getCaseName(),
+					isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null), null);
 		}
 	}
 
-	private Boolean isInJurisdiction(CaseJurisdictionDto sampleCaseJurisdiction, ContactJurisdictionDto sampleContactJurisdiction) {
-		if (sampleCaseJurisdiction != null) {
-			return caseJurisdictionChecker.isInJurisdiction(sampleCaseJurisdiction);
+	private boolean isInJurisdiction(CaseJurisdictionDto caseJurisdiction, ContactJurisdictionDto contactJurisdiction) {
+		if (caseJurisdiction != null) {
+			return caseJurisdictionChecker.isInJurisdiction(caseJurisdiction);
 		}
 
-		if (sampleContactJurisdiction != null) {
-			return contactJurisdictionChecker.isInJurisdiction(sampleContactJurisdiction);
+		if (contactJurisdiction != null) {
+			return contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
 		}
 
 		return true;

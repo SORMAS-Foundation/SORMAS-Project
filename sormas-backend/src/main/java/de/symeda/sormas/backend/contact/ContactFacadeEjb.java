@@ -216,7 +216,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(contactService.getByUuid(uuid));
+		return convertToReferenceDto(contactService.getByUuid(uuid));
 	}
 
 	@Override
@@ -865,6 +865,25 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		return dto;
 	}
+
+	private ContactReferenceDto convertToReferenceDto(Contact source) {
+		ContactReferenceDto dto = toReferenceDto(source);
+
+		if (dto != null) {
+			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
+				if (source.getCaze() != null) {
+					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
+					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
+				}
+
+				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
+			});
+		}
+
+		return dto;
+	}
+
 
 	public static ContactReferenceDto toReferenceDto(Contact source) {
 		if (source == null) {

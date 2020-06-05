@@ -246,7 +246,8 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	private void pseudonymizeEmbeddedFields(ContactReferenceDto contact, ContactJurisdictionDto contactJurisdiction, CaseReferenceDto caze, CaseJurisdictionDto caseJurisdiction) {
 		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, contact, contactJurisdictionChecker.isInJurisdiction(contactJurisdiction), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, contact.getCaseName(), caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()), null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, contact.getContactName(), contactJurisdictionChecker.isInJurisdiction(contactJurisdiction), null);
 		}
 
 		if (caze != null) {

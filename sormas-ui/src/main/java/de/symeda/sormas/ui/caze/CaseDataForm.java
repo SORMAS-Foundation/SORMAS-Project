@@ -87,6 +87,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -179,8 +180,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, false,
-				FieldVisibilityCheckers.withDisease(disease).add(
-						new OutbreakFieldVisibilityChecker(viewMode)),
+				FieldVisibilityCheckers.withDisease(disease)
+						.add(new OutbreakFieldVisibilityChecker(viewMode))
+						.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 				FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)
 		);
 		this.person = person;
