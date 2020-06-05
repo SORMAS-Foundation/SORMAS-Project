@@ -137,6 +137,10 @@ public class Symptoms extends AbstractDomainObject {
     @Enumerated(EnumType.STRING)
     private SymptomState cough;
     @Enumerated(EnumType.STRING)
+    private SymptomState coughWithSputum;
+    @Enumerated(EnumType.STRING)
+    private SymptomState coughWithHeamoptysis;
+    @Enumerated(EnumType.STRING)
     private SymptomState runnyNose;
     @Enumerated(EnumType.STRING)
     private SymptomState difficultyBreathing;
@@ -220,6 +224,8 @@ public class Symptoms extends AbstractDomainObject {
     @DatabaseField(dataType = DataType.DATE_LONG)
     private Date lesionsOnsetDate;
     @Enumerated(EnumType.STRING)
+    private SymptomState lymphadenopathy;
+    @Enumerated(EnumType.STRING)
     private SymptomState lymphadenopathyInguinal;
     @Enumerated(EnumType.STRING)
     private SymptomState lymphadenopathyAxillary;
@@ -300,6 +306,14 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState erraticBehaviour;
     @Enumerated(EnumType.STRING)
     private SymptomState coma;
+    @Enumerated(EnumType.STRING)
+    private SymptomState respiratoryDiseaseVentilation;
+    @Enumerated(EnumType.STRING)
+    private SymptomState generalSignsOfDisease;
+    @Enumerated(EnumType.STRING)
+    private SymptomState fastHeartRate;
+    @Enumerated(EnumType.STRING)
+    private SymptomState oxygenSaturationLower94;
 
     @Enumerated(EnumType.STRING)
     private SymptomState convulsion;
@@ -373,6 +387,18 @@ public class Symptoms extends AbstractDomainObject {
     private SymptomState lossOfTaste;
     @Enumerated(EnumType.STRING)
     private SymptomState lossOfSmell;
+    @Enumerated(EnumType.STRING)
+    private SymptomState wheezing;
+    @Enumerated(EnumType.STRING)
+    private SymptomState skinUlcers;
+    @Enumerated(EnumType.STRING)
+    private SymptomState inabilityToWalk;
+    @Enumerated(EnumType.STRING)
+    private SymptomState inDrawingOfChestWall;
+    @Enumerated(EnumType.STRING)
+    private SymptomState otherComplications;
+    @Column(length = 255)
+    private String otherComplicationsText;
 
     @Override
     public String getI18nPrefix() {
@@ -1609,5 +1635,109 @@ public class Symptoms extends AbstractDomainObject {
 
     public void setLossOfSmell(SymptomState lossOfSmell) {
         this.lossOfSmell = lossOfSmell;
+    }
+
+    public SymptomState getCoughWithSputum() {
+        return coughWithSputum;
+    }
+
+    public void setCoughWithSputum(SymptomState coughWithSputum) {
+        this.coughWithSputum = coughWithSputum;
+    }
+
+    public SymptomState getCoughWithHeamoptysis() {
+        return coughWithHeamoptysis;
+    }
+
+    public void setCoughWithHeamoptysis(SymptomState coughWithHeamoptysis) {
+        this.coughWithHeamoptysis = coughWithHeamoptysis;
+    }
+
+    public SymptomState getLymphadenopathy() {
+        return lymphadenopathy;
+    }
+
+    public void setLymphadenopathy(SymptomState lymphadenopathy) {
+        this.lymphadenopathy = lymphadenopathy;
+    }
+
+    public SymptomState getWheezing() {
+        return wheezing;
+    }
+
+    public void setWheezing(SymptomState wheezing) {
+        this.wheezing = wheezing;
+    }
+
+    public SymptomState getSkinUlcers() {
+        return skinUlcers;
+    }
+
+    public void setSkinUlcers(SymptomState skinUlcers) {
+        this.skinUlcers = skinUlcers;
+    }
+
+    public SymptomState getInabilityToWalk() {
+        return inabilityToWalk;
+    }
+
+    public void setInabilityToWalk(SymptomState inabilityToWalk) {
+        this.inabilityToWalk = inabilityToWalk;
+    }
+
+    public SymptomState getInDrawingOfChestWall() {
+        return inDrawingOfChestWall;
+    }
+
+    public void setInDrawingOfChestWall(SymptomState inDrawingOfChestWall) {
+        this.inDrawingOfChestWall = inDrawingOfChestWall;
+    }
+
+    public SymptomState getOtherComplications() {
+        return otherComplications;
+    }
+
+    public void setOtherComplications(SymptomState otherComplications) {
+        this.otherComplications = otherComplications;
+    }
+
+    public String getOtherComplicationsText() {
+        return otherComplicationsText;
+    }
+
+    public void setOtherComplicationsText(String otherComplicationsText) {
+        this.otherComplicationsText = otherComplicationsText;
+    }
+
+    public SymptomState getRespiratoryDiseaseVentilation() {
+        return respiratoryDiseaseVentilation;
+    }
+
+    public void setRespiratoryDiseaseVentilation(SymptomState respiratoryDiseaseVentilation) {
+        this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
+    }
+
+    public SymptomState getGeneralSignsOfDisease() {
+        return generalSignsOfDisease;
+    }
+
+    public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
+        this.generalSignsOfDisease = generalSignsOfDisease;
+    }
+
+    public SymptomState getFastHeartRate() {
+        return fastHeartRate;
+    }
+
+    public void setFastHeartRate(SymptomState fastHeartRate) {
+        this.fastHeartRate = fastHeartRate;
+    }
+
+    public SymptomState getOxygenSaturationLower94() {
+        return oxygenSaturationLower94;
+    }
+
+    public void setOxygenSaturationLower94(SymptomState oxygenSaturationLower94) {
+        this.oxygenSaturationLower94 = oxygenSaturationLower94;
     }
 }

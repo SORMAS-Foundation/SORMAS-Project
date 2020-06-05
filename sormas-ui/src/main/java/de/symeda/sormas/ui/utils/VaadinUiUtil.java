@@ -37,6 +37,8 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.data.util.PropertyValueGenerator;
 
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -72,11 +74,10 @@ public final class VaadinUiUtil {
 		Label contentLabel = new Label(contentText);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
-		Button okayButton = new Button(I18nProperties.getCaption(Captions.actionOkay));
-		okayButton.addClickListener(e -> {
+		Button okayButton = ButtonHelper.createButton(Captions.actionOkay, e -> {
 			window.close();
-		});
-		CssStyles.style(okayButton, ValoTheme.BUTTON_PRIMARY);
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		popupLayout.addComponent(okayButton);
 		popupLayout.setComponentAlignment(okayButton, Alignment.BOTTOM_RIGHT);
 
@@ -130,6 +131,13 @@ public final class VaadinUiUtil {
 				return String.class;
 			}
 		});
+	}
+
+	public static void setupEditColumn(Grid.Column column) {
+		column.setRenderer(new HtmlRenderer());
+		column.setWidth(20);
+		column.setSortable(false);
+		column.setHeaderCaption("");
 	}
 
 	public static Window showConfirmationPopup(String caption, Component content, String confirmCaption, String cancelCaption, Integer width, Consumer<Boolean> resultConsumer) {

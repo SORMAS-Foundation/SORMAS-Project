@@ -27,6 +27,7 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -41,16 +42,24 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
+	//Created for the SurvNet interface in order to track additional change dates.
+	//additional change dates filters for: sample, pathogenTests, patient and location.
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
+
 	long count(CaseCriteria caseCriteria);
 	
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-	
+
+	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage);
 	
 	CaseDataDto getCaseDataByUuid(String uuid);
     
     CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
-    
+
+	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
+
     void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
@@ -65,13 +74,13 @@ public interface CaseFacade {
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
-	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean includeSharedCases);
+	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 	
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean includeSharedCases);
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 	
-	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean includeSharedCases);
+	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 	
-	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean includeSharedCases);
+	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 	
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
@@ -112,4 +121,6 @@ public interface CaseFacade {
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 	
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
+	
+	Boolean isCaseEditAllowed(String caseUuid);
 }

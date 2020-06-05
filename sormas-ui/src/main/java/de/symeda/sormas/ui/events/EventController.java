@@ -41,6 +41,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -99,9 +100,10 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
-		EventDataForm eventCreateForm = new EventDataForm(true, UserRight.EVENT_CREATE);
+		EventDataForm eventCreateForm = new EventDataForm(true);
 		eventCreateForm.setValue(createNewEvent());
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
 			@Override
@@ -120,9 +122,10 @@ public class EventController {
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false, UserRight.EVENT_EDIT);
+		EventDataForm eventEditForm = new EventDataForm(false);
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT), eventEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
@@ -143,17 +146,10 @@ public class EventController {
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
-			Button archiveEventButton = new Button();
-			archiveEventButton.addStyleName(ValoTheme.BUTTON_LINK);
-			if (archived) {
-				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionDearchive));
-			} else {
-				archiveEventButton.setCaption(I18nProperties.getCaption(Captions.actionArchive));
-			}
-			archiveEventButton.addClickListener(e -> {
+			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				editView.commit();
 				archiveOrDearchiveEvent(eventUuid, !archived);
-			});
+			}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);

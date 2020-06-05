@@ -19,7 +19,7 @@
 
 #!/bin/bash
 
-rm setup.log
+rm -f r-setup.log
 exec > >(tee -ia r-setup.log)
 exec 2> >(tee -ia r-setup.log)
 
@@ -103,7 +103,7 @@ else
 		R_DIR="${R_DIR_DEFAULT}"
 	fi
 	while [[ ! -d "${R_DIR}" ]]; do
-		read -p "Please specify a valid directory" R_DIR
+		read -r -p "Please specify a valid directory: " R_DIR
 	done
 	echo "Starting package installation..."
 	powershell -Command "Start-Process -Verb \"RunAs\" -Wait -FilePath \"${R_DIR}\\bin\R.exe\" \"--no-save -f install_packages.r\""

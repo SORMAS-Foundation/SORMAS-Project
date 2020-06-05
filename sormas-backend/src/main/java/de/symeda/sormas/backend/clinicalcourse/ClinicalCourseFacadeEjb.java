@@ -113,6 +113,13 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
 		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
+		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
+		target.setObesity(source.getObesity());
+		target.setCurrentSmoker(source.getCurrentSmoker());
+		target.setFormerSmoker(source.getFormerSmoker());
+		target.setAsthma(source.getAsthma());
+		target.setSickleCellDisease(source.getSickleCellDisease());
+		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		return target;
 	}
@@ -147,6 +154,12 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 		target.setOtherConditions(source.getOtherConditions());
 		target.setImmunodeficiencyOtherThanHiv(source.getImmunodeficiencyOtherThanHiv());
 		target.setCardiovascularDiseaseIncludingHypertension(source.getCardiovascularDiseaseIncludingHypertension());
+		target.setObesity(source.getObesity());
+		target.setCurrentSmoker(source.getCurrentSmoker());
+		target.setFormerSmoker(source.getFormerSmoker());
+		target.setAsthma(source.getAsthma());
+		target.setSickleCellDisease(source.getSickleCellDisease());
+		target.setImmunodeficiencyIncludingHiv(source.getImmunodeficiencyIncludingHiv());
 
 		return target;
 	}

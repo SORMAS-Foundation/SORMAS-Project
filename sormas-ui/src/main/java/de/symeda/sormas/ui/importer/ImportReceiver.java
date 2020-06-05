@@ -10,6 +10,9 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -24,13 +27,11 @@ import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class ImportReceiver implements Receiver, SucceededListener {
 
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private File file;
 	private String fileNameAddition;
@@ -46,7 +47,6 @@ public class ImportReceiver implements Receiver, SucceededListener {
 		// Reject empty files
 		if (fileName == null || fileName.isEmpty()) {
 			file = null;
-			logger.error("Failure on import, file not specified or empty");
 			new Notification(I18nProperties.getString(Strings.headingNoFile), I18nProperties.getString(Strings.messageNoCsvFile), 
 					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
@@ -55,21 +55,20 @@ public class ImportReceiver implements Receiver, SucceededListener {
 		// Reject all files except .csv files - we also need to accept excel files here
 		if (!(mimeType.equals("text/csv") || mimeType.equals("application/vnd.ms-excel"))) {
 			file = null;
-			logger.error("Failure on import, wrong file type");
 			new Notification(I18nProperties.getString(Strings.headingWrongFileType), I18nProperties.getString(Strings.messageWrongFileType), 
 					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
 
-		FileOutputStream fos = null;
+		final FileOutputStream fos;
 		try {
 			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
 			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
 			file = null;
-			logger.error("Failure on import", e);
+			logger.error("Reading the file to import failed", e);
 			new Notification(I18nProperties.getString(Strings.headingImportError), I18nProperties.getString(Strings.messageImportError), 
 					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException

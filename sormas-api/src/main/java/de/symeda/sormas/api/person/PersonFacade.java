@@ -50,7 +50,7 @@ public interface PersonFacade {
 	
 	PersonIndexDto getIndexDto(String uuid);
 
-	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria);
+	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
@@ -59,5 +59,6 @@ public interface PersonFacade {
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 	
 	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
-	
+
+    Boolean isValidPersonUuid(String personUuid);
 }

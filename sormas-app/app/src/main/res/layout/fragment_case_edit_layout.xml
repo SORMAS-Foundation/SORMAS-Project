@@ -42,6 +42,7 @@
         <variable name="data" type="de.symeda.sormas.app.backend.caze.Case"/>
         <variable name="yesNoUnknownClass" type="Class" />
         <variable name="vaccinationClass" type="Class" />
+        <variable name="trimesterClass" type="Class" />
     </data>
 
     <ScrollView
@@ -382,17 +383,6 @@
                     app:value="@={data.quarantineHelpNeeded}"
                     style="@style/ControlSingleColumnStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_additionalDetails"
-                    app:value="@={data.additionalDetails}"
-                    app:inputType="textMultiLine"
-                    app:textAlignment="gravity"
-                    app:gravity="top|start"
-                    app:singleLine="false"
-                    app:maxLines="3"
-                    app:textArea="true"
-                    style="@style/ControlSingleColumnStyle" />
-
                 <ImageView style="@style/FullHorizontalDividerStyle" />
 
                 <TextView
@@ -405,6 +395,20 @@
                     android:id="@+id/caseData_pregnant"
                     app:enumClass="@{yesNoUnknownClass}"
                     app:value="@={data.pregnant}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_trimester"
+                    app:enumClass="@{trimesterClass}"
+                    app:dependencyParentField="@{caseDataPregnant}"
+                    app:dependencyParentValue="@{YesNoUnknown.YES}"
+                    app:value="@={data.trimester}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/caseData_postpartum"
+                    app:enumClass="@{yesNoUnknownClass}"
+                    app:value="@={data.postpartum}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
@@ -524,6 +528,26 @@
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/caseData_districtLevelDate"
                     app:value="@={data.districtLevelDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <ImageView style="@style/FullHorizontalDividerStyle" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/heading_additional_details"
+                    style="@style/SubHeadingStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_additionalDetails"
+                    app:showCaption="false"
+                    app:value="@={data.additionalDetails}"
+                    app:inputType="textMultiLine"
+                    app:textAlignment="gravity"
+                    app:gravity="top|start"
+                    app:singleLine="false"
+                    app:maxLines="3"
+                    app:textArea="true"
                     style="@style/ControlSingleColumnStyle" />
 
             </LinearLayout>

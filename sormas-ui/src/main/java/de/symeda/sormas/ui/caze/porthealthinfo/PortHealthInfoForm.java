@@ -20,7 +20,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -66,8 +65,8 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 	private PointOfEntryDto pointOfEntry;
 	private String pointOfEntryDetails;
 
-	public PortHealthInfoForm(UserRight editOrCreateUserRight, PointOfEntryDto pointOfEntry, String pointOfEntryDetails) {
-		super(PortHealthInfoDto.class, PortHealthInfoDto.I18N_PREFIX, editOrCreateUserRight);
+	public PortHealthInfoForm(PointOfEntryDto pointOfEntry, String pointOfEntryDetails) {
+		super(PortHealthInfoDto.class, PortHealthInfoDto.I18N_PREFIX);
 		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;
 		

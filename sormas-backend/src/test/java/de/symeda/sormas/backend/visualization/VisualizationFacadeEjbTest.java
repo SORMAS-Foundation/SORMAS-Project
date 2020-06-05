@@ -1,10 +1,11 @@
 package de.symeda.sormas.backend.visualization;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import de.symeda.sormas.api.Language;
+import org.hamcrest.Matchers;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.hamcrest.Matchers;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 	
@@ -46,7 +44,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 
 			Path domainXmlPath = writeDomainXml();
 
-			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, temp.getRoot().toPath(), domainXmlPath, contactIds);
+			String result = VisualizationFacadeEjb.buildTransmissionChainJson(r, temp.getRoot().toPath(), domainXmlPath, contactIds, Language.EN);
 			assertThat(result, startsWith("{"));
 			assertThat(result, endsWith("}"));
 		});
@@ -71,7 +69,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 				"<script type=\"application/json\" data-for=\"htmlwidget-b9f896960aa32dc1f3e5\">{\"x\":\"a\\/b\"}</script>\r\n" + 
 				"</body>\r\n" + 
 				"</html>"
-			);
+			, Language.EN);
 		assertThat(json, is("{\"x\":\"a\\/b\"}"));
 	}
 	

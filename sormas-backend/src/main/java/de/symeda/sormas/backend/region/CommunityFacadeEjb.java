@@ -17,11 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -39,6 +35,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityCriteria;
@@ -138,6 +135,7 @@ public class CommunityFacadeEjb implements CommunityFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case Community.NAME:
+				case Community.EXTERNAL_ID:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -209,6 +207,29 @@ public class CommunityFacadeEjb implements CommunityFacade {
 	@Override
 	public CommunityReferenceDto getCommunityReferenceByUuid(String uuid) {
 		return toReferenceDto(communityService.getByUuid(uuid));
+	}
+
+	@Override
+	public CommunityReferenceDto getCommunityReferenceById(long id) {
+		return toReferenceDto(communityService.getById(id));
+	}
+
+	@Override
+	public Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities) {
+		if (communities.isEmpty()) {
+			return new HashMap<>();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		Root<Community> root = cq.from(Community.class);
+		Join<Community, District> districtJoin = root.join(Community.DISTRICT, JoinType.LEFT);
+
+		Predicate filter = root.get(Community.UUID).in(communities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+		cq.where(filter);
+		cq.multiselect(root.get(Community.UUID), districtJoin.get(District.UUID));
+
+		return em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(e -> (String) e[0], e -> (String) e[1]));
 	}
 
 	@Override

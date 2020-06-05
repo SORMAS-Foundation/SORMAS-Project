@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -83,6 +84,7 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -138,10 +140,15 @@ public class ContactDto extends EntityDto {
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
+	@HideForCountriesExcept
 	private String quarantineHomePossibleComment;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@HideForCountriesExcept
 	private String quarantineHomeSupplyEnsuredComment;
+	private String additionalDetails;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -506,4 +513,11 @@ public class ContactDto extends EntityDto {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 	
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
+	}
 }

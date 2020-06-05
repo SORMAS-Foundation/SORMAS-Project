@@ -1,16 +1,19 @@
 package de.symeda.sormas.backend.region;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 public class DistrictFacadeEjbTest extends AbstractBeanTest {
 
@@ -64,4 +67,22 @@ public class DistrictFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getDistrictFacade().getAllActiveByRegion(r.getUuid()).size());
 	}
 
+	@Test
+    public void testGetRegionUuidsForDistricts() {
+		Region r1 = creator.createRegion("r1");
+		Region r2 = creator.createRegion("r2");
+		District d1 = creator.createDistrict("d1", r1);
+		District d2 = creator.createDistrict("d2", r2);
+		District d3 = creator.createDistrict("d3", r2);
+
+		Map<String, String> districtRegions = getDistrictFacade().getRegionUuidsForDistricts(Arrays.asList(
+				new DistrictReferenceDto(d1.getUuid()),
+				new DistrictReferenceDto(d2.getUuid()),
+				new DistrictReferenceDto(d3.getUuid())
+		));
+
+		assertThat(districtRegions.get(d1.getUuid()), is(r1.getUuid()));
+		assertThat(districtRegions.get(d2.getUuid()), is(r2.getUuid()));
+		assertThat(districtRegions.get(d3.getUuid()), is(r2.getUuid()));
+    }
 }

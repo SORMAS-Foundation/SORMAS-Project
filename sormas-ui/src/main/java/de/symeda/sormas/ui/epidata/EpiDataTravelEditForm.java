@@ -26,7 +26,6 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -39,8 +38,8 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 			fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO) +
 			fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
 	
-	public EpiDataTravelEditForm(UserRight editOrCreateUserRight) {
-		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX, editOrCreateUserRight);
+	public EpiDataTravelEditForm() {
+		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX);
 		
 		setWidth(540, Unit.PIXELS);
 	}

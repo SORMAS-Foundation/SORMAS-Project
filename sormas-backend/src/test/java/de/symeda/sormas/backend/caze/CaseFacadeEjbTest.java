@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,7 +112,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze, new Date(), new Date());
+				caze, new Date(), new Date(), null);
 
 		// Follow-up status and duration should be set to the requirements for EVD
 		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
@@ -354,11 +355,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
-				caze, new Date(), new Date());
+				caze, new Date(), new Date(), null);
 		TaskDto task = creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING,
 				caze.toReference(), null, null, new Date(), user.toReference());
 		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(),
 				SampleMaterial.BLOOD, rdcf.facility);
+		SampleDto sampleAssociatedToContactAndCase = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		ContactDto contact2 = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(),
+				caze, new Date(), new Date(), null);
+		sampleAssociatedToContactAndCase.setAssociatedContact(new ContactReferenceDto(contact2.getUuid()));
+		getSampleFacade().saveSample(sampleAssociatedToContactAndCase);
+
 		PathogenTestDto pathogenTest = creator.createPathogenTest(sample.toReference(), caze);
 		AdditionalTestDto additionalTest = creator.createAdditionalTest(sample.toReference());
 
@@ -376,6 +383,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
+		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
@@ -505,6 +513,92 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersSample() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
+		Thread.sleep(10L);
+
+		sample.setComment("one comment");
+		getSampleFacade().saveSample(sample);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+	@Test
+	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersPathogenTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		PathogenTestDto pathogenTestDto = creator.createPathogenTest(sample.toReference(), caze);
+
+		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
+		Thread.sleep(10L);
+
+		pathogenTestDto.setTestResultText("test result changed");
+		getPathogenTestFacade().savePathogenTest(pathogenTestDto);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+	@Test
+	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersPatientTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
+		Thread.sleep(10L);
+
+		cazePerson.setBurialDate(new Date());
+		getPersonFacade().savePerson(cazePerson);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+	@Test
+	public void testGetAllActiveCasesIncludeExtendedChangeDateFiltersLocationTest() throws InterruptedException {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
+				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
+				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+
+		Date date = new Date();
+		//the delay is needed in order to ensure the time difference between the date and the case dependent objects update
+		Thread.sleep(10L);
+
+		cazePerson.getAddress().setAddress("new Address");
+		getPersonFacade().savePerson(cazePerson);
+
+		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
+		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(date, true).size());
+	}
+
+
+	@Test
 	public void testGenerateEpidNumber() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
@@ -578,7 +672,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherCase.setClinicianName("name");
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact = creator.createContact(otherUserReference, otherUserReference, otherPersonReference,
-				otherCase, new Date(), new Date());
+				otherCase, new Date(), new Date(), null);
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		SampleDto sample = creator.createSample(otherCaseReference, otherUserReference,

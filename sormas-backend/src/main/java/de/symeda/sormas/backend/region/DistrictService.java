@@ -95,16 +95,6 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Long> getIdsByReferenceDtos(List<DistrictReferenceDto> references) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<District> from = cq.from(getElementClass());
-
-		cq.where(from.get(District.UUID).in(references.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList())));
-		cq.select(from.get(District.ID));
-		return em.createQuery(cq).getResultList();
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<District, District> from) {

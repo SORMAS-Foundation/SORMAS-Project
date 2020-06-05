@@ -18,20 +18,32 @@
 package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = -4649293670201029461L;
+
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String SPECIMEN_CONDITION = "specimenCondition";
+	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String DISEASE = "disease";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String LAB = "laboratory";
+	public static final String CASE_CODE_ID_LIKE = "caseCodeIdLike";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -44,35 +56,38 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private Disease disease;
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
+	private ContactReferenceDto contact;
 	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
+	private SampleAssociationType sampleAssociationType;
+
+	private Date sampleReportDateFrom;
+	private Date sampleReportDateTo;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
 
-	public SampleCriteria region(RegionReferenceDto region) {
+	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
-		return this;
 	}
 
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
-	public SampleCriteria district(DistrictReferenceDto district) {
+	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
-		return this;
 	}
 
 	public FacilityReferenceDto getLaboratory() {
 		return laboratory;
 	}
 
-	public SampleCriteria laboratory(FacilityReferenceDto laboratory) {
+	public void setLaboratory(FacilityReferenceDto laboratory) {
 		this.laboratory = laboratory;
-		return this;
 	}
 
 	public Boolean getShipped() {
@@ -102,31 +117,60 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
+		this.sampleReportDateFrom = reportDateFrom;
+		this.sampleReportDateTo = reportDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public SampleCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public Date getSampleReportDateFrom() {
+		return sampleReportDateFrom;
+	}
+
+	public void setSampleReportDateFrom(Date sampleReportDateFrom) {
+		this.sampleReportDateFrom = sampleReportDateFrom;
+	}
+
+	public Date getSampleReportDateTo() {
+		return sampleReportDateTo;
+	}
+
+	public void setSampleReportDateTo(Date sampleReportDateTo) {
+		this.sampleReportDateTo = sampleReportDateTo;
+	}
+
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
 
-	public SampleCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult) {
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
-		return this;
 	}
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
 
-	public SampleCriteria caseClassification(CaseClassification caseClassification) {
+	public void setCaseClassification(CaseClassification caseClassification) {
 		this.caseClassification = caseClassification;
-		return this;
 	}
 
 	public Disease getDisease() {
 		return disease;
 	}
 
-	public SampleCriteria disease(Disease disease) {
+	public void setDisease(Disease disease) {
 		this.disease = disease;
-		return this;
 	}
 
 	public CaseReferenceDto getCaze() {
@@ -138,15 +182,32 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public SampleCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
+	}
+
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
 
-	public SampleCriteria specimenCondition(SpecimenCondition specimenCondition) {
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
+	}
+
+	public SampleAssociationType getSampleAssociationType() {
+		return sampleAssociationType;
+	}
+
+	public SampleCriteria sampleAssociationType(SampleAssociationType sampleAssociationType) {
+		this.sampleAssociationType = sampleAssociationType;
 		return this;
 	}
-	
+
 	public SampleCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
@@ -171,9 +232,8 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	/**
 	 * returns all entries that match ALL of the passed words
 	 */
-	public SampleCriteria caseCodeIdLike(String caseCodeIdLike) {
+	public void setCaseCodeIdLike(String caseCodeIdLike) {
 		this.caseCodeIdLike = caseCodeIdLike;
-		return this;
 	}
 
 	@IgnoreForUrl

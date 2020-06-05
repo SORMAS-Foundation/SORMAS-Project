@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -45,6 +46,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.backend.facility.Facility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +122,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 	@Override
 	public List<ADO> getAll() {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
@@ -129,7 +131,6 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	}
 
 	public List<ADO> getAll(String orderProperty, boolean asc) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
@@ -227,12 +228,16 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ADO, ADO> from);
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Timestamp date) {		
+	public Predicate createUserFilter(QueryContext qe) {
+		return null;
+	};
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Timestamp date) {
 		Predicate dateFilter = cb.greaterThan(from.get(AbstractDomainObject.CHANGE_DATE), date);
 		return dateFilter;
 	}
-	
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<ADO,ADO> from, Date date) {
+
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date) {
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
@@ -455,6 +460,16 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 		}
 		filterBuilder.append(")");
 		return filterBuilder;
+	}
+
+	public List<Long> getIdsByReferenceDtos(List<? extends ReferenceDto> references) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		cq.where(from.get(AbstractDomainObject.UUID).in(references.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
+		cq.select(from.get(AbstractDomainObject.ID));
+		return em.createQuery(cq).getResultList();
 	}
 
 }

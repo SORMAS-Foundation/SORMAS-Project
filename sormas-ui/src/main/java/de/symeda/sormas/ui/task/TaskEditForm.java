@@ -72,8 +72,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
     private UserRight editOrCreateUserRight;
     
-    public TaskEditForm(boolean create, UserRight editOrCreateUserRight) {
-        super(TaskDto.class, TaskDto.I18N_PREFIX, editOrCreateUserRight);
+    public TaskEditForm(boolean create) {
+        super(TaskDto.class, TaskDto.I18N_PREFIX);
         this.editOrCreateUserRight = editOrCreateUserRight;
         addValueChangeListener(e -> {
     		updateByTaskContext();

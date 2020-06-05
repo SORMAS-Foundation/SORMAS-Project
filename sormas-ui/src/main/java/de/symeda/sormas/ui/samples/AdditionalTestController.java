@@ -29,9 +29,10 @@ public class AdditionalTestController {
 	}
 
 	public void openCreateComponent(String sampleUuid, Runnable callback) {
-		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid), true, UserRight.ADDITIONAL_TEST_CREATE);
+		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid), true);
 		form.setValue(AdditionalTestDto.build(FacadeProvider.getSampleFacade().getReferenceByUuid(sampleUuid)));
-		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE), form.getFieldGroup());
 		
 		Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingCreateAdditionalTest));
 		window.setWidth(form.getWidth() + 90, Unit.PIXELS);
@@ -53,9 +54,10 @@ public class AdditionalTestController {
 	
 	public void openEditComponent(AdditionalTestDto dto, Runnable callback) {
 		AdditionalTestDto newDto = FacadeProvider.getAdditionalTestFacade().getByUuid(dto.getUuid());
-		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false, UserRight.ADDITIONAL_TEST_EDIT);
+		AdditionalTestForm form = new AdditionalTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false);
 		form.setValue(newDto);
-		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<AdditionalTestForm> component = new CommitDiscardWrapperComponent<>(form, 
+				UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_EDIT), form.getFieldGroup());
 		
 		Window window = VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingEditAdditionalTest));
 		window.setWidth(form.getWidth() + 90, Unit.PIXELS);

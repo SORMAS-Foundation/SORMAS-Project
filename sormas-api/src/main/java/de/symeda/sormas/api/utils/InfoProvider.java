@@ -44,11 +44,11 @@ public class InfoProvider {
 	}
 
 	/**
-	 * When changing this make sure to check also EXTERNAL_VISITS_MINIMUM_REQUIRED_VERSION.
+	 * When changing this make sure to check also EXTERNAL_VISITS_API_VERSION.
 	 * @return
 	 */
 	public String getMinimumRequiredVersion() {
-		return "1.39.0";
+		return "1.41.0";
 	}
 	
 	/**

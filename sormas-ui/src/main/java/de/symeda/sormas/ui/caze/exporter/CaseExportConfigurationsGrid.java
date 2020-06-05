@@ -18,6 +18,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 
 @SuppressWarnings("serial")
 public class CaseExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
@@ -55,25 +56,21 @@ public class CaseExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 		
-		Button btnExport = new Button(VaadinIcons.DOWNLOAD);
-		btnExport.setStyleName(ValoTheme.BUTTON_PRIMARY);
+		Button btnExport = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-download", null, VaadinIcons.DOWNLOAD, e -> exportCallback.accept(config), ValoTheme.BUTTON_PRIMARY);
 		layout.addComponent(btnExport);
-		btnExport.addClickListener(e -> exportCallback.accept(config));
-		
-		Button btnEdit = new Button(VaadinIcons.EDIT);
-		layout.addComponent(btnEdit);
-		btnEdit.addClickListener(e -> {
+
+		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
 			ControllerProvider.getCaseController().openEditExportConfigurationWindow(this, config);
 		});
-		
-		Button btnDelete = new Button(VaadinIcons.TRASH);
-		layout.addComponent(btnDelete);
-		btnDelete.addClickListener(e -> {
+		layout.addComponent(btnEdit);
+
+		Button btnDelete = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-delete", null, VaadinIcons.TRASH, e -> {
 			FacadeProvider.getExportFacade().deleteExportConfiguration(config.getUuid());
 			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationDeleted), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
 			reload();
 		});
-		
+		layout.addComponent(btnDelete);
+
 		return layout;
 	}
 	

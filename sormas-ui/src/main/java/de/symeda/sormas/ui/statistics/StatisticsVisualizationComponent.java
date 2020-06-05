@@ -24,8 +24,6 @@ import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
@@ -39,6 +37,7 @@ import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationChartType;
 import de.symeda.sormas.ui.statistics.StatisticsVisualizationType.StatisticsVisualizationMapType;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -61,6 +60,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		setWidth(100, Unit.PERCENTAGE);
 
 		visualizationSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsVisualizationType), Arrays.asList(StatisticsVisualizationType.values()));
+		visualizationSelect.setId(Captions.statisticsVisualizationType);
 		visualizationSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -85,6 +85,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		setExpandRatio(visualizationSelect, 0);
 
 		visualizationMapSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsMapType), Arrays.asList(StatisticsVisualizationMapType.values()));
+		visualizationMapSelect.setId(Captions.statisticsMapType);
 		visualizationMapSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -99,6 +100,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 
 		visualizationChartSelect = new OptionGroup(I18nProperties.getCaption(Captions.statisticsChartType),
 				Arrays.asList(StatisticsVisualizationChartType.values()));
+		visualizationChartSelect.setId(Captions.statisticsChartType);
 		visualizationChartSelect.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -116,27 +118,22 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		addComponent(rowsElement);
 		setExpandRatio(rowsElement, 0);
 
-		switchRowsAndColumnsButton = new Button();
-		CssStyles.style(switchRowsAndColumnsButton, CssStyles.FORCE_CAPTION);
-		switchRowsAndColumnsButton.setIcon(VaadinIcons.EXCHANGE);
+		switchRowsAndColumnsButton = ButtonHelper.createIconButtonWithCaption("switchRowsAndColumns", null, VaadinIcons.EXCHANGE, event -> {
+			StatisticsVisualizationElement newRowsElement = columnsElement;
+			newRowsElement.setType(StatisticsVisualizationElementType.ROWS, visualizationType);
+			StatisticsVisualizationElement newColumnsElement = rowsElement;
+			newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS, visualizationType);
+			removeComponent(rowsElement);
+			removeComponent(columnsElement);
+			addComponent(newRowsElement, getComponentIndex(switchRowsAndColumnsButton));
+			addComponent(newColumnsElement, getComponentIndex(switchRowsAndColumnsButton) + 1);
+			replaceComponent(rowsElement, newRowsElement);
+			replaceComponent(columnsElement, newColumnsElement);
+			rowsElement = newRowsElement;
+			columnsElement = newColumnsElement;
+		}, CssStyles.FORCE_CAPTION);
 		switchRowsAndColumnsButton.setDescription(I18nProperties.getCaption(Captions.statisticsExchange));
-		switchRowsAndColumnsButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				StatisticsVisualizationElement newRowsElement = columnsElement;
-				newRowsElement.setType(StatisticsVisualizationElementType.ROWS, visualizationType);
-				StatisticsVisualizationElement newColumnsElement = rowsElement;
-				newColumnsElement.setType(StatisticsVisualizationElementType.COLUMNS, visualizationType);
-				removeComponent(rowsElement);
-				removeComponent(columnsElement);
-				addComponent(newRowsElement, getComponentIndex(switchRowsAndColumnsButton));
-				addComponent(newColumnsElement, getComponentIndex(switchRowsAndColumnsButton) + 1);
-				replaceComponent(rowsElement, newRowsElement);
-				replaceComponent(columnsElement, newColumnsElement);		
-				rowsElement = newRowsElement;
-				columnsElement = newColumnsElement;
-			}
-		});
+
 		addComponent(switchRowsAndColumnsButton);
 		setExpandRatio(switchRowsAndColumnsButton, 0);
 
@@ -172,7 +169,7 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 	public StatisticsCaseAttribute getRowsAttribute() {
 		switch (visualizationType) {
 		case MAP:
-			return StatisticsCaseAttribute.REGION_DISTRICT;
+			return StatisticsCaseAttribute.JURISDICTION;
 		default:
 			break;
 		}
@@ -264,6 +261,11 @@ public class StatisticsVisualizationComponent extends HorizontalLayout {
 		default:
 			throw new IllegalArgumentException(visualizationType.toString());
 		}
+	}
+
+	public boolean hasIncidenceIncompatibleGrouping() {
+		return rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.COMMUNITY ||
+				rowsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY || columnsElement.getSubAttribute() == StatisticsCaseSubAttribute.HEALTH_FACILITY;
 	}
 	
 	public boolean hasSexGrouping() {

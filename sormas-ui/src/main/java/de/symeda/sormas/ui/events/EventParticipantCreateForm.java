@@ -23,7 +23,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
@@ -37,8 +36,8 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 			fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +
 			fluidRowLocs(FIRST_NAME, LAST_NAME);
 	
-	public EventParticipantCreateForm(UserRight editOrCreateUserRight) {
-		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, editOrCreateUserRight);
+	public EventParticipantCreateForm() {
+		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
 		
         setWidth(540, Unit.PIXELS);
         

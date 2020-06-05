@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -208,22 +209,20 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		HorizontalLayout selectionButtonLayout = new HorizontalLayout();
 		selectionButtonLayout.setMargin(false);
 
-		Button btnSelectAll = new Button(I18nProperties.getCaption(Captions.actionSelectAll));
-		btnSelectAll.setStyleName(ValoTheme.BUTTON_LINK);
-		btnSelectAll.addClickListener(e -> {
+		Button btnSelectAll = ButtonHelper.createButton(Captions.actionSelectAll, e -> {
 			for (CheckBox checkBox : checkBoxes.keySet()) {
 				checkBox.setValue(true);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
+
 		selectionButtonLayout.addComponent(btnSelectAll);
 
-		Button btnDeselectAll = new Button(I18nProperties.getCaption(Captions.actionDeselectAll));
-		btnDeselectAll.setStyleName(ValoTheme.BUTTON_LINK);
-		btnDeselectAll.addClickListener(e -> {
+		Button btnDeselectAll = ButtonHelper.createButton(Captions.actionDeselectAll, e -> {
 			for (CheckBox checkBox : checkBoxes.keySet()) {
 				checkBox.setValue(false);
 			}
-		});
+		}, ValoTheme.BUTTON_LINK);
+
 		selectionButtonLayout.addComponent(btnDeselectAll);
 
 		return selectionButtonLayout;
@@ -233,18 +232,16 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setMargin(false);
 
-		Button btnDiscard = new Button(I18nProperties.getCaption(Captions.actionDiscard));
-		btnDiscard.addClickListener(e -> discardCallback.run());
+		Button btnDiscard = ButtonHelper.createButton(Captions.actionDiscard, e -> discardCallback.run());
 		buttonLayout.addComponent(btnDiscard);
 
-		Button btnSave = new Button(I18nProperties.getCaption(Captions.actionSave));
-		btnSave.setStyleName(ValoTheme.BUTTON_PRIMARY);
-		btnSave.addClickListener(e -> {
+		Button btnSave = ButtonHelper.createButton(Captions.actionSave, e -> {
 			if (validate()) {
 				updateExportConfiguration();
 				resultCallback.accept(exportConfiguration);
 			}
-		});
+		}, ValoTheme.BUTTON_PRIMARY);
+
 		buttonLayout.addComponent(btnSave);
 
 		return buttonLayout;

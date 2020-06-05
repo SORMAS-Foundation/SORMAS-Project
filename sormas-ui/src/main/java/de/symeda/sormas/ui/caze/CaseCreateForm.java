@@ -54,7 +54,6 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
@@ -62,32 +61,28 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private ComboBox birthDateDay;
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
-			fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER) +
-			fluidRow(
-					fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
+	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
+			+ fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER)
+			+ fluidRow(fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
 					fluidColumn(6, 0,
-							locs(CaseDataDto.DISEASE_DETAILS, 
-									CaseDataDto.PLAGUE_TYPE,
-									CaseDataDto.DENGUE_FEVER_TYPE, 
-									CaseDataDto.RABIES_TYPE))) +
-			fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-			fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-			fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
-			fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
-			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
-			fluidRow(
-					fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					fluidRowLocs(PersonDto.SEX)) +
-			fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
+							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
+									CaseDataDto.RABIES_TYPE)))
+			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
+			+ fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY)
+			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS)
+			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+					fluidRowLocs(PersonDto.SEX))
+			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
 
-	public CaseCreateForm(UserRight editOrCreateUserRight) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
+	public CaseCreateForm() {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 
 		setWidth(720, Unit.PIXELS);
 
@@ -197,13 +192,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		OptionGroup ogCaseOrigin = addField(CaseDataDto.CASE_ORIGIN, OptionGroup.class);
 		ogCaseOrigin.setRequired(true);
 
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
-			setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY,
-					CaseDataDto.HEALTH_FACILITY);
-			setVisible(true, CaseDataDto.POINT_OF_ENTRY);
-		} else {
-			ogCaseOrigin.addValueChangeListener(e -> {
-				if (e.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
+		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			ogCaseOrigin.addValueChangeListener(ev -> {
+				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
 					setRequired(true, CaseDataDto.HEALTH_FACILITY);
 					setRequired(false, CaseDataDto.POINT_OF_ENTRY);
@@ -216,7 +207,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				}
 			});
 		}
-
+		
 		setRequired(true, CaseDataDto.REPORT_DATE, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, CaseDataDto.DISEASE,
 				CaseDataDto.REGION, CaseDataDto.DISTRICT);
 		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails, sex);
@@ -243,11 +234,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.addValueChangeListener(e -> {
 			updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 		});
-	
+
 		addValueChangeListener(e -> {
 			Disease defaultDisease = FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
 			if (defaultDisease != null) {
 				disease.setValue(defaultDisease);
+			}
+
+			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY,
+						CaseDataDto.HEALTH_FACILITY);
+				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
 		});
 	}

@@ -24,18 +24,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
@@ -61,6 +52,7 @@ public class Sample extends CoreAdo {
 	public static final String TABLE_NAME = "samples";
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
+	public static final String ASSOCIATED_CONTACT = "associatedContact";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -90,8 +82,10 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_ADDITIONAL_TESTS_STRING = "requestedAdditionalTestsString";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
+	public static final String PATHOGENTESTS = "pathogenTests";
 	
 	private Case associatedCase;
+	private Contact associatedContact;
 	private String labSampleID;
 	private String fieldSampleID;
 	private Date sampleDateTime;
@@ -132,13 +126,22 @@ public class Sample extends CoreAdo {
 	private List<PathogenTest> pathogenTests;
 	private List<AdditionalTest> additionalTests;
 
-	@ManyToOne(cascade = {})
-	@JoinColumn(nullable = false)
+	@ManyToOne
+	@JoinColumn
 	public Case getAssociatedCase() {
 		return associatedCase;
 	}
 	public void setAssociatedCase(Case associatedCase) {
 		this.associatedCase = associatedCase;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public Contact getAssociatedContact() {
+		return associatedContact;
+	}
+	public void setAssociatedContact(Contact associatedContact) {
+		this.associatedContact = associatedContact;
 	}
 
 	@Column(length=512)
@@ -267,14 +270,15 @@ public class Sample extends CoreAdo {
 		this.noTestPossibleReason = noTestPossibleReason;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = PathogenTest.SAMPLE)
-	public List<PathogenTest> getSampleTests() {
+	@OneToMany(mappedBy = PathogenTest.SAMPLE, fetch = FetchType.LAZY)
+	public List<PathogenTest> getPathogenTests() {
 		return pathogenTests;
 	}
-	public void setSampleTests(List<PathogenTest> pathogenTests) {
+
+	public void setPathogenTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = AdditionalTest.SAMPLE)
 	public List<AdditionalTest> getAdditionalTests() {
 		return additionalTests;
@@ -449,16 +453,18 @@ public class Sample extends CoreAdo {
 	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
-	
+
 	@Override
 	public String toString() {
-		return SampleReferenceDto.buildCaption(getSampleMaterial(), 
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
+		return SampleReferenceDto.buildCaption(getSampleMaterial(),
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null, getAssociatedContact() != null ?
+						getAssociatedContact().getUuid() : null);
 	}
 
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(getUuid(), getSampleMaterial(), 
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null);
+				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 
 	public Double getReportLat() {

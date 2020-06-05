@@ -18,13 +18,17 @@
 package de.symeda.sormas.backend.contact;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -46,8 +50,10 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Entity
 @Audited
@@ -104,6 +110,8 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String VISITS = "visits";
+	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	
 	private Date reportDateTime;
 	private User reportingUser;
@@ -159,9 +167,12 @@ public class Contact extends CoreAdo {
 	private String quarantineHomePossibleComment;
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
+	private String additionalDetails;
 
 	private List<Task> tasks;
-	
+	private Set<Sample> samples;
+	private Set<Visit> visits = new HashSet<>();
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public Person getPerson() {
@@ -335,6 +346,22 @@ public class Contact extends CoreAdo {
 	}
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	@ManyToMany(mappedBy = Visit.CONTACTS, fetch = FetchType.LAZY)
+	public Set<Visit> getVisits() {
+		return visits;
+	}
+	public void setVisits(Set<Visit> visits) {
+		this.visits = visits;
+	}
+
+	@OneToMany(mappedBy = Sample.ASSOCIATED_CONTACT, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
 	}
 
 	public Double getReportLat() {
@@ -594,4 +621,12 @@ public class Contact extends CoreAdo {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 	
+	@Column(length = 512)
+	public String getAdditionalDetails() {
+		return additionalDetails;
+	}
+
+	public void setAdditionalDetails(String additionalDetails) {
+		this.additionalDetails = additionalDetails;
+	}
 }

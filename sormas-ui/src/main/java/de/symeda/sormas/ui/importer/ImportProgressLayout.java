@@ -33,6 +33,7 @@ import com.vaadin.v7.ui.ProgressBar;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -118,12 +119,12 @@ public class ImportProgressLayout extends VerticalLayout {
 		setComponentAlignment(progressInfoLayout, Alignment.TOP_RIGHT);
 		
 		// Cancel button
-		closeCancelButton = new Button(I18nProperties.getCaption(Captions.actionCancel));
-		CssStyles.style(closeCancelButton, CssStyles.VSPACE_TOP_2);
 		cancelListener = e -> {
 			cancelCallback.run();
 		};
-		closeCancelButton.addClickListener(cancelListener);
+
+		closeCancelButton = ButtonHelper.createButton(Captions.actionCancel, cancelListener, CssStyles.VSPACE_TOP_2);
+
 		addComponent(closeCancelButton);
 		setComponentAlignment(closeCancelButton, Alignment.MIDDLE_RIGHT);
 	}

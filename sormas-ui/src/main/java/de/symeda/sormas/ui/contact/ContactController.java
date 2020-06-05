@@ -34,7 +34,11 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.*;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -51,6 +55,7 @@ import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactController {
 
@@ -96,11 +101,6 @@ public class ContactController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);	
 	}
 
-	public void editPerson(String contactUuid) {
-		String navigationState = ContactPersonView.VIEW_NAME + "/" + contactUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
-	}
-
 	public void overview() {
 		String navigationState = ContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
@@ -137,11 +137,13 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		ContactCreateForm createForm = new ContactCreateForm(UserRight.CONTACT_CREATE, caze != null ?
+		ContactCreateForm createForm = new ContactCreateForm(caze != null ?
 				caze.getDisease() : null, caze != null);
 		createForm.setValue(createNewContact(caze));
 		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
-				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, createForm.getFieldGroup());
+				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, 
+						UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE), 
+						createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -227,12 +229,15 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid) {
-		ContactDataForm editForm = new ContactDataForm(UserRight.CONTACT_EDIT);
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode) {
+
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, 
+				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), 
+				editForm.getFieldGroup());
 
 		editComponent.addCommitListener(new CommitListener() {
 			@Override
@@ -270,7 +275,7 @@ public class ContactController {
 		return editComponent;
 	}
 
-	public void showBulkContactDataEditComponent(Collection<ContactIndexDto> selectedContacts, String caseUuid) {
+	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
 		if (selectedContacts.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -327,7 +332,7 @@ public class ContactController {
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	public void deleteAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -345,7 +350,7 @@ public class ContactController {
 		}
 	}
 
-	public void cancelFollowUpOfAllSelectedItems(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
@@ -368,7 +373,7 @@ public class ContactController {
 		}
 	}
 
-	public void setAllSelectedItemsToLostToFollowUp(Collection<ContactIndexDto> selectedRows, Runnable callback) {
+	public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
 					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());

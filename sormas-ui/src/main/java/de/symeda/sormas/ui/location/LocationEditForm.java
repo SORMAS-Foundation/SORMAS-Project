@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.ValidationConstants;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -89,8 +90,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(UserRight editOrCreateUserRight) {
-		super(LocationDto.class, LocationDto.I18N_PREFIX, editOrCreateUserRight);
+	public LocationEditForm() {
+		super(LocationDto.class, LocationDto.I18N_PREFIX);
 		
 		HorizontalLayout geoButtons = new HorizontalLayout();
 		geoButtons.setMargin(false);
@@ -98,11 +99,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		getContent().addComponent(geoButtons, GEO_BUTTONS_LOC);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled()) {
-			Button geocodeButton = new Button(VaadinIcons.MAP_MARKER, e -> triggerGeocoding());
-			geocodeButton.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-			geocodeButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
-			geocodeButton.addStyleName(ValoTheme.BUTTON_LARGE);
-			
+			Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER,
+					e -> triggerGeocoding(), ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+
 			geoButtons.addComponent(geocodeButton);
 			geoButtons.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
 		}
@@ -233,16 +232,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 	
 	private void updateLeafletMapContent() {
-		Double lat = getConvertedValue(LocationDto.LATITUDE);
-		Double lon = getConvertedValue(LocationDto.LONGITUDE);
-		GeoLatLon coordinates;
-		if (ObjectUtils.allNotNull(lat, lon)) {
-			coordinates = new GeoLatLon(lat, lon);
-		} else {
-			coordinates = null;
+		if(areFieldsValid(LocationDto.LATITUDE, LocationDto.LONGITUDE)) {
+			Double lat = getConvertedValue(LocationDto.LATITUDE);
+			Double lon = getConvertedValue(LocationDto.LONGITUDE);
+			GeoLatLon coordinates;
+			if (ObjectUtils.allNotNull(lat, lon)) {
+				coordinates = new GeoLatLon(lat, lon);
+			} else {
+				coordinates = null;
+			}
+			leafletMapPopup.setEnabled(coordinates != null);
+			leafletMapPopup.setCoordinates(coordinates);
 		}
-		leafletMapPopup.setEnabled(coordinates != null);
-		leafletMapPopup.setCoordinates(coordinates);
+		else {
+			leafletMapPopup.setEnabled(false);
+		}
 	}
 
 	@Override

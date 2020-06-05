@@ -32,8 +32,6 @@ public interface VisitFacade {
 
 	VisitDto getVisitByUuid(String uuid);
 
-	VisitReferenceDto getReferenceByUuid(String uuid);
-
 	VisitDto saveVisit(VisitDto dto);
 
 	void validate(VisitDto dto);
@@ -46,15 +44,11 @@ public interface VisitFacade {
 	
 	void deleteVisit(String visitUuid);
 	
-	int getNumberOfVisits(ContactReferenceDto contactRef, VisitStatus visitStatus);
-	
-	List<DashboardVisitDto> getDashboardVisitsByContact(ContactReferenceDto contactRef, Date from, Date to);
-	
 	List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	
+	long count(VisitCriteria visitCriteria);
 
 	List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria, VisitExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration);
-
-	long count(VisitCriteria visitCriteria);
 	
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
 	

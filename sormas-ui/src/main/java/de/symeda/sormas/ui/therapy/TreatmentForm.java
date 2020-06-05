@@ -14,7 +14,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -32,8 +31,8 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 			loc(TreatmentDto.ROUTE_DETAILS) +
 			loc(TreatmentDto.ADDITIONAL_NOTES);
 	
-	public TreatmentForm(boolean create, UserRight editOrCreateUserRight) {
-		super(TreatmentDto.class, TreatmentDto.I18N_PREFIX, editOrCreateUserRight);
+	public TreatmentForm(boolean create) {
+		super(TreatmentDto.class, TreatmentDto.I18N_PREFIX);
 		
 		setWidth(680, Unit.PIXELS);
 		

@@ -38,7 +38,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -61,7 +60,6 @@ import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
-import de.symeda.sormas.app.component.dialog.UserReportDialog;
 import de.symeda.sormas.app.component.menu.PageMenuControl;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -75,7 +73,6 @@ import de.symeda.sormas.app.login.EnterPinActivity;
 import de.symeda.sormas.app.login.LoginActivity;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.SynchronizeDataAsync;
-import de.symeda.sormas.app.settings.SettingsActivity;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.NavigationHelper;
@@ -352,12 +349,6 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
                 InfoDialog infoDialog = new InfoDialog(getContext(),
                         R.layout.dialog_screen_help_layout, Html.fromHtml(helpStringBuilder.toString()));
                 infoDialog.show();
-                return true;
-
-            // Report problem button
-            case R.id.action_report:
-                UserReportDialog userReportDialog = new UserReportDialog(this, getClass().getSimpleName(), null);
-                userReportDialog.show();
                 return true;
         }
 

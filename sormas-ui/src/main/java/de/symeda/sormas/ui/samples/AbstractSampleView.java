@@ -22,6 +22,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
+import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
@@ -48,12 +50,19 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
-		CaseReferenceDto caseRef = FacadeProvider.getSampleFacade().getSampleByUuid(params).getAssociatedCase();
-		
+
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
+
+		final SampleDto sampleByUuid = FacadeProvider.getSampleFacade().getSampleByUuid(params);
+		final CaseReferenceDto caseRef = sampleByUuid.getAssociatedCase();
 		if (caseRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getString(Strings.entityCase), caseRef.getUuid(), true);
+		}
+
+		final ContactReferenceDto contactRef = sampleByUuid.getAssociatedContact();
+		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(sampleRef.getCaption());

@@ -22,10 +22,8 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,6 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -47,8 +46,6 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
-
-	public static final String EDIT_BTN_ID = "edit";
 
 	private static final String PATHOGEN_TEST_RESULT = Captions.Sample_pathogenTestResult;
 	private static final String DISEASE_SHORT = Captions.columnDiseaseShort;
@@ -69,9 +66,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			setCriteria(criteria);
 		}
 
-		Column<SampleIndexDto, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
-		editColumn.setId(EDIT_BTN_ID);
-		editColumn.setWidth(20);
+		addEditColumn(e -> ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid()));
 
 		Column<SampleIndexDto, String> diseaseShortColumn = addColumn(sample -> 
 		DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
@@ -90,9 +85,12 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setId(PATHOGEN_TEST_RESULT);
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
-		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER, SampleIndexDto.ASSOCIATED_CASE, DISEASE_SHORT,
-				SampleIndexDto.CASE_DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED, SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT, SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER,
+				SampleIndexDto.ASSOCIATED_CASE, SampleIndexDto.ASSOCIATED_CONTACT, DISEASE_SHORT,
+				SampleIndexDto.DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED,
+				SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
+				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT,
+				SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -113,18 +111,20 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			removeColumn(SampleIndexDto.ADDITIONAL_TESTING_STATUS);
-		} 
+		}
+
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
+			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+		}
+		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
+			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+		}
 		
 		for(Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(
 					SampleIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-
-		addItemClickListener(e -> {
-			if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
-				ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid());
-			}
-		});
 	}
 
 	public void reload() {

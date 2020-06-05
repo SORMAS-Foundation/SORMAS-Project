@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,6 +68,7 @@ import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
@@ -325,6 +327,9 @@ public class CaseImporter extends DataImporter {
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
+					// Workarround: Reset the change date to avoid OutdatedEntityExceptions
+					// Should be changed when doing #2265
+					newCase.setChangeDate(new Date());
 					FacadeProvider.getCaseFacade().saveCase(newCase);
 					for (SampleDto sample : samples) {
 						FacadeProvider.getSampleFacade().saveSample(sample);
@@ -520,8 +525,7 @@ public class CaseImporter extends DataImporter {
 				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 				component.getCommitButton().setEnabled(false);
 
-				Button skipButton = new Button(I18nProperties.getCaption(Captions.actionSkip));
-				skipButton.addClickListener(e -> {
+				Button skipButton = ButtonHelper.createButton(Captions.actionSkip, e -> {
 					component.removeDiscardListener(discardListener);
 					component.discard();
 					resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));

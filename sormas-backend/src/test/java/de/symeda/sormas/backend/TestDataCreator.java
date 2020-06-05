@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
@@ -90,6 +93,10 @@ public class TestDataCreator {
 
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+	}
+	
+	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 
 	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
@@ -204,14 +211,35 @@ public class TestDataCreator {
 		
 		return treatment;
 	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null);
+	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease);
+	}
+	
+	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
+		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null);
+	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
-		return createContact(reportingUser, null, contactPerson, caze, new Date(), null);
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate) {
-		ContactDto contact = ContactDto.build(caze);
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+		ContactDto contact;
+		
+		if (caze != null) {
+			contact = ContactDto.build(caze);
+		} else {
+			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
+			RDCF rdcf = createRDCF();
+			contact.setRegion(rdcf.region);
+			contact.setDistrict(rdcf.district);
+		}
 		contact.setReportingUser(reportingUser);
 		contact.setContactOfficer(contactOfficer);
 		contact.setPerson(contactPerson);
@@ -254,10 +282,22 @@ public class TestDataCreator {
 
 		return task;
 	}
+	
+	public VisitDto createVisit(PersonReferenceDto person) {
+		return createVisit(Disease.EVD, person);
+	}
+	
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person) {
+		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE);
+	}
+	
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime) {
+		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE);
+	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto contactPerson, Date visitDateTime,
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime,
 			VisitStatus visitStatus) {
-		VisitDto visit = VisitDto.build(contactPerson, disease);
+		VisitDto visit = VisitDto.build(person, disease);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 		visit = beanTest.getVisitFacade().saveVisit(visit);
@@ -324,6 +364,20 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
+			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, PathogenTestType testType, Disease testedDisease,
 			Date testDateTime, Facility lab, UserReferenceDto labUser, PathogenTestResultType testResult, String testResultText,
 			boolean verified) {
@@ -359,6 +413,23 @@ public class TestDataCreator {
 				associatedCase.getReportingUser(), SampleMaterial.BLOOD, rdcf.facility);
 		return createPathogenTest(new SampleReferenceDto(sample.getUuid()), testType, testedDisease, new Date(), rdcf.facility,
 				associatedCase.getReportingUser(), resultType, "", true);
+	}
+
+	public PathogenTestDto buildPathogenTestDto(RDCFEntities rdcf, UserDto user, SampleDto sample, Disease disease,
+												Date testDateTime) {
+		final PathogenTestDto newPathogenTest = new PathogenTestDto();
+
+		newPathogenTest.setSample(sample.toReference());
+		newPathogenTest.setTestedDisease(disease);
+		newPathogenTest.setTestType(PathogenTestType.ISOLATION);
+
+		newPathogenTest.setTestDateTime(testDateTime);
+		newPathogenTest.setLab(new FacilityReferenceDto(rdcf.facility.getUuid()));
+		newPathogenTest.setLabUser(user.toReference());
+		newPathogenTest.setTestResult(PathogenTestResultType.PENDING);
+		newPathogenTest.setTestResultText("all bad!");
+		newPathogenTest.setTestResultVerified(false);
+		return newPathogenTest;
 	}
 	
 	public AdditionalTestDto createAdditionalTest(SampleReferenceDto sample) {
@@ -492,6 +563,19 @@ public class TestDataCreator {
 		config.setPrimaryDisease(primary);
 		config.setCaseBased(caseBased);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
+	}
+
+	/**
+	 * Creates a list with {@code count} values of type {@code T}. 
+	 * The list index is given to the {@code valueSupplier} for each value to create.
+	 */
+	public static <T> List<T> createValuesList(int count, Function<Integer, T> valueSupplier) {
+
+		List<T> values = new ArrayList<>(count);
+		for (int i = 0; i < count; i++) {
+			values.add(valueSupplier.apply(i));
+		}
+		return values;
 	}
 
 	/**

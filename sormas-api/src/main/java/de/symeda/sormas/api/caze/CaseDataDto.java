@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -43,11 +44,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.Required;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.visit.VisitDto;
 
 public class CaseDataDto extends EntityDto {
@@ -128,6 +125,8 @@ public class CaseDataDto extends EntityDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String REPORTING_TYPE = "reportingType";
+	public static final String POSTPARTUM = "postpartum";
+	public static final String TRIMESTER = "trimester";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -251,11 +250,17 @@ public class CaseDataDto extends EntityDto {
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
+	@HideForCountriesExcept
 	private String quarantineHomePossibleComment;
+	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
+	@HideForCountriesExcept
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
+	private YesNoUnknown postpartum;
+	private Trimester trimester;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -898,5 +903,21 @@ public class CaseDataDto extends EntityDto {
 
 	public void setReportingType(ReportingType reportingType) {
 		this.reportingType = reportingType;
+	}
+
+	public YesNoUnknown getPostpartum() {
+		return postpartum;
+	}
+
+	public void setPostpartum(YesNoUnknown postpartum) {
+		this.postpartum = postpartum;
+	}
+
+	public Trimester getTrimester() {
+		return trimester;
+	}
+
+	public void setTrimester(Trimester trimester) {
+		this.trimester = trimester;
 	}
 }

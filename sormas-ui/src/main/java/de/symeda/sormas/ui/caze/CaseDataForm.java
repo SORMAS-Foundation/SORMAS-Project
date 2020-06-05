@@ -88,6 +88,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -107,6 +108,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String CLASSIFIED_BY_SYSTEM_LOC = "classifiedBySystemLoc";
 	private static final String ASSIGN_NEW_EPID_NUMBER_LOC = "assignNewEpidNumberLoc";
 	private static final String EPID_NUMBER_WARNING_LOC = "epidNumberWarningLoc";
+	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
@@ -147,9 +149,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
 			fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
-			fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
 			loc(MEDICAL_INFORMATION_LOC) +
-			fluidRowLocs(CaseDataDto.PREGNANT, "") +
+					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "")
+					+
 			fluidRowLocs(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES) +
 			fluidRowLocs(CaseDataDto.VACCINE, "") +
 			fluidRowLocs(CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.SMALLPOX_VACCINATION_SCAR) +
@@ -159,7 +161,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS) +
 			fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 			loc(PAPER_FORM_DATES_LOC) +
-			fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE);
+					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE,
+							CaseDataDto.NATIONAL_LEVEL_DATE)
+					+ loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 
 	private final PersonDto person;
 	private final Disease disease;
@@ -170,8 +174,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	
-	public CaseDataForm(PersonDto person, Disease disease, UserRight editOrCreateUserRight, ViewMode viewMode) {
-		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX, editOrCreateUserRight);
+	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode) {
+		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 		this.person = person;
 		this.disease = disease;
 		this.viewMode = viewMode;
@@ -190,20 +194,18 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.CLASSIFICATION_DATE, CaseDataDto.CLASSIFICATION_USER, CaseDataDto.CLASSIFICATION_COMMENT,
 				CaseDataDto.NOTIFYING_CLINIC, CaseDataDto.NOTIFYING_CLINIC_DETAILS, CaseDataDto.CLINICIAN_NAME,
 				CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
-		
-		// Button to automatically assign a new epid number
-		Button assignNewEpidNumberButton = new Button(I18nProperties.getCaption(Captions.actionAssignNewEpidNumber));
-		style(assignNewEpidNumberButton, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
-		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
-		assignNewEpidNumberButton.setVisible(false);
-		
+
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
 		style(epidField, ERROR_COLOR_PRIMARY);
-		
-		assignNewEpidNumberButton.addClickListener(e -> {
+
+		// Button to automatically assign a new epid number
+		Button assignNewEpidNumberButton = ButtonHelper.createButton(Captions.actionAssignNewEpidNumber, e -> {
 			epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue().toReference()));
-		});
+		}, ValoTheme.BUTTON_DANGER, FORCE_CAPTION);
+
+		getContent().addComponent(assignNewEpidNumberButton, ASSIGN_NEW_EPID_NUMBER_LOC);
+		assignNewEpidNumberButton.setVisible(false);
 
 		Label epidNumberWarningLabel = new Label(I18nProperties.getString(Strings.messageEpidNumberWarning));
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
@@ -297,7 +299,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 		
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
-			CheckBox cbSharedToCountry = addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
+			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 		
@@ -308,11 +310,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
 		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
-		addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class).setRows(3);
+		Label generalCommentLabel = new Label(
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
+		generalCommentLabel.addStyleName(H3);
+		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
-		addFields(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES,
-				CaseDataDto.VACCINATION_INFO_SOURCE, CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR,
-				CaseDataDto.SMALLPOX_VACCINATION_RECEIVED, CaseDataDto.VACCINATION_DATE);
+		TextArea additionalDetails = addField(CaseDataDto.ADDITIONAL_DETAILS, TextArea.class);
+		additionalDetails.setRows(3);
+		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addField(CaseDataDto.PREGNANT, OptionGroup.class);
+		addField(CaseDataDto.POSTPARTUM, OptionGroup.class);
+		addField(CaseDataDto.TRIMESTER, OptionGroup.class);
+		FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.TRIMESTER, CaseDataDto.PREGNANT,
+				Arrays.asList(YesNoUnknown.YES), true);
+
+		addFields(CaseDataDto.VACCINATION, CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION_INFO_SOURCE,
+				CaseDataDto.VACCINE, CaseDataDto.SMALLPOX_VACCINATION_SCAR, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED,
+				CaseDataDto.VACCINATION_DATE);
 
 		// Set initial visibilities
 
@@ -334,7 +349,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// dynamically setting the visibility
 
 		if (isVisibleAllowed(CaseDataDto.PREGNANT)) {
-			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT);
+			setVisible(person.getSex() == Sex.FEMALE, CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM);
 		}
 		if (isVisibleAllowed(CaseDataDto.VACCINATION_DOSES)) {
 			FieldHelper.setVisibleWhen(getFieldGroup(), CaseDataDto.VACCINATION_DOSES, CaseDataDto.VACCINATION,
@@ -432,11 +447,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade()
 				.getByDisease(disease);
 		if (disease != Disease.OTHER && diseaseClassificationCriteria != null) {
-			Button classificationRulesButton = new Button(I18nProperties.getCaption(Captions.info), VaadinIcons.INFO_CIRCLE);
-			style(classificationRulesButton, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
-			classificationRulesButton.addClickListener(e -> {
+			Button classificationRulesButton = ButtonHelper.createIconButton(Captions.info, VaadinIcons.INFO_CIRCLE, e -> {
 				ControllerProvider.getCaseController().openClassificationRulesPopup(diseaseClassificationCriteria);
-			});
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}

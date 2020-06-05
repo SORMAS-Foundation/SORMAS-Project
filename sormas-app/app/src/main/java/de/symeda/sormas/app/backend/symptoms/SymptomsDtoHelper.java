@@ -212,6 +212,19 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
         target.setLossOfSmell(source.getLossOfSmell());
         target.setLossOfTaste(source.getLossOfTaste());
+        target.setCoughWithSputum(source.getCoughWithSputum());
+        target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
+        target.setLymphadenopathy(source.getLymphadenopathy());
+        target.setWheezing(source.getWheezing());
+        target.setSkinUlcers(source.getSkinUlcers());
+        target.setInabilityToWalk(source.getInabilityToWalk());
+        target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
+        target.setOtherComplications(source.getOtherComplications());
+        target.setOtherComplicationsText(source.getOtherComplicationsText());
+        target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+        target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+        target.setFastHeartRate(source.getFastHeartRate());
+        target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
     }
 
     @Override
@@ -370,5 +383,18 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
         target.setPneumoniaClinicalOrRadiologic(source.getPneumoniaClinicalOrRadiologic());
         target.setLossOfSmell(source.getLossOfSmell());
         target.setLossOfTaste(source.getLossOfTaste());
+        target.setCoughWithSputum(source.getCoughWithSputum());
+        target.setCoughWithHeamoptysis(source.getCoughWithHeamoptysis());
+        target.setLymphadenopathy(source.getLymphadenopathy());
+        target.setWheezing(source.getWheezing());
+        target.setSkinUlcers(source.getSkinUlcers());
+        target.setInabilityToWalk(source.getInabilityToWalk());
+        target.setInDrawingOfChestWall(source.getInDrawingOfChestWall());
+        target.setOtherComplications(source.getOtherComplications());
+        target.setOtherComplicationsText(source.getOtherComplicationsText());
+        target.setRespiratoryDiseaseVentilation(source.getRespiratoryDiseaseVentilation());
+        target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
+        target.setFastHeartRate(source.getFastHeartRate());
+        target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
     }
 }

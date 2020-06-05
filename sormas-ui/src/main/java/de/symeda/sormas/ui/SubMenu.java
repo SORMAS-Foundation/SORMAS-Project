@@ -66,6 +66,7 @@ public class SubMenu extends CssLayout {
     	tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
 
     	CssLayout tabItem = new CssLayout();
+    	tabItem.setId("tab-" + name.replaceAll("/", "-"));
     	tabItem.setSizeUndefined();
     	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
     	if (isBackNavigation) {

@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.i18n;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.ResourceBundle;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,11 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
-
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.ResourceBundle;
 
 public final class I18nProperties {
 
@@ -98,13 +97,19 @@ public final class I18nProperties {
 
 	@SuppressWarnings("rawtypes")
 	public static String getEnumCaption(Enum value) {
-		String caption = getInstance(userLanguage.get()).enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
+		final Language language = userLanguage.get();
+		return getEnumCaption(language, value);
+	}
+
+	public static String getEnumCaption(Language language, Enum value) {
+		String caption = getInstance(language).enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
 		if (caption != null) {
 			return caption;
 		} else {
 			return value.name();
 		}
 	}
+
 
 	/**
 	 * Retrieves the property by adding an additional string in between the class name and the property name,
@@ -173,6 +178,23 @@ public final class I18nProperties {
 		}
 
 		return propertyId;
+	}
+
+	/**
+	 * Iterates through the prefixes to determines the caption for the specified propertyId.
+	 *
+	 * @return
+	 */
+	public static String findPrefixCaptionWithDefault(String propertyId, String defaultValue, String ... prefixes) {
+
+		for (String prefix : prefixes) {
+			final String caption = I18nProperties.getPrefixCaption(prefix, propertyId, null);
+			if (caption != null) {
+				return caption;
+			}
+		}
+
+		return defaultValue;
 	}
 
 	public static String getDescription(String key) {
