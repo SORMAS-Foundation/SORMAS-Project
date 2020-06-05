@@ -26,20 +26,20 @@ If anything goes wrong during the automatic database update process when deployi
 These are the default users for most user roles, intended to be used on development or demo systems. In all cases except the admin user, the username and password are identical. Make sure to deactivate them or change the passwords on productive systems.
 
 ### Admin
-**Username:** admin
+**Username:** admin  
 **Password:** sadmin
 
 ### Web users
-**Surveillance Supervisor:** SurvSup
-**Case Supervisor:** CaseSup
-**Contact Supervisor:** ContSup
-**Point of Entry Supervisor:** PoeSup
-**Laboratory Officer:** LabOff
-**Event Officer:** EveOff
-**National User:** NatUser
-**National Clinician:** NatClin
+**Surveillance Supervisor:** SurvSup  
+**Case Supervisor:** CaseSup  
+**Contact Supervisor:** ContSup  
+**Point of Entry Supervisor:** PoeSup  
+**Laboratory Officer:** LabOff  
+**Event Officer:** EveOff  
+**National User:** NatUser  
+**National Clinician:** NatClin  
 
 ### Mobile app users
-**Surveillance Officer:** SurvOff
-**Hospital Informant:** HospInf
-**Point of Entry Informant:** PoeInf
+**Surveillance Officer:** SurvOff  
+**Hospital Informant:** HospInf  
+**Point of Entry Informant:** PoeInf  
