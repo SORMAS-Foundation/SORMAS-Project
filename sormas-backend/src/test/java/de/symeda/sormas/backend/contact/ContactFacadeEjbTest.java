@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
+import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -62,6 +64,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -70,6 +74,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -78,7 +83,10 @@ import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
@@ -257,6 +265,114 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		assertThat(result[0], equalTo(0));
 		assertThat(result[1], equalTo(0));
 		assertThat(result[2], equalTo(0));
+	}
+
+	@Test
+	public void testGetNonSourceCaseCountForDashboard() {
+
+		ContactFacade cut = getBean(ContactFacadeEjbLocal.class);
+
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson("Case", "Person");
+		Disease disease = Disease.OTHER;
+
+		// 1. A case not resulted of a contact: 0
+		CaseDataDto caseWithoutContact = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			disease,
+			CaseClassification.CONFIRMED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		assertThat(cut.getNonSourceCaseCountForDashboard(Collections.singletonList(caseWithoutContact.getUuid())), equalTo(0));
+
+		// 2. Another case, but created from a contact: 1
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), disease);
+		CaseDataDto caseWithContact = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			disease,
+			CaseClassification.CONFIRMED,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		contact.setResultingCase(caseWithContact.toReference());
+		contact = getContactFacade().saveContact(contact);
+		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(caseWithoutContact.getUuid(), caseWithContact.getUuid())), equalTo(1));
+
+		// 3. Some more cases
+		{
+			CaseDataDto caseWithoutContact2 = creator.createCase(
+				user.toReference(),
+				person.toReference(),
+				disease,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+			ContactDto contact2 = creator.createContact(user.toReference(), person.toReference(), disease);
+			CaseDataDto caseWithContact2 = creator.createCase(
+				user.toReference(),
+				person.toReference(),
+				disease,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+			contact2.setResultingCase(caseWithContact2.toReference());
+			contact2 = getContactFacade().saveContact(contact2);
+
+			ContactDto contact3 = creator.createContact(user.toReference(), person.toReference(), disease);
+			CaseDataDto caseWithContact3 = creator.createCase(
+				user.toReference(),
+				person.toReference(),
+				disease,
+				CaseClassification.CONFIRMED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+			contact3.setResultingCase(caseWithContact3.toReference());
+			contact3 = getContactFacade().saveContact(contact3);
+
+			assertThat(
+				cut.getNonSourceCaseCountForDashboard(
+					Arrays.asList(
+						caseWithoutContact.getUuid(),
+						caseWithContact.getUuid(),
+						caseWithoutContact2.getUuid(),
+						caseWithContact2.getUuid(),
+						caseWithContact3.getUuid())),
+				equalTo(3));
+		}
+	}
+
+	@Test
+	public void testGetNonSourceCaseCountForDashboardVariousInClauseCount() {
+
+		ContactFacade cut = getBean(ContactFacadeEjbLocal.class);
+
+		// 0. Works for 0 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Collections.emptyList()), equalTo(0));
+		assertThat(cut.getNonSourceCaseCountForDashboard(null), equalTo(0));
+
+		// 1a. Works for 1 case
+		assertThat(cut.getNonSourceCaseCountForDashboard(Collections.singletonList(DataHelper.createUuid())), equalTo(0));
+
+		// 1b. Works for 2 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(DataHelper.createUuid(), DataHelper.createUuid())), equalTo(0));
+
+		// 1c. Works for 3 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(DataHelper.createUuid(), DataHelper.createUuid(), DataHelper.createUuid())), equalTo(0));
+
+		// 2a. Works for 1_000 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(TestDataCreator.createValuesList(1_000, i -> DataHelper.createUuid())), equalTo(0));
+
+		// 2b. Works for 100_000 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(TestDataCreator.createValuesList(100_000, i -> DataHelper.createUuid())), equalTo(0));
 	}
 
 	@Test

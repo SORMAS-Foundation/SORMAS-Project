@@ -17,6 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Function;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -393,7 +400,7 @@ public class TestDataCreator {
 
 		return sample;
 	}
-	
+
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
@@ -644,6 +651,19 @@ public class TestDataCreator {
 		config.setPrimaryDisease(primary);
 		config.setCaseBased(caseBased);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
+	}
+
+	/**
+	 * Creates a list with {@code count} values of type {@code T}.
+	 * The list index is given to the {@code valueSupplier} for each value to create.
+	 */
+	public static <T> List<T> createValuesList(int count, Function<Integer, T> valueSupplier) {
+
+		List<T> values = new ArrayList<>(count);
+		for (int i = 0; i < count; i++) {
+			values.add(valueSupplier.apply(i));
+		}
+		return values;
 	}
 
 	/**

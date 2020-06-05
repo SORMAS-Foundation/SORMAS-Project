@@ -17,6 +17,42 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -85,6 +121,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -706,16 +743,21 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> contact = cq.from(Contact.class);
-		Join<Contact, Case> caseJoin = contact.join(Contact.RESULTING_CASE, JoinType.LEFT);
 
-		cq.where(caseJoin.get(Case.UUID).in(caseUuids));
-		cq.select(cb.count(caseJoin.get(Case.ID)));
-		cq.distinct(true);
+		if (CollectionUtils.isEmpty(caseUuids)) {
+			// Avoid empty IN clause
+			return 0;
+		}
 
-		return em.createQuery(cq).getSingleResult().intValue();
+		Query query = em.createNativeQuery(
+			String.format(
+				"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (%s)",
+				Contact.RESULTING_CASE.toLowerCase(),
+				Case.UUID,
+				QueryHelper.concatStrings(caseUuids)));
+
+		BigInteger count = (BigInteger) query.getSingleResult();
+		return count.intValue();
 	}
 
 	public Contact fromDto(@NotNull ContactDto source) {
