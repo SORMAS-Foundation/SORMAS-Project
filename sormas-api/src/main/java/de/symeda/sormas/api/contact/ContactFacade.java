@@ -86,6 +86,11 @@ public interface ContactFacade {
 
 	int[] getContactCountsByCasesForDashboard(List<Long> contactIds);
 
+	/**
+	 * @param caseUuids
+	 *            The cases to check, how much of them where created from a contact.
+	 * @return Number of cases, that resulted from a contact.
+	 */
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
 	void validate(ContactDto contact) throws ValidationRuntimeException;
