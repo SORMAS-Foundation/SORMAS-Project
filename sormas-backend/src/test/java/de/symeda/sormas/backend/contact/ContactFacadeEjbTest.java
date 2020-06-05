@@ -71,6 +71,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -343,6 +345,31 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 						caseWithContact3.getUuid())),
 				equalTo(3));
 		}
+	}
+
+	@Test
+	public void testGetNonSourceCaseCountForDashboardVariousInClauseCount() {
+
+		ContactFacade cut = getBean(ContactFacadeEjbLocal.class);
+
+		// 0. Works for 0 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Collections.emptyList()), equalTo(0));
+		assertThat(cut.getNonSourceCaseCountForDashboard(null), equalTo(0));
+
+		// 1a. Works for 1 case
+		assertThat(cut.getNonSourceCaseCountForDashboard(Collections.singletonList(DataHelper.createUuid())), equalTo(0));
+
+		// 1b. Works for 2 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(DataHelper.createUuid(), DataHelper.createUuid())), equalTo(0));
+
+		// 1c. Works for 3 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(DataHelper.createUuid(), DataHelper.createUuid(), DataHelper.createUuid())), equalTo(0));
+
+		// 2a. Works for 1_000 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(TestDataCreator.createValuesList(1_000, i -> DataHelper.createUuid())), equalTo(0));
+
+		// 2b. Works for 100_000 cases
+		assertThat(cut.getNonSourceCaseCountForDashboard(TestDataCreator.createValuesList(100_000, i -> DataHelper.createUuid())), equalTo(0));
 	}
 
 	@Test
