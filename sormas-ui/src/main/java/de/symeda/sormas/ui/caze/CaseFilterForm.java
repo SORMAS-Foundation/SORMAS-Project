@@ -1,12 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Date;
-import java.util.stream.Stream;
-
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -18,7 +11,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -40,11 +32,12 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.*;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.*;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
@@ -136,7 +129,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		reportingUserField
 				.setInputPrompt(I18nProperties.getPrefixCaption(propertyI18nPrefix, CaseDataDto.REPORTING_USER));
 
-		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
+		Field quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
+		quarantineTo.removeAllValidators();
 
 		addField(moreFiltersContainer, CheckBox.class,
 				FieldConfiguration.withCaptionAndStyle(CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
@@ -308,12 +302,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
 		Date newCaseDateFrom = criteria.getNewCaseDateFrom();
 		Date newCaseDateTo = criteria.getNewCaseDateTo();
-		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
-			weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
-			weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
-		} else {
-			weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
-			weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+		if (newCaseDateFrom != null && newCaseDateTo != null) {
+			if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
+				weekAndDateFilter.getWeekFromFilter().setValue(DateHelper.getEpiWeek(newCaseDateFrom));
+				weekAndDateFilter.getWeekToFilter().setValue(DateHelper.getEpiWeek(newCaseDateTo));
+			} else {
+				weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
+				weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
+			}
 		}
 	}
 

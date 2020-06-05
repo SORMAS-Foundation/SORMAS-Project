@@ -28,7 +28,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 
-public class CaseIndexDto implements Serializable {
+public class CaseIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -289,6 +289,11 @@ public class CaseIndexDto implements Serializable {
 	@Override
 	public String toString() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	public String getUuid() {

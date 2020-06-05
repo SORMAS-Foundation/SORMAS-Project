@@ -9,7 +9,6 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.PopupDateField;
 import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
@@ -28,11 +27,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.AbstractFilterForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
-import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.*;
 
 import java.util.Date;
 import java.util.stream.Stream;
@@ -103,10 +98,12 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.CONTACT_OFFICER, I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID), 140));
 		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
-		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.FOLLOW_UP_UNTIL_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL), 200));
+		Field followUpUntilTo = addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.FOLLOW_UP_UNTIL_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.FOLLOW_UP_UNTIL), 200));
+		followUpUntilTo.removeAllValidators();
 		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.QUARANTINE_TYPE, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE), 140));
 
-		addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactDto.QUARANTINE_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO), 140));
+		Field quarantineTo = addField(moreFiltersContainer, FieldConfiguration.withCaptionAndPixelSized(ContactDto.QUARANTINE_TO, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO), 140));
+		quarantineTo.removeAllValidators();
 
 		if (isGermanServer()) {
 			addField(moreFiltersContainer, CheckBox.class, FieldConfiguration.withCaptionAndStyle(ContactCriteria.QUARANTINE_ORDERED_VERBALLY, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY), null, CssStyles.CHECKBOX_FILTER_INLINE));
