@@ -23,7 +23,10 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
@@ -63,5 +66,7 @@ public interface SampleFacade {
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
 	
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
+	
+	Map<SampleCountType, Long> getSampleCount(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 	
 }

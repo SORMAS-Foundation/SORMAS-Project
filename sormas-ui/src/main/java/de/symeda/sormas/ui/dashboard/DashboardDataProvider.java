@@ -39,6 +39,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleCountType;
 
 public class DashboardDataProvider {
 
@@ -69,6 +70,7 @@ public class DashboardDataProvider {
 	private Map<EventStatus, Long> eventCountByStatus;
 	private List<DashboardTestResultDto> testResults = new ArrayList<>();
 	private List<DashboardTestResultDto> previousTestResults = new ArrayList<>();
+	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
 
 	public void refreshData() {
 		// Update the entities lists according to the filters
@@ -88,6 +90,12 @@ public class DashboardDataProvider {
 					toDate));
 			setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
 					previousFromDate, previousToDate));
+		}
+		
+		if (getDashboardType() == DashboardType.SAMPLES) {
+			//Samples counts
+			setSampleCount(FacadeProvider.getSampleFacade().getSampleCount(region, district, disease, fromDate,
+					toDate) );
 		}
 
 		if (getDashboardType() == DashboardType.CONTACTS || this.disease != null) {
@@ -303,4 +311,11 @@ public class DashboardDataProvider {
 		this.dashboardType = dashboardType;
 	}
 
+	public Map<SampleCountType, Long> getSampleCount() {
+		return sampleCount;
+	}
+
+	public void setSampleCount(Map<SampleCountType, Long> sampleCount) {
+		this.sampleCount = sampleCount;
+	}
 }

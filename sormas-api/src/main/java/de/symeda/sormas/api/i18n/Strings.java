@@ -382,6 +382,7 @@ public interface Strings {
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
 	String infoSampleAdditionalTesting = "infoSampleAdditionalTesting";
+	String infoSampleDashboard = "infoSampleDashboard";
 	String infoSampleExport = "infoSampleExport";
 	String infoSamplePathogenTesting = "infoSamplePathogenTesting";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";

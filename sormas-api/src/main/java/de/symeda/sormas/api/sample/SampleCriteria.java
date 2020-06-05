@@ -24,6 +24,7 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -73,6 +74,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
+	
+	public SampleCriteria region(RegionReferenceDto region){
+		setRegion(region);
+
+		return this;
+	}
 
 	public DistrictReferenceDto getDistrict() {
 		return district;
@@ -80,6 +87,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+	
+	public SampleCriteria district(DistrictReferenceDto district){
+		setDistrict(district);
+
+		return this;
 	}
 
 	public FacilityReferenceDto getLaboratory() {
@@ -156,6 +169,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
 	}
+	
+	public SampleCriteria pathogenTestResult(PathogenTestResultType pathogenTestResult){
+		setPathogenTestResult(pathogenTestResult);
+
+		return this;
+	}
 
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
@@ -171,6 +190,12 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+	
+	public SampleCriteria disease(Disease disease){
+		setDisease(disease);
+
+		return this;
 	}
 
 	public CaseReferenceDto getCaze() {
@@ -197,6 +222,11 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
+	}
+	
+	public SampleCriteria specimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
+		return this;
 	}
 
 	public SampleAssociationType getSampleAssociationType() {

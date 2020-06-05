@@ -24,6 +24,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.SampleCountType;
 
 public final class CssStyles {
 
@@ -363,6 +364,36 @@ public final class CssStyles {
 			return "background-disease-coronavirus";
 		default:
 			throw new IllegalArgumentException(disease.toString());
+		}
+	}
+	
+	/**
+	 * Returns CSS style name defined in VAADIN/themes/sormas/views/samplecount.scss 
+	 */
+	public static String getSampleCountColor(SampleCountType count) {
+		switch (count) {
+		case TOTAL:
+			return "background-sample-count-total";
+		case INDETERMINATE:
+			return "background-sample-count-adequate";
+		case ADEQUATE:
+			return "background-sample-count-adequate";
+		case INADEQUATE:
+			return "background-sample-count-inadequate";
+		case POSITIVE:
+			return "background-sample-count-positives";
+		case NEGATIVE:
+			return "background-sample-count-negatives";
+		case PENDING:
+			return "background-sample-count-pendings";
+		case SHIPPED:
+			return "background-sample-count-shipped";
+		case NOT_SHIPED:
+			return "background-sample-count-not-shipped";
+		case RECEIVED:
+			return "background-sample-count-recieved";
+		default:
+			throw new IllegalArgumentException(count.toString());
 		}
 	}
 }

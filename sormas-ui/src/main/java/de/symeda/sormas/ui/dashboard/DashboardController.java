@@ -22,6 +22,7 @@ import com.vaadin.navigator.Navigator;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
+import de.symeda.sormas.ui.dashboard.samples.SamplesDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 
 public class DashboardController {
@@ -36,6 +37,9 @@ public class DashboardController {
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			navigator.addView(ContactsDashboardView.VIEW_NAME, ContactsDashboardView.class);
+		}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SAMPLE_ACCESS)) {
+			navigator.addView(SamplesDashboardView.VIEW_NAME, SamplesDashboardView.class);
 		}
 	}
 }

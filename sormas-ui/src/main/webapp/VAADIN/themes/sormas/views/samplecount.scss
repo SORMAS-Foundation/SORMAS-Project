@@ -1,0 +1,193 @@
+
+@mixin sormas-sample-count-styles {
+
+  .background-sample-count-total {
+  	background-color: #00E0A1;
+  	fill: #00E0A1;
+  	
+  	&.background-darker {
+  		background-color: #00B582;
+  		fill: #00B582;
+  	}
+  }
+  .background-sample-count-adequate {
+  	background-color: #FEBA01;
+  	fill: #FEBA01;
+  	
+  	&.background-darker {
+  		background-color: #E5A701;
+  		fill: #E5A701;
+  	}
+  }
+  .background-sample-count-inadequate{
+  	background-color: #59BDEF;
+  	fill: #59BDEF;
+  	
+  	&.background-darker {
+  		background-color: #50AAD7;
+  		fill: #50AAD7;
+  	}
+  }
+  .background-sample-count-positives {
+  	background-color: #44BEC7;
+  	fill: #44BEC7;
+  	
+  	&.background-darker {
+  		background-color: #3DABB3;
+  		fill: #3DABB3;
+  	}
+  }
+  .background-sample-count-negatives {
+  	background-color: #8C45AD;
+  	fill: #8C45AD;
+  	
+  	&.background-darker {
+  		background-color: #7E3E9C;
+  		fill: #7E3E9C;
+  	}
+  }
+  .background-sample-count-pendings {
+  	background-color: #3FD100;
+  	fill: #3FD100;
+  	
+  	&.background-darker {
+  		background-color: #38BA00;
+  		fill: #38BA00;
+  	}
+  }
+  .background-sample-count-shipped {
+  	background-color: #EA579B;
+  	fill: #EA579B;
+  	
+  	&.background-darker {
+  		background-color: #D34E8B;
+  		fill: #D34E8B;
+  	}
+  }
+  .background-sample-count-not-shipped {
+  	background-color: #66AD45;
+  	fill: #66AD45;
+  	
+  	&.background-darker {
+  		background-color: #5C9C3E;
+  		fill: #5C9C3E;
+  	}
+  }
+  .background-sample-count-recieved {
+  	background-color: #FF9299;
+  	fill: #FF9299;
+  	
+  	&.background-darker {
+  		background-color: #E5838A;
+  		fill: #E5838A;
+  	}
+  }
+/*  .background-disease-new-flu {
+  	background-color: #4550AC;
+  	fill: #4550AC;
+  	
+  	&.background-darker {
+  		background-color: #3E489B;
+  		fill: #3E489B;
+  	}
+  }
+  .background-disease-plague {
+  	background-color: #8270CC;
+  	fill: #8270CC;
+  	
+  	&.background-darker {
+  		background-color: #7565B8;
+  		fill: #7565B8;
+  	}
+  }
+  .background-disease-polio {
+  	background-color: #A6E300;
+  	fill: #A6E300;
+  	
+  	&.background-darker {
+  		background-color: #96CC00;
+  		fill: #96CC00;
+  	}
+  }
+  .background-disease-unspecified-vhf {
+  	background-color: #448282;
+  	fill: #448282;
+  	
+  	&.background-darker {
+  		background-color: #2F4F4F;
+  		fill: #2F4F4F;
+  	}
+  }
+  .background-disease-west-nile-fever {
+  	background-color: #87CEFA;
+  	fill: #87CEFA;
+  	
+  	&.background-darker {
+  		background-color: #5b94b7;
+  		fill: #5b94b7;
+  	}
+  }
+  .background-disease-yellow-fever {
+  	background-color: #E2D320;
+  	fill: #E2D320;
+  	
+  	&.background-darker {
+  		background-color: #CBBE1D;
+  		fill: #CBBE1D;
+  	}
+  }
+  .background-disease-congenital-rubella {
+    background-color: #d4d4f7;
+    fill: #d4d4f7;
+    
+    &.background-darker {
+    	background-color: #aaaaee;
+    	fill: #aaaaee;
+   	}
+  }
+  .background-disease-other {
+  	background-color: #888;
+  	fill: #888;
+  	
+  	&.background-darker {
+  		background-color: #6D6D6D;
+  		fill: #6D6D6D;
+  	}
+  }
+  .background-disease-undefined {
+  	background-color: #cccccc;
+  	fill: #cccccc;
+  	
+  	&.background-darker {
+  		background-color: #d9d9d9;
+  		filled: #d9d9d9;
+  	}
+  }
+  .background-disease-rabies {
+  	background-color: #ef5a6c;
+  	fill: #ef5a6c;
+  	
+  	&.background-darker {
+  		background-color: #e04a5b;
+  		filled: #e04a5b;
+  	}
+  }
+  .background-disease-anthrax {
+  	background-color: #5a95f4;
+  	fill: #5a95f4;
+  	
+  	&.background-darker {
+  		background-color: #3b7fed;
+		filled: #3b7fed;
+	}
+  }
+  .background-disease-coronavirus {
+  	background-color: #bf8678;
+  	fill: #bf8678;
+  	
+  	&.background-darker {
+  		background-color: #b0796b;
+  		filled: #b0796b;
+  	}
+  }*/
+}

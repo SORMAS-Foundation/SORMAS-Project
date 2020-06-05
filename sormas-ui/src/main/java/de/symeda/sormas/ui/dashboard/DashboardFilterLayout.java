@@ -105,7 +105,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		createDateFilters();
 		createRegionAndDistrictFilter();
-		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS) {
+		if (dashboardDataProvider.getDashboardType() == DashboardType.CONTACTS || dashboardDataProvider.getDashboardType() == DashboardType.SAMPLES) {
 			createDiseaseFilter();
 		}
 	}

@@ -15,18 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.dashboard;
+package de.symeda.sormas.api.sample;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum DashboardType {
-
-	SURVEILLANCE,
-	CONTACTS,
-	SAMPLES;
+public enum SampleCountType {
+	TOTAL,
+	INDETERMINATE,
+	PENDING,
+	NEGATIVE,
+	POSITIVE,
+	
+	ADEQUATE,
+	INADEQUATE,
+	SHIPPED,
+	NOT_SHIPED,
+	RECEIVED
+	;
 	
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 	
 }
