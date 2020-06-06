@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.utils.PersonalData;
+
 import java.io.Serializable;
 
 public class BirthDateDto implements Serializable {
+	@PersonalData
 	private Integer birthdateDD;
 	private Integer birthdateMM;
 	private Integer birthdateYYYY;
@@ -15,6 +18,10 @@ public class BirthDateDto implements Serializable {
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 
 	public Integer getBirthdateMM() {

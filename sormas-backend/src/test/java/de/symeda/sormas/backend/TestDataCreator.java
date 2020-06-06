@@ -42,8 +42,11 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -78,6 +81,11 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.function.Consumer;
 
 public class TestDataCreator {
 
@@ -126,8 +134,12 @@ public class TestDataCreator {
 
 		return cazePerson;
 	}
-	
+
 	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null);
+	}
+
+	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD, LocationDto address) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
@@ -135,6 +147,11 @@ public class TestDataCreator {
 		person.setBirthdateYYYY(birthdateYYYY);
 		person.setBirthdateMM(birthdateMM);
 		person.setBirthdateDD(birthdateDD);
+
+		if(address != null){
+			person.setAddress(address);
+		}
+
 		person = beanTest.getPersonFacade().savePerson(person);
 		
 		return person;
@@ -153,6 +170,10 @@ public class TestDataCreator {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
 	}
 
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
+		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
 			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
 			RDCFEntities rdcf) {
@@ -166,10 +187,15 @@ public class TestDataCreator {
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
 		return beanTest.getCaseFacade().saveCase(aCase);
 	}
-	
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
-			CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
-			RDCF rdcf) {
+								  CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+								  RDCF rdcf) {
+		return createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, rdcf, null);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto cazePerson, Disease disease,
+								  CaseClassification caseClassification, InvestigationStatus investigationStatus, Date reportAndOnsetDate,
+								  RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
 		CaseDataDto caze = CaseDataDto.build(cazePerson, disease);
 		caze.setReportDate(reportAndOnsetDate);
 		caze.setReportingUser(user);
@@ -180,6 +206,11 @@ public class TestDataCreator {
 		caze.setDistrict(rdcf.district);
 		caze.setCommunity(rdcf.community);
 		caze.setHealthFacility(rdcf.facility);
+		caze.setPointOfEntry(rdcf.pointOfEntry);
+
+		if(setCustomFields != null){
+			setCustomFields.accept(caze);
+		}
 
 		caze = beanTest.getCaseFacade().saveCase(caze);
 
@@ -213,30 +244,37 @@ public class TestDataCreator {
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
-		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null);
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
-		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease);
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
 	}
 	
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Date reportDateTime) {
-		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null);
+		return createContact(reportingUser, null, contactPerson, null, reportDateTime, null, null, null);
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, CaseDataDto caze) {
-		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null);
+		return createContact(reportingUser, null, contactPerson, caze, new Date(), null, null, null);
 	}
-	
+
 	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease) {
+		return createContact(reportingUser, contactOfficer, contactPerson, caze, reportDateTime, lastContactDate, disease, null);
+	}
+
+	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
+			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf) {
 		ContactDto contact;
 		
 		if (caze != null) {
 			contact = ContactDto.build(caze);
 		} else {
 			contact = ContactDto.build(null, disease != null ? disease : Disease.EVD, null);
-			RDCF rdcf = createRDCF();
+			if(rdcf == null) {
+				rdcf = createRDCF();
+			}
 			contact.setRegion(rdcf.region);
 			contact.setDistrict(rdcf.district);
 		}
@@ -349,7 +387,20 @@ public class TestDataCreator {
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
 		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
 	}
-	
+
+	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
+		sample.setSampleDateTime(new Date());
+		sample.setReportDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
 	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
@@ -364,6 +415,7 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	@Deprecated
 	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
 			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
@@ -372,6 +424,20 @@ public class TestDataCreator {
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+
+		return sample;
+	}
+
+	public SampleDto createSample(ContactReferenceDto associatedContact, Date sampleDateTime, Date reportDateTime,
+								  UserReferenceDto reportingUser, SampleMaterial sampleMaterial, FacilityReferenceDto lab) {
+		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
 
 		sample = beanTest.getSampleFacade().saveSample(sample);
 
@@ -446,15 +512,25 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
+		return createRDCF(regionName, districtName, communityName, facilityName, null);
+	}
+
+	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName, String pointOfEntryName) {
 		Region region = createRegion(regionName);
 		District district = createDistrict(districtName, region);
 		Community community = createCommunity(communityName, district);
 		Facility facility = createFacility(facilityName, region, district, community);
 
+		PointOfEntry pointOfEntry = null;
+		if(pointOfEntryName != null){
+			pointOfEntry = createPointOfEntry(pointOfEntryName, region, district);
+		}
+
 		return new RDCF(new RegionReferenceDto(region.getUuid(), region.getName()),
 				new DistrictReferenceDto(district.getUuid(), district.getName()),
 				new CommunityReferenceDto(community.getUuid(), community.getName()),
-				new FacilityReferenceDto(facility.getUuid(), facility.getName()));
+				new FacilityReferenceDto(facility.getUuid(), facility.getName()),
+				pointOfEntry != null ? new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName()) : null);
 	}
 
 	public RDCFEntities createRDCFEntities() {
@@ -548,6 +624,18 @@ public class TestDataCreator {
 		return pointOfEntry;
 	}
 
+	public PointOfEntryDto createPointOfEntry(String pointOfEntryName, RegionReferenceDto region, DistrictReferenceDto district) {
+		PointOfEntryDto pointOfEntry = PointOfEntryDto.build();
+		pointOfEntry.setUuid(DataHelper.createUuid());
+		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+		pointOfEntry.setName(pointOfEntryName);
+		pointOfEntry.setDistrict(district);
+		pointOfEntry.setRegion(region);
+		beanTest.getPointOfEntryFacade().save(pointOfEntry);
+
+		return pointOfEntry;
+	}
+
 	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
 		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
 		populationData.setRegion(region);
@@ -566,7 +654,7 @@ public class TestDataCreator {
 	}
 
 	/**
-	 * Creates a list with {@code count} values of type {@code T}. 
+	 * Creates a list with {@code count} values of type {@code T}.
 	 * The list index is given to the {@code valueSupplier} for each value to create.
 	 */
 	public static <T> List<T> createValuesList(int count, Function<Integer, T> valueSupplier) {
@@ -603,14 +691,20 @@ public class TestDataCreator {
 		public DistrictReferenceDto district;
 		public CommunityReferenceDto community;
 		public FacilityReferenceDto facility;
+		public PointOfEntryReferenceDto pointOfEntry;
 
 		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
+			this(region, district, community, facility, null);
+		}
+
+		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility, PointOfEntryReferenceDto pointOfEntry) {
 			this.region = region;
 			this.district = district;
 			this.community = community;
 			this.facility = facility;
+			this.pointOfEntry = pointOfEntry;
 		}
-		
+
 		public RDCF(RDCFEntities rdcfEntities) {
 			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName());
 			this.district = new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName());

@@ -17,23 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
@@ -55,6 +38,22 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Audited
 public class Contact extends CoreAdo {
@@ -62,7 +61,7 @@ public class Contact extends CoreAdo {
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String TABLE_NAME = "contact";
-	
+
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -112,7 +111,7 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-	
+
 	private Date reportDateTime;
 	private User reportingUser;
 	private Double reportLat;
@@ -121,7 +120,7 @@ public class Contact extends CoreAdo {
 
 	private Region region;
 	private District district;
-	
+
 	private Person person;
 	private Case caze;
 	private Disease disease;
@@ -139,19 +138,19 @@ public class Contact extends CoreAdo {
 	private User contactOfficer;
 	private String description;
 	private String externalID;
-	
+
 	private Case resultingCase;
 	private User resultingCaseUser;
-	
+
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
-	
+
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
-	
+
 	private String caseIdExternalSystem;
 	private String caseOrEventInformation;
 
@@ -178,11 +177,11 @@ public class Contact extends CoreAdo {
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn
 	public Case getCaze() {
@@ -218,7 +217,7 @@ public class Contact extends CoreAdo {
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable=false)
 	public User getReportingUser() {
@@ -227,7 +226,7 @@ public class Contact extends CoreAdo {
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLastContactDate() {
 		return lastContactDate;
@@ -235,7 +234,7 @@ public class Contact extends CoreAdo {
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
@@ -288,7 +287,7 @@ public class Contact extends CoreAdo {
 
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
-	}	
+	}
 
 	@Enumerated(EnumType.STRING)
 	public ContactStatus getContactStatus() {
@@ -303,7 +302,7 @@ public class Contact extends CoreAdo {
 	public ContactRelation getRelationToCase() {
 		return relationToCase;
 	}
-	
+
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
@@ -331,15 +330,22 @@ public class Contact extends CoreAdo {
 	public String toString() {
 		Person contactPerson = getPerson();
 		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
-				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
+				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null, getUuid());
 	}
-	
+
 	public ContactReferenceDto toReference() {
 		Person contactPerson = getPerson();
-		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(),
-				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null);
+
+		String casePersonFirstName = null;
+		String casePersonLastName = null;
+		if(getCaze() != null){
+			casePersonFirstName = getCaze().getPerson().getFirstName();
+			casePersonLastName = getCaze().getPerson().getLastName();
+		}
+
+		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName);
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
 	public List<Task> getTasks() {
 		return tasks;
@@ -370,7 +376,7 @@ public class Contact extends CoreAdo {
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
-	
+
 	public Double getReportLon() {
 		return reportLon;
 	}
@@ -521,7 +527,7 @@ public class Contact extends CoreAdo {
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
-	
+
 	@Column(length = 512)
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
@@ -620,7 +626,7 @@ public class Contact extends CoreAdo {
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
-	
+
 	@Column(length = 512)
 	public String getAdditionalDetails() {
 		return additionalDetails;

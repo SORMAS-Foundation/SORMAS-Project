@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class MapCaseDto implements Serializable {
 
@@ -35,30 +36,37 @@ public class MapCaseDto implements Serializable {
 	private CaseClassification caseClassification;
 	private Disease disease;
 	private PersonReferenceDto person;
-	private String healthFacilityUuid;
+	@PersonalData
 	private Double healthFacilityLat;
+	@PersonalData
 	private Double healthFacilityLon;
 	private Double reportLat;
 	private Double reportLon;
+	@PersonalData
 	private Double addressLat;
+	@PersonalData
 	private Double addressLon;
+	private CaseJurisdictionDto jurisdiction;
 
 	public MapCaseDto(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
-			String personUuid, String personFirstName, String personLastName, 
+			String personUuid, String personFirstName, String personLastName,
 			String healthFacilityUuid, Double healthFacilityLat, Double healthFacilityLon,
-			Double reportLat, Double reportLon, Double addressLat, Double addressLon) {
+			Double reportLat, Double reportLon, Double addressLat, Double addressLon,
+			String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, String pointOfEntryUuid
+	) {
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.caseClassification = caseClassification;
 		this.disease = disease;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
-		this.healthFacilityUuid = healthFacilityUuid;
 		this.setHealthFacilityLat(healthFacilityLat);
 		this.setHealthFacilityLon(healthFacilityLon);
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
 		this.addressLat = addressLat;
 		this.addressLon = addressLon;
+
+		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
 
 	public String getUuid() {
@@ -94,11 +102,7 @@ public class MapCaseDto implements Serializable {
 	}
 
 	public String getHealthFacilityUuid() {
-		return healthFacilityUuid;
-	}
-
-	public void setHealthFacilityUuid(String healthFacilityUuid) {
-		this.healthFacilityUuid = healthFacilityUuid;
+		return jurisdiction.getHealthFacilityUuid();
 	}
 
 	public PersonReferenceDto getPerson() {
@@ -123,8 +127,8 @@ public class MapCaseDto implements Serializable {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
-	}	
-	
+	}
+
 	public Double getAddressLat() {
 		return addressLat;
 	}
@@ -162,4 +166,7 @@ public class MapCaseDto implements Serializable {
 		this.healthFacilityLon = healthFacilityLon;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

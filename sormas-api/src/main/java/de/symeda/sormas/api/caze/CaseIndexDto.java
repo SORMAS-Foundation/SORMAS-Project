@@ -26,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class CaseIndexDto implements Serializable, Cloneable {
 
@@ -63,7 +64,9 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private String uuid;
 	private String epidNumber;
 	private String externalID;
+	@PersonalData
 	private String personFirstName;
+	@PersonalData
 	private String personLastName;
 	private Disease disease;
 	private String diseaseDetails;
@@ -72,11 +75,10 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private PresentCondition presentCondition;
 	private Date reportDate;
 	private Date creationDate;
-	private String regionUuid;
-	private String districtUuid;
 	private String districtName;
-	private String healthFacilityUuid;
+	@PersonalData
 	private String healthFacilityName;
+	@PersonalData
 	private String pointOfEntryName;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
@@ -85,10 +87,12 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private Float completeness;
 	private Date quarantineTo;
 
+	private CaseJurisdictionDto jurisdiction;
+
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
-						PresentCondition presentCondition, Date reportDate, Date creationDate, String regionUuid,
-						String districtUuid, String districtName, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
+						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
 		this.id = id;
@@ -104,10 +108,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.presentCondition = presentCondition;
 		this.reportDate = reportDate;
 		this.creationDate = creationDate;
-		this.regionUuid = regionUuid;
-		this.districtUuid = districtUuid;
 		this.districtName = districtName;
-		this.healthFacilityUuid = healthFacilityUuid;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
@@ -116,6 +117,9 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.sex = sex;
 		this.quarantineTo = quarantineTo;
 		this.completeness = completeness;
+
+		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid,
+				healthFacilityUuid, pointOfEntryUuid);
 	}
 
 	public long getId() {
@@ -199,19 +203,11 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	}
 
 	public String getRegionUuid() {
-		return regionUuid;
-	}
-
-	public void setRegionUuid(String regionUuid) {
-		this.regionUuid = regionUuid;
+		return jurisdiction.getRegionUuid();
 	}
 
 	public String getDistrictUuid() {
-		return districtUuid;
-	}
-
-	public void setDistrictUuid(String districtUuid) {
-		this.districtUuid = districtUuid;
+		return jurisdiction.getDistrictUuid();
 	}
 
 	public String getSurveillanceOfficerUuid() {
@@ -236,14 +232,6 @@ public class CaseIndexDto implements Serializable, Cloneable {
 
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
-	}
-
-	public String getHealthFacilityUuid() {
-		return healthFacilityUuid;
-	}
-
-	public void setHealthFacilityUuid(String healthFacilityUuid) {
-		this.healthFacilityUuid = healthFacilityUuid;
 	}
 
 	public String getHealthFacilityName() {
@@ -295,7 +283,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), getPersonFirstName(), getPersonLastName());
+		return new CaseReferenceDto(uuid, personFirstName, personLastName);
 	}
 
 	@Override
@@ -332,4 +320,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.quarantineTo = quarantineTo;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

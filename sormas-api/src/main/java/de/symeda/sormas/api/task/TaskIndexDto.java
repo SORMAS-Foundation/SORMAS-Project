@@ -22,7 +22,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -33,7 +35,7 @@ public class TaskIndexDto implements Serializable {
 	private static final long serialVersionUID = 2439546041916003653L;
 
 	public static final String I18N_PREFIX = "Task";
-	
+
 	public static final String UUID = "uuid";
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
@@ -55,29 +57,50 @@ public class TaskIndexDto implements Serializable {
 	private CaseReferenceDto caze;
 	private EventReferenceDto event;
 	private ContactReferenceDto contact;
-	
+
 	private TaskType taskType;
 	private TaskPriority priority;
 	private Date dueDate;
 	private Date suggestedStart;
 	private TaskStatus taskStatus;
-	
+
 	private UserReferenceDto creatorUser;
 	private String creatorComment;
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 
+	private CaseJurisdictionDto caseJurisdiction;
+	private ContactJurisdictionDto contactJurisdiction;
+
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
-			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, Date eventDate, 
+			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
-			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply) {
+			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
+			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid) {
 		this.setUuid(uuid);
 		this.taskContext = taskContext;
-		this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
+
+		if(caseUuid != null) {
+			this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
+			this.caseJurisdiction = new CaseJurisdictionDto(
+					caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid
+			);
+		}
+
 		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
-		this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
+
+		if(contactUuid != null) {
+			this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
+
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
+					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid);
+			this.contactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+		}
+
 		this.taskType = taskType;
 		this.priority = priority;
 		this.dueDate = dueDate;
@@ -167,7 +190,7 @@ public class TaskIndexDto implements Serializable {
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
-	
+
 	public ReferenceDto getContextReference() {
 		switch (taskContext) {
 		case CASE:
@@ -187,5 +210,13 @@ public class TaskIndexDto implements Serializable {
 	}
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
+	}
+
+	public ContactJurisdictionDto getContactJurisdiction() {
+		return contactJurisdiction;
 	}
 }

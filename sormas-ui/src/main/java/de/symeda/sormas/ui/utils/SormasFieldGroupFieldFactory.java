@@ -16,6 +16,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
 import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
@@ -24,8 +26,16 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
-	
+
 	private static final long serialVersionUID = 471700572643936674L;
+
+	private final FieldVisibilityCheckers fieldVisibilityCheckers;
+	private final FieldAccessCheckers fieldAccessCheckers;
+
+	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -74,7 +84,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) field;
 		}
 		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm();
+			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		}
 		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm();
@@ -160,5 +170,5 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
             newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
         }
 	}
-	
+
 }

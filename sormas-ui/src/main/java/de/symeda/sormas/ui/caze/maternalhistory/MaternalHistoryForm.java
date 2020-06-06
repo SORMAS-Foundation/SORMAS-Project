@@ -1,15 +1,8 @@
 package de.symeda.sormas.ui.caze.maternalhistory;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Arrays;
-
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -21,6 +14,12 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 	
@@ -80,8 +79,6 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		ComboBox cbRashExposureRegion = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_REGION);
 		ComboBox cbRashExposureDistrict = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT);
 		ComboBox cbRashExposureCommunity = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
-
-		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
 		
 		cbRashExposureRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

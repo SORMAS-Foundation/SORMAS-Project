@@ -8,19 +8,19 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.function.Consumer;
 
-public class AbstractDomainObjectJoins<ADO extends AbstractDomainObject> {
-	private Root<ADO> root;
+public class AbstractDomainObjectJoins<X extends AbstractDomainObject, Y extends AbstractDomainObject> {
+	private From<X, Y> root;
 
-	public AbstractDomainObjectJoins(Root<ADO> root) {
+	public AbstractDomainObjectJoins(From<X, Y> root) {
 		this.root = root;
 	}
 
-	public Root<ADO> getRoot() {
+	public From<X, Y> getRoot() {
 		return root;
 	}
 
-	protected  <T> Join<ADO, T> getOrCreate(Join<ADO, T> join, String attribute, JoinType joinType, Consumer<Join<ADO, T>> setValue) {
-		return getOrCreate(join, attribute, joinType, root, setValue);
+	protected  <T> Join<Y, T> getOrCreate(Join<Y, T> join, String attribute, JoinType joinType, Consumer<Join<Y, T>> setValue) {
+		return this.getOrCreate(join, attribute, joinType, root, setValue);
 	}
 
 	protected <P, T> Join<P, T> getOrCreate(Join<P, T> join, String attribute, JoinType joinType, From<?, P> parent, Consumer<Join<P, T>> setValue) {

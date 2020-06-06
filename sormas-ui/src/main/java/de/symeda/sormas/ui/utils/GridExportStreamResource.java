@@ -28,8 +28,10 @@ import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
@@ -96,6 +98,10 @@ public class GridExportStreamResource extends StreamResource {
 											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
 										} else
 											valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+									} else if (value instanceof AgeAndBirthDateDto) {
+										AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+										valueString = PersonHelper.getAgeAndBirthdateString(ageAndBirthDate.getAge(), ageAndBirthDate.getAgeType(),
+												ageAndBirthDate.getBirthdateDD(), ageAndBirthDate.getBirthdateMM(), ageAndBirthDate.getBirthdateYYYY(), I18nProperties.getUserLanguage());
 									} else {
 										valueString = value.toString();
 									}

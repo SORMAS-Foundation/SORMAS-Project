@@ -35,7 +35,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private boolean skipChangeEvents;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix, true);
+		super(type, propertyI18nPrefix,
+				new SormasFieldGroupFieldFactory(null, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -135,7 +136,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			applyDependenciesOnNewValue(newFieldValue);
 
 			updateResetButtonState();
-			if(moreFiltersLayout != null) {
+			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout)
 						.anyMatch(f -> !f.isEmpty());
 				moreFiltersLayout.setVisible(hasExpandedFilter);
@@ -154,7 +155,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		return FieldHelper.streamFields(layout);
 	}
 
-	protected void applyDependenciesOnNewValue(T newValue){
+	protected void applyDependenciesOnNewValue(T newValue) {
 
 	}
 

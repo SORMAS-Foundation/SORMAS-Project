@@ -779,6 +779,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Contact, Contact> contactPath) {
+		return createUserFilterForJoin(cb, cq, contactPath);
+	}
+
+	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
 		Predicate userFilter = caseService.createUserFilter(cb, cq, contactPath.join(Contact.CAZE, JoinType.LEFT));
 		Predicate filter;
 		if (userFilter != null) {
@@ -791,7 +795,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilterWithoutCase(CriteriaBuilder cb, CriteriaQuery cq,
-			From<Contact, Contact> contactPath) {
+			From<?, Contact> contactPath) {
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
 		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER,
@@ -953,6 +957,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getCaseClassification() != null) {
 			filter = and(cb, filter,
 					cb.equal(caze.get(Case.CASE_CLASSIFICATION), contactCriteria.getCaseClassification()));
+		}
+		if(contactCriteria.getPerson() != null){
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter,
+					cb.equal(person.get(Person.UUID), contactCriteria.getPerson().getUuid()));
 		}
 
 		return filter;

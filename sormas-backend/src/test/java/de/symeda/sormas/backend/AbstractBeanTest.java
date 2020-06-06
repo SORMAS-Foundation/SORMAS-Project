@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.user.UserDto;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -356,4 +357,14 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
+	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
+		if(rdcf == null){
+			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		UserDto survOff = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
+
+		return survOff;
+	}
 }

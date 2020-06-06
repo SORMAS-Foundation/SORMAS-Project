@@ -17,20 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -47,7 +41,13 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.visit.VisitDto;
 
-public class CaseDataDto extends EntityDto {
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+
+public class CaseDataDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
 
@@ -185,11 +185,14 @@ public class CaseDataDto extends EntityDto {
 	@Required
 	private DistrictReferenceDto district;
 	@Outbreaks
+	@PersonalData
 	private CommunityReferenceDto community;
 	@Outbreaks
 	@Required
+	@PersonalData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
+	@PersonalData
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({ Disease.AFP, Disease.GUINEA_WORM, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.CSM,
@@ -237,7 +240,9 @@ public class CaseDataDto extends EntityDto {
 	private String creationVersion;
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
+	@PersonalData
 	private PointOfEntryReferenceDto pointOfEntry;
+	@PersonalData
 	private String pointOfEntryDetails;
 	private String additionalDetails;
 	private String externalID;
@@ -315,7 +320,7 @@ public class CaseDataDto extends EntityDto {
 
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(getUuid(), CaseReferenceDto.buildCaption(getUuid(), getPerson().getCaption()));
+		return new CaseReferenceDto(getUuid(), getPerson().getFirstName(), getPerson().getLastName());
 	}
 
 	/**

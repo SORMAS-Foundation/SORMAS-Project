@@ -33,6 +33,9 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.OnRebindCallback;
 import androidx.databinding.ViewDataBinding;
+
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
@@ -64,6 +67,15 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
     protected static <TFragment extends BaseEditFragment> TFragment newInstance(Class<TFragment> fragmentClass, Bundle data, AbstractDomainObject activityRootData) {
         TFragment fragment = newInstance(fragmentClass, data);
         fragment.setActivityRootData(activityRootData);
+        return fragment;
+    }
+
+    protected static <TFragment extends BaseEditFragment> TFragment newInstanceWithFieldCheckers(Class<TFragment> fragmentClass, Bundle data, AbstractDomainObject activityRootData,
+                                                                                                 FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+        TFragment fragment = newInstance(fragmentClass, data, activityRootData);
+        fragment.setFieldVisibilityCheckers(fieldVisibilityCheckers);
+        fragment.setFieldAccessCheckers(fieldAccessCheckers);
+
         return fragment;
     }
 

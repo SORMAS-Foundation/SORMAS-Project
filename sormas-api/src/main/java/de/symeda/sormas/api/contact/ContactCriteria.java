@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -84,6 +85,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean quarantineOrderedVerbally;
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
+	private PersonReferenceDto person;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -369,4 +371,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 		this.quarantineNotOrdered = quarantineNotOrdered;
 	}
 
+	public PersonReferenceDto getPerson() {
+		return person;
+	}
+
+	public ContactCriteria person(PersonReferenceDto person) {
+		this.person = person;
+
+		return this;
+	}
 }

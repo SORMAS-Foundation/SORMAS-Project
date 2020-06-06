@@ -34,6 +34,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.backend.TestDataCreator;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -183,8 +186,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testMapContactListCreation() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
@@ -193,7 +196,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		MapCaseDto mapCaseDto = new MapCaseDto(caze.getUuid(), caze.getReportDate(), caze.getCaseClassification(), caze.getDisease(),
 				caze.getPerson().getUuid(), cazePerson.getFirstName(), cazePerson.getLastName(),
 				caze.getHealthFacility().getUuid(), 0d, 0d,
-				caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon());
+				caze.getReportLat(), caze.getReportLon(), caze.getReportLat(), caze.getReportLon(), null, null, null, null, null);
 
 		List<MapContactDto> mapContactDtos =  getContactFacade().getContactsForMap(caze.getRegion(), caze.getDistrict(), caze.getDisease(), DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1), Arrays.asList(mapCaseDto));
 
@@ -390,14 +393,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 
 	@Test
 	public void testGetExportList() {
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		String userUuid = user.getUuid();
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD, CaseClassification.PROBABLE,
 				InvestigationStatus.PENDING, new Date(), rdcf);
-		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), creator.createPerson("Contact", "Person").toReference(), caze, new Date(), new Date(), null, rdcf);
+		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
 
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
@@ -418,8 +420,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest  {
 		// Make sure that everything that is added retrospectively (address, last cooperative visit date and symptoms) is present
 		ContactExportDto exportDto = results.get(0);
 
-		assertEquals(rdcf.region.getName(), exportDto.getAddressRegion());
-		assertEquals(rdcf.district.getName(), exportDto.getAddressDistrict());
+		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
+		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
 		assertEquals("City", exportDto.getCity());
 		assertEquals("Street Address", exportDto.getAddress());
 		assertEquals("1234", exportDto.getPostalCode());

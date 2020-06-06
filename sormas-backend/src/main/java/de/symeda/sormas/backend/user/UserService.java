@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.UserCriteria;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -49,6 +51,8 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @Stateless
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	public UserService() {
 		super(User.class);
@@ -319,4 +323,10 @@ public class UserService extends AbstractAdoService<User> {
         Set<UserRole> userRoles = getCurrentUser().getUserRoles();
         return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
     }
+
+    public boolean hasRight(UserRight right){
+		User currentUser = getCurrentUser();
+
+		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
+	}
 }

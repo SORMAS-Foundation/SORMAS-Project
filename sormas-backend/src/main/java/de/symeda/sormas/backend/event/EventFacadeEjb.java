@@ -17,14 +17,31 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.DashboardEventDto;
+import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventFacade;
+import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
+import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -43,33 +60,14 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
-
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.event.DashboardEventDto;
-import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventIndexDto;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.location.LocationFacadeEjb;
-import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -168,9 +166,8 @@ public class EventFacadeEjb implements EventFacade {
 	
 	@Override
 	public void deleteEvent(String eventUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete events.");
+		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
 		eventService.delete(eventService.getByUuid(eventUuid));

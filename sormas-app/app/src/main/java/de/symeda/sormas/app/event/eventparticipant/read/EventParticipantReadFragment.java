@@ -21,6 +21,7 @@ package de.symeda.sormas.app.event.eventparticipant.read;
 import android.os.Bundle;
 import android.view.View;
 
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -41,7 +42,8 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
     // Static methods
 
     public static EventParticipantReadFragment newInstance(EventParticipant activityRootData) {
-        return newInstance(EventParticipantReadFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(EventParticipantReadFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()), null);
     }
 
     // Instance methods

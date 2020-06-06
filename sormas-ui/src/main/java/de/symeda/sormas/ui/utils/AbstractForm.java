@@ -13,17 +13,14 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
-	
+
 	protected final String propertyI18nPrefix;
 	private final BeanFieldGroup<T> fieldGroup;
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix) {
-		this(type, propertyI18nPrefix, true);
-	}
-
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
+	protected AbstractForm(Class<T> type, String propertyI18nPrefix,
+						   SormasFieldGroupFieldFactory fieldFactory, boolean addFields) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
@@ -45,7 +42,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 			}
 		};
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory());
+		fieldGroup.setFieldFactory(fieldFactory);
 		setHeightUndefined();
 
 		if (addFields) {
@@ -267,5 +264,5 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
 	}
-	
+
 }

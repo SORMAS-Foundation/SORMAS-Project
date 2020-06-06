@@ -69,6 +69,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -199,13 +200,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
         return em.createQuery(cq).getResultList();
     }
 
-    public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
-        Root<Case> caze = cq.from(getElementClass());
-        Join<Case, Facility> facility = caze.join(Case.HEALTH_FACILITY, JoinType.LEFT);
-        Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-        Join<Person, Location> casePersonAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+	public List<MapCaseDto> getCasesForMap(Region region, District district, Disease disease, Date from, Date to) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MapCaseDto> cq = cb.createQuery(MapCaseDto.class);
+		Root<Case> caze = cq.from(getElementClass());
+
+		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
         Predicate filter = createActiveCasesFilter(cb, caze);
         filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, caze, new CaseUserFilterCriteria()
@@ -239,24 +239,30 @@ public class CaseService extends AbstractCoreAdoService<Case> {
             }
         }
 
-        List<MapCaseDto> result;
-        if (filter != null) {
-            cq.where(filter);
-            cq.multiselect(
-                    caze.get(Case.UUID),
-                    caze.get(Case.REPORT_DATE),
-                    caze.get(Case.CASE_CLASSIFICATION),
-                    caze.get(Case.DISEASE),
-                    person.get(Person.UUID),
-                    person.get(Person.FIRST_NAME),
-                    person.get(Person.LAST_NAME),
-                    facility.get(Facility.UUID),
-                    facility.get(Facility.LATITUDE),
-                    facility.get(Facility.LONGITUDE),
-                    caze.get(Case.REPORT_LAT),
-                    caze.get(Case.REPORT_LON),
-                    casePersonAddress.get(Location.LATITUDE),
-                    casePersonAddress.get(Location.LONGITUDE));
+		List<MapCaseDto> result;
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+					caze.get(Case.UUID),
+					caze.get(Case.REPORT_DATE),
+					caze.get(Case.CASE_CLASSIFICATION),
+					caze.get(Case.DISEASE),
+					joins.getPerson().get(Person.UUID),
+					joins.getPerson().get(Person.FIRST_NAME),
+					joins.getPerson().get(Person.LAST_NAME),
+					joins.getFacility().get(Facility.UUID),
+					joins.getFacility().get(Facility.LATITUDE),
+					joins.getFacility().get(Facility.LONGITUDE),
+					caze.get(Case.REPORT_LAT),
+					caze.get(Case.REPORT_LON),
+					joins.getPersonAddress().get(Location.LATITUDE),
+					joins.getPersonAddress().get(Location.LONGITUDE),
+					joins.getReportingUser().get(User.UUID),
+					joins.getRegion().get(Region.UUID),
+					joins.getDistrict().get(District.UUID),
+					joins.getCommunity().get(Community.UUID),
+					joins.getPointOfEntry().get(PointOfEntry.UUID)
+			);
 
             result = em.createQuery(cq).getResultList();
         } else {
@@ -414,7 +420,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
         }
     }
 
-    public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<Case, Case> from) {
+    public Predicate createCriteriaFilter(CaseCriteria caseCriteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<?, Case> from) {
         Join<Case, Person> person = from.join(Case.PERSON, JoinType.LEFT);
         Join<Case, User> reportingUser = from.join(Case.REPORTING_USER, JoinType.LEFT);
         Join<Case, Region> region = from.join(Case.REGION, JoinType.LEFT);
@@ -730,7 +736,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
         return dateFilter;
     }
 
-    public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Case, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+    public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?,Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return null;
@@ -790,9 +796,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
                 // get all cases based on the user's sample association
                 Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
                 Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
-                QueryContext<Sample> sampleQueryContext = new QueryContext<>(cb, cq, sampleRoot);
-                sampleService.buildJoins(sampleQueryContext, null);
-                sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(sampleQueryContext));
+                sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
                 sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
                 filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
             }
@@ -842,7 +846,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
      * By default (if {@code newCaseDateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
      * the {@link Case#reportDate}.
      */
-    private Predicate createNewCaseFilter(CriteriaBuilder cb, From<Case, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
+    private Predicate createNewCaseFilter(CriteriaBuilder cb, From<?, Case> caze, Date fromDate, Date toDate, NewCaseDateType newCaseDateType) {
         Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
 
         toDate = DateHelper.getEndOfDay(toDate);

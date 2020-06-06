@@ -41,7 +41,8 @@ public class ContactPersonView extends AbstractContactView {
     	super.enter(event);
     	ContactDto dto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
     	
-    	CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(), dto.getDisease(), dto.getDiseaseDetails(), UserRight.CONTACT_EDIT, null);
+    	CommitDiscardWrapperComponent<PersonEditForm> contactPersonComponent = ControllerProvider.getPersonController().getPersonEditComponent(dto.getPerson().getUuid(),
+				dto.getDisease(), dto.getDiseaseDetails(), UserRight.CONTACT_EDIT, null, FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid()));
     	setSubComponent(contactPersonComponent);
     	
     	setContactEditPermission(contactPersonComponent);    	

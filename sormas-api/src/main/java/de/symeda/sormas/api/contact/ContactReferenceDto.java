@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.utils.PersonalData;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -24,39 +25,72 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+import java.io.Serializable;
+
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
-	
+
+	private PersonName contactName;
+	private PersonName caseName;
+
 	public ContactReferenceDto() {
-		
+
 	}
-	
+
 	public ContactReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
-	public ContactReferenceDto(String uuid, String caption) {
+
+	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
+							   String caseFirstName, String caseLastName) {
 		setUuid(uuid);
-		setCaption(caption);
-	}
-	
-	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
-		setUuid(uuid);
-		setCaption(buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName));
+		this.contactName = new PersonName(contactFirstName, contactLastName);
+		this.caseName = new PersonName(caseFirstName, caseLastName);
+}
+
+	@Override
+	public String getCaption() {
+		return buildCaption(contactName.firstName, contactName.lastName, caseName.firstName, caseName.lastName, getUuid());
 	}
 
-	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+	public PersonName getContactName() {
+		return contactName;
+	}
+
+	public PersonName getCaseName() {
+		return caseName;
+	}
+
+	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName, String contactUuid) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(DataHelper.toStringNullable(contactFirstName))
-			.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
-		
-		if (caseFirstName != null || caseLastName != null) {
-			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), ""))
+		if (!DataHelper.isNullOrEmpty(contactFirstName) || !DataHelper.isNullOrEmpty(contactLastName)) {
+			builder.append(DataHelper.toStringNullable(contactFirstName))
+					.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
+		}
+
+		if (!DataHelper.isNullOrEmpty(caseFirstName) || !DataHelper.isNullOrEmpty(caseLastName)) {
+			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), " "))
 			.append(DataHelper.toStringNullable(caseFirstName))
 			.append(" ").append(DataHelper.toStringNullable(caseLastName));
 		}
-		
+
+		if(builder.length() == 0){
+			builder.append(DataHelper.getShortUuid(contactUuid));
+		}
+
 		return builder.toString();
+	}
+
+	public static class PersonName implements Serializable {
+		@PersonalData
+		private String firstName;
+		@PersonalData
+		private String lastName;
+
+		public PersonName(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
 	}
 }

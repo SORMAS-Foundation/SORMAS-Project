@@ -87,13 +87,14 @@ public class PersonController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editUserRight, final ViewMode viewMode) {
-		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, viewMode);
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease,
+																				String diseaseDetails, UserRight editUserRight, final ViewMode viewMode, boolean isInJurisdiction) {
+		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, viewMode, isInJurisdiction);
 
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
 		editForm.setValue(personDto);
 		
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, 
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm,
 				UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
 		
 		editView.addCommitListener(new CommitListener() {

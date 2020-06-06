@@ -324,7 +324,7 @@ public class CaseController {
 			createForm.setPersonalDetailsReadOnly(true);
 			createForm.setDiseaseReadOnly(true);
 		}
-		
+
 		final CommitDiscardWrapperComponent<CaseCreateForm> editView = new CommitDiscardWrapperComponent<CaseCreateForm>(
 				createForm, UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE), createForm.getFieldGroup());
 
@@ -472,10 +472,10 @@ public class CaseController {
 //	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid,
-			final ViewMode viewMode) {
+			final ViewMode viewMode, boolean isInJurisdiction) {
 		CaseDataDto caze = findCase(caseUuid);
 		CaseDataForm caseEditForm = new CaseDataForm(
-				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), viewMode);
+				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()), caze.getDisease(), viewMode, isInJurisdiction);
 		caseEditForm.setValue(caze);
 
 		CommitDiscardWrapperComponent<CaseDataForm> editView = new CommitDiscardWrapperComponent<CaseDataForm>(

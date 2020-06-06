@@ -48,6 +48,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 /**
@@ -94,7 +95,9 @@ public class CaseExportDto implements Serializable {
 	private String epidNumber;
 	private String diseaseFormatted;
 	private Disease disease;
+	@PersonalData
 	private String firstName;
+	@PersonalData
 	private String lastName;
 	private Sex sex;
 	private YesNoUnknown pregnant;
@@ -104,8 +107,11 @@ public class CaseExportDto implements Serializable {
 	private Date reportDate;
 	private String region;
 	private String district;
+	@PersonalData
 	private String community;
+	@PersonalData
 	private String healthFacility;
+	@PersonalData
 	private String pointOfEntry;
 	private CaseClassification caseClassification;
 	private InvestigationStatus investigationStatus;
@@ -122,9 +128,13 @@ public class CaseExportDto implements Serializable {
 	private BurialInfoDto burialInfo;
 	private String addressRegion;
 	private String addressDistrict;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String postalCode;
+	@PersonalData
 	private String addressGpsCoordinates;
 	private String phone;
 	private String occupationType;
@@ -164,11 +174,14 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 
+	private CaseJurisdictionDto jurisdiction;
+
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, String diseaseDetails, String firstName, String lastName, Sex sex, YesNoUnknown pregnant,
 						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
+						 Integer birthdateYYYY, Date reportDate, String reportingUserUuid, String regionUuid, String region,
+						 String districtUuid, String district, String communityUuid, String community,
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 InvestigationStatus investigationStatus, CaseOutcome outcome,
@@ -244,10 +257,12 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 		this.postpartum = postpartum;
 		this.trimester = trimester;
+
+		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, PersonDto.buildCaption(firstName, lastName));
+		return new CaseReferenceDto(uuid, firstName, lastName);
 	}
 
 	@Order(0)
@@ -1132,4 +1147,7 @@ public class CaseExportDto implements Serializable {
 		this.otherSamples = otherSamples;
 	}
 
+	public CaseJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }
