@@ -27,7 +27,7 @@ public class ContactEditAuthorization {
             dto.setReportingUserUuid(contact.getReportingUser().getUuid());
         }
         if (contact.getRegion() != null) {
-            dto.setRegionUuId(contact.getRegion().getUuid());
+            dto.setRegionUuid(contact.getRegion().getUuid());
         }
         if (contact.getDistrict() != null) {
             dto.setDistrictUuid(contact.getDistrict().getUuid());
