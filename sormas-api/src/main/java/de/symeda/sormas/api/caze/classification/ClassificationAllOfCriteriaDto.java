@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -29,35 +29,37 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = -6427002056924376593L;
-	
+
 	/**
 	 * Always draws all sub criteria in one component instead of providing a dedicated
 	 * component for all of them.
 	 */
 	protected boolean drawSubCriteriaTogether = false;
-	
+
 	protected List<ClassificationCriteriaDto> subCriteria;
 
 	public ClassificationAllOfCriteriaDto() {
-		
+
 	}
-	
+
 	public ClassificationAllOfCriteriaDto(ClassificationCriteriaDto... criteria) {
 		this.subCriteria = Arrays.asList(criteria);
 	}
-	
+
 	public ClassificationAllOfCriteriaDto(boolean drawSubCriteriaTogether, ClassificationCriteriaDto... criteria) {
+
 		this(criteria);
 		this.drawSubCriteriaTogether = drawSubCriteriaTogether;
 	}
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+
 		for (ClassificationCriteriaDto classificationCriteriaDto : subCriteria) {
 			if (!classificationCriteriaDto.eval(caze, person, sampleTests))
 				return false;
 		}
-		
+
 		return true;
 	}
 
@@ -65,23 +67,23 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	public String buildDescription() {
 		return getCriteriaName();
 	}
-	
+
 	@Override
 	public String getCriteriaName() {
 		return "<b>" + I18nProperties.getString(Strings.classificationAllOf).toUpperCase() + "</b>";
 	}
-	
+
 	@Override
 	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return subCriteria;
 	}
-	
+
 	/**
 	 * Has a different buildDescription method to display all sub criteria in one line, with the sub criteria separated
 	 * by an "AND". Functionality is identical to ClassificationAllOfCriteria.
 	 */
 	public static class ClassificationAllOfCompactCriteriaDto extends ClassificationAllOfCriteriaDto implements ClassificationCompactCriteria {
-		
+
 		private static final long serialVersionUID = 3761118522728690578L;
 
 		public ClassificationAllOfCompactCriteriaDto(ClassificationCriteriaDto... criteria) {
@@ -99,13 +101,12 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.and).toUpperCase()).append("</b> ");
 					}
 				}
-				
-				stringBuilder.append(subCriteria.get(i).buildDescription());	
+
+				stringBuilder.append(subCriteria.get(i).buildDescription());
 			}
-			
+
 			return stringBuilder.toString();
 		}
-	
 	}
 
 	public void setSubCriteria(List<ClassificationCriteriaDto> subCriteria) {
@@ -119,5 +120,4 @@ public class ClassificationAllOfCriteriaDto extends ClassificationCriteriaDto im
 	public void setDrawSubCriteriaTogether(boolean drawSubCriteriaTogether) {
 		this.drawSubCriteriaTogether = drawSubCriteriaTogether;
 	}
-	
 }

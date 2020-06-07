@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -46,6 +46,7 @@ import java.util.Set;
 
 public enum UserRight {
 
+	//@formatter:off
 	CASE_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -1000,14 +1001,15 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			POE_INFORMANT),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION();
+	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;
 
 	UserRight(UserRole... defaultUserRoles) {
 
 		this.defaultUserRoles = defaultUserRoles.length > 0
-				? Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(defaultUserRoles)))
-				: Collections.<UserRole>emptySet();
+			? Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(defaultUserRoles)))
+			: Collections.<UserRole> emptySet();
 	}
 
 	public boolean isDefaultForRole(UserRole userRole) {

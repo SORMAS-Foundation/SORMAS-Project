@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
@@ -21,7 +21,7 @@ package de.symeda.sormas.api.statistics;
  * Indicates that the class implementing this interface will be used for filter and grouping
  * purposes in the statistics section(s). All implementing classes should override and provide
  * custom implementations of the toString, equals, hashCode and compareTo methods (thereby also
- * implementing the Comparable interface). All implementing enums should provide custom 
+ * implementing the Comparable interface). All implementing enums should provide custom
  * implementations of the toString method.
  * 
  * @author Mate Strysewske
@@ -29,5 +29,4 @@ package de.symeda.sormas.api.statistics;
 public interface StatisticsGroupingKey {
 
 	int keyCompareTo(StatisticsGroupingKey o);
-	
 }

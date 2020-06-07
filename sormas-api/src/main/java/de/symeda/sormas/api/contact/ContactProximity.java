@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -39,25 +39,24 @@ public enum ContactProximity {
 
 	public boolean hasFollowUp() {
 		switch (this) {
-			case AIRPLANE:
-			case CLOSE_CONTACT:
-			case CLOTHES_OR_OTHER:
-			case FACE_TO_FACE_LONG:
-			case MEDICAL_UNSAFE:
-			case MEDICAL_LIMITED:
-			case PHYSICAL_CONTACT:
-			case SAME_ROOM:
-			case TOUCHED_FLUID:
-			case MEDICAL_SAME_ROOM:
-			case AEROSOL:
-				return true;
-			case FACE_TO_FACE_SHORT:
-			case MEDICAL_SAFE:
-			case MEDICAL_DISTANT:
-				return false;
-
-			default:
-				throw new IllegalArgumentException(this.name());
+		case AIRPLANE:
+		case CLOSE_CONTACT:
+		case CLOTHES_OR_OTHER:
+		case FACE_TO_FACE_LONG:
+		case MEDICAL_UNSAFE:
+		case MEDICAL_LIMITED:
+		case PHYSICAL_CONTACT:
+		case SAME_ROOM:
+		case TOUCHED_FLUID:
+		case MEDICAL_SAME_ROOM:
+		case AEROSOL:
+			return true;
+		case FACE_TO_FACE_SHORT:
+		case MEDICAL_SAFE:
+		case MEDICAL_DISTANT:
+			return false;
+		default:
+			throw new IllegalArgumentException(this.name());
 		}
 	}
 
@@ -65,16 +64,32 @@ public enum ContactProximity {
 	 * TODO Replace locale with customizable solution or whatever is needed based on #1503
 	 */
 	public static ContactProximity[] getValues(Disease disease, String serverLocale) {
+
 		if (disease != null && serverLocale != null && serverLocale.startsWith("de")) {
 			switch (disease) {
-				case CORONAVIRUS:
-					return new ContactProximity[] { FACE_TO_FACE_LONG, TOUCHED_FLUID, AEROSOL, MEDICAL_UNSAFE, MEDICAL_LIMITED, SAME_ROOM,
-							FACE_TO_FACE_SHORT, MEDICAL_SAME_ROOM, MEDICAL_SAFE, MEDICAL_DISTANT };
-				default:
-					break;
+			case CORONAVIRUS:
+				return new ContactProximity[] {
+					FACE_TO_FACE_LONG,
+					TOUCHED_FLUID,
+					AEROSOL,
+					MEDICAL_UNSAFE,
+					MEDICAL_LIMITED,
+					SAME_ROOM,
+					FACE_TO_FACE_SHORT,
+					MEDICAL_SAME_ROOM,
+					MEDICAL_SAFE,
+					MEDICAL_DISTANT };
+			default:
+				break;
 			}
 		}
-		return new ContactProximity[] { TOUCHED_FLUID, PHYSICAL_CONTACT, CLOTHES_OR_OTHER, CLOSE_CONTACT, SAME_ROOM };
+
+		return new ContactProximity[] {
+			TOUCHED_FLUID,
+			PHYSICAL_CONTACT,
+			CLOTHES_OR_OTHER,
+			CLOSE_CONTACT,
+			SAME_ROOM };
 	}
 
 	public String toString() {

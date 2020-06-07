@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -87,6 +87,7 @@ public class ContactExportDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
+	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
@@ -100,6 +101,8 @@ public class ContactExportDto implements Serializable {
 							String reportingUserUuid, String regionUuid, String districtUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
+	//@formatter:on
+
 		this.id = id;
 		this.personId = personId;
 		this.uuid = uuid;
@@ -130,13 +133,22 @@ public class ContactExportDto implements Serializable {
 		this.address = address;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
-		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
-				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.occupationType = PersonHelper.buildOccupationString(
+			occupationType,
+			occupationDetails,
+			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
 
-		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null ? null : new CaseJurisdictionDto(
-				caseReportingUserUuid, caseRegionUui, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
+			? null
+			: new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUui,
+				caseDistrictUud,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 

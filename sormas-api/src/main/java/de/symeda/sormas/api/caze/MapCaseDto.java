@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
@@ -48,12 +48,27 @@ public class MapCaseDto implements Serializable {
 	private Double addressLon;
 	private CaseJurisdictionDto jurisdiction;
 
-	public MapCaseDto(String uuid, Date reportDate, CaseClassification caseClassification, Disease disease,
-			String personUuid, String personFirstName, String personLastName,
-			String healthFacilityUuid, Double healthFacilityLat, Double healthFacilityLon,
-			Double reportLat, Double reportLon, Double addressLat, Double addressLon,
-			String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid, String pointOfEntryUuid
-	) {
+	public MapCaseDto(
+		String uuid,
+		Date reportDate,
+		CaseClassification caseClassification,
+		Disease disease,
+		String personUuid,
+		String personFirstName,
+		String personLastName,
+		String healthFacilityUuid,
+		Double healthFacilityLat,
+		Double healthFacilityLon,
+		Double reportLat,
+		Double reportLon,
+		Double addressLat,
+		Double addressLon,
+		String reportingUserUuid,
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String pointOfEntryUuid) {
+
 		this.uuid = uuid;
 		this.reportDate = reportDate;
 		this.caseClassification = caseClassification;

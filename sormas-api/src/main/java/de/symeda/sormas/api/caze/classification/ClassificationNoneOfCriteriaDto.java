@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -34,13 +34,13 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto implements ClassificationCollectiveCriteria {
 
 	private static final long serialVersionUID = 2199852259112272090L;
-	
+
 	protected List<ClassificationCriteriaDto> classificationCriteria;
 
 	public ClassificationNoneOfCriteriaDto() {
-		
+
 	}
-	
+
 	public ClassificationNoneOfCriteriaDto(ClassificationCriteriaDto... criteria) {
 		this.classificationCriteria = Arrays.asList(criteria);
 	}
@@ -52,7 +52,7 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -66,12 +66,12 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 		}
 		return stringBuilder.toString();
 	}
-	
+
 	@Override
 	public String getCriteriaName() {
 		return "<b>" + I18nProperties.getString(Strings.classificationNoneOf).toUpperCase() + "</b>";
 	}
-	
+
 	@Override
 	public List<ClassificationCriteriaDto> getSubCriteria() {
 		return classificationCriteria;
@@ -84,5 +84,4 @@ public class ClassificationNoneOfCriteriaDto extends ClassificationCriteriaDto i
 	public void setClassificationCriteria(List<ClassificationCriteriaDto> classificationCriteria) {
 		this.classificationCriteria = classificationCriteria;
 	}
-
 }

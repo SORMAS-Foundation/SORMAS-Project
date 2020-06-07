@@ -34,6 +34,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String phone;
 	private UserReferenceDto reportingUser;
 
+	//@formatter:off
 	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
 								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
@@ -46,10 +47,15 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String districtName, String city, String address, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName,
 								   int visitCount) {
+	//@formatter:on
+
+		//@formatter:off
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
+		//@formatter:on
+
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;
@@ -91,5 +97,4 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
-
 }

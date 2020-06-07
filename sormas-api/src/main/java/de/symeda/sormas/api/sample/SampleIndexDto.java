@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -28,7 +28,6 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.utils.PersonalData;
 
 public class SampleIndexDto implements Serializable {
 
@@ -81,6 +80,7 @@ public class SampleIndexDto implements Serializable {
 	private CaseJurisdictionDto associatedCaseJurisdiction;
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
+	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
@@ -93,24 +93,46 @@ public class SampleIndexDto implements Serializable {
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
 	) {
+	//@formatter:on
+
 		this.uuid = uuid;
 		if (associatedCaseUuid != null) {
 			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
-			this.associatedCaseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+			this.associatedCaseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 		if (associatedContactUuid != null) {
-			this.associatedContact = new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
+			this.associatedContact =
+				new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
 
-			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
-					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid
-			);
-			this.associatedContactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
+				? null
+				: new CaseJurisdictionDto(
+					contactCaseReportingUserUuid,
+					contactCaseRegionUuid,
+					contactCaseDistrictUuid,
+					contactCaseCommunityUuid,
+					contactCaseHealthFacilityUuid,
+					contactCasePointOfEntryUuid);
+			this.associatedContactJurisdiction =
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.district = createDistrictReference(caseDistrictName, contactDistrictName, contactCaseDistrictName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid);
+		this.district = createDistrictReference(
+			caseDistrictName,
+			contactDistrictName,
+			contactCaseDistrictName,
+			caseDistrictUuid,
+			contactDistrictUuid,
+			contactCaseDistrictUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -122,11 +144,19 @@ public class SampleIndexDto implements Serializable {
 		this.samplePurpose = samplePurpose;
 		this.specimenCondition = specimenCondition;
 		this.pathogenTestResult = pathogenTestResult;
-		this.additionalTestingStatus = Boolean.TRUE.equals(additionalTestPerformed) ? AdditionalTestingStatus.PERFORMED :
-				(Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
+		this.additionalTestingStatus = Boolean.TRUE.equals(additionalTestPerformed)
+			? AdditionalTestingStatus.PERFORMED
+			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
 	}
 
-	private DistrictReferenceDto createDistrictReference(String caseDistrictName, String contactDistrictName, String contactCaseDistrictName, String caseDistrictUuid, String contactDistrictUuid, String contactCaseDistrictUuid) {
+	private DistrictReferenceDto createDistrictReference(
+		String caseDistrictName,
+		String contactDistrictName,
+		String contactCaseDistrictName,
+		String caseDistrictUuid,
+		String contactDistrictUuid,
+		String contactCaseDistrictUuid) {
+
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
 			ref = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
@@ -276,9 +306,12 @@ public class SampleIndexDto implements Serializable {
 	}
 
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(uuid, getSampleMaterial(),
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+
+		return new SampleReferenceDto(
+			uuid,
+			getSampleMaterial(),
+			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {

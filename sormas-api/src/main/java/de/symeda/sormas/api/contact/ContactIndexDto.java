@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -22,8 +22,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
 
 public class ContactIndexDto implements Serializable {
@@ -73,6 +73,7 @@ public class ContactIndexDto implements Serializable {
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
 
+	//formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
 						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
@@ -81,14 +82,21 @@ public class ContactIndexDto implements Serializable {
 						   CaseClassification caseClassification,
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   int visitCount) {
+	//@formatter:on
+
 		this.uuid = uuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
 
-		if(cazeUuid != null) {
+		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUid, caseRegionUuid, caseDistrictUud,
-					caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+			this.caseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUserUid,
+				caseRegionUuid,
+				caseDistrictUud,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 
 		this.disease = disease;

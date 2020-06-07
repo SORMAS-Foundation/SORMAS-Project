@@ -14,7 +14,7 @@ public class MaternalHistoryDto extends EntityDto {
 	private static final long serialVersionUID = -5534360436146186436L;
 
 	public static final String I18N_PREFIX = "MaternalHistory";
-	
+
 	public static final String CHILDREN_NUMBER = "childrenNumber";
 	public static final String AGE_AT_BIRTH = "ageAtBirth";
 	public static final String CONJUNCTIVITIS = "conjunctivitis";
@@ -68,8 +68,9 @@ public class MaternalHistoryDto extends EntityDto {
 	private RegionReferenceDto rashExposureRegion;
 	private DistrictReferenceDto rashExposureDistrict;
 	private CommunityReferenceDto rashExposureCommunity;
-	
+
 	public static MaternalHistoryDto build() {
+
 		MaternalHistoryDto maternalHistory = new MaternalHistoryDto();
 		maternalHistory.setUuid(DataHelper.createUuid());
 		return maternalHistory;
@@ -282,5 +283,4 @@ public class MaternalHistoryDto extends EntityDto {
 	public void setRashExposureCommunity(CommunityReferenceDto rashExposureCommunity) {
 		this.rashExposureCommunity = rashExposureCommunity;
 	}
-	
 }

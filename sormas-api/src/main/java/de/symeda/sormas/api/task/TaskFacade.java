@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
@@ -30,34 +30,34 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface TaskFacade {
 
-    TaskDto saveTask(TaskDto dto);
-	
+	TaskDto saveTask(TaskDto dto);
+
 	List<TaskDto> getAllActiveTasksAfter(Date date);
-	
+
 	List<TaskDto> getAllByCase(CaseReferenceDto caseRef);
-	
+
 	List<TaskDto> getAllByContact(ContactReferenceDto contactRef);
-	
+
 	List<TaskDto> getAllByEvent(EventReferenceDto eventRef);
-	
+
 	List<TaskDto> getAllPendingByCase(CaseReferenceDto caseDataDto);
 
 	List<TaskDto> getByUuids(List<String> uuids);
-	
+
 	long getPendingTaskCountByContact(ContactReferenceDto contactDto);
-	
+
 	long getPendingTaskCountByEvent(EventReferenceDto eventDto);
-	
+
 	long getPendingTaskCount(String userUuid);
 
 	TaskDto getByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
-	
+
 	void deleteTask(TaskDto taskDto);
 
 	long count(TaskCriteria criteria);
-	
+
 	List<TaskIndexDto> getIndexList(TaskCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	void sendNewAndDueTaskMessages();

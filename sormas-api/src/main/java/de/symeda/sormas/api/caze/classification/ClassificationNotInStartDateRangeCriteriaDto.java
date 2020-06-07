@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -40,31 +40,31 @@ import de.symeda.sormas.api.utils.DateHelper;
 public class ClassificationNotInStartDateRangeCriteriaDto extends ClassificationCaseCriteriaDto {
 
 	private static final long serialVersionUID = -8817472226784147694L;
-	
+
 	private int daysBeforeStartDate;
-	
+
 	public ClassificationNotInStartDateRangeCriteriaDto() {
 		super();
 	}
-	
+
 	public ClassificationNotInStartDateRangeCriteriaDto(String propertyId, int daysBeforeStartDate) {
 		super(propertyId);
 		this.daysBeforeStartDate = daysBeforeStartDate;
 	}
-	
+
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+
 		try {
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
 			if (value instanceof Date) {
 				Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
 				Date lowerThresholdDate = DateHelper.subtractDays(startDate, daysBeforeStartDate);
-				
-				return !(((Date) value).equals(lowerThresholdDate) 
-						|| ((Date) value).equals(startDate)
-						|| (((Date) value).after(lowerThresholdDate) 
-								&& ((Date) value).before(startDate)));
+
+				return !(((Date) value).equals(lowerThresholdDate)
+					|| ((Date) value).equals(startDate)
+					|| (((Date) value).after(lowerThresholdDate) && ((Date) value).before(startDate)));
 			} else {
 				return true;
 			}
@@ -72,12 +72,18 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public String buildDescription() {
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
-		stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationNotWithin)).append(" ").append(daysBeforeStartDate).append(" ").append(I18nProperties.getString(Strings.classificationDaysBeforeCaseStart));
+		stringBuilder.append(" ")
+			.append(I18nProperties.getString(Strings.classificationNotWithin))
+			.append(" ")
+			.append(daysBeforeStartDate)
+			.append(" ")
+			.append(I18nProperties.getString(Strings.classificationDaysBeforeCaseStart));
 		return stringBuilder.toString();
 	}
 
@@ -88,5 +94,4 @@ public class ClassificationNotInStartDateRangeCriteriaDto extends Classification
 	public void setDaysBeforeStartDate(int daysBeforeStartDate) {
 		this.daysBeforeStartDate = daysBeforeStartDate;
 	}
-	
 }

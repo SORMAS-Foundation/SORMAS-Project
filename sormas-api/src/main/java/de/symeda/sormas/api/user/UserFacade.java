@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -30,15 +30,15 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface UserFacade {
 
-    List<UserDto> getAll(UserRole... roles);
-    
-    UserDto getByUuid(String uuid);
-    
-    UserDto saveUser(UserDto dto);
+	List<UserDto> getAll(UserRole... roles);
 
-    boolean isLoginUnique(String uuid, String userName);
-    
-    String resetPassword(String uuid);
+	UserDto getByUuid(String uuid);
+
+	UserDto saveUser(UserDto dto);
+
+	boolean isLoginUnique(String uuid, String userName);
+
+	String resetPassword(String uuid);
 
 	List<UserDto> getAllAfter(Date date);
 
@@ -49,16 +49,18 @@ public interface UserFacade {
 	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
-	
+
 	List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties);
 
 	long count(UserCriteria userCriteria);
-	
+
 	/**
 	 * 
 	 * @param district
-	 * @param includeSupervisors independent from the district
-	 * @param userRoles roles of the users by district
+	 * @param includeSupervisors
+	 *            independent from the district
+	 * @param userRoles
+	 *            roles of the users by district
 	 * @return
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
@@ -68,11 +70,10 @@ public interface UserFacade {
 	List<String> getAllUuids();
 
 	List<UserDto> getByUuids(List<String> uuids);
-	
+
 	UserDto getCurrentUser();
-	
+
 	UserReferenceDto getCurrentUserAsReference();
 
 	Set<UserRole> getValidLoginRoles(String userName, String password);
-	
 }

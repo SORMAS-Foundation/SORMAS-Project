@@ -34,12 +34,15 @@ public class ContactFollowUpDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
+	//@formatter:off
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDateTime, Date followUpUntil, Disease disease,
 							  String reportingUserUuid, String regionUuid, String districtUuid,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
+	//formatter:on
+
 		this.uuid = uuid;
 		this.person = new PersonReferenceDto(personUuid, personFirstName, personLastName);
 		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
@@ -48,8 +51,15 @@ public class ContactFollowUpDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 		this.disease = disease;
 
-		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid == null ? null : new CaseJurisdictionDto(
-				caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUud, caseHealthFacilityUuid, casePointOfEntryUuid);
+		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid == null
+			? null
+			: new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUud,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 

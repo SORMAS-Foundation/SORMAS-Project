@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -25,21 +25,23 @@ import org.apache.commons.lang3.ObjectUtils;
 public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
-	
+
 	private String uuid;
 	private String caption;
-	
-	public ReferenceDto() { }
-	
+
+	public ReferenceDto() {
+
+	}
+
 	public ReferenceDto(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	public ReferenceDto(String uuid, String caption) {
 		this.uuid = uuid;
 		this.caption = caption;
 	}
-	
+
 	@Override
 	public String getUuid() {
 		return uuid;
@@ -56,14 +58,15 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	public void setCaption(String caption) {
 		this.caption = caption;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getCaption();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o) {
 			return true;
 		}
@@ -71,8 +74,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 			return false;
 		}
 
-		if (getUuid() != null && o instanceof HasUuid
-				&& ((HasUuid) o).getUuid() != null) {
+		if (getUuid() != null && o instanceof HasUuid && ((HasUuid) o).getUuid() != null) {
 			// this works, because we are using UUIDs
 			HasUuid ado = (HasUuid) o;
 			return getUuid().equals(ado.getUuid());
@@ -83,6 +85,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	@Override
 	public int hashCode() {
+
 		if (getUuid() != null) {
 			return getUuid().hashCode();
 		}

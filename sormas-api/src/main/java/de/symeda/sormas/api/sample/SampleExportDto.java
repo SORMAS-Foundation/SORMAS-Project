@@ -5,22 +5,22 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.PersonalData;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class SampleExportDto implements Serializable {
 
@@ -87,6 +87,7 @@ public class SampleExportDto implements Serializable {
 	private CaseJurisdictionDto associatedCaseJurisdiction;
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
+	//@formatter:off
 	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String casePersonFirstName, String casePersonLastName,
 						   Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
 						   SampleSource sampleSource, String laboratoryUuid, String laboratory, String laboratoryDetails,
@@ -103,23 +104,44 @@ public class SampleExportDto implements Serializable {
 						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
 	) {
+	//@formatter:on
+
 		this.id = id;
 		this.uuid = uuid;
 		this.labSampleID = labSampleId;
 		this.epidNumber = epidNumber;
 
 		if (caseUuid != null) {
-			this.associatedCase = new AssociatedCase(caseUuid, casePersonFirstName, casePersonLastName, caseRegion, caseDistrict,
-					caseCommunity, caseHealthFacilityUuid, caseHealthFacility, caseFacilityDetails);
+			this.associatedCase = new AssociatedCase(
+				caseUuid,
+				casePersonFirstName,
+				casePersonLastName,
+				caseRegion,
+				caseDistrict,
+				caseCommunity,
+				caseHealthFacilityUuid,
+				caseHealthFacility,
+				caseFacilityDetails);
 			this.associatedCaseJurisdiction = new CaseJurisdictionDto(
-					caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid
-			);
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 		if (contactReportingUserUuid != null) {
-			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
-					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid
-			);
-			this.associatedContactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
+				? null
+				: new CaseJurisdictionDto(
+					contactCaseReportingUserUuid,
+					contactCaseRegionUuid,
+					contactCaseDistrictUuid,
+					contactCaseCommunityUuid,
+					contactCaseHealthFacilityUuid,
+					contactCasePointOfEntryUuid);
+			this.associatedContactJurisdiction =
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
@@ -441,8 +463,8 @@ public class SampleExportDto implements Serializable {
 
 	@Order(42)
 	public String getCaseAddressCaption() {
-		return LocationReferenceDto.buildCaption(caseAddress.region, caseAddress.district, caseAddress.community,
-				caseAddress.city, caseAddress.address);
+		return LocationReferenceDto
+			.buildCaption(caseAddress.region, caseAddress.district, caseAddress.community, caseAddress.city, caseAddress.address);
 	}
 
 	public CasePersonAddress getCaseAddress() {
@@ -694,6 +716,9 @@ public class SampleExportDto implements Serializable {
 	}
 
 	public static class AssociatedCase extends CaseReferenceDto {
+
+		private static final long serialVersionUID = 4890448385381706557L;
+
 		private String region;
 		private String district;
 		@PersonalData
@@ -701,8 +726,16 @@ public class SampleExportDto implements Serializable {
 		@PersonalData
 		private String facility;
 
-		public AssociatedCase(String uuid, String firstName, String lastName, String region, String district, String community,
-							  String facilityUuid, String facility, String facilityDetails) {
+		public AssociatedCase(
+			String uuid,
+			String firstName,
+			String lastName,
+			String region,
+			String district,
+			String community,
+			String facilityUuid,
+			String facility,
+			String facilityDetails) {
 			super(uuid, firstName, lastName);
 
 			this.region = region;
@@ -730,6 +763,9 @@ public class SampleExportDto implements Serializable {
 	}
 
 	public static class CasePersonAddress implements Serializable {
+
+		private static final long serialVersionUID = 466724930802680895L;
+
 		private String region;
 		private String district;
 		@PersonalData

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -30,7 +30,7 @@ public class DashboardContactDto implements Serializable {
 	private static final long serialVersionUID = -8118109313009645462L;
 
 	public static final String I18N_PREFIX = "Contact";
-	
+
 	private long id;
 	private Date reportDate;
 	private Boolean symptomatic;
@@ -42,10 +42,16 @@ public class DashboardContactDto implements Serializable {
 	private Date followUpUntil;
 	private Disease disease;
 	private Map<VisitStatus, Long> visitStatusMap = new HashMap<>();
-	
-	public DashboardContactDto(long id, Date reportDate, ContactStatus contactStatus,
-			ContactClassification contactClassification, FollowUpStatus followUpStatus,
-			Date followUpUntil, Disease disease) {
+
+	public DashboardContactDto(
+		long id,
+		Date reportDate,
+		ContactStatus contactStatus,
+		ContactClassification contactClassification,
+		FollowUpStatus followUpStatus,
+		Date followUpUntil,
+		Disease disease) {
+
 		this.id = id;
 		this.reportDate = reportDate;
 		this.contactStatus = contactStatus;
@@ -58,11 +64,11 @@ public class DashboardContactDto implements Serializable {
 	public long getId() {
 		return id;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public Date getReportDate() {
 		return reportDate;
 	}
@@ -145,6 +151,7 @@ public class DashboardContactDto implements Serializable {
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
@@ -153,6 +160,7 @@ public class DashboardContactDto implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -164,5 +172,4 @@ public class DashboardContactDto implements Serializable {
 			return false;
 		return true;
 	}
-	
 }

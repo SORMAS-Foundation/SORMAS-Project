@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
@@ -72,6 +72,7 @@ public class TaskIndexDto implements Serializable {
 	private CaseJurisdictionDto caseJurisdiction;
 	private ContactJurisdictionDto contactJurisdiction;
 
+	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
 			String eventUuid, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
@@ -81,24 +82,38 @@ public class TaskIndexDto implements Serializable {
 			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid) {
+	//@formatter:on
+
 		this.setUuid(uuid);
 		this.taskContext = taskContext;
 
-		if(caseUuid != null) {
+		if (caseUuid != null) {
 			this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
 			this.caseJurisdiction = new CaseJurisdictionDto(
-					caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid
-			);
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 
 		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
 
-		if(contactUuid != null) {
+		if (contactUuid != null) {
 			this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
 
-			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null ? null : new CaseJurisdictionDto(
-					contactCaseReportingUserUuid, contactCaseRegionUuid, contactCaseDistrictUuid, contactCaseCommunityUuid, contactCaseHealthFacilityUuid, contactCasePointOfEntryUuid);
-			this.contactJurisdiction = new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
+				? null
+				: new CaseJurisdictionDto(
+					contactCaseReportingUserUuid,
+					contactCaseRegionUuid,
+					contactCaseDistrictUuid,
+					contactCaseCommunityUuid,
+					contactCaseHealthFacilityUuid,
+					contactCasePointOfEntryUuid);
+			this.contactJurisdiction =
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 
 		this.taskType = taskType;
@@ -111,45 +126,59 @@ public class TaskIndexDto implements Serializable {
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
 		this.assigneeReply = assigneeReply;
 	}
+
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}
+
 	public void setTaskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
 	}
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
+
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
+
 	public EventReferenceDto getEvent() {
 		return event;
 	}
+
 	public void setEvent(EventReferenceDto event) {
 		this.event = event;
 	}
+
 	public ContactReferenceDto getContact() {
 		return contact;
 	}
+
 	public void setContact(ContactReferenceDto contact) {
 		this.contact = contact;
 	}
+
 	public TaskType getTaskType() {
 		return taskType;
 	}
+
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
 	}
+
 	public Date getDueDate() {
 		return dueDate;
 	}
+
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
+
 	public Date getSuggestedStart() {
 		return suggestedStart;
 	}
+
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
 	}
@@ -157,36 +186,47 @@ public class TaskIndexDto implements Serializable {
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
 	}
+
 	public void setTaskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
 	}
+
 	public UserReferenceDto getCreatorUser() {
 		return creatorUser;
 	}
+
 	public void setCreatorUser(UserReferenceDto creatorUser) {
 		this.creatorUser = creatorUser;
 	}
+
 	public String getCreatorComment() {
 		return creatorComment;
 	}
+
 	public void setCreatorComment(String creatorComment) {
 		this.creatorComment = creatorComment;
 	}
+
 	public UserReferenceDto getAssigneeUser() {
 		return assigneeUser;
 	}
+
 	public void setAssigneeUser(UserReferenceDto assigneeUser) {
 		this.assigneeUser = assigneeUser;
 	}
+
 	public String getAssigneeReply() {
 		return assigneeReply;
 	}
+
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
 	}
+
 	public TaskPriority getPriority() {
 		return priority;
 	}
+
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
@@ -205,9 +245,11 @@ public class TaskIndexDto implements Serializable {
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}
 	}
+
 	public String getUuid() {
 		return uuid;
 	}
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}

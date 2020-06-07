@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
@@ -30,46 +30,50 @@ public class RegionIndexDto extends EntityDto {
 	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
-	
+
 	private String name;
 	private String epidCode;
 	private Integer population;
 	private Float growthRate;
 	private String externalID;
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getEpidCode() {
 		return epidCode;
 	}
+
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
+
 	public Integer getPopulation() {
 		return population;
 	}
+
 	public void setPopulation(Integer population) {
 		this.population = population;
 	}
-	
+
 	public Float getGrowthRate() {
 		return growthRate;
 	}
+
 	public void setGrowthRate(Float growthRate) {
 		this.growthRate = growthRate;
 	}
-	
+
 	public String getExternalID() {
 		return externalID;
 	}
@@ -81,8 +85,9 @@ public class RegionIndexDto extends EntityDto {
 	public RegionReferenceDto toReference() {
 		return new RegionReferenceDto(getUuid());
 	}
-	
+
 	public static RegionIndexDto build() {
+
 		RegionIndexDto dto = new RegionIndexDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;

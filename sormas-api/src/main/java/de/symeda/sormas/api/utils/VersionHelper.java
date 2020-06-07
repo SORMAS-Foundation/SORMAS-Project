@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -27,16 +27,17 @@ public final class VersionHelper {
 	}
 
 	/**
-	 * Extract the version (X.Y.Z) from any string. 
+	 * Extract the version (X.Y.Z) from any string.
 	 * If multiple matching patterns are found the last one is returned.
+	 * 
 	 * @return null when no version is found.
 	 */
 	public static int[] extractVersion(String input) {
-		
+
 		if (DataHelper.isNullOrEmpty(input)) {
 			return null;
 		}
-		
+
 		Pattern pattern = Pattern.compile("[-\\.]*(\\d+)\\.(\\d+)\\.(\\d+)[-\\.]*");
 		int[] version = null;
 		Matcher matcher = pattern.matcher(input);
@@ -51,18 +52,17 @@ public final class VersionHelper {
 		}
 		return version;
 	}
-	
+
 	public static boolean isVersion(int[] version) {
 		return version != null && version.length == 3;
 	}
 
 	public static boolean isBefore(int[] version, int[] referenceVersion) {
-		
-		for (int i=0; i<3; i++) {
+
+		for (int i = 0; i < 3; i++) {
 			if (version[i] < referenceVersion[i]) {
 				return true;
-			}
-			else if (version[i] > referenceVersion[i]) {
+			} else if (version[i] > referenceVersion[i]) {
 				return false;
 			}
 		}
@@ -70,21 +70,20 @@ public final class VersionHelper {
 	}
 
 	public static boolean isAfter(int[] version, int[] referenceVersion) {
-		
-		for (int i=0; i<3; i++) {
+
+		for (int i = 0; i < 3; i++) {
 			if (version[i] > referenceVersion[i]) {
 				return true;
-			}
-			else if (version[i] < referenceVersion[i]) {
+			} else if (version[i] < referenceVersion[i]) {
 				return false;
 			}
 		}
 		return false;
 	}
-	
+
 	public static boolean isEqual(int[] version, int[] referenceVersion) {
-		
-		for (int i=0; i<3; i++) {
+
+		for (int i = 0; i < 3; i++) {
 			if (version[i] != referenceVersion[i]) {
 				return false;
 			}
