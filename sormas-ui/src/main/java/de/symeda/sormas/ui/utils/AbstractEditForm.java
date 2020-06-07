@@ -9,13 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -30,17 +35,13 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
 
@@ -65,7 +66,13 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		this(type, propertyI18nPrefix, true, fieldVisibilityCheckers, null);
 	}
 
-	protected AbstractEditForm(Class<DTO> type, String propertyI18nPrefix, boolean addFields, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	protected AbstractEditForm(
+		Class<DTO> type,
+		String propertyI18nPrefix,
+		boolean addFields,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		FieldAccessCheckers fieldAccessCheckers) {
+
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, fieldAccessCheckers), false);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
@@ -85,6 +92,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	@SuppressWarnings("rawtypes")
 	public static CommitDiscardWrapperComponent<VerticalLayout> buildCommitDiscardWrapper(AbstractEditForm... wrappedForms) {
+
 		VerticalLayout formsLayout = new VerticalLayout();
 		if (wrappedForms.length > 0) { // not perfect, but necessary to make this work in grid views like CaseDataView
 			formsLayout.setWidth(wrappedForms[0].getWidth(), wrappedForms[0].getWidthUnits());
@@ -113,6 +121,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	@Override
 	public void preCommit(CommitEvent commitEvent) throws CommitException {
+
 		List<Field<?>> customFields = getCustomFields();
 
 		if (hideValidationUntilNextCommit) {
@@ -149,8 +158,8 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		} catch (CommitException e) {
 			if (e.getInvalidFields().size() > 0) {
 				throw new InvalidValueException(
-						e.getInvalidFields().keySet().stream().map(f -> f.getCaption()).collect(Collectors.joining(", ")),
-						e.getInvalidFields().values().stream().toArray(InvalidValueException[]::new));
+					e.getInvalidFields().keySet().stream().map(f -> f.getCaption()).collect(Collectors.joining(", ")),
+					e.getInvalidFields().values().stream().toArray(InvalidValueException[]::new));
 			} else {
 				throw new SourceException(this, e);
 			}
@@ -175,7 +184,9 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 * to be used for Disease fields that might contain a disease that is no longer active in the system and thus will
 	 * not be returned by DiseaseHelper.isActivePrimaryDisease(disease).
 	 */
+	@SuppressWarnings("unchecked")
 	protected ComboBox addDiseaseField(String fieldId, boolean showNonPrimaryDiseases) {
+
 		ComboBox field = addField(fieldId, ComboBox.class);
 		if (showNonPrimaryDiseases) {
 			addNonPrimaryDiseasesTo(field);
@@ -203,15 +214,18 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		return field;
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
 	@Override
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
 
 	/**
-	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
-	 *                            -1 for no restriction at all
+	 * @param allowedDaysInFuture
+	 *            How many days in the future the value of this field can be or
+	 *            -1 for no restriction at all
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -235,8 +249,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 		if (field instanceof AbstractField) {
 			AbstractField<?> abstractField = (AbstractField) field;
-			abstractField.setDescription(I18nProperties.getPrefixDescription(
-					propertyI18nPrefix, propertyId, abstractField.getDescription()));
+			abstractField.setDescription(I18nProperties.getPrefixDescription(propertyI18nPrefix, propertyId, abstractField.getDescription()));
 
 			if (hideValidationUntilNextCommit && !abstractField.isInvalidCommitted()) {
 				abstractField.setValidationVisible(false);
@@ -256,6 +269,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void setReadOnly(boolean readOnly, String... fieldOrPropertyIds) {
+
 		for (String propertyId : fieldOrPropertyIds) {
 			if (readOnly || isEditableAllowed(propertyId)) {
 				getField(propertyId).setReadOnly(readOnly);
@@ -272,6 +286,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void setVisible(boolean visible, String... fieldOrPropertyIds) {
+
 		for (String propertyId : fieldOrPropertyIds) {
 			if (!visible || isVisibleAllowed(propertyId)) {
 				getField(propertyId).setVisible(visible);
@@ -280,6 +295,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void setVisibleClear(boolean visible, String... fieldOrPropertyIds) {
+
 		for (String propertyId : fieldOrPropertyIds) {
 			if (!visible || isVisibleAllowed(propertyId)) {
 				Field<?> field = getField(propertyId);
@@ -292,12 +308,14 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void discard(String... propertyIds) {
+
 		for (String propertyId : propertyIds) {
 			getField(propertyId).discard();
 		}
 	}
 
 	protected void setRequired(boolean required, String... fieldOrPropertyIds) {
+
 		for (String propertyId : fieldOrPropertyIds) {
 			if (!required || isEditableAllowed(propertyId)) {
 				Field<?> field = getField(propertyId);
@@ -307,6 +325,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void setSoftRequired(boolean required, String... fieldOrPropertyIds) {
+
 		for (String propertyId : fieldOrPropertyIds) {
 			Field<?> field = getField(propertyId);
 			if (required) {
@@ -318,12 +337,14 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	}
 
 	protected void addFieldListeners(String fieldOrPropertyId, ValueChangeListener... listeners) {
+
 		for (ValueChangeListener listener : listeners) {
 			getField(fieldOrPropertyId).addValueChangeListener(listener);
 		}
 	}
 
 	protected void addValidators(String fieldOrPropertyId, Validator... validators) {
+
 		for (Validator validator : validators) {
 			getField(fieldOrPropertyId).addValidator(validator);
 		}
@@ -361,7 +382,9 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void addNonPrimaryDiseasesTo(ComboBox diseaseField) {
+
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, false, true);
 		for (Disease disease : diseases) {
 			if (diseaseField.getItem(disease) != null) {
@@ -375,9 +398,11 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 
 	/**
 	 * Sets the initial visibilities based on annotations and builds a list of all fields in a form that are allowed to be visible -
-	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on the respective field.
+	 * this is either because the @Diseases and @Outbreaks annotations are not relevant or at least one of these annotations are present on
+	 * the respective field.
 	 */
 	protected void initializeVisibilitiesAndAllowedVisibilities() {
+
 		if (fieldVisibilityCheckers == null) {
 			throw new RuntimeException("Visibility checker is not set!");
 		}
@@ -410,6 +435,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	 * that are allowed to be enabled based on access rights
 	 */
 	protected void initializeAccessAndAllowedAccesses() {
+
 		if (fieldAccessCheckers == null) {
 			throw new RuntimeException("Access checker is not set!");
 		}
@@ -440,5 +466,4 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	protected boolean isGermanServer() {
 		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
-
 }

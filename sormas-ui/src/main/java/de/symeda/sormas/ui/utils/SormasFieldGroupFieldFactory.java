@@ -7,14 +7,19 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
-import com.vaadin.v7.ui.*;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractTextField;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -37,13 +42,14 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
 	@Override
 	public <T extends Field> T createField(Class<?> type, Class<T> fieldType) {
 		if (type.isEnum()) {
 			if (fieldType.isAssignableFrom(Field.class) // no specific fieldType defined?
-					&& (SymptomState.class.isAssignableFrom(type)
-							|| YesNoUnknown.class.isAssignableFrom(type))) {
+				&& (SymptomState.class.isAssignableFrom(type) || YesNoUnknown.class.isAssignableFrom(type))) {
 				OptionGroup field = super.createField(type, OptionGroup.class);
 				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
 				return (T) field;
@@ -70,50 +76,37 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 					return field;
 				}
 			}
-		}
-		else if (Boolean.class.isAssignableFrom(type)) {
-			fieldType = CheckBox.class.isAssignableFrom(fieldType)
-					? (Class<T>)CheckBox.class
-					: (Class<T>)OptionGroup.class;
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) OptionGroup.class;
 
 			return createBooleanField(fieldType);
-		}
-		else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
+		} else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);
 			return (T) field;
-		}
-		else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
+		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
-		}
-		else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
+		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
 			return (T) new HealthConditionsForm();
-		}
-		else if (DateTimeField.class.isAssignableFrom(fieldType)) {
+		} else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 			DateTimeField field = new DateTimeField();
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
-		}
-		else if (DateField.class.isAssignableFrom(fieldType)) {
+		} else if (DateField.class.isAssignableFrom(fieldType)) {
 			DateField field = super.createField(type, DateField.class);
 			field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 			field.setLenient(true);
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
-		}
-		else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
+		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new PreviousHospitalizationsField();
-		}
-		else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
+		} else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
 			return (T) new EpiDataBurialsField();
-		}
-		else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
+		} else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
 			return (T) new EpiDataGatheringsField();
-		}
-		else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
+		} else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
 			return (T) new EpiDataTravelsField();
-		}
-		else if (fieldType.equals(Field.class)) {
+		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
 				DateField field = super.createField(type, DateField.class);
@@ -121,8 +114,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				field.setLenient(true);
 				field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 				return (T) field;
-			}
-			else if (ReferenceDto.class.isAssignableFrom(type)) {
+			} else if (ReferenceDto.class.isAssignableFrom(type)) {
 				return (T) new ComboBox();
 			}
 		}
@@ -137,7 +129,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		return textField;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
 	@Override
 	protected <T extends Field> T createBooleanField(Class<T> fieldType) {
 		if (OptionGroup.class.isAssignableFrom(fieldType)) {
@@ -155,20 +149,19 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void populateWithDiseaseData(ComboBox diseaseField) {
 
 		diseaseField.removeAllItems();
-        for (Object p : diseaseField.getContainerPropertyIds()) {
-        	diseaseField.removeContainerProperty(p);
-        }
-        diseaseField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
-        diseaseField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
-        @SuppressWarnings("unchecked")
+		for (Object p : diseaseField.getContainerPropertyIds()) {
+			diseaseField.removeContainerProperty(p);
+		}
+		diseaseField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
+		diseaseField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
-        for (Object r : diseases) {
-            Item newItem = diseaseField.addItem(r);
-            newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
-        }
+		for (Object r : diseases) {
+			Item newItem = diseaseField.addItem(r);
+			newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
+		}
 	}
-
 }

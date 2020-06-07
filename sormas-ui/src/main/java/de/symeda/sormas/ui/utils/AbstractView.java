@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -21,11 +21,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
 
-import com.vaadin.navigator.Navigator;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.SormasUI;
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -43,6 +41,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.ui.SormasUI;
 
 public abstract class AbstractView extends VerticalLayout implements View {
 
@@ -112,7 +112,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	public Label getViewTitleLabel() {
 		return viewTitleLabel;
 	}
-	
+
 	public Label getViewSubTitleLabel() {
 		return viewSubTitleLabel;
 	}
@@ -133,7 +133,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		String newState = buildNavigationState(state, criteria);
 
 		boolean didNavigate = false;
-		if(!newState.equals(state) || force) {
+		if (!newState.equals(state) || force) {
 			navigator.navigateTo(newState);
 
 			didNavigate = true;
@@ -154,7 +154,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		if (criteria != null) {
 			String params = criteria.toUrlParams();
 			if (!DataHelper.isNullOrEmpty(params)) {
-				if (newState.charAt(newState.length()-1) != '/') {
+				if (newState.charAt(newState.length() - 1) != '/') {
 					newState += "/";
 				}
 
@@ -168,14 +168,20 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	public void setApplyingCriteria(boolean applyingCriteria) {
 		this.applyingCriteria = applyingCriteria;
 	}
-	
-	protected void addExportButton(StreamResource streamResource, PopupButton exportPopupButton, VerticalLayout exportLayout,
-			Resource icon, String captionKey, String descriptionKey) {
+
+	protected void addExportButton(
+		StreamResource streamResource,
+		PopupButton exportPopupButton,
+		VerticalLayout exportLayout,
+		Resource icon,
+		String captionKey,
+		String descriptionKey) {
+
 		Button exportButton = ButtonHelper.createIconButton(captionKey, icon, e -> {
-			
+
 			Button button = e.getButton();
 			int buttonPos = exportLayout.getComponentIndex(button);
-			
+
 			DownloadUtil.showExportWaitDialog(button, ce -> {
 				//restore the button
 				exportLayout.addComponent(button, buttonPos);
@@ -198,14 +204,14 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	 *
 	 * @return
 	 */
-	protected static String findPrefixCaption(String propertyId, String ... prefixes) {
-		return Arrays.stream(prefixes)
-				.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(propertyId);
-	}
+	protected static String findPrefixCaption(String propertyId, String... prefixes) {
 
+		return Arrays.stream(prefixes)
+			.map(p -> I18nProperties.getPrefixCaption(p, propertyId, null))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(propertyId);
+	}
 
 	protected String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
 		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;

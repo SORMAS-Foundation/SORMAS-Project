@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
@@ -53,8 +53,10 @@ public class DashboardStatisticsComparisonElement extends VerticalLayout {
 
 	public void update(int firstCount, int secondCount, String leftCaptionAddition, String rightCaptionAddition) {
 		countLabel.setValue(firstCount + " / " + secondCount);
-		captionLabel.setValue(leftCaption + (!StringUtils.isEmpty(leftCaptionAddition) ? " (" + leftCaptionAddition + ") / " : " / ")
-				+ rightCaption + (!StringUtils.isEmpty(rightCaptionAddition) ? " (" + rightCaptionAddition + ")" : ""));
+		captionLabel.setValue(
+			leftCaption
+				+ (!StringUtils.isEmpty(leftCaptionAddition) ? " (" + leftCaptionAddition + ") / " : " / ")
+				+ rightCaption
+				+ (!StringUtils.isEmpty(rightCaptionAddition) ? " (" + rightCaptionAddition + ")" : ""));
 	}
-
 }

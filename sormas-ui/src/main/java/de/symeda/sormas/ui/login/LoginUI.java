@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
@@ -64,15 +64,21 @@ public class LoginUI extends UI {
 		getPage().setTitle("SORMAS");
 
 		setContent(new LoginScreen(new LoginListener() {
+
 			@Override
 			public void loginSuccessful() {
-	        	UI.getCurrent().getPage().setLocation(VaadinServletService.getCurrentServletRequest().getContextPath() + "#" + DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()));
+				UI.getCurrent()
+					.getPage()
+					.setLocation(
+						VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
+							+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()));
 			}
 		}));
-
 	}
 
-	@WebServlet(urlPatterns = { "/login/*", "/VAADIN/*"}, name = "SormasLoginServlet", asyncSupported = true)
+	@WebServlet(urlPatterns = {
+		"/login/*",
+		"/VAADIN/*" }, name = "SormasLoginServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = LoginUI.class, productionMode = true)
 	@ServletSecurity(@HttpConstraint)
 	public static class SormasLoginServlet extends VaadinServlet {

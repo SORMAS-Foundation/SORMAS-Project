@@ -21,9 +21,9 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
-import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
+import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,11 +31,12 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException {
+
 		TestDataCreator creator = new TestDataCreator();
-		
+
 		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid()
-				,"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_success.csv").getFile());
@@ -69,6 +70,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: skip
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
@@ -83,6 +85,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: pick
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.PICK));
@@ -97,6 +100,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: cancel
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
@@ -111,6 +115,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: override
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(input.getSimilarCases().get(0), ImportSimilarityResultOption.OVERRIDE));
@@ -125,6 +130,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: create -> fail because of duplicate epid number
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
@@ -145,6 +151,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 		// Similarity: create -> pass
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_similarities.csv").getFile());
 		caseImporter = new CaseImporterExtension(csvFile, true, user.toReference()) {
+
 			@Override
 			protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
@@ -173,8 +180,8 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Test
 	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException {
 		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_import_test_line_listing.csv").getFile());
@@ -186,6 +193,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 	}
 
 	private static class CaseImporterExtension extends CaseImporter {
+
 		private CaseImporterExtension(File inputFile, boolean hasEntityClassRow, UserReferenceDto currentUser) {
 			super(inputFile, hasEntityClassRow, currentUser);
 		}
@@ -196,6 +204,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		protected Writer createErrorReportWriter() {
 			return new OutputStreamWriter(new OutputStream() {
+
 				@Override
 				public void write(int b) throws IOException {
 					// Do nothing
@@ -203,5 +212,4 @@ public class CaseImporterTest extends AbstractBeanTest {
 			});
 		}
 	}
-
 }

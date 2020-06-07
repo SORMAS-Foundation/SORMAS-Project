@@ -32,37 +32,46 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 	private static final String EDIT_BTN_ID = "edit";
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";
-	
+
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
-	
-	public PrescriptionGrid(TherapyView parentView) {		
+
+	public PrescriptionGrid(TherapyView parentView) {
 		setSizeFull();
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
 		}
-		
+
 		BeanItemContainer<PrescriptionIndexDto> container = new BeanItemContainer<>(PrescriptionIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
+		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
 		setContainerDataSource(generatedContainer);
-		
+
 		generatedContainer.addGeneratedProperty(DOCUMENT_TREATMENT_BTN_ID, new PropertyValueGenerator<String>() {
+
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				return I18nProperties.getPrefixCaption(TherapyDto.I18N_PREFIX, I18nProperties.getCaption(Captions.treatmentCreateTreatment));
 			}
+
 			@Override
 			public Class<String> getType() {
 				return String.class;
 			}
 		});
-		
-		setColumns(EDIT_BTN_ID, PrescriptionIndexDto.PRESCRIPTION_TYPE, PrescriptionIndexDto.PRESCRIPTION_DATE, 
-				PrescriptionIndexDto.PRESCRIPTION_PERIOD, PrescriptionIndexDto.FREQUENCY, PrescriptionIndexDto.DOSE, 
-				PrescriptionIndexDto.ROUTE, PrescriptionIndexDto.PRESCRIBING_CLINICIAN, DOCUMENT_TREATMENT_BTN_ID);
+
+		setColumns(
+			EDIT_BTN_ID,
+			PrescriptionIndexDto.PRESCRIPTION_TYPE,
+			PrescriptionIndexDto.PRESCRIPTION_DATE,
+			PrescriptionIndexDto.PRESCRIPTION_PERIOD,
+			PrescriptionIndexDto.FREQUENCY,
+			PrescriptionIndexDto.DOSE,
+			PrescriptionIndexDto.ROUTE,
+			PrescriptionIndexDto.PRESCRIBING_CLINICIAN,
+			DOCUMENT_TREATMENT_BTN_ID);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
@@ -72,23 +81,19 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					PrescriptionIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+			column.setHeaderCaption(
+				I18nProperties.getPrefixCaption(PrescriptionIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
-		
+
 		addItemClickListener(e -> {
 			if (e.getPropertyId() == null) {
 				return;
 			}
-			
+
 			if (DOCUMENT_TREATMENT_BTN_ID.equals(e.getPropertyId())) {
-				PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
-				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, new Runnable() {
-					@Override
-					public void run() {
-						parentView.reloadTreatmentGrid();
-					}
-				});
+				PrescriptionDto prescription =
+					FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
+				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
 			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
 			}
@@ -100,26 +105,25 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
 		return (BeanItemContainer<PrescriptionIndexDto>) container.getWrappedContainer();
 	}
-	
+
 	public void reload() {
 		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
 			deselectAll();
 		}
 
 		List<PrescriptionIndexDto> entries = FacadeProvider.getPrescriptionFacade().getIndexList(prescriptionCriteria);
-		
+
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);
 	}
-	
+
 	@Override
 	public void setCriteria(PrescriptionCriteria prescriptionCriteria) {
 		this.prescriptionCriteria = prescriptionCriteria;
 	}
-	
+
 	@Override
 	public PrescriptionCriteria getCriteria() {
 		return prescriptionCriteria;
 	}
-	
 }

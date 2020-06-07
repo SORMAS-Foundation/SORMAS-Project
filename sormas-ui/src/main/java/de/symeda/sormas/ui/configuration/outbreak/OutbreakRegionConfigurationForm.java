@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.outbreak;
 
@@ -42,7 +42,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class OutbreakRegionConfigurationForm extends VerticalLayout {
-		
+
 	private static final long serialVersionUID = 1L;
 
 	// Outbreak mode statics
@@ -56,13 +56,13 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 	// Outbreak toggles
 	private OptionGroup[] outbreakToggles;
-	
+
 	// UI elements
 	private Label affectedDistrictsNumberLabel;
 
 	public OutbreakRegionConfigurationForm(OutbreakRegionConfiguration regionOutbreakConfiguration) {
+
 		setStyleName("configuration-view");
-		
 
 		// Copy the set of affected districts because the CommitDiscardWrapperComponent is not reset when discarding this form
 		affectedDistricts = new HashSet<>(regionOutbreakConfiguration.getAffectedDistricts());
@@ -77,6 +77,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	}
 
 	private HorizontalLayout createHeader() {
+
 		HorizontalLayout headerLayout = new HorizontalLayout();
 		headerLayout.setWidth(100, Unit.PERCENTAGE);
 		headerLayout.setSpacing(true);
@@ -131,6 +132,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	}
 
 	private HorizontalLayout createAffectedDistrictsComponent() {
+
 		HorizontalLayout affectedDistrictsComponent = new HorizontalLayout();
 		affectedDistrictsComponent.setWidth(100, Unit.PERCENTAGE);
 		affectedDistrictsComponent.setMargin(false);
@@ -154,7 +156,7 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 
 		affectedDistrictsComponent.setExpandRatio(leftColumn, 1);
 		affectedDistrictsComponent.setExpandRatio(middleColumn, 1);
-		affectedDistrictsComponent.setExpandRatio(rightColumn, 1);		
+		affectedDistrictsComponent.setExpandRatio(rightColumn, 1);
 
 		List<DistrictReferenceDto> districts = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
 		int index = 1;
@@ -164,11 +166,10 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 			outbreakToggles[index - 1] = outbreakToggle;
 
 			// Split districts evenly to all three columns
-			if ((districts.size() % 3 == 0 && index <= districts.size() / 3) || 
-					(districts.size() % 3 != 0 && index <= (districts.size() / 3) + 1)) {
+			if ((districts.size() % 3 == 0 && index <= districts.size() / 3) || (districts.size() % 3 != 0 && index <= (districts.size() / 3) + 1)) {
 				leftColumn.addComponent(outbreakToggle);
-			} else if ((districts.size() % 3 == 0 && index <= districts.size() / 1.5f) || 
-					((districts.size() % 3 == 1 || districts.size() % 3 == 2) && index <= (districts.size() / 1.5f) + 1)) {
+			} else if ((districts.size() % 3 == 0 && index <= districts.size() / 1.5f)
+				|| ((districts.size() % 3 == 1 || districts.size() % 3 == 2) && index <= (districts.size() / 1.5f) + 1)) {
 				middleColumn.addComponent(outbreakToggle);
 			} else {
 				rightColumn.addComponent(outbreakToggle);
@@ -181,36 +182,46 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 	}
 
 	private OptionGroup createOutbreakToggle(DistrictReferenceDto district) {
+
 		OptionGroup outbreakToggle = new OptionGroup();
-		style(outbreakToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
+		style(
+			outbreakToggle,
+			ValoTheme.OPTIONGROUP_HORIZONTAL,
+			CssStyles.OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL,
+			CssStyles.OPTIONGROUP_CAPTION_INLINE);
 		outbreakToggle.setCaption(district.toString());
 		outbreakToggle.addItem(OUTBREAK);
 		outbreakToggle.addItem(NORMAL);
-		
+
 		if (affectedDistricts.contains(district)) {
 			outbreakToggle.setValue(OUTBREAK);
 		} else {
 			outbreakToggle.setValue(NORMAL);
 		}
-		
+
 		outbreakToggle.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() == OUTBREAK) {
 				affectedDistricts.add(district);
 			} else {
 				affectedDistricts.remove(district);
 			}
-			
+
 			updateAffectedDistrictsNumberLabel();
 		});
-		
+
 		return outbreakToggle;
 	}
 
-	private void updateAffectedDistrictsNumberLabel() {		
-		affectedDistrictsNumberLabel.setValue(affectedDistricts.size() + "/" + totalDistricts + " " + I18nProperties.getCaption(Captions.outbreakAffectedDistricts));
-		
-		CssStyles.removeStyles(affectedDistrictsNumberLabel, 
-				CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_CRITICAL, CssStyles.LABEL_WARNING);
+	private void updateAffectedDistrictsNumberLabel() {
+
+		affectedDistrictsNumberLabel
+			.setValue(affectedDistricts.size() + "/" + totalDistricts + " " + I18nProperties.getCaption(Captions.outbreakAffectedDistricts));
+
+		CssStyles.removeStyles(
+			affectedDistrictsNumberLabel,
+			CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR,
+			CssStyles.LABEL_CRITICAL,
+			CssStyles.LABEL_WARNING);
 		if (affectedDistricts.size() == 0) {
 			style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR);
 		} else if (affectedDistricts.size() >= totalDistricts / 2.0f) {
@@ -219,9 +230,8 @@ public class OutbreakRegionConfigurationForm extends VerticalLayout {
 			style(affectedDistrictsNumberLabel, CssStyles.LABEL_CONFIGURATION_SEVERITY_INDICATOR, CssStyles.LABEL_WARNING);
 		}
 	}
-	
+
 	public Set<DistrictReferenceDto> getAffectedDistricts() {
 		return affectedDistricts;
 	}
-	
 }

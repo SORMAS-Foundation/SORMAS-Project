@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -67,7 +67,8 @@ import de.symeda.sormas.ui.user.UsersView;
 public class MainScreen extends HorizontalLayout {
 
 	// Add new views to this set to make sure that the right error page is shown
-	private static final Set<String> KNOWN_VIEWS = new HashSet<>(Arrays.asList(
+	private static final Set<String> KNOWN_VIEWS = new HashSet<>(
+		Arrays.asList(
 			SurveillanceDashboardView.VIEW_NAME,
 			ContactsDashboardView.VIEW_NAME,
 			TasksView.VIEW_NAME,
@@ -85,7 +86,7 @@ public class MainScreen extends HorizontalLayout {
 			HealthFacilitiesView.VIEW_NAME,
 			LaboratoriesView.VIEW_NAME,
 			PointsOfEntryView.VIEW_NAME));
-	
+
 	private Menu menu;
 
 	public MainScreen(SormasUI ui) {
@@ -96,6 +97,7 @@ public class MainScreen extends HorizontalLayout {
 
 		final Navigator navigator = new Navigator(ui, viewContainer);
 		navigator.setErrorProvider(new ViewProvider() {
+
 			@Override
 			public String getViewName(String viewAndParameters) {
 				return viewAndParameters;
@@ -122,11 +124,19 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
 		if (permitted(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
+			menu.addView(
+				SurveillanceDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
 		} else if (permitted(UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
+			menu.addView(
+				ContactsDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
 		}
-		
+
 		if (permitted(UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
@@ -135,7 +145,11 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (permitted(FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {
-			menu.addView(AggregateReportsView.class, AggregateReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAggregateReports), VaadinIcons.GRID_SMALL);
+			menu.addView(
+				AggregateReportsView.class,
+				AggregateReportsView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuAggregateReports),
+				VaadinIcons.GRID_SMALL);
 		}
 		if (permitted(UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
@@ -154,19 +168,27 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (permitted(UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
-			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
+			menu.addView(
+				StatisticsView.class,
+				AbstractStatisticsView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuStatistics),
+				VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
-			menu.addView(OutbreaksView.class, AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration), VaadinIcons.COGS);
+			menu.addView(
+				OutbreaksView.class,
+				AbstractConfigurationView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuConfiguration),
+				VaadinIcons.COGS);
 		}
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE);
 
 		navigator.addViewChangeListener(viewChangeListener);
-				
+
 		ui.setNavigator(navigator);
 
 		addComponent(menu);
@@ -185,7 +207,7 @@ public class MainScreen extends HorizontalLayout {
 		public boolean beforeViewChange(ViewChangeEvent event) {
 
 			// Would be better to do this check BEFORE the view is created, but the Navigator can't be extended that way
-			
+
 			if (!event.getParameters().contains("?")) {
 				StringBuilder urlParams = new StringBuilder();
 				Collection<Object> viewModels = ViewModelProviders.of(event.getNewView().getClass()).getAll();
@@ -194,9 +216,9 @@ public class MainScreen extends HorizontalLayout {
 						if (urlParams.length() > 0) {
 							urlParams.append('&');
 						}
-						urlParams.append(((BaseCriteria)viewModel).toUrlParams());
-						if (urlParams.length() > 0 && urlParams.charAt(urlParams.length()-1) == '&') {
-							urlParams.deleteCharAt(urlParams.length()-1);
+						urlParams.append(((BaseCriteria) viewModel).toUrlParams());
+						if (urlParams.length() > 0 && urlParams.charAt(urlParams.length() - 1) == '&') {
+							urlParams.deleteCharAt(urlParams.length() - 1);
 						}
 					}
 				}
@@ -210,7 +232,7 @@ public class MainScreen extends HorizontalLayout {
 					return false;
 				}
 			}
-			
+
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				String defaultView;
@@ -225,7 +247,7 @@ public class MainScreen extends HorizontalLayout {
 				}
 				SormasUI.get().getNavigator().navigateTo(defaultView);
 				return false;
-			}	
+			}
 			return true;
 		}
 
@@ -237,7 +259,7 @@ public class MainScreen extends HorizontalLayout {
 
 	private static boolean permitted(FeatureType feature, UserRight userRight) {
 		return (feature == null || !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(feature))
-				&& (userRight == null || UserProvider.getCurrent().hasUserRight(userRight));
+			&& (userRight == null || UserProvider.getCurrent().hasUserRight(userRight));
 	}
 
 	private static boolean permitted(UserRight userRight) {

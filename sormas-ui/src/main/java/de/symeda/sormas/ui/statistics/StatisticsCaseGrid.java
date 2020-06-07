@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -44,8 +44,9 @@ public class StatisticsCaseGrid extends Grid {
 	private static final String CASE_COUNT_OR_INCIDENCE_COLUMN = "CaseCountOrIncidenceColumn";
 	private static final String UNKNOWN_COLUMN = "UnknownColumn";
 	private static final String TOTAL_COLUMN = "TotalColumn";
-	
+
 	private final class StatisticsCaseGridCellStyleGenerator implements CellStyleGenerator {
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -59,12 +60,18 @@ public class StatisticsCaseGrid extends Grid {
 	}
 
 	/**
-	 * @param cellValues Ordered by rows, then columns
+	 * @param cellValues
+	 *            Ordered by rows, then columns
 	 */
-	@SuppressWarnings("unchecked")
-	public StatisticsCaseGrid(StatisticsCaseAttribute rowsAttribute, StatisticsCaseSubAttribute rowsSubAttribute,
-			StatisticsCaseAttribute columnsAttribute, StatisticsCaseSubAttribute columnsSubAttribute, 
-			boolean showCaseIncidence, int incidenceDivisor, List<StatisticsCaseCountDto> cellValues, StatisticsCaseCriteria caseCriteria) {
+	public StatisticsCaseGrid(
+		StatisticsCaseAttribute rowsAttribute,
+		StatisticsCaseSubAttribute rowsSubAttribute,
+		StatisticsCaseAttribute columnsAttribute,
+		StatisticsCaseSubAttribute columnsSubAttribute,
+		boolean showCaseIncidence,
+		int incidenceDivisor,
+		List<StatisticsCaseCountDto> cellValues,
+		StatisticsCaseCriteria caseCriteria) {
 
 		super();
 
@@ -76,7 +83,7 @@ public class StatisticsCaseGrid extends Grid {
 		if (cellValues.isEmpty()) {
 			return;
 		}
-		
+
 		CaseCountOrIncidence dataStyle = showCaseIncidence ? CaseCountOrIncidence.CASE_INCIDENCE : CaseCountOrIncidence.CASE_COUNT;
 
 		// If no displayed attributes are selected, simply show the total number or incidence of cases
@@ -84,9 +91,13 @@ public class StatisticsCaseGrid extends Grid {
 			addColumn(CASE_COUNT_OR_INCIDENCE_COLUMN);
 			getColumn(CASE_COUNT_OR_INCIDENCE_COLUMN).setHeaderCaption(dataStyle.toString());
 			if (!showCaseIncidence) {
-				addRow(new Object[]{String.valueOf(cellValues.get(0).getCaseCount())});
+				addRow(
+					new Object[] {
+						String.valueOf(cellValues.get(0).getCaseCount()) });
 			} else {
-				addRow(new Object[]{String.valueOf(cellValues.get(0).getIncidence(incidenceDivisor))});
+				addRow(
+					new Object[] {
+						String.valueOf(cellValues.get(0).getIncidence(incidenceDivisor)) });
 			}
 			return;
 		}
@@ -105,8 +116,7 @@ public class StatisticsCaseGrid extends Grid {
 		if (columnsAttribute == null && columnsSubAttribute == null) {
 			// When no column grouping has been selected, simply display the number of cases or case incidence for the respective row
 			totalColumnIndex = getColumns().size();
-			addColumn(CASE_COUNT_OR_INCIDENCE_COLUMN)
-			.setHeaderCaption(dataStyle.toString());
+			addColumn(CASE_COUNT_OR_INCIDENCE_COLUMN).setHeaderCaption(dataStyle.toString());
 		} else {
 			boolean addColumnUnknown = false;
 			// Iterate over content and add new columns to the list
@@ -164,23 +174,24 @@ public class StatisticsCaseGrid extends Grid {
 				if (columnsAttribute != null) {
 					// Calculate total
 					if (rowTotal == 0) {
-						currentRow[totalColumnIndex] = null;					
+						currentRow[totalColumnIndex] = null;
 					} else if (!showCaseIncidence) {
 						currentRow[totalColumnIndex] = String.valueOf(rowTotal);
 					} else if (rowPopulation > 0) {
-						currentRow[totalColumnIndex] = String.valueOf(InfrastructureHelper.getCaseIncidence(rowTotal, rowPopulation, incidenceDivisor));
+						currentRow[totalColumnIndex] =
+							String.valueOf(InfrastructureHelper.getCaseIncidence(rowTotal, rowPopulation, incidenceDivisor));
 					} else {
 						currentRow[totalColumnIndex] = I18nProperties.getCaption(Captions.notAvailableShort);
 					}
-					
+
 					if (!(showCaseIncidence && rowPopulation == 0)) {
 						caseCountTotalRow[totalColumnIndex] += rowTotal;
-						
+
 						if (rowsAttribute != null && rowsAttribute.isPopulationData()) {
 							populationTotalRow[totalColumnIndex] += rowPopulation;
 						} else if (populationTotalRow[totalColumnIndex] == 0) {
 							populationTotalRow[totalColumnIndex] = rowPopulation;
-						}						
+						}
 					}
 				}
 
@@ -264,7 +275,7 @@ public class StatisticsCaseGrid extends Grid {
 				} else {
 					currentRow[totalColumnIndex] = null;
 				}
-				
+
 				if (!(showCaseIncidence && rowPopulation == 0)) {
 					caseCountTotalRow[totalColumnIndex] += rowTotal;
 
@@ -273,7 +284,7 @@ public class StatisticsCaseGrid extends Grid {
 					} else if (populationTotalRow[totalColumnIndex] == 0) {
 						populationTotalRow[totalColumnIndex] = rowPopulation;
 					}
-				}				
+				}
 			}
 			rows.putIfAbsent(currentRowKey, currentRow);
 		}
@@ -295,7 +306,8 @@ public class StatisticsCaseGrid extends Grid {
 				}
 			} else {
 				if (caseCountTotalRow[i] > 0 && populationTotalRow[i] > 0) {
-					totalRow[i] = String.valueOf(InfrastructureHelper.getCaseIncidence((int) caseCountTotalRow[i], populationTotalRow[i], incidenceDivisor));
+					totalRow[i] =
+						String.valueOf(InfrastructureHelper.getCaseIncidence((int) caseCountTotalRow[i], populationTotalRow[i], incidenceDivisor));
 				} else {
 					totalRow[i] = null;
 				}
@@ -315,5 +327,4 @@ public class StatisticsCaseGrid extends Grid {
 
 		return total;
 	}
-
 }
