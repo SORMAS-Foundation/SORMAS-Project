@@ -18,11 +18,10 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 public class UserRoleConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetEffectiveUserRights() throws Exception {
+	public void testGetEffectiveUserRights() {
 
 		// 1. no role configured -> use defaults
-		Set<UserRight> supervisorRights = getUserRoleConfigFacade()
-				.getEffectiveUserRights(UserRole.SURVEILLANCE_SUPERVISOR);
+		Set<UserRight> supervisorRights = getUserRoleConfigFacade().getEffectiveUserRights(UserRole.SURVEILLANCE_SUPERVISOR);
 		assertThat(supervisorRights, is(UserRole.SURVEILLANCE_SUPERVISOR.getDefaultUserRights()));
 
 		UserRoleConfigDto userRoleConfig = UserRoleConfigDto.build(UserRole.SURVEILLANCE_SUPERVISOR);
@@ -38,22 +37,19 @@ public class UserRoleConfigFacadeEjbTest extends AbstractBeanTest {
 		userRoleConfig = getUserRoleConfigFacade().saveUserRoleConfig(userRoleConfig);
 
 		supervisorRights = getUserRoleConfigFacade().getEffectiveUserRights(UserRole.SURVEILLANCE_SUPERVISOR);
-		assertThat(supervisorRights,
-				is(new HashSet<UserRight>(Arrays.asList(UserRight.CASE_CREATE, UserRight.CASE_EDIT))));
+		assertThat(supervisorRights, is(new HashSet<UserRight>(Arrays.asList(UserRight.CASE_CREATE, UserRight.CASE_EDIT))));
 
 		// 4. combine configured and default rights
-		Set<UserRight> mixedUserRights = getUserRoleConfigFacade()
-				.getEffectiveUserRights(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.NATIONAL_OBSERVER);
-		Set<UserRight> expectedUserRights = new HashSet<UserRight>(
-				Arrays.asList(UserRight.CASE_CREATE, UserRight.CASE_EDIT));
+		Set<UserRight> mixedUserRights =
+			getUserRoleConfigFacade().getEffectiveUserRights(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.NATIONAL_OBSERVER);
+		Set<UserRight> expectedUserRights = new HashSet<UserRight>(Arrays.asList(UserRight.CASE_CREATE, UserRight.CASE_EDIT));
 		expectedUserRights.addAll(UserRole.NATIONAL_OBSERVER.getDefaultUserRights());
 		assertThat(mixedUserRights, is(expectedUserRights));
-
 	}
 
 	// not testable, because history tables don't work with H2
 //	@Test
-//	public void testGetDeletedUuids() throws Exception {
+//	public void testGetDeletedUuids() {
 //		// 1. no role configured -> use defaults 
 //		List<String> deletedUuids = getUserRoleConfigFacade().getDeletedUuids(null);
 //		assertThat(deletedUuids, is(IsEmptyCollection.empty()));
@@ -75,5 +71,4 @@ public class UserRoleConfigFacadeEjbTest extends AbstractBeanTest {
 //		deletedUuids = getUserRoleConfigFacade().getDeletedUuids(new Date());
 //		assertThat(deletedUuids, is(IsEmptyCollection.empty()));
 //	}
-
 }

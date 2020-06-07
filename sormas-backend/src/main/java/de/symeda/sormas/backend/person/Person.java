@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
@@ -50,11 +50,11 @@ import de.symeda.sormas.backend.region.Region;
 @Entity
 @Audited
 public class Person extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = -1735038738114840087L;
-	
+
 	public static final String TABLE_NAME = "person";
-	
+
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String NICKNAME = "nickname";
@@ -99,14 +99,14 @@ public class Person extends AbstractDomainObject {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
-	
+
 	private String firstName;
 	private String lastName;
 	private String nickname;
 	private String mothersName;
 	private String mothersMaidenName;
 	private String fathersName;
-	
+
 	private Integer approximateAge;
 	private ApproximateAgeType approximateAgeType;
 	private Date approximateAgeReferenceDate;
@@ -119,14 +119,14 @@ public class Person extends AbstractDomainObject {
 	private Date burialDate;
 	private String burialPlaceDescription;
 	private BurialConductor burialConductor;
-	
+
 	private Location address;
 	private String phone;
 	private String phoneOwner;
 	private String emailAddress;
-	
+
 	private Sex sex;
-	
+
 	private PresentCondition presentCondition;
 	private Integer birthdateDD;
 	private Integer birthdateMM;
@@ -153,19 +153,21 @@ public class Person extends AbstractDomainObject {
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
-	
+
 	@Column(nullable = false)
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	@Column(nullable = false)
 	public String getLastName() {
 		return lastName;
 	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
@@ -173,15 +175,15 @@ public class Person extends AbstractDomainObject {
 	public String getNickname() {
 		return nickname;
 	}
-	
+
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
-	
+
 	public String getMothersMaidenName() {
 		return mothersMaidenName;
 	}
-	
+
 	public void setMothersMaidenName(String mothersMaidenName) {
 		this.mothersMaidenName = mothersMaidenName;
 	}
@@ -194,28 +196,29 @@ public class Person extends AbstractDomainObject {
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
 	}
-	
+
 	@Column(name = "birthdate_mm")
 	public Integer getBirthdateMM() {
 		return birthdateMM;
 	}
-	
+
 	public void setBirthdateMM(Integer birthdateMM) {
 		this.birthdateMM = birthdateMM;
 	}
-	
+
 	@Column(name = "birthdate_yyyy")
 	public Integer getBirthdateYYYY() {
 		return birthdateYYYY;
 	}
-	
+
 	public void setBirthdateYYYY(Integer birthdateYYYY) {
 		this.birthdateYYYY = birthdateYYYY;
 	}
-	
+
 	public Integer getApproximateAge() {
 		return approximateAge;
 	}
+
 	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
@@ -224,6 +227,7 @@ public class Person extends AbstractDomainObject {
 	public ApproximateAgeType getApproximateAgeType() {
 		return approximateAgeType;
 	}
+
 	public void setApproximateAgeType(ApproximateAgeType approximateAgeType) {
 		this.approximateAgeType = approximateAgeType;
 	}
@@ -232,32 +236,36 @@ public class Person extends AbstractDomainObject {
 	public Date getApproximateAgeReferenceDate() {
 		return approximateAgeReferenceDate;
 	}
+
 	public void setApproximateAgeReferenceDate(Date approximateAgeReferenceDate) {
 		this.approximateAgeReferenceDate = approximateAgeReferenceDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public DeathPlaceType getDeathPlaceType() {
 		return deathPlaceType;
 	}
+
 	public void setDeathPlaceType(DeathPlaceType deathPlaceType) {
 		this.deathPlaceType = deathPlaceType;
 	}
-	
+
 	public String getDeathPlaceDescription() {
 		return deathPlaceDescription;
 	}
+
 	public void setDeathPlaceDescription(String deathPlaceDescription) {
 		this.deathPlaceDescription = deathPlaceDescription;
 	}
-	
+
 	public String getBurialPlaceDescription() {
 		return burialPlaceDescription;
 	}
+
 	public void setBurialPlaceDescription(String burialPlaceDescription) {
 		this.burialPlaceDescription = burialPlaceDescription;
 	}
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
 		if (address == null) {
@@ -265,6 +273,7 @@ public class Person extends AbstractDomainObject {
 		}
 		return address;
 	}
+
 	public void setAddress(Location address) {
 		this.address = address;
 	}
@@ -272,21 +281,24 @@ public class Person extends AbstractDomainObject {
 	public String getPhone() {
 		return phone;
 	}
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
 	public String getPhoneOwner() {
 		return phoneOwner;
 	}
+
 	public void setPhoneOwner(String phoneOwner) {
 		this.phoneOwner = phoneOwner;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public Sex getSex() {
 		return sex;
 	}
+
 	public void setSex(Sex sex) {
 		this.sex = sex;
 	}
@@ -294,18 +306,20 @@ public class Person extends AbstractDomainObject {
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
+
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
-	
+
 	@Temporal(TemporalType.DATE)
 	public Date getDeathDate() {
 		return deathDate;
 	}
+
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
-	
+
 	@Temporal(TemporalType.DATE)
 	public Date getBurialDate() {
 		return burialDate;
@@ -314,26 +328,29 @@ public class Person extends AbstractDomainObject {
 	public void setBurialDate(Date burialDate) {
 		this.burialDate = burialDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public BurialConductor getBurialConductor() {
 		return burialConductor;
 	}
+
 	public void setBurialConductor(BurialConductor burialConductor) {
 		this.burialConductor = burialConductor;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public CauseOfDeath getCauseOfDeath() {
 		return causeOfDeath;
 	}
+
 	public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
-	
+
 	public String getCauseOfDeathDetails() {
 		return causeOfDeathDetails;
 	}
+
 	public void setCauseOfDeathDetails(String causeOfDeathDetails) {
 		this.causeOfDeathDetails = causeOfDeathDetails;
 	}
@@ -342,21 +359,24 @@ public class Person extends AbstractDomainObject {
 	public Disease getCauseOfDeathDisease() {
 		return causeOfDeathDisease;
 	}
+
 	public void setCauseOfDeathDisease(Disease causeOfDeathDisease) {
 		this.causeOfDeathDisease = causeOfDeathDisease;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public EducationType getEducationType() {
 		return educationType;
 	}
+
 	public void setEducationType(EducationType educationType) {
 		this.educationType = educationType;
 	}
-	
+
 	public String getEducationDetails() {
 		return educationDetails;
 	}
+
 	public void setEducationDetails(String educationDetails) {
 		this.educationDetails = educationDetails;
 	}
@@ -365,26 +385,33 @@ public class Person extends AbstractDomainObject {
 	public OccupationType getOccupationType() {
 		return occupationType;
 	}
+
 	public void setOccupationType(OccupationType occupationType) {
 		this.occupationType = occupationType;
 	}
+
 	public String getOccupationDetails() {
 		return occupationDetails;
 	}
+
 	public void setOccupationDetails(String occupationDetails) {
 		this.occupationDetails = occupationDetails;
 	}
+
 	@ManyToOne(cascade = {})
 	public Facility getOccupationFacility() {
 		return occupationFacility;
 	}
+
 	public void setOccupationFacility(Facility occupationFacility) {
 		this.occupationFacility = occupationFacility;
 	}
+
 	@ManyToOne(cascade = {})
 	public Region getOccupationRegion() {
 		return occupationRegion;
 	}
+
 	public void setOccupationRegion(Region occupationRegion) {
 		this.occupationRegion = occupationRegion;
 	}
@@ -393,6 +420,7 @@ public class Person extends AbstractDomainObject {
 	public District getOccupationDistrict() {
 		return occupationDistrict;
 	}
+
 	public void setOccupationDistrict(District occupationDistrict) {
 		this.occupationDistrict = occupationDistrict;
 	}
@@ -401,13 +429,15 @@ public class Person extends AbstractDomainObject {
 	public Community getOccupationCommunity() {
 		return occupationCommunity;
 	}
+
 	public void setOccupationCommunity(Community occupationCommunity) {
 		this.occupationCommunity = occupationCommunity;
 	}
-	
+
 	public String getOccupationFacilityDetails() {
 		return occupationFacilityDetails;
 	}
+
 	public void setOccupationFacilityDetails(String occupationFacilityDetails) {
 		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
@@ -416,6 +446,7 @@ public class Person extends AbstractDomainObject {
 	public String getMothersName() {
 		return mothersName;
 	}
+
 	public void setMothersName(String mothersName) {
 		this.mothersName = mothersName;
 	}
@@ -424,6 +455,7 @@ public class Person extends AbstractDomainObject {
 	public String getFathersName() {
 		return fathersName;
 	}
+
 	public void setFathersName(String fathersName) {
 		this.fathersName = fathersName;
 	}
@@ -432,6 +464,7 @@ public class Person extends AbstractDomainObject {
 	public Region getPlaceOfBirthRegion() {
 		return placeOfBirthRegion;
 	}
+
 	public void setPlaceOfBirthRegion(Region placeOfBirthRegion) {
 		this.placeOfBirthRegion = placeOfBirthRegion;
 	}
@@ -440,6 +473,7 @@ public class Person extends AbstractDomainObject {
 	public District getPlaceOfBirthDistrict() {
 		return placeOfBirthDistrict;
 	}
+
 	public void setPlaceOfBirthDistrict(District placeOfBirthDistrict) {
 		this.placeOfBirthDistrict = placeOfBirthDistrict;
 	}
@@ -448,6 +482,7 @@ public class Person extends AbstractDomainObject {
 	public Community getPlaceOfBirthCommunity() {
 		return placeOfBirthCommunity;
 	}
+
 	public void setPlaceOfBirthCommunity(Community placeOfBirthCommunity) {
 		this.placeOfBirthCommunity = placeOfBirthCommunity;
 	}
@@ -456,6 +491,7 @@ public class Person extends AbstractDomainObject {
 	public Facility getPlaceOfBirthFacility() {
 		return placeOfBirthFacility;
 	}
+
 	public void setPlaceOfBirthFacility(Facility placeOfBirthFacility) {
 		this.placeOfBirthFacility = placeOfBirthFacility;
 	}
@@ -464,20 +500,23 @@ public class Person extends AbstractDomainObject {
 	public String getPlaceOfBirthFacilityDetails() {
 		return placeOfBirthFacilityDetails;
 	}
+
 	public void setPlaceOfBirthFacilityDetails(String placeOfBirthFacilityDetails) {
 		this.placeOfBirthFacilityDetails = placeOfBirthFacilityDetails;
 	}
-	
+
 	public Integer getGestationAgeAtBirth() {
 		return gestationAgeAtBirth;
 	}
+
 	public void setGestationAgeAtBirth(Integer gestationAgeAtBirth) {
 		this.gestationAgeAtBirth = gestationAgeAtBirth;
 	}
-	
+
 	public Integer getBirthWeight() {
 		return birthWeight;
 	}
+
 	public void setBirthWeight(Integer birthWeight) {
 		this.birthWeight = birthWeight;
 	}
@@ -486,6 +525,7 @@ public class Person extends AbstractDomainObject {
 	public String getGeneralPractitionerDetails() {
 		return generalPractitionerDetails;
 	}
+
 	public void setGeneralPractitionerDetails(String generalPractitionerDetails) {
 		this.generalPractitionerDetails = generalPractitionerDetails;
 	}
@@ -494,6 +534,7 @@ public class Person extends AbstractDomainObject {
 	public String getEmailAddress() {
 		return emailAddress;
 	}
+
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
@@ -502,6 +543,7 @@ public class Person extends AbstractDomainObject {
 	public String getPassportNumber() {
 		return passportNumber;
 	}
+
 	public void setPassportNumber(String passportNumber) {
 		this.passportNumber = passportNumber;
 	}
@@ -510,12 +552,13 @@ public class Person extends AbstractDomainObject {
 	public String getNationalHealthId() {
 		return nationalHealthId;
 	}
+
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
 	}
-	
+
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
-	}	
+	}
 }

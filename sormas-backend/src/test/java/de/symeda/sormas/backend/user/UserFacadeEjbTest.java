@@ -16,25 +16,24 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 public class UserFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetUsersByRegionAndRoles() throws Exception {
+	public void testGetUsersByRegionAndRoles() {
 		getUserFacade().getUsersByRegionAndRoles(null, UserRole.SURVEILLANCE_OFFICER);
 	}
 
 	@Test
-	public void testGetValidLoginRoles() throws Exception {
-		
+	public void testGetValidLoginRoles() {
+
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		String password = getUserFacade().resetPassword(user.getUuid());
 
 		Set<UserRole> validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
 		assertThat(validLoginRoles, containsInAnyOrder(UserRole.SURVEILLANCE_SUPERVISOR));
-		
+
 		user.setActive(false);
 		getUserFacade().saveUser(user);
-		
+
 		validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
 		assertThat(validLoginRoles, nullValue());
 	}
-
 }

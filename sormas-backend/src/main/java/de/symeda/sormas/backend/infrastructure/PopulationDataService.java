@@ -29,7 +29,8 @@ public class PopulationDataService extends AbstractAdoService<PopulationData> {
 		if (criteria.isDistrictIsNull()) {
 			filter = and(cb, filter, cb.isNull(from.get(PopulationData.DISTRICT)));
 		} else if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.join(PopulationData.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter =
+				and(cb, filter, cb.equal(from.join(PopulationData.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.isAgeGroupIsNull()) {
 			filter = and(cb, filter, cb.isNull(from.get(PopulationData.AGE_GROUP)));
@@ -50,5 +51,4 @@ public class PopulationDataService extends AbstractAdoService<PopulationData> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PopulationData, PopulationData> from) {
 		return null;
 	}
-
 }

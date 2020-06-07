@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
@@ -31,7 +31,7 @@ public final class PasswordHelper {
 		// Hide Utility Class Constructor
 	}
 
-	private static final char[] PASSWORD_CHARS = new char[26-2 + 26-3 + 8];
+	private static final char[] PASSWORD_CHARS = new char[26 - 2 + 26 - 3 + 8];
 	static {
 		int i = 0;
 		for (char ch = 'a'; ch <= 'z'; ch++) {
@@ -59,7 +59,7 @@ public final class PasswordHelper {
 		for (char ch = '2'; ch <= '9'; ch++) {
 			PASSWORD_CHARS[i++] = ch;
 		}
-		
+
 		if (i != PASSWORD_CHARS.length) {
 			throw new ValidationException("Size of password char array does not match defined values.");
 		}
@@ -88,8 +88,7 @@ public final class PasswordHelper {
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
 			digest.reset();
-			byte[] digested = digest.digest((password + seed)
-					.getBytes(UTF8_CHARSET));
+			byte[] digested = digest.digest((password + seed).getBytes(UTF8_CHARSET));
 			String encoded = hexEncode(digested);
 
 			return encoded;

@@ -1,6 +1,6 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,23 +9,14 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
-import de.symeda.sormas.api.PseudonymizableDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
-import de.symeda.sormas.backend.user.UserService;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +25,37 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.backend.user.UserService;
+
 @Stateless
 @LocalBean
 public class PseudonymizationService {
+
 	@EJB
 	private UserService userService;
 
-	public <DTO> void pseudonymizeDtoCollection(Class<DTO> type, Collection<DTO> dtos, Function<DTO, Boolean> jurisdictionValidator, CustomPseudonymization<DTO> customPseudonymization) {
+	public <DTO> void pseudonymizeDtoCollection(
+		Class<DTO> type,
+		Collection<DTO> dtos,
+		Function<DTO, Boolean> jurisdictionValidator,
+		CustomPseudonymization<DTO> customPseudonymization) {
+
 		List<Field> declaredFields = getDeclaredFields(type);
 
 		dtos.forEach(dto -> {
 			Boolean isInJurisdiction = jurisdictionValidator.apply(dto);
-			pseudonymizeDto(dto, declaredFields, isInJurisdiction, customPseudonymization == null ? null : d -> customPseudonymization.pseudonymize(dto, isInJurisdiction));
+			pseudonymizeDto(
+				dto,
+				declaredFields,
+				isInJurisdiction,
+				customPseudonymization == null ? null : d -> customPseudonymization.pseudonymize(dto, isInJurisdiction));
 		});
 	}
 
@@ -96,39 +106,37 @@ public class PseudonymizationService {
 	}
 
 	private FieldAccessCheckers createFieldAccessCheckers(boolean isInJurisdiction) {
-		return new FieldAccessCheckers()
-				.add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction));
+		return new FieldAccessCheckers().add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction));
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field) {
+
 		try {
 			Object emptyValue = field.getType().equals(String.class) ? "" : null;
-
 			field.setAccessible(true);
 			field.set(dto, emptyValue);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
-		}
-		finally {
+		} finally {
 			field.setAccessible(false);
 		}
 	}
 
 	private <DTO extends PseudonymizableDto> void restoreOriginalValue(DTO dto, Field field, DTO originalDto) {
+
 		try {
 			field.setAccessible(true);
-
 			Object originalValue = field.get(originalDto);
 			field.set(dto, originalValue);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
-		}
-		finally {
+		} finally {
 			field.setAccessible(false);
 		}
 	}
 
 	private List<Field> getDeclaredFields(Class<?> type) {
+
 		ArrayList<Field> declaredFields = new ArrayList<>(Arrays.asList(type.getDeclaredFields()));
 
 		if (type.getSuperclass() != null) {
@@ -139,6 +147,7 @@ public class PseudonymizationService {
 	}
 
 	public interface CustomPseudonymization<DTO> {
+
 		void pseudonymize(DTO dto, boolean isInJurisdiction);
 	}
 }

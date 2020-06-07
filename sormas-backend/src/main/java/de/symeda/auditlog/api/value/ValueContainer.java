@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value;
 
@@ -35,12 +35,12 @@ public interface ValueContainer extends Serializable {
 	String DEFAULT_NULL_STRING = "[null]";
 
 	/**
-	 * @return	The saved attributes so far.
+	 * @return The saved attributes so far.
 	 */
 	SortedMap<String, String> getAttributes();
 
 	/**
-	 * @return	Placeholder when a changed attribute is set to <code>null</code>.
+	 * @return Placeholder when a changed attribute is set to <code>null</code>.
 	 */
 	default String getNullString() {
 		return DEFAULT_NULL_STRING;
@@ -50,17 +50,18 @@ public interface ValueContainer extends Serializable {
 	 * Compares the state with an older version.
 	 * 
 	 * @param originalState
-	 * 			The original state of an entity.
-	 * @return	<ul>
-	 * 			<li>Returns a list of attributes with values that differ from the original version.</li>
-	 * 			<li>Returns an empty map when both states are identical.</li>
-	 * 			</ul>
+	 *            The original state of an entity.
+	 * @return
+	 *         <ul>
+	 *         <li>Returns a list of attributes with values that differ from the original version.</li>
+	 *         <li>Returns an empty map when both states are identical.</li>
+	 *         </ul>
 	 */
 	SortedMap<String, String> compare(ValueContainer originalState);
 
 	/**
-	 * @return	Returns a list of attributes with values that differ from the original version,
-	 * 			the way they have to be put out as changes/saved.
+	 * @return Returns a list of attributes with values that differ from the original version,
+	 *         the way they have to be put out as changes/saved.
 	 */
 	SortedMap<String, String> getChanges();
 
@@ -68,21 +69,21 @@ public interface ValueContainer extends Serializable {
 	 * Saves the String to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, String value);
-	
+
 	/**
 	 * Saves the value to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 * @param valueFormatter
-	 * 			Formats the given {@code value} if it is not {@code null}.
+	 *            Formats the given {@code value} if it is not {@code null}.
 	 */
 	<V> void put(String key, V value, ValueFormatter<V> valueFormatter);
 }

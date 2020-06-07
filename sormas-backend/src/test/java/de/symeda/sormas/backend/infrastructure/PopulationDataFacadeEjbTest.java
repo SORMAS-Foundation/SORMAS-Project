@@ -17,25 +17,30 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 public class PopulationDataFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetProjectedRegionPopulation() throws Exception {
+	public void testGetProjectedRegionPopulation() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RegionDto region = getRegionFacade().getRegionByUuid(rdcf.region.getUuid());
 		region.setGrowthRate(2.7f);
 		getRegionFacade().saveRegion(region);
 		creator.createPopulationData(new RegionReferenceDto(rdcf.region.getUuid()), null, 450000, DateHelper.subtractYears(new Date(), 3));
-		
+
 		assertEquals(new Integer(487440), getPopulationDataFacade().getProjectedRegionPopulation(rdcf.region.getUuid()));
 	}
-	
+
 	@Test
-	public void testGetProjectedDistrictPopulation() throws Exception {
+	public void testGetProjectedDistrictPopulation() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		DistrictDto district = getDistrictFacade().getDistrictByUuid(rdcf.district.getUuid());
 		district.setGrowthRate(2.7f);
 		getDistrictFacade().saveDistrict(district);
-		creator.createPopulationData(new RegionReferenceDto(rdcf.region.getUuid()), new DistrictReferenceDto(rdcf.district.getUuid()), 450000, DateHelper.subtractYears(new Date(), 3));
-		
+		creator.createPopulationData(
+			new RegionReferenceDto(rdcf.region.getUuid()),
+			new DistrictReferenceDto(rdcf.district.getUuid()),
+			450000,
+			DateHelper.subtractYears(new Date(), 3));
+
 		assertEquals(new Integer(487440), getPopulationDataFacade().getProjectedDistrictPopulation(rdcf.district.getUuid()));
 	}
-
 }

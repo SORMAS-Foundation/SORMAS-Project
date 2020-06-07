@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -29,7 +29,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 
-public class ConfigFacadeEjbTest extends AbstractBeanTest  {
+public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testValidateAppUrls() {
@@ -38,58 +38,64 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest  {
 		Mockito.when(InfoProvider.get().getMinimumRequiredVersion()).thenReturn("0.5.0");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
 		getConfigFacade().validateAppUrls();
-		
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads-0.4.0-test/sormas-0.7.0-release.apk");
 		getConfigFacade().validateAppUrls();
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-release.apk");
-		try { 
+		try {
 			getConfigFacade().validateAppUrls();
 			fail();
-		} catch (IllegalArgumentException e) { }
+		} catch (IllegalArgumentException e) {
+		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
-		try { 
+		try {
 			getConfigFacade().validateAppUrls();
 			fail();
-		} catch (IllegalArgumentException e) { }
+		} catch (IllegalArgumentException e) {
+		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
-		try { 
+		try {
 			getConfigFacade().validateAppUrls();
 			fail();
-		} catch (IllegalArgumentException e) { }
+		} catch (IllegalArgumentException e) {
+		}
 
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("1.0.0");
 		getConfigFacade().validateAppUrls();
-		
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.8.0-release.apk");
-		try { 
+		try {
 			getConfigFacade().validateAppUrls();
 			fail();
-		} catch (IllegalArgumentException e) { }
+		} catch (IllegalArgumentException e) {
+		}
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.7.0-release.apk");
 		getConfigFacade().validateAppUrls();
-		
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_URL, "https://www.sormas.org/downloads/sormas-1.0.0-release.apk");
 		getConfigFacade().validateAppUrls();
-		
+
 		// below minimum
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.APP_LEGACY_URL, "https://www.sormas.org/downloads/sormas-0.4.0-release.apk");
-		try { 
+		try {
 			getConfigFacade().validateAppUrls();
 			fail();
-		} catch (IllegalArgumentException e) { }
+		} catch (IllegalArgumentException e) {
+		}
 
 	}
 
 	@Test
-	public void testNormalizeLocaleString() throws Exception {
+	public void testNormalizeLocaleString() {
+
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("  "), isEmptyString());
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("en"), is("en"));
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("En"), is("en"));
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-CA"), is("en-CA"));
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-cA"), is("en-CA"));
-	}	
+	}
 }

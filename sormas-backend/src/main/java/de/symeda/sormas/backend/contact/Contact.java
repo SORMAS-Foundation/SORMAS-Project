@@ -9,13 +9,30 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
@@ -37,22 +54,6 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Audited
@@ -173,7 +174,7 @@ public class Contact extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
 	}
@@ -187,6 +188,7 @@ public class Contact extends CoreAdo {
 	public Case getCaze() {
 		return caze;
 	}
+
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
@@ -200,7 +202,7 @@ public class Contact extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -210,19 +212,21 @@ public class Contact extends CoreAdo {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -231,6 +235,7 @@ public class Contact extends CoreAdo {
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
+
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
@@ -239,11 +244,12 @@ public class Contact extends CoreAdo {
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
+
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getDescription() {
 		return description;
 	}
@@ -328,17 +334,22 @@ public class Contact extends CoreAdo {
 
 	@Override
 	public String toString() {
+
 		Person contactPerson = getPerson();
-		return ContactReferenceDto.buildCaption(contactPerson.getFirstName(), contactPerson.getLastName(),
-				getCaze() != null ? getCaze().getPerson().getFirstName() : null, getCaze() != null ? getCaze().getPerson().getLastName() : null, getUuid());
+		return ContactReferenceDto.buildCaption(
+			contactPerson.getFirstName(),
+			contactPerson.getLastName(),
+			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
+			getCaze() != null ? getCaze().getPerson().getLastName() : null,
+			getUuid());
 	}
 
 	public ContactReferenceDto toReference() {
-		Person contactPerson = getPerson();
 
+		Person contactPerson = getPerson();
 		String casePersonFirstName = null;
 		String casePersonLastName = null;
-		if(getCaze() != null){
+		if (getCaze() != null) {
 			casePersonFirstName = getCaze().getPerson().getFirstName();
 			casePersonLastName = getCaze().getPerson().getLastName();
 		}
@@ -350,6 +361,7 @@ public class Contact extends CoreAdo {
 	public List<Task> getTasks() {
 		return tasks;
 	}
+
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
 	}
@@ -358,6 +370,7 @@ public class Contact extends CoreAdo {
 	public Set<Visit> getVisits() {
 		return visits;
 	}
+
 	public void setVisits(Set<Visit> visits) {
 		this.visits = visits;
 	}
@@ -366,6 +379,7 @@ public class Contact extends CoreAdo {
 	public Set<Sample> getSamples() {
 		return samples;
 	}
+
 	public void setSamples(Set<Sample> samples) {
 		this.samples = samples;
 	}
@@ -373,6 +387,7 @@ public class Contact extends CoreAdo {
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
@@ -380,11 +395,12 @@ public class Contact extends CoreAdo {
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -402,7 +418,7 @@ public class Contact extends CoreAdo {
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=true)
+	@JoinColumn(nullable = true)
 	public User getResultingCaseUser() {
 		return resultingCaseUser;
 	}
@@ -456,7 +472,7 @@ public class Contact extends CoreAdo {
 		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
 		return immunosuppressiveTherapyBasicDiseaseDetails;
 	}
@@ -501,7 +517,7 @@ public class Contact extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length=255)
+	@Column(length = 255)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
 	}
@@ -510,7 +526,7 @@ public class Contact extends CoreAdo {
 		this.caseIdExternalSystem = caseIdExternalSystem;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getCaseOrEventInformation() {
 		return caseOrEventInformation;
 	}

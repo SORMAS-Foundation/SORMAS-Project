@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
@@ -27,15 +27,15 @@ import javax.persistence.ManyToOne;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity(name="weeklyreportentry")
+@Entity(name = "weeklyreportentry")
 public class WeeklyReportEntry extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -4161597011857710604L;
-	
+
 	public static final String WEEKLY_REPORT = "weeklyReport";
 	public static final String DISEASE = "disease";
 	public static final String NUMBER_OF_CASES = "numberOfCases";
-	
+
 	private WeeklyReport weeklyReport;
 	private Disease disease;
 	private Integer numberOfCases;
@@ -45,25 +45,27 @@ public class WeeklyReportEntry extends AbstractDomainObject {
 	public WeeklyReport getWeeklyReport() {
 		return weeklyReport;
 	}
+
 	public void setWeeklyReport(WeeklyReport weeklyReport) {
 		this.weeklyReport = weeklyReport;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
 
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Integer getNumberOfCases() {
 		return numberOfCases;
 	}
+
 	public void setNumberOfCases(Integer numberOfCases) {
 		this.numberOfCases = numberOfCases;
 	}
-
 }

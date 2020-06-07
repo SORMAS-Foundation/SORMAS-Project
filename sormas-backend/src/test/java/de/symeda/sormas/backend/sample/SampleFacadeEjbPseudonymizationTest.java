@@ -1,6 +1,6 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,14 +9,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.sample;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -26,7 +40,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -34,23 +47,10 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.facility.Facility;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
+
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
@@ -61,12 +61,12 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(),
-				"Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(),
-				"Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -90,7 +90,15 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testGetSampleWithContactInJurisdiction() {
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Doe").toReference(), rdcf2);
-		ContactDto contact = creator.createContact(user2.toReference(), null, creator.createPerson("James", "Smith").toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("James", "Smith").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		SampleDto sample = createContactSample(contact);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
@@ -100,7 +108,15 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testGetSampleWithContactOutsideJurisdiction() {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Doe").toReference(), rdcf1);
-		ContactDto contact = creator.createContact(user1.toReference(), null, creator.createPerson("James", "Smith").toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("James", "Smith").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		SampleDto sample = createContactSample(contact);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
@@ -113,11 +129,27 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample1 = createCaseSample(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		SampleDto sample2 = createCaseSample(caze2);
 		SampleDto sample3 = createContactSample(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		SampleDto sample4 = createContactSample(contact2);
 
 		List<SampleIndexDto> indexList = getSampleFacade().getIndexList(new SampleCriteria(), null, null, Collections.emptyList());
@@ -142,11 +174,27 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample1 = createCaseSample(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		SampleDto sample2 = createCaseSample(caze2);
 		SampleDto sample3 = createContactSample(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		SampleDto sample4 = createContactSample(contact2);
 
 		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), 0, 100);
@@ -172,11 +220,27 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample1 = createCaseSample(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		SampleDto sample2 = createCaseSample(caze2);
 		SampleDto sample3 = createContactSample(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		SampleDto sample4 = createContactSample(contact2);
 
 		Calendar calendar = Calendar.getInstance();

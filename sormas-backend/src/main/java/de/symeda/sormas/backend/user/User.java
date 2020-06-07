@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
-@Entity(name="users")
+@Entity(name = "users")
 @Audited
 public class User extends AbstractDomainObject {
 
@@ -86,7 +86,7 @@ public class User extends AbstractDomainObject {
 	private String userEmail;
 	private String phone;
 	private Location address;
-	
+
 	private Set<UserRole> userRoles;
 
 	private Region region;
@@ -99,78 +99,86 @@ public class User extends AbstractDomainObject {
 	private Facility laboratory;
 	// point of entry of POE users
 	private PointOfEntry pointOfEntry;
-	
+
 	private User associatedOfficer;
-	
+
 	private Disease limitedDisease;
-	
+
 	private Language language;
-	
+
 	@Column(nullable = false)
 	public String getUserName() {
 		return userName;
 	}
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 	@Size(max = 64)
 	@Column(name = "password", nullable = false, length = 64)
 	@AuditedAttribute(anonymous = true, anonymizingString = "*****")
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	@Column(name = "seed", nullable = false, length = 16)
 	@AuditedAttribute(anonymous = true, anonymizingString = "*****")
 	public String getSeed() {
 		return seed;
 	}
+
 	public void setSeed(String seed) {
 		this.seed = seed;
 	}
-	
+
 	@Column(nullable = false)
 	public boolean isActive() {
 		return active;
 	}
+
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
 	@Column(nullable = false)
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	@Column(nullable = false)
 	public String getLastName() {
 		return lastName;
 	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public String getUserEmail() {
 		return userEmail;
 	}
+
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-	
+
 	public String getPhone() {
 		return phone;
 	}
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	public Location getAddress() {
 		if (address == null) {
@@ -178,6 +186,7 @@ public class User extends AbstractDomainObject {
 		}
 		return address;
 	}
+
 	public void setAddress(Location address) {
 		this.address = address;
 	}
@@ -186,42 +195,45 @@ public class User extends AbstractDomainObject {
 	public Region getRegion() {
 		return region;
 	}
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
-	
-	@ElementCollection(fetch=FetchType.LAZY)
+
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(
-			name = TABLE_NAME_USERROLES,
-	        joinColumns=@JoinColumn(name="user_id", referencedColumnName=User.ID, nullable = false),
-	        uniqueConstraints=@UniqueConstraint(columnNames={"user_id", "userrole"})
-	  )
+	@CollectionTable(name = TABLE_NAME_USERROLES,
+		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"user_id",
+			"userrole" }))
 	@Column(name = "userrole", nullable = false)
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
+
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public User getAssociatedOfficer() {
 		return associatedOfficer;
 	}
+
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
 	}
-	
+
 	@Override
 	public String toString() {
 		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles());
 	}
-	
+
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
 	}
-	
+
 	@Transient
 	public boolean isSupervisor() {
 		for (UserRole userRole : getUserRoles()) {
@@ -231,35 +243,39 @@ public class User extends AbstractDomainObject {
 		}
 		return false;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Community getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Facility getHealthFacility() {
 		return healthFacility;
 	}
+
 	public void setHealthFacility(Facility healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Facility getLaboratory() {
 		return laboratory;
 	}
+
 	public void setLaboratory(Facility laboratory) {
 		this.laboratory = laboratory;
 	}
@@ -268,32 +284,33 @@ public class User extends AbstractDomainObject {
 	public PointOfEntry getPointOfEntry() {
 		return pointOfEntry;
 	}
+
 	public void setPointOfEntry(PointOfEntry pointOfEntry) {
 		this.pointOfEntry = pointOfEntry;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public Disease getLimitedDisease() {
 		return limitedDisease;
 	}
+
 	public void setLimitedDisease(Disease limitedDisease) {
 		this.limitedDisease = limitedDisease;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public Language getLanguage() {
 		return language;
 	}
+
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
-	
+
 	/**
 	 * Checks if the User possesses any of the specified userRoles
 	 */
-	public boolean hasAnyUserRole(UserRole ... userRoles) {
-		return Arrays.stream(userRoles)
-				.anyMatch(getUserRoles()::contains);
+	public boolean hasAnyUserRole(UserRole... userRoles) {
+		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
 	}
-	
 }

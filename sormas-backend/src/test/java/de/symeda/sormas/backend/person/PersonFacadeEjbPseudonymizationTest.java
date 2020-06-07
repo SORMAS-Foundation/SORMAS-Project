@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -9,14 +9,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.person;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -30,24 +45,10 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
+
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
@@ -59,12 +60,12 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
-		user1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(),
-				"Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");
-		user2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(),
-				"Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -76,8 +77,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCasePersonInSameJurisdiction() {
-		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 
+		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
@@ -90,121 +91,111 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdateCasePersonInJurisdiction() {
+
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
-
 		updatePerson(false);
-
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateCasePersonOutsideJurisdiction() {
+
 		creator.createCase(user1.toReference(), person.toReference(), rdcf1);
-
 		updatePerson(true);
-
 		assertPersonNotUpdated();
 	}
 
 	@Test
 	public void testUpdateCasePersonInJurisdictionWithPseudonymizedDto() {
+
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
-
 		updatePersonPseudonymisedDto();
-
 		assertPersonNotUpdated();
 	}
 
-
 	@Test
 	public void testGetContactPersonInSameJurisdiction() {
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
 
+		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testGetContactPersonOutsideJurisdiction() {
-		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
 
+		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateContactPersonInJurisdiction() {
+
 		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf2);
-
 		updatePerson(false);
-
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateContactPersonOutsideJurisdiction() {
+
 		creator.createContact(user1.toReference(), null, person.toReference(), null, new Date(), null, Disease.CORONAVIRUS, rdcf1);
-
 		updatePerson(true);
-
 		assertPersonNotUpdated();
 	}
 
 	@Test
 	public void testGetEventParticipantPersonInSameJurisdiction() {
+
 		EventDto event = creator.createEvent(user2.toReference());
 		creator.createEventParticipant(event.toReference(), person);
-
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testGetEventParticipantPersonInOutsideJurisdiction() {
+
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person);
-
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
 	@Test
 	public void testUpdateEventParticipantPersonInJurisdiction() {
+
 		EventDto event = creator.createEvent(user2.toReference());
 		creator.createEventParticipant(event.toReference(), person);
-
 		updatePerson(false);
-
 		assertPersonUpdated();
 	}
 
 	@Test
 	public void testUpdateEventParticipantPersonPersonOutsideJurisdiction() {
+
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person);
-
 		updatePerson(true);
-
 		assertPersonNotUpdated();
 	}
 
 	@Test
-	public void testPseudonymizeGetByUuids(){
+	public void testPseudonymizeGetByUuids() {
+
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
-
 		PersonDto person2 = createPerson();
-
 		List<PersonDto> persons = getPersonFacade().getByUuids(Arrays.asList(person.getUuid(), person2.getUuid()));
-
 		assertNotPseudonymized(persons.stream().filter(p -> p.getUuid().equals(person.getUuid())).findFirst().get());
 		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
 	}
 
 	@Test
-	public void testPseudonymizeGetAllAfter(){
+	public void testPseudonymizeGetAllAfter() {
+
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
 
 		PersonDto person2 = createPerson();
 		//create redonly case with person2 --> person2 should be pseudonymized
 		CaseDataDto caze = creator.createCase(user1.toReference(), person2.toReference(), rdcf1);
-		creator.createContact(user2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(),
-				Disease.CORONAVIRUS, rdcf2);
+		creator.createContact(user2.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
@@ -214,8 +205,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertPseudonymised(persons.stream().filter(p -> p.getUuid().equals(person2.getUuid())).findFirst().get());
 	}
 
-
 	private PersonDto createPerson() {
+
 		LocationDto address = new LocationDto();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);
@@ -233,6 +224,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void updatePerson(boolean pseudonymized) {
+
 		person.setPseudonymized(pseudonymized);
 		person.setFirstName("Newfirstname");
 		person.setLastName("Newlastname");
@@ -258,6 +250,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void updatePersonPseudonymisedDto() {
+
 		person.setPseudonymized(true);
 		person.setFirstName("");
 		person.setLastName("");
@@ -283,6 +276,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertNotPseudonymized(PersonDto person) {
+
 		assertThat(person.isPseudonymized(), is(false));
 		assertThat(person.getFirstName(), is("James"));
 		assertThat(person.getLastName(), is("Smith"));
@@ -302,6 +296,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertPseudonymised(PersonDto person) {
+
 		assertThat(person.isPseudonymized(), is(true));
 		assertThat(person.getFirstName(), isEmptyString());
 		assertThat(person.getLastName(), isEmptyString());
@@ -321,6 +316,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertPersonUpdated() {
+
 		Person savedPerson = getPersonService().getByUuid(person.getUuid());
 
 		assertThat(savedPerson.getFirstName(), is("Newfirstname"));
@@ -340,6 +336,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertPersonNotUpdated() {
+
 		Person savedPerson = getPersonService().getByUuid(person.getUuid());
 
 		assertThat(savedPerson.getFirstName(), is("James"));
@@ -356,5 +353,6 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getAddress().getDetails(), is("Test address details"));
 		assertThat(savedPerson.getAddress().getLongitude(), is(46.233));
 		assertThat(savedPerson.getAddress().getLatitude(), is(26.533));
-		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(10F));	}
+		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(10F));
+	}
 }

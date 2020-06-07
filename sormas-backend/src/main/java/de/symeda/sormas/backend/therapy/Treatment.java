@@ -36,7 +36,7 @@ public class Treatment extends AbstractDomainObject {
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
 	public static final String PRESCRIPTION = "prescription";
-	
+
 	private Therapy therapy;
 	private Date treatmentDateTime;
 	private String executingClinician;
@@ -50,44 +50,49 @@ public class Treatment extends AbstractDomainObject {
 	private Prescription prescription;
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Therapy getTherapy() {
 		return therapy;
 	}
+
 	public void setTherapy(Therapy therapy) {
 		this.therapy = therapy;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getTreatmentDateTime() {
 		return treatmentDateTime;
 	}
+
 	public void setTreatmentDateTime(Date treatmentDateTime) {
 		this.treatmentDateTime = treatmentDateTime;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getExecutingClinician() {
 		return executingClinician;
 	}
+
 	public void setExecutingClinician(String executingClinician) {
 		this.executingClinician = executingClinician;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public TreatmentType getTreatmentType() {
 		return treatmentType;
 	}
+
 	public void setTreatmentType(TreatmentType treatmentType) {
 		this.treatmentType = treatmentType;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getTreatmentDetails() {
 		return treatmentDetails;
 	}
+
 	public void setTreatmentDetails(String treatmentDetails) {
 		this.treatmentDetails = treatmentDetails;
 	}
@@ -96,48 +101,53 @@ public class Treatment extends AbstractDomainObject {
 	public TypeOfDrug getTypeOfDrug() {
 		return typeOfDrug;
 	}
+
 	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
 		this.typeOfDrug = typeOfDrug;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = 512)
 	public String getDose() {
 		return dose;
 	}
+
 	public void setDose(String dose) {
 		this.dose = dose;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public TreatmentRoute getRoute() {
 		return route;
 	}
+
 	public void setRoute(TreatmentRoute route) {
 		this.route = route;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getRouteDetails() {
 		return routeDetails;
 	}
+
 	public void setRouteDetails(String routeDetails) {
 		this.routeDetails = routeDetails;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getAdditionalNotes() {
 		return additionalNotes;
 	}
+
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Prescription getPrescription() {
 		return prescription;
 	}
+
 	public void setPrescription(Prescription prescription) {
 		this.prescription = prescription;
 	}
-	
 }

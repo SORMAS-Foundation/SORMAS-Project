@@ -1,5 +1,9 @@
 package de.symeda.sormas.backend.caze;
 
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -16,13 +20,8 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
-
 public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObjectJoins<T, Case> {
+
 	private Join<Case, Person> person;
 	private Join<Case, Region> region;
 	private Join<Case, District> district;
@@ -41,7 +40,6 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	private Join<Case, Symptoms> symptoms;
 	private Join<Case, ClinicalCourse> clinicalCourse;
 	private Join<ClinicalCourse, HealthConditions> healthConditions;
-
 
 	public CaseJoins(From<T, Case> caze) {
 		super(caze);
@@ -176,7 +174,7 @@ public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObj
 	}
 
 	public Join<Case, ClinicalCourse> getClinicalCourse() {
-		return getOrCreate(clinicalCourse,Case.CLINICAL_COURSE, JoinType.LEFT, this::setClinicalCourse);
+		return getOrCreate(clinicalCourse, Case.CLINICAL_COURSE, JoinType.LEFT, this::setClinicalCourse);
 	}
 
 	private void setClinicalCourse(Join<Case, ClinicalCourse> clinicalCourse) {

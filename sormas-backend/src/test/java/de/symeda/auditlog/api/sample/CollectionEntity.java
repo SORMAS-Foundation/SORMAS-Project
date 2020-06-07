@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.sample;
 
@@ -40,7 +40,7 @@ public class CollectionEntity implements HasUuid {
 	private final Set<Month> month = EnumSet.noneOf(Month.class);
 	private final List<SimpleBooleanFlagEntity> simpleEntities = new ArrayList<>();
 	private final List<String> nullCollection = null;
-	
+
 	public CollectionEntity(String uuid) {
 		this.uuid = uuid;
 	}
@@ -62,11 +62,8 @@ public class CollectionEntity implements HasUuid {
 	public List<SimpleBooleanFlagEntity> getSimpleEntities() {
 		return simpleEntities;
 	}
-	
+
 	public List<String> getNullCollection() {
 		return nullCollection;
 	}
-	
-	
-
 }

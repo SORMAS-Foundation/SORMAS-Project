@@ -13,11 +13,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class Therapy extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -1467303502817738376L;
-	
+
 	public static final String TABLE_NAME = "therapy";
-	
+
 	public static final String CASE = "caze";
-	
+
 	private Case caze;
 
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = Case.THERAPY)
@@ -28,5 +28,4 @@ public class Therapy extends AbstractDomainObject {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-	
 }

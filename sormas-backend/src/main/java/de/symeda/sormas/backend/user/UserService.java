@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @Stateless
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
+
 	@EJB
 	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
@@ -59,47 +60,46 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public User createUser() {
+
 		User user = new User();
 		// dummy password to make sure no one can login with this user
 		String password = PasswordHelper.createPass(12);
 		user.setSeed(PasswordHelper.createPass(16));
-		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));		
+		user.setPassword(PasswordHelper.encodePassword(password, user.getSeed()));
 		return user;
 	}
-	
+
 	@Override
 	public User getCurrentUser() {
 		return super.getCurrentUser();
 	}
 
 	public User getByUserName(String userName) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
-		
-		TypedQuery<User> q = em.createQuery(cq)
-			.setParameter(userNameParam, userName);
-		
-		User entity = q.getResultList().stream()
-				.findFirst()
-				.orElse(null);
-		
+
+		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+
+		User entity = q.getResultList().stream().findFirst().orElse(null);
+
 		return entity;
 	}
-	
+
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		
+
 		Predicate filter = null;
 		if (region != null) {
 			filter = cb.equal(from.get(User.REGION), region);
 		}
-		
+
 		if (userRoles.length > 0) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			Predicate rolesFilter = joinRoles.in(Arrays.asList(userRoles));
@@ -109,16 +109,17 @@ public class UserService extends AbstractAdoService<User> {
 				filter = rolesFilter;
 			}
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter).distinct(true);
 		}
-		
+
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<User> getInformantsOfFacility(Facility facility) {
+
 		if (facility == null || facility.getType() == FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility is null or a laboratory");
 		}
@@ -128,55 +129,68 @@ public class UserService extends AbstractAdoService<User> {
 		Root<User> from = cq.from(getElementClass());
 		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 
-		Predicate filter = cb.and(cb.equal(from.get(User.HEALTH_FACILITY), facility),
-				joinRoles.in(Arrays.asList(new UserRole[] { UserRole.HOSPITAL_INFORMANT })));
+		Predicate filter = cb.and(
+			cb.equal(from.get(User.HEALTH_FACILITY), facility),
+			joinRoles.in(
+				Arrays.asList(
+					new UserRole[] {
+						UserRole.HOSPITAL_INFORMANT })));
 
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
 
 	public List<User> getLabUsersOfLab(Facility facility) {
+
 		if (facility == null || facility.getType() != FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility needs to be a laboratory");
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-		
+
 		Predicate filter = cb.and(
-				cb.equal(from.get(User.LABORATORY), facility),
-				joinRoles.in(Arrays.asList(new UserRole[]{UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER})));
-		
+			cb.equal(from.get(User.LABORATORY), facility),
+			joinRoles.in(
+				Arrays.asList(
+					new UserRole[] {
+						UserRole.LAB_USER,
+						UserRole.EXTERNAL_LAB_USER })));
+
 		cq.where(filter).distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	/**
 	 * @param district
-	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
+	 * @param includeSupervisors
+	 *            If set to true, all supervisors are returned independent of the district
 	 * @param userRoles
 	 * @return
 	 */
 	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 
 		buildDistrictQuery(cb, cq, from, district, includeSupervisors, userRoles);
-		
+
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
 
 	/**
 	 * @param entityDistrict
-	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
+	 * @param includeSupervisors
+	 *            If set to true, all supervisors are returned independent of the district
 	 * @param userRoles
 	 * @return
 	 */
 	public List<User> getAllByAssociatedOfficer(User associatedOfficer, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
@@ -184,7 +198,7 @@ public class UserService extends AbstractAdoService<User> {
 		Predicate filter = cb.equal(from.get(User.ASSOCIATED_OFFICER), associatedOfficer);
 		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
 		cq.where(filter);
-		
+
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
@@ -195,18 +209,16 @@ public class UserService extends AbstractAdoService<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
-		
-		TypedQuery<User> q = em.createQuery(cq)
-			.setParameter(userNameParam, userName);
-		
-		User entity = q.getResultList().stream()
-				.findFirst()
-				.orElse(null);
-		
-		return entity==null || (entity!=null&&entity.getUuid().equals(uuid));
+
+		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+
+		User entity = q.getResultList().stream().findFirst().orElse(null);
+
+		return entity == null || (entity != null && entity.getUuid().equals(uuid));
 	}
-	
+
 	public String resetPassword(String userUuid) {
+
 		User user = getByUuid(userUuid);
 
 		if (user == null) {
@@ -223,6 +235,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
+
 		Predicate filter = null;
 		if (userCriteria.getActive() != null) {
 			filter = and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
@@ -243,18 +256,17 @@ public class UserService extends AbstractAdoService<User> {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
-							cb.like(cb.lower(from.get(User.PHONE)), textFilter),
-							cb.like(cb.lower(from.get(User.UUID)), textFilter));
+						cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
+						cb.like(cb.lower(from.get(User.PHONE)), textFilter),
+						cb.like(cb.lower(from.get(User.UUID)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
-			
 		}
-		
+
 		return filter;
 	}
 
@@ -264,8 +276,9 @@ public class UserService extends AbstractAdoService<User> {
 		// a user can read all other users
 		return null;
 	}
-	
+
 	public Predicate buildUserRolesFilter(Root<User> from, UserRole... userRoles) {
+
 		if (userRoles.length > 0) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			return joinRoles.in(Arrays.asList(userRoles));
@@ -273,27 +286,36 @@ public class UserService extends AbstractAdoService<User> {
 		return null;
 	}
 
-	private void buildDistrictQuery(CriteriaBuilder cb, CriteriaQuery<User> cq, Root<User> from, District district, boolean includeSupervisors, UserRole... userRoles) {
+	private void buildDistrictQuery(
+		CriteriaBuilder cb,
+		CriteriaQuery<User> cq,
+		Root<User> from,
+		District district,
+		boolean includeSupervisors,
+		UserRole... userRoles) {
+
 		Predicate filter = cb.equal(from.get(User.DISTRICT), district);
-		
+
 		filter = and(cb, filter, buildUserRolesFilter(from, userRoles));
 
 		if (includeSupervisors) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate supervisorFilter = joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
+			Predicate supervisorFilter =
+				joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
 			if (filter != null) {
 				filter = cb.or(filter, supervisorFilter);
 			} else {
 				filter = supervisorFilter;
 			}
 		}
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
 	}
 
 	public Long countByAssignedOfficer(User officer, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> from = cq.from(getElementClass());
@@ -303,8 +325,9 @@ public class UserService extends AbstractAdoService<User> {
 		cq.select(cb.count(from));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	public Long countByRegion(Region region, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> from = cq.from(getElementClass());
@@ -314,19 +337,20 @@ public class UserService extends AbstractAdoService<User> {
 		cq.select(cb.count(from));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
-	public boolean hasRole (UserRole userRoleName){
-        return getCurrentUser().getUserRoles().contains(userRoleName);
-    }
-	
+
+	public boolean hasRole(UserRole userRoleName) {
+		return getCurrentUser().getUserRoles().contains(userRoleName);
+	}
+
 	public boolean hasAnyRole(Set<UserRole> typeRoles) {
-        Set<UserRole> userRoles = getCurrentUser().getUserRoles();
-        return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
-    }
 
-    public boolean hasRight(UserRight right){
+		Set<UserRole> userRoles = getCurrentUser().getUserRoles();
+		return !userRoles.stream().filter(userRole -> typeRoles.contains(userRole)).collect(Collectors.toList()).isEmpty();
+	}
+
+	public boolean hasRight(UserRight right) {
+
 		User currentUser = getCurrentUser();
-
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.auditlog;
 
@@ -94,7 +94,7 @@ public class AuditLogEntry implements Serializable {
 	}
 
 	/**
-	 * @return 	Uuid of the audited entity.
+	 * @return Uuid of the audited entity.
 	 */
 	public String getUuid() {
 		return uuid;
@@ -121,7 +121,7 @@ public class AuditLogEntry implements Serializable {
 	}
 
 	/**
-	 * @return 	The timestamp when the change has been detected/logged.
+	 * @return The timestamp when the change has been detected/logged.
 	 */
 	public Date getDetectionTimestamp() {
 		return detectionTimestamp;
@@ -146,5 +146,4 @@ public class AuditLogEntry implements Serializable {
 	public void setAttributes(Map<String, String> attributes) {
 		this.attributes = attributes;
 	}
-
 }
