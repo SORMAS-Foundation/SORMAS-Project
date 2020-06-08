@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -95,27 +95,27 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static ContactController getContactController() {
 		return get().contactController;
 	}
-	
+
 	public static EventController getEventController() {
 		return get().eventController;
 	}
-	
+
 	public static EventParticipantsController getEventParticipantController() {
 		return get().eventParticipantController;
 	}
-	
+
 	public static InfrastructureController getInfrastructureController() {
 		return get().infrastructureController;
 	}
-	
+
 	public static VisitController getVisitController() {
 		return get().visitController;
 	}
-	
+
 	public static PersonController getPersonController() {
 		return get().personController;
 	}
-	
+
 	public static UserController getUserController() {
 		return get().userController;
 	}
@@ -123,35 +123,35 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static TaskController getTaskController() {
 		return get().taskController;
 	}
-	
+
 	public static SampleController getSampleController() {
 		return get().sampleController;
 	}
-	
+
 	public static AdditionalTestController getAdditionalTestController() {
 		return get().additionalTestController;
 	}
-	
+
 	public static PathogenTestController getPathogenTestController() {
 		return get().pathogenTestController;
 	}
-	
+
 	public static OutbreakController getOutbreakController() {
 		return get().outbreakController;
 	}
-	
+
 	public static StatisticsController getStatisticsController() {
 		return get().statisticsController;
 	}
-	
+
 	public static DashboardController getDashboardController() {
 		return get().dashboardController;
 	}
-	
+
 	public static TherapyController getTherapyController() {
 		return get().therapyController;
 	}
-	
+
 	public static ClinicalCourseController getClinicalCourseController() {
 		return get().clinicalCourseController;
 	}
@@ -163,5 +163,4 @@ public class ControllerProvider extends BaseControllerProvider {
 	public static CampaignController getCampaignController() {
 		return get().campaignController;
 	}
-
 }

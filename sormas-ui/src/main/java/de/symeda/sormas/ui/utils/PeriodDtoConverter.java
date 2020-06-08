@@ -1,11 +1,14 @@
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.v7.data.util.converter.Converter;
-import de.symeda.sormas.api.therapy.PeriodDto;
-
 import java.util.Locale;
 
+import com.vaadin.v7.data.util.converter.Converter;
+
+import de.symeda.sormas.api.therapy.PeriodDto;
+
 public class PeriodDtoConverter implements Converter<String, PeriodDto> {
+
+	private static final long serialVersionUID = 4119205056759462799L;
 
 	@Override
 	public PeriodDto convertToModel(String value, Class<? extends PeriodDto> targetType, Locale locale) throws ConversionException {

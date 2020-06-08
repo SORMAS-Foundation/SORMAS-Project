@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
@@ -29,11 +29,12 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "SymptomsFacade")
 public class SymptomsFacadeEjb implements SymptomsFacade {
-	
+
 	@EJB
 	private SymptomsService service;
 
-	public Symptoms fromDto(SymptomsDto dto) {		
+	public Symptoms fromDto(SymptomsDto dto) {
+
 		if (dto == null) {
 			return null;
 		}
@@ -46,12 +47,12 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 			if (dto.getCreationDate() != null) {
 				symptoms.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
-		} 
-		
+		}
+
 		Symptoms target = symptoms;
 		SymptomsDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAbdominalPain(source.getAbdominalPain());
 		target.setAlteredConsciousness(source.getAlteredConsciousness());
 		target.setAnorexiaAppetiteLoss(source.getAnorexiaAppetiteLoss());
@@ -222,20 +223,20 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 		return symptoms;
 	}
-	
+
 	public static SymptomsDto toDto(Symptoms symptoms) {
-		
+
 		if (symptoms == null) {
 			return null;
 		}
 
 		SymptomsDto target = new SymptomsDto();
 		Symptoms source = symptoms;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setAbdominalPain(source.getAbdominalPain());
 		target.setAlteredConsciousness(source.getAlteredConsciousness());
 		target.setAnorexiaAppetiteLoss(source.getAnorexiaAppetiteLoss());
@@ -327,7 +328,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setBulgingFontanelle(source.getBulgingFontanelle());
 		target.setBloodPressureDiastolic(source.getBloodPressureDiastolic());
 		target.setBloodPressureSystolic(source.getBloodPressureSystolic());
-		target.setHeartRate(source.getHeartRate());		
+		target.setHeartRate(source.getHeartRate());
 		target.setPharyngealErythema(source.getPharyngealErythema());
 		target.setPharyngealExudate(source.getPharyngealExudate());
 		target.setOedemaFaceNeck(source.getOedemaFaceNeck());
@@ -406,10 +407,10 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class SymptomsFacadeEjbLocal extends SymptomsFacadeEjb {
+
 	}
 }
-

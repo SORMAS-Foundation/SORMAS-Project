@@ -6,9 +6,9 @@ import java.util.Date;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class DashboardVisit implements Serializable {
-	
+
 	private static final long serialVersionUID = -2178146234937420833L;
-	
+
 	private Long contactId;
 	private Boolean symptomatic;
 	private VisitStatus visitStatus;
@@ -20,7 +20,7 @@ public class DashboardVisit implements Serializable {
 		this.visitStatus = visitStatus;
 		this.visitDateTime = visitDateTime;
 	}
-	
+
 	public Long getContactId() {
 		return contactId;
 	}
@@ -52,5 +52,4 @@ public class DashboardVisit implements Serializable {
 	public void setVisitDateTime(Date visitDateTime) {
 		this.visitDateTime = visitDateTime;
 	}
-	
 }

@@ -21,6 +21,7 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testTreatmentDeletion() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf, UserRole.ADMIN);
@@ -39,15 +40,15 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testTreatmentIndexListGeneration() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		creator.createTreatment(caze);
-		
+
 		List<TreatmentIndexDto> results = getTreatmentFacade().getIndexList(null);
-		
+
 		assertEquals(1, results.size());
-	}	
-	
+	}
 }

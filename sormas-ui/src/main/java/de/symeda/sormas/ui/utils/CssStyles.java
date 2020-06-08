@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -37,7 +37,7 @@ public final class CssStyles {
 	public static final String H3 = "h3";
 	public static final String H4 = "h4";
 	public static final String H5 = "h5";
-	
+
 	public static final String VR = "vertical-rule";
 
 	// Vertical space
@@ -48,7 +48,7 @@ public final class CssStyles {
 	public static final String VSPACE_4 = "vspace-4";
 	public static final String VSPACE_5 = "vspace-5";
 	public static final String VSPACE_NONE = "vspace-none";
-	
+
 	public static final String VSPACE_TOP_0 = "vspace-top-0";
 	public static final String VSPACE_TOP_1 = "vspace-top-1";
 	public static final String VSPACE_TOP_2 = "vspace-top-2";
@@ -56,7 +56,7 @@ public final class CssStyles {
 	public static final String VSPACE_TOP_4 = "vspace-top-4";
 	public static final String VSPACE_TOP_5 = "vspace-top-5";
 	public static final String VSPACE_TOP_NONE = "vspace-top-none";
-	
+
 	// Horizontal space
 	public static final String HSPACE_LEFT_0 = "hspace-left-0";
 	public static final String HSPACE_LEFT_1 = "hspace-left-1";
@@ -65,7 +65,7 @@ public final class CssStyles {
 	public static final String HSPACE_LEFT_4 = "hspace-left-4";
 	public static final String HSPACE_LEFT_5 = "hspace-left-5";
 	public static final String HSPACE_LEFT_NONE = "hspace-left-none";
-	
+
 	public static final String HSPACE_RIGHT_0 = "hspace-right-0";
 	public static final String HSPACE_RIGHT_1 = "hspace-right-1";
 	public static final String HSPACE_RIGHT_2 = "hspace-right-2";
@@ -73,13 +73,13 @@ public final class CssStyles {
 	public static final String HSPACE_RIGHT_4 = "hspace-right-4";
 	public static final String HSPACE_RIGHT_5 = "hspace-right-5";
 	public static final String HSPACE_RIGHT_NONE = "hspace-right-none";
-	
+
 	public static final String INDENT_LEFT_1 = "indent-left-1";
 	public static final String INDENT_LEFT_2 = "indent-left-2";
 	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
-	
+
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
 	public static final String LABEL_SECONDARY = "secondary";
@@ -94,7 +94,7 @@ public final class CssStyles {
 	public static final String LABEL_DONE = "done";
 	public static final String LABEL_NOT = "not";
 	public static final String LABEL_WHITE = "white";
-	
+
 	// Font sizes
 	public static final String LABEL_SMALL = "small";
 	public static final String LABEL_MEDIUM = "medium";
@@ -104,11 +104,11 @@ public final class CssStyles {
 	public static final String LABEL_XXLARGE = "xxlarge";
 	public static final String LABEL_XXXLARGE = "xxxlarge";
 	public static final String LABEL_REALLY_LARGE = "really-large";
-	
+
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
-	
+
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
 	public static final String LABEL_ROUNDED_CORNERS = "rounded-corners";
@@ -120,7 +120,7 @@ public final class CssStyles {
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE = "bg-follow-up-uncooperative";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED = "bg-follow-up-not-performed";
-	
+
 	// Layout styles
 	public static final String LAYOUT_MINIMAL = "minimal";
 	public static final String LAYOUT_SPACIOUS = "spacious";
@@ -135,7 +135,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
 	public static final String BACKGROUND_CRITICAL = "background-critical";
 	public static final String BACKGROUND_DARKER = "background-darker";
-	
+
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
 	public static final String BUTTON_CRITICAL = "critical";
@@ -151,12 +151,11 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
 	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
-	
+
 	// List styles
 	public static final String SORMAS_LIST = "s-list";
 	public static final String SORMAS_LIST_ENTRY = "s-list-entry";
-	
-	
+
 	// SVG fill and stroke styles
 	public static final String SVG_FILL_PRIMARY = "svg-fill-primary";
 	public static final String SVG_FILL_BACKGROUND = "svg-fill-background";
@@ -176,7 +175,7 @@ public final class CssStyles {
 	public static final String FORCE_CAPTION_CHECKBOX = "force-caption-checkbox";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
-	
+
 	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
 
@@ -207,31 +206,31 @@ public final class CssStyles {
 	public static final String GRID_ROW_STATUS_DONE = "status-done";
 	public static final String GRID_ROW_STATUS_PENDING = "status-pending";
 	public static final String GRID_ROW_TITLE = "row-title";
-	
+
 	public static final String LABEL_CONFIGURATION_SEVERITY_INDICATOR = "severity-indicator";
 	public static final String BADGE = "badge";
-	
+
 	public static final String SPACING_SMALL = "spacing-small";
-	
+
 	// Checkbox styles
 	public static final String CHECKBOX_FILTER_INLINE = "filter-inline";
-	
+
 	// Combo Box styles
 	public static final String COMBO_BOX_SUBTLE = "subtle";
 	public static final String COMBO_BOX_WITH_FLAG_ICON = "with-flag-icon";
-	
+
 	// Layout components
 	public static final String ROOT_COMPONENT = "root-component";
 	public static final String MAIN_COMPONENT = "main-component";
 	public static final String SIDE_COMPONENT = "side-component";
-	
+
 	// Statistics layout
 	public static final String STATISTICS_TITLE_BOX = "title-box";
 	public static final String STATISTICS_TITLE = "title";
-	
+
 	// Notification styles
 	public static final String NOTIFICATION_ERROR = "notification-error";
-	
+
 	// Login
 	public static final String LOGINDEATILS = "login-details";
 	public static final String LOGINFORM = "login-form";
@@ -246,10 +245,10 @@ public final class CssStyles {
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
-	
+
 	@Deprecated
 	public static final String CALLOUT = "callout";
-	
+
 	public static String buildVaadinStyle(String primaryStyle, String... styles) {
 		StringBuilder styleBuilder = new StringBuilder();
 		styleBuilder.append(primaryStyle);
@@ -263,13 +262,13 @@ public final class CssStyles {
 		for (String style : styles)
 			component.addStyleName(style);
 	}
-	
+
 	public static void style(String style, Component... components) {
 		for (Component component : components) {
 			component.addStyleName(style);
 		}
 	}
-	
+
 	public static void removeStyles(Component component, String... styles) {
 		for (String style : styles) {
 			component.removeStyleName(style);
@@ -286,9 +285,9 @@ public final class CssStyles {
 	 * Styles and (de-)activates the given buttons.
 	 * 
 	 * @param activeButton
-	 *		This button is styled as active but disabled.
+	 *            This button is styled as active but disabled.
 	 * @param allOrOtherButtons
-	 *		These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
+	 *            These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
 	 */
 	public static void styleSectionFilterButton(Button activeButton, Button... allOrOtherButtons) {
 
@@ -299,9 +298,9 @@ public final class CssStyles {
 	 * Styles and (de-)activates the given buttons.
 	 * 
 	 * @param activeButton
-	 *		This button is styled as active but disabled.
+	 *            This button is styled as active but disabled.
 	 * @param allOrOtherButtons
-	 *		These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
+	 *            These buttons lose their active styling and become enabled. {@code activeButton} may be included here.
 	 */
 	public static <B extends Button> void styleSectionFilterButton(Button activeButton, Iterable<B> allOrOtherButtons) {
 
@@ -313,9 +312,9 @@ public final class CssStyles {
 		activeButton.setEnabled(false);
 		activeButton.addStyleName(CssStyles.LINK_ACTIVE);
 	}
-	
+
 	/**
-	 * Returns CSS style name defined in VAADIN/themes/sormas/views/disease.scss 
+	 * Returns CSS style name defined in VAADIN/themes/sormas/views/disease.scss
 	 */
 	public static String getDiseaseColor(Disease disease) {
 		switch (disease) {

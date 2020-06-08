@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -23,7 +23,7 @@ import java.io.InputStream;
 public class InfoProvider {
 
 	private static InfoProvider instance;
-	
+
 	private final String version;
 
 	InfoProvider() {
@@ -35,7 +35,7 @@ public class InfoProvider {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static synchronized InfoProvider get() {
 		if (instance == null) {
 			instance = new InfoProvider();
@@ -45,12 +45,13 @@ public class InfoProvider {
 
 	/**
 	 * When changing this make sure to check also EXTERNAL_VISITS_API_VERSION.
+	 * 
 	 * @return
 	 */
 	public String getMinimumRequiredVersion() {
 		return "1.41.0";
 	}
-	
+
 	/**
 	 * Reads the version from the version.txt where it is written by maven.
 	 * We are doing it this way, because all other version information (manifest, pom) will be removed in the android app by gradle.
@@ -79,6 +80,7 @@ public class InfoProvider {
 	 * MINIMUM_REQUIRED_VERSION and lower or equal to the version returned by getVersion().
 	 */
 	public CompatibilityCheckResponse isCompatibleToApi(int[] appVersion) {
+
 		if (!VersionHelper.isVersion(appVersion)) {
 			throw new IllegalArgumentException("No proper app version provided");
 		}

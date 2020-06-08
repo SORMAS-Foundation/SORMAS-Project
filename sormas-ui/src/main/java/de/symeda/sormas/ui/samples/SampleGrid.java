@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
@@ -29,9 +29,9 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -68,8 +68,8 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		addEditColumn(e -> ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid()));
 
-		Column<SampleIndexDto, String> diseaseShortColumn = addColumn(sample -> 
-		DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
+		Column<SampleIndexDto, String> diseaseShortColumn =
+			addColumn(sample -> DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(SampleIndexDto.DISEASE);
 
@@ -85,12 +85,23 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		pathogenTestResultColumn.setId(PATHOGEN_TEST_RESULT);
 		pathogenTestResultColumn.setSortProperty(SampleIndexDto.PATHOGEN_TEST_RESULT);
 
-		setColumns(EDIT_BTN_ID, SampleIndexDto.LAB_SAMPLE_ID, SampleIndexDto.EPID_NUMBER,
-				SampleIndexDto.ASSOCIATED_CASE, SampleIndexDto.ASSOCIATED_CONTACT, DISEASE_SHORT,
-				SampleIndexDto.DISTRICT, SampleIndexDto.SHIPPED, SampleIndexDto.RECEIVED,
-				SampleIndexDto.SHIPMENT_DATE, SampleIndexDto.RECEIVED_DATE, SampleIndexDto.LAB,
-				SampleIndexDto.SAMPLE_MATERIAL, SampleIndexDto.SAMPLE_PURPOSE, PATHOGEN_TEST_RESULT,
-				SampleIndexDto.ADDITIONAL_TESTING_STATUS);
+		setColumns(
+			EDIT_BTN_ID,
+			SampleIndexDto.LAB_SAMPLE_ID,
+			SampleIndexDto.EPID_NUMBER,
+			SampleIndexDto.ASSOCIATED_CASE,
+			SampleIndexDto.ASSOCIATED_CONTACT,
+			DISEASE_SHORT,
+			SampleIndexDto.DISTRICT,
+			SampleIndexDto.SHIPPED,
+			SampleIndexDto.RECEIVED,
+			SampleIndexDto.SHIPMENT_DATE,
+			SampleIndexDto.RECEIVED_DATE,
+			SampleIndexDto.LAB,
+			SampleIndexDto.SAMPLE_MATERIAL,
+			SampleIndexDto.SAMPLE_PURPOSE,
+			PATHOGEN_TEST_RESULT,
+			SampleIndexDto.ADDITIONAL_TESTING_STATUS);
 
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.SHIPMENT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		((Column<SampleIndexDto, Date>) getColumn(SampleIndexDto.RECEIVED_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
@@ -120,10 +131,9 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
 		}
-		
-		for(Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					SampleIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
@@ -134,22 +144,28 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		getDataProvider().refreshAll();
 	}
-	
+
 	public void setLazyDataProvider() {
 		DataProvider<SampleIndexDto, SampleCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getSampleFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> (int) FacadeProvider.getSampleFacade().count(query.getFilter().orElse(null)));
+			query -> FacadeProvider.getSampleFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> (int) FacadeProvider.getSampleFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<SampleIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getSampleFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<SampleIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getSampleFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-
 }

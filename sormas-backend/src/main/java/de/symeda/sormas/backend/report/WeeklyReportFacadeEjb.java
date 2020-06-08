@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
@@ -97,22 +97,19 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@EJB
 	private TaskService taskService;
 	@EJB
-	FacilityFacadeEjbLocal facilityFacade;
+	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private UserFacadeEjbLocal userFacade;
-	
+
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date) {
 
 		User user = userService.getCurrentUser();
-
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
-		return weeklyReportService.getAllAfter(date, user).stream()
-				.map(WeeklyReportFacadeEjb::toDto)
-				.collect(Collectors.toList());
+		return weeklyReportService.getAllAfter(date, user).stream().map(WeeklyReportFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -127,13 +124,16 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public WeeklyReportDto saveWeeklyReport(WeeklyReportDto dto) {
+
 		// Don't create a new report if there already is one in the database for the user/epi week combination
 		WeeklyReportDto existingReport = getByEpiWeekAndUser(new EpiWeek(dto.getYear(), dto.getEpiWeek()), dto.getReportingUser());
 		if (existingReport != null && !dto.getUuid().equals(existingReport.getUuid())) {
-			logger.warn("Tried to create a new report for an already existing user/epi week combination (existing UUID: " + existingReport.getUuid() + "); report was not created");
+			logger.warn(
+				"Tried to create a new report for an already existing user/epi week combination (existing UUID: " + existingReport.getUuid()
+					+ "); report was not created");
 			return null;
 		}
-		
+
 		WeeklyReport report = fromDto(dto);
 		weeklyReportService.ensurePersisted(report);
 		return toDto(report);
@@ -153,10 +153,10 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
 
 		//Only for national users
-		if (! UserRole.isNational(userService.getCurrentUser().getUserRoles())) {
+		if (!UserRole.isNational(userService.getCurrentUser().getUserRoles())) {
 			return new ArrayList<>();
 		}
-		
+
 		List<WeeklyReportRegionSummaryDto> summaryDtos = new ArrayList<>();
 
 		WeeklyReportCriteria regionReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
@@ -172,10 +172,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			if (officers.intValue() == 0) {
 				continue; // summarize only regions that do have officers
 			}
-			
+
 			summaryDto.setOfficers(officers.intValue());
-			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT,
-					UserRole.COMMUNITY_INFORMANT);
+			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
 			summaryDto.setInformants(informants.intValue());
 
 			regionReportCriteria.reportingUserRegion(summaryDto.getRegion());
@@ -203,18 +202,16 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto regionRef, EpiWeek epiWeek) {
-		
+
 		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
 		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
 
 		Region region = regionService.getByReferenceDto(regionRef);
-		
+
 		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
 		officers = weeklyReportService.filterWeeklyReportUsers(userService.getCurrentUser(), officers);
-		
-		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers
-		.sorted(Comparator.comparing(a -> a.getDistrict().getName()))
-		.map(officer -> {
+
+		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers.sorted(Comparator.comparing(a -> a.getDistrict().getName())).map(officer -> {
 
 			WeeklyReportOfficerSummaryDto summaryDto = new WeeklyReportOfficerSummaryDto();
 			summaryDto.setOfficer(UserFacadeEjb.toReferenceDto(officer));
@@ -222,18 +219,14 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 			{
 				officerReportCriteria.reportingUser(new UserReferenceDto(officer.getUuid()));
-				weeklyReportService.queryByCriteria(officerReportCriteria, null, null, true).stream()
-				.findFirst()
-				.ifPresent(officerReport -> {
+				weeklyReportService.queryByCriteria(officerReportCriteria, null, null, true).stream().findFirst().ifPresent(officerReport -> {
 					summaryDto.setOfficerReportDate(officerReport.getReportDateTime());
 					summaryDto.setTotalCaseCount(officerReport.getTotalNumberOfCases());
 				});
 			}
 
 			{
-				Long informants = userService.countByAssignedOfficer(officer, 
-						UserRole.HOSPITAL_INFORMANT,
-						UserRole.COMMUNITY_INFORMANT);
+				Long informants = userService.countByAssignedOfficer(officer, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
 				summaryDto.setInformants(informants.intValue());
 			}
 
@@ -250,17 +243,15 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 
 			return summaryDto;
-		})
-		.collect(Collectors.toList());
-		
+		}).collect(Collectors.toList());
 
 		return summaryDtos;
 	}
 
 	@Override
 	public WeeklyReportDto getByEpiWeekAndUser(EpiWeek epiWeek, UserReferenceDto userRef) {
-		User user = userService.getByReferenceDto(userRef);
 
+		User user = userService.getByReferenceDto(userRef);
 		return toDto(weeklyReportService.getByEpiWeekAndUser(epiWeek, user));
 	}
 
@@ -300,6 +291,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	public WeeklyReportEntry fromDto(WeeklyReportEntryDto source) {
+
 		if (source == null) {
 			return null;
 		}
@@ -322,17 +314,21 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	public static WeeklyReportReferenceDto toReferenceDto(WeeklyReport entity) {
+
 		if (entity == null) {
 			return null;
 		}
+
 		WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 
 	public static WeeklyReportDto toDto(WeeklyReport source) {
+
 		if (source == null) {
 			return null;
 		}
+
 		WeeklyReportDto target = new WeeklyReportDto();
 		DtoHelper.fillDto(target, source);
 
@@ -357,6 +353,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	public static WeeklyReportEntryDto toDto(WeeklyReportEntry source) {
+
 		if (source == null) {
 			return null;
 		}
@@ -376,6 +373,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@RolesAllowed(UserRole._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateSubmitWeeklyReportTasks() {
+
 		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.HOSPITAL_INFORMANT);
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 
@@ -387,9 +385,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				// task
 				continue;
 			} else {
-				TaskCriteria pendingUserTaskCriteria = new TaskCriteria()
-						.taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference())
-						.taskStatus(TaskStatus.PENDING);
+				TaskCriteria pendingUserTaskCriteria =
+					new TaskCriteria().taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference()).taskStatus(TaskStatus.PENDING);
 				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
 
 				if (!existingTasks.isEmpty()) {
@@ -415,6 +412,6 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@LocalBean
 	@Stateless
 	public static class WeeklyReportFacadeEjbLocal extends WeeklyReportFacadeEjb {
-	}
 
+	}
 }

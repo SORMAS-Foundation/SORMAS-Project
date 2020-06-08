@@ -344,6 +344,7 @@ public interface Strings {
 	String infoCaseCompleteness = "infoCaseCompleteness";
 	String infoCaseDate = "infoCaseDate";
 	String infoCaseIncidence = "infoCaseIncidence";
+	String infoCaseIncidenceIncompatible = "infoCaseIncidenceIncompatible";
 	String infoCaseIncidenceMissingPopulationData = "infoCaseIncidenceMissingPopulationData";
 	String infoCaseIncidenceNotPossible = "infoCaseIncidenceNotPossible";
 	String infoCaseManagementExport = "infoCaseManagementExport";

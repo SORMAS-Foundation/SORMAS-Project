@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
@@ -42,7 +42,7 @@ public class TaskListEntry extends HorizontalLayout {
 	private Button editButton;
 
 	public TaskListEntry(TaskIndexDto task) {
-		
+
 		this.task = task;
 
 		setMargin(false);
@@ -56,25 +56,26 @@ public class TaskListEntry extends HorizontalLayout {
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		addComponent(topLayout);
 		setExpandRatio(topLayout, 1);
-		
+
 		// TOP LEFT
 		VerticalLayout topLeftLayout = new VerticalLayout();
-				
+
 		topLeftLayout.setMargin(false);
 		topLeftLayout.setSpacing(false);
-	
+
 		Label taskTypeLabel = new Label(DataHelper.toStringNullable(task.getTaskType()));
 		CssStyles.style(taskTypeLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topLeftLayout.addComponent(taskTypeLabel);
-		
-		Label suggestedStartLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START)
-				+ ": " + DateFormatHelper.formatDate(task.getSuggestedStart()));
+
+		Label suggestedStartLabel = new Label(
+			I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.SUGGESTED_START) + ": "
+				+ DateFormatHelper.formatDate(task.getSuggestedStart()));
 		topLeftLayout.addComponent(suggestedStartLabel);
-		
-		Label dueDateLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE)
-				+ ": " + DateFormatHelper.formatDate(task.getDueDate()));
-		topLeftLayout.addComponent(dueDateLabel);		
-		
+
+		Label dueDateLabel =
+			new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.DUE_DATE) + ": " + DateFormatHelper.formatDate(task.getDueDate()));
+		topLeftLayout.addComponent(dueDateLabel);
+
 		topLayout.addComponent(topLeftLayout);
 
 		// TOP RIGHT
@@ -83,21 +84,22 @@ public class TaskListEntry extends HorizontalLayout {
 		topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
 		topRightLayout.setMargin(false);
 		topRightLayout.setSpacing(false);
-		
+
 		Label statusLabel = new Label(DataHelper.toStringNullable(task.getTaskStatus()));
 		CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 		topRightLayout.addComponent(statusLabel);
-		
-		Label priorityLabel = new Label(DataHelper.toStringNullable(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": " + task.getPriority()));
+
+		Label priorityLabel = new Label(
+			DataHelper.toStringNullable(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.PRIORITY) + ": " + task.getPriority()));
 		if (TaskPriority.HIGH == task.getPriority()) {
 			priorityLabel.addStyleName(CssStyles.LABEL_IMPORTANT);
 		} else if (TaskPriority.NORMAL == task.getPriority()) {
-			priorityLabel.addStyleName(CssStyles.LABEL_NEUTRAL);				
+			priorityLabel.addStyleName(CssStyles.LABEL_NEUTRAL);
 		}
 		topRightLayout.addComponent(priorityLabel);
-		
-		Label userLabel = new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": "
-				+ task.getAssigneeUser().getCaption());
+
+		Label userLabel =
+			new Label(I18nProperties.getPrefixCaption(TaskDto.I18N_PREFIX, TaskDto.ASSIGNEE_USER) + ": " + task.getAssigneeUser().getCaption());
 		topRightLayout.addComponent(userLabel);
 
 		topLayout.addComponent(topRightLayout);
@@ -116,6 +118,7 @@ public class TaskListEntry extends HorizontalLayout {
 			break;
 		default:
 			statusStyle = null;
+			break;
 		}
 
 		if (statusStyle != null) {
@@ -130,7 +133,13 @@ public class TaskListEntry extends HorizontalLayout {
 
 	public void addEditListener(int rowIndex, ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption("edit-task-" + rowIndex, null, VaadinIcons.PENCIL, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			editButton = ButtonHelper.createIconButtonWithCaption(
+				"edit-task-" + rowIndex,
+				null,
+				VaadinIcons.PENCIL,
+				null,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
 
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

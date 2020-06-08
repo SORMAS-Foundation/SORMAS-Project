@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -56,6 +56,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	private Map<CheckBox, DatabaseTable> databaseTableToggles;
 
 	public DatabaseExportView() {
+
 		super(VIEW_NAME);
 
 		databaseTableToggles = new HashMap<>();
@@ -74,7 +75,8 @@ public class DatabaseExportView extends AbstractStatisticsView {
 
 		Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
-		StreamResource streamResource = DownloadUtil.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
+		StreamResource streamResource = DownloadUtil
+			.createDatabaseExportStreamResource(this, "sormas_export_" + DateHelper.formatDateForExport(new Date()) + ".zip", "application/zip");
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(exportButton);
 
@@ -86,15 +88,18 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	}
 
 	public void showExportErrorNotification() {
-		new Notification(I18nProperties.getString(Strings.headingDatabaseExportFailed), 
-				I18nProperties.getString(Strings.messageDatabaseExportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+		new Notification(
+			I18nProperties.getString(Strings.headingDatabaseExportFailed),
+			I18nProperties.getString(Strings.messageDatabaseExportFailed),
+			Type.ERROR_MESSAGE,
+			false).show(Page.getCurrent());
 	}
-	
+
 	private HorizontalLayout createSelectionButtonsLayout() {
 		HorizontalLayout selectionButtonsLayout = new HorizontalLayout();
 		selectionButtonsLayout.setMargin(false);
 		selectionButtonsLayout.setSpacing(true);
-		
+
 		Button selectAll = ButtonHelper.createButton(Captions.actionSelectAll, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				checkBox.setValue(true);
@@ -102,7 +107,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		}, ValoTheme.BUTTON_LINK);
 
 		selectionButtonsLayout.addComponent(selectAll);
-		
+
 		Button selectAllSormasData = ButtonHelper.createButton(Captions.exportSelectSormasData, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				if (databaseTableToggles.get(checkBox).getDatabaseTableType() == DatabaseTableType.SORMAS) {
@@ -114,7 +119,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		}, ValoTheme.BUTTON_LINK);
 
 		selectionButtonsLayout.addComponent(selectAllSormasData);
-		
+
 		Button deselectAll = ButtonHelper.createButton(Captions.actionDeselectAll, e -> {
 			for (CheckBox checkBox : databaseTableToggles.keySet()) {
 				checkBox.setValue(false);
@@ -122,7 +127,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		}, ValoTheme.BUTTON_LINK);
 
 		selectionButtonsLayout.addComponent(deselectAll);
-		
+
 		return selectionButtonsLayout;
 	}
 
@@ -130,21 +135,21 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		HorizontalLayout databaseTablesLayout = new HorizontalLayout();
 		databaseTablesLayout.setMargin(false);
 		databaseTablesLayout.setSpacing(true);
-		
+
 		VerticalLayout sormasDataLayout = new VerticalLayout();
 		sormasDataLayout.setMargin(false);
 		sormasDataLayout.setSpacing(false);
 		Label sormasDataHeadline = new Label(I18nProperties.getCaption(Captions.exportSormasData));
 		CssStyles.style(sormasDataHeadline, CssStyles.H4);
 		sormasDataLayout.addComponent(sormasDataHeadline);
-		
+
 		VerticalLayout infrastructureDataLayout = new VerticalLayout();
 		infrastructureDataLayout.setMargin(false);
 		infrastructureDataLayout.setSpacing(false);
 		Label infrastructureDataHeadline = new Label(I18nProperties.getCaption(Captions.exportInfrastructureData));
 		CssStyles.style(infrastructureDataHeadline, CssStyles.H4);
 		infrastructureDataLayout.addComponent(infrastructureDataHeadline);
-		
+
 		for (DatabaseTable databaseTable : DatabaseTable.values()) {
 			CheckBox checkBox = new CheckBox(databaseTable.toString());
 			int indent = getIndent(databaseTable);
@@ -163,13 +168,14 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			}
 			databaseTableToggles.put(checkBox, databaseTable);
 		}
-		
+
 		databaseTablesLayout.addComponent(sormasDataLayout);
 		databaseTablesLayout.addComponent(infrastructureDataLayout);
 		return databaseTablesLayout;
 	}
 
 	private int getIndent(DatabaseTable databaseTable) {
+
 		int indent = 0;
 		while (databaseTable.getParentTable() != null) {
 			indent++;
@@ -186,5 +192,4 @@ public class DatabaseExportView extends AbstractStatisticsView {
 	public Map<CheckBox, DatabaseTable> getDatabaseTableToggles() {
 		return databaseTableToggles;
 	}
-
 }

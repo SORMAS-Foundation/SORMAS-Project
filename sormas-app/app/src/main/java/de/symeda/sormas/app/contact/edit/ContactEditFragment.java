@@ -31,6 +31,8 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -66,7 +68,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     // Instance methods
 
     public static ContactEditFragment newInstance(Contact activityRootData) {
-        return newInstance(ContactEditFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(ContactEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
@@ -93,7 +97,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
     }
 
     private void setUpFieldVisibilities(FragmentContactEditLayoutBinding contentBinding) {
-        setVisibilityByDisease(ContactDto.class, record.getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(ContactDto.class, contentBinding.mainContent);
 
         if (record.getResultingCaseUuid() != null) {
             contentBinding.createCase.setVisibility(GONE);
@@ -230,8 +234,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                 case FACE_TO_FACE_LONG:
                 case TOUCHED_FLUID:
                 case AEROSOL:
-                case MEDICAL_UNSAVE:
                     contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK);
+                    break;
+                case MEDICAL_UNSAFE:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+                    break;
+                case MEDICAL_LIMITED:
+                    contentBinding.contactContactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
                     break;
                 case SAME_ROOM:
                 case FACE_TO_FACE_SHORT:
@@ -239,7 +248,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
                     contentBinding.contactContactCategory.setValue(ContactCategory.LOW_RISK);
                     break;
                 case MEDICAL_DISTANT:
-                case MEDICAL_SAVE:
+                case MEDICAL_SAFE:
                     contentBinding.contactContactCategory.setValue(ContactCategory.NO_RISK);
                     break;
                 default:

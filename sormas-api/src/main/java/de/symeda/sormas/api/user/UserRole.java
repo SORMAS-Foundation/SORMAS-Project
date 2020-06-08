@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -32,19 +32,21 @@ import de.symeda.sormas.api.utils.ValidationException;
 /**
  * These are also used as user groups in the server realm
  */
-public enum UserRole implements StatisticsGroupingKey {
+public enum UserRole
+	implements
+	StatisticsGroupingKey {
 
 	ADMIN(false, false, false, false),
-	NATIONAL_USER(false, false, false, false),	
-	SURVEILLANCE_SUPERVISOR(true, false, false, false),	
-	SURVEILLANCE_OFFICER(false, true, false, false),	
-	HOSPITAL_INFORMANT(false, false, true, false),	
+	NATIONAL_USER(false, false, false, false),
+	SURVEILLANCE_SUPERVISOR(true, false, false, false),
+	SURVEILLANCE_OFFICER(false, true, false, false),
+	HOSPITAL_INFORMANT(false, false, true, false),
 	COMMUNITY_INFORMANT(false, false, true, false),
-	CASE_SUPERVISOR(true, false, false, false),	
-	CASE_OFFICER(false, true, false, false),	
-	CONTACT_SUPERVISOR(true, false, false, false),	
-	CONTACT_OFFICER(false, true, false, false),	
-	EVENT_OFFICER(true, false, false, false),	
+	CASE_SUPERVISOR(true, false, false, false),
+	CASE_OFFICER(false, true, false, false),
+	CONTACT_SUPERVISOR(true, false, false, false),
+	CONTACT_OFFICER(false, true, false, false),
+	EVENT_OFFICER(true, false, false, false),
 	LAB_USER(false, false, false, false),
 	EXTERNAL_LAB_USER(false, false, false, false),
 	NATIONAL_OBSERVER(false, false, false, false),
@@ -87,23 +89,20 @@ public enum UserRole implements StatisticsGroupingKey {
 	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
 	public static final String _REST_USER = REST_USER.name();
 
-	private static final Set<UserRole> NATIONAL_ROLES = EnumSet.of(
-			UserRole.NATIONAL_OBSERVER,
-			UserRole.NATIONAL_USER,
-			UserRole.NATIONAL_CLINICIAN,
-			UserRole.POE_NATIONAL_USER);
-	
+	private static final Set<UserRole> NATIONAL_ROLES =
+		EnumSet.of(UserRole.NATIONAL_OBSERVER, UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.POE_NATIONAL_USER);
+
 	private final boolean supervisor;
 	private final boolean officer;
 	private final boolean informant;
-	
+
 	/**
 	 * Whether the user is directly responsible for managing port health cases
 	 */
 	private final boolean portHealthUser;
-	
+
 	private Set<UserRight> defaultUserRights = null;
-	
+
 	private static Set<UserRole> supervisorRoles = null;
 	private static Set<UserRole> officerRoles = null;
 	private static Set<UserRole> informantRoles = null;
@@ -116,11 +115,11 @@ public enum UserRole implements StatisticsGroupingKey {
 		this.informant = informant;
 		this.portHealthUser = portHealthUser;
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);
 	}
@@ -128,24 +127,25 @@ public enum UserRole implements StatisticsGroupingKey {
 	public boolean isSupervisor() {
 		return supervisor;
 	}
-	
+
 	public boolean isOfficer() {
 		return officer;
 	}
-	
+
 	public boolean isInformant() {
 		return informant;
 	}
-	
+
 	public boolean isPortHealthUser() {
 		return portHealthUser;
 	}
-	
+
 	public boolean isNational() {
 		return NATIONAL_ROLES.contains(this);
 	}
-	
+
 	public Set<UserRight> getDefaultUserRights() {
+
 		if (defaultUserRights == null) {
 			defaultUserRights = EnumSet.noneOf(UserRight.class);
 			for (UserRight userRight : UserRight.values()) {
@@ -156,15 +156,16 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return defaultUserRights;
 	}
-		
+
 	public boolean hasDefaultRight(UserRight userRight) {
 		return getDefaultUserRights().contains(userRight);
 	}
-	
+
 	public void addAssignableRoles(Collection<UserRole> collection) {
+
 		switch (this) {
 		case ADMIN:
-			for(UserRole role : UserRole.values()) {
+			for (UserRole role : UserRole.values()) {
 				collection.add(role);
 			}
 			break;
@@ -228,7 +229,7 @@ public enum UserRole implements StatisticsGroupingKey {
 			break;
 		}
 	}
-	
+
 	public static Set<UserRole> getAssignableRoles(Collection<UserRole> roles) {
 		Set<UserRole> result = EnumSet.noneOf(UserRole.class);
 		for (UserRole role : roles) {
@@ -238,11 +239,19 @@ public enum UserRole implements StatisticsGroupingKey {
 	}
 
 	public Collection<UserRole> getCombinableRoles() {
-		switch(this) {
+
+		switch (this) {
 		case ADMIN:
 			return Arrays.asList(
-					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, NATIONAL_OBSERVER, NATIONAL_CLINICIAN, IMPORT_USER);
+				SURVEILLANCE_SUPERVISOR,
+				CASE_SUPERVISOR,
+				CONTACT_SUPERVISOR,
+				EVENT_OFFICER,
+				LAB_USER,
+				NATIONAL_USER,
+				NATIONAL_OBSERVER,
+				NATIONAL_CLINICIAN,
+				IMPORT_USER);
 		case NATIONAL_USER:
 			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN, IMPORT_USER);
 		case NATIONAL_OBSERVER:
@@ -253,13 +262,10 @@ public enum UserRole implements StatisticsGroupingKey {
 		case CONTACT_SUPERVISOR:
 		case SURVEILLANCE_SUPERVISOR:
 		case EVENT_OFFICER:
-			return Arrays.asList(
-					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, ADMIN, IMPORT_USER);
+			return Arrays.asList(SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR, EVENT_OFFICER, LAB_USER, ADMIN, IMPORT_USER);
 		case LAB_USER:
-			return Arrays.asList(
-					SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR,
-					EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN, IMPORT_USER);
+			return Arrays
+				.asList(SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR, EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN, IMPORT_USER);
 		case SURVEILLANCE_OFFICER:
 		case CASE_OFFICER:
 		case CONTACT_OFFICER:
@@ -278,7 +284,7 @@ public enum UserRole implements StatisticsGroupingKey {
 			return Arrays.asList(IMPORT_USER);
 		case IMPORT_USER:
 			final List<UserRole> userRoles = new ArrayList<>();
-			for (UserRole userRole: UserRole.values()) {
+			for (UserRole userRole : UserRole.values()) {
 				if (userRole != REST_EXTERNAL_VISITS_USER && userRole != REST_USER) {
 					userRoles.add(userRole);
 				}
@@ -294,6 +300,7 @@ public enum UserRole implements StatisticsGroupingKey {
 	}
 
 	public static boolean isSupervisor(Collection<UserRole> roles) {
+
 		for (UserRole role : roles) {
 			if (role.isSupervisor()) {
 				return true;
@@ -301,8 +308,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return false;
 	}
-	
+
 	public static boolean isOfficer(Collection<UserRole> roles) {
+
 		for (UserRole role : roles) {
 			if (role.isOfficer()) {
 				return true;
@@ -310,12 +318,13 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return false;
 	}
-	
+
 	public static boolean isAdmin(Collection<UserRole> roles) {
 		return roles.contains(UserRole.ADMIN);
 	}
-	
+
 	public static boolean isInformant(Collection<UserRole> roles) {
+
 		for (UserRole role : roles) {
 			if (role.isInformant()) {
 				return true;
@@ -323,8 +332,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return false;
 	}
-	
+
 	public static boolean isNational(Collection<UserRole> roles) {
+
 		for (UserRole role : roles) {
 			if (role.isNational()) {
 				return true;
@@ -332,8 +342,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return false;
 	}
-	
+
 	public static boolean isPortHealthUser(Collection<UserRole> roles) {
+
 		for (UserRole role : roles) {
 			if (role.isPortHealthUser()) {
 				return true;
@@ -341,13 +352,13 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return false;
 	}
-	
+
 	public static boolean isLabUser(Collection<UserRole> roles) {
 		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
-	
+
 	public static UserRole getFirstDifferentUserRole(Collection<UserRole> roles, UserRole ignoredUserRole, Collection<UserRole> ignoredRoles) {
-		
+
 		for (UserRole userRole : roles) {
 			if (!ignoredRoles.contains(userRole) && ignoredUserRole != userRole) {
 				return userRole;
@@ -355,9 +366,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return null;
 	}
-	
+
 	public static void validate(Collection<UserRole> roles) throws UserRoleValidationException {
-		
+
 		for (UserRole userRole : roles) {
 			UserRole forbiddenUserRole = getFirstDifferentUserRole(roles, userRole, userRole.getCombinableRoles());
 			if (forbiddenUserRole != null) {
@@ -367,6 +378,7 @@ public enum UserRole implements StatisticsGroupingKey {
 	}
 
 	public static Set<UserRole> getSupervisorRoles() {
+
 		if (supervisorRoles == null) {
 			supervisorRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
@@ -377,8 +389,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return supervisorRoles;
 	}
-	
+
 	public static Set<UserRole> getOfficerRoles() {
+
 		if (officerRoles == null) {
 			officerRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
@@ -389,8 +402,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return officerRoles;
 	}
-	
+
 	public static Set<UserRole> getInformantRoles() {
+
 		if (informantRoles == null) {
 			informantRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
@@ -401,8 +415,9 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return informantRoles;
 	}
-	
+
 	public static Set<UserRole> getPortHealthUserRoles() {
+
 		if (portHealthUserRoles == null) {
 			portHealthUserRoles = EnumSet.noneOf(UserRole.class);
 			for (UserRole userRole : values()) {
@@ -413,12 +428,13 @@ public enum UserRole implements StatisticsGroupingKey {
 		}
 		return portHealthUserRoles;
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static class UserRoleValidationException extends ValidationException {
+
 		private final UserRole checkedUserRole;
 		private final UserRole forbiddenUserRole;
-		
+
 		public UserRoleValidationException(UserRole checkedUserRole, UserRole forbiddenUserRole) {
 			super(checkedUserRole + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole);
 			this.checkedUserRole = checkedUserRole;
@@ -436,12 +452,13 @@ public enum UserRole implements StatisticsGroupingKey {
 
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName()
-					+ " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
 
 		return this.toString().compareTo(o.toString());

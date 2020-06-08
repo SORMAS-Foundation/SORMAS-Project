@@ -9,18 +9,19 @@ public class AggregatedCaseCountDto implements Serializable {
 	private static final long serialVersionUID = -6857559727281292882L;
 
 	public static final String I18N_PREFIX = "AggregateReport";
-	
+
 	public static final String DISEASE = "disease";
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
-	
+
 	private Disease disease;
 	private int newCases;
 	private int labConfirmations;
 	private int deaths;
 
 	public AggregatedCaseCountDto(Disease disease, int newCases, int labConfirmations, int deaths) {
+
 		this.disease = disease;
 		this.newCases = newCases;
 		this.labConfirmations = labConfirmations;
@@ -61,6 +62,7 @@ public class AggregatedCaseCountDto implements Serializable {
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + deaths;
@@ -72,6 +74,7 @@ public class AggregatedCaseCountDto implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -89,5 +92,4 @@ public class AggregatedCaseCountDto implements Serializable {
 			return false;
 		return true;
 	}
-	
 }

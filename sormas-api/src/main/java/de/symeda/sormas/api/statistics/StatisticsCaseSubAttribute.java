@@ -9,18 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum StatisticsCaseSubAttribute {
-	
+
 	YEAR(true, true),
 	QUARTER(true, true),
 	MONTH(true, true),
@@ -30,26 +30,27 @@ public enum StatisticsCaseSubAttribute {
 	EPI_WEEK_OF_YEAR(true, true),
 	DATE_RANGE(true, false),
 	REGION(false, true),
-	DISTRICT(false, true);
-	
+	DISTRICT(false, true),
+	COMMUNITY(false, true),
+	HEALTH_FACILITY(false, true);
+
 	private boolean usedForFilters;
 	private boolean usedForGrouping;
-	
+
 	StatisticsCaseSubAttribute(boolean usedForFilters, boolean usedForGrouping) {
 		this.usedForFilters = usedForFilters;
 		this.usedForGrouping = usedForGrouping;
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
 
 	public boolean isUsedForFilters() {
 		return usedForFilters;
-	}	
-	
+	}
+
 	public boolean isUsedForGrouping() {
 		return usedForGrouping;
 	}
-	
 }

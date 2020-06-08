@@ -1,14 +1,17 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Locale;
+
 import com.vaadin.v7.data.util.converter.Converter;
+
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 
-import java.util.Locale;
-
 public class AgeAndBirthDateDtoConverterV7 implements Converter<String, AgeAndBirthDateDto> {
+
+	private static final long serialVersionUID = 4515813046485937433L;
 
 	@Override
 	public AgeAndBirthDateDto convertToModel(String value, Class<? extends AgeAndBirthDateDto> targetType, Locale locale) throws ConversionException {
@@ -17,13 +20,20 @@ public class AgeAndBirthDateDtoConverterV7 implements Converter<String, AgeAndBi
 
 	@Override
 	public String convertToPresentation(AgeAndBirthDateDto value, Class<? extends String> targetType, Locale locale) throws ConversionException {
+
 		if (value == null) {
 			return "";
 		}
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		return PersonHelper.getAgeAndBirthdateString(value.getAge(), value.getAgeType(), value.getBirthdateDD(), value.getBirthdateMM(), value.getBirthdateYYYY(), userLanguage);
+		return PersonHelper.getAgeAndBirthdateString(
+			value.getAge(),
+			value.getAgeType(),
+			value.getBirthdateDD(),
+			value.getBirthdateMM(),
+			value.getBirthdateYYYY(),
+			userLanguage);
 	}
 
 	@Override

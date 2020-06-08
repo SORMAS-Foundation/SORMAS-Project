@@ -25,9 +25,7 @@ import android.view.ViewGroup;
 import androidx.databinding.ObservableArrayList;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
@@ -38,6 +36,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -52,7 +51,6 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -73,7 +71,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
     // Static methods
 
     public static CaseEditEpidemiologicalDataFragment newInstance(Case activityRootData) {
-        return newInstance(CaseEditEpidemiologicalDataFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(CaseEditEpidemiologicalDataFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()), null);
     }
 
     // Instance methods
@@ -384,7 +383,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
     @Override
     public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
-        setVisibilityByDisease(EpiDataDto.class, disease, contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 
         // Initialize ControlSpinnerFields
         contentBinding.epiDataWaterSource.initializeSpinner(drinkingWaterSourceList);

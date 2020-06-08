@@ -1,15 +1,14 @@
 package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.DateHelper;
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.text.DateFormat;
 import java.util.Date;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DateHelper;
+
 public class DateFormatHelper {
+
 	public static DateFormat getDateFormat() {
 		return DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage());
 	}
@@ -23,6 +22,7 @@ public class DateFormatHelper {
 	}
 
 	public static String buildPeriodString(Date startDate, Date endDate) {
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 
 		String startDateString = startDate != null ? DateHelper.formatLocalDate(startDate, userLanguage) : "?";
@@ -36,7 +36,7 @@ public class DateFormatHelper {
 		}
 	}
 
-	public static String formatLocalDateTime(Date dateTime){
+	public static String formatLocalDateTime(Date dateTime) {
 		return DateHelper.formatLocalDateTime(dateTime, I18nProperties.getUserLanguage());
 	}
 }

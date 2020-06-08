@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format.override;
 
@@ -32,12 +32,14 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 public class DateFormatOverrideDetector implements OverrideDetector<Date> {
 
 	/**
-	 * Returns an adjusted {@link ValueFormatter} for an entity property as long as this is applicable according to the the method description.
+	 * Returns an adjusted {@link ValueFormatter} for an entity property as long as this is applicable according to the the method
+	 * description.
 	 * 
 	 * @param m
-	 * 			The method that describes the property.
-	 * @return	Returns <code>null</code> if no reasonable derivation can be found. Returns a ValueFormatter that is adjusted to the value of the
-	 * 			{@link Temporal} annotation, if present.
+	 *            The method that describes the property.
+	 * @return Returns <code>null</code> if no reasonable derivation can be found. Returns a ValueFormatter that is adjusted to the value of
+	 *         the
+	 *         {@link Temporal} annotation, if present.
 	 */
 	@Override
 	public ValueFormatter<Date> override(Method m) {

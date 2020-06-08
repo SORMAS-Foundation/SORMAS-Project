@@ -20,18 +20,11 @@ package de.symeda.sormas.app.symptoms;
 
 import android.content.res.Resources;
 import android.view.View;
-import android.view.ViewGroup;
-
-import org.joda.time.DateTimeComparator;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -40,6 +33,8 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -47,6 +42,7 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.visit.Visit;
@@ -83,15 +79,21 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
     private List<ControlSwitchField> symptomFields;
 
     public static SymptomsEditFragment newInstance(Case activityRootData) {
-        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(SymptomsEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     public static SymptomsEditFragment newInstance(Visit activityRootData) {
-        return newInstance(SymptomsEditFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(SymptomsEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     public static SymptomsEditFragment newInstance(ClinicalVisit activityRootData, String caseUuid) {
-        return newInstance(SymptomsEditFragment.class, ClinicalVisitEditActivity.buildBundleWithCase(caseUuid).get(), activityRootData);
+        return newInstanceWithFieldCheckers(SymptomsEditFragment.class, ClinicalVisitEditActivity.buildBundleWithCase(caseUuid).get(), activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())), null);
     }
 
     @Override
@@ -165,7 +167,7 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
             contentBinding.btnClearedToNo.setEnabled(enabled);
         }
 
-        setVisibilityByDisease(SymptomsDto.class, disease, contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(SymptomsDto.class, contentBinding.mainContent);
 
         if (contentBinding.symptomsBulgingFontanelle.getVisibility() == VISIBLE
                 && !isInfant) {

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
@@ -31,7 +31,7 @@ public class Community extends InfrastructureAdo {
 	private static final long serialVersionUID = 1971053920357795693L;
 
 	public static final String TABLE_NAME = "community";
-	
+
 	public static final String NAME = "name";
 	public static final String DISTRICT = "district";
 	public static final String EXTERNAL_ID = "externalID";
@@ -39,19 +39,21 @@ public class Community extends InfrastructureAdo {
 	private String name;
 	private District district;
 	private String externalID;
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
 	@JoinColumn(nullable = false)
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}

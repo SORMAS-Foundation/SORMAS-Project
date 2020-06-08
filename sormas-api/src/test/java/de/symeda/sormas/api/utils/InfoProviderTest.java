@@ -9,28 +9,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 
+import java.lang.reflect.Field;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 public class InfoProviderTest {
 
 	@Before
 	public void prepareTest() {
+
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
 			instance.setAccessible(true);
@@ -39,13 +40,13 @@ public class InfoProviderTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
-	public void testIsCompatibleToApiString() throws Exception {
+	public void testIsCompatibleToApiString() {
 
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("0.7.0");
 		Mockito.when(InfoProvider.get().getMinimumRequiredVersion()).thenReturn("0.5.0");
-		
+
 		// testMatchingVersionCompatibility
 		assertEquals(CompatibilityCheckResponse.COMPATIBLE, InfoProvider.get().isCompatibleToApi("0.5.0"));
 		assertEquals(CompatibilityCheckResponse.COMPATIBLE, InfoProvider.get().isCompatibleToApi("0.7.0"));
@@ -63,15 +64,15 @@ public class InfoProviderTest {
 		assertEquals(CompatibilityCheckResponse.TOO_NEW, InfoProvider.get().isCompatibleToApi("1.0.0"));
 
 		// testMalformedVersionReturnsError
-		try { 
+		try {
 			InfoProvider.get().isCompatibleToApi("1.0");
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
-		catch (IllegalArgumentException e) { }
-		try { 
+		try {
 			InfoProvider.get().isCompatibleToApi("wrong.format.test");
 			fail();
+		} catch (IllegalArgumentException e) {
 		}
-		catch (IllegalArgumentException e) { }
 	}
 }

@@ -42,11 +42,6 @@
                 android:icon="@drawable/ic_mark_all_as_read_option_menu_24dp"
                 android:title="@string/action_markAllAsRead"
                 app:showAsAction="always|withText"/>
-            <item
-                android:id="@+id/action_report"
-                android:icon="@drawable/ic_report_problem_option_menu_24dp"
-                android:title="@string/action_report"
-                app:showAsAction="always|withText"/>
         </menu>
 
     </item>

@@ -34,7 +34,7 @@ public class MergeCasesView extends AbstractView {
 
 	private MergeCasesGrid grid;
 	private MergeCasesFilterComponent filterComponent;
-	
+
 	public MergeCasesView() {
 		super(VIEW_NAME);
 
@@ -43,8 +43,8 @@ public class MergeCasesView extends AbstractView {
 		criteria = ViewModelProviders.of(MergeCasesView.class).get(CaseCriteria.class);
 		if (criteriaUninitialized) {
 			criteria.creationDateFrom(DateHelper.subtractDays(new Date(), 30))
-			.creationDateTo(new Date())
-			.setRegion(UserProvider.getCurrent().getUser().getRegion());
+				.creationDateTo(new Date())
+				.setRegion(UserProvider.getCurrent().getUser().getRegion());
 		}
 
 		grid = new MergeCasesGrid();
@@ -64,7 +64,7 @@ public class MergeCasesView extends AbstractView {
 			grid.reload(ignoreRegion);
 		});
 		gridLayout.addComponent(filterComponent);
-		
+
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -76,12 +76,16 @@ public class MergeCasesView extends AbstractView {
 		Button btnOpenGuide = ButtonHelper.createIconButton(Captions.caseOpenMergeGuide, VaadinIcons.QUESTION, e -> buildAndOpenMergeInstructions());
 		addHeaderComponent(btnOpenGuide);
 
-		Button btnCalculateCompleteness = ButtonHelper.createIconButton(Captions.caseCalculateCompleteness, VaadinIcons.CALC, e -> showCalculateCompletenessWindow());
+		Button btnCalculateCompleteness =
+			ButtonHelper.createIconButton(Captions.caseCalculateCompleteness, VaadinIcons.CALC, e -> showCalculateCompletenessWindow());
 
 		addHeaderComponent(btnCalculateCompleteness);
 
-		Button btnBack = ButtonHelper.createIconButton(Captions.caseBackToDirectory, VaadinIcons.ARROW_BACKWARD,
-				e -> ControllerProvider.getCaseController().navigateToIndex(), ValoTheme.BUTTON_PRIMARY);
+		Button btnBack = ButtonHelper.createIconButton(
+			Captions.caseBackToDirectory,
+			VaadinIcons.ARROW_BACKWARD,
+			e -> ControllerProvider.getCaseController().navigateToIndex(),
+			ValoTheme.BUTTON_PRIMARY);
 
 		addHeaderComponent(btnBack);
 	}
@@ -93,15 +97,22 @@ public class MergeCasesView extends AbstractView {
 	}
 
 	private void showCalculateCompletenessWindow() {
-		VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmUpdateCompleteness), 
-				new Label(I18nProperties.getString(Strings.confirmationUpdateCompleteness)), 
-				I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
-					if (e.booleanValue() == true) {
-						grid.calculateCompletenessValues();
-						new Notification(I18nProperties.getString(Strings.headingCasesArchived),
-								I18nProperties.getString(Strings.messageCompletenessValuesUpdated), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-					}
-				});
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingConfirmUpdateCompleteness),
+			new Label(I18nProperties.getString(Strings.confirmationUpdateCompleteness)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			null,
+			e -> {
+				if (e.booleanValue() == true) {
+					grid.calculateCompletenessValues();
+					new Notification(
+						I18nProperties.getString(Strings.headingCasesArchived),
+						I18nProperties.getString(Strings.messageCompletenessValuesUpdated),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				}
+			});
 	}
 
 	@Override

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
@@ -33,7 +33,7 @@ public class VisitDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "Visit";
 	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
-	
+
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
 	public static final String VISIT_DATE_TIME = "visitDateTime";
@@ -43,7 +43,7 @@ public class VisitDto extends EntityDto {
 	public static final String SYMPTOMS = "symptoms";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
-	
+
 	@Required
 	private PersonReferenceDto person;
 	private Disease disease;
@@ -55,28 +55,38 @@ public class VisitDto extends EntityDto {
 	private VisitStatus visitStatus;
 	private String visitRemarks;
 	private SymptomsDto symptoms;
-	
+
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 
 	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {
+
 		VisitDto visit = new VisitDto();
-    	visit.setUuid(DataHelper.createUuid());
+		visit.setUuid(DataHelper.createUuid());
 
-    	visit.setPerson(contactPerson);
-    	visit.setDisease(disease);
+		visit.setPerson(contactPerson);
+		visit.setDisease(disease);
 
-    	SymptomsDto symptoms = new SymptomsDto();
-    	visit.setSymptoms(symptoms);
+		SymptomsDto symptoms = new SymptomsDto();
+		visit.setSymptoms(symptoms);
 
-    	visit.setVisitDateTime(new Date());
+		visit.setVisitDateTime(new Date());
 
-    	return visit;
+		return visit;
 	}
 
-	public static VisitDto build(PersonReferenceDto person, Disease disease, Date visitDateTime, UserReferenceDto visitUser, VisitStatus visitStatus, String visitRemarks,
-								 SymptomsDto symptoms, Double reportLat, Double reportLon, Float reportLatLonAccuracy) {
+	public static VisitDto build(
+		PersonReferenceDto person,
+		Disease disease,
+		Date visitDateTime,
+		UserReferenceDto visitUser,
+		VisitStatus visitStatus,
+		String visitRemarks,
+		SymptomsDto symptoms,
+		Double reportLat,
+		Double reportLon,
+		Float reportLatLonAccuracy) {
 
 		final VisitDto visit = build(person, disease);
 
@@ -96,70 +106,88 @@ public class VisitDto extends EntityDto {
 
 		return visit;
 	}
-	
+
 	public Date getVisitDateTime() {
 		return visitDateTime;
 	}
+
 	public void setVisitDateTime(Date visitDateTime) {
 		this.visitDateTime = visitDateTime;
 	}
+
 	public VisitStatus getVisitStatus() {
 		return visitStatus;
 	}
+
 	public void setVisitStatus(VisitStatus visitStatus) {
 		this.visitStatus = visitStatus;
 	}
+
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}
+
 	public void setVisitRemarks(String visitRemarks) {
 		this.visitRemarks = visitRemarks;
 	}
+
 	public SymptomsDto getSymptoms() {
 		return symptoms;
 	}
+
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
 	}
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
+
 	public void setPerson(PersonReferenceDto person) {
 		this.person = person;
 	}
+
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
+
 	public UserReferenceDto getVisitUser() {
 		return visitUser;
 	}
+
 	public void setVisitUser(UserReferenceDto visitUser) {
 		this.visitUser = visitUser;
 	}
+
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
+
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
+
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
+
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
-	
+
 	public VisitReferenceDto toReference() {
 		return new VisitReferenceDto(getUuid());
 	}
-	
 }

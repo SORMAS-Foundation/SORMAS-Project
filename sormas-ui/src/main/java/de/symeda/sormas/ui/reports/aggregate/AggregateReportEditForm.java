@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
-
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
@@ -26,10 +25,11 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 
 	private boolean initialized = false;
 
-	private static final String HTML_LAYOUT = LayoutUtil.fluidRow(LayoutUtil.oneOfTwoCol(DISEASE_LOC),
-			LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
-			LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
-			LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS));
+	private static final String HTML_LAYOUT = LayoutUtil.fluidRow(
+		LayoutUtil.oneOfTwoCol(DISEASE_LOC),
+		LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
+		LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
+		LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS));
 
 	private TextField caseField;
 	private TextField labField;
@@ -62,23 +62,20 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 		getContent().addComponent(diseaseLabel, DISEASE_LOC);
 		caseField = addField(AggregateReportDto.NEW_CASES);
 		caseField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportNewCasesShort));
-		caseField.setConversionError(
-				I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseField.getCaption()));
+		caseField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caseField.getCaption()));
 		labField = addField(AggregateReportDto.LAB_CONFIRMATIONS);
 		labField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportLabConfirmationsShort));
-		labField.setConversionError(
-				I18nProperties.getValidationError(Validations.onlyNumbersAllowed, labField.getCaption()));
+		labField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, labField.getCaption()));
 		deathField = addField(AggregateReportDto.DEATHS);
 		deathField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportDeathsShort));
-		deathField.setConversionError(
-				I18nProperties.getValidationError(Validations.onlyNumbersAllowed, deathField.getCaption()));
+		deathField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, deathField.getCaption()));
 		CssStyles.style(CssStyles.CAPTION_HIDDEN, diseaseLabel, caseField, labField, deathField);
 	}
 
 	public boolean isValid() {
 		return (caseField.getValue().isEmpty() || DataHelper.isParseableInt(caseField.getValue()))
-				&& (labField.getValue().isEmpty() || DataHelper.isParseableInt(labField.getValue()))
-				&& (deathField.getValue().isEmpty() || DataHelper.isParseableInt(deathField.getValue()));
+			&& (labField.getValue().isEmpty() || DataHelper.isParseableInt(labField.getValue()))
+			&& (deathField.getValue().isEmpty() || DataHelper.isParseableInt(deathField.getValue()));
 	}
 
 	public String getDisease() {

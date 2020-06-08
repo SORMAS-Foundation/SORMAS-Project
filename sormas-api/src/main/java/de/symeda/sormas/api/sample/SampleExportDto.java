@@ -10,12 +10,17 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class SampleExportDto implements Serializable {
 
@@ -27,8 +32,7 @@ public class SampleExportDto implements Serializable {
 	private String uuid;
 	private String labSampleID;
 	private String epidNumber;
-	private String firstName;
-	private String lastName;
+	private AssociatedCase associatedCase;
 	private String disease;
 	private Date sampleDateTime;
 	private String sampleMaterial;
@@ -54,15 +58,10 @@ public class SampleExportDto implements Serializable {
 	private String caseUuid;
 	private String caseAge;
 	private Sex caseSex;
-	private long caseAddressId;
-	private String caseAddress;
+	private CasePersonAddress caseAddress;
 	private Date caseReportDate;
 	private CaseClassification caseClassification;
 	private CaseOutcome caseOutcome;
-	private String caseRegion;
-	private String caseDistrict;
-	private String caseCommunity;
-	private String caseFacility;
 	private String pathogenTestType1;
 	private String pathogenTestDisease1;
 	private Date pathogenTestDateTime1;
@@ -85,26 +84,70 @@ public class SampleExportDto implements Serializable {
 	private AdditionalTestDto additionalTest;
 	private String otherAdditionalTestsDetails = "";
 
-	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String firstName, String lastName, 
-			Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
-			SampleSource sampleSource, String laboratoryUuid, String laboratory, String laboratoryDetails,
-			PathogenTestResultType pathogenTestResult, Boolean pathogenTestingRequested, String requestedPathogenTests, String requestedOtherPathogenTests, 
-			Boolean additionalTestingRequested, String requestedAdditionalTests, String requestedOtherAdditionalTests, boolean shipped, Date shipmentDate,
-			String shipmentDetails, boolean received, Date receivedDate, SpecimenCondition specimenCondition,
-			String noTestPossibleReason, String comment, String referredToUuid, String caseUuid, Integer approximateAge,
-			ApproximateAgeType approximateAgeType, Sex caseSex, long caseAddressId, Date caseReportDate,
-			CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
-			String caseCommunity, String caseFacilityUuid, String caseFacility, String caseFacilityDetails) {
+	private CaseJurisdictionDto associatedCaseJurisdiction;
+	private ContactJurisdictionDto associatedContactJurisdiction;
+
+	//@formatter:off
+	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String casePersonFirstName, String casePersonLastName,
+						   Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
+						   SampleSource sampleSource, String laboratoryUuid, String laboratory, String laboratoryDetails,
+						   PathogenTestResultType pathogenTestResult, Boolean pathogenTestingRequested, String requestedPathogenTests, String requestedOtherPathogenTests,
+						   Boolean additionalTestingRequested, String requestedAdditionalTests, String requestedOtherAdditionalTests, boolean shipped, Date shipmentDate,
+						   String shipmentDetails, boolean received, Date receivedDate, SpecimenCondition specimenCondition,
+						   String noTestPossibleReason, String comment, String referredToUuid, String caseUuid, Integer approximateAge,
+						   ApproximateAgeType approximateAgeType, Sex caseSex,
+						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressAddress,
+						   Date caseReportDate,
+						   CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
+						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails,
+						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
+	) {
+	//@formatter:on
+
 		this.id = id;
 		this.uuid = uuid;
 		this.labSampleID = labSampleId;
 		this.epidNumber = epidNumber;
-		this.firstName = firstName;
-		this.lastName = lastName;
+
+		if (caseUuid != null) {
+			this.associatedCase = new AssociatedCase(
+				caseUuid,
+				casePersonFirstName,
+				casePersonLastName,
+				caseRegion,
+				caseDistrict,
+				caseCommunity,
+				caseHealthFacilityUuid,
+				caseHealthFacility,
+				caseFacilityDetails);
+			this.associatedCaseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
+		}
+		if (contactReportingUserUuid != null) {
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
+				? null
+				: new CaseJurisdictionDto(
+					contactCaseReportingUserUuid,
+					contactCaseRegionUuid,
+					contactCaseDistrictUuid,
+					contactCaseCommunityUuid,
+					contactCaseHealthFacilityUuid,
+					contactCasePointOfEntryUuid);
+			this.associatedContactJurisdiction =
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+		}
+
 		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
 		this.sampleDateTime = sampleDateTime;
 		this.sampleMaterial = SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
-		if( samplePurpose != null)
+		if (samplePurpose != null)
 			this.samplePurpose = samplePurpose.toString();
 		this.sampleSource = sampleSource;
 		this.lab = FacilityHelper.buildFacilityString(laboratoryUuid, laboratory, laboratoryDetails);
@@ -137,14 +180,10 @@ public class SampleExportDto implements Serializable {
 		this.caseUuid = caseUuid;
 		this.caseAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.caseSex = caseSex;
-		this.caseAddressId = caseAddressId;
+		this.caseAddress = new CasePersonAddress(caseAddressRegion, caseAddressDistrict, caseAddressCommunity, caseAddressCity, caseAddressAddress);
 		this.caseReportDate = caseReportDate;
 		this.caseClassification = caseClassification;
 		this.caseOutcome = caseOutcome;
-		this.caseRegion = caseRegion;
-		this.caseDistrict = caseDistrict;
-		this.caseCommunity = caseCommunity;
-		this.caseFacility = FacilityHelper.buildFacilityString(caseFacilityUuid, caseFacility, caseFacilityDetails);
 	}
 
 	@Order(0)
@@ -164,7 +203,7 @@ public class SampleExportDto implements Serializable {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	@Order(2)
 	public String getLabSampleID() {
 		return labSampleID;
@@ -183,22 +222,18 @@ public class SampleExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 	}
 
-	@Order(4)
-	public String getFirstName() {
-		return firstName;
+	public AssociatedCase getAssociatedCase() {
+		return associatedCase;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	@Order(4)
+	public String getFirstName() {
+		return associatedCase != null ? associatedCase.getFirstName() : null;
 	}
 
 	@Order(5)
 	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		return associatedCase != null ? associatedCase.getLastName() : null;
 	}
 
 	@Order(6)
@@ -227,12 +262,12 @@ public class SampleExportDto implements Serializable {
 	public void setSampleMaterial(String sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
 	}
-	
+
 	@Order(12)
 	public String getSamplePurpose() {
 		return samplePurpose;
 	}
-	
+
 	public void setSamplePurpose(String samplePurpose) {
 		this.samplePurpose = samplePurpose;
 	}
@@ -427,12 +462,13 @@ public class SampleExportDto implements Serializable {
 	}
 
 	@Order(42)
-	public String getCaseAddress() {
-		return caseAddress;
+	public String getCaseAddressCaption() {
+		return LocationReferenceDto
+			.buildCaption(caseAddress.region, caseAddress.district, caseAddress.community, caseAddress.city, caseAddress.address);
 	}
 
-	public void setCaseAddress(String caseAddress) {
-		this.caseAddress = caseAddress;
+	public CasePersonAddress getCaseAddress() {
+		return caseAddress;
 	}
 
 	@Order(43)
@@ -464,38 +500,22 @@ public class SampleExportDto implements Serializable {
 
 	@Order(46)
 	public String getCaseRegion() {
-		return caseRegion;
-	}
-
-	public void setCaseRegion(String caseRegion) {
-		this.caseRegion = caseRegion;
+		return associatedCase != null ? associatedCase.getRegion() : null;
 	}
 
 	@Order(47)
 	public String getCaseDistrict() {
-		return caseDistrict;
-	}
-
-	public void setCaseDistrict(String caseDistrict) {
-		this.caseDistrict = caseDistrict;
+		return associatedCase != null ? associatedCase.getDistrict() : null;
 	}
 
 	@Order(48)
 	public String getCaseCommunity() {
-		return caseCommunity;
-	}
-
-	public void setCaseCommunity(String caseCommunity) {
-		this.caseCommunity = caseCommunity;
+		return associatedCase != null ? associatedCase.getCommunity() : null;
 	}
 
 	@Order(49)
 	public String getCaseFacility() {
-		return caseFacility;
-	}
-
-	public void setCaseFacility(String caseFacility) {
-		this.caseFacility = caseFacility;
+		return associatedCase != null ? associatedCase.getFacility() : null;
 	}
 
 	@Order(51)
@@ -687,12 +707,80 @@ public class SampleExportDto implements Serializable {
 		this.otherAdditionalTestsDetails = otherAdditionalTestsDetails;
 	}
 
-	public long getCaseAddressId() {
-		return caseAddressId;
+	public CaseJurisdictionDto getAssociatedCaseJurisdiction() {
+		return associatedCaseJurisdiction;
 	}
 
-	public void setCaseAddressId(long caseAddressId) {
-		this.caseAddressId = caseAddressId;
+	public ContactJurisdictionDto getAssociatedContactJurisdiction() {
+		return associatedContactJurisdiction;
 	}
-	
+
+	public static class AssociatedCase extends CaseReferenceDto {
+
+		private static final long serialVersionUID = 4890448385381706557L;
+
+		private String region;
+		private String district;
+		@PersonalData
+		private String community;
+		@PersonalData
+		private String facility;
+
+		public AssociatedCase(
+			String uuid,
+			String firstName,
+			String lastName,
+			String region,
+			String district,
+			String community,
+			String facilityUuid,
+			String facility,
+			String facilityDetails) {
+			super(uuid, firstName, lastName);
+
+			this.region = region;
+			this.district = district;
+			this.community = community;
+			this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility, facilityDetails);
+
+		}
+
+		public String getRegion() {
+			return region;
+		}
+
+		public String getDistrict() {
+			return district;
+		}
+
+		public String getCommunity() {
+			return community;
+		}
+
+		public String getFacility() {
+			return facility;
+		}
+	}
+
+	public static class CasePersonAddress implements Serializable {
+
+		private static final long serialVersionUID = 466724930802680895L;
+
+		private String region;
+		private String district;
+		@PersonalData
+		private String community;
+		@PersonalData
+		private String city;
+		@PersonalData
+		private String address;
+
+		public CasePersonAddress(String region, String district, String community, String city, String address) {
+			this.region = region;
+			this.district = district;
+			this.community = community;
+			this.city = city;
+			this.address = address;
+		}
+	}
 }

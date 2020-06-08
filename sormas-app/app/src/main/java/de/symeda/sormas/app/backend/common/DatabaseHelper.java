@@ -20,7 +20,6 @@ package de.symeda.sormas.app.backend.common;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -95,9 +94,9 @@ import de.symeda.sormas.app.backend.report.WeeklyReportEntryDao;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.AdditionalTestDao;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
+import de.symeda.sormas.app.backend.sample.PathogenTestDao;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
-import de.symeda.sormas.app.backend.sample.PathogenTestDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.synclog.SyncLog;
@@ -127,7 +126,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 205;
+	public static final int DATABASE_VERSION = 207;
 
 	private static DatabaseHelper instance = null;
 	public static void init(Context context) {
@@ -1545,6 +1544,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				case 204:
 					currentVersion = 204;
 					getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedContact_id bigint REFERENCES contact (id);");
+				case 205:
+					currentVersion = 205;
+					getDao(Contact.class).executeRaw("UPDATE contacts SET contactProximity = 'MEDICAL_SAFE' WHERE contactProximity = 'MEDICAL_SAVE';");
+					getDao(Contact.class).executeRaw("UPDATE contacts SET contactProximity = 'MEDICAL_UNSAFE' WHERE contactProximity = 'MEDICAL_UNSAVE';");
+				case 206:
+					currentVersion = 206;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN pseudonymized boolean;");
+					getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN pseudonymized boolean;");
+					getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN pseudonymized boolean;");
 
 						// ATTENTION: break should only be done after last version
 					break;

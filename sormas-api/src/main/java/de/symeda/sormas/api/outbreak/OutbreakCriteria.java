@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.outbreak;
 
@@ -37,26 +37,29 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	private Date changeDateAfter;
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
-	
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
+
 	public OutbreakCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
+
 	public OutbreakCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public OutbreakCriteria disease(Disease disease) {
 		this.disease = disease;
 		return this;
@@ -65,55 +68,64 @@ public class OutbreakCriteria extends BaseCriteria implements Serializable {
 	public Boolean getActive() {
 		return active;
 	}
+
 	public Date getActiveLower() {
 		return activeLower;
 	}
+
 	public Date getActiveUpper() {
 		return activeUpper;
 	}
+
 	public OutbreakCriteria active(Boolean active) {
+
 		this.active = active;
-		if (active != null)
-		{
+		if (active != null) {
 			this.activeLower = new Date();
 			this.activeUpper = new Date();
 		} else {
 			this.activeLower = null;
-			this.activeUpper = null;			
+			this.activeUpper = null;
 		}
 		return this;
 	}
+
 	public OutbreakCriteria active(boolean active, Date activeLower, Date activeUpper) {
 		this.active = active;
 		this.activeLower = activeLower;
 		this.activeUpper = activeUpper;
 		return this;
 	}
-	
+
 	public Date getChangeDateAfter() {
 		return changeDateAfter;
 	}
+
 	public OutbreakCriteria changeDateAfter(Date changeDateAfter) {
 		this.changeDateAfter = changeDateAfter;
 		return this;
 	}
-	
-	public OutbreakCriteria reportedBetween (Date reportedDateFrom, Date reportedDateTo) {
+
+	public OutbreakCriteria reportedBetween(Date reportedDateFrom, Date reportedDateTo) {
 		this.reportedDateFrom = reportedDateFrom;
 		this.reportedDateTo = reportedDateTo;
 		return this;
 	}
-	public OutbreakCriteria reportedDateFrom (Date reportedDateFrom) {
+
+	public OutbreakCriteria reportedDateFrom(Date reportedDateFrom) {
 		this.reportedDateFrom = reportedDateFrom;
 		return this;
 	}
+
 	public Date getReportedDateFrom() {
 		return reportedDateFrom;
 	}
-	public OutbreakCriteria reportedDateTo (Date reportedDateTo) {
+
+	public OutbreakCriteria reportedDateTo(Date reportedDateTo) {
 		this.reportedDateTo = reportedDateTo;
 		return this;
 	}
+
 	public Date getReportedDateTo() {
 		return reportedDateTo;
 	}

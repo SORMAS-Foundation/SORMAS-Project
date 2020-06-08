@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -31,7 +31,7 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-public class StringMessageBodyWriter implements MessageBodyWriter<String>{
+public class StringMessageBodyWriter implements MessageBodyWriter<String> {
 
 	@Override
 	public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -45,11 +45,18 @@ public class StringMessageBodyWriter implements MessageBodyWriter<String>{
 	}
 
 	@Override
-	public void writeTo(String t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-			throws IOException, WebApplicationException {
+	public void writeTo(
+		String t,
+		Class<?> type,
+		Type genericType,
+		Annotation[] annotations,
+		MediaType mediaType,
+		MultivaluedMap<String, Object> httpHeaders,
+		OutputStream entityStream)
+		throws IOException, WebApplicationException {
+
 		if (t != null) {
-			entityStream.write(("\""+t+"\"").getBytes());
+			entityStream.write(("\"" + t + "\"").getBytes());
 		}
 	}
 }

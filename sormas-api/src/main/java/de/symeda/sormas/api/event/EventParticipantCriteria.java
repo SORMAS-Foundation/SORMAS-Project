@@ -10,15 +10,14 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private static final long serialVersionUID = 5981720569585071845L;
 
 	private EventReferenceDto event;
-	
+
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
 		return event;
 	}
-	
+
 	public EventParticipantCriteria event(EventReferenceDto event) {
 		this.event = event;
 		return this;
 	}
-	
 }

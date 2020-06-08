@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -28,7 +28,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 public class TaskStatusValidator extends AbstractValidator<TaskStatus> {
 
 	private String caseUuid;
-	
+
 	public TaskStatusValidator(String caseUuid, String errorMessage) {
 		super(errorMessage);
 		this.caseUuid = caseUuid;
@@ -36,6 +36,7 @@ public class TaskStatusValidator extends AbstractValidator<TaskStatus> {
 
 	@Override
 	protected boolean isValidValue(TaskStatus value) {
+
 		if (value == TaskStatus.DONE) {
 			try {
 				CaseLogic.validateInvestigationDoneAllowed(FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid));
@@ -52,5 +53,4 @@ public class TaskStatusValidator extends AbstractValidator<TaskStatus> {
 	public Class<TaskStatus> getType() {
 		return TaskStatus.class;
 	}
-
 }

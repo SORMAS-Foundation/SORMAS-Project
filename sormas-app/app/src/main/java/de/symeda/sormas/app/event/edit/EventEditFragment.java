@@ -33,7 +33,6 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -62,7 +61,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
     private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
         final Location location = record.getEventLocation();
         final Location locationClone = (Location) location.clone();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, null);
         locationDialog.show();
 
         locationDialog.setPositiveCallback(() -> {

@@ -4285,8 +4285,13 @@ ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (211, 'Add samples to contacts #1753');
 
---2020-05-25 Add campaigns #1984
+-- 2020-05-28 Rename misspelled enum values #2094
+UPDATE contact SET contactproximity = 'MEDICAL_UNSAFE' WHERE contactproximity = 'MEDICAL_UNSAVE';
+UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'MEDICAL_SAVE';
 
+INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');                                                                                                                        
+
+--2020-05-25 Add campaigns #1984
 CREATE TABLE campaigns(
 	id bigint not null,
 	uuid varchar(36) not null unique,

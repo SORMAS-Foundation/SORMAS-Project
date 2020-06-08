@@ -11,17 +11,16 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
-public class ClinicalCourseService extends AbstractAdoService<ClinicalCourse>  {
+public class ClinicalCourseService extends AbstractAdoService<ClinicalCourse> {
 
 	public ClinicalCourseService() {
 		super(ClinicalCourse.class);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<ClinicalCourse, ClinicalCourse> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
-	
 }

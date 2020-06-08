@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.importexport;
 
@@ -30,15 +30,15 @@ public interface ImportFacade {
 	 * it as a download.
 	 */
 	void generateCaseImportTemplateFile() throws IOException;
-	
+
 	void generateCaseContactImportTemplateFile() throws IOException;
 
 	void generateCaseLineListingImportTemplateFile() throws IOException;
 
 	void generatePointOfEntryImportTemplateFile() throws IOException;
-	
+
 	void generatePopulationDataImportTemplateFile() throws IOException;
-	
+
 	void generateRegionImportTemplateFile() throws IOException;
 
 	void generateDistrictImportTemplateFile() throws IOException;
@@ -50,9 +50,9 @@ public interface ImportFacade {
 	void generateContactImportTemplateFile() throws IOException;
 
 	String getCaseImportTemplateFilePath();
-	
+
 	String getPointOfEntryImportTemplateFilePath();
-	
+
 	String getPopulationDataImportTemplateFilePath();
 
 	String getCaseLineListingImportTemplateFilePath();

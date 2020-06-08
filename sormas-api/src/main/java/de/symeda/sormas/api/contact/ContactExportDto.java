@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class ContactExportDto implements Serializable {
@@ -38,7 +40,7 @@ public class ContactExportDto implements Serializable {
 	private static final long serialVersionUID = 2054231712903661096L;
 
 	public static final String I18N_PREFIX = "ContactExport";
-	
+
 	private long id;
 	private long personId;
 	private String uuid;
@@ -48,7 +50,9 @@ public class ContactExportDto implements Serializable {
 	private String disease;
 	private ContactClassification contactClassification;
 	private Date lastContactDate;
+	@PersonalData
 	private String firstName;
+	@PersonalData
 	private String lastName;
 	private Sex sex;
 	private String approximateAge;
@@ -61,8 +65,11 @@ public class ContactExportDto implements Serializable {
 	private Date deathDate;
 	private String addressRegion;
 	private String addressDistrict;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String postalCode;
 	private String phone;
 	private String occupationType;
@@ -78,17 +85,24 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
 
+	private ContactJurisdictionDto jurisdiction;
+
+	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
-			ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
-			Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
-			ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
-			QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
-			PresentCondition presentCondition, Date deathDate,
-			String addressRegion, String addressDistrict, String city, String address, String postalCode,
-			String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
-			String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
-			String region, String district
+							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
+							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
+							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
+							QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							PresentCondition presentCondition, Date deathDate,
+							String addressRegion, String addressDistrict, String city, String address, String postalCode,
+							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
+							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
+							String region, String district,
+							String reportingUserUuid, String regionUuid, String districtUuid,
+							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
+	//@formatter:on
+
 		this.id = id;
 		this.personId = personId;
 		this.uuid = uuid;
@@ -119,16 +133,29 @@ public class ContactExportDto implements Serializable {
 		this.address = address;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
-		this.occupationType = PersonHelper.buildOccupationString(occupationType, occupationDetails,
-				FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
+		this.occupationType = PersonHelper.buildOccupationString(
+			occupationType,
+			occupationDetails,
+			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
+
+		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
+			? null
+			: new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUui,
+				caseDistrictUud,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
-	
+
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
 	}
-	
+
 	public long getId() {
 		return id;
 	}
@@ -136,11 +163,11 @@ public class ContactExportDto implements Serializable {
 	public long getPersonId() {
 		return personId;
 	}
-	
+
 	public Disease getInternalDisease() {
 		return internalDisease;
 	}
-	
+
 	@Order(0)
 	public String getUuid() {
 		return uuid;
@@ -195,12 +222,12 @@ public class ContactExportDto implements Serializable {
 	public Date getReportDate() {
 		return reportDate;
 	}
-	
+
 	@Order(15)
 	public String getRegion() {
 		return region;
 	}
-	
+
 	@Order(16)
 	public String getDistrict() {
 		return district;
@@ -235,10 +262,12 @@ public class ContactExportDto implements Serializable {
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
+
 	@Order(26)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
+
 	@Order(27)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
@@ -312,11 +341,11 @@ public class ContactExportDto implements Serializable {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public void setPersonId(long personId) {
 		this.personId = personId;
 	}
-	
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -416,5 +445,20 @@ public class ContactExportDto implements Serializable {
 	public void setDistrict(String district) {
 		this.district = district;
 	}
-	
+
+	public String getReportingUserUuid() {
+		return jurisdiction.getReportingUserUuid();
+	}
+
+	public String getRegionUuid() {
+		return jurisdiction.getRegionUuid();
+	}
+
+	public String getDistrictUuid() {
+		return jurisdiction.getDistrictUuid();
+	}
+
+	public ContactJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
 }

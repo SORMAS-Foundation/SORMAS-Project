@@ -368,9 +368,9 @@
     <color name="indicatorInvestigationDone">@color/green</color>
     <color name="indicatorInvestigationDiscarded">@color/gray</color>
 
-    <color name="indicatorCaseSuspected">@color/orange</color>
+    <color name="indicatorCaseProbable">@color/orange</color>
     <color name="indicatorCaseNotYetClassified">@color/lightBlue50</color>
-    <color name="indicatorCaseProbable">@color/brightYellow</color>
+    <color name="indicatorCaseSuspect">@color/brightYellow</color>
     <color name="indicatorCaseConfirmed">@color/watchOut</color>
     <color name="indicatorNotACase">@color/gray</color>
 
