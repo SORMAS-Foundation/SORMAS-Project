@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.disease;
 
@@ -41,40 +41,71 @@ public class DiseaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testDiseaseBurdenForDashboard() {
+
 		Date referenceDate = new Date();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		CommunityDto community2 = creator.createCommunity("Community2", rdcf.district);
-		RDCF rdcf2 = new RDCF(rdcf.region, rdcf.district, community2.toReference(), 
-				creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
+		RDCF rdcf2 = new RDCF(
+			rdcf.region,
+			rdcf.district,
+			community2.toReference(),
+			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
 
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = 	creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, DateHelper.subtractDays(referenceDate, 2), rdcf);
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.subtractDays(referenceDate, 2),
+			rdcf);
 
 		PersonDto cazePerson2 = creator.createPerson("Case", "Person2");
-		CaseDataDto caze2 = creator.createCase(user.toReference(), cazePerson2.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, DateHelper.addDays(referenceDate, 1), rdcf2);
+		CaseDataDto caze2 = creator.createCase(
+			user.toReference(),
+			cazePerson2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.addDays(referenceDate, 1),
+			rdcf2);
 
 		PersonDto cazePerson3 = creator.createPerson("Case", "Person3");
-		CaseDataDto caze3 = creator.createCase(user.toReference(), cazePerson3.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, DateHelper.addDays(referenceDate, 2), rdcf);
+		CaseDataDto caze3 = creator.createCase(
+			user.toReference(),
+			cazePerson3.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			DateHelper.addDays(referenceDate, 2),
+			rdcf);
 
 		PersonDto cazePerson4 = creator.createPerson("Case", "Person4");
-		CaseDataDto caze4 = creator.createCase(user.toReference(), cazePerson4.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, referenceDate, rdcf2);
+		CaseDataDto caze4 = creator.createCase(
+			user.toReference(),
+			cazePerson4.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			referenceDate,
+			rdcf2);
 
-		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(rdcf.region, rdcf.district, 
-				DateHelper.getStartOfDay(referenceDate), DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
-				DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)), DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)));
-		
+		List<DiseaseBurdenDto> diseaseBurdenForDashboard = getDiseaseFacade().getDiseaseBurdenForDashboard(
+			rdcf.region,
+			rdcf.district,
+			DateHelper.getStartOfDay(referenceDate),
+			DateHelper.getEndOfDay(DateHelper.addDays(referenceDate, 10)),
+			DateHelper.getStartOfDay(DateHelper.subtractDays(referenceDate, 10)),
+			DateHelper.getEndOfDay(DateHelper.subtractDays(referenceDate, 1)));
+
 		DiseaseBurdenDto evdBurden = diseaseBurdenForDashboard.stream().filter(dto -> dto.getDisease() == Disease.EVD).findFirst().get();
 		assertEquals(new Long(3), evdBurden.getCaseCount());
 		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
 		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
 	}
-	
 }

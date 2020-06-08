@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.importexport;
 
@@ -105,7 +105,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	public String generateDatabaseExportArchive(List<DatabaseTable> databaseTables) throws ExportErrorException, IOException {
 
 		// Create the folder if it doesn't exist
-		try {	
+		try {
 			Files.createDirectories(Paths.get(configFacade.getTempFilesPath()));
 		} catch (IOException e) {
 			logger.error("Temp directory doesn't exist and creation failed.");
@@ -113,16 +113,16 @@ public class ExportFacadeEjb implements ExportFacade {
 		}
 
 		long startTime = System.currentTimeMillis();
-		
+
 		Path zipPath = generateZipArchivePath();
-		
+
 		if (Files.exists(zipPath)) {
 			throw new IOException("File already exists: " + zipPath);
 		}
-		
-		try (OutputStream fos = Files.newOutputStream(zipPath); ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream( fos))) {
+
+		try (OutputStream fos = Files.newOutputStream(zipPath); ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(fos))) {
 			// Export all selected tables to .csv files
-			 databaseExportService.exportAsCsvFiles(zos, databaseTables);
+			databaseExportService.exportAsCsvFiles(zos, databaseTables);
 		} catch (RuntimeException e) {
 			Files.deleteIfExists(zipPath);
 			throw e;
@@ -131,62 +131,65 @@ public class ExportFacadeEjb implements ExportFacade {
 			logger.error("Failed to generate a zip file for database export.");
 			throw new ExportErrorException();
 		}
-		logger
-			.debug(
-				"generateDatabaseExportArchive() finished. {} tables, {} s",
-				databaseTables.size(),
-				(System.currentTimeMillis() - startTime) / 1_000);
+		logger.debug(
+			"generateDatabaseExportArchive() finished. {} tables, {} s",
+			databaseTables.size(),
+			(System.currentTimeMillis() - startTime) / 1_000);
 
 		return zipPath.toString();
 	}
 
 	@Override
 	public String generateZipArchive(String date, int randomNumber) {
+
 		//XXX parameters are not respected
 		Path filePath = generateZipArchivePath();
 		return filePath.toString();
 	}
 
 	private Path generateZipArchivePath() {
+
 		Path path = Paths.get(configFacade.getTempFilesPath());
-		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + DateHelper.formatDateForExport(new Date()) + "_" + new Random().nextInt(Integer.MAX_VALUE) + ".zip";
+		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_export_" + DateHelper.formatDateForExport(new Date()) + "_"
+			+ new Random().nextInt(Integer.MAX_VALUE) + ".zip";
 		Path filePath = path.resolve(fileName);
 		return filePath;
 	}
-	
+
 	@Override
 	public List<ExportConfigurationDto> getExportConfigurations() {
+
 		User user = userService.getCurrentUser();
-		
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ExportConfiguration> cq = cb.createQuery(ExportConfiguration.class);
 		Root<ExportConfiguration> config = cq.from(ExportConfiguration.class);
-		
+
 		cq.where(cb.equal(config.get(ExportConfiguration.USER), user));
 		cq.orderBy(cb.desc(config.get(ExportConfiguration.CHANGE_DATE)));
-		
-		return em.createQuery(cq).getResultList().stream()
-				.map(c -> toExportConfigurationDto(c))
-				.collect(Collectors.toList());
+
+		return em.createQuery(cq).getResultList().stream().map(c -> toExportConfigurationDto(c)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public void saveExportConfiguration(ExportConfigurationDto exportConfiguration) {
+
 		ExportConfiguration entity = fromExportConfigurationDto(exportConfiguration);
 		exportConfigurationService.ensurePersisted(entity);
 	}
-	
+
 	@Override
 	public void deleteExportConfiguration(String exportConfigurationUuid) {
+
 		ExportConfiguration exportConfiguration = exportConfigurationService.getByUuid(exportConfigurationUuid);
 		exportConfigurationService.delete(exportConfiguration);
 	}
-	
+
 	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source) {
+
 		ExportConfiguration target = exportConfigurationService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new ExportConfiguration();
@@ -195,22 +198,23 @@ public class ExportFacadeEjb implements ExportFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		
+
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setName(source.getName());
 		target.setUser(userService.getByReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
-		
+
 		return target;
 	}
-	
+
 	public static ExportConfigurationDto toExportConfigurationDto(ExportConfiguration source) {
+
 		if (source == null) {
 			return null;
 		}
-		
+
 		ExportConfigurationDto target = new ExportConfigurationDto();
 		DtoHelper.fillDto(target, source);
 
@@ -218,13 +222,13 @@ public class ExportFacadeEjb implements ExportFacade {
 		target.setUser(UserFacadeEjb.toReferenceDto(source.getUser()));
 		target.setExportType(source.getExportType());
 		target.setProperties(source.getProperties());
-		
+
 		return target;
 	}
 
 	@LocalBean
 	@Stateless
 	public static class ExportFacadeEjbLocal extends ExportFacadeEjb {
-	}
 
+	}
 }

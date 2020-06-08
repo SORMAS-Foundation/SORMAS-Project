@@ -13,7 +13,7 @@ public class ClinicalVisitExportDto implements Serializable {
 	private static final long serialVersionUID = -5724133522485897878L;
 
 	public static final String I18N_PREFIX = "ClinicalVisitExport";
-	
+
 	private String caseUuid;
 	private String caseName;
 	private Disease disease;
@@ -22,9 +22,17 @@ public class ClinicalVisitExportDto implements Serializable {
 	private String visitingPerson;
 	private long symptomsId;
 	private SymptomsDto symptoms;
-	
-	public ClinicalVisitExportDto(String caseUuid, String caseFirstName, String caseLastName, Disease disease,
-			Date visitDateTime, String visitRemarks, String visitingPerson, long symptomsId) {
+
+	public ClinicalVisitExportDto(
+		String caseUuid,
+		String caseFirstName,
+		String caseLastName,
+		Disease disease,
+		Date visitDateTime,
+		String visitRemarks,
+		String visitingPerson,
+		long symptomsId) {
+
 		this.caseUuid = caseUuid;
 		this.caseName = PersonDto.buildCaption(caseFirstName, caseLastName);
 		this.disease = disease;
@@ -104,5 +112,4 @@ public class ClinicalVisitExportDto implements Serializable {
 	public void setSymptomsId(long symptomsId) {
 		this.symptomsId = symptomsId;
 	}
-	
 }

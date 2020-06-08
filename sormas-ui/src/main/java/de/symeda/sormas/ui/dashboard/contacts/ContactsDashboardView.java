@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
@@ -102,8 +102,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		// add network diagram
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
 			networkDiagramComponent = Optional.of(FacadeProvider.getConfigFacade())
-					.map(ConfigFacade::getRScriptExecutable)
-					.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
+				.map(ConfigFacade::getRScriptExecutable)
+				.map(x -> new DashboardNetworkComponent(dashboardDataProvider));
 
 			networkDiagramRowLayout = createNetworkDiagramRowLayout();
 			rowsLayout.addComponent(networkDiagramRowLayout);
@@ -145,9 +145,11 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		CssStyles.style(caption, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
 		layout.addComponent(caption);
 
-		CssStyles.style(minLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_LARGE_ALT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_5, CssStyles.HSPACE_RIGHT_3);
+		CssStyles
+			.style(minLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_LARGE_ALT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_5, CssStyles.HSPACE_RIGHT_3);
 		layout.addComponent(minLabel);
-		CssStyles.style(maxLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_LARGE_ALT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_5, CssStyles.HSPACE_RIGHT_3);
+		CssStyles
+			.style(maxLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_LARGE_ALT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_5, CssStyles.HSPACE_RIGHT_3);
 		layout.addComponent(maxLabel);
 		CssStyles.style(avgLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_LARGE_ALT, CssStyles.LABEL_BOLD, CssStyles.VSPACE_5);
 		layout.addComponent(avgLabel);
@@ -230,7 +232,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 		noNetworkDiagramLayout = new HorizontalLayout();
 		noNetworkDiagramLayout.setMargin(true);
-		Label noDiagramLabel = new Label(VaadinIcons.CLUSTER.getHtml() + " " + I18nProperties.getString(Strings.infoNoNetworkDiagram), ContentMode.HTML);
+		Label noDiagramLabel =
+			new Label(VaadinIcons.CLUSTER.getHtml() + " " + I18nProperties.getString(Strings.infoNoNetworkDiagram), ContentMode.HTML);
 		noNetworkDiagramLayout.addComponent(noDiagramLabel);
 		layout.addComponent(noNetworkDiagramLayout);
 		layout.setComponentAlignment(noNetworkDiagramLayout, Alignment.MIDDLE_CENTER);
@@ -246,8 +249,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	protected VerticalLayout createEpiCurveLayout() {
 		if (epiCurveComponent == null) {
-			throw new UnsupportedOperationException(
-					"EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
+			throw new UnsupportedOperationException("EpiCurveComponent needs to be initialized before calling createEpiCurveLayout");
 		}
 
 		VerticalLayout layout = new VerticalLayout();
@@ -285,8 +287,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	protected Optional<VerticalLayout> createMapLayout() {
 		if (mapComponent == null) {
-			throw new UnsupportedOperationException(
-					"MapComponent needs to be initialized before calling createMapLayout");
+			throw new UnsupportedOperationException("MapComponent needs to be initialized before calling createMapLayout");
 		}
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
@@ -358,6 +359,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	}
 
 	public void refreshDashboard() {
+
 		super.refreshDashboard();
 
 		// Updates statistics
@@ -365,20 +367,19 @@ public class ContactsDashboardView extends AbstractDashboardView {
 		updateCaseCountsAndSourceCasesLabels();
 
 		// Update cases and contacts shown on the map
-		if (mapComponent != null)
+		if (mapComponent != null) {
 			mapComponent.refreshMap();
+		}
 
 		// Update cases and contacts shown on the map
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
-			networkDiagramComponent
-			.filter(c -> c.getParent().isVisible())
-			.ifPresent(DashboardNetworkComponent::refreshDiagram);
+			networkDiagramComponent.filter(c -> c.getParent().isVisible()).ifPresent(DashboardNetworkComponent::refreshDiagram);
 		}
 
 		// Epi curve chart has to be created again due to a canvas resizing issue when
 		// simply refreshing the component
-		if (epiCurveComponent != null)
+		if (epiCurveComponent != null) {
 			epiCurveComponent.clearAndFillEpiCurveChart();
+		}
 	}
-
 }

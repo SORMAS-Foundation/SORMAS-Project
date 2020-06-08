@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
@@ -35,22 +35,22 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "LocationFacade")
 public class LocationFacadeEjb implements LocationFacade {
-	
+
 	@EJB
 	private LocationService locationService;
-
 	@EJB
 	private RegionService regionService;
 	@EJB
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
-	
-	public Location fromDto(LocationDto source) {		
+
+	public Location fromDto(LocationDto source) {
+
 		if (source == null) {
 			return null;
 		}
-		
+
 		Location target = locationService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Location();
@@ -58,18 +58,18 @@ public class LocationFacadeEjb implements LocationFacade {
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
-		} 
+		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
-		
+
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
-		
+
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
@@ -78,36 +78,37 @@ public class LocationFacadeEjb implements LocationFacade {
 
 		return target;
 	}
-	
+
 	public static LocationDto toDto(Location source) {
-		
+
 		if (source == null) {
 			return null;
 		}
 
 		LocationDto target = new LocationDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
-		
+
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
-		
+
 		target.setLatitude(source.getLatitude());
 		target.setLongitude(source.getLongitude());
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
-		
+
 		target.setPostalCode(source.getPostalCode());
 
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class LocationFacadeEjbLocal extends LocationFacadeEjb {
+
 	}
 }

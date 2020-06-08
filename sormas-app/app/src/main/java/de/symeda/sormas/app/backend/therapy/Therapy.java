@@ -1,26 +1,23 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.therapy;
 
-import com.j256.ormlite.table.DatabaseTable;
-
 import javax.persistence.Entity;
+
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -30,14 +27,13 @@ import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 @EmbeddedAdo
 public class Therapy extends AbstractDomainObject {
 
-    private static final long serialVersionUID = -1467303502817738376L;
+	private static final long serialVersionUID = -1467303502817738376L;
 
-    public static final String TABLE_NAME = "therapy";
-    public static final String I18N_PREFIX = "Therapy";
+	public static final String TABLE_NAME = "therapy";
+	public static final String I18N_PREFIX = "Therapy";
 
-    @Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
-    }
-
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 }

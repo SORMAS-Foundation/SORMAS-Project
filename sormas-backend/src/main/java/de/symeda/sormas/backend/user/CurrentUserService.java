@@ -30,39 +30,37 @@ public class CurrentUserService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-    /**
-     * Returns the User entity corresponding to the current user.
-     *
-     * @return
-     */
-    @Produces
-    @CurrentUserQualifier
-    @RequestScoped
-    @Transactional
-    public CurrentUser getCurrentUser() {
-        final String userName = context.getCallerPrincipal().getName();
-        if (userName.equalsIgnoreCase("ANONYMOUS")) {
-            return new CurrentUser(null);
-        }
+	/**
+	 * Returns the User entity corresponding to the current user.
+	 *
+	 * @return
+	 */
+	@Produces
+	@CurrentUserQualifier
+	@RequestScoped
+	@Transactional
+	public CurrentUser getCurrentUser() {
 
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
-        final CriteriaQuery<User> cq = cb.createQuery(User.class);
-        final Root<User> from = cq.from(User.class);
-        cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
+		final String userName = context.getCallerPrincipal().getName();
+		if (userName.equalsIgnoreCase("ANONYMOUS")) {
+			return new CurrentUser(null);
+		}
 
-        final TypedQuery<User> q = em.createQuery(cq)
-                .setParameter(userNameParam, userName);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
+		final CriteriaQuery<User> cq = cb.createQuery(User.class);
+		final Root<User> from = cq.from(User.class);
+		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
 
-        final User user = q.getResultList().stream()
-                .findFirst()
-                .orElse(null);
+		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
 
-        if (user != null) {
-            user.getUserRoles().size();
-            return new CurrentUser(user);
-        } else {
-            return new CurrentUser(null);
-        }
-    }
+		final User user = q.getResultList().stream().findFirst().orElse(null);
+
+		if (user != null) {
+			user.getUserRoles().size();
+			return new CurrentUser(user);
+		} else {
+			return new CurrentUser(null);
+		}
+	}
 }

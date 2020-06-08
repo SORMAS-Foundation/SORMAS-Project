@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -41,7 +41,7 @@ public class UserRoleConfig extends AbstractDomainObject {
 	private static final long serialVersionUID = 9053095630718041842L;
 
 	public static final String TABLE_NAME = "userrolesconfig";
-	
+
 	public static final String USER_ROLE = "userRole";
 	public static final String USER_RIGHTS = "userRights";
 
@@ -60,8 +60,11 @@ public class UserRoleConfig extends AbstractDomainObject {
 
 	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
-	@CollectionTable(name = "userroles_userrights", joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRoleConfig.ID, nullable = false), uniqueConstraints = @UniqueConstraint(columnNames = {
-			"userrole_id", "userright" }))
+	@CollectionTable(name = "userroles_userrights",
+		joinColumns = @JoinColumn(name = "userrole_id", referencedColumnName = UserRoleConfig.ID, nullable = false),
+		uniqueConstraints = @UniqueConstraint(columnNames = {
+			"userrole_id",
+			"userright" }))
 	@Column(name = "userright", nullable = false)
 	public Set<UserRight> getUserRights() {
 		return userRights;

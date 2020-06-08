@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
@@ -49,40 +49,41 @@ public class SampleListEntry extends HorizontalLayout {
 	private Button editButton;
 
 	public SampleListEntry(SampleIndexDto sample) {
-		
+
 		this.sample = sample;
-		
+
 		setMargin(false);
 		setSpacing(true);
 		setWidth(100, Unit.PERCENTAGE);
 		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-		
+
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 		mainLayout.setMargin(false);
 		mainLayout.setSpacing(false);
 		addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1);
-		
+
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
 		mainLayout.addComponent(topLayout);
-		
+
 		VerticalLayout topLeftLayout = new VerticalLayout();
-		{		
+		{
 			topLeftLayout.setMargin(false);
 			topLeftLayout.setSpacing(false);
-		
+
 			Label materialLabel = new Label(DataHelper.toStringNullable(sample.getSampleMaterial()));
 			CssStyles.style(materialLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			topLeftLayout.addComponent(materialLabel);
-			
-			Label dateTimeLabel = new Label(I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME)
-					+ ": " + DateFormatHelper.formatDate(sample.getSampleDateTime()));
+
+			Label dateTimeLabel = new Label(
+				I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME) + ": "
+					+ DateFormatHelper.formatDate(sample.getSampleDateTime()));
 			topLeftLayout.addComponent(dateTimeLabel);
-			
+
 			if (sample.getSamplePurpose() == SamplePurpose.INTERNAL) {
 				Label purposeLabel = new Label(SamplePurpose.INTERNAL.toString());
 				topLeftLayout.addComponent(purposeLabel);
@@ -98,22 +99,22 @@ public class SampleListEntry extends HorizontalLayout {
 			topRightLayout.addStyleName(CssStyles.ALIGN_RIGHT);
 			topRightLayout.setMargin(false);
 			topRightLayout.setSpacing(false);
-			
+
 			Label resultLabel = new Label();
 			CssStyles.style(resultLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			if (sample.getPathogenTestResult() != null) {
 				resultLabel.setValue(DataHelper.toStringNullable(sample.getPathogenTestResult()));
 				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
 					resultLabel.addStyleName(CssStyles.LABEL_CRITICAL);
-				} else if (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE){
+				} else if (sample.getPathogenTestResult() == PathogenTestResultType.INDETERMINATE) {
 					resultLabel.addStyleName(CssStyles.LABEL_WARNING);
 				}
 			} else if (sample.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE) {
 				resultLabel.setValue(DataHelper.toStringNullable(sample.getSpecimenCondition()));
 				resultLabel.addStyleName(CssStyles.LABEL_WARNING);
-			} 
+			}
 			topRightLayout.addComponent(resultLabel);
-			
+
 			Label referredLabel = new Label();
 			CssStyles.style(referredLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
 			if (sample.isReferred()) {
@@ -121,9 +122,11 @@ public class SampleListEntry extends HorizontalLayout {
 				referredLabel.addStyleName(CssStyles.LABEL_NOT);
 			} else if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
 				if (sample.isReceived()) {
-					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateFormatHelper.formatDate(sample.getReceivedDate()));
+					referredLabel
+						.setValue(I18nProperties.getCaption(Captions.sampleReceived) + " " + DateFormatHelper.formatDate(sample.getReceivedDate()));
 				} else if (sample.isShipped()) {
-					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateFormatHelper.formatDate((sample.getShipmentDate())));
+					referredLabel
+						.setValue(I18nProperties.getCaption(Captions.sampleShipped) + " " + DateFormatHelper.formatDate((sample.getShipmentDate())));
 				} else {
 					referredLabel.setValue(I18nProperties.getCaption(Captions.sampleNotShippedLong));
 				}
@@ -133,16 +136,23 @@ public class SampleListEntry extends HorizontalLayout {
 		topLayout.addComponent(topRightLayout);
 		topLayout.setComponentAlignment(topRightLayout, Alignment.TOP_RIGHT);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW) && sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
-			Label labelAdditionalTests = new Label(I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
+			&& sample.getAdditionalTestingStatus() != AdditionalTestingStatus.NOT_REQUESTED) {
+			Label labelAdditionalTests = new Label(
+				I18nProperties.getString(Strings.entityAdditionalTests) + " " + sample.getAdditionalTestingStatus().toString().toLowerCase());
 			mainLayout.addComponent(labelAdditionalTests);
 		}
 	}
 
 	public void addEditListener(int rowIndex, ClickListener editClickListener) {
 		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption("edit-sample-" + rowIndex, null, VaadinIcons.PENCIL, null,
-					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			editButton = ButtonHelper.createIconButtonWithCaption(
+				"edit-sample-" + rowIndex,
+				null,
+				VaadinIcons.PENCIL,
+				null,
+				ValoTheme.BUTTON_LINK,
+				CssStyles.BUTTON_COMPACT);
 
 			addComponent(editButton);
 			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);

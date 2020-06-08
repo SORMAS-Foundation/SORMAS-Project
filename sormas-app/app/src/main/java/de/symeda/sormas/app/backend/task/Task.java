@@ -1,26 +1,19 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.task;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
@@ -28,6 +21,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskPriority;
@@ -39,12 +36,11 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.util.DataUtils;
 
-@Entity(name= Task.TABLE_NAME)
+@Entity(name = Task.TABLE_NAME)
 @DatabaseTable(tableName = Task.TABLE_NAME)
 public class Task extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = -2666695184163562129L;
 
 	public static final String TABLE_NAME = "tasks";
@@ -102,13 +98,13 @@ public class Task extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User creatorUser;
 
-	@Column(length=512)
+	@Column(length = 512)
 	private String creatorComment;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User assigneeUser;
 
-	@Column(length=512)
+	@Column(length = 512)
 	private String assigneeReply;
 
 	@DatabaseField
@@ -121,6 +117,7 @@ public class Task extends AbstractDomainObject {
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}
+
 	public void setTaskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
 	}
@@ -128,22 +125,23 @@ public class Task extends AbstractDomainObject {
 	public AbstractDomainObject getAssociatedLink() {
 		switch (getTaskContext()) {
 
-			case CASE:
-				return getCaze();
-			case CONTACT:
-				return getContact();
-			case EVENT:
-				return getEvent();
-			case GENERAL:
-				return null;
-			default:
-				throw new IndexOutOfBoundsException(DataHelper.toStringNullable(getTaskContext()));
+		case CASE:
+			return getCaze();
+		case CONTACT:
+			return getContact();
+		case EVENT:
+			return getEvent();
+		case GENERAL:
+			return null;
+		default:
+			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(getTaskContext()));
 		}
 	}
 
 	public Case getCaze() {
 		return caze;
 	}
+
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
@@ -151,6 +149,7 @@ public class Task extends AbstractDomainObject {
 	public Contact getContact() {
 		return contact;
 	}
+
 	public void setContact(Contact contact) {
 		this.contact = contact;
 	}
@@ -158,6 +157,7 @@ public class Task extends AbstractDomainObject {
 	public Event getEvent() {
 		return event;
 	}
+
 	public void setEvent(Event event) {
 		this.event = event;
 	}
@@ -165,6 +165,7 @@ public class Task extends AbstractDomainObject {
 	public TaskType getTaskType() {
 		return taskType;
 	}
+
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
 	}
@@ -172,6 +173,7 @@ public class Task extends AbstractDomainObject {
 	public Date getDueDate() {
 		return dueDate;
 	}
+
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
@@ -179,6 +181,7 @@ public class Task extends AbstractDomainObject {
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
 	}
+
 	public void setTaskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
 	}
@@ -186,6 +189,7 @@ public class Task extends AbstractDomainObject {
 	public Date getStatusChangeDate() {
 		return statusChangeDate;
 	}
+
 	public void setStatusChangeDate(Date statusChangeDate) {
 		this.statusChangeDate = statusChangeDate;
 	}
@@ -193,6 +197,7 @@ public class Task extends AbstractDomainObject {
 	public Date getPerceivedStart() {
 		return perceivedStart;
 	}
+
 	public void setPerceivedStart(Date perceivedStart) {
 		this.perceivedStart = perceivedStart;
 	}
@@ -200,6 +205,7 @@ public class Task extends AbstractDomainObject {
 	public User getCreatorUser() {
 		return creatorUser;
 	}
+
 	public void setCreatorUser(User creatorUser) {
 		this.creatorUser = creatorUser;
 	}
@@ -207,6 +213,7 @@ public class Task extends AbstractDomainObject {
 	public String getCreatorComment() {
 		return creatorComment;
 	}
+
 	public void setCreatorComment(String creatorComment) {
 		this.creatorComment = creatorComment;
 	}
@@ -214,6 +221,7 @@ public class Task extends AbstractDomainObject {
 	public User getAssigneeUser() {
 		return assigneeUser;
 	}
+
 	public void setAssigneeUser(User assigneeUser) {
 		this.assigneeUser = assigneeUser;
 	}
@@ -221,6 +229,7 @@ public class Task extends AbstractDomainObject {
 	public String getAssigneeReply() {
 		return assigneeReply;
 	}
+
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
 	}
@@ -228,6 +237,7 @@ public class Task extends AbstractDomainObject {
 	public TaskPriority getPriority() {
 		return priority;
 	}
+
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
@@ -235,6 +245,7 @@ public class Task extends AbstractDomainObject {
 	public Date getSuggestedStart() {
 		return suggestedStart;
 	}
+
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
 	}

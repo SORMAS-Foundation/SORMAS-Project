@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -37,7 +37,7 @@ public class ContactDto extends EntityDto {
 	private static final long serialVersionUID = -7764607075875188799L;
 
 	public static final String I18N_PREFIX = "Contact";
-	
+
 	public static final String PERSON = "person";
 	public static final String CAZE = "caze";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -117,7 +117,7 @@ public class ContactDto extends EntityDto {
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private String externalID;
-	
+
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
@@ -153,11 +153,11 @@ public class ContactDto extends EntityDto {
 	public static ContactDto build() {
 		return build(null, null, null);
 	}
-	
+
 	public static ContactDto build(CaseDataDto caze) {
 		return build(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
 	}
-	
+
 	public static ContactDto build(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		ContactDto contact = new ContactDto();
 		contact.setUuid(DataHelper.createUuid());
@@ -171,144 +171,185 @@ public class ContactDto extends EntityDto {
 
 		return contact;
 	}
-	
+
 	public void assignCase(CaseDataDto caze) {
 		assignCase(caze.toReference(), caze.getDisease(), caze.getDiseaseDetails());
 	}
-	
+
 	public void assignCase(CaseReferenceDto caze, Disease disease, String diseaseDetails) {
 		setCaze(caze);
 		setDisease(disease);
 		setDiseaseDetails(diseaseDetails);
 	}
-	
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
+
 	public void setPerson(PersonReferenceDto person) {
 		this.person = person;
 	}
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}
+
 	public void setCaze(CaseReferenceDto caze) {
 		this.caze = caze;
 	}
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
+
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
+
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
+
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
 	}
+
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
+
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public UserReferenceDto getContactOfficer() {
 		return contactOfficer;
 	}
+
 	public void setContactOfficer(UserReferenceDto contactOfficer) {
 		this.contactOfficer = contactOfficer;
 	}
+
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
+
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
 		this.followUpStatus = followUpStatus;
 	}
+
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
+
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}
+
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
+
 	public void setContactStatus(ContactStatus contactStatus) {
 		this.contactStatus = contactStatus;
 	}
+
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
+
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
+
 	public ContactRelation getRelationToCase() {
 		return relationToCase;
 	}
+
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
+
 	public String getRelationDescription() {
 		return relationDescription;
 	}
+
 	public void setRelationDescription(String relationDescription) {
 		this.relationDescription = relationDescription;
 	}
+
 	public CaseReferenceDto getResultingCase() {
 		return resultingCase;
 	}
+
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
 	}
+
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
+
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
+
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
+
 	public void setFollowUpComment(String followUpComment) {
 		this.followUpComment = followUpComment;
 	}
+
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
+
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
-	
+
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(getUuid());
 	}
+
 	public UserReferenceDto getResultingCaseUser() {
 		return resultingCaseUser;
 	}
+
 	public void setResultingCaseUser(UserReferenceDto resultingCaseUser) {
 		this.resultingCaseUser = resultingCaseUser;
 	}
+
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
@@ -376,7 +417,7 @@ public class ContactDto extends EntityDto {
 	public void setCareForPeopleOver60(YesNoUnknown careForPeopleOver60) {
 		this.careForPeopleOver60 = careForPeopleOver60;
 	}
-	
+
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
@@ -424,7 +465,7 @@ public class ContactDto extends EntityDto {
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
-	
+
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
 	}
@@ -512,7 +553,7 @@ public class ContactDto extends EntityDto {
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
-	
+
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

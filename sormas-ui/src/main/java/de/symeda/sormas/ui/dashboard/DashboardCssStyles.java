@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
@@ -26,5 +26,4 @@ public final class DashboardCssStyles {
 	public static final String CURVE_AND_MAP_LAYOUT = "curve-and-map-layout";
 	public static final String DASHBOARD_SCREEN = "dashboard-screen";
 	public static final String HIGHLIGHTED_STATISTICS_COMPONENT = "highlighted-statistics-component";
-	
 }

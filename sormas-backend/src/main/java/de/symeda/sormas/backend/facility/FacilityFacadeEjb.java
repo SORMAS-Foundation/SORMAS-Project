@@ -9,15 +9,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -80,29 +86,30 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacilities) {
+
 		Community community = communityService.getByUuid(communityRef.getUuid());
 		List<Facility> facilities = facilityService.getActiveHealthFacilitiesByCommunity(community, includeStaticFacilities);
-
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<FacilityReferenceDto> getActiveHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeStaticFacilities) {
+
 		District district = districtService.getByUuid(districtRef.getUuid());
 		List<Facility> facilities = facilityService.getActiveHealthFacilitiesByDistrict(district, includeStaticFacilities);
-
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory) {
-		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherLaboratory);
 
+		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherLaboratory);
 		return laboratories.stream().map(l -> toReferenceDto(l)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<String> getAllUuids() {
+
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
@@ -112,6 +119,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FacilityDto> cq = cb.createQuery(FacilityDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
@@ -134,6 +142,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityDto> getAllWithoutRegionAfter(Date date) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FacilityDto> cq = cb.createQuery(FacilityDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
@@ -154,15 +163,29 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	// Need to be in the same order as in the constructor
 	private void selectDtoFields(CriteriaQuery<FacilityDto> cq, Root<Facility> root) {
+
 		Join<Facility, Community> community = root.join(Facility.COMMUNITY, JoinType.LEFT);
 		Join<Facility, District> district = root.join(Facility.DISTRICT, JoinType.LEFT);
 		Join<Facility, Region> region = root.join(Facility.REGION, JoinType.LEFT);
 
-		cq.multiselect(root.get(Facility.CREATION_DATE), root.get(Facility.CHANGE_DATE), root.get(Facility.UUID), root.get(Facility.ARCHIVED),
-				root.get(Facility.NAME), region.get(Region.UUID), region.get(Region.NAME), district.get(District.UUID),
-				district.get(District.NAME), community.get(Community.UUID), community.get(Community.NAME),
-				root.get(Facility.CITY), root.get(Facility.LATITUDE), root.get(Facility.LONGITUDE),
-				root.get(Facility.TYPE), root.get(Facility.PUBLIC_OWNERSHIP), root.get(Facility.EXTERNAL_ID));
+		cq.multiselect(
+			root.get(Facility.CREATION_DATE),
+			root.get(Facility.CHANGE_DATE),
+			root.get(Facility.UUID),
+			root.get(Facility.ARCHIVED),
+			root.get(Facility.NAME),
+			region.get(Region.UUID),
+			region.get(Region.NAME),
+			district.get(District.UUID),
+			district.get(District.NAME),
+			community.get(Community.UUID),
+			community.get(Community.NAME),
+			root.get(Facility.CITY),
+			root.get(Facility.LATITUDE),
+			root.get(Facility.LONGITUDE),
+			root.get(Facility.TYPE),
+			root.get(Facility.PUBLIC_OWNERSHIP),
+			root.get(Facility.EXTERNAL_ID));
 	}
 
 	@Override
@@ -187,6 +210,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities) {
+
 		if (facilities.isEmpty()) {
 			return new HashMap<>();
 		}
@@ -205,6 +229,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities) {
+
 		if (facilities.isEmpty()) {
 			return new HashMap<>();
 		}
@@ -215,9 +240,8 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Join<Facility, Community> communityJoin = root.join(Facility.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = cb.and(
-				cb.isNotNull(root.get(Facility.COMMUNITY)),
-				root.get(Facility.UUID).in(facilities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()))
-		);
+			cb.isNotNull(root.get(Facility.COMMUNITY)),
+			root.get(Facility.UUID).in(facilities.stream().map(ReferenceDto::getUuid).collect(Collectors.toList())));
 		cq.where(filter);
 		cq.multiselect(root.get(Facility.UUID), communityJoin.get(Community.UUID));
 
@@ -225,22 +249,31 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef,
-												CommunityReferenceDto communityRef, boolean includeArchivedEntities) {
+	public List<FacilityReferenceDto> getByName(
+		String name,
+		DistrictReferenceDto districtRef,
+		CommunityReferenceDto communityRef,
+		boolean includeArchivedEntities) {
+
 		return facilityService
-				.getHealthFacilitiesByName(name, districtService.getByReferenceDto(districtRef),
-						communityService.getByReferenceDto(communityRef), includeArchivedEntities)
-				.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+			.getHealthFacilitiesByName(
+				name,
+				districtService.getByReferenceDto(districtRef),
+				communityService.getByReferenceDto(communityRef),
+				includeArchivedEntities)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
-		return facilityService.getLaboratoriesByName(name, includeArchivedEntities).stream().map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
+		return facilityService.getLaboratoriesByName(name, includeArchivedEntities).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public void archive(String facilityUuid) {
+
 		Facility facility = facilityService.getByUuid(facilityUuid);
 		facility.setArchived(true);
 		facilityService.ensurePersisted(facility);
@@ -248,6 +281,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public void dearchive(String facilityUuid) {
+
 		Facility facility = facilityService.getByUuid(facilityUuid);
 		facility.setArchived(false);
 		facilityService.ensurePersisted(facility);
@@ -255,6 +289,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Facility> root = cq.from(Facility.class);
@@ -263,15 +298,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Join<Facility, Region> regionJoin = root.join(Facility.REGION);
 
 		cq.where(
-				cb.and(
-						cb.or(
-								cb.isTrue(communityJoin.get(Community.ARCHIVED)),
-								cb.isTrue(districtJoin.get(District.ARCHIVED)),
-								cb.isTrue(regionJoin.get(Region.ARCHIVED))
-						),
-						root.get(Facility.UUID).in(facilityUuids)
-				)
-		);
+			cb.and(
+				cb.or(
+					cb.isTrue(communityJoin.get(Community.ARCHIVED)),
+					cb.isTrue(districtJoin.get(District.ARCHIVED)),
+					cb.isTrue(regionJoin.get(Region.ARCHIVED))),
+				root.get(Facility.UUID).in(facilityUuids)));
 
 		cq.select(root.get(Facility.ID));
 
@@ -279,17 +311,21 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	public static FacilityReferenceDto toReferenceDto(Facility entity) {
+
 		if (entity == null) {
 			return null;
 		}
+
 		FacilityReferenceDto dto = new FacilityReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 
 	private FacilityDto toDto(Facility entity) {
+
 		if (entity == null) {
 			return null;
 		}
+
 		FacilityDto dto = new FacilityDto();
 		DtoHelper.fillDto(dto, entity);
 
@@ -311,11 +347,12 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@LocalBean
 	@Stateless
 	public static class FacilityFacadeEjbLocal extends FacilityFacadeEjb {
+
 	}
 
 	@Override
-	public List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max,
-										  List<SortProperty> sortProperties) {
+	public List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(Facility.class);
 		Root<Facility> facility = cq.from(Facility.class);
@@ -324,9 +361,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Join<Facility, Community> community = facility.join(Facility.COMMUNITY, JoinType.LEFT);
 
 		Predicate filter = facilityService.buildCriteriaFilter(facilityCriteria, cb, facility);
-		Predicate excludeFilter = cb.and(cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-				cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
-				cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+		Predicate excludeFilter = cb.and(
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
 		if (filter != null) {
 			filter = AbstractAdoService.and(cb, filter, excludeFilter);
 		} else {
@@ -342,37 +380,46 @@ public class FacilityFacadeEjb implements FacilityFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-					case Facility.NAME:
-					case Facility.CITY:
-					case Facility.LATITUDE:
-					case Facility.LONGITUDE:
-					case Facility.EXTERNAL_ID:
-						expression = facility.get(sortProperty.propertyName);
-						break;
-					case Facility.REGION:
-						expression = region.get(Region.NAME);
-						break;
-					case Facility.DISTRICT:
-						expression = district.get(District.NAME);
-						break;
-					case Facility.COMMUNITY:
-						expression = community.get(Community.NAME);
-						break;
-					default:
-						throw new IllegalArgumentException(sortProperty.propertyName);
+				case Facility.NAME:
+				case Facility.CITY:
+				case Facility.LATITUDE:
+				case Facility.LONGITUDE:
+				case Facility.EXTERNAL_ID:
+					expression = facility.get(sortProperty.propertyName);
+					break;
+				case Facility.REGION:
+					expression = region.get(Region.NAME);
+					break;
+				case Facility.DISTRICT:
+					expression = district.get(District.NAME);
+					break;
+				case Facility.COMMUNITY:
+					expression = community.get(Community.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.asc(region.get(Region.NAME)), cb.asc(district.get(District.NAME)),
-					cb.asc(community.get(Community.NAME)), cb.asc(facility.get(Facility.NAME)));
+			cq.orderBy(
+				cb.asc(region.get(Region.NAME)),
+				cb.asc(district.get(District.NAME)),
+				cb.asc(community.get(Community.NAME)),
+				cb.asc(facility.get(Facility.NAME)));
 		}
 
 		cq.select(facility);
 
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
+			return em.createQuery(cq)
+				.setFirstResult(first)
+				.setMaxResults(max)
+				.getResultList()
+				.stream()
+				.map(f -> toDto(f))
+				.collect(Collectors.toList());
 		} else {
 			return em.createQuery(cq).getResultList().stream().map(f -> toDto(f)).collect(Collectors.toList());
 		}
@@ -380,14 +427,16 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public long count(FacilityCriteria criteria) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Facility> root = cq.from(Facility.class);
 
 		Predicate filter = facilityService.buildCriteriaFilter(criteria, cb, root);
-		Predicate excludeFilter = cb.and(cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-				cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
-				cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+		Predicate excludeFilter = cb.and(
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
 		if (filter != null) {
 			filter = AbstractAdoService.and(cb, filter, excludeFilter);
 		} else {
@@ -404,6 +453,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
+
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
 		if (facility == null) {
@@ -428,6 +478,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	private Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target) {
+
 		if (target == null) {
 			target = new Facility();
 			target.setUuid(source.getUuid());
@@ -451,5 +502,4 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 		return target;
 	}
-
 }

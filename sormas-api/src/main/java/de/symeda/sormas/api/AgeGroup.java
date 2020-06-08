@@ -25,12 +25,13 @@ public enum AgeGroup {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public static AgeGroup getAgeGroupFromIntegerRange(IntegerRange range) {
+
 		if (range.getFrom() == 80 && range.getTo() == null) {
 			return AGE_80_PLUS;
 		}
-		
+
 		try {
 			return AgeGroup.valueOf("AGE_" + range.getFrom() + "_" + range.getTo());
 		} catch (IllegalArgumentException e) {
@@ -39,17 +40,17 @@ public enum AgeGroup {
 	}
 
 	public IntegerRange toIntegerRange() {
+
 		if (this == AGE_80_PLUS) {
 			return new IntegerRange(80, null);
 		}
-		
+
 		try {
 			return new IntegerRange(
-					Integer.valueOf(this.name().substring(this.name().indexOf("_") + 1, this.name().lastIndexOf("_"))), 
-					Integer.valueOf(this.name().substring(this.name().lastIndexOf("_") + 1, this.name().length())));
+				Integer.valueOf(this.name().substring(this.name().indexOf("_") + 1, this.name().lastIndexOf("_"))),
+				Integer.valueOf(this.name().substring(this.name().lastIndexOf("_") + 1, this.name().length())));
 		} catch (NumberFormatException e) {
 			return null;
 		}
 	}
-	
 }

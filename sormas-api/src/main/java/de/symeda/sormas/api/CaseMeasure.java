@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -28,9 +28,8 @@ public enum CaseMeasure {
 	/**
 	 * Number of cases per DistrictDto.CASE_INCIDENCE_DIVISOR; rounded to two decimal places with rounding mode half up
 	 */
-	CASE_INCIDENCE
-	;	
-	
+	CASE_INCIDENCE;
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	};

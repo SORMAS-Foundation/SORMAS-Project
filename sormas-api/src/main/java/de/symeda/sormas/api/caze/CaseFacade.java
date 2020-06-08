@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
@@ -47,80 +47,92 @@ public interface CaseFacade {
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
 
 	long count(CaseCriteria caseCriteria);
-	
+
 	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseIndexDetailedDto> getIndexDetailedList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<CaseExportDto> getExportList(CaseCriteria caseCriteria, CaseExportType exportType, int first, int max, ExportConfigurationDto exportConfiguration, Language userLanguage);
-	
+	List<CaseExportDto> getExportList(
+		CaseCriteria caseCriteria,
+		CaseExportType exportType,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration,
+		Language userLanguage);
+
 	CaseDataDto getCaseDataByUuid(String uuid);
-    
-    CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
+
+	CaseDataDto saveCase(CaseDataDto dto) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
-    void validate(CaseDataDto dto) throws ValidationRuntimeException;
+	void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
 	CaseReferenceDto getReferenceByUuid(String uuid);
-	
+
 	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getByUuids(List<String> uuids);
-	
+
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm);
-	
+
 	List<DashboardCaseDto> getCasesForDashboard(CaseCriteria caseCriteria);
 
 	List<MapCaseDto> getCasesForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
-	
-	Map<CaseClassification, Long> getCaseCountPerClassification(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-	
-	Map<PresentCondition, Long> getCaseCountPerPersonCondition(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-	
+
+	Map<CaseClassification, Long> getCaseCountPerClassification(
+		CaseCriteria caseCriteria,
+		boolean excludeSharedCases,
+		boolean excludeCasesFromContacts);
+
+	Map<PresentCondition, Long> getCaseCountPerPersonCondition(
+		CaseCriteria caseCriteria,
+		boolean excludeSharedCases,
+		boolean excludeCasesFromContacts);
+
 	Map<Disease, Long> getCaseCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-	
+
 	String getLastReportedDistrictName(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
-	
+
 	List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date onsetFromDate, Date onsetToDate, Disease disease, CaseMeasure caseMeasure);
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
-	
+
 	void deleteCase(String caseUuid);
-	
+
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
-	
+
 	Date getOldestCaseOnsetDate();
-	
+
 	Date getOldestCaseReportDate();
-	
+
 	boolean isArchived(String caseUuid);
-	
+
 	boolean isDeleted(String caseUuid);
-	
+
 	void archiveOrDearchiveCase(String caseUuid, boolean archive);
-	
+
 	List<String> getArchivedUuidsSince(Date since);
-	
+
 	List<String> getDeletedUuidsSince(Date since);
-	
+
 	boolean doesEpidNumberExist(String epidNumber, String caseUuid, Disease disease);
-	
+
 	String generateEpidNumber(CaseReferenceDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
-	
+
 	List<CaseIndexDto> getSimilarCases(CaseSimilarityCriteria criteria);
-	
+
 	List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean showDuplicatesWithDifferentRegion);
-	
+
 	void updateCompleteness(String caseUuid);
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
-	
+
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
-	
+
 	Boolean isCaseEditAllowed(String caseUuid);
 }

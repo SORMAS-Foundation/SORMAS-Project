@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
@@ -73,84 +73,83 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private CaseService caseService;
 	@EJB
 	private UserService userService;
-	
+
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
+
 		User user = userService.getCurrentUser();
 		Event event = eventService.getByUuid(eventUuid);
-		
-		if(user == null) {
+
+		if (user == null) {
 			return Collections.emptyList();
 		}
-		
-		if(event == null) {
+
+		if (event == null) {
 			return Collections.emptyList();
 		}
-		
-		return eventParticipantService.getAllByEventAfter(date, event).stream()
-				.map(e -> toDto(e))
-				.collect(Collectors.toList());
+
+		return eventParticipantService.getAllByEventAfter(date, event).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<String> getAllActiveUuids() {
 		User user = userService.getCurrentUser();
-		
+
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return eventParticipantService.getAllActiveUuids(user);
-	}	
-	
+	}
+
 	@Override
 	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
-		
+
 		User user = userService.getCurrentUser();
-		
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream()
-			.map(c -> toDto(c))
-			.collect(Collectors.toList());
+
+		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
-		
+
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-		return eventParticipantService.getByUuids(uuids)
-				.stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		return eventParticipantService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
 		return toDto(eventParticipantService.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
+
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
-		
 		return toDto(entity);
 	}
-	
+
 	@Override
 	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
+
 		User user = userService.getCurrentUser();
 		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
 			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
 		}
-		
+
 		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantRef);
 		eventParticipantService.delete(eventParticipant);
 	}
-	
+
 	@Override
-	public List<EventParticipantIndexDto> getIndexList(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<EventParticipantIndexDto> getIndexList(
+		EventParticipantCriteria eventParticipantCriteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+
 		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of an event is not possible
 		}
@@ -158,22 +157,23 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
-		
+
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
-		
-		cq.multiselect(eventParticipant.get(EventParticipant.UUID),
-				person.get(Person.UUID),
-				resultingCase.get(Case.UUID),
-				event.get(Event.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				person.get(Person.SEX),
-				person.get(Person.APPROXIMATE_AGE),
-				person.get(Person.APPROXIMATE_AGE_TYPE),
-				eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION));
-				
+
+		cq.multiselect(
+			eventParticipant.get(EventParticipant.UUID),
+			person.get(Person.UUID),
+			resultingCase.get(Case.UUID),
+			event.get(Event.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			person.get(Person.SEX),
+			person.get(Person.APPROXIMATE_AGE),
+			person.get(Person.APPROXIMATE_AGE_TYPE),
+			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION));
+
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);
 
@@ -201,8 +201,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = resultingCase.get(Case.UUID);
 					break;
-					default:
-						throw new IllegalArgumentException(sortProperty.propertyName);
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -217,13 +217,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return em.createQuery(cq).getResultList();
 		}
 	}
-	
+
 	@Override
 	public long count(EventParticipantCriteria eventParticipantCriteria) {
 		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
 			return 0L; // Retrieving a count independent of an event is not possible
 		}
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
@@ -232,9 +232,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
-	
+
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
-		
+
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new EventParticipant();
@@ -244,7 +244,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			}
 		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
@@ -252,23 +252,25 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		return target;
 	}
-	
+
 	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
-		if(entity == null) {
+
+		if (entity == null) {
 			return null;
 		}
-		
+
 		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
-	
+
 	public static EventParticipantDto toDto(EventParticipant source) {
-		if(source == null) {
+
+		if (source == null) {
 			return null;
 		}
 		EventParticipantDto target = new EventParticipantDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
@@ -280,5 +282,6 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@LocalBean
 	@Stateless
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
-	}	
+
+	}
 }

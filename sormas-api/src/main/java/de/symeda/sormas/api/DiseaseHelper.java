@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -35,8 +35,9 @@ public final class DiseaseHelper {
 		if (symptoms.getFever() == SymptomState.YES) {
 			if (symptoms.getPainfulLymphadenitis() == SymptomState.YES) {
 				return PlagueType.BUBONIC;
-			} else if (symptoms.getCough() == SymptomState.YES || symptoms.getChestPain() == SymptomState.YES ||
-					symptoms.getCoughingBlood() == SymptomState.YES) {
+			} else if (symptoms.getCough() == SymptomState.YES
+				|| symptoms.getChestPain() == SymptomState.YES
+				|| symptoms.getCoughingBlood() == SymptomState.YES) {
 				return PlagueType.PNEUMONIC;
 			} else if (symptoms.getChillsSweats() == SymptomState.YES) {
 				return PlagueType.SEPTICAEMIC;
@@ -52,8 +53,7 @@ public final class DiseaseHelper {
 		if (disease == null) {
 			return "";
 		}
-		
+
 		return disease != Disease.OTHER ? disease.toShortString() : DataHelper.toStringNullable(diseaseDetails);
 	}
-	
 }

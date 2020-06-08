@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -41,21 +41,20 @@ public enum PathogenTestType {
 	CQ_VALUE_DETECTION,
 	SEQUENCING,
 	OTHER;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public static String toString(PathogenTestType value, String details) {
 		if (value == null) {
 			return "";
 		}
-		
+
 		if (value == PathogenTestType.OTHER) {
 			return DataHelper.toStringNullable(details);
 		}
-		
+
 		return value.toString();
-	}	
-	
+	}
 }

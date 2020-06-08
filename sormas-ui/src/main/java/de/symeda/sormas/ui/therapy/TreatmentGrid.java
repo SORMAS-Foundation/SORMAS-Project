@@ -25,9 +25,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCriteria> {
 
 	private static final String EDIT_BTN_ID = "edit";
-	
+
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
-	
+
 	public TreatmentGrid() {
 		setSizeFull();
 
@@ -39,27 +39,32 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 
 		BeanItemContainer<TreatmentIndexDto> container = new BeanItemContainer<>(TreatmentIndexDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
-        VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
+		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
 		setContainerDataSource(generatedContainer);
-		
-		setColumns(EDIT_BTN_ID, TreatmentIndexDto.TREATMENT_TYPE, TreatmentIndexDto.TREATMENT_DATE_TIME,
-				TreatmentIndexDto.DOSE, TreatmentIndexDto.ROUTE, TreatmentIndexDto.EXECUTING_CLINICIAN);
+
+		setColumns(
+			EDIT_BTN_ID,
+			TreatmentIndexDto.TREATMENT_TYPE,
+			TreatmentIndexDto.TREATMENT_DATE_TIME,
+			TreatmentIndexDto.DOSE,
+			TreatmentIndexDto.ROUTE,
+			TreatmentIndexDto.EXECUTING_CLINICIAN);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		getColumn(TreatmentIndexDto.TREATMENT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		
+
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					TreatmentIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+			column.setHeaderCaption(
+				I18nProperties.getPrefixCaption(TreatmentIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		addItemClickListener(e -> {
 			if (e.getPropertyId() == null) {
 				return;
 			}
-			
+
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
 				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload);
 			}
@@ -71,26 +76,25 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
 		return (BeanItemContainer<TreatmentIndexDto>) container.getWrappedContainer();
 	}
-	
+
 	public void reload() {
 		if (getSelectionModel() instanceof HasUserSelectionAllowed) {
 			deselectAll();
 		}
 
 		List<TreatmentIndexDto> entries = FacadeProvider.getTreatmentFacade().getIndexList(treatmentCriteria);
-		
+
 		getContainer().removeAllItems();
 		getContainer().addAll(entries);
 	}
-	
+
 	@Override
 	public void setCriteria(TreatmentCriteria treatmentCriteria) {
 		this.treatmentCriteria = treatmentCriteria;
 	}
-	
+
 	@Override
 	public TreatmentCriteria getCriteria() {
 		return treatmentCriteria;
-	}	
-	
+	}
 }

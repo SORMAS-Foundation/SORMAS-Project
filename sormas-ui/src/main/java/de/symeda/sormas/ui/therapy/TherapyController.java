@@ -25,7 +25,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TherapyController {
@@ -37,10 +36,11 @@ public class TherapyController {
 	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
 		PrescriptionForm form = new PrescriptionForm(true, false);
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
-		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<PrescriptionForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -60,12 +60,13 @@ public class TherapyController {
 		PrescriptionForm form = new PrescriptionForm(false, readOnly);
 		form.setValue(prescription);
 
-		final CommitDiscardWrapperComponent<PrescriptionForm> view = new CommitDiscardWrapperComponent<>(form,
-				UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT), form.getFieldGroup());
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(
-				readOnly? Strings.entityPrescription : Strings.headingEditPrescription));
+		final CommitDiscardWrapperComponent<PrescriptionForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_EDIT), form.getFieldGroup());
+		Window popupWindow = VaadinUiUtil
+			.showModalPopupWindow(view, I18nProperties.getString(readOnly ? Strings.entityPrescription : Strings.headingEditPrescription));
 
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -80,15 +81,11 @@ public class TherapyController {
 			}
 		});
 
-		view.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		view.addDiscardListener(() -> popupWindow.close());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_DELETE)) {
 			view.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
@@ -108,10 +105,11 @@ public class TherapyController {
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true);
 		form.setValue(TreatmentDto.build(therapy));
-		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TreatmentForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -129,10 +127,11 @@ public class TherapyController {
 	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
 		TreatmentForm form = new TreatmentForm(true);
 		form.setValue(TreatmentDto.build(prescription));
-		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TreatmentForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
 
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -152,11 +151,12 @@ public class TherapyController {
 		TreatmentForm form = new TreatmentForm(false);
 		form.setValue(treatment);
 
-		final CommitDiscardWrapperComponent<TreatmentForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<TreatmentForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_EDIT), form.getFieldGroup());
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditTreatment));
 
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -169,15 +169,11 @@ public class TherapyController {
 			}
 		});
 
-		view.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		view.addDiscardListener(() -> popupWindow.close());
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_DELETE)) {
 			view.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					FacadeProvider.getTreatmentFacade().deleteTreatment(treatment.getUuid());
@@ -199,39 +195,56 @@ public class TherapyController {
 
 	public void deleteAllSelectedPrescriptions(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoPrescriptionsSelected),
-					I18nProperties.getString(Strings.messageNoPrescriptionsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoPrescriptionsSelected),
+				I18nProperties.getString(Strings.messageNoPrescriptionsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeletePrescriptions), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid());
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeletePrescriptions), selectedRows.size()),
+				new Runnable() {
+
+					public void run() {
+						for (Object selectedRow : selectedRows) {
+							FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid());
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingPrescriptionsDeleted),
+							I18nProperties.getString(Strings.messagePrescriptionsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingPrescriptionsDeleted),
-							I18nProperties.getString(Strings.messagePrescriptionsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
-
 
 	public void deleteAllSelectedTreatments(Collection<Object> selectedRows, Runnable callback) {
+
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoTreatmentsSelected),
-					I18nProperties.getString(Strings.messageNoTreatmentsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTreatmentsSelected),
+				I18nProperties.getString(Strings.messageNoTreatmentsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTreatments), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getTreatmentFacade().deleteTreatment(((TreatmentIndexDto) selectedRow).getUuid());
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteTreatments), selectedRows.size()),
+				new Runnable() {
+
+					public void run() {
+						for (Object selectedRow : selectedRows) {
+							FacadeProvider.getTreatmentFacade().deleteTreatment(((TreatmentIndexDto) selectedRow).getUuid());
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingTreatmentsDeleted),
+							I18nProperties.getString(Strings.messageTreatmentsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingTreatmentsDeleted),
-							I18nProperties.getString(Strings.messageTreatmentsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
-
 }

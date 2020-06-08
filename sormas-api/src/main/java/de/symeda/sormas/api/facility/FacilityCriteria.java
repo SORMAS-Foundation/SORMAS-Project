@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
@@ -36,7 +36,7 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 	private String nameCityLike;
 	private FacilityType type;
 	private EntityRelevanceStatus relevanceStatus;
-	
+
 	public FacilityCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
@@ -73,12 +73,12 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 	public FacilityType getType() {
 		return type;
 	}
-	
+
 	public FacilityCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
@@ -88,7 +88,7 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 	public String getNameCityLike() {
 		return nameCityLike;
 	}
-	
+
 	public FacilityCriteria nameCityLike(String nameCityLike) {
 		this.nameCityLike = nameCityLike;
 		return this;

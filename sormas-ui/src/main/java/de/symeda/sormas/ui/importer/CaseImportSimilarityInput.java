@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.importer;
 
@@ -28,7 +28,7 @@ public class CaseImportSimilarityInput {
 	private final CaseDataDto caze;
 	private final PersonDto person;
 	private final List<CaseIndexDto> similarCases;
-	
+
 	public CaseImportSimilarityInput(CaseDataDto caze, PersonDto person, List<CaseIndexDto> similarCases) {
 		this.similarCases = similarCases;
 		this.caze = caze;
@@ -46,5 +46,4 @@ public class CaseImportSimilarityInput {
 	public PersonDto getPerson() {
 		return person;
 	}
-
 }

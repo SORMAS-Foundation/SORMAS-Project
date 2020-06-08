@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
@@ -42,19 +42,18 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE) +
-			fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT) +
-			fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY) +
-			fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS) +
-			fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
+
+	private static final String HTML_LAYOUT = fluidRowLocs(PreviousHospitalizationDto.ADMISSION_DATE, PreviousHospitalizationDto.DISCHARGE_DATE)
+		+ fluidRowLocs(PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT)
+		+ fluidRowLocs(PreviousHospitalizationDto.COMMUNITY, PreviousHospitalizationDto.HEALTH_FACILITY)
+		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
+		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
 	public PreviousHospitalizationEditForm(boolean create) {
 		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX);
 
 		setWidth(540, Unit.PIXELS);
-		
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -74,45 +73,57 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		ComboBox healthFacility = addInfrastructureField(PreviousHospitalizationDto.HEALTH_FACILITY);
 		TextField healthFacilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		healthFacilityDetails.setVisible(false);
-		
+
 		healthFacility.setImmediate(true);
 
 		facilityRegion.addValueChangeListener(e -> {
-			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facilityDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
-       	});
+			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				facilityDistrict,
+				regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		});
 		facilityDistrict.addValueChangeListener(e -> {
 			if (facilityCommunity.getValue() == null) {
-    			FieldHelper.removeItems(healthFacility);
-    		}
-    		FieldHelper.removeItems(facilityCommunity);
-    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facilityCommunity, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(healthFacility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
-    	});
+				FieldHelper.removeItems(healthFacility);
+			}
+			FieldHelper.removeItems(facilityCommunity);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				facilityCommunity,
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(
+				healthFacility,
+				districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+		});
 		facilityCommunity.addValueChangeListener(e -> {
 			FieldHelper.removeItems(healthFacility);
-    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(healthFacility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
-    			facilityDistrict.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true) :
-    				null);
-    	});
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				healthFacility,
+				communityDto != null
+					? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
+					: facilityDistrict.getValue() != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) facilityDistrict.getValue(), true)
+						: null);
+		});
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		
+
 		healthFacility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
-				
+
 				healthFacilityDetails.setVisible(visibleAndRequired);
 				healthFacilityDetails.setRequired(visibleAndRequired);
-				
+
 				if (otherHealthFacility) {
 					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
 				if (noneHealthFacility) {
-					healthFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+					healthFacilityDetails
+						.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
 				}
 				if (!visibleAndRequired) {
 					healthFacilityDetails.clear();
@@ -123,18 +134,25 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				healthFacilityDetails.clear();
 			}
 		});
-		
+
 		// Validations
-		admissionDate.addValidator(new DateComparisonValidator(admissionDate, dischargeDate, true, false, 
+		admissionDate.addValidator(
+			new DateComparisonValidator(
+				admissionDate,
+				dischargeDate,
+				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, admissionDate.getCaption(), dischargeDate.getCaption())));
-		dischargeDate.addValidator(new DateComparisonValidator(dischargeDate, admissionDate, false, false, 
+		dischargeDate.addValidator(
+			new DateComparisonValidator(
+				dischargeDate,
+				admissionDate,
+				false,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDate.getCaption(), admissionDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
-		setRequired(true,
-				PreviousHospitalizationDto.REGION,
-				PreviousHospitalizationDto.DISTRICT,
-				PreviousHospitalizationDto.HEALTH_FACILITY);
+		setRequired(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT, PreviousHospitalizationDto.HEALTH_FACILITY);
 	}
 
 	@Override

@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.visit;
@@ -37,84 +34,84 @@ import retrofit2.Call;
 
 public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 
-    private SymptomsDtoHelper symptomsDtoHelper = new SymptomsDtoHelper();
+	private SymptomsDtoHelper symptomsDtoHelper = new SymptomsDtoHelper();
 
-    @Override
-    protected Class<Visit> getAdoClass() {
-        return Visit.class;
-    }
+	@Override
+	protected Class<Visit> getAdoClass() {
+		return Visit.class;
+	}
 
-    @Override
-    protected Class<VisitDto> getDtoClass() {
-        return VisitDto.class;
-    }
+	@Override
+	protected Class<VisitDto> getDtoClass() {
+		return VisitDto.class;
+	}
 
-    @Override
-    protected Call<List<VisitDto>> pullAllSince(long since) throws NoConnectionException {
-        return RetroProvider.getVisitFacade().pullAllSince(since);
-    }
+	@Override
+	protected Call<List<VisitDto>> pullAllSince(long since) throws NoConnectionException {
+		return RetroProvider.getVisitFacade().pullAllSince(since);
+	}
 
-    @Override
-    protected Call<List<VisitDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-        return RetroProvider.getVisitFacade().pullByUuids(uuids);
-    }
+	@Override
+	protected Call<List<VisitDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+		return RetroProvider.getVisitFacade().pullByUuids(uuids);
+	}
 
-    @Override
-    protected Call<List<PushResult>> pushAll(List<VisitDto> visitDtos) throws NoConnectionException {
-        return RetroProvider.getVisitFacade().pushAll(visitDtos);
-    }
+	@Override
+	protected Call<List<PushResult>> pushAll(List<VisitDto> visitDtos) throws NoConnectionException {
+		return RetroProvider.getVisitFacade().pushAll(visitDtos);
+	}
 
-    @Override
-    public void fillInnerFromDto(Visit target, VisitDto source) {
+	@Override
+	public void fillInnerFromDto(Visit target, VisitDto source) {
 
-        target.setDisease(source.getDisease());
+		target.setDisease(source.getDisease());
 
-        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
+		target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
-        target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
-        target.setVisitDateTime(source.getVisitDateTime());
-        target.setVisitRemarks(source.getVisitRemarks());
-        target.setVisitStatus(source.getVisitStatus());
-        target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
+		target.setSymptoms(symptomsDtoHelper.fillOrCreateFromDto(target.getSymptoms(), source.getSymptoms()));
+		target.setVisitDateTime(source.getVisitDateTime());
+		target.setVisitRemarks(source.getVisitRemarks());
+		target.setVisitStatus(source.getVisitStatus());
+		target.setVisitUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getVisitUser()));
 
-        target.setReportLat(source.getReportLat());
-        target.setReportLon(source.getReportLon());
-        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-    }
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+	}
 
-    @Override
-    public void fillInnerFromAdo(VisitDto target, Visit source) {
+	@Override
+	public void fillInnerFromAdo(VisitDto target, Visit source) {
 
-        target.setDisease(source.getDisease());
+		target.setDisease(source.getDisease());
 
-        if (source.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
-            target.setPerson(PersonDtoHelper.toReferenceDto(person));
-        } else {
-            target.setPerson(null);
-        }
+		if (source.getPerson() != null) {
+			Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+			target.setPerson(PersonDtoHelper.toReferenceDto(person));
+		} else {
+			target.setPerson(null);
+		}
 
-        if (source.getSymptoms() != null) {
-            Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(source.getSymptoms().getId());
-            SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
-            target.setSymptoms(symptomsDto);
-        } else {
-            target.setSymptoms(null);
-        }
+		if (source.getSymptoms() != null) {
+			Symptoms symptoms = DatabaseHelper.getSymptomsDao().queryForId(source.getSymptoms().getId());
+			SymptomsDto symptomsDto = symptomsDtoHelper.adoToDto(symptoms);
+			target.setSymptoms(symptomsDto);
+		} else {
+			target.setSymptoms(null);
+		}
 
-        target.setVisitDateTime(source.getVisitDateTime());
-        target.setVisitRemarks(source.getVisitRemarks());
-        target.setVisitStatus(source.getVisitStatus());
+		target.setVisitDateTime(source.getVisitDateTime());
+		target.setVisitRemarks(source.getVisitRemarks());
+		target.setVisitStatus(source.getVisitStatus());
 
-        if (source.getVisitUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(source.getVisitUser().getId());
-            target.setVisitUser(UserDtoHelper.toReferenceDto(user));
-        } else {
-            target.setVisitUser(null);
-        }
+		if (source.getVisitUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getVisitUser().getId());
+			target.setVisitUser(UserDtoHelper.toReferenceDto(user));
+		} else {
+			target.setVisitUser(null);
+		}
 
-        target.setReportLat(source.getReportLat());
-        target.setReportLon(source.getReportLon());
-        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-    }
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+	}
 }

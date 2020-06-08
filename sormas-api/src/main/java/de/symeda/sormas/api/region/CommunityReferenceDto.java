@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
@@ -25,13 +25,13 @@ public class CommunityReferenceDto extends ReferenceDto implements StatisticsGro
 	private static final long serialVersionUID = -8833267932522978860L;
 
 	public CommunityReferenceDto() {
-		
+
 	}
-	
+
 	public CommunityReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public CommunityReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
@@ -46,12 +46,11 @@ public class CommunityReferenceDto extends ReferenceDto implements StatisticsGro
 		if (this.equals(o)) {
 			return 0;
 		}
-		int captionComparison = this.getCaption().compareTo(((CommunityReferenceDto) o) .getCaption());
+		int captionComparison = this.getCaption().compareTo(((CommunityReferenceDto) o).getCaption());
 		if (captionComparison != 0) {
 			return captionComparison;
 		} else {
 			return this.getUuid().compareTo(((CommunityReferenceDto) o).getUuid());
 		}
 	}
-	
 }

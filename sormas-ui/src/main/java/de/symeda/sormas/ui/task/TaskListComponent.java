@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
@@ -62,8 +62,11 @@ public class TaskListComponent extends VerticalLayout {
 		componentHeader.addComponent(tasksHeader);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.taskNewTask, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getTaskController().create(context, entityRef, this::reload), ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.taskNewTask,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getTaskController().create(context, entityRef, this::reload),
+				ValoTheme.BUTTON_PRIMARY);
 
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

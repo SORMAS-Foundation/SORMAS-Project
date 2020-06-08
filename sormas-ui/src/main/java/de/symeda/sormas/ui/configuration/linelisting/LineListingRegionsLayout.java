@@ -26,6 +26,7 @@ public class LineListingRegionsLayout extends CssLayout {
 	private Map<String, String> regionNames;
 
 	public LineListingRegionsLayout(List<FeatureConfigurationIndexDto> configurations, Disease disease) {
+
 		this.disease = disease;
 		this.regionNames = new HashMap<>();
 		this.regions = new TreeMap<>((r1, r2) -> regionNames.get(r1).compareTo(regionNames.get(r2)));
@@ -45,6 +46,7 @@ public class LineListingRegionsLayout extends CssLayout {
 	}
 
 	private void buildLayout() {
+
 		for (String regionUuid : regions.keySet()) {
 			StringBuilder captionBuilder = new StringBuilder();
 			captionBuilder.append("<b>").append(regionNames.get(regionUuid));
@@ -53,7 +55,9 @@ public class LineListingRegionsLayout extends CssLayout {
 			}
 
 			Button configButton = ButtonHelper.createButtonWithCaption("region-" + regionUuid, captionBuilder.toString(), e -> {
-				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid + "/?disease=" + disease.getName());
+				SormasUI.get()
+					.getNavigator()
+					.navigateTo(LineListingConfigurationView.VIEW_NAME + "/" + regionUuid + "/?disease=" + disease.getName());
 			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.HSPACE_LEFT_4, CssStyles.VSPACE_4);
 			configButton.setCaptionAsHtml(true);
 
@@ -66,5 +70,4 @@ public class LineListingRegionsLayout extends CssLayout {
 			addComponent(configButton);
 		}
 	}
-
 }

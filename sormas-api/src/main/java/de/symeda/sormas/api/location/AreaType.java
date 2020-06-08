@@ -7,9 +7,8 @@ public enum AreaType {
 	URBAN,
 	RURAL,
 	UNKNOWN;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

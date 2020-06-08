@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -37,7 +37,8 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 
 	public abstract List<TokenizableValue> getSelectedValues();
 
-	protected List<TokenizableValue> createTokens(StatisticsGroupingKey ...groupingKeys) {
+	protected List<TokenizableValue> createTokens(StatisticsGroupingKey... groupingKeys) {
+
 		List<TokenizableValue> result = new ArrayList<>(groupingKeys.length);
 		for (int i = 0; i < groupingKeys.length; i++) {
 			result.add(new TokenizableValue(groupingKeys[i], i));
@@ -45,7 +46,7 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 
 		return result;
 	}
-	
+
 	protected List<TokenizableValue> createTokens(Collection<? extends StatisticsGroupingKey> groupingKeys) {
 		List<TokenizableValue> result = new ArrayList<>(groupingKeys.size());
 		int index = 0;
@@ -55,7 +56,7 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 
 		return result;
 	}
-	
+
 	public static class TokenizableValue implements Tokenizable {
 
 		private final Object value;
@@ -96,7 +97,5 @@ public abstract class StatisticsFilterElement extends HorizontalLayout {
 		public String toString() {
 			return getStringValue();
 		}
-
 	}
-	
 }

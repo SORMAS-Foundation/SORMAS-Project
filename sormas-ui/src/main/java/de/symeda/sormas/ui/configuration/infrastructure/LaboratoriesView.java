@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -38,19 +38,22 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/laboratories";
 
 	public LaboratoriesView() {
+
 		super(VIEW_NAME, FacilityType.LABORATORY);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_laboratories", "sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv", FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource streamResource = new GridExportStreamResource(
+				grid,
+				"sormas_laboratories",
+				"sormas_laboratories_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				FacilitiesGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption(I18nProperties.getCaption(Captions.actionNewEntry));
-			createButton.addClickListener(
-					e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));
+			createButton.addClickListener(e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));
 		}
 	}
-
 }

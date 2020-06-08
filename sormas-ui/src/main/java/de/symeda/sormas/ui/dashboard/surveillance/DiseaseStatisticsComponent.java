@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
@@ -65,7 +65,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	// "Outbreak Districts" elements
 	private Label outbreakDistrictCountLabel;
 	private Label lastReportedDistrictLabel;
-	
+
 	// "Case Fatality" elements
 	private Label caseFatalityRateValue;
 	private Label caseFatalityCountValue;
@@ -83,7 +83,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 	private DashboardStatisticsCountElement testResultNegative;
 	private DashboardStatisticsCountElement testResultPending;
 	private DashboardStatisticsCountElement testResultIndeterminate;
-	
+
 	private static final String CASE_LOC = "case";
 	private static final String OUTBREAK_LOC = "outbreak";
 	private static final String EVENT_LOC = "event";
@@ -91,22 +91,20 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	public DiseaseStatisticsComponent(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
-		
+
 		setWidth(100, Unit.PERCENTAGE);
 
 		setTemplateContents(
-				LayoutUtil.fluidRow(
-						LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)), 
-						LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))
-						) 
-				);
+			LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(CASE_LOC, OUTBREAK_LOC)),
+				LayoutUtil.fluidColumn(6, 0, 12, 0, LayoutUtil.fluidRowLocs(EVENT_LOC, SAMPLE_LOC))));
 
 		addComponent(createCaseComponent(), CASE_LOC);
 		addComponent(createOutbreakDistrictAndCaseFatalityLayout(), OUTBREAK_LOC);
 		addComponent(createEventComponent(), EVENT_LOC);
 		addComponent(createTestResultComponent(), SAMPLE_LOC);
 	}
-	
+
 	private DashboardStatisticsSubComponent createCaseComponent() {
 		DashboardStatisticsSubComponent caseComponent = new DashboardStatisticsSubComponent();
 
@@ -116,8 +114,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		headerLayout.setSpacing(false);
 		// count
 		caseCountLabel = new Label();
-		CssStyles.style(caseCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
-				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(
+			caseCountLabel,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_XXXLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_4,
+			CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(caseCountLabel);
 		// title
 		Label caseComponentTitle = new Label(I18nProperties.getCaption(Captions.dashboardNewCases));
@@ -128,32 +131,37 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Count layout
 		CssLayout countLayout = caseComponent.createCountLayout(true);
-		caseClassificationConfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
+		caseClassificationConfirmed =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.CRITICAL);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationConfirmed);
-		caseClassificationProbable = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardProbable), CountElementStyle.IMPORTANT);
+		caseClassificationProbable =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardProbable), CountElementStyle.IMPORTANT);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationProbable);
-		caseClassificationSuspect = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSuspect), CountElementStyle.RELEVANT);
+		caseClassificationSuspect =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSuspect), CountElementStyle.RELEVANT);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationSuspect);
-		caseClassificationNotACase = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotACase), CountElementStyle.POSITIVE);
+		caseClassificationNotACase =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotACase), CountElementStyle.POSITIVE);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotACase);
-		caseClassificationNotYetClassified = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), CountElementStyle.MINOR);
+		caseClassificationNotYetClassified =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotYetClassified), CountElementStyle.MINOR);
 		caseComponent.addComponentToCountLayout(countLayout, caseClassificationNotYetClassified);
 		caseComponent.addComponent(countLayout);
-		
+
 		return caseComponent;
 	}
-	
+
 	private DashboardStatisticsSubComponent createOutbreakDistrictAndCaseFatalityLayout() {
 		DashboardStatisticsSubComponent layout = new DashboardStatisticsSubComponent();
-		
+
 		layout.addComponent(createCaseFatalityComponent());
-		
+
 		layout.addComponent(this.createLastReportedDistrictComponent());
-		
+
 		layout.addComponent(createOutbreakDistrictComponent());
-		
+
 		layout.addStyleName(CssStyles.VSPACE_TOP_4);
-		
+
 		return layout;
 	}
 
@@ -162,7 +170,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		component.setMargin(false);
 		component.setSpacing(false);
 		component.setWidth(100, Unit.PERCENTAGE);
-		
+
 		// rate
 		{
 			HorizontalLayout rateLayout = new HorizontalLayout();
@@ -173,45 +181,57 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardCaseFatalityRate));
 			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 			rateLayout.addComponent(titleLabel);
-			
+
 			// value
 			caseFatalityRateValue = new Label("00.0%");
-			CssStyles.style(caseFatalityRateValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+			CssStyles.style(
+				caseFatalityRateValue,
+				CssStyles.LABEL_PRIMARY,
+				CssStyles.LABEL_BOLD,
+				CssStyles.LABEL_LARGE,
+				CssStyles.HSPACE_LEFT_3,
+				CssStyles.VSPACE_TOP_5);
 			rateLayout.addComponent(caseFatalityRateValue);
-			
+
 			component.addComponent(rateLayout);
 			component.setExpandRatio(rateLayout, 1);
 		}
-		
+
 		// count		
 		{
 			HorizontalLayout countLayout = new HorizontalLayout();
 			countLayout.setMargin(false);
 			countLayout.setSpacing(false);
-			
+
 			// title
 			Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardFatalities));
 			CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_3);
 			countLayout.addComponent(titleLabel);
-			
+
 			// value
 			caseFatalityCountValue = new Label("0");
-			CssStyles.style(caseFatalityCountValue, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_RIGHT_5, CssStyles.VSPACE_TOP_5);
+			CssStyles.style(
+				caseFatalityCountValue,
+				CssStyles.LABEL_PRIMARY,
+				CssStyles.LABEL_BOLD,
+				CssStyles.LABEL_LARGE,
+				CssStyles.HSPACE_RIGHT_5,
+				CssStyles.VSPACE_TOP_5);
 			countLayout.addComponent(caseFatalityCountValue);
-		
+
 			// growth
 			caseFatalityCountGrowth = new Label("", ContentMode.HTML);
 			CssStyles.style(caseFatalityCountGrowth, CssStyles.VSPACE_TOP_5);
 			countLayout.addComponent(caseFatalityCountGrowth);
-			
+
 			component.addComponent(countLayout);
 			component.setExpandRatio(countLayout, 0);
 			component.setComponentAlignment(countLayout, Alignment.MIDDLE_RIGHT);
-		}	
-		
+		}
+
 		return component;
 	}
-	
+
 	private Layout createLastReportedDistrictComponent() {
 		HorizontalLayout component = new HorizontalLayout();
 		component.setMargin(false);
@@ -221,12 +241,18 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		Label titleLabel = new Label(I18nProperties.getCaption(I18nProperties.getCaption(Captions.dashboardLastReportedDistrict)));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
 		component.addComponent(titleLabel);
-		
+
 		// value
 		lastReportedDistrictLabel = new Label(I18nProperties.getString(Strings.none).toUpperCase());
-		CssStyles.style(lastReportedDistrictLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+		CssStyles.style(
+			lastReportedDistrictLabel,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_LARGE,
+			CssStyles.HSPACE_LEFT_3,
+			CssStyles.VSPACE_TOP_5);
 		component.addComponent(lastReportedDistrictLabel);
-		
+
 		return component;
 	}
 
@@ -234,7 +260,7 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		HorizontalLayout component = new HorizontalLayout();
 		component.setMargin(false);
 		component.setSpacing(false);
-		
+
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreakDistricts));
 		CssStyles.style(titleLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.VSPACE_TOP_4);
@@ -242,9 +268,15 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// count
 		outbreakDistrictCountLabel = new Label();
-		CssStyles.style(outbreakDistrictCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.LABEL_LARGE, CssStyles.HSPACE_LEFT_3, CssStyles.VSPACE_TOP_5);
+		CssStyles.style(
+			outbreakDistrictCountLabel,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_LARGE,
+			CssStyles.HSPACE_LEFT_3,
+			CssStyles.VSPACE_TOP_5);
 		component.addComponent(outbreakDistrictCountLabel);
-		
+
 		return component;
 	}
 
@@ -258,8 +290,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// count
 		eventCountLabel = new Label();
-		CssStyles.style(eventCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
-				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(
+			eventCountLabel,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_XXXLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_4,
+			CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(eventCountLabel);
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardNewEvents));
@@ -270,17 +307,14 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Count layout
 		CssLayout countLayout = eventComponent.createCountLayout(true);
-		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.CONFIRMED.toString(),
-				CountElementStyle.CRITICAL);
+		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.CONFIRMED.toString(), CountElementStyle.CRITICAL);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.POSSIBLE.toString(),
-				CountElementStyle.IMPORTANT);
+		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.POSSIBLE.toString(), CountElementStyle.IMPORTANT);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.NO_EVENT.toString(),
-				CountElementStyle.POSITIVE);
+		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.NO_EVENT.toString(), CountElementStyle.POSITIVE);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
 		eventComponent.addComponent(countLayout);
-		
+
 		return eventComponent;
 	}
 
@@ -294,8 +328,13 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		// count
 		testResultCountLabel = new Label();
 		testResultCountLabel.setDescription(I18nProperties.getDescription(Descriptions.descDashboardNewTestResults));
-		CssStyles.style(testResultCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD,
-				CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+		CssStyles.style(
+			testResultCountLabel,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_XXXLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.VSPACE_4,
+			CssStyles.VSPACE_TOP_NONE);
 		headerLayout.addComponent(testResultCountLabel);
 		// title
 		Label titleLabel = new Label(I18nProperties.getCaption(Captions.dashboardNewTestResults));
@@ -312,16 +351,17 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		testResultComponent.addComponentToCountLayout(countLayout, testResultNegative);
 		testResultPending = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardPending), CountElementStyle.IMPORTANT);
 		testResultComponent.addComponentToCountLayout(countLayout, testResultPending);
-		testResultIndeterminate = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
+		testResultIndeterminate =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardIndeterminate), CountElementStyle.MINOR);
 		testResultComponent.addComponentToCountLayout(countLayout, testResultIndeterminate);
 		testResultComponent.addComponent(countLayout);
-		
+
 		return testResultComponent;
 	}
 
 	public void refresh() {
 		Disease disease = this.dashboardDataProvider.getDisease();
-		
+
 		updateCaseComponent(disease);
 		updateCaseFatalityComponent(disease);
 		updateLastReportedDistrictComponent(disease);
@@ -336,20 +376,15 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 		//caseDiseaseLabel.setValue("(" + disease.toString() + ")");
 		caseCountLabel.setValue(Integer.toString(cases.size()).toString());
 
-		int confirmedCasesCount = (int) cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
+		int confirmedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.CONFIRMED).count();
 		caseClassificationConfirmed.updateCountLabel(confirmedCasesCount);
-		int probableCasesCount = (int) cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
+		int probableCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.PROBABLE).count();
 		caseClassificationProbable.updateCountLabel(probableCasesCount);
-		int suspectCasesCount = (int) cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
+		int suspectCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.SUSPECT).count();
 		caseClassificationSuspect.updateCountLabel(suspectCasesCount);
-		int notACaseCasesCount = (int) cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
+		int notACaseCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NO_CASE).count();
 		caseClassificationNotACase.updateCountLabel(notACaseCasesCount);
-		int notYetClassifiedCasesCount = (int) cases.stream()
-				.filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
+		int notYetClassifiedCasesCount = (int) cases.stream().filter(c -> c.getCaseClassification() == CaseClassification.NOT_CLASSIFIED).count();
 		caseClassificationNotYetClassified.updateCountLabel(notYetClassifiedCasesCount);
 	}
 
@@ -382,11 +417,10 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 			criticalLevel = CssStyles.LABEL_IMPORTANT;
 		}
 
-		caseFatalityCountGrowth.setValue("<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
-				+ " align-center v-label-align-center bold v-label-bold v-has-width\" "
-				+ "	  style=\"margin-top: 4px;margin-left: 5px;\">"
-				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
-				+ "</div>");
+		caseFatalityCountGrowth.setValue(
+			"<div class=\"v-label v-widget " + criticalLevel + " v-label-" + criticalLevel
+				+ " align-center v-label-align-center bold v-label-bold v-has-width\" " + "	  style=\"margin-top: 4px;margin-left: 5px;\">"
+				+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
 
 		// rate
 		caseFatalityRateValue.setValue(fatalityRate + "%");
@@ -399,10 +433,10 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 	private void updateOutbreakDistrictComponent(Disease disease) {
 		Long districtCount = dashboardDataProvider.getOutbreakDistrictCount();
-		
+
 		outbreakDistrictCountLabel.setValue(districtCount.toString());
 	}
-	
+
 	private void updateEventComponent(Disease disease) {
 		Map<EventStatus, Long> events = dashboardDataProvider.getEventCountByStatus();
 

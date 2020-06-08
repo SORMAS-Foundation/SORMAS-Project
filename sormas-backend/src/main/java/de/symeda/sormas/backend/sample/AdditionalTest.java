@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
@@ -37,9 +37,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class AdditionalTest extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7306267901413644171L;
-	
+
 	public static final String TABLE_NAME = "additionaltest";
-	
+
 	public static final String SAMPLE = "sample";
 	public static final String TEST_DATE_TIME = "testDateTime";
 
@@ -71,6 +71,7 @@ public class AdditionalTest extends AbstractDomainObject {
 	public Sample getSample() {
 		return sample;
 	}
+
 	public void setSample(Sample sample) {
 		this.sample = sample;
 	}
@@ -80,14 +81,16 @@ public class AdditionalTest extends AbstractDomainObject {
 	public Date getTestDateTime() {
 		return testDateTime;
 	}
+
 	public void setTestDateTime(Date testDateTime) {
 		this.testDateTime = testDateTime;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public SimpleTestResultType getHaemoglobinuria() {
 		return haemoglobinuria;
 	}
+
 	public void setHaemoglobinuria(SimpleTestResultType haemoglobinuria) {
 		this.haemoglobinuria = haemoglobinuria;
 	}
@@ -96,6 +99,7 @@ public class AdditionalTest extends AbstractDomainObject {
 	public SimpleTestResultType getProteinuria() {
 		return proteinuria;
 	}
+
 	public void setProteinuria(SimpleTestResultType proteinuria) {
 		this.proteinuria = proteinuria;
 	}
@@ -104,128 +108,145 @@ public class AdditionalTest extends AbstractDomainObject {
 	public SimpleTestResultType getHematuria() {
 		return hematuria;
 	}
+
 	public void setHematuria(SimpleTestResultType hematuria) {
 		this.hematuria = hematuria;
 	}
-	
+
 	public Float getArterialVenousGasPH() {
 		return arterialVenousGasPH;
 	}
+
 	public void setArterialVenousGasPH(Float arterialVenousGasPH) {
 		this.arterialVenousGasPH = arterialVenousGasPH;
 	}
-	
+
 	public Float getArterialVenousGasPco2() {
 		return arterialVenousGasPco2;
 	}
+
 	public void setArterialVenousGasPco2(Float arterialVenousGasPco2) {
 		this.arterialVenousGasPco2 = arterialVenousGasPco2;
 	}
-	
+
 	public Float getArterialVenousGasPao2() {
 		return arterialVenousGasPao2;
 	}
+
 	public void setArterialVenousGasPao2(Float arterialVenousGasPao2) {
 		this.arterialVenousGasPao2 = arterialVenousGasPao2;
 	}
-	
+
 	public Float getArterialVenousGasHco3() {
 		return arterialVenousGasHco3;
 	}
+
 	public void setArterialVenousGasHco3(Float arterialVenousGasHco3) {
 		this.arterialVenousGasHco3 = arterialVenousGasHco3;
 	}
-	
+
 	public Float getGasOxygenTherapy() {
 		return gasOxygenTherapy;
 	}
+
 	public void setGasOxygenTherapy(Float gasOxygenTherapy) {
 		this.gasOxygenTherapy = gasOxygenTherapy;
 	}
-	
+
 	public Float getAltSgpt() {
 		return altSgpt;
 	}
+
 	public void setAltSgpt(Float altSgpt) {
 		this.altSgpt = altSgpt;
 	}
-	
+
 	public Float getAstSgot() {
 		return astSgot;
 	}
+
 	public void setAstSgot(Float astSgot) {
 		this.astSgot = astSgot;
 	}
-	
+
 	public Float getCreatinine() {
 		return creatinine;
 	}
+
 	public void setCreatinine(Float creatinine) {
 		this.creatinine = creatinine;
 	}
-	
+
 	public Float getPotassium() {
 		return potassium;
 	}
+
 	public void setPotassium(Float potassium) {
 		this.potassium = potassium;
 	}
-	
+
 	public Float getUrea() {
 		return urea;
 	}
+
 	public void setUrea(Float urea) {
 		this.urea = urea;
 	}
-	
+
 	public Float getHaemoglobin() {
 		return haemoglobin;
 	}
+
 	public void setHaemoglobin(Float haemoglobin) {
 		this.haemoglobin = haemoglobin;
 	}
-	
+
 	public Float getTotalBilirubin() {
 		return totalBilirubin;
 	}
+
 	public void setTotalBilirubin(Float totalBilirubin) {
 		this.totalBilirubin = totalBilirubin;
 	}
-	
+
 	public Float getConjBilirubin() {
 		return conjBilirubin;
 	}
+
 	public void setConjBilirubin(Float conjBilirubin) {
 		this.conjBilirubin = conjBilirubin;
 	}
-	
+
 	public Float getWbcCount() {
 		return wbcCount;
 	}
+
 	public void setWbcCount(Float wbcCount) {
 		this.wbcCount = wbcCount;
 	}
-	
+
 	public Float getPlatelets() {
 		return platelets;
 	}
+
 	public void setPlatelets(Float platelets) {
 		this.platelets = platelets;
 	}
-	
+
 	public Float getProthrombinTime() {
 		return prothrombinTime;
 	}
+
 	public void setProthrombinTime(Float prothrombinTime) {
 		this.prothrombinTime = prothrombinTime;
 	}
 
-	@Column(length=512)
+	@Column(length = 512)
 	public String getOtherTestResults() {
 		return otherTestResults;
 	}
+
 	public void setOtherTestResults(String otherTestResults) {
 		this.otherTestResults = otherTestResults;
 	}
-	
 }

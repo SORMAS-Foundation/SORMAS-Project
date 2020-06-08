@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -31,9 +31,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String HTML_LAYOUT =
-			fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) +
-			fluidRowLocs(EventParticipantDto.PERSON);
+	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) + fluidRowLocs(EventParticipantDto.PERSON);
 
 	private final EventDto event;
 
@@ -53,7 +51,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
 
-		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(),  null);
+		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), null, true);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);
@@ -65,16 +63,15 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 	}
 
 	public String getPersonFirstName() {
-		return (String)getField(PersonDto.FIRST_NAME).getValue();
+		return (String) getField(PersonDto.FIRST_NAME).getValue();
 	}
 
 	public String getPersonLastName() {
-		return (String)getField(PersonDto.LAST_NAME).getValue();
+		return (String) getField(PersonDto.LAST_NAME).getValue();
 	}
 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

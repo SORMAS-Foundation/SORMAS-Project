@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -35,20 +35,21 @@ import de.symeda.sormas.api.i18n.Strings;
 @SuppressWarnings("serial")
 public class ErrorView extends VerticalLayout implements View {
 
-    private Label explanation;
+	private Label explanation;
 
-    public ErrorView() {
-        setMargin(true);
-        setSpacing(true);
+	public ErrorView() {
 
-        Label header = new Label(I18nProperties.getString(Strings.headingViewNotFound));
-        header.addStyleName(ValoTheme.LABEL_H1);
-        addComponent(header);
-        addComponent(explanation = new Label());
-    }
+		setMargin(true);
+		setSpacing(true);
 
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
-        explanation.setValue(String.format(I18nProperties.getString(Strings.errorViewNotFound), event.getViewName()));
-    }
+		Label header = new Label(I18nProperties.getString(Strings.headingViewNotFound));
+		header.addStyleName(ValoTheme.LABEL_H1);
+		addComponent(header);
+		addComponent(explanation = new Label());
+	}
+
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		explanation.setValue(String.format(I18nProperties.getString(Strings.errorViewNotFound), event.getViewName()));
+	}
 }

@@ -9,26 +9,33 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.HashMap;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.*;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -37,9 +44,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
-
-import java.util.HashMap;
-import de.symeda.sormas.api.sample.SampleCriteria;
 
 @SuppressWarnings("serial")
 public class SampleGridComponent extends VerticalLayout {
@@ -104,7 +108,7 @@ public class SampleGridComponent extends VerticalLayout {
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if(!samplesView.navigateTo(criteria, false)){
+			if (!samplesView.navigateTo(criteria, false)) {
 				filterForm.updateResetButtonState();
 				grid.reload();
 			}
@@ -131,7 +135,8 @@ public class SampleGridComponent extends VerticalLayout {
 		HorizontalLayout buttonFilterLayout = new HorizontalLayout();
 		buttonFilterLayout.setSpacing(true);
 		{
-			Button statusAll = ButtonHelper.createButton(Captions.all, e -> processStatusChange(null), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
+			Button statusAll =
+				ButtonHelper.createButton(Captions.all, e -> processStatusChange(null), ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER);
 			statusAll.setCaptionAsHtml(true);
 
 			buttonFilterLayout.addComponent(statusAll);
@@ -171,15 +176,16 @@ public class SampleGridComponent extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-								public void run() {
-									samplesView.navigateTo(criteria);
-								}
-							});
-						})
-				);
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+
+							public void run() {
+								samplesView.navigateTo(criteria);
+							}
+						});
+					}));
 
 				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
 
@@ -195,7 +201,7 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
 			sampleTypeFilter.addValueChangeListener(e -> {
-				criteria.sampleAssociationType(((SampleAssociationType)e.getProperty().getValue()));
+				criteria.sampleAssociationType(((SampleAssociationType) e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);
 			});
 			actionButtonsLayout.addComponent(sampleTypeFilter);
@@ -274,8 +280,12 @@ public class SampleGridComponent extends VerticalLayout {
 	}
 
 	private void createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
-		Button button = ButtonHelper.createButton(captionKey, e -> processStatusChange(status),
-				ValoTheme.BUTTON_BORDERLESS, CssStyles.BUTTON_FILTER, CssStyles.BUTTON_FILTER_LIGHT);
+		Button button = ButtonHelper.createButton(
+			captionKey,
+			e -> processStatusChange(status),
+			ValoTheme.BUTTON_BORDERLESS,
+			CssStyles.BUTTON_FILTER,
+			CssStyles.BUTTON_FILTER_LIGHT);
 
 		button.setData(status);
 		button.setCaptionAsHtml(true);
@@ -290,15 +300,16 @@ public class SampleGridComponent extends VerticalLayout {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 			if ((NOT_SHIPPED.equals(b.getData()) && criteria.getShipped() == Boolean.FALSE)
-					|| (SHIPPED.equals(b.getData()) && criteria.getShipped() == Boolean.TRUE)
-					|| (RECEIVED.equals(b.getData()) && criteria.getReceived() == Boolean.TRUE)
-					|| (REFERRED.equals(b.getData()) && criteria.getReferred() == Boolean.TRUE)) {
+				|| (SHIPPED.equals(b.getData()) && criteria.getShipped() == Boolean.TRUE)
+				|| (RECEIVED.equals(b.getData()) && criteria.getReceived() == Boolean.TRUE)
+				|| (REFERRED.equals(b.getData()) && criteria.getReferred() == Boolean.TRUE)) {
 				activeStatusButton = b;
 			}
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+			activeStatusButton
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
 
@@ -313,5 +324,4 @@ public class SampleGridComponent extends VerticalLayout {
 	public SampleCriteria getCriteria() {
 		return criteria;
 	}
-
 }

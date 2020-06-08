@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
@@ -34,7 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class PersonSelectionGrid extends Grid {
-	
+
 	public PersonSelectionGrid(PersonSimilarityCriteria criteria) {
 		buildGrid();
 		loadData(criteria);
@@ -49,13 +49,20 @@ public class PersonSelectionGrid extends Grid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(PersonIndexDto.FIRST_NAME, PersonIndexDto.LAST_NAME, PersonIndexDto.NICKNAME, 
-				PersonIndexDto.APPROXIMATE_AGE, PersonIndexDto.SEX, PersonIndexDto.PRESENT_CONDITION,
-				PersonIndexDto.DISTRICT_NAME, PersonIndexDto.COMMUNITY_NAME, PersonIndexDto.CITY);
+		setColumns(
+			PersonIndexDto.FIRST_NAME,
+			PersonIndexDto.LAST_NAME,
+			PersonIndexDto.NICKNAME,
+			PersonIndexDto.APPROXIMATE_AGE,
+			PersonIndexDto.SEX,
+			PersonIndexDto.PRESENT_CONDITION,
+			PersonIndexDto.DISTRICT_NAME,
+			PersonIndexDto.COMMUNITY_NAME,
+			PersonIndexDto.CITY);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+			column.setHeaderCaption(
+				I18nProperties.getPrefixCaption(PersonIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		getColumn(PersonIndexDto.FIRST_NAME).setMinimumWidth(150);
@@ -69,15 +76,18 @@ public class PersonSelectionGrid extends Grid {
 	}
 
 	private void loadData(PersonSimilarityCriteria criteria) {
-		List<String> similarPersonUuids = FacadeProvider.getPersonFacade().getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria).stream()
-				.filter(dto -> PersonHelper.areNamesSimilar(criteria.getFirstName() + " " + criteria.getLastName(), dto.getFirstName() + " " + dto.getLastName()))
-				.map(dto -> dto.getUuid())
-				.collect(Collectors.toList());
+		List<String> similarPersonUuids = FacadeProvider.getPersonFacade()
+			.getMatchingNameDtos(UserProvider.getCurrent().getUserReference(), criteria)
+			.stream()
+			.filter(
+				dto -> PersonHelper
+					.areNamesSimilar(criteria.getFirstName() + " " + criteria.getLastName(), dto.getFirstName() + " " + dto.getLastName()))
+			.map(dto -> dto.getUuid())
+			.collect(Collectors.toList());
 		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getIndexDtosByUuids(similarPersonUuids);
-		
+
 		getContainer().removeAllItems();
-		getContainer().addAll(similarPersons);    
+		getContainer().addAll(similarPersons);
 		setHeightByRows(similarPersons.size() > 0 ? (similarPersons.size() <= 10 ? similarPersons.size() : 10) : 1);
 	}
-
 }

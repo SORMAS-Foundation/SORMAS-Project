@@ -1,28 +1,11 @@
 package de.symeda.sormas.ui.caze;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -36,17 +19,21 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
+import de.symeda.sormas.ui.utils.*;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -85,8 +72,7 @@ public class LineListingLayout extends VerticalLayout {
 		disease.setId("lineListingDisease");
 		disease.setItems(FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true));
 		sharedInformationBar.addComponent(disease);
-		diseaseDetails = new TextField(
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
+		diseaseDetails = new TextField(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE_DETAILS));
 		diseaseDetails.setId("lineListingDiseaseDetails");
 		diseaseDetails.setVisible(false);
 		sharedInformationBar.addComponent(diseaseDetails);
@@ -195,11 +181,11 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private void updateDistricts(RegionReferenceDto regionDto) {
-		FieldHelper.updateItems(district,
-				regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 	}
 
 	private void setEpidNumberPrefixes() {
+
 		for (CaseLineLayout layout : caseLines) {
 			LocalDate dateOfReport = layout.dateOfReport.getValue();
 			setEpidNumberPrefix(layout, dateOfReport);
@@ -207,6 +193,7 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private void setEpidNumberPrefix(CaseLineLayout layout, LocalDate date) {
+
 		if (district.getValue() != null) {
 			if (date == null) {
 				layout.epidNumber.setValue(getEpidNumberPrefix(null));
@@ -218,11 +205,11 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private String getEpidNumberPrefix(String year) {
-		
+
 		String fullEpidCode = FacadeProvider.getDistrictFacade().getFullEpidCodeForDistrict(district.getValue().getUuid());
 		if (year == null) {
 			return fullEpidCode + "-";
-		}else {
+		} else {
 			return fullEpidCode + "-" + year + "-";
 		}
 	}
@@ -258,26 +245,24 @@ public class LineListingLayout extends VerticalLayout {
 
 			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-			ControllerProvider.getCaseController().selectOrCreate(newCase, caseLineDto.getFirstName(),
-					caseLineDto.getLastName(), uuid -> {
-						if (uuid == null) {
-							PersonDto newPerson = PersonDto.build();
-							newPerson.setFirstName(caseLineDto.getFirstName());
-							newPerson.setLastName(caseLineDto.getLastName());
-							newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
-							newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
-							newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
-							newPerson.setSex(caseLineDto.getSex());
+			ControllerProvider.getCaseController().selectOrCreate(newCase, caseLineDto.getFirstName(), caseLineDto.getLastName(), uuid -> {
+				if (uuid == null) {
+					PersonDto newPerson = PersonDto.build();
+					newPerson.setFirstName(caseLineDto.getFirstName());
+					newPerson.setLastName(caseLineDto.getLastName());
+					newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
+					newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
+					newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
+					newPerson.setSex(caseLineDto.getSex());
 
-							FacadeProvider.getPersonFacade().savePerson(newPerson);
+					FacadeProvider.getPersonFacade().savePerson(newPerson);
 
-							newCase.setPerson(newPerson.toReference());
+					newCase.setPerson(newPerson.toReference());
 
-							FacadeProvider.getCaseFacade().saveCase(newCase);
-							Notification.show(I18nProperties.getString(Strings.messageCaseCreated),
-									Type.ASSISTIVE_NOTIFICATION);
-						}
-					});
+					FacadeProvider.getCaseFacade().saveCase(newCase);
+					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
+				}
+			});
 		}
 		closeWindow();
 		ControllerProvider.getCaseController().navigateToIndex();
@@ -291,13 +276,12 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	private void updateCommunityAndFacility(DistrictReferenceDto districtDto, CaseLineLayout line) {
-		FieldHelper.updateItems(line.getCommunity(),
-				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
-						: null);
-		FieldHelper.updateItems(line.getFacility(),
-				districtDto != null
-						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true)
-						: null);
+		FieldHelper.updateItems(
+			line.getCommunity(),
+			districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+		FieldHelper.updateItems(
+			line.getFacility(),
+			districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
 	}
 
 	private void removeCommunities() {
@@ -361,9 +345,8 @@ public class LineListingLayout extends VerticalLayout {
 
 			binder.forField(disease).asRequired().bind(CaseLineDto.DISEASE);
 			binder.forField(diseaseDetails)
-					.asRequired(new FieldVisibleAndNotEmptyValidator<String>(
-							I18nProperties.getString(Strings.errorFieldValidationFailed)))
-					.bind(CaseLineDto.DISEASE_DETAILS);
+				.asRequired(new FieldVisibleAndNotEmptyValidator<String>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
+				.bind(CaseLineDto.DISEASE_DETAILS);
 			binder.forField(region).asRequired().bind(CaseLineDto.REGION);
 			binder.forField(district).asRequired().bind(CaseLineDto.DISTRICT);
 
@@ -382,11 +365,13 @@ public class LineListingLayout extends VerticalLayout {
 			community.addValueChangeListener(e -> {
 				FieldHelper.removeItems(facility);
 				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getValue();
-				FieldHelper.updateItems(facility, communityDto != null
+				FieldHelper.updateItems(
+					facility,
+					communityDto != null
 						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
-						: district.getValue() != null ? FacadeProvider.getFacilityFacade()
-								.getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
-								: null);
+						: district.getValue() != null
+							? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
+							: null);
 			});
 			binder.forField(community).bind(CaseLineDto.COMMUNITY);
 			facility = new ComboBox<>();
@@ -401,9 +386,8 @@ public class LineListingLayout extends VerticalLayout {
 			facilityDetails.setVisible(false);
 			updateFacilityFields(facility, facilityDetails);
 			binder.forField(facilityDetails)
-					.asRequired(new FieldVisibleAndNotEmptyValidator<String>(
-							I18nProperties.getString(Strings.errorFieldValidationFailed)))
-					.bind(CaseLineDto.FACILITIY_DETAILS);
+				.asRequired(new FieldVisibleAndNotEmptyValidator<String>(I18nProperties.getString(Strings.errorFieldValidationFailed)))
+				.bind(CaseLineDto.FACILITIY_DETAILS);
 
 			firstname = new TextField();
 			firstname.setId("lineListingFirstName_" + lineIndex);
@@ -449,6 +433,7 @@ public class LineListingLayout extends VerticalLayout {
 			dateOfOnset = new DateField();
 			dateOfOnset.setId("lineListingDateOfOnSet_" + lineIndex);
 			dateOfOnset.setWidth(100, Unit.PIXELS);
+			dateOfOnset.addStyleName(CssStyles.CAPTION_FIXED_WIDTH_100);
 			binder.forField(dateOfOnset).bind(CaseLineDto.DATE_OF_ONSET);
 			delete = ButtonHelper.createIconButtonWithCaption("delete_" + lineIndex, null, VaadinIcons.TRASH, event -> {
 				lineComponent.removeComponent(this);
@@ -463,8 +448,18 @@ public class LineListingLayout extends VerticalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_EPID_NUMBER)) {
 				addComponent(epidNumber);
 			}
-			addComponents(community, facility, facilityDetails, firstname, lastname, dateOfBirthYear, dateOfBirthMonth,
-					dateOfBirthDay, sex, dateOfOnset, delete);
+			addComponents(
+				community,
+				facility,
+				facilityDetails,
+				firstname,
+				lastname,
+				dateOfBirthYear,
+				dateOfBirthMonth,
+				dateOfBirthDay,
+				sex,
+				dateOfOnset,
+				delete);
 
 			if (lineIndex == 0) {
 				formatAsFirstLine();
@@ -491,7 +486,7 @@ public class LineListingLayout extends VerticalLayout {
 		private void formatAsFirstLine() {
 
 			setRequiredInicatorsVisibility(true);
-			
+
 			formatAsOtherLine();
 
 			dateOfReport.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
@@ -510,7 +505,8 @@ public class LineListingLayout extends VerticalLayout {
 			lastname.removeStyleName(CssStyles.CAPTION_HIDDEN);
 			dateOfBirthYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
 			sex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			dateOfOnset.setCaption(I18nProperties.getCaption(Captions.Contact_caze_symptomsOnset));
+			dateOfOnset.setCaption(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
+			dateOfOnset.setDescription(I18nProperties.getPrefixDescription(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			delete.setEnabled(false);
 			setComponentAlignment(delete, Alignment.MIDDLE_LEFT);
 		}
@@ -549,23 +545,19 @@ public class LineListingLayout extends VerticalLayout {
 
 		private void updateFacilityFields(ComboBox<FacilityReferenceDto> cbFacility, TextField tfFacilityDetails) {
 			if (cbFacility.getValue() != null) {
-				boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid()
-						.equals(FacilityDto.OTHER_FACILITY_UUID);
-				boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid()
-						.equals(FacilityDto.NONE_FACILITY_UUID);
+				boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+				boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean visibleEnabledAndRequired = otherHealthFacility || noneHealthFacility;
 
 				tfFacilityDetails.setVisible(visibleEnabledAndRequired);
 				tfFacilityDetails.setEnabled(visibleEnabledAndRequired);
 
 				if (otherHealthFacility) {
-					tfFacilityDetails
-							.setPlaceholder(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
+					tfFacilityDetails.setPlaceholder(I18nProperties.getCaption(Captions.caseHealthFacilityDetailsShort));
 
 				}
 				if (noneHealthFacility) {
-					tfFacilityDetails
-							.setPlaceholder(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
+					tfFacilityDetails.setPlaceholder(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 				}
 				if (visibleEnabledAndRequired) {
 					cbFacility.setWidthUndefined();
@@ -636,11 +628,23 @@ public class LineListingLayout extends VerticalLayout {
 		private Sex sex;
 		private LocalDate dateOfOnset;
 
-		public CaseLineDto(Disease disease, String diseaseDetails, RegionReferenceDto region,
-				DistrictReferenceDto district, LocalDate dateOfReport, String epidNumber,
-				CommunityReferenceDto community, FacilityReferenceDto facility, String facilityDetails,
-				String firstname, String lastname, Integer dateOfBirthYear, Integer dateOfBirthMonth,
-				Integer dateOfBirthDay, Sex sex, LocalDate dateOfOnset) {
+		public CaseLineDto(
+			Disease disease,
+			String diseaseDetails,
+			RegionReferenceDto region,
+			DistrictReferenceDto district,
+			LocalDate dateOfReport,
+			String epidNumber,
+			CommunityReferenceDto community,
+			FacilityReferenceDto facility,
+			String facilityDetails,
+			String firstname,
+			String lastname,
+			Integer dateOfBirthYear,
+			Integer dateOfBirthMonth,
+			Integer dateOfBirthDay,
+			Sex sex,
+			LocalDate dateOfOnset) {
 
 			this.disease = disease;
 			this.diseaseDetails = diseaseDetails;

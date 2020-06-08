@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -29,28 +29,28 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 @SuppressWarnings("serial")
 public class DateFilter implements Filter {
-    
-	final Object propertyId;
-    final String filterString;
 
-    public DateFilter(Object propertyId, String filterString) {
-    	this.propertyId = propertyId;
-    	this.filterString = filterString;
-    }
-    
+	final Object propertyId;
+	final String filterString;
+
+	public DateFilter(Object propertyId, String filterString) {
+		this.propertyId = propertyId;
+		this.filterString = filterString;
+	}
+
 	@Override
 	public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-		
+
 		if (DataHelper.isNullOrEmpty(filterString)) {
 			return true;
 		}
-		
-		Date date = (Date)item.getItemProperty(propertyId).getValue();
-		
+
+		Date date = (Date) item.getItemProperty(propertyId).getValue();
+
 		if (date == null) {
 			return false;
 		}
-		
+
 		Date[] dateBounds = DateHelper.findDateBounds(filterString);
 
 		if (dateBounds != null) {
@@ -80,7 +80,7 @@ public class DateFilter implements Filter {
 			// available data matches
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -88,5 +88,4 @@ public class DateFilter implements Filter {
 	public boolean appliesToProperty(Object propertyId) {
 		return this.propertyId.equals(propertyId);
 	}
-
 }

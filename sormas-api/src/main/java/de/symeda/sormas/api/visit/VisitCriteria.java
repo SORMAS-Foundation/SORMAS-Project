@@ -16,7 +16,7 @@ public class VisitCriteria extends BaseCriteria implements Serializable {
 	public ContactReferenceDto getContact() {
 		return contact;
 	}
-	
+
 	public VisitCriteria contact(ContactReferenceDto contact) {
 		this.contact = contact;
 		return this;
