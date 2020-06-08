@@ -20,6 +20,7 @@ package de.symeda.sormas.api;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
@@ -252,6 +253,9 @@ public class FacadeProvider {
 
 	public static GeocodingFacade getGeocodingFacade() {
 		return get().lookupEjbRemote(GeocodingFacade.class);
+	}
+	public static CampaignFacade getCampaignFacade() {
+		return get().lookupEjbRemote(CampaignFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

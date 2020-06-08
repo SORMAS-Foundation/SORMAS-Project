@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.feature;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * New server features are automatically added to the database in FeatureConfigurationService.createMissingFeatureConfigurations().
@@ -19,7 +19,8 @@ public enum FeatureType {
 	TASK_GENERATION_CASE_SURVEILLANCE(true, true),
 	TASK_GENERATION_CONTACT_TRACING(true, true),
 	TASK_GENERATION_EVENT_SURVEILLANCE(true, true),
-	TASK_GENERATION_GENERAL(true, true);
+	TASK_GENERATION_GENERAL(true, true),
+	CAMPAIGNS(true, false);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
