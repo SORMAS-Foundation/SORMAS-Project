@@ -17,34 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
@@ -55,14 +27,7 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleExportDto;
-import de.symeda.sormas.api.sample.SampleFacade;
-import de.symeda.sormas.api.sample.SampleIndexDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.sample.*;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -74,12 +39,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
-import de.symeda.sormas.backend.common.QueryContext;
+import de.symeda.sormas.backend.common.*;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -104,6 +64,19 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -460,8 +433,12 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaze().get(Case.EPID_NUMBER),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getContactPerson().get(Person.FIRST_NAME),
+				joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getCaze().get(Case.DISEASE),
 				joins.getCaze().get(Case.DISEASE_DETAILS),
+				joins.getContact().get(Contact.DISEASE),
+				joins.getContact().get(Contact.DISEASE_DETAILS),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
@@ -487,14 +464,23 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.COMMENT),
 				joins.getReferredSample().get(Sample.UUID),
 				joins.getCaze().get(Case.UUID),
+				joins.getContact().get(Contact.UUID),
 				joins.getCasePerson().get(Person.APPROXIMATE_AGE),
 				joins.getCasePerson().get(Person.APPROXIMATE_AGE_TYPE),
 				joins.getCasePerson().get(Person.SEX),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getContactPerson().get(Person.SEX),
 				joins.getCasePersonAddressRegion().get(Region.NAME),
 				joins.getCasePersonAddressDistrict().get(District.NAME),
 				joins.getCasePersonAddressCommunity().get(Community.NAME),
 				joins.getCasePersonAddress().get(Location.CITY),
 				joins.getCasePersonAddress().get(Location.ADDRESS),
+				joins.getContactPersonAddressRegion().get(Region.NAME),
+				joins.getContactPersonAddressDistrict().get(District.NAME),
+				joins.getContactPersonAddressCommunity().get(Community.NAME),
+				joins.getContactPersonAddress().get(Location.CITY),
+				joins.getContactPersonAddress().get(Location.ADDRESS),
 				joins.getCaze().get(Case.REPORT_DATE),
 				joins.getCaze().get(Case.CASE_CLASSIFICATION),
 				joins.getCaze().get(Case.OUTCOME),
@@ -502,7 +488,13 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaseDistrict().get(District.NAME),
 				joins.getCaseCommunity().get(Community.NAME),
 				joins.getCaseFacility().get(Facility.NAME),
-				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS)));
+				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
+				joins.getContactRegion().get(Region.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContact().get(Contact.REPORT_DATE_TIME),
+				joins.getContact().get(Contact.LAST_CONTACT_DATE),
+				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
+				joins.getContact().get(Contact.CONTACT_STATUS)));
 
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
@@ -529,9 +521,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (SampleExportDto exportDto : resultList) {
-			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), null);
+			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), exportDto.getAssociatedContactJurisdiction());
 			pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
-			pseudonymizationService.pseudonymizeDto(SampleExportDto.CasePersonAddress.class, exportDto.getCaseAddress(), isInJurisdiction, null);
+			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
+			pseudonymizationService
+				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
 
 			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
 			int count = 0;

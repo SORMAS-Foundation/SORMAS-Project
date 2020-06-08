@@ -61,6 +61,10 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Location, Region> casePersonAddressRegion;
 	private Join<Location, District> casePersonAddressDistrict;
 	private Join<Location, Community> casePersonAddressCommunity;
+	private Join<Person, Location> contactPersonAddress;
+	private Join<Location, Region> contactPersonAddressRegion;
+	private Join<Location, District> contactPersonAddressDistrict;
+	private Join<Location, Community> contactPersonAddressCommunity;
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
@@ -278,5 +282,52 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	private void setCasePersonAddressCommunity(Join<Location, Community> casePersonAddressCommunity) {
 		this.casePersonAddressCommunity = casePersonAddressCommunity;
+	}
+
+	public Join<Person, Location> getContactPersonAddress() {
+		return getOrCreate(contactPersonAddress, Person.ADDRESS, JoinType.LEFT, getContactPerson(), this::setContactPersonAddress);
+	}
+
+	public void setContactPersonAddress(Join<Person, Location> contactPersonAddress) {
+		this.contactPersonAddress = contactPersonAddress;
+	}
+
+	public Join<Location, Region> getContactPersonAddressRegion() {
+		return getOrCreate(
+			contactPersonAddressRegion,
+			Location.REGION,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressRegion);
+	}
+
+	public void setContactPersonAddressRegion(Join<Location, Region> contactPersonAddressRegion) {
+		this.contactPersonAddressRegion = contactPersonAddressRegion;
+	}
+
+	public Join<Location, District> getContactPersonAddressDistrict() {
+		return getOrCreate(
+			contactPersonAddressDistrict,
+			Location.DISTRICT,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressDistrict);
+	}
+
+	public void setContactPersonAddressDistrict(Join<Location, District> contactPersonAddressDistrict) {
+		this.contactPersonAddressDistrict = contactPersonAddressDistrict;
+	}
+
+	public Join<Location, Community> getContactPersonAddressCommunity() {
+		return getOrCreate(
+			contactPersonAddressCommunity,
+			Location.COMMUNITY,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressCommunity);
+	}
+
+	public void setContactPersonAddressCommunity(Join<Location, Community> contactPersonAddressCommunity) {
+		this.contactPersonAddressCommunity = contactPersonAddressCommunity;
 	}
 }
