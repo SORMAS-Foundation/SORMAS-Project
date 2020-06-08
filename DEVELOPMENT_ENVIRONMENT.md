@@ -74,7 +74,7 @@
 * On first start of the application enter the Sormas rest service URL for the server URL: http://10.0.2.2:6080/sormas-rest/ (see: https://developer.android.com/studio/run/emulator-networking)
 * Configure code formatting:
 	- install Eclipse code formatter for Android studio (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
-	- open the plugin and check the "Use the Eclipse code formatter"
+	- open the plugin ("File -> Settings -> Other Settings") and check the "Use the Eclipse code formatter"
 	- browse to ``sormas-base/java-formatter-profile.xml`` and select it for Eclipse Java Formatter config file
 	- check optimize imports and select for Import order the ``sormas-base/java-importorder-profile.importorder`` file
 	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
