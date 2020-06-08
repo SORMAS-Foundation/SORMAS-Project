@@ -103,6 +103,12 @@ public interface Strings {
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String day = "day";
+	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
+	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
+	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
+	String DiseaseNetworkDiagram_legend = "DiseaseNetworkDiagram.legend";
+	String DiseaseNetworkDiagram_lowRisk = "DiseaseNetworkDiagram.lowRisk";
+	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
 	String entityAdditionalTest = "entityAdditionalTest";

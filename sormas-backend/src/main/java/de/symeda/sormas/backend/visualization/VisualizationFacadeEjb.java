@@ -307,29 +307,22 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		supportedEnums = Collections.unmodifiableMap(map);
 	}
 
-	private static final Pattern ENUM_PATTERN = Pattern.compile("\"(([A-Za-z]+)\\.([A-Z_]+))\"");
+	private static final Pattern ENUM_PATTERN = Pattern.compile("[A-Za-z]+\\.[A-Z_]+");
+	private static final Pattern INTERNATIONALIZATION_KEY_PATTERN = Pattern.compile("\\{([A-Za-z_.]+)\\}");
+	private static final String DISEASE_NETWORK_DIAGRAM_PREFIX = "DiseaseNetworkDiagram.";
 
 	private static String doI18n(String json, Language language) {
 
-		Matcher m = ENUM_PATTERN.matcher(json);
+		Matcher m = INTERNATIONALIZATION_KEY_PATTERN.matcher(json);
 
 		StringBuffer sb = new StringBuffer(json.length());
 		while (m.find()) {
 			String replacement = Optional.of(m.group(1))
-				.map(supportedEnums::get)
-				.map(c -> I18nProperties.getEnumCaption(language, c))
-				//TODO real json escaping
-				.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
-				.orElseGet(
-					() -> {
-						//TODO i18n of Classification.HEALTHY
-						if (m.group(2).equals("Classification")) {
-							String name = m.group(3);
-							return "\"" + name.charAt(0) + name.substring(1).toLowerCase() + "\"";
-						} else {
-							return m.group();
-						}
-					});
+				.map(c -> I18nProperties.getString(language, DISEASE_NETWORK_DIAGRAM_PREFIX + c))
+				.map(c -> escapeJsonString(c))
+				.orElseGet(() -> {
+					return findEnumCaption(m.group(1), language).map(s -> escapeJsonString(s)).orElse(m.group());
+				});
 
 			m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
 		}
@@ -337,6 +330,17 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 		return sb.toString();
 
+	}
+
+	private static Optional<String> findEnumCaption(String key, Language language) {
+		return Optional.of(key)
+			.filter(k -> ENUM_PATTERN.matcher(k).matches())
+			.map(supportedEnums::get)
+			.map(c -> I18nProperties.getEnumCaption(language, c));
+	}
+
+	private static String escapeJsonString(String string) {
+		return string.replace("\"", "\\\"");
 	}
 
 	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
@@ -355,6 +359,5 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@LocalBean
 	@Stateless
 	public static class VisualizationFacadeEjbLocal extends VisualizationFacadeEjb {
-
 	}
 }
