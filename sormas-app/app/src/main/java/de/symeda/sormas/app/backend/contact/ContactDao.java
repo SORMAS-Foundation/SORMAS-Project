@@ -213,9 +213,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 					if (!StringUtils.isEmpty(textFilter)) {
 						whereStatements.add(
 							where.or(
-								where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter + "'"),
-								where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter + "'"),
-								where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter + "'")));
+								where.raw(Contact.TABLE_NAME + "." + Contact.UUID + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+								where.raw(Person.TABLE_NAME + "." + Person.FIRST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'"),
+								where.raw(Person.TABLE_NAME + "." + Person.LAST_NAME + " LIKE '" + textFilter.replaceAll("'", "''") + "'")));
 					}
 				}
 			}
