@@ -12,16 +12,16 @@ import retrofit2.http.Path;
 
 public interface AggregateReportFacadeRetro {
 
-    @GET("aggregatereports/all/{since}")
-    Call<List<AggregateReportDto>> pullAllSince(@Path("since") long since);
+	@GET("aggregatereports/all/{since}")
+	Call<List<AggregateReportDto>> pullAllSince(@Path("since") long since);
 
-    @POST("aggregatereports/query")
-    Call<List<AggregateReportDto>> pullByUuids(@Body List<String> uuids);
+	@POST("aggregatereports/query")
+	Call<List<AggregateReportDto>> pullByUuids(@Body List<String> uuids);
 
-    @POST("aggregatereports/push")
-    Call<List<PushResult>> pushAll(@Body List<AggregateReportDto> dtos);
+	@POST("aggregatereports/push")
+	Call<List<PushResult>> pushAll(@Body List<AggregateReportDto> dtos);
 
-    @GET("aggregatereports/uuids")
-    Call<List<String>> pullUuids();
+	@GET("aggregatereports/uuids")
+	Call<List<String>> pullUuids();
 
 }
