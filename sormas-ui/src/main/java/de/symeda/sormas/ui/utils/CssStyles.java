@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-
 import de.symeda.sormas.api.Disease;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public final class CssStyles {
 
@@ -175,6 +174,7 @@ public final class CssStyles {
 	public static final String FORCE_CAPTION_CHECKBOX = "force-caption-checkbox";
 	public static final String CAPTION_HIDDEN = "caption-hidden";
 	public static final String CAPTION_OVERFLOW = "caption-overflow";
+	public static final String CAPTION_FIXED_WIDTH_100 = "caption-fixed-width-100";
 
 	public static final String SOFT_REQUIRED = "soft-required";
 	public static final String ERROR_COLOR_PRIMARY = "error-color-primary";
