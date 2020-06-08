@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Collections;
-
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+
+import java.util.Collections;
 
 public class ContactJurisdictionHelper {
 
@@ -32,16 +32,16 @@ public class ContactJurisdictionHelper {
 			return true;
 		}
 
-		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(roleCheck, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
-		}
-
-		if (roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
+		if (contactJurisdiction.getRegionUuid() != null && roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
 			return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
 		}
 
-		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
+		if (contactJurisdiction.getDistrictUuid() != null && roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
 			return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+		}
+
+		if (contactJurisdiction.getCaseJurisdiction() != null) {
+			return CaseJurisdictionHelper.isInJurisdiction(roleCheck, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
 		}
 
 		return roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER));
