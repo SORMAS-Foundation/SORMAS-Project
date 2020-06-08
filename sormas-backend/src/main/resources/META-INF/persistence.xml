@@ -1,92 +1,94 @@
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-	version="2.1">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
 
-	<persistence-unit name="SormasPU" transaction-type="JTA">
+    <persistence-unit name="SormasPU" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<jta-data-source>jdbc/sormasDataPool</jta-data-source>
-        
-		<mapping-file>META-INF/listener.xml</mapping-file>
+        <jta-data-source>jdbc/sormasDataPool</jta-data-source>
 
-		<class>de.symeda.sormas.backend.caze.Case</class>
-		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
-		<class>de.symeda.sormas.backend.contact.Contact</class>
-		<class>de.symeda.sormas.backend.epidata.EpiData</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
-		<class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
-		<class>de.symeda.sormas.backend.event.Event</class>
-		<class>de.symeda.sormas.backend.event.EventParticipant</class>
-		<class>de.symeda.sormas.backend.facility.Facility</class>
-		<class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
-		<class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
-		<class>de.symeda.sormas.backend.location.Location</class>
-		<class>de.symeda.sormas.backend.outbreak.Outbreak</class>
-		<class>de.symeda.sormas.backend.person.Person</class>
-		<class>de.symeda.sormas.backend.region.Community</class>
-		<class>de.symeda.sormas.backend.region.District</class>
-		<class>de.symeda.sormas.backend.region.Region</class>
-		<class>de.symeda.sormas.backend.report.WeeklyReport</class>
-		<class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
-		<class>de.symeda.sormas.backend.sample.Sample</class>
-		<class>de.symeda.sormas.backend.sample.PathogenTest</class>
-		<class>de.symeda.sormas.backend.symptoms.Symptoms</class>
-		<class>de.symeda.sormas.backend.task.Task</class>
-		<class>de.symeda.sormas.backend.user.User</class>
-		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
-		<class>de.symeda.sormas.backend.visit.Visit</class>
-		<class>de.symeda.sormas.backend.therapy.Therapy</class>
-		<class>de.symeda.sormas.backend.therapy.Treatment</class>
-		<class>de.symeda.sormas.backend.therapy.Prescription</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
-		<class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
-		<class>de.symeda.sormas.backend.sample.AdditionalTest</class>
-		<class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
-		<class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
-		<class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
-		<class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
-		<class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
-		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
-		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
-		<class>de.symeda.sormas.backend.report.AggregateReport</class>
-		<class>de.symeda.sormas.backend.campaign.Campaign</class>
+        <mapping-file>META-INF/listener.xml</mapping-file>
 
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <class>de.symeda.sormas.backend.caze.Case</class>
+        <class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+        <class>de.symeda.sormas.backend.contact.Contact</class>
+        <class>de.symeda.sormas.backend.epidata.EpiData</class>
+        <class>de.symeda.sormas.backend.epidata.EpiDataBurial</class>
+        <class>de.symeda.sormas.backend.epidata.EpiDataGathering</class>
+        <class>de.symeda.sormas.backend.epidata.EpiDataTravel</class>
+        <class>de.symeda.sormas.backend.event.Event</class>
+        <class>de.symeda.sormas.backend.event.EventParticipant</class>
+        <class>de.symeda.sormas.backend.facility.Facility</class>
+        <class>de.symeda.sormas.backend.hospitalization.Hospitalization</class>
+        <class>de.symeda.sormas.backend.hospitalization.PreviousHospitalization</class>
+        <class>de.symeda.sormas.backend.location.Location</class>
+        <class>de.symeda.sormas.backend.outbreak.Outbreak</class>
+        <class>de.symeda.sormas.backend.person.Person</class>
+        <class>de.symeda.sormas.backend.region.Community</class>
+        <class>de.symeda.sormas.backend.region.District</class>
+        <class>de.symeda.sormas.backend.region.Region</class>
+        <class>de.symeda.sormas.backend.report.WeeklyReport</class>
+        <class>de.symeda.sormas.backend.report.WeeklyReportEntry</class>
+        <class>de.symeda.sormas.backend.sample.Sample</class>
+        <class>de.symeda.sormas.backend.sample.PathogenTest</class>
+        <class>de.symeda.sormas.backend.symptoms.Symptoms</class>
+        <class>de.symeda.sormas.backend.task.Task</class>
+        <class>de.symeda.sormas.backend.user.User</class>
+        <class>de.symeda.sormas.backend.user.UserRoleConfig</class>
+        <class>de.symeda.sormas.backend.visit.Visit</class>
+        <class>de.symeda.sormas.backend.therapy.Therapy</class>
+        <class>de.symeda.sormas.backend.therapy.Treatment</class>
+        <class>de.symeda.sormas.backend.therapy.Prescription</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.ClinicalCourse</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.ClinicalVisit</class>
+        <class>de.symeda.sormas.backend.clinicalcourse.HealthConditions</class>
+        <class>de.symeda.sormas.backend.sample.AdditionalTest</class>
+        <class>de.symeda.sormas.backend.disease.DiseaseConfiguration</class>
+        <class>de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory</class>
+        <class>de.symeda.sormas.backend.infrastructure.PointOfEntry</class>
+        <class>de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo</class>
+        <class>de.symeda.sormas.backend.importexport.ExportConfiguration</class>
+        <class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
+        <class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
+        <class>de.symeda.sormas.backend.report.AggregateReport</class>
+        <class>de.symeda.sormas.backend.campaign.Campaign</class>
 
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		<validation-mode>CALLBACK</validation-mode>
-		
-		 <properties>
-         	<property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
-         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.format_sql" value="false" />
-         	<!-- don't validate on release, otherwise the automatic db update won't work
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
-         	 -->
-      	</properties>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
-	</persistence-unit>
-	
-	<persistence-unit name="auditlogPU">
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+        <validation-mode>CALLBACK</validation-mode>
+
+        <properties>
+            <property name="hibernate.dialect" value="de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect"/>
+            <property name="hibernate.transaction.jta.platform"
+                      value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
+            <!-- don't validate on release, otherwise the automatic db update won't work
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+             -->
+        </properties>
+
+    </persistence-unit>
+
+    <persistence-unit name="auditlogPU">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<jta-data-source>jdbc/AuditlogPool</jta-data-source>
+        <jta-data-source>jdbc/AuditlogPool</jta-data-source>
 
-		<class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
+        <class>de.symeda.sormas.backend.auditlog.AuditLogEntry</class>
 
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		<validation-mode>CALLBACK</validation-mode>
-		
-		 <properties>
-         	<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect"/>
-         	<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-         	<!-- don't validate on release, otherwise the automatic db update won't work
-         	<property name="hibernate.hbm2ddl.auto" value="validate"/>
-         	 -->
-      	</properties>
-		
-	</persistence-unit>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+        <validation-mode>CALLBACK</validation-mode>
+
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL94Dialect"/>
+            <property name="hibernate.transaction.jta.platform"
+                      value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+            <!-- don't validate on release, otherwise the automatic db update won't work
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+             -->
+        </properties>
+
+    </persistence-unit>
 </persistence>

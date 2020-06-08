@@ -1,5 +1,22 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -18,17 +35,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 @Stateless(name = "CampaignFacade")
 public class CampaignFacadeEjb implements CampaignFacade {
 
@@ -43,14 +49,12 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
-	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max,
-			List<SortProperty> sortProperties) {
+	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
-		
-		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.START_DATE),
-				campaign.get(Campaign.END_DATE));
+
+		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
 		Predicate filter = campaignService.createUserFilter(cb, cq, campaign);
 
@@ -165,8 +169,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		// Workaround for probable bug in Eclipse Link/Postgre that throws a
 		// NoResultException when trying to
 		// query for a true Boolean result
-		cq.where(cb.and(cb.equal(from.get(Campaign.ARCHIVED), true),
-				cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
+		cq.where(cb.and(cb.equal(from.get(Campaign.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), uuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
@@ -175,10 +178,11 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public void deleteCampaign(String campaignUuid) {
 		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade
-				.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-				.contains(UserRight.CAMPAIGN_DELETE)) {
-			throw new UnsupportedOperationException(I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.CAMPAIGN_DELETE)) {
+			throw new UnsupportedOperationException(
+				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "
+					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 
 		campaignService.delete(campaignService.getByUuid(campaignUuid));

@@ -1,30 +1,19 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.common;
-
-import androidx.annotation.NonNull;
-import androidx.databinding.BaseObservable;
-import android.util.Log;
-
-import com.googlecode.openbeans.PropertyDescriptor;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -35,11 +24,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.BaseObservable;
 import androidx.recyclerview.widget.DiffUtil;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 @MappedSuperclass
-public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable  {
+public class AbstractDomainObject extends BaseObservable implements Serializable, Cloneable {
 
 	public static final String ID = "id";
 	public static final String UUID = "uuid";
@@ -57,10 +55,10 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	/**
 	 * This marks the snapshot of a modified entity that was created for merging
 	 */
-	@DatabaseField(uniqueCombo=true)
+	@DatabaseField(uniqueCombo = true)
 	private boolean snapshot = false;
 
-	@DatabaseField(uniqueCombo=true, canBeNull = false)
+	@DatabaseField(uniqueCombo = true, canBeNull = false)
 	private String uuid;
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
@@ -107,7 +105,8 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	 * @return
 	 */
 	public boolean isModifiedOrChildModified() {
-		if (isModified()) return true;
+		if (isModified())
+			return true;
 
 		try {
 			Iterator<PropertyDescriptor> propertyIterator = AdoPropertyHelper.getEmbeddedAdoProperties(this.getClass());
@@ -191,7 +190,7 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	public String getUuid() {
 		return uuid;
 	}
-	
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -284,6 +283,7 @@ public class AbstractDomainObject extends BaseObservable implements Serializable
 	}
 
 	public static DiffUtil.ItemCallback<AbstractDomainObject> DIFF_CALLBACK = new DiffUtil.ItemCallback<AbstractDomainObject>() {
+
 		@Override
 		public boolean areItemsTheSame(@NonNull AbstractDomainObject oldItem, @NonNull AbstractDomainObject newItem) {
 			return oldItem.getId().equals(newItem.getId());

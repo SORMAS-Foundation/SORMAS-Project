@@ -8,7 +8,7 @@ import retrofit2.http.POST;
 
 public interface InfrastructureFacadeRetro {
 
-    @POST("infrastructure/sync")
-    Call<InfrastructureSyncDto> pullInfrastructureSyncData(@Body InfrastructureChangeDatesDto changeDates);
+	@POST("infrastructure/sync")
+	Call<InfrastructureSyncDto> pullInfrastructureSyncData(@Body InfrastructureChangeDatesDto changeDates);
 
 }

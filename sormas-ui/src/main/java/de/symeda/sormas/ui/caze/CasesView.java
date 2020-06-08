@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.function.Supplier;
+
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -25,6 +31,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.*;
@@ -48,11 +55,6 @@ import de.symeda.sormas.ui.caze.exporter.CaseExportConfigurationsLayout;
 import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
 import de.symeda.sormas.ui.utils.*;
-import org.vaadin.hene.popupbutton.PopupButton;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.function.Supplier;
 
 /**
  * A view for performing create-read-update-delete operations on products.

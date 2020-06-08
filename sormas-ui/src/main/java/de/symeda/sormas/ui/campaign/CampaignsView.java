@@ -8,6 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.i18n.Captions;
@@ -59,9 +60,11 @@ public class CampaignsView extends AbstractView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
-			createButton = ButtonHelper.createIconButton(Captions.campaignNewCampaign, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getCampaignController().createOrEdit(null),
-					ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.campaignNewCampaign,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getCampaignController().createOrEdit(null),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -94,8 +97,8 @@ public class CampaignsView extends AbstractView {
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.campaignArchivedCampaigns));
 		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.campaignAllCampaigns));
 		relevanceStatusFilter.addValueChangeListener(e -> {
-				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
-				navigateTo(criteria);
+			criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+			navigateTo(criteria);
 		});
 		filterLayout.addComponent(relevanceStatusFilter);
 		filterLayout.setComponentAlignment(relevanceStatusFilter, Alignment.MIDDLE_RIGHT);
@@ -127,6 +130,5 @@ public class CampaignsView extends AbstractView {
 
 		applyingCriteria = false;
 	}
-
 
 }

@@ -10,34 +10,34 @@ import de.symeda.sormas.app.util.JurisdictionHelper;
 
 public class ContactEditAuthorization {
 
-    public static boolean isContactEditAllowed(Contact contact) {
-        User user = ConfigProvider.getUser();
+	public static boolean isContactEditAllowed(Contact contact) {
+		User user = ConfigProvider.getUser();
 
-        return ContactJurisdictionHelper.isInJurisdiction(ConfigProvider::hasRole, JurisdictionHelper.createUserJurisdiction(user),
-                createContactJurisdictionDto(contact));
-    }
+		return ContactJurisdictionHelper
+			.isInJurisdiction(ConfigProvider::hasRole, JurisdictionHelper.createUserJurisdiction(user), createContactJurisdictionDto(contact));
+	}
 
-    private static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
-        if (contact == null) {
-            return null;
-        }
-        ContactJurisdictionDto dto = new ContactJurisdictionDto();
+	private static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+		if (contact == null) {
+			return null;
+		}
+		ContactJurisdictionDto dto = new ContactJurisdictionDto();
 
-        if (contact.getReportingUser() != null) {
-            dto.setReportingUserUuid(contact.getReportingUser().getUuid());
-        }
-        if (contact.getRegion() != null) {
-            dto.setRegionUuid(contact.getRegion().getUuid());
-        }
-        if (contact.getDistrict() != null) {
-            dto.setDistrictUuid(contact.getDistrict().getUuid());
-        }
+		if (contact.getReportingUser() != null) {
+			dto.setReportingUserUuid(contact.getReportingUser().getUuid());
+		}
+		if (contact.getRegion() != null) {
+			dto.setRegionUuid(contact.getRegion().getUuid());
+		}
+		if (contact.getDistrict() != null) {
+			dto.setDistrictUuid(contact.getDistrict().getUuid());
+		}
 
-        if (contact.getCaseUuid() != null) {
-            Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-            JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
-        }
+		if (contact.getCaseUuid() != null) {
+			Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+			JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
+		}
 
-        return dto;
-    }
+		return dto;
+	}
 }
