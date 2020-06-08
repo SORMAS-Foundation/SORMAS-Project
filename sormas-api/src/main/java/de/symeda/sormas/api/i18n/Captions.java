@@ -855,6 +855,7 @@ public interface Captions {
 	String moreActions = "moreActions";
 	String name = "name";
 	String notAvailableShort = "notAvailableShort";
+	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";

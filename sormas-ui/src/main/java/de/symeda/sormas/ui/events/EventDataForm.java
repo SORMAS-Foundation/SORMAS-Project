@@ -54,6 +54,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -136,8 +137,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
-		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
-		descriptionField.setRows(2);
+		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 
 		addField(EventDto.NOSOCOMIAL, OptionGroup.class);
 
