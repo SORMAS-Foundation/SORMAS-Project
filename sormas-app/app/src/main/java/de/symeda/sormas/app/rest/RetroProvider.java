@@ -161,8 +161,8 @@ public final class RetroProvider {
 
 		OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 		httpClient.connectTimeout(20, TimeUnit.SECONDS);
-		httpClient.readTimeout(60, TimeUnit.SECONDS); // for infrastructure data
-		httpClient.writeTimeout(30, TimeUnit.SECONDS);
+		httpClient.readTimeout(240, TimeUnit.SECONDS); // for infrastructure data
+		httpClient.writeTimeout(60, TimeUnit.SECONDS);
 
 		// adds "Accept-Encoding: gzip" by default
 		httpClient.addInterceptor(interceptor);
