@@ -9,34 +9,29 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
-
-import de.symeda.sormas.api.utils.PersonalData;
-import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
 
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
-	@PersonalData
-	private String contactFirstName;
-	@PersonalData
-	private String contactLastName;
-	@PersonalData
-	private String caseFirstName;
-	@PersonalData
-	private String caseLastName;
+	private PersonName contactName;
+	private PersonName caseName;
 
 	public ContactReferenceDto() {
 
@@ -46,37 +41,74 @@ public class ContactReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName,
-							   String caseFirstName, String caseLastName) {
+	public ContactReferenceDto(String uuid, String contactFirstName, String contactLastName, String caseFirstName, String caseLastName) {
+
 		setUuid(uuid);
-		this.contactFirstName = contactFirstName;
-		this.contactLastName = contactLastName;
-		this.caseFirstName = caseFirstName;
-		this.caseLastName = caseLastName;
-}
+		this.contactName = new PersonName(contactFirstName, contactLastName);
+		this.caseName = new PersonName(caseFirstName, caseLastName);
+	}
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactFirstName, contactLastName, caseFirstName, caseLastName, getUuid());
+		return buildCaption(contactName.firstName, contactName.lastName, caseName.firstName, caseName.lastName, getUuid());
 	}
 
-	public static String buildCaption(String contactFirstName, String contactLastName, String caseFirstName, String caseLastName, String contactUuid) {
+	public PersonName getContactName() {
+		return contactName;
+	}
+
+	public PersonName getCaseName() {
+		return caseName;
+	}
+
+	public static String buildCaption(
+		String contactFirstName,
+		String contactLastName,
+		String caseFirstName,
+		String caseLastName,
+		String contactUuid) {
+
 		StringBuilder builder = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(contactFirstName) || !DataHelper.isNullOrEmpty(contactLastName)) {
 			builder.append(DataHelper.toStringNullable(contactFirstName))
-					.append(" ").append(DataHelper.toStringNullable(contactLastName).toUpperCase());
+				.append(" ")
+				.append(DataHelper.toStringNullable(contactLastName).toUpperCase());
 		}
 
 		if (!DataHelper.isNullOrEmpty(caseFirstName) || !DataHelper.isNullOrEmpty(caseLastName)) {
 			builder.append(StringUtils.wrap(I18nProperties.getString(Strings.toCase), " "))
-			.append(DataHelper.toStringNullable(caseFirstName))
-			.append(" ").append(DataHelper.toStringNullable(caseLastName));
+				.append(DataHelper.toStringNullable(caseFirstName))
+				.append(" ")
+				.append(DataHelper.toStringNullable(caseLastName));
 		}
 
-		if(builder.length() == 0){
+		if (builder.length() == 0) {
 			builder.append(DataHelper.getShortUuid(contactUuid));
 		}
 
 		return builder.toString();
+	}
+
+	public static class PersonName implements Serializable {
+
+		private static final long serialVersionUID = 3655299579771996044L;
+
+		@PersonalData
+		private String firstName;
+		@PersonalData
+		private String lastName;
+
+		public PersonName(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
+
+		public String getFirstName() {
+			return firstName;
+		}
+
+		public String getLastName() {
+			return lastName;
+		}
 	}
 }

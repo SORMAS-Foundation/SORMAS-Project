@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -26,16 +26,20 @@ import elemental.json.JsonValue;
 @SuppressWarnings("serial")
 public class GridButtonRenderer extends HtmlRenderer {
 
-    @Override
-    public JsonValue encode(String value) {
-    	if(!StringUtils.isEmpty(value)) {
+	@Override
+	public JsonValue encode(String value) {
+
+		if (!StringUtils.isEmpty(value)) {
+			//@formatter:off
     		value = "<div class='v-button v-widget primary v-button-primary' tabindex='0' role='button'>"
     				+ "<span class='v-button-wrap'>"
     				+ "<span class='v-button-caption'>" + value + "</span></span></div>";
 //	    	value = "<a class='v-button v-button-primary' title='" + value + "'>" + value + "</a>";
-	        return super.encode(value);
-    	} else {
-    		return null;
-    	}
-    }
+    		//@formatter:on
+
+			return super.encode(value);
+		} else {
+			return null;
+		}
+	}
 }

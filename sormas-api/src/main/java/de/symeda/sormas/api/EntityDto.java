@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -52,6 +52,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	}
 
 	protected EntityDto(Date creationDate, Date changeDate, String uuid) {
+
 		this.creationDate = creationDate;
 		this.changeDate = changeDate;
 		this.uuid = uuid;
@@ -84,6 +85,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o) {
 			return true;
 		}
@@ -102,6 +104,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	@Override
 	public int hashCode() {
+
 		if (getUuid() != null) {
 			return getUuid().hashCode();
 		}
@@ -110,9 +113,11 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 	@Override
 	public EntityDto clone() throws CloneNotSupportedException {
+
 		if (getUuid() == null) {
 			throw new CloneNotSupportedException("DataTransferObject must have uuid in order to be cloneable");
 		}
+
 		return (EntityDto) super.clone();
 	}
 }

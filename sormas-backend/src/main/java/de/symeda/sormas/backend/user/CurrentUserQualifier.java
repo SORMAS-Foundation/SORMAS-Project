@@ -15,9 +15,14 @@ import javax.inject.Qualifier;
 /**
  * Used as a Qualifier to identify the User entity produced as the current user
  */
-@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Target({
+	TYPE,
+	METHOD,
+	PARAMETER,
+	FIELD })
 @Retention(RUNTIME)
 @Documented
 @Qualifier
 public @interface CurrentUserQualifier {
+
 }

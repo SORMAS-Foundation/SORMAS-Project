@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
+
+import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
@@ -29,8 +31,6 @@ import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
-
-import java.util.Date;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -105,9 +105,13 @@ public class PersonDto extends PseudonymizableDto {
 	@Required
 	@PersonalData
 	private String lastName;
+	@PersonalData
 	private String nickname;
+	@PersonalData
 	private String mothersName;
+	@PersonalData
 	private String mothersMaidenName;
+	@PersonalData
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;
@@ -124,19 +128,26 @@ public class PersonDto extends PseudonymizableDto {
 	private ApproximateAgeType approximateAgeType;
 	@Outbreaks
 	private Date approximateAgeReferenceDate;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private RegionReferenceDto placeOfBirthRegion;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private DistrictReferenceDto placeOfBirthDistrict;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private CommunityReferenceDto placeOfBirthCommunity;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private FacilityReferenceDto placeOfBirthFacility;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private String placeOfBirthFacilityDetails;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private Integer gestationAgeAtBirth;
-	@Diseases({Disease.CONGENITAL_RUBELLA})
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
 	private Integer birthWeight;
 
 	@Outbreaks
@@ -145,20 +156,58 @@ public class PersonDto extends PseudonymizableDto {
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
 	private String causeOfDeathDetails;
-	@Diseases({Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.CORONAVIRUS,
-			Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.POLIO,
+		Disease.UNSPECIFIED_VHF,
+		Disease.CORONAVIRUS,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private DeathPlaceType deathPlaceType;
-	@Diseases({Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.POLIO, Disease.UNSPECIFIED_VHF, Disease.CORONAVIRUS,
-			Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.POLIO,
+		Disease.UNSPECIFIED_VHF,
+		Disease.CORONAVIRUS,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private String deathPlaceDescription;
-	@Diseases({Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
-			Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.POLIO,
+		Disease.CORONAVIRUS,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private Date burialDate;
-	@Diseases({Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
-			Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.POLIO,
+		Disease.CORONAVIRUS,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private String burialPlaceDescription;
-	@Diseases({Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.POLIO, Disease.CORONAVIRUS, Disease.UNSPECIFIED_VHF,
-			Disease.UNDEFINED, Disease.OTHER})
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.POLIO,
+		Disease.CORONAVIRUS,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private BurialConductor burialConductor;
 	private String phone;
 	private String phoneOwner;
@@ -370,17 +419,19 @@ public class PersonDto extends PseudonymizableDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public EducationType getEducationType() {
 		return educationType;
 	}
+
 	public void setEducationType(EducationType educationType) {
 		this.educationType = educationType;
 	}
-	
+
 	public String getEducationDetails() {
 		return educationDetails;
 	}
+
 	public void setEducationDetails(String educationDetails) {
 		this.educationDetails = educationDetails;
 	}
@@ -559,10 +610,10 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	public static PersonDto build() {
+
 		PersonDto person = new PersonDto();
 		person.setUuid(DataHelper.createUuid());
 		person.setAddress(LocationDto.build());
 		return person;
 	}
-
 }

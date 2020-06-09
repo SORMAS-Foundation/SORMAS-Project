@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
@@ -52,19 +52,20 @@ import de.symeda.sormas.backend.user.UserService;
 public class TaskService extends AbstractAdoService<Task> {
 
 	@EJB
-	CaseService caseService;
+	private CaseService caseService;
 	@EJB
-	ContactService contactService;
+	private ContactService contactService;
 	@EJB
-	EventService eventService;
+	private EventService eventService;
 	@EJB
-	UserService userService;
+	private UserService userService;
 
 	public TaskService() {
 		super(Task.class);
 	}
 
 	public List<Task> getAllActiveTasksAfter(Date date, User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
@@ -89,6 +90,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	public List<String> getAllActiveUuids(User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Task> from = cq.from(getElementClass());
@@ -119,11 +121,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(
-				UserRole.NATIONAL_USER,
-				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER,
-				UserRole.REST_USER)) {
+		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
 			return assigneeFilter;
 		}
 
@@ -181,6 +179,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
+
 		Predicate filter = null;
 		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
 		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
@@ -198,7 +197,10 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(assigneeUser.get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = and(cb, filter, cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(Case.UUID), taskCriteria.getCaze().getUuid()));
@@ -207,7 +209,10 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(from.join(Task.CONTACT, JoinType.LEFT).get(User.UUID), taskCriteria.getContact().getUuid()));
 		}
 		if (taskCriteria.getContactPerson() != null) {
-			filter = and(cb, filter, cb.equal(
+			filter = and(
+				cb,
+				filter,
+				cb.equal(
 					from.join(Task.CONTACT, JoinType.LEFT).join(Contact.PERSON, JoinType.LEFT).get(User.UUID),
 					taskCriteria.getContactPerson().getUuid()));
 		}
@@ -230,17 +235,13 @@ public class TaskService extends AbstractAdoService<Task> {
 			if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, buildActiveTasksFilter(cb, from));
 			} else if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = and(cb, filter,
-						cb.or(
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-										cb.equal(caze.get(Case.ARCHIVED), true)),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-										cb.equal(contactCaze.get(Case.ARCHIVED), true)),
-								cb.and(
-										cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-										cb.equal(event.get(Event.ARCHIVED), true))));
+				filter = and(
+					cb,
+					filter,
+					cb.or(
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE), cb.equal(caze.get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT), cb.equal(contactCaze.get(Case.ARCHIVED), true)),
+						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(event.get(Event.ARCHIVED), true))));
 			}
 		}
 
@@ -250,6 +251,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	private Predicate buildActiveTasksFilter(CriteriaBuilder cb, Root<Task> from) {
+
 		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
 		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
@@ -279,6 +281,7 @@ public class TaskService extends AbstractAdoService<Task> {
 	}
 
 	public Task buildTask(User creatorUser) {
+
 		Task task = new Task();
 		task.setCreatorUser(creatorUser);
 		task.setPriority(TaskPriority.NORMAL);

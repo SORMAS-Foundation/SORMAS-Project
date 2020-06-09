@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,6 +45,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -59,7 +59,11 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
 	private ExportConfigurationDto exportConfiguration;
 
-	public CaseExportConfigurationEditLayout(ExportConfigurationDto exportConfiguration, Consumer<ExportConfigurationDto> resultCallback, Runnable discardCallback) {
+	public CaseExportConfigurationEditLayout(
+		ExportConfigurationDto exportConfiguration,
+		Consumer<ExportConfigurationDto> resultCallback,
+		Runnable discardCallback) {
+
 		if (exportConfiguration == null) {
 			exportConfiguration = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
 			exportConfiguration.setExportType(ExportType.CASE);
@@ -99,16 +103,16 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private int buildCheckBoxGroups() {
+
 		checkBoxGroups = new HashMap<>();
 		checkBoxes = new HashMap<>();
 		int checkBoxCount = 0;
 
 		List<Method> readMethods = new ArrayList<Method>();
-		readMethods.addAll(Arrays.stream(CaseExportDto.class.getDeclaredMethods())
-				.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) 
-						&& m.isAnnotationPresent(ExportGroup.class))
-				.sorted((a, b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), 
-						b.getAnnotationsByType(Order.class)[0].value()))
+		readMethods.addAll(
+			Arrays.stream(CaseExportDto.class.getDeclaredMethods())
+				.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(ExportGroup.class))
+				.sorted((a, b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), b.getAnnotationsByType(Order.class)[0].value()))
 				.collect(Collectors.toList()));
 
 		Set<String> combinedProperties = new HashSet<>();
@@ -124,13 +128,25 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 			}
 
 			String property = method.getAnnotation(ExportProperty.class).value();
-			String caption = I18nProperties.getPrefixCaption(CaseExportDto.I18N_PREFIX, property,
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, property,
-							I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, property,
-									I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, property,
-											I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, property,
-													I18nProperties.getPrefixCaption(HospitalizationDto.I18N_PREFIX, property,
-															I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, property)))))));
+			String caption = I18nProperties.getPrefixCaption(
+				CaseExportDto.I18N_PREFIX,
+				property,
+				I18nProperties.getPrefixCaption(
+					CaseDataDto.I18N_PREFIX,
+					property,
+					I18nProperties.getPrefixCaption(
+						PersonDto.I18N_PREFIX,
+						property,
+						I18nProperties.getPrefixCaption(
+							SymptomsDto.I18N_PREFIX,
+							property,
+							I18nProperties.getPrefixCaption(
+								EpiDataDto.I18N_PREFIX,
+								property,
+								I18nProperties.getPrefixCaption(
+									HospitalizationDto.I18N_PREFIX,
+									property,
+									I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, property)))))));
 
 			if (method.getAnnotation(ExportProperty.class).combined()) {
 				if (combinedProperties.contains(property)) {
@@ -155,6 +171,7 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private HorizontalLayout buildCheckBoxLayout(int totalCheckBoxCount) {
+
 		HorizontalLayout checkBoxLayout = new HorizontalLayout();
 		checkBoxLayout.setMargin(false);
 
@@ -180,9 +197,9 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 			}
 
 			int side = 0;
-			if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 1/3) {
+			if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 1 / 3) {
 				firstColumnLayout.addComponent(groupTypeLabels.get(groupType));
-			} else if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 2/3){
+			} else if (currentCheckBoxCount < (float) totalCheckBoxCount * (float) 2 / 3) {
 				secondColumnLayout.addComponent(groupTypeLabels.get(groupType));
 				side = 1;
 			} else {
@@ -206,6 +223,7 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private HorizontalLayout buildSelectionButtonLayout() {
+
 		HorizontalLayout selectionButtonLayout = new HorizontalLayout();
 		selectionButtonLayout.setMargin(false);
 
@@ -229,6 +247,7 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private HorizontalLayout buildButtonLayout(Consumer<ExportConfigurationDto> resultCallback, Runnable discardCallback) {
+
 		HorizontalLayout buttonLayout = new HorizontalLayout();
 		buttonLayout.setMargin(false);
 
@@ -248,15 +267,18 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 	}
 
 	private boolean validate() {
+
 		if (!StringUtils.isEmpty(tfName.getValue())) {
 			return true;
 		} else {
-			new Notification(null, I18nProperties.getValidationError(Validations.exportNoNameSpecified), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			new Notification(null, I18nProperties.getValidationError(Validations.exportNoNameSpecified), Type.ERROR_MESSAGE, false)
+				.show(Page.getCurrent());
 			return false;
 		}
 	}
 
 	private void updateExportConfiguration() {
+
 		Set<String> properties = new HashSet<>();
 		for (CheckBox checkBox : checkBoxes.keySet()) {
 			if (Boolean.TRUE == checkBox.getValue()) {
@@ -266,5 +288,4 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		exportConfiguration.setProperties(properties);
 		exportConfiguration.setName(tfName.getValue());
 	}
-
 }

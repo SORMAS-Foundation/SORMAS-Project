@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -40,12 +40,13 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 	private static final long serialVersionUID = 6289713952342575369L;
 
 	public RegionsGrid(RegionCriteria criteria) {
+
 		super(RegionIndexDto.class);
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(RegionsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
-		
+
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -54,8 +55,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			setCriteria(criteria);
 		}
 
-		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.EXTERNAL_ID, RegionIndexDto.POPULATION,
-				RegionIndexDto.GROWTH_RATE);
+		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.EXTERNAL_ID, RegionIndexDto.POPULATION, RegionIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> {
@@ -64,8 +64,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					RegionIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(RegionIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
@@ -74,23 +73,30 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 	}
 
 	public void setLazyDataProvider() {
+
 		DataProvider<RegionIndexDto, RegionCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getRegionFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getRegionFacade().count(
-						query.getFilter().orElse(null));
-				});
+			query -> FacadeProvider.getRegionFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getRegionFacade().count(query.getFilter().orElse(null));
+			});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<RegionIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getRegionFacade().getIndexList(getCriteria(), null, null, null).stream());
+
+		ListDataProvider<RegionIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getRegionFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-	
 }

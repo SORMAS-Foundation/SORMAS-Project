@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -9,14 +9,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.contact;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -38,24 +52,10 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
+
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
@@ -63,34 +63,43 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Override
 	public void init() {
+
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(),
-				"Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(),
-				"Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
 
 	@Test
 	public void testGetContactInJurisdiction() {
+
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ContactDto contact = createContact(user2, caze, rdcf2);
-
 		assertNotPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()), true);
 	}
 
 	@Test
 	public void testGetContactOutsideJurisdiction() {
+
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact = createContact(user1, caze, rdcf1);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		creator.createContact(user1.toReference(), null, createPerson().toReference(), getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()), new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
-
+		creator.createContact(
+			user1.toReference(),
+			null,
+			createPerson().toReference(),
+			getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()),
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		assertPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()));
 	}
 
@@ -99,22 +108,24 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		List<ContactDto> contacts = getContactFacade().getByUuids(Arrays.asList(contact1.getUuid(), contact2.getUuid()));
-
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), false);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
 	}
 
 	@Test
 	public void testPseudonymizeGetAllAfter() {
+
 		CaseDataDto caze1 = createCase(user2, rdcf2);
 		ContactDto contact1 = createContact(user2, caze1, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
 		CaseDataDto caze2 = createCase(user1, rdcf1);
 		ContactDto contact3 = createContact(user2, caze2, rdcf2);
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
@@ -130,7 +141,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), null, null, Collections.emptyList());
 
@@ -176,7 +188,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		List<ContactExportDto> exportList = getContactFacade().getExportList(new ContactCriteria(), 0, 100, Language.EN);
 
@@ -200,7 +213,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		ContactSimilarityCriteria criteria = new ContactSimilarityCriteria();
 		criteria.setReportDate(new Date());
@@ -223,9 +237,11 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
-		List<ContactFollowUpDto> matchingContacts = getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
+		List<ContactFollowUpDto> matchingContacts =
+			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
 
 		ContactFollowUpDto followup1 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(followup1.getPerson().getFirstName(), is("James"));
@@ -234,7 +250,6 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactFollowUpDto followup2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
 		assertThat(followup2.getPerson().getFirstName(), isEmptyString());
 		assertThat(followup2.getPerson().getLastName(), isEmptyString());
-
 	}
 
 	@Test
@@ -307,6 +322,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertPseudonymized(ContactDto contact) {
+
 		assertThat(contact.getPerson().getFirstName(), isEmptyString());
 		assertThat(contact.getPerson().getLastName(), isEmptyString());
 
@@ -323,8 +339,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private ContactDto createContact(UserDto reportingUser, CaseDataDto caze, TestDataCreator.RDCF rdcf) {
-		return creator.createContact(reportingUser.toReference(), reportingUser.toReference(), createPerson().toReference(), caze,
-				new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
+		return creator
+			.createContact(reportingUser.toReference(), reportingUser.toReference(), createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
 					c.setResultingCaseUser(reportingUser.toReference());
 
 					c.setReportLat(43.4354);
@@ -338,6 +354,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private PersonDto createPerson() {
+
 		LocationDto address = new LocationDto();
 		address.setRegion(rdcf1.region);
 		address.setDistrict(rdcf1.district);

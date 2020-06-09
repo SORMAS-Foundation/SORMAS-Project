@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
@@ -59,11 +59,19 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void testSampleDeletion() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
-		TaskDto task = creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
-
+		TaskDto task = creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
@@ -77,30 +85,80 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexList() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
 	}
 
 	@Test
 	public void testArchivedTaskNotGettingTransfered() {
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(),
-				"Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), Disease.EVD,
-				CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
-		ContactDto contact = creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
-				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		EventDto event = creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 
-		creator.createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, DateHelper.addDays(new Date(), 1), user.toReference());
-		creator.createTask(TaskContext.CASE, TaskType.OTHER, TaskStatus.PENDING, caze.toReference(), null, null, DateHelper.addDays(new Date(), 1), user.toReference());
-		creator.createTask(TaskContext.CONTACT, TaskType.OTHER, TaskStatus.PENDING, null, contact.toReference(), null, DateHelper.addDays(new Date(), 1), user.toReference());
-		creator.createTask(TaskContext.EVENT, TaskType.OTHER, TaskStatus.PENDING, null, null, event.toReference(), DateHelper.addDays(new Date(), 1), user.toReference());
-
+		creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.CASE,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			contact.toReference(),
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			event.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
 		// getAllActiveTasks and getAllUuids should return length 4+1 (case investigation)
 		assertEquals(5, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(5, getTaskFacade().getAllActiveUuids().size());

@@ -23,16 +23,23 @@ If anything goes wrong during the automatic database update process when deployi
 ``pg_restore --clean -U postgres -Fc -d sormas_db sormas_db_....dump``
 
 ## Default Logins
-These are the default users for demo systems. Make sure to deactivate them or change the passwords on productive systems:
+These are the default users for most user roles, intended to be used on development or demo systems. In all cases except the admin user, the username and password are identical. Make sure to deactivate them or change the passwords on productive systems.
 
 ### Admin
-name: admin
-pw: sadmin
+**Username:** admin  
+**Password:** sadmin
 
-### Surveillance Supervisor (web UI)
-name: SunkSesa
-pw: Sunkanmi
+### Web users
+**Surveillance Supervisor:** SurvSup  
+**Case Supervisor:** CaseSup  
+**Contact Supervisor:** ContSup  
+**Point of Entry Supervisor:** PoeSup  
+**Laboratory Officer:** LabOff  
+**Event Officer:** EveOff  
+**National User:** NatUser  
+**National Clinician:** NatClin  
 
-### Surveillance Officer (mobile app)
-name: SanaObas
-pw: Sanaa
+### Mobile app users
+**Surveillance Officer:** SurvOff  
+**Hospital Informant:** HospInf  
+**Point of Entry Informant:** PoeInf  

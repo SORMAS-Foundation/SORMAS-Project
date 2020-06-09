@@ -30,9 +30,9 @@ public abstract class BaseCriteria implements Serializable {
 		try {
 			for (Method getter : getClass().getDeclaredMethods()) {
 				if (Modifier.isStatic(getter.getModifiers())
-						|| Modifier.isPrivate(getter.getModifiers())
-						|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is"))
-						|| getter.isAnnotationPresent(IgnoreForUrl.class))
+					|| Modifier.isPrivate(getter.getModifiers())
+					|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is"))
+					|| getter.isAnnotationPresent(IgnoreForUrl.class))
 					continue;
 
 				String propertyName = getter.getName();
@@ -52,15 +52,15 @@ public abstract class BaseCriteria implements Serializable {
 					urlFilter.append('=');
 					String stringValue;
 					if (ReferenceDto.class.isAssignableFrom(type)) {
-						stringValue = ((ReferenceDto)value).getUuid();
+						stringValue = ((ReferenceDto) value).getUuid();
 					} else if (Date.class.isAssignableFrom(type)) {
-						stringValue = String.valueOf(((Date)value).getTime());
+						stringValue = String.valueOf(((Date) value).getTime());
 					} else if (Boolean.class.isAssignableFrom(type)) {
-						stringValue = String.valueOf(((Boolean)value).booleanValue());
+						stringValue = String.valueOf(((Boolean) value).booleanValue());
 					} else if (Enum.class.isAssignableFrom(type)) {
-						stringValue = ((Enum<?>)value).name();
+						stringValue = ((Enum<?>) value).name();
 					} else if (String.class.isAssignableFrom(type)) {
-						stringValue = (String)value;
+						stringValue = (String) value;
 					} else if (Integer.class.isAssignableFrom(type)) {
 						stringValue = String.valueOf(value);
 					} else if (EpiWeek.class.isAssignableFrom(type)) {
@@ -78,11 +78,12 @@ public abstract class BaseCriteria implements Serializable {
 	}
 
 	public boolean hasAnyFilterActive() {
+
 		try {
 			for (Method getter : getClass().getDeclaredMethods()) {
 				if (Modifier.isStatic(getter.getModifiers())
-						|| Modifier.isPrivate(getter.getModifiers())
-						|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is")))
+					|| Modifier.isPrivate(getter.getModifiers())
+					|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is")))
 					continue;
 
 				String propertyName = getter.getName();
@@ -116,15 +117,17 @@ public abstract class BaseCriteria implements Serializable {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
 	public void fromUrlParams(String urlParams) {
-		Map<String, List<String>> params = splitQuery(urlParams);
 
+		Map<String, List<String>> params = splitQuery(urlParams);
 		try {
 			for (Method getter : getClass().getDeclaredMethods()) {
 				if (Modifier.isStatic(getter.getModifiers())
-						|| Modifier.isPrivate(getter.getModifiers())
-						|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is")))
+					|| Modifier.isPrivate(getter.getModifiers())
+					|| !(getter.getName().startsWith("get") || getter.getName().startsWith("is")))
 					continue;
 
 				String propertyName = getter.getName();
@@ -135,31 +138,33 @@ public abstract class BaseCriteria implements Serializable {
 				}
 
 				Class<?> type = getter.getReturnType();
-				
+
 				Method setter;
 				try {
 					setter = getClass().getMethod(propertyName, type);
 				} catch (NoSuchMethodException e) {
 					setter = getClass().getMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), type);
 				}
-				
+
 				if (params.containsKey(propertyName)) {
 					List<String> fieldParams = params.get(propertyName);
 
 					Object value = null;
 					if (ReferenceDto.class.isAssignableFrom(type)) {
 						value = type.newInstance();
-						((ReferenceDto)value).setUuid(fieldParams.get(0));
+						((ReferenceDto) value).setUuid(fieldParams.get(0));
 					} else if (Date.class.isAssignableFrom(type)) {
 						try {
 							value = new Date(Long.valueOf(fieldParams.get(0)).longValue());
-						} catch (NumberFormatException e) { } // ignore
+						} catch (NumberFormatException e) {
+						} // ignore
 					} else if (Boolean.class.isAssignableFrom(type)) {
 						value = Boolean.valueOf(fieldParams.get(0));
 					} else if (Enum.class.isAssignableFrom(type)) {
 						try {
-							value = Enum.valueOf((Class<? extends Enum>)type, fieldParams.get(0));
-						} catch (IllegalArgumentException e) { } // ignore
+							value = Enum.valueOf((Class<? extends Enum>) type, fieldParams.get(0));
+						} catch (IllegalArgumentException e) {
+						} // ignore
 					} else if (String.class.isAssignableFrom(type)) {
 						value = fieldParams.get(0);
 					} else if (Integer.class.isAssignableFrom(type)) {

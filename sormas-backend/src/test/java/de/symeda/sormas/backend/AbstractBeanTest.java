@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
@@ -65,6 +65,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
@@ -131,7 +132,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
-		
+
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 
@@ -151,7 +152,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
-	
+
 	@Before
 	public void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
@@ -161,7 +162,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 			getDiseaseConfigurationService().ensurePersisted(configuration);
 		});
 	}
-	
+
 	public EntityManager getEntityManager() {
 		return getBean(EntityManagerWrapper.class).getEntityManager();
 	}
@@ -173,11 +174,11 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
-	
+
 	public CaseService getCaseService() {
 		return getBean(CaseService.class);
 	}
-	
+
 	public CaseStatisticsFacade getCaseStatisticsFacade() {
 		return getBean(CaseStatisticsFacadeEjbLocal.class);
 	}
@@ -205,7 +206,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public VisitFacade getVisitFacade() {
 		return getBean(VisitFacadeEjbLocal.class);
 	}
-	
+
 	public VisitService getVisitService() {
 		return getBean(VisitService.class);
 	}
@@ -213,7 +214,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public PersonFacade getPersonFacade() {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
-	
+
 	public PersonService getPersonService() {
 		return getBean(PersonService.class);
 	}
@@ -233,7 +234,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public PathogenTestFacade getSampleTestFacade() {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
-	
+
 	public AdditionalTestFacade getAdditionalTestFacade() {
 		return getBean(AdditionalTestFacadeEjbLocal.class);
 	}
@@ -317,35 +318,35 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CommunityService getCommunityService() {
 		return getBean(CommunityService.class);
 	}
-	
+
 	public ClinicalCourseFacade getClinicalCourseFacade() {
 		return getBean(ClinicalCourseFacadeEjbLocal.class);
 	}
-	
+
 	public ClinicalVisitFacade getClinicalVisitFacade() {
 		return getBean(ClinicalVisitFacadeEjbLocal.class);
 	}
-	
+
 	public TherapyFacade getTherapyFacade() {
 		return getBean(TherapyFacadeEjbLocal.class);
 	}
-	
+
 	public PrescriptionFacade getPrescriptionFacade() {
 		return getBean(PrescriptionFacadeEjbLocal.class);
 	}
-	
+
 	public TreatmentFacade getTreatmentFacade() {
 		return getBean(TreatmentFacadeEjbLocal.class);
 	}
-	
+
 	public DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
 		return getBean(DiseaseConfigurationFacadeEjbLocal.class);
 	}
-	
+
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
 	}
-	
+
 	public PopulationDataFacade getPopulationDataFacade() {
 		return getBean(PopulationDataFacadeEjbLocal.class);
 	}
@@ -353,15 +354,26 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public DiseaseFacade getDiseaseFacade() {
 		return getBean(DiseaseFacadeEjbLocal.class);
 	}
-	
+
 	public FeatureConfigurationFacade getFeatureConfigurationFacade() {
 		return getBean(FeatureConfigurationFacadeEjbLocal.class);
 	}
-	
+
 	public PathogenTestFacade getPathogenTestFacade() {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
+	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		UserDto survOff =
+			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
+
+		return survOff;
+	}
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
 	}

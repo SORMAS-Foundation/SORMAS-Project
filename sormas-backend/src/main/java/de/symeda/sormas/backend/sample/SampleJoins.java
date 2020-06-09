@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -9,14 +9,17 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.sample;
+
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
@@ -30,11 +33,8 @@ import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-
 public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
+
 	private Join<Sample, Sample> referredSample;
 	private Join<Sample, Facility> lab;
 	private Join<Sample, Case> caze;
@@ -61,7 +61,10 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Location, Region> casePersonAddressRegion;
 	private Join<Location, District> casePersonAddressDistrict;
 	private Join<Location, Community> casePersonAddressCommunity;
-
+	private Join<Person, Location> contactPersonAddress;
+	private Join<Location, Region> contactPersonAddressRegion;
+	private Join<Location, District> contactPersonAddressDistrict;
+	private Join<Location, Community> contactPersonAddressCommunity;
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
@@ -268,10 +271,63 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	}
 
 	public Join<Location, Community> getCasePersonAddressCommunity() {
-		return getOrCreate(casePersonAddressCommunity, Location.COMMUNITY, JoinType.LEFT, getCasePersonAddress(), this::setCasePersonAddressCommunity);
+
+		return getOrCreate(
+			casePersonAddressCommunity,
+			Location.COMMUNITY,
+			JoinType.LEFT,
+			getCasePersonAddress(),
+			this::setCasePersonAddressCommunity);
 	}
 
 	private void setCasePersonAddressCommunity(Join<Location, Community> casePersonAddressCommunity) {
 		this.casePersonAddressCommunity = casePersonAddressCommunity;
+	}
+
+	public Join<Person, Location> getContactPersonAddress() {
+		return getOrCreate(contactPersonAddress, Person.ADDRESS, JoinType.LEFT, getContactPerson(), this::setContactPersonAddress);
+	}
+
+	public void setContactPersonAddress(Join<Person, Location> contactPersonAddress) {
+		this.contactPersonAddress = contactPersonAddress;
+	}
+
+	public Join<Location, Region> getContactPersonAddressRegion() {
+		return getOrCreate(
+			contactPersonAddressRegion,
+			Location.REGION,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressRegion);
+	}
+
+	public void setContactPersonAddressRegion(Join<Location, Region> contactPersonAddressRegion) {
+		this.contactPersonAddressRegion = contactPersonAddressRegion;
+	}
+
+	public Join<Location, District> getContactPersonAddressDistrict() {
+		return getOrCreate(
+			contactPersonAddressDistrict,
+			Location.DISTRICT,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressDistrict);
+	}
+
+	public void setContactPersonAddressDistrict(Join<Location, District> contactPersonAddressDistrict) {
+		this.contactPersonAddressDistrict = contactPersonAddressDistrict;
+	}
+
+	public Join<Location, Community> getContactPersonAddressCommunity() {
+		return getOrCreate(
+			contactPersonAddressCommunity,
+			Location.COMMUNITY,
+			JoinType.LEFT,
+			getContactPersonAddress(),
+			this::setContactPersonAddressCommunity);
+	}
+
+	public void setContactPersonAddressCommunity(Join<Location, Community> contactPersonAddressCommunity) {
+		this.contactPersonAddressCommunity = contactPersonAddressCommunity;
 	}
 }

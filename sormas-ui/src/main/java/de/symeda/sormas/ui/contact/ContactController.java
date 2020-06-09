@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactController {
 
@@ -74,12 +75,13 @@ public class ContactController {
 	}
 
 	public void create(CaseReferenceDto caseRef) {
+
 		CaseDataDto caze = null;
 		if (caseRef != null) {
 			caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 		CommitDiscardWrapperComponent<ContactCreateForm> createComponent = getContactCreateComponent(caze);
-		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));    	
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewContact));
 	}
 
 	public void navigateToData(String contactUuid) {
@@ -92,12 +94,12 @@ public class ContactController {
 			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
 		} else {
 			SormasUI.get().getNavigator().navigateTo(navigationState);
-		}		
+		}
 	}
 
 	public void editData(String contactUuid) {
 		String navigationState = ContactDataView.VIEW_NAME + "/" + contactUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);	
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
 	public void overview() {
@@ -122,8 +124,7 @@ public class ContactController {
 		}
 
 		Page page = SormasUI.get().getPage();
-		page.setUriFragment("!" + ContactsView.VIEW_NAME + "/"
-				+ fragmentParameter, false);
+		page.setUriFragment("!" + ContactsView.VIEW_NAME + "/" + fragmentParameter, false);
 	}
 
 	private ContactDto createNewContact(CaseDataDto caze) {
@@ -136,13 +137,13 @@ public class ContactController {
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(CaseDataDto caze) {
-		ContactCreateForm createForm = new ContactCreateForm(caze != null ?
-				caze.getDisease() : null, caze != null);
+
+		ContactCreateForm createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null);
 		createForm.setValue(createNewContact(caze));
-		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent =
-				new CommitDiscardWrapperComponent<ContactCreateForm>(createForm, 
-						UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE), 
-						createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactCreateForm> createComponent = new CommitDiscardWrapperComponent<ContactCreateForm>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE),
+			createForm.getFieldGroup());
 
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -155,38 +156,32 @@ public class ContactController {
 				person.setBirthdateDD(createForm.getBirthdateDD());
 				person.setSex(createForm.getSex());
 
-				ControllerProvider.getPersonController().selectOrCreatePerson(
-						person,
-						I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact),
-						selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
+				ControllerProvider.getPersonController()
+					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
+						if (selectedPerson != null) {
+							dto.setPerson(selectedPerson);
 
-								// set the contact person's address to the one of the case when it is currently
-								// empty and
-								// the relationship with the case has been set to living in the same household
-								if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
-									PersonDto personDto =
-											FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
-									if (personDto.getAddress().isEmptyLocation()) {
-										CaseDataDto caseDto =
-												FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
-										personDto.getAddress().setRegion(caseDto.getRegion());
-										personDto.getAddress().setDistrict(caseDto.getDistrict());
-										personDto.getAddress().setCommunity(caseDto.getCommunity());
-									}
-									FacadeProvider.getPersonFacade().savePerson(personDto);
+							// set the contact person's address to the one of the case when it is currently
+							// empty and
+							// the relationship with the case has been set to living in the same household
+							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
+								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
+								if (personDto.getAddress().isEmptyLocation()) {
+									CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getCaze().getUuid());
+									personDto.getAddress().setRegion(caseDto.getRegion());
+									personDto.getAddress().setDistrict(caseDto.getDistrict());
+									personDto.getAddress().setCommunity(caseDto.getCommunity());
 								}
-
-								selectOrCreateContact(dto, person,
-										I18nProperties.getString(Strings.infoSelectOrCreateContact),
-										selectedContactUuid -> {
-											if (selectedContactUuid != null) {
-												editData(selectedContactUuid);
-											}
-										});
+								FacadeProvider.getPersonFacade().savePerson(personDto);
 							}
-						});
+
+							selectOrCreateContact(dto, person, I18nProperties.getString(Strings.infoSelectOrCreateContact), selectedContactUuid -> {
+								if (selectedContactUuid != null) {
+									editData(selectedContactUuid);
+								}
+							});
+						}
+					});
 			}
 		});
 
@@ -228,16 +223,19 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, boolean isInJurisdiction) {
-		ContactDataForm editForm = new ContactDataForm(isInJurisdiction);
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode) {
+
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode);
 		editForm.setValue(contact);
-		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT), 
-				editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			editForm.getFieldGroup());
 
 		editComponent.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -275,8 +273,11 @@ public class ContactController {
 
 	public void showBulkContactDataEditComponent(Collection<? extends ContactIndexDto> selectedContacts, String caseUuid) {
 		if (selectedContacts.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
-					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 			return;
 		}
 
@@ -297,11 +298,13 @@ public class ContactController {
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
 		BulkContactDataForm form = new BulkContactDataForm(district);
 		form.setValue(bulkEditData);
-		final CommitDiscardWrapperComponent<BulkContactDataForm> editView = new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkContactDataForm> editView =
+			new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditContacts));
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				ContactBulkEditData updatedBulkEditData = form.getValue();
@@ -332,85 +335,115 @@ public class ContactController {
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
-					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (ContactIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
+				new Runnable() {
+
+					public void run() {
+						for (ContactIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingContactsDeleted),
+							I18nProperties.getString(Strings.messageContactsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingContactsDeleted), 
-							I18nProperties.getString(Strings.messageContactsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
 
 	public void cancelFollowUpOfAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
+
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
-					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (ContactIndexDto contact : selectedRows) {
-						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-							contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
-							contactDto.setFollowUpComment(String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
-							FacadeProvider.getContactFacade().saveContact(contactDto);
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationCancelFollowUp), selectedRows.size()),
+				new Runnable() {
+
+					public void run() {
+						for (ContactIndexDto contact : selectedRows) {
+							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
+								contactDto.setFollowUpComment(
+									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
+								FacadeProvider.getContactFacade().saveContact(contactDto);
+							}
 						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingFollowUpCanceled),
+							I18nProperties.getString(Strings.messageFollowUpCanceled),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingFollowUpCanceled), 
-							I18nProperties.getString(Strings.messageFollowUpCanceled), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
 
 	public void setAllSelectedItemsToLostToFollowUp(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoContactsSelected), 
-					I18nProperties.getString(Strings.messageNoContactsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoContactsSelected),
+				I18nProperties.getString(Strings.messageNoContactsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()), new Runnable() {
-				public void run() {
-					for (ContactIndexDto contact : selectedRows) {
-						if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-							ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
-							contactDto.setFollowUpStatus(FollowUpStatus.LOST);
-							contactDto.setFollowUpComment(String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
-							FacadeProvider.getContactFacade().saveContact(contactDto);
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationLostToFollowUp), selectedRows.size()),
+				new Runnable() {
+
+					public void run() {
+						for (ContactIndexDto contact : selectedRows) {
+							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
+								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
+								contactDto.setFollowUpComment(
+									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
+								FacadeProvider.getContactFacade().saveContact(contactDto);
+							}
 						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingFollowUpStatusChanged),
+							I18nProperties.getString(Strings.messageFollowUpStatusChanged),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingFollowUpStatusChanged), 
-							I18nProperties.getString(Strings.messageFollowUpStatusChanged), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
-	
+
 	public void openSelectCaseForContactWindow(Disease disease, Consumer<CaseIndexDto> selectedCaseCallback) {
+
 		CaseCriteria criteria = new CaseCriteria().disease(disease);
 		CaseSelectionField selectionField = new CaseSelectionField(criteria);
 		selectionField.setWidth(1280, Unit.PIXELS);
-		
+
 		final CommitDiscardWrapperComponent<CaseSelectionField> component = new CommitDiscardWrapperComponent<>(selectionField);
 		component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
 		component.getCommitButton().setEnabled(false);
 		component.addCommitListener(() -> {
 			selectedCaseCallback.accept(selectionField.getValue());
 		});
-		
+
 		selectionField.setSelectionChangeCallback((commitAllowed) -> {
 			component.getCommitButton().setEnabled(commitAllowed);
 		});
-		
+
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
-
 }

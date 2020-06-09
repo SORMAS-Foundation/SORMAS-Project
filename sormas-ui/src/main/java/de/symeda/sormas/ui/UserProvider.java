@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -35,6 +35,7 @@ public class UserProvider {
 	private Set<UserRight> userRights;
 
 	public UserDto getUser() {
+
 		if (user == null) {
 			user = FacadeProvider.getUserFacade().getCurrentUser();
 		}
@@ -42,9 +43,9 @@ public class UserProvider {
 	}
 
 	public Set<UserRight> getUserRights() {
+
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade()
-					.getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
+			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
 		}
 		return userRights;
 	}
@@ -57,14 +58,12 @@ public class UserProvider {
 		return getUser().getUserRoles().contains(userRole);
 	}
 
-	
 	/**
 	 * Checks if the User possesses any of the specified userRoles
 	 */
-	public boolean hasAnyUserRole(UserRole ... userRoles) {
+	public boolean hasAnyUserRole(UserRole... userRoles) {
 		Set<UserRole> currentUserRoles = getUser().getUserRoles();
-		return Arrays.stream(userRoles)
-				.anyMatch(currentUserRoles::contains);
+		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
@@ -72,6 +71,7 @@ public class UserProvider {
 	}
 
 	public UserReferenceDto getUserReference() {
+
 		if (userReference == null) {
 			userReference = getUser().toReference();
 		}
@@ -100,6 +100,7 @@ public class UserProvider {
 	 * @return the current user instance if available, otherwise <code>null</code>
 	 */
 	public static UserProvider getCurrent() {
+
 		UI currentUI = UI.getCurrent();
 		if (currentUI instanceof HasUserProvider) {
 			return ((HasUserProvider) currentUI).getUserProvider();
@@ -108,6 +109,7 @@ public class UserProvider {
 	}
 
 	public interface HasUserProvider {
+
 		UserProvider getUserProvider();
 	}
 }

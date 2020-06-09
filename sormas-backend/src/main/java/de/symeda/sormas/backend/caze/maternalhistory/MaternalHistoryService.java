@@ -16,12 +16,11 @@ public class MaternalHistoryService extends AbstractAdoService<MaternalHistory> 
 	public MaternalHistoryService() {
 		super(MaternalHistory.class);
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<MaternalHistory, MaternalHistory> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
-	
 }

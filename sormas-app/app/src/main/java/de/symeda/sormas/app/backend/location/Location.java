@@ -1,47 +1,44 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.location;
-
-import androidx.databinding.Bindable;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import androidx.databinding.Bindable;
+
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
-import de.symeda.sormas.app.backend.common.PseudonymizableDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
-@Entity(name=Location.TABLE_NAME)
+@Entity(name = Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
 @EmbeddedAdo
-public class Location extends PseudonymizableDomainObject {
+public class Location extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 392776645668778670L;
 
@@ -79,6 +76,7 @@ public class Location extends PseudonymizableDomainObject {
 	public String getAddress() {
 		return address;
 	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
@@ -87,6 +85,7 @@ public class Location extends PseudonymizableDomainObject {
 	public String getDetails() {
 		return details;
 	}
+
 	public void setDetails(String details) {
 		this.details = details;
 	}
@@ -95,6 +94,7 @@ public class Location extends PseudonymizableDomainObject {
 	public String getCity() {
 		return city;
 	}
+
 	public void setCity(String city) {
 		this.city = city;
 	}
@@ -102,6 +102,7 @@ public class Location extends PseudonymizableDomainObject {
 	public AreaType getAreaType() {
 		return areaType;
 	}
+
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
 	}
@@ -109,6 +110,7 @@ public class Location extends PseudonymizableDomainObject {
 	public Region getRegion() {
 		return region;
 	}
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
@@ -116,6 +118,7 @@ public class Location extends PseudonymizableDomainObject {
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
@@ -123,6 +126,7 @@ public class Location extends PseudonymizableDomainObject {
 	public Community getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
@@ -130,6 +134,7 @@ public class Location extends PseudonymizableDomainObject {
 	public Double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
@@ -137,6 +142,7 @@ public class Location extends PseudonymizableDomainObject {
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
@@ -155,8 +161,7 @@ public class Location extends PseudonymizableDomainObject {
 		if (getAddress() != null && !getAddress().isEmpty()) {
 			sb.append(getAddress());
 		}
-		if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null || getDistrict() != null
-				|| getAreaType() != null) {
+		if ((getCity() != null && !getCity().isEmpty()) || getCommunity() != null || getDistrict() != null || getAreaType() != null) {
 			if (getAddress() != null && !getAddress().isEmpty()) {
 				sb.append("\n");
 			}
@@ -180,8 +185,10 @@ public class Location extends PseudonymizableDomainObject {
 		}
 
 		if (getDetails() != null && !getDetails().isEmpty()) {
-			if ((getAddress() != null && !getAddress().isEmpty()) || (getCity() != null && !getCity().isEmpty()) ||
-					getCommunity() != null || getDistrict() != null) {
+			if ((getAddress() != null && !getAddress().isEmpty())
+				|| (getCity() != null && !getCity().isEmpty())
+				|| getCommunity() != null
+				|| getDistrict() != null) {
 				sb.append("\n");
 			}
 			sb.append(getDetails());
@@ -216,7 +223,7 @@ public class Location extends PseudonymizableDomainObject {
 					resultString.append(" +-").append(Math.round(latLonAccuracy)).append("m");
 				}
 				return resultString.toString();
-			} catch(IllegalArgumentException convertException) {
+			} catch (IllegalArgumentException convertException) {
 				// ignore
 			}
 		}
@@ -229,8 +236,7 @@ public class Location extends PseudonymizableDomainObject {
 	}
 
 	public boolean isEmptyLocation() {
-		return address == null && details == null && city == null && region == null &&
-				district == null && community == null;
+		return address == null && details == null && city == null && region == null && district == null && community == null;
 	}
 
 	public String getGpsLocation() {
@@ -239,12 +245,11 @@ public class Location extends PseudonymizableDomainObject {
 		}
 
 		if (latLonAccuracy != null) {
-			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-					+ ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES)
-					+ " +-" + Math.round(latLonAccuracy) + "m";
+			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES) + ", "
+				+ android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES) + " +-" + Math.round(latLonAccuracy) + "m";
 		} else {
-			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES)
-					+ ", " + android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES);
+			return android.location.Location.convert(latitude, android.location.Location.FORMAT_DEGREES) + ", "
+				+ android.location.Location.convert(longitude, android.location.Location.FORMAT_DEGREES);
 		}
 	}
 

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
@@ -49,6 +49,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactDataView extends AbstractContactView {
 
@@ -68,16 +69,16 @@ public class ContactDataView extends AbstractContactView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		super.enter(event);
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(
-				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC)
-				);
+			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -91,8 +92,8 @@ public class ContactDataView extends AbstractContactView {
 		container.addComponent(layout);
 
 		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
-		CommitDiscardWrapperComponent<?> editComponent = ControllerProvider.getContactController()
-				.getContactDataEditComponent(getContactRef().getUuid(), isInJurisdiction);
+		CommitDiscardWrapperComponent<?> editComponent =
+			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -109,7 +110,10 @@ public class ContactDataView extends AbstractContactView {
 			buttonsLayout.setSpacing(true);
 
 			Button chooseCaseButton = ButtonHelper.createButton(
-					contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_2);
+				contactDto.getCaze() == null ? Captions.contactChooseSourceCase : Captions.contactChangeCase,
+				null,
+				ValoTheme.BUTTON_PRIMARY,
+				CssStyles.VSPACE_2);
 			buttonsLayout.addComponent(chooseCaseButton);
 			Button removeCaseButton = ButtonHelper.createButton(Captions.contactRemoveCase, null, ValoTheme.BUTTON_LINK);
 
@@ -119,7 +123,41 @@ public class ContactDataView extends AbstractContactView {
 
 			chooseCaseButton.addClickListener(e -> {
 				VaadinUiUtil.showConfirmationPopup(
-						I18nProperties.getString(Strings.headingDiscardUnsavedChanges),
+					I18nProperties.getString(Strings.headingDiscardUnsavedChanges),
+					new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					480,
+					confirmed -> {
+						if (confirmed) {
+							editComponent.discard();
+							Disease selectedDisease = ((ContactDataForm) editComponent.getWrappedComponent()).getSelectedDisease();
+							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
+								if (selectedCase != null) {
+									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase);
+									ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+									contactToChange.setCaze(selectedCase.toReference());
+									FacadeProvider.getContactFacade().saveContact(contactToChange);
+									layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
+									removeCaseButton.setVisible(true);
+									chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
+									ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+									new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
+										.show(Page.getCurrent());
+								}
+							});
+						}
+					});
+			});
+			removeCaseButton.addClickListener(e -> {
+				if (contactDto.getRegion() == null || contactDto.getDistrict() == null) {
+					// Ask user to fill in a region and district before removing the source case
+					VaadinUiUtil.showSimplePopupWindow(
+						I18nProperties.getString(Strings.headingContactDataNotComplete),
+						I18nProperties.getString(Strings.messageSetContactRegionAndDistrict));
+				} else {
+					VaadinUiUtil.showConfirmationPopup(
+						I18nProperties.getString(Strings.headingRemoveCaseFromContact),
 						new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
 						I18nProperties.getString(Strings.yes),
 						I18nProperties.getString(Strings.no),
@@ -127,48 +165,18 @@ public class ContactDataView extends AbstractContactView {
 						confirmed -> {
 							if (confirmed) {
 								editComponent.discard();
-								Disease selectedDisease = ((ContactDataForm) editComponent.getWrappedComponent()).getSelectedDisease();
-								ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
-									if (selectedCase != null) {
-										((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase);
-										ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
-										contactToChange.setCaze(selectedCase.toReference());
-										FacadeProvider.getContactFacade().saveContact(contactToChange);
-										layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()),CASE_LOC);
-										removeCaseButton.setVisible(true);
-										chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
-										ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-										new Notification(null,I18nProperties.getString(Strings.messageContactCaseChanged),Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
-									}
-								});
+								layout.removeComponent(CASE_LOC);
+								((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
+								ContactDto contactToChange = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+								contactToChange.setCaze(null);
+								FacadeProvider.getContactFacade().saveContact(contactToChange);
+								removeCaseButton.setVisible(false);
+								chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
+								ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+								new Notification(null, I18nProperties.getString(Strings.messageContactCaseRemoved), Type.TRAY_NOTIFICATION, false)
+									.show(Page.getCurrent());
 							}
 						});
-
-			});
-			removeCaseButton.addClickListener(e -> {
-				if (contactDto.getRegion() == null || contactDto.getDistrict() == null) {
-					// Ask user to fill in a region and district before removing the source case
-					VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingContactDataNotComplete), I18nProperties.getString(Strings.messageSetContactRegionAndDistrict));
-				} else {
-					VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingRemoveCaseFromContact),
-							new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
-							I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 480, confirmed -> {
-								if (confirmed) {
-									editComponent.discard();
-									layout.removeComponent(CASE_LOC);
-									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
-									ContactDto contactToChange = FacadeProvider.getContactFacade()
-											.getContactByUuid(getContactRef().getUuid());
-									contactToChange.setCaze(null);
-									FacadeProvider.getContactFacade().saveContact(contactToChange);
-									removeCaseButton.setVisible(false);
-									chooseCaseButton
-									.setCaption(I18nProperties.getCaption(Captions.contactChooseSourceCase));
-									ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-									new Notification(null, I18nProperties.getString(Strings.messageContactCaseRemoved),
-											Type.TRAY_NOTIFICATION, false).show(Page.getCurrent());
-								}
-							});
 				}
 			});
 
@@ -189,21 +197,23 @@ public class ContactDataView extends AbstractContactView {
 			sampleLocLayout.addComponent(sampleList);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				sampleLocLayout.addComponent(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges), ContentMode.HTML));
+				sampleLocLayout.addComponent(
+					new Label(
+						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
+						ContentMode.HTML));
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
-
 		}
 
 		setContactEditPermission(container);
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
+
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		return caseInfoLayout;
 	}
-
 }

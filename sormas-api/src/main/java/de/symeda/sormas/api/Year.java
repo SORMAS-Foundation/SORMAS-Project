@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -24,21 +24,21 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 public class Year implements Serializable, Comparable<Year>, StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -6317192936320989737L;
-	
+
 	private int value;
-	
+
 	public Year(int value) {
 		this.value = value;
 	}
-	
+
 	public int getValue() {
 		return value;
 	}
-	
+
 	public void increaseYearBy(int increase) {
 		value += increase;
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);
@@ -46,6 +46,7 @@ public class Year implements Serializable, Comparable<Year>, StatisticsGroupingK
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + value;
@@ -54,6 +55,7 @@ public class Year implements Serializable, Comparable<Year>, StatisticsGroupingK
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -68,13 +70,15 @@ public class Year implements Serializable, Comparable<Year>, StatisticsGroupingK
 
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
-		
+
 		return Integer.compare(value, ((Year) o).getValue());
 	}
 
@@ -82,5 +86,4 @@ public class Year implements Serializable, Comparable<Year>, StatisticsGroupingK
 	public int compareTo(Year o) {
 		return keyCompareTo(o);
 	}
-	
 }

@@ -38,9 +38,15 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			setCriteria(criteria);
 		}
 
-		setColumns(PointOfEntryDto.NAME, PointOfEntryDto.POINT_OF_ENTRY_TYPE, PointOfEntryDto.REGION,
-				PointOfEntryDto.DISTRICT, PointOfEntryDto.LATITUDE, PointOfEntryDto.LONGITUDE,
-				PointOfEntryDto.EXTERNAL_ID, PointOfEntryDto.ACTIVE);
+		setColumns(
+			PointOfEntryDto.NAME,
+			PointOfEntryDto.POINT_OF_ENTRY_TYPE,
+			PointOfEntryDto.REGION,
+			PointOfEntryDto.DISTRICT,
+			PointOfEntryDto.LATITUDE,
+			PointOfEntryDto.LONGITUDE,
+			PointOfEntryDto.EXTERNAL_ID,
+			PointOfEntryDto.ACTIVE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> {
@@ -49,8 +55,7 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					PointOfEntryDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(PointOfEntryDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
 		getColumn(PointOfEntryDto.ACTIVE).setRenderer(new BooleanRenderer());
@@ -61,23 +66,30 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 	}
 
 	public void setLazyDataProvider() {
+
 		DataProvider<PointOfEntryDto, PointOfEntryCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getPointOfEntryFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-								.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getPointOfEntryFacade().count(
-							query.getFilter().orElse(null));
-				});
+			query -> FacadeProvider.getPointOfEntryFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getPointOfEntryFacade().count(query.getFilter().orElse(null));
+			});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<PointOfEntryDto> dataProvider = DataProvider.fromStream(FacadeProvider.getPointOfEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
+
+		ListDataProvider<PointOfEntryDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getPointOfEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-
 }

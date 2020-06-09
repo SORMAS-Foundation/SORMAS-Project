@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -34,9 +34,11 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 
 @Path("/clinicalvisits")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class ClinicalVisitResource extends EntityDtoResource {
 
 	@GET
@@ -61,7 +63,7 @@ public class ClinicalVisitResource extends EntityDtoResource {
 		return result;
 	}
 
-	@GET	
+	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getClinicalVisitFacade().getAllActiveUuids();

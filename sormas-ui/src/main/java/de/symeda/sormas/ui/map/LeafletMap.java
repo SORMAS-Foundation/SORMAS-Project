@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.map;
 
@@ -38,8 +38,16 @@ import elemental.json.JsonArray;
  * 
  * @author Martin Wahnschaffe
  */
-@JavaScript({ "vaadin://map/leaflet.js", "vaadin://map/leaflet.fullscreen.js", "vaadin://map/leaflet-easy-print.js", "vaadin://map/leaflet.markercluster.js", "vaadin://map/leaflet-connector.js" })
-@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css" })
+@JavaScript({
+	"vaadin://map/leaflet.js",
+	"vaadin://map/leaflet.fullscreen.js",
+	"vaadin://map/leaflet-easy-print.js",
+	"vaadin://map/leaflet.markercluster.js",
+	"vaadin://map/leaflet-connector.js" })
+@StyleSheet({
+	"vaadin://map/leaflet.css",
+	"vaadin://map/leaflet.fullscreen.css",
+	"vaadin://map/MarkerCluster.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
 	private static final long serialVersionUID = 1671451734103288729L;
@@ -63,6 +71,7 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setTileLayerOpacity(1);
 
 		addFunction("onClick", new JavaScriptFunction() {
+
 			@Override
 			public void call(JsonArray arguments) {
 				String groupId = arguments.getString(0);
@@ -102,7 +111,7 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setCenterLatitude(coordinates.getLat());
 		getState().setCenterLongitude(coordinates.getLon());
 	}
-	
+
 	public void setTileLayerVisible(boolean tileLayerVisible) {
 		getState().setTileLayerVisible(tileLayerVisible);
 	}
@@ -143,6 +152,7 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	}
 
 	public static class MarkerClickEvent extends EventObject {
+
 		private static final long serialVersionUID = -2607378360765308016L;
 		private final String groupId;
 		private final int markerIndex;

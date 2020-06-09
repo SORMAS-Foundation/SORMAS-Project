@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.contacts;
 
@@ -105,11 +105,15 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		firstComponent.addMainContent();
 
 		allContactsCountLayout = firstComponent.createCountLayout(true);
-		contactClassificationUnconfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CountElementStyle.MINOR);
-		contactClassificationConfirmed = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.PRIMARY);
-		contactClassificationNotAContact = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CountElementStyle.POSITIVE);
+		contactClassificationUnconfirmed =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CountElementStyle.MINOR);
+		contactClassificationConfirmed =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CountElementStyle.PRIMARY);
+		contactClassificationNotAContact =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CountElementStyle.POSITIVE);
 		newContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNew), CountElementStyle.NEUTRAL);
-		symptomaticContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CountElementStyle.CRITICAL);
+		symptomaticContacts =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CountElementStyle.CRITICAL);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationUnconfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationConfirmed);
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, contactClassificationNotAContact);
@@ -117,11 +121,15 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		firstComponent.addComponentToCountLayout(allContactsCountLayout, symptomaticContacts);
 		firstComponent.addComponentToContent(allContactsCountLayout);
 
-		contactClassificationUnconfirmedLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CssStyles.SVG_FILL_MINOR);
-		contactClassificationConfirmedLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CssStyles.SVG_FILL_CRITICAL);
-		contactClassificationNotAContactLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CssStyles.SVG_FILL_POSITIVE);
+		contactClassificationUnconfirmedLarge =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardUnconfirmed), CssStyles.SVG_FILL_MINOR);
+		contactClassificationConfirmedLarge =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConfirmed), CssStyles.SVG_FILL_CRITICAL);
+		contactClassificationNotAContactLarge =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNotAContact), CssStyles.SVG_FILL_POSITIVE);
 		newContactsLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardNew), CssStyles.SVG_FILL_NEUTRAL);
-		symptomaticContactsLarge = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CssStyles.SVG_FILL_CRITICAL);
+		symptomaticContactsLarge =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardSymptomatic), CssStyles.SVG_FILL_CRITICAL);
 
 		subComponentsLayout.addComponent(firstComponent, FIRST_LOC);
 	}
@@ -135,19 +143,24 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		firstComponent.updateCountLabel(contactsCount);
 
 		int newContactsCount = (int) contacts.stream()
-				.filter(
-						c -> c.getReportDate().after(dashboardDataProvider.getFromDate())
-						|| c.getReportDate().equals(dashboardDataProvider.getFromDate()))
-				.count();
+			.filter(
+				c -> c.getReportDate().after(dashboardDataProvider.getFromDate()) || c.getReportDate().equals(dashboardDataProvider.getFromDate()))
+			.count();
 		int newContactsPercentage = contactsCount == 0 ? 0 : (int) ((newContactsCount * 100.0f) / contactsCount);
 		int symptomaticContactsCount = (int) contacts.stream().filter(c -> Boolean.TRUE.equals(c.getSymptomatic())).count();
 		int symptomaticContactsPercentage = contactsCount == 0 ? 0 : (int) ((symptomaticContactsCount * 100.0f) / contactsCount);
-		int contactClassificationUnconfirmedCount = (int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.UNCONFIRMED).count();
-		int contactClassificationUnconfirmedPercentage = contactsCount == 0 ? 0 : (int) ((contactClassificationUnconfirmedCount * 100.0f) / contactsCount);
-		int contactClassificationConfirmedCount = (int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.CONFIRMED).count();
-		int contactClassificationConfirmedPercentage = contactsCount == 0 ? 0 : (int) ((contactClassificationConfirmedCount * 100.0f) / contactsCount);
-		int contactClassificationNotAContactCount = (int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.NO_CONTACT).count();
-		int contactClassificationNotAContactPercentage = contactsCount == 0 ? 0 : (int) ((contactClassificationNotAContactCount * 100.0f) / contactsCount);
+		int contactClassificationUnconfirmedCount =
+			(int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.UNCONFIRMED).count();
+		int contactClassificationUnconfirmedPercentage =
+			contactsCount == 0 ? 0 : (int) ((contactClassificationUnconfirmedCount * 100.0f) / contactsCount);
+		int contactClassificationConfirmedCount =
+			(int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.CONFIRMED).count();
+		int contactClassificationConfirmedPercentage =
+			contactsCount == 0 ? 0 : (int) ((contactClassificationConfirmedCount * 100.0f) / contactsCount);
+		int contactClassificationNotAContactCount =
+			(int) contacts.stream().filter(c -> c.getContactClassification() == ContactClassification.NO_CONTACT).count();
+		int contactClassificationNotAContactPercentage =
+			contactsCount == 0 ? 0 : (int) ((contactClassificationNotAContactCount * 100.0f) / contactsCount);
 
 		// Remove and re-create content layout if the disease filter has been applied or set to null
 		if (currentDisease == null && previousDisease != null) {
@@ -167,9 +180,12 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 			firstComponent.removeAllComponentsFromContent();
 			firstComponent.addComponentToContent(allContactsCountLayout);
 
-			contactClassificationUnconfirmed.updateCountLabel(contactClassificationUnconfirmedCount + " (" + contactClassificationUnconfirmedPercentage + " %)");
-			contactClassificationConfirmed.updateCountLabel(contactClassificationConfirmedCount + " (" + contactClassificationConfirmedPercentage + " %)");
-			contactClassificationNotAContact.updateCountLabel(contactClassificationNotAContactCount + " (" + contactClassificationNotAContactPercentage + " %)");
+			contactClassificationUnconfirmed
+				.updateCountLabel(contactClassificationUnconfirmedCount + " (" + contactClassificationUnconfirmedPercentage + " %)");
+			contactClassificationConfirmed
+				.updateCountLabel(contactClassificationConfirmedCount + " (" + contactClassificationConfirmedPercentage + " %)");
+			contactClassificationNotAContact
+				.updateCountLabel(contactClassificationNotAContactCount + " (" + contactClassificationNotAContactPercentage + " %)");
 			newContacts.updateCountLabel(newContactsCount);
 			symptomaticContacts.updateCountLabel(symptomaticContactsCount + " (" + symptomaticContactsPercentage + " %)");
 
@@ -187,18 +203,21 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 				Map.Entry<Disease, Integer> mapEntry = sortedDiseaseList.get(i);
 				int previousDiseaseCount = (int) previousContacts.stream().filter(c -> c.getDisease() == mapEntry.getKey()).count();
-				DashboardStatisticsDiseaseElement diseaseElement = new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
+				DashboardStatisticsDiseaseElement diseaseElement =
+					new DashboardStatisticsDiseaseElement(mapEntry.getKey().toString(), mapEntry.getValue(), previousDiseaseCount);
 				firstComponent.addComponentToContent(diseaseElement);
 			}
 		} else {
-			contactClassificationUnconfirmedLarge.updatePercentageValueWithCount(contactClassificationUnconfirmedCount, contactClassificationUnconfirmedPercentage);
-			contactClassificationConfirmedLarge.updatePercentageValueWithCount(contactClassificationConfirmedCount, contactClassificationConfirmedPercentage);
-			contactClassificationNotAContactLarge.updatePercentageValueWithCount(contactClassificationNotAContactCount, contactClassificationNotAContactPercentage);
+			contactClassificationUnconfirmedLarge
+				.updatePercentageValueWithCount(contactClassificationUnconfirmedCount, contactClassificationUnconfirmedPercentage);
+			contactClassificationConfirmedLarge
+				.updatePercentageValueWithCount(contactClassificationConfirmedCount, contactClassificationConfirmedPercentage);
+			contactClassificationNotAContactLarge
+				.updatePercentageValueWithCount(contactClassificationNotAContactCount, contactClassificationNotAContactPercentage);
 			newContactsLarge.updatePercentageValueWithCount(newContactsCount, newContactsPercentage);
 			symptomaticContactsLarge.updatePercentageValueWithCount(symptomaticContactsCount, symptomaticContactsPercentage);
 		}
 	}
-
 
 	@Override
 	protected void addSecondComponent() {
@@ -211,13 +230,17 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		secondComponent.addMainContent();
 
 		CssLayout visitStatusCountLayout = secondComponent.createCountLayout(true);
-		cooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
+		cooperativeContacts =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardCooperative), CountElementStyle.POSITIVE);
 		secondComponent.addComponentToCountLayout(visitStatusCountLayout, cooperativeContacts);
-		uncooperativeContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CountElementStyle.CRITICAL);
+		uncooperativeContacts =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CountElementStyle.CRITICAL);
 		secondComponent.addComponentToCountLayout(visitStatusCountLayout, uncooperativeContacts);
-		unavailableContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CountElementStyle.RELEVANT);
+		unavailableContacts =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CountElementStyle.RELEVANT);
 		secondComponent.addComponentToCountLayout(visitStatusCountLayout, unavailableContacts);
-		neverVisitedContacts = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
+		neverVisitedContacts =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardNeverVisited), CountElementStyle.MINOR);
 		secondComponent.addComponentToCountLayout(visitStatusCountLayout, neverVisitedContacts);
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
@@ -230,7 +253,13 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 		// Number of missed visits
 		Label missedVisitsLabel = new Label(I18nProperties.getCaption(Captions.dashboardNotVisitedFor));
-		CssStyles.style(missedVisitsLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_UPPERCASE, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.LABEL_ROUNDED_CORNERS_SLIM);
+		CssStyles.style(
+			missedVisitsLabel,
+			CssStyles.LABEL_BOLD,
+			CssStyles.LABEL_PRIMARY,
+			CssStyles.LABEL_UPPERCASE,
+			CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+			CssStyles.LABEL_ROUNDED_CORNERS_SLIM);
 		secondComponent.addComponentToContent(missedVisitsLabel);
 
 		CssLayout missedVisitsCountLayout = secondComponent.createCountLayout(false);
@@ -238,9 +267,11 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsOneDay);
 		missedVisitsTwoDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardTwoDays), CountElementStyle.PRIMARY);
 		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsTwoDays);
-		missedVisitsThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardThreeDays), CountElementStyle.PRIMARY);
+		missedVisitsThreeDays =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardThreeDays), CountElementStyle.PRIMARY);
 		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsThreeDays);
-		missedVisitsGtThreeDays = new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardGtThreeDays), CountElementStyle.PRIMARY);
+		missedVisitsGtThreeDays =
+			new DashboardStatisticsCountElement(I18nProperties.getCaption(Captions.dashboardGtThreeDays), CountElementStyle.PRIMARY);
 		secondComponent.addComponentToCountLayout(missedVisitsCountLayout, missedVisitsGtThreeDays);
 		secondComponent.addComponentToContent(missedVisitsCountLayout);
 
@@ -314,13 +345,17 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 		// Visit status of last visit
 		thirdComponent.addMainContent();
 
-		followUpCompleted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
+		followUpCompleted =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCompletedFollowUp), CssStyles.SVG_FILL_POSITIVE);
 		followUpCompleted.setDescription(FollowUpStatus.COMPLETED.getDescription());
-		followUpCanceled = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
+		followUpCanceled =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardCanceledFollowUp), CssStyles.SVG_FILL_IMPORTANT);
 		followUpCanceled.setDescription(FollowUpStatus.CANCELED.getDescription());
-		lostToFollowUp = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardLostToFollowUp), CssStyles.SVG_FILL_CRITICAL);
+		lostToFollowUp =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardLostToFollowUp), CssStyles.SVG_FILL_CRITICAL);
 		lostToFollowUp.setDescription(FollowUpStatus.LOST.getDescription());
-		contactStatusConverted = new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConvertedToCase), CssStyles.SVG_FILL_NEUTRAL);
+		contactStatusConverted =
+			new DashboardStatisticsPercentageElement(I18nProperties.getCaption(Captions.dashboardConvertedToCase), CssStyles.SVG_FILL_NEUTRAL);
 		contactStatusConverted.setDescription(I18nProperties.getDescription(Descriptions.descDashboardConvertedToCase));
 		thirdComponent.addComponentToContent(followUpCompleted);
 		thirdComponent.addComponentToContent(followUpCanceled);
@@ -363,16 +398,20 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 
 		// Content
 		fourthComponent.addMainContent();
-		unavailableVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CssStyles.SVG_FILL_MINOR);
+		unavailableVisits =
+			new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUnavailable), CssStyles.SVG_FILL_MINOR);
 		fourthComponent.addComponentToContent(unavailableVisits);
-		uncooperativeVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CssStyles.SVG_FILL_IMPORTANT);
+		uncooperativeVisits =
+			new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardUncooperative), CssStyles.SVG_FILL_IMPORTANT);
 		fourthComponent.addComponentToContent(uncooperativeVisits);
-		cooperativeVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardCooperative), CssStyles.SVG_FILL_POSITIVE);
+		cooperativeVisits =
+			new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardCooperative), CssStyles.SVG_FILL_POSITIVE);
 		fourthComponent.addComponentToContent(cooperativeVisits);
 		Label separator = new Label("<hr/>", ContentMode.HTML);
 		CssStyles.style(separator, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
 		fourthComponent.addComponentToContent(separator);
-		missedVisits = new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardMissed), CssStyles.SVG_FILL_CRITICAL);
+		missedVisits =
+			new DashboardStatisticsGraphicalGrowthElement(I18nProperties.getCaption(Captions.dashboardMissed), CssStyles.SVG_FILL_CRITICAL);
 		fourthComponent.addComponentToContent(missedVisits);
 
 		subComponentsLayout.addComponent(fourthComponent, FOURTH_LOC);
@@ -399,7 +438,9 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 				visitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
 			}
 			if (contact.getFollowUpUntil() != null) {
-				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				int contactFollowUpDays = Math.min(
+					DateHelper.getDaysBetween(contact.getReportDate(), now),
+					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				totalFollowUpDays += contactFollowUpDays;
 				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
 				doneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
@@ -415,7 +456,9 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 				previousVisitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
 			}
 			if (contact.getFollowUpUntil() != null) {
-				int contactFollowUpDays = Math.min(DateHelper.getDaysBetween(contact.getReportDate(), now), DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				int contactFollowUpDays = Math.min(
+					DateHelper.getDaysBetween(contact.getReportDate(), now),
+					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
 				previousTotalFollowUpDays += contactFollowUpDays;
 				Long visitCount = contact.getVisitStatusMap().values().stream().reduce(0L, Long::sum);
 				previousDoneEssentialVisitsCount += (visitCount > contactFollowUpDays ? contactFollowUpDays : visitCount);
@@ -463,5 +506,4 @@ public class ContactsDashboardStatisticsComponent extends AbstractDashboardStati
 	protected int getFilteredHeight() {
 		return 320;
 	}
-
 }

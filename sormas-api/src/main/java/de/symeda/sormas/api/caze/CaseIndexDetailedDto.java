@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.caze;
 
+import java.util.Date;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -9,9 +11,10 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-import java.util.Date;
-
 public class CaseIndexDetailedDto extends CaseIndexDto {
+
+	private static final long serialVersionUID = -3722694511897383913L;
+
 	public static final String SEX = "sex";
 	public static final String CITY = "city";
 	public static final String ADDRESS = "address";
@@ -29,6 +32,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	@PersonnelData
 	private UserReferenceDto reportingUser;
 
+	//@formatter:off
 	public CaseIndexDetailedDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName,
 								Disease disease, String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 								PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate,
@@ -39,11 +43,13 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								Date quarantineTo, Float completeness,
 								String city, String address, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName) {
+
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
 				quarantineTo, completeness);
+		//@formatter:on
 
 		this.city = city;
 		this.address = address;

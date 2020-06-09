@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.function.Consumer;
+
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
@@ -7,10 +9,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.HtmlRenderer;
-import de.symeda.sormas.api.BaseCriteria;
 
-import java.util.Collections;
-import java.util.function.Consumer;
+import de.symeda.sormas.api.BaseCriteria;
 
 public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 

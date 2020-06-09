@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
@@ -37,13 +37,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.util.PseudonymizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -59,10 +56,10 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -305,8 +302,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	public static PathogenTestDto toDto(PathogenTest source) {
 		if (source == null) {
-			return null;
-		}
+			return null;}
+
 		PathogenTestDto target = new PathogenTestDto();
 		DtoHelper.fillDto(target, source);
 
@@ -380,8 +377,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 							recipient.getUuid()));
 				}
 			}
-		} else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING &&
-				newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+		} else if (existingPathogenTest != null && existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING
+				&&newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
 			final String contentString = caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED :
 					MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
 			for (User recipient : messageRecipients) {

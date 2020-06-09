@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
@@ -42,44 +42,47 @@ public final class LoginHelper {
 		// Hide Utility Class Constructor
 	}
 
-    public static boolean login(String username, String password) throws UserRightsException {
-        if (username == null || username.isEmpty()) {
-            return false;
-        }
+	public static boolean login(String username, String password) throws UserRightsException {
 
-        BeanManager bm = CDI.current().getBeanManager();
-    	@SuppressWarnings("unchecked")
-		Bean<SecurityContext> securityContextBean = (Bean<SecurityContext>)bm.getBeans(SecurityContext.class).iterator().next();
-  	    CreationalContext<SecurityContext> ctx = bm.createCreationalContext(securityContextBean);
-    	SecurityContext securityContext = (SecurityContext) bm.getReference(securityContextBean, SecurityContext.class, ctx);
-        
-        AuthenticationParameters authentication = new AuthenticationParameters();
-        authentication.credential(new UsernamePasswordCredential(username, password));
-        authentication.newAuthentication(true);
-        authentication.setRememberMe(true);
-        AuthenticationStatus status = securityContext.authenticate(
-        		VaadinServletService.getCurrentServletRequest(),
-        		VaadinServletService.getCurrentResponse().getHttpServletResponse(), authentication);
-        
-        if (status == AuthenticationStatus.SUCCESS) {
-        	Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
-        	I18nProperties.setUserLanguage(userLanguage);
-        	return true;
-        }
-        
-        return false;
-    }
-    
-    public static boolean logout() {
-        try {
+		if (username == null || username.isEmpty()) {
+			return false;
+		}
+
+		BeanManager bm = CDI.current().getBeanManager();
+		@SuppressWarnings("unchecked")
+		Bean<SecurityContext> securityContextBean = (Bean<SecurityContext>) bm.getBeans(SecurityContext.class).iterator().next();
+		CreationalContext<SecurityContext> ctx = bm.createCreationalContext(securityContextBean);
+		SecurityContext securityContext = (SecurityContext) bm.getReference(securityContextBean, SecurityContext.class, ctx);
+
+		AuthenticationParameters authentication = new AuthenticationParameters();
+		authentication.credential(new UsernamePasswordCredential(username, password));
+		authentication.newAuthentication(true);
+		authentication.setRememberMe(true);
+		AuthenticationStatus status = securityContext.authenticate(
+			VaadinServletService.getCurrentServletRequest(),
+			VaadinServletService.getCurrentResponse().getHttpServletResponse(),
+			authentication);
+
+		if (status == AuthenticationStatus.SUCCESS) {
+			Language userLanguage = FacadeProvider.getUserFacade().getByUserName(username).getLanguage();
+			I18nProperties.setUserLanguage(userLanguage);
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean logout() {
+
+		try {
 			VaadinServletService.getCurrentServletRequest().logout();
 		} catch (ServletException e) {
 			return false;
 		}
-        
-        VaadinSession.getCurrent().getSession().invalidate();
-        Page.getCurrent().reload();
-        
-        return true;
-    }
+
+		VaadinSession.getCurrent().getSession().invalidate();
+		Page.getCurrent().reload();
+
+		return true;
+	}
 }

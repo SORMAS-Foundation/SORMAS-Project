@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
@@ -40,6 +40,7 @@ public class CaseReferenceDto extends ReferenceDto {
 	}
 
 	public CaseReferenceDto(String uuid, String firstName, String lastName) {
+
 		setUuid(uuid);
 
 		this.firstName = firstName;
@@ -60,6 +61,7 @@ public class CaseReferenceDto extends ReferenceDto {
 	}
 
 	public static String buildCaption(String uuid, String firstName, String lastName) {
+
 		String personName = PersonDto.buildCaption(firstName, lastName);
 		String shortUuid = DataHelper.getShortUuid(uuid);
 

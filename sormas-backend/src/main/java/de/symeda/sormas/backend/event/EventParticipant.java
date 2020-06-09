@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
@@ -34,12 +34,12 @@ public class EventParticipant extends AbstractDomainObject {
 	private static final long serialVersionUID = -9006001699517297107L;
 
 	public static final String TABLE_NAME = "eventparticipant";
-	
+
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
-	
+
 	private Event event;
 	private Person person;
 	private String involvementDescription;
@@ -49,30 +49,30 @@ public class EventParticipant extends AbstractDomainObject {
 	public Event getEvent() {
 		return event;
 	}
-	
+
 	public void setEvent(Event event) {
 		this.event = event;
 	}
-	
+
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	public void setPerson(Person person) {
 		this.person = person;
 	}
 
-	@Column(length=512, nullable=false)
+	@Column(length = 512, nullable = false)
 	public String getInvolvementDescription() {
 		return involvementDescription;
 	}
-	
+
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getPerson().toString();
@@ -87,5 +87,4 @@ public class EventParticipant extends AbstractDomainObject {
 	public void setResultingCase(Case resultingCase) {
 		this.resultingCase = resultingCase;
 	}
-
 }

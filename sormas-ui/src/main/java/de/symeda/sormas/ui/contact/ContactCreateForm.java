@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
@@ -72,6 +72,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private static final String CHOOSE_CASE_LOC = "chooseCaseLoc";
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
+	//@formatter:off
 	private static final String HTML_LAYOUT =
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -88,6 +89,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
 					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+	//@formatter:on
 
 	private OptionGroup contactProximity;
 	private Disease disease;
@@ -114,6 +116,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	@Override
 	protected void addFields() {
+
 		if (hasCaseRelation == null) {
 			return;
 		}
@@ -130,8 +133,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
-			contactProximity
-					.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
+			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
@@ -170,12 +172,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+			FieldHelper
+				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.RELATION_DESCRIPTION,
+			ContactDto.RELATION_TO_CASE,
+			Arrays.asList(ContactRelation.OTHER),
+			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
@@ -201,9 +209,11 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				ControllerProvider.getContactController().openSelectCaseForContactWindow((Disease) cbDisease.getValue(), selectedCase -> {
 					if (selectedCase != null) {
 						this.selectedCase = selectedCase.toReference();
-						caseInfoLabel.setValue(String.format(I18nProperties.getString(Strings.infoContactCreationSourceCase),
-								selectedCase.getPersonFirstName() + " " + selectedCase.getPersonLastName() + " " + "(" +
-										DataHelper.getShortUuid(selectedCase.getUuid()) + ")"));
+						caseInfoLabel.setValue(
+							String.format(
+								I18nProperties.getString(Strings.infoContactCreationSourceCase),
+								selectedCase.getPersonFirstName() + " " + selectedCase.getPersonLastName() + " " + "("
+									+ DataHelper.getShortUuid(selectedCase.getUuid()) + ")"));
 						caseInfoLabel.removeStyleName(CssStyles.VSPACE_TOP_4);
 						removeCaseButton.setVisible(true);
 						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
@@ -248,36 +258,36 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
 	private void updateContactCategory(ContactProximity proximity) {
+
 		if (proximity != null) {
 			switch (proximity) {
-				case FACE_TO_FACE_LONG:
-				case TOUCHED_FLUID:
-				case AEROSOL:
-					contactCategory.setValue(ContactCategory.HIGH_RISK);
-					break;
-				case MEDICAL_UNSAFE:
-					contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
-					break;
-				case MEDICAL_LIMITED:
-					contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
-					break;
-				case SAME_ROOM:
-				case FACE_TO_FACE_SHORT:
-				case MEDICAL_SAME_ROOM:
-					contactCategory.setValue(ContactCategory.LOW_RISK);
-					break;
-				case MEDICAL_DISTANT:
-				case MEDICAL_SAFE:
-					contactCategory.setValue(ContactCategory.NO_RISK);
-					break;
-				default:
+			case FACE_TO_FACE_LONG:
+			case TOUCHED_FLUID:
+			case AEROSOL:
+				contactCategory.setValue(ContactCategory.HIGH_RISK);
+				break;
+			case MEDICAL_UNSAFE:
+				contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+				break;
+			case MEDICAL_LIMITED:
+				contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
+				break;
+			case SAME_ROOM:
+			case FACE_TO_FACE_SHORT:
+			case MEDICAL_SAME_ROOM:
+				contactCategory.setValue(ContactCategory.LOW_RISK);
+				break;
+			case MEDICAL_DISTANT:
+			case MEDICAL_SAFE:
+				contactCategory.setValue(ContactCategory.NO_RISK);
+				break;
+			default:
 			}
 		}
 	}
 
 	private void updateFieldVisibilitiesByCase(boolean caseSelected) {
-		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM,
-				ContactDto.CASE_OR_EVENT_INFORMATION);
+		setVisible(!caseSelected, ContactDto.DISEASE, ContactDto.CASE_ID_EXTERNAL_SYSTEM, ContactDto.CASE_OR_EVENT_INFORMATION);
 		setRequired(!caseSelected, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
 	}
 
@@ -294,20 +304,29 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			}
 		}
 		if (getValue() != null) {
-			dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate,
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE),
-					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
-					null, new LocalDate(getValue().getReportDateTime()).toDate(), Resolution.SECOND));
+			dateField.addValidator(
+				new DateRangeValidator(
+					I18nProperties.getValidationError(
+						Validations.beforeDate,
+						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE),
+						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORT_DATE_TIME)),
+					null,
+					new LocalDate(getValue().getReportDateTime()).toDate(),
+					Resolution.SECOND));
 		}
 	}
 
 	private void updateContactProximity() {
+
 		ContactProximity value = (ContactProximity) contactProximity.getValue();
-		FieldHelper.updateEnumData(contactProximity, Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
+		FieldHelper.updateEnumData(
+			contactProximity,
+			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 		contactProximity.setValue(value);
 	}
 
 	private void setItemCaptionsForMonths(AbstractSelect months) {
+
 		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
 		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
 		months.setItemCaption(3, I18nProperties.getEnumCaption(Month.MARCH));
@@ -323,6 +342,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
+
 		Integer currentlySelected = (Integer) birthDateDay.getValue();
 		birthDateDay.removeAllItems();
 		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));

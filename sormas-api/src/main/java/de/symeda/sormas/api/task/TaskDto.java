@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
@@ -80,6 +80,7 @@ public class TaskDto extends EntityDto {
 	private Float closedLatLonAccuracy;
 
 	public static TaskDto build(TaskContext context, ReferenceDto entityRef) {
+
 		TaskDto task = new TaskDto();
 		task.setUuid(DataHelper.createUuid());
 		task.setSuggestedStart(TaskHelper.getDefaultSuggestedStart());
@@ -87,9 +88,9 @@ public class TaskDto extends EntityDto {
 		task.setTaskStatus(TaskStatus.PENDING);
 		task.setPriority(TaskPriority.NORMAL);
 		task.setTaskContext(context);
-		switch(context) {
+		switch (context) {
 		case CASE:
-			task.setCaze((CaseReferenceDto) entityRef); 
+			task.setCaze((CaseReferenceDto) entityRef);
 			break;
 		case CONTACT:
 			task.setContact((ContactReferenceDto) entityRef);
@@ -102,7 +103,7 @@ public class TaskDto extends EntityDto {
 		}
 		return task;
 	}
-	
+
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}
@@ -240,6 +241,7 @@ public class TaskDto extends EntityDto {
 	}
 
 	public ReferenceDto getContextReference() {
+
 		switch (taskContext) {
 		case CASE:
 			return getCaze();
@@ -261,5 +263,4 @@ public class TaskDto extends EntityDto {
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -31,30 +31,28 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringDto> {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static final String HTML_LAYOUT =
-			fluidRowLocs(EpiDataGatheringDto.GATHERING_DATE, "") +
-			fluidRowLocs(EpiDataGatheringDto.DESCRIPTION) +
-			fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS);
-	
+
+	private static final String HTML_LAYOUT = fluidRowLocs(EpiDataGatheringDto.GATHERING_DATE, "")
+		+ fluidRowLocs(EpiDataGatheringDto.DESCRIPTION)
+		+ fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS);
+
 	public EpiDataGatheringEditForm() {
 		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, new FieldVisibilityCheckers());
-		
+
 		setWidth(540, Unit.PIXELS);
-	}	
-	
+	}
+
 	@Override
 	protected void addFields() {
 		DateField gatheringDate = addField(EpiDataGatheringDto.GATHERING_DATE, DateField.class);
 		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(2);
 		addField(EpiDataGatheringDto.GATHERING_ADDRESS, LocationEditForm.class).setCaption(null);
-		
+
 		FieldHelper.addSoftRequiredStyle(gatheringDate);
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-	
 }

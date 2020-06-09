@@ -13,6 +13,18 @@
     &.v-caption-caption-overflow {
       margin-right : -1000px;
     }
+
+    &.v-caption-caption-fixed-width-100 {
+
+      .v-captiontext {
+        width: 100px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+      }
+
+    }
   }
 
   .force-caption {

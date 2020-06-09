@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -27,7 +27,7 @@ import de.symeda.auditlog.api.value.ValueContainer;
  * 
  * @author Stefan Kock
  * @param <V>
- * 			Type of the {@code value} to format within the {@link Collection}.
+ *            Type of the {@code value} to format within the {@link Collection}.
  */
 public interface CollectionFormatter<V> extends ValueFormatter<Collection<V>> {
 
@@ -47,7 +47,7 @@ public interface CollectionFormatter<V> extends ValueFormatter<Collection<V>> {
 	char SUFFIX = ']';
 
 	/**
-	 * @return	Placeholder if a value of the {@link Collection} has been set to <code>null</code>.
+	 * @return Placeholder if a value of the {@link Collection} has been set to <code>null</code>.
 	 */
 	default String getNullString() {
 		return ValueContainer.DEFAULT_NULL_STRING;
@@ -57,8 +57,8 @@ public interface CollectionFormatter<V> extends ValueFormatter<Collection<V>> {
 	 * Formats the {@link Collection} as {@link String}.
 	 * 
 	 * @param valueCollection
-	 * 			{@link Collection} to format.
-	 * @return 	String format of the given {@link Collection}.
+	 *            {@link Collection} to format.
+	 * @return String format of the given {@link Collection}.
 	 */
 	@Override
 	String format(Collection<V> valueCollection);

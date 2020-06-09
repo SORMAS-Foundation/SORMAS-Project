@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
@@ -36,25 +36,25 @@ public class DiseaseTileViewLayout extends CssLayout {
 	public DiseaseTileViewLayout(DashboardDataProvider dashboardDataProvider) {
 		this.dashboardDataProvider = dashboardDataProvider;
 	}
-	
+
 	@Override
-    protected String getCss(Component c) {
+	protected String getCss(Component c) {
 		return "margin-left: 18px; margin-bottom: 18px;";
-    }
+	}
 
 	public void refresh(int limitDiseasesCount) {
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-		
+
 		// sort, limit and filter
-		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
-									   .sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
+		Stream<DiseaseBurdenDto> diseasesBurdenStream =
+			diseasesBurden.stream().sorted((dto1, dto2) -> (int) (dto2.getCaseCount() - dto1.getCaseCount()));
 		if (limitDiseasesCount > 0) {
 			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
 		}
 		diseasesBurden = diseasesBurdenStream.collect(Collectors.toList());
-		
+
 		this.removeAllComponents();
-		
+
 		for (DiseaseBurdenDto diseaseBurden : diseasesBurden) {
 			DiseaseTileComponent tile = new DiseaseTileComponent(diseaseBurden);
 			tile.setWidth(230, Unit.PIXELS);

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -36,16 +36,15 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 
 @Path("/weeklyreports")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed("USER")
 public class WeeklyReportResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<WeeklyReportDto> getAllWeeklyReports(@Context SecurityContext sc, @PathParam("since") long since) {
-		return FacadeProvider.getWeeklyReportFacade()
-				.getAllWeeklyReportsAfter(new Date(since));
+		return FacadeProvider.getWeeklyReportFacade().getAllWeeklyReportsAfter(new Date(since));
 	}
 
 	@POST
@@ -67,5 +66,4 @@ public class WeeklyReportResource extends EntityDtoResource {
 	public List<String> getAllUuids(@Context SecurityContext sc) {
 		return FacadeProvider.getWeeklyReportFacade().getAllUuids();
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
@@ -40,13 +40,13 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 public class AbstractSampleView extends AbstractSubNavigationView {
 
 	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
-	
+
 	private SampleReferenceDto sampleRef;
-	
+
 	protected AbstractSampleView(String viewName) {
 		super(viewName);
 	}
-	
+
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
@@ -68,18 +68,17 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		infoLabel.setValue(sampleRef.getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
 	}
-	
+
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
-		
+
 		if (FacadeProvider.getSampleFacade().isDeleted(sampleRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
-	
+
 	public SampleReferenceDto getSampleRef() {
 		return sampleRef;
 	}
-
 }

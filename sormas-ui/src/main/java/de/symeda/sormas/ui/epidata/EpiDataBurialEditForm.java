@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -36,30 +36,39 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(EpiDataBurialDto.BURIAL_DATE_FROM, EpiDataBurialDto.BURIAL_DATE_TO) +
-			fluidRowLocs(EpiDataBurialDto.BURIAL_PERSON_NAME, EpiDataBurialDto.BURIAL_RELATION) +
-			fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS) +
-			fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
-	
+
+	private static final String HTML_LAYOUT = fluidRowLocs(EpiDataBurialDto.BURIAL_DATE_FROM, EpiDataBurialDto.BURIAL_DATE_TO)
+		+ fluidRowLocs(EpiDataBurialDto.BURIAL_PERSON_NAME, EpiDataBurialDto.BURIAL_RELATION)
+		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS)
+		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
+
 	public EpiDataBurialEditForm(boolean create) {
 		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), new FieldAccessCheckers());
-		
+
 		setWidth(540, Unit.PIXELS);
-		
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
 	}
-	
+
 	@Override
 	protected void addFields() {
 		DateField burialDateFrom = addField(EpiDataBurialDto.BURIAL_DATE_FROM, DateField.class);
 		DateField burialDateTo = addField(EpiDataBurialDto.BURIAL_DATE_TO, DateField.class);
-		burialDateFrom.addValidator(new DateComparisonValidator(burialDateFrom, burialDateTo, true, false, 
+		burialDateFrom.addValidator(
+			new DateComparisonValidator(
+				burialDateFrom,
+				burialDateTo,
+				true,
+				false,
 				I18nProperties.getValidationError(Validations.beforeDate, burialDateFrom.getCaption(), burialDateTo.getCaption())));
-		burialDateTo.addValidator(new DateComparisonValidator(burialDateTo, burialDateFrom, false, false, 
+		burialDateTo.addValidator(
+			new DateComparisonValidator(
+				burialDateTo,
+				burialDateFrom,
+				false,
+				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDateFrom.getCaption(), burialDateTo.getCaption())));
 		addField(EpiDataBurialDto.BURIAL_PERSON_NAME, TextField.class);
 		addField(EpiDataBurialDto.BURIAL_RELATION, TextField.class);
@@ -68,15 +77,12 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationEditForm.class).setCaption(null);
 
 		FieldHelper.addSoftRequiredStyle(burialDateFrom, burialDateTo);
-		setRequired(true,
-				EpiDataBurialDto.BURIAL_ILL,
-				EpiDataBurialDto.BURIAL_TOUCHING);
-		
+		setRequired(true, EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
+
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-	
 }

@@ -18,6 +18,10 @@
 - Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
 - Add a Payara server to Eclipse and enter the credentials you specified when setting up the server
+- Configure automatic code formatting ("Window -> Preferences"):
+    - Go to "Java -> Code Style -> Formatter", import ``sormas-base/java-formatter-profile.xml`` and apply.
+    - Go to "Java -> Code Style -> Organize Imports", import ``sormas-base/java-importorder-profile.importorder``, "Number of imports needed for .*" = ``99``, "Number of static imports needed for .*" = ``99``, "Do not create import for types starting with a lowercase letter" = ``checked`` and apply.
+    - Go to "Java -> Editor -> Save Actions", activate "Perform the selected actions on save", "Format source code" with "Format all lines", "Organize imports" and apply.
 
 ### Additional Steps
 - Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
@@ -49,6 +53,13 @@
 	- under Startup/Connection tab make sure you do not pass environment variables (it's a currently open bug in intellij) - ignore warning about debug config not being correct
 	- edit your domain config ..\payara5\glassfish\domains\sormas\config\domain.xml and make sure the java-config node contains:
 	 ``<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...``
+- Configure code formatting:
+	- install Eclipse code formatter for IntelliJ(https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+	- open the plugin and check the "Use the Eclipse code formatter"
+	- browse to ``sormas-base/java-formatter-profile.xml`` and select it for Eclipse Java Formatter config file
+	- check optimize imports and select for Import order the ``sormas-base/java-importorder-profile.importorder`` file
+	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
+	- for IntelliJ code formatting is usually used with Ctrl+Alt+L shortcut - if you wish to do the formating with save please use the plugin Save actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 ## Android Studio
 **Note: This is only needed for development of the SORMAS Android app
@@ -61,5 +72,12 @@
 * Build the Android Studio project by executing the gradle build (this may be done automatically)
 * Add an emulator with SDK version between the minSdkVersion and targetSdkVersion properties from build.gradle
 * On first start of the application enter the Sormas rest service URL for the server URL: http://10.0.2.2:6080/sormas-rest/ (see: https://developer.android.com/studio/run/emulator-networking)
+* Configure code formatting:
+	- install Eclipse code formatter for Android studio (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+	- open the plugin ("File -> Settings -> Other Settings") and check the "Use the Eclipse code formatter"
+	- browse to ``sormas-base/java-formatter-profile.xml`` and select it for Eclipse Java Formatter config file
+	- check optimize imports and select for Import order the ``sormas-base/java-importorder-profile.importorder`` file
+	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
+	- for Android Studio code formatting is usually used with Ctrl+Alt+L shortcut - if you wish to do the formating with save please use the plugin Save actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 

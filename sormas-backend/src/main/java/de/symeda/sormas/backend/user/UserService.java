@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.util.PasswordHelper;
 @Stateless
 @LocalBean
 public class UserService extends AbstractAdoService<User> {
+
 	@EJB
 	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
@@ -59,6 +60,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public User createUser() {
+
 		User user = new User();
 		// dummy password to make sure no one can login with this user
 		String password = PasswordHelper.createPass(12);
@@ -86,11 +88,11 @@ public class UserService extends AbstractAdoService<User> {
 		User entity = q.getResultList().stream()
 				.findFirst()
 				.orElse(null);
-
 		return entity;
 	}
 
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
@@ -107,12 +109,12 @@ public class UserService extends AbstractAdoService<User> {
 		}
 
 		cq.where(filter).distinct(true);
-
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 		return em.createQuery(cq).getResultList();
 	}
 
 	public List<User> getInformantsOfFacility(Facility facility) {
+
 		if (facility == null || facility.getType() == FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility is null or a laboratory");
 		}
@@ -132,6 +134,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public List<User> getLabUsersOfLab(Facility facility) {
+
 		if (facility == null || facility.getType() != FacilityType.LABORATORY) {
 			throw new IllegalArgumentException("Facility needs to be a laboratory");
 		}
@@ -142,10 +145,9 @@ public class UserService extends AbstractAdoService<User> {
 		Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 
 		Predicate filter = cb.and(
-				createUserFilter(cb, from),
+			createUserFilter(cb, from),
 				cb.equal(from.get(User.LABORATORY), facility),
 				joinRoles.in(Arrays.asList(new UserRole[]{UserRole.LAB_USER, UserRole.EXTERNAL_LAB_USER})));
-
 		cq.where(filter).distinct(true);
 
 		return em.createQuery(cq).getResultList();
@@ -153,11 +155,13 @@ public class UserService extends AbstractAdoService<User> {
 
 	/**
 	 * @param district
-	 * @param includeSupervisors If set to true, all supervisors are returned independent of the district
+	 * @param includeSupervisors
+	 *            If set to true, all supervisors are returned independent of the district
 	 * @param userRoles
 	 * @return
 	 */
 	public List<User> getAllByDistrict(District district, boolean includeSupervisors, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
@@ -170,11 +174,14 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	/**
-	 * @param associatedOfficer
+	 * @param entityDistrict
+	 * @param includeSupervisors
+	 *            If set to true, all supervisors are returned independent of the district
 	 * @param userRoles
 	 * @return
 	 */
 	public List<User> getAllByAssociatedOfficer(User associatedOfficer, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
@@ -209,6 +216,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public String resetPassword(String userUuid) {
+
 		User user = getByUuid(userUuid);
 
 		if (user == null) {
@@ -225,6 +233,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Predicate buildCriteriaFilter(UserCriteria userCriteria, CriteriaBuilder cb, Root<User> from) {
+
 		Predicate filter = null;
 		if (userCriteria.getActive() != null) {
 			filter = and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
@@ -245,16 +254,15 @@ public class UserService extends AbstractAdoService<User> {
 				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
-							cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
-							cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
-							cb.like(cb.lower(from.get(User.PHONE)), textFilter),
-							cb.like(cb.lower(from.get(User.UUID)), textFilter));
+						cb.like(cb.lower(from.get(User.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.LAST_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.USER_NAME)), textFilter),
+						cb.like(cb.lower(from.get(User.USER_EMAIL)), textFilter),
+						cb.like(cb.lower(from.get(User.PHONE)), textFilter),
+						cb.like(cb.lower(from.get(User.UUID)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
-
 		}
 
 		return filter;
@@ -296,6 +304,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Predicate buildUserRolesFilter(Root<User> from, UserRole... userRoles) {
+
 		if (userRoles.length > 0) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			return joinRoles.in(Arrays.asList(userRoles));
@@ -303,7 +312,14 @@ public class UserService extends AbstractAdoService<User> {
 		return null;
 	}
 
-	private void buildDistrictQuery(CriteriaBuilder cb, CriteriaQuery<User> cq, Root<User> from, District district, boolean includeSupervisors, UserRole... userRoles) {
+	private void buildDistrictQuery(
+		CriteriaBuilder cb,
+		CriteriaQuery<User> cq,
+		Root<User> from,
+		District district,
+		boolean includeSupervisors,
+		UserRole... userRoles) {
+
 		Predicate filter = createUserFilter(cb, from);
 
 		filter = and(cb,
@@ -314,7 +330,8 @@ public class UserService extends AbstractAdoService<User> {
 
 		if (includeSupervisors) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate supervisorFilter = joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
+			Predicate supervisorFilter =
+				joinRoles.in(Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR));
 			if (filter != null) {
 				filter = cb.or(filter, supervisorFilter);
 			} else {
@@ -328,6 +345,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Long countByAssignedOfficer(User officer, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> from = cq.from(getElementClass());
@@ -339,6 +357,7 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Long countByRegion(Region region, UserRole... userRoles) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> from = cq.from(getElementClass());
@@ -360,7 +379,6 @@ public class UserService extends AbstractAdoService<User> {
 
 	public boolean hasRight(UserRight right) {
 		User currentUser = getCurrentUser();
-
 		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
 	}
 }

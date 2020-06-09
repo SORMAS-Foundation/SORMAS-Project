@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -31,7 +31,7 @@ import de.symeda.auditlog.api.value.ValueContainer;
  * 
  * @author Stefan Kock
  * @param <V>
- * 			Type of the {@code value} to format within the {@link Collection}.
+ *            Type of the {@code value} to format within the {@link Collection}.
  */
 public class ComparableCollectionFormatter<V extends Comparable<V>> extends AbstractCollectionFormatter<V> {
 
@@ -52,7 +52,7 @@ public class ComparableCollectionFormatter<V extends Comparable<V>> extends Abst
 	 * <ul>
 	 * 
 	 * @param valueFormatter
-	 * 			{@link ValueFormatter} to be used to format the individual values.
+	 *            {@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparableCollectionFormatter(ValueFormatter<V> valueFormatter) {
 
@@ -61,9 +61,9 @@ public class ComparableCollectionFormatter<V extends Comparable<V>> extends Abst
 
 	/**
 	 * @param nullString
-	 *      	Placeholder for {@code null} values.
+	 *            Placeholder for {@code null} values.
 	 * @param valueFormatter
-	 * 			{@link ValueFormatter} to be used to format the individual values.
+	 *            {@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparableCollectionFormatter(String nullString, ValueFormatter<V> valueFormatter) {
 

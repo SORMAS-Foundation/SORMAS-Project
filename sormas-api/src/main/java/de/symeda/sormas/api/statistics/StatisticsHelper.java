@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
@@ -36,7 +36,9 @@ import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -52,12 +54,20 @@ public final class StatisticsHelper {
 	public static final String VALUE_UNKNOWN = "VALUE_UNKNOWN";
 	public static final String TOTAL = "total";
 	public static final String UNKNOWN = "unknown";
-	
-	public static StatisticsGroupingKey buildGroupingKey(Object attributeValue, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, Function<Integer, RegionReferenceDto> regionProvider, Function<Integer, DistrictReferenceDto> districtProvider) {
+
+	public static StatisticsGroupingKey buildGroupingKey(
+		Object attributeValue,
+		StatisticsCaseAttribute attribute,
+		StatisticsCaseSubAttribute subAttribute,
+		Function<Integer, RegionReferenceDto> regionProvider,
+		Function<Integer, DistrictReferenceDto> districtProvider,
+		Function<Integer, CommunityReferenceDto> communityProvider,
+		Function<Integer, FacilityReferenceDto> healthFacilityProvider) {
+
 		if (isNullOrUnknown(attributeValue)) {
 			return null;
 		}
-		
+
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case YEAR:
@@ -70,17 +80,27 @@ public final class StatisticsHelper {
 				return new EpiWeek(null, (int) attributeValue);
 			case QUARTER_OF_YEAR:
 				String entryAsString = String.valueOf(attributeValue);
-				return new QuarterOfYear(new Quarter(Integer.valueOf(entryAsString.substring(entryAsString.length() - 1))), new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 1))));
+				return new QuarterOfYear(
+					new Quarter(Integer.valueOf(entryAsString.substring(entryAsString.length() - 1))),
+					new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 1))));
 			case MONTH_OF_YEAR:
 				entryAsString = String.valueOf(attributeValue);
-				return new MonthOfYear(Month.values()[Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)) - 1], new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2))));
+				return new MonthOfYear(
+					Month.values()[Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)) - 1],
+					new Year(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2))));
 			case EPI_WEEK_OF_YEAR:
 				entryAsString = String.valueOf(attributeValue);
-				return new EpiWeek(Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2)), Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)));
+				return new EpiWeek(
+					Integer.valueOf(entryAsString.substring(0, entryAsString.length() - 2)),
+					Integer.valueOf(entryAsString.substring(entryAsString.length() - 2)));
 			case REGION:
 				return regionProvider.apply(((Number) attributeValue).intValue());
 			case DISTRICT:
 				return districtProvider.apply(((Number) attributeValue).intValue());
+			case COMMUNITY:
+				return communityProvider.apply(((Number) attributeValue).intValue());
+			case HEALTH_FACILITY:
+				return healthFacilityProvider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}
@@ -109,9 +129,11 @@ public final class StatisticsHelper {
 						// This is fine; continue to build the IntegerGroup based on the entry string
 					}
 				}
-				
+
 				if (entryAsString.contains("-")) {
-					return new IntegerRange(Integer.valueOf(entryAsString.substring(0, entryAsString.indexOf("-"))), Integer.valueOf(entryAsString.substring(entryAsString.indexOf("-") + 1)));
+					return new IntegerRange(
+						Integer.valueOf(entryAsString.substring(0, entryAsString.indexOf("-"))),
+						Integer.valueOf(entryAsString.substring(entryAsString.indexOf("-") + 1)));
 				} else if (entryAsString.contains("+")) {
 					return new IntegerRange(Integer.valueOf(entryAsString.substring(0, entryAsString.indexOf("+"))), null);
 				} else {
@@ -124,8 +146,9 @@ public final class StatisticsHelper {
 			}
 		}
 	}
-	
+
 	public static List<StatisticsGroupingKey> getAgeIntervalGroupingKeys(StatisticsCaseAttribute attribute) {
+
 		List<StatisticsGroupingKey> ageIntervalList = new ArrayList<>();
 		switch (attribute) {
 		case AGE_INTERVAL_1_YEAR:
@@ -184,6 +207,7 @@ public final class StatisticsHelper {
 	}
 
 	public static List<StatisticsGroupingKey> getTimeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+
 		Date oldestCaseDate = null;
 		switch (attribute) {
 		case ONSET_TIME:
@@ -250,10 +274,11 @@ public final class StatisticsHelper {
 		default:
 			return new ArrayList<>();
 		}
-	}	
-	
+	}
+
 	@SuppressWarnings("unchecked")
 	public static List<StatisticsGroupingKey> getAttributeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case YEAR:
@@ -265,9 +290,14 @@ public final class StatisticsHelper {
 			case EPI_WEEK_OF_YEAR:
 				return StatisticsHelper.getTimeGroupingKeys(attribute, subAttribute);
 			case REGION:
-				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getRegionFacade().getAllActiveAsReference();
+				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getRegionFacade()
+					.getAllActiveAsReference();
 			case DISTRICT:
-				return (List<StatisticsGroupingKey>)(List<? extends StatisticsGroupingKey>)FacadeProvider.getDistrictFacade().getAllActiveAsReference();
+				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getDistrictFacade()
+					.getAllActiveAsReference();
+			case COMMUNITY:
+			case HEALTH_FACILITY:
+				return new ArrayList<>();
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}
@@ -309,38 +339,39 @@ public final class StatisticsHelper {
 			}
 		}
 	}
-	
+
 	public static boolean isNullOrUnknown(Object value) {
+
 		if (value == null) {
 			return true;
 		}
 		if (value instanceof IntegerRange && ((IntegerRange) value).getFrom() == null && ((IntegerRange) value).getTo() == null) {
 			return true;
 		}
-		
+
 		return isUnknown(value);
 	}
-	
+
 	public static boolean isUnknown(Object value) {
 		return value.toString().equalsIgnoreCase(VALUE_UNKNOWN);
 	}
-	
+
 	public static class StatisticsKeyComparator implements Comparator<StatisticsGroupingKey> {
+
 		public int compare(StatisticsGroupingKey a, StatisticsGroupingKey b) {
 			if (a == null && b == null) {
 				return 0;
 			}
-			
+
 			if (a == null && b != null) {
 				return -1;
 			}
-			
+
 			if (b == null && a != null) {
 				return 1;
 			}
-			
+
 			return a.keyCompareTo(b);
 		}
 	}
-	
 }

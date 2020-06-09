@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -50,7 +50,6 @@ import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 @Widgetset("de.symeda.sormas.SormasWidgetset")
 public class SormasUI extends UI implements HasUserProvider, HasViewModelProviders {
 
-	
 	private final UserProvider userProvider = new UserProvider();
 	private final ViewModelProviders viewModelProviders = new ViewModelProviders();
 
@@ -88,13 +87,14 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 		return viewModelProviders;
 	}
 
-	@WebServlet(urlPatterns = {"/*"}, name = "SormasUIServlet", asyncSupported = true)
+	@WebServlet(urlPatterns = {
+		"/*" }, name = "SormasUIServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
 	@ServletSecurity(@HttpConstraint(rolesAllowed = "USER"))
 	public static class SormasUIServlet extends VaadinServlet {
 
 	}
-	
+
 	public static void refreshView() {
 		get().getNavigator().navigateTo(get().getNavigator().getState());
 	}

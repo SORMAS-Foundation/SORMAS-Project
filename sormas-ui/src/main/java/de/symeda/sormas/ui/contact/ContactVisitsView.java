@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
+
+import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -25,10 +27,9 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
@@ -50,8 +51,6 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
-import java.util.Date;
-
 public class ContactVisitsView extends AbstractContactView {
 
 	private static final long serialVersionUID = -1L;
@@ -59,8 +58,8 @@ public class ContactVisitsView extends AbstractContactView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/visits";
 
 	private VisitCriteria criteria;
-	
-	private VisitGrid grid;    
+
+	private VisitGrid grid;
 	private Button newButton;
 	private VerticalLayout gridLayout;
 //	private HashMap<Button, String> statusButtons;
@@ -70,7 +69,7 @@ public class ContactVisitsView extends AbstractContactView {
 		super(VIEW_NAME);
 
 		setSizeFull();
-		
+
 		criteria = ViewModelProviders.of(ContactVisitsView.class).get(VisitCriteria.class);
 	}
 
@@ -83,15 +82,16 @@ public class ContactVisitsView extends AbstractContactView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
-			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
-					})
-			);
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+				Captions.bulkActions,
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+					ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+
+						public void run() {
+							navigateTo(criteria);
+						}
+					});
+				}));
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
@@ -105,28 +105,32 @@ public class ContactVisitsView extends AbstractContactView {
 				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
 			}
 
-			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(VisitExportDto.class, VisitExportType.CONTACT_VISITS,
-					(Integer start, Integer max) -> FacadeProvider.getVisitFacade().getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
-					(propertyId, type) -> {
-						String caption = findPrefixCaption(propertyId,
-								VisitExportDto.I18N_PREFIX,
-								VisitDto.I18N_PREFIX,
-								PersonDto.I18N_PREFIX,
-								SymptomsDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"), null);
+			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+				VisitExportDto.class,
+				VisitExportType.CONTACT_VISITS,
+				(Integer start, Integer max) -> FacadeProvider.getVisitFacade()
+					.getVisitsExportList(grid.getCriteria(), VisitExportType.CONTACT_VISITS, start, max, null),
+				(propertyId, type) -> {
+					String caption = findPrefixCaption(
+						propertyId,
+						VisitExportDto.I18N_PREFIX,
+						VisitDto.I18N_PREFIX,
+						PersonDto.I18N_PREFIX,
+						SymptomsDto.I18N_PREFIX);
+					if (Date.class.isAssignableFrom(type)) {
+						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+					}
+					return caption;
+				},
+				createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"),
+				null);
 
 			new FileDownloader(exportStreamResource).extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getVisitController().createVisit(this.getContactRef(),
-						r -> navigateTo(criteria));
+				ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -155,15 +159,15 @@ public class ContactVisitsView extends AbstractContactView {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		super.enter(event);
-		
+
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null
-				&& FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
+			&& FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
 			newButton.setVisible(false);
 		}
 
 		criteria.contact(getContactRef());
-		
+
 		if (grid == null) {
 			grid = new VisitGrid(criteria);
 			gridLayout = new VerticalLayout();
@@ -175,11 +179,10 @@ public class ContactVisitsView extends AbstractContactView {
 			gridLayout.setExpandRatio(grid, 1);
 			setSubComponent(gridLayout);
 		}
-		
+
 		grid.reload();
 //		updateActiveStatusButtonCaption();
-		
+
 		setContactEditPermission(gridLayout);
 	}
-
 }

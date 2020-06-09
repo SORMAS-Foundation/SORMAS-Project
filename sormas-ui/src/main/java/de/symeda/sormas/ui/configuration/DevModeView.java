@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
@@ -79,8 +79,8 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateHelper8;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -94,6 +94,7 @@ public class DevModeView extends AbstractConfigurationView {
 	private Binder<ContactGenerationConfig> contactGeneratorConfigBinder = new Binder<>();
 
 	public DevModeView() {
+
 		super(VIEW_NAME);
 
 		contentLayout = new VerticalLayout();
@@ -102,7 +103,8 @@ public class DevModeView extends AbstractConfigurationView {
 		contentLayout.setWidth(100, Unit.PERCENTAGE);
 		contentLayout.setStyleName("crud-main-layout");
 
-		contentLayout.addComponent(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptions), ContentMode.HTML));
+		contentLayout.addComponent(
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoDeveloperOptions), ContentMode.HTML));
 		contentLayout.addComponent(createCaseGeneratorLayout());
 		contentLayout.addComponent(createContactGeneratorLayout());
 
@@ -110,6 +112,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private VerticalLayout createCaseGeneratorLayout() {
+
 		VerticalLayout caseGeneratorLayout = new VerticalLayout();
 		caseGeneratorLayout.setMargin(false);
 		caseGeneratorLayout.setSpacing(false);
@@ -123,8 +126,8 @@ public class DevModeView extends AbstractConfigurationView {
 		TextField caseCountField = new TextField();
 		caseCountField.setCaption(I18nProperties.getCaption(Captions.devModeCaseCount));
 		caseGeneratorConfigBinder.forField(caseCountField)
-		.withConverter(new StringToIntegerConverter("Must be a number"))
-		.bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(CaseGenerationConfig::getCaseCount, CaseGenerationConfig::setCaseCount);
 		caseOptionsLayout.addComponent(caseCountField);
 
 		DateField startDateField = new DateField();
@@ -179,6 +182,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private VerticalLayout createContactGeneratorLayout() {
+
 		VerticalLayout contactGeneratorLayout = new VerticalLayout();
 		contactGeneratorLayout.setMargin(false);
 		contactGeneratorLayout.setSpacing(false);
@@ -192,8 +196,8 @@ public class DevModeView extends AbstractConfigurationView {
 		TextField contactCountField = new TextField();
 		contactCountField.setCaption(I18nProperties.getCaption(Captions.devModeContactCount));
 		contactGeneratorConfigBinder.forField(contactCountField)
-		.withConverter(new StringToIntegerConverter("Must be a number"))
-		.bind(ContactGenerationConfig::getContactCount, ContactGenerationConfig::setContactCount);
+			.withConverter(new StringToIntegerConverter("Must be a number"))
+			.bind(ContactGenerationConfig::getContactCount, ContactGenerationConfig::setContactCount);
 		contactOptionsFirstLineLayout.addComponent(contactCountField);
 
 		DateField startDateField = new DateField();
@@ -243,15 +247,23 @@ public class DevModeView extends AbstractConfigurationView {
 		HorizontalLayout contactOptionsSecondLineLayout = new HorizontalLayout();
 
 		CheckBox createWithoutSourceCasesField = new CheckBox(I18nProperties.getCaption(Captions.devModeContactCreateWithoutSourceCases));
-		contactGeneratorConfigBinder.bind(createWithoutSourceCasesField, ContactGenerationConfig::isCreateWithoutSourceCases, ContactGenerationConfig::setCreateWithoutSourceCases);
+		contactGeneratorConfigBinder.bind(
+			createWithoutSourceCasesField,
+			ContactGenerationConfig::isCreateWithoutSourceCases,
+			ContactGenerationConfig::setCreateWithoutSourceCases);
 		contactOptionsSecondLineLayout.addComponent(createWithoutSourceCasesField);
 
-		CheckBox createMultipleContactsPerPersonField = new CheckBox(I18nProperties.getCaption(Captions.devModeContactCreateMultipleContactsPerPerson));
-		contactGeneratorConfigBinder.bind(createMultipleContactsPerPersonField, ContactGenerationConfig::isCreateMultipleContactsPerPerson, ContactGenerationConfig::setCreateMultipleContactsPerPerson);
+		CheckBox createMultipleContactsPerPersonField =
+			new CheckBox(I18nProperties.getCaption(Captions.devModeContactCreateMultipleContactsPerPerson));
+		contactGeneratorConfigBinder.bind(
+			createMultipleContactsPerPersonField,
+			ContactGenerationConfig::isCreateMultipleContactsPerPerson,
+			ContactGenerationConfig::setCreateMultipleContactsPerPerson);
 		contactOptionsSecondLineLayout.addComponent(createMultipleContactsPerPersonField);
 
 		CheckBox createWithVisitsField = new CheckBox(I18nProperties.getCaption(Captions.devModeContactCreateWithVisits));
-		contactGeneratorConfigBinder.bind(createWithVisitsField, ContactGenerationConfig::isCreateWithVisits, ContactGenerationConfig::setCreateWithVisits);
+		contactGeneratorConfigBinder
+			.bind(createWithVisitsField, ContactGenerationConfig::isCreateWithVisits, ContactGenerationConfig::setCreateWithVisits);
 		contactOptionsSecondLineLayout.addComponent(createWithVisitsField);
 
 		contactGeneratorLayout.addComponent(contactOptionsSecondLineLayout);
@@ -264,19 +276,47 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private final String[] maleFirstNames = new String[] {
-			"Nelson", "Malik", "Thato", "Omar", "Dion", "Darius", "Bandile", "Demarco" };
-	private final String[] femaleFirstNames = new String[] { 
-			"Ayana", "Shaka", "Shaniqua", "Charlize", "Zari", "Jayla", "Aisha", "Iminathi"};
-	private final String[] lastNames = new String[] { 
-			"Ajanlekoko", "Omiata", "Apeloko", "Adisa", "Abioye", "Chipo", "Baako", "Akua", 
-			"Ekua", "Katlego", "Furaha", "Chuks", "Babak", "Tinibu", "Okar", "Egwu" };
+		"Nelson",
+		"Malik",
+		"Thato",
+		"Omar",
+		"Dion",
+		"Darius",
+		"Bandile",
+		"Demarco" };
+	private final String[] femaleFirstNames = new String[] {
+		"Ayana",
+		"Shaka",
+		"Shaniqua",
+		"Charlize",
+		"Zari",
+		"Jayla",
+		"Aisha",
+		"Iminathi" };
+	private final String[] lastNames = new String[] {
+		"Ajanlekoko",
+		"Omiata",
+		"Apeloko",
+		"Adisa",
+		"Abioye",
+		"Chipo",
+		"Baako",
+		"Akua",
+		"Ekua",
+		"Katlego",
+		"Furaha",
+		"Chuks",
+		"Babak",
+		"Tinibu",
+		"Okar",
+		"Egwu" };
 
 	private static Random random() {
 		return ThreadLocalRandom.current();
 	}
 
 	private static boolean randomPercent(int p) {
-		return random().nextInt(100) <=p;
+		return random().nextInt(100) <= p;
 	}
 
 	private static <T> T random(List<T> list) {
@@ -288,11 +328,11 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private static Date randomDate(LocalDateTime referenceDateTime) {
-		return Date.from(referenceDateTime.plusMinutes(random().nextInt(60*24*5))
-				.atZone(ZoneId.systemDefault()).toInstant());
+		return Date.from(referenceDateTime.plusMinutes(random().nextInt(60 * 24 * 5)).atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private void fillEntity(EntityDto entity, LocalDateTime referenceDateTime) {
+
 		try {
 			Class<? extends EntityDto> entityClass = entity.getClass();
 			List<Method> setters = setters(entityClass);
@@ -308,8 +348,7 @@ public class DevModeView extends AbstractConfigurationView {
 				//				else 
 				if (parameterType.isAssignableFrom(Date.class)) {
 					setter.invoke(entity, randomDate(referenceDateTime));
-				}
-				else if (parameterType.isEnum()) {
+				} else if (parameterType.isEnum()) {
 					Object[] enumConstants;
 					// Only use active primary diseases
 					enumConstants = getEnumConstants(parameterType);
@@ -319,14 +358,13 @@ public class DevModeView extends AbstractConfigurationView {
 					} else {
 						setter.invoke(entity, random(enumConstants));
 					}
-				}
-				else if (EntityDto.class.isAssignableFrom(parameterType)) {
+				} else if (EntityDto.class.isAssignableFrom(parameterType)) {
 					getter(setter).ifPresent(g -> {
 						Object subEntity;
 						try {
 							subEntity = g.invoke(entity);
 							if (subEntity instanceof EntityDto) {
-								fillEntity((EntityDto)subEntity, referenceDateTime);
+								fillEntity((EntityDto) subEntity, referenceDateTime);
 							}
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 							throw new RuntimeException(e.getMessage(), e);
@@ -356,13 +394,16 @@ public class DevModeView extends AbstractConfigurationView {
 	private Map<Method, Optional<Method>> getters = new HashMap<>();
 
 	private List<Method> setters(Class<? extends EntityDto> entityClass) {
-		return setters.computeIfAbsent(entityClass, c ->
-				Arrays.stream(c.getDeclaredMethods())
-					.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
-					.collect(Collectors.toList()));
+
+		return setters.computeIfAbsent(
+			entityClass,
+			c -> Arrays.stream(c.getDeclaredMethods())
+				.filter(method -> method.getName().startsWith("set") && method.getParameterTypes().length == 1)
+				.collect(Collectors.toList()));
 	}
 
 	private Optional<Method> getter(Method setter) throws NoSuchMethodException {
+
 		return getters.computeIfAbsent(setter, s -> {
 			try {
 				return Optional.of(s.getDeclaringClass().getDeclaredMethod(s.getName().replaceFirst("set", "get")));
@@ -373,6 +414,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateCases() {
+
 		CaseGenerationConfig config = caseGeneratorConfigBinder.getBean();
 
 		List<Disease> diseases = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true);
@@ -383,7 +425,8 @@ public class DevModeView extends AbstractConfigurationView {
 		facilityCriteria.region(config.getRegion());
 		facilityCriteria.district(config.getDistrict());
 		// just load some health facilities. Alphabetical order is not random, but the best we can get
-		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade().getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount()*2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
+		List<FacilityDto> healthFacilities = FacadeProvider.getFacilityFacade()
+			.getIndexList(facilityCriteria, 0, Math.min(config.getCaseCount() * 2, 300), Arrays.asList(new SortProperty(FacilityDto.NAME)));
 
 		for (int i = 0; i < config.getCaseCount(); i++) {
 			Disease disease = config.getDisease();
@@ -426,15 +469,25 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private void generateContacts() {
+
 		ContactGenerationConfig config = contactGeneratorConfigBinder.getBean();
 
 		List<Disease> diseases = config.getDisease() == null ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true) : null;
 		List<String> personUuids = new ArrayList<>();
 		List<CaseReferenceDto> cases = null;
-		List<DistrictIndexDto> districts = config.getDistrict() == null ? FacadeProvider.getDistrictFacade().getIndexList(new DistrictCriteria().region(config.getRegion()), 0, Math.min(config.getContactCount() * 2, 50), Arrays.asList(new SortProperty(DistrictDto.NAME))) : null;
+		List<DistrictIndexDto> districts = config.getDistrict() == null
+			? FacadeProvider.getDistrictFacade()
+				.getIndexList(
+					new DistrictCriteria().region(config.getRegion()),
+					0,
+					Math.min(config.getContactCount() * 2, 50),
+					Arrays.asList(new SortProperty(DistrictDto.NAME)))
+			: null;
 		if (!config.isCreateWithoutSourceCases()) {
-			cases = FacadeProvider.getCaseFacade().getRandomCaseReferences(
-					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()), config.getContactCount() * 2);
+			cases = FacadeProvider.getCaseFacade()
+				.getRandomCaseReferences(
+					new CaseCriteria().region(config.getRegion()).district(config.getDistrict()).disease(config.getDisease()),
+					config.getContactCount() * 2);
 		}
 
 		float baseOffset = random().nextFloat();
@@ -446,7 +499,8 @@ public class DevModeView extends AbstractConfigurationView {
 				disease = random(diseases);
 			}
 
-			LocalDateTime referenceDateTime = getReferenceDateTime(i, config.getContactCount(), baseOffset, disease, config.getStartDate(), daysBetween);
+			LocalDateTime referenceDateTime =
+				getReferenceDateTime(i, config.getContactCount(), baseOffset, disease, config.getStartDate(), daysBetween);
 
 			PersonDto person;
 			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
@@ -509,8 +563,9 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setFollowUpUntil(contact.getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP ? null : randomDate(referenceDateTime));
 
 			// Create visits
-			if (config.isCreateWithVisits() && FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease()) &&
-					FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
+			if (config.isCreateWithVisits()
+				&& FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())
+				&& FollowUpStatus.NO_FOLLOW_UP != contact.getFollowUpStatus()) {
 				Date latestFollowUpDate = contact.getFollowUpUntil().before(new Date()) ? contact.getFollowUpUntil() : new Date();
 				Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 				int followUpCount = random().nextInt(DateHelper.getDaysBetween(contactStartDate, latestFollowUpDate) + 1);
@@ -518,7 +573,8 @@ public class DevModeView extends AbstractConfigurationView {
 					int[] followUpDays = new Random().ints(1, followUpCount + 1).distinct().limit(followUpCount).toArray();
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
-						followUpDates.add(DateHelper8.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
+						followUpDates.add(
+							DateHelper8.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
 					}
 
 					for (LocalDateTime date : followUpDates) {
@@ -538,16 +594,18 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private LocalDateTime getReferenceDateTime(int i, int count, float baseOffset, Disease disease, LocalDate startDate, int daysBetween) {
+
 		float x = (float) i / count;
 		x += baseOffset;
 		x += 0.13f * disease.ordinal();
 		x += 0.5f * random().nextFloat();
-		x = (float) (Math.asin((x % 2 ) - 1) / Math.PI / 2) + 0.5f;
+		x = (float) (Math.asin((x % 2) - 1) / Math.PI / 2) + 0.5f;
 
 		return startDate.atStartOfDay().plusMinutes((int) (x * 60 * 24 * daysBetween));
 	}
 
 	private void setPersonName(PersonDto person) {
+
 		Sex sex = Sex.values()[random().nextInt(2)];
 		person.setSex(sex);
 		if (sex == Sex.MALE) {
@@ -565,6 +623,7 @@ public class DevModeView extends AbstractConfigurationView {
 	}
 
 	private static class CaseGenerationConfig {
+
 		private int caseCount = 10;
 		private LocalDate startDate = LocalDate.now().minusDays(90);
 		private LocalDate endDate = LocalDate.now();
@@ -575,42 +634,54 @@ public class DevModeView extends AbstractConfigurationView {
 		public int getCaseCount() {
 			return caseCount;
 		}
+
 		public void setCaseCount(int caseCount) {
 			this.caseCount = caseCount;
 		}
+
 		public LocalDate getStartDate() {
 			return startDate;
 		}
+
 		public void setStartDate(LocalDate startDate) {
 			this.startDate = startDate;
 		}
+
 		public LocalDate getEndDate() {
 			return endDate;
 		}
+
 		public void setEndDate(LocalDate endDate) {
 			this.endDate = endDate;
 		}
+
 		public Disease getDisease() {
 			return disease;
 		}
+
 		public void setDisease(Disease disease) {
 			this.disease = disease;
 		}
+
 		public RegionReferenceDto getRegion() {
 			return region;
 		}
+
 		public void setRegion(RegionReferenceDto region) {
 			this.region = region;
 		}
+
 		public DistrictReferenceDto getDistrict() {
 			return district;
 		}
+
 		public void setDistrict(DistrictReferenceDto district) {
 			this.district = district;
-		}		
+		}
 	}
 
 	private static class ContactGenerationConfig {
+
 		private int contactCount = 10;
 		private LocalDate startDate = LocalDate.now().minusDays(90);
 		private LocalDate endDate = LocalDate.now();
@@ -624,57 +695,73 @@ public class DevModeView extends AbstractConfigurationView {
 		public int getContactCount() {
 			return contactCount;
 		}
+
 		public void setContactCount(int contactCount) {
 			this.contactCount = contactCount;
 		}
+
 		public LocalDate getStartDate() {
 			return startDate;
 		}
+
 		public void setStartDate(LocalDate startDate) {
 			this.startDate = startDate;
 		}
+
 		public LocalDate getEndDate() {
 			return endDate;
 		}
+
 		public void setEndDate(LocalDate endDate) {
 			this.endDate = endDate;
 		}
+
 		public Disease getDisease() {
 			return disease;
 		}
+
 		public void setDisease(Disease disease) {
 			this.disease = disease;
 		}
+
 		public RegionReferenceDto getRegion() {
 			return region;
 		}
+
 		public void setRegion(RegionReferenceDto region) {
 			this.region = region;
 		}
+
 		public DistrictReferenceDto getDistrict() {
 			return district;
 		}
+
 		public void setDistrict(DistrictReferenceDto district) {
 			this.district = district;
 		}
+
 		public boolean isCreateWithoutSourceCases() {
 			return createWithoutSourceCases;
 		}
+
 		public void setCreateWithoutSourceCases(boolean createWithoutSourceCases) {
 			this.createWithoutSourceCases = createWithoutSourceCases;
 		}
+
 		public boolean isCreateMultipleContactsPerPerson() {
 			return createMultipleContactsPerPerson;
 		}
+
 		public void setCreateMultipleContactsPerPerson(boolean createMultipleContactsPerPerson) {
 			this.createMultipleContactsPerPerson = createMultipleContactsPerPerson;
 		}
+
 		public boolean isCreateWithVisits() {
 			return createWithVisits;
 		}
+
 		public void setCreateWithVisits(boolean createWithVisits) {
 			this.createWithVisits = createWithVisits;
 		}
 	}
-
 }

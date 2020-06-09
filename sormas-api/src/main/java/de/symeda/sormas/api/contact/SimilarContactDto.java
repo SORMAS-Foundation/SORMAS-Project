@@ -37,6 +37,7 @@ public class SimilarContactDto implements Serializable {
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
 
+	//@formatter:off
 	public SimilarContactDto(String firstName, String lastName, String uuid,
 							 String cazeUuid, String caseFirstName, String caseLastName, String caseIdExternalSystem,
 							 Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
@@ -45,6 +46,8 @@ public class SimilarContactDto implements Serializable {
 							 String reportingUserUuid, String regionUuid, String districtUuid,
 							 String caseReportingUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid,
 							 String caseHealthFacilityUuid, String casePointOfEntryUuid) {
+		//@formatter:on
+
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.uuid = uuid;
@@ -52,8 +55,13 @@ public class SimilarContactDto implements Serializable {
 		CaseJurisdictionDto caseJurisdiction = null;
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUuid, caseRegionUuid, caseDistrictUuid,
-					caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
+			this.caseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 		this.caseIdExternalSystem = caseIdExternalSystem;
 		this.lastContactDate = lastContactDate;

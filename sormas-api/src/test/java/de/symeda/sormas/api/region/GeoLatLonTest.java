@@ -11,7 +11,7 @@ public class GeoLatLonTest {
 
 	@Test
 	public void testGetters() {
-		
+
 		double lat = 2;
 		double lon = 3;
 		GeoLatLon ll = new GeoLatLon(lat, lon);
@@ -22,11 +22,11 @@ public class GeoLatLonTest {
 
 	@Test
 	public void testClone() {
-		
+
 		double lat = 2;
 		double lon = 3;
 		GeoLatLon ll = new GeoLatLon(lat, lon);
-		
+
 		GeoLatLon c = ll.clone();
 
 		assertThat(c.getLat(), is(lat));
@@ -35,5 +35,4 @@ public class GeoLatLonTest {
 		assertThat(c, is(ll));
 		assertThat(c, not(sameInstance(ll)));
 	}
-
 }

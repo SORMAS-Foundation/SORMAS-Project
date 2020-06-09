@@ -1,6 +1,6 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -9,14 +9,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
 package de.symeda.sormas.backend.task;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -33,23 +47,10 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
+
 	private TestDataCreator.RDCF rdcf1;
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
@@ -60,18 +61,19 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(),
-				"Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(),
-				"Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator
+			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
 
 	@Test
 	public void testGetTaskWithCaseInJurisdiction() {
+
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task = createCaseTask(caze);
 
@@ -80,6 +82,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetTaskWithCaseOutsideJurisdiction() {
+
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		TaskDto task = createCaseTask(caze);
 
@@ -88,8 +91,17 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetTaskWithContactInJurisdiction() {
+
 		CaseDataDto caze = creator.createCase(user2.toReference(), creator.createPerson("John", "Doe").toReference(), rdcf2);
-		ContactDto contact = creator.createContact(user2.toReference(), null, creator.createPerson("James", "Smith").toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("James", "Smith").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task = createContactTask(contact);
 
 		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
@@ -98,8 +110,17 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetTaskWithContactOutsideJurisdiction() {
+
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Doe").toReference(), rdcf1);
-		ContactDto contact = creator.createContact(user1.toReference(), null, creator.createPerson("James", "Smith").toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("James", "Smith").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		TaskDto task = createContactTask(contact);
 
 		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
@@ -108,15 +129,32 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeIndexList() {
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task1 = createCaseTask(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task2 = createCaseTask(caze2);
 		TaskDto task3 = createContactTask(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		TaskDto task4 = createContactTask(contact2);
 
 		List<TaskIndexDto> indexList = getTaskFacade().getIndexList(new TaskCriteria(), null, null, Collections.emptyList());
@@ -137,15 +175,32 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeGetAllAfter() {
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task1 = createCaseTask(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task2 = createCaseTask(caze2);
 		TaskDto task3 = createContactTask(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		TaskDto task4 = createContactTask(contact2);
 
 		Calendar calendar = Calendar.getInstance();
@@ -168,15 +223,32 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeGetAllByUuid() {
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task1 = createCaseTask(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task2 = createCaseTask(caze2);
 		TaskDto task3 = createContactTask(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		TaskDto task4 = createContactTask(contact2);
 
 		List<TaskDto> activeTasks = getTaskFacade().getByUuids(Arrays.asList(task1.getUuid(), task2.getUuid(), task3.getUuid(), task4.getUuid()));
@@ -198,11 +270,20 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testPseudonymizeGetByCase() {
+
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		TaskDto task1 = createCaseTask(caze1);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task2 = createCaseTask(caze2);
 
 		List<TaskDto> case1Tasks = getTaskFacade().getAllByCase(caze1.toReference());
@@ -219,10 +300,26 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	@Test
 	public void testPseudonymizeGetByContact() {
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
-		ContactDto contact1 = creator.createContact(user2.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact1 = creator.createContact(
+			user2.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 		TaskDto task3 = createContactTask(contact1);
 
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, creator.createPerson("John", "Smith").toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf1);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			null,
+			creator.createPerson("John", "Smith").toReference(),
+			caze2,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf1);
 		TaskDto task4 = createContactTask(contact2);
 
 		List<TaskDto> contact1Tasks = getTaskFacade().getAllByContact(contact1.toReference());
@@ -235,11 +332,13 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private TaskDto createCaseTask(CaseDataDto caze) {
-		return creator.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze.toReference(), null, null, new Date(), null);
+		return creator
+			.createTask(TaskContext.CASE, TaskType.CASE_INVESTIGATION, TaskStatus.PENDING, caze.toReference(), null, null, new Date(), null);
 	}
 
 	private TaskDto createContactTask(ContactDto contact) {
-		return creator.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contact.toReference(), null, new Date(), null);
+		return creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contact.toReference(), null, new Date(), null);
 	}
 
 	private void assertNotPseudonymized(TaskDto task) {
@@ -251,5 +350,4 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(task.getCaze().getFirstName(), isEmptyString());
 		assertThat(task.getCaze().getLastName(), isEmptyString());
 	}
-
 }
