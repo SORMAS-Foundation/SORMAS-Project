@@ -27,13 +27,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -139,6 +133,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.EVENT_DATE),
 				event.get(Event.REPORT_LAT),
 				event.get(Event.REPORT_LON),
+				eventLocation.get(Location.LATITUDE),
+				eventLocation.get(Location.LONGITUDE),
 				eventDistrict.get(District.UUID));
 
 			result = em.createQuery(cq).getResultList();
