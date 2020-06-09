@@ -142,7 +142,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
-		if (permitted(UserRight.CASE_VIEW)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
@@ -153,7 +153,7 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuAggregateReports),
 				VaadinIcons.GRID_SMALL);
 		}
-		if (permitted(UserRight.CONTACT_VIEW)) {
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
 			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), VaadinIcons.HAND);
 		}
@@ -161,7 +161,7 @@ public class MainScreen extends HorizontalLayout {
 			ControllerProvider.getEventController().registerViews(navigator);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
-		if (permitted(UserRight.SAMPLE_VIEW)) {
+		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
