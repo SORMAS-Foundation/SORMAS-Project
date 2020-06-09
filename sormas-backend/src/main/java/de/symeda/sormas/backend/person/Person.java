@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -442,7 +444,7 @@ public class Person extends AbstractDomainObject {
 		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
 	}
@@ -451,7 +453,7 @@ public class Person extends AbstractDomainObject {
 		this.mothersName = mothersName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFathersName() {
 		return fathersName;
 	}
@@ -496,7 +498,7 @@ public class Person extends AbstractDomainObject {
 		this.placeOfBirthFacility = placeOfBirthFacility;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPlaceOfBirthFacilityDetails() {
 		return placeOfBirthFacilityDetails;
 	}
@@ -521,7 +523,7 @@ public class Person extends AbstractDomainObject {
 		this.birthWeight = birthWeight;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getGeneralPractitionerDetails() {
 		return generalPractitionerDetails;
 	}

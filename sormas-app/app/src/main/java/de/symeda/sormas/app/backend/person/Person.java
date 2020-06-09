@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.person;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -68,13 +70,13 @@ public class Person extends PseudonymizableAdo {
 	private String firstName;
 	@Column(nullable = false)
 	private String lastName;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String nickname;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String mothersMaidenName;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String mothersName;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fathersName;
 	@Column
 	private Integer birthdateDD;
@@ -97,7 +99,7 @@ public class Person extends PseudonymizableAdo {
 	private Community placeOfBirthCommunity;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility placeOfBirthFacility;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String placeOfBirthFacilityDetails;
 
 	@Column
@@ -107,11 +109,11 @@ public class Person extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 2)
 	private Location address;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String phone;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String phoneOwner;
-	@Column
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String emailAddress;
 
 	@Enumerated(EnumType.STRING)
@@ -131,23 +133,23 @@ public class Person extends PseudonymizableAdo {
 	private Date deathDate;
 	@Enumerated(EnumType.STRING)
 	private DeathPlaceType deathPlaceType;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String deathPlaceDescription;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date burialDate;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String burialPlaceDescription;
 	@Enumerated(EnumType.STRING)
 	private BurialConductor burialConductor;
 
 	@Enumerated(EnumType.STRING)
 	private EducationType educationType;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String educationDetails;
 
 	@Enumerated(EnumType.STRING)
 	private OccupationType occupationType;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String occupationDetails;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Region occupationRegion;
@@ -157,10 +159,10 @@ public class Person extends PseudonymizableAdo {
 	private Community occupationCommunity;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility occupationFacility;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String occupationFacilityDetails;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String generalPractitionerDetails;
 	@Column
 	private String passportNumber;

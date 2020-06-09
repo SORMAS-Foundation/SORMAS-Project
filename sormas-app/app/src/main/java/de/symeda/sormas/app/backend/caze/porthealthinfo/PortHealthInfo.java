@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.caze.porthealthinfo;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -42,9 +45,9 @@ public class PortHealthInfo extends AbstractDomainObject {
 	public static final String I18N_PREFIX = "PortHealthInfo";
 
 	// Airport
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String airlineName;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String flightNumber;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date departureDateTime;
@@ -52,45 +55,45 @@ public class PortHealthInfo extends AbstractDomainObject {
 	private Date arrivalDateTime;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown freeSeating;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String seatNumber;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String departureAirport;
 	@Column
 	private Integer numberOfTransitStops;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String transitStopDetails1;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String transitStopDetails2;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String transitStopDetails3;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String transitStopDetails4;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String transitStopDetails5;
 
 	// Seaport
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String vesselName;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String vesselDetails;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String portOfDeparture;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String lastPortOfCall;
 
 	// Ground Crossing
 	@Enumerated(EnumType.STRING)
 	private ConveyanceType conveyanceType;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String conveyanceTypeDetails;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String departureLocation;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String finalDestination;
 
 	// Other
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String details;
 
 	public String getAirlineName() {
@@ -273,4 +276,5 @@ public class PortHealthInfo extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.caze.porthealthinfo;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -52,7 +55,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 	// Other
 	private String details;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getAirlineName() {
 		return airlineName;
 	}
@@ -61,7 +64,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.airlineName = airlineName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFlightNumber() {
 		return flightNumber;
 	}
@@ -97,7 +100,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.freeSeating = freeSeating;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSeatNumber() {
 		return seatNumber;
 	}
@@ -106,7 +109,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.seatNumber = seatNumber;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDepartureAirport() {
 		return departureAirport;
 	}
@@ -123,7 +126,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.numberOfTransitStops = numberOfTransitStops;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTransitStopDetails1() {
 		return transitStopDetails1;
 	}
@@ -132,7 +135,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.transitStopDetails1 = transitStopDetails1;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTransitStopDetails2() {
 		return transitStopDetails2;
 	}
@@ -141,7 +144,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.transitStopDetails2 = transitStopDetails2;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTransitStopDetails3() {
 		return transitStopDetails3;
 	}
@@ -150,7 +153,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.transitStopDetails3 = transitStopDetails3;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTransitStopDetails4() {
 		return transitStopDetails4;
 	}
@@ -159,7 +162,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.transitStopDetails4 = transitStopDetails4;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTransitStopDetails5() {
 		return transitStopDetails5;
 	}
@@ -168,7 +171,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.transitStopDetails5 = transitStopDetails5;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVesselName() {
 		return vesselName;
 	}
@@ -177,7 +180,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.vesselName = vesselName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVesselDetails() {
 		return vesselDetails;
 	}
@@ -186,7 +189,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.vesselDetails = vesselDetails;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPortOfDeparture() {
 		return portOfDeparture;
 	}
@@ -195,7 +198,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.portOfDeparture = portOfDeparture;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLastPortOfCall() {
 		return lastPortOfCall;
 	}
@@ -213,7 +216,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.conveyanceType = conveyanceType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getConveyanceTypeDetails() {
 		return conveyanceTypeDetails;
 	}
@@ -222,7 +225,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.conveyanceTypeDetails = conveyanceTypeDetails;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDepartureLocation() {
 		return departureLocation;
 	}
@@ -231,7 +234,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.departureLocation = departureLocation;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFinalDestination() {
 		return finalDestination;
 	}
@@ -240,7 +243,7 @@ public class PortHealthInfo extends AbstractDomainObject {
 		this.finalDestination = finalDestination;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getDetails() {
 		return details;
 	}

@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -202,7 +205,7 @@ public class Contact extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -249,7 +252,7 @@ public class Contact extends CoreAdo {
 		this.contactProximity = contactProximity;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDescription() {
 		return description;
 	}
@@ -313,7 +316,7 @@ public class Contact extends CoreAdo {
 		this.relationToCase = relationToCase;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRelationDescription() {
 		return relationDescription;
 	}
@@ -334,7 +337,6 @@ public class Contact extends CoreAdo {
 
 	@Override
 	public String toString() {
-
 		Person contactPerson = getPerson();
 		return ContactReferenceDto.buildCaption(
 			contactPerson.getFirstName(),
@@ -345,16 +347,13 @@ public class Contact extends CoreAdo {
 	}
 
 	public ContactReferenceDto toReference() {
-
 		Person contactPerson = getPerson();
-		String casePersonFirstName = null;
-		String casePersonLastName = null;
-		if (getCaze() != null) {
-			casePersonFirstName = getCaze().getPerson().getFirstName();
-			casePersonLastName = getCaze().getPerson().getLastName();
-		}
-
-		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName);
+		return new ContactReferenceDto(
+			getUuid(),
+			contactPerson.getFirstName(),
+			contactPerson.getLastName(),
+			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
+			getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
@@ -400,7 +399,7 @@ public class Contact extends CoreAdo {
 		this.reportLon = reportLon;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -427,7 +426,7 @@ public class Contact extends CoreAdo {
 		this.resultingCaseUser = resultingCaseUser;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -472,7 +471,7 @@ public class Contact extends CoreAdo {
 		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
 		return immunosuppressiveTherapyBasicDiseaseDetails;
 	}
@@ -517,7 +516,7 @@ public class Contact extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
 	}
@@ -526,7 +525,7 @@ public class Contact extends CoreAdo {
 		this.caseIdExternalSystem = caseIdExternalSystem;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getCaseOrEventInformation() {
 		return caseOrEventInformation;
 	}
@@ -544,7 +543,7 @@ public class Contact extends CoreAdo {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
 	}
@@ -562,7 +561,7 @@ public class Contact extends CoreAdo {
 		this.contactCategory = contactCategory;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -616,7 +615,7 @@ public class Contact extends CoreAdo {
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -634,7 +633,7 @@ public class Contact extends CoreAdo {
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}
@@ -643,7 +642,7 @@ public class Contact extends CoreAdo {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}

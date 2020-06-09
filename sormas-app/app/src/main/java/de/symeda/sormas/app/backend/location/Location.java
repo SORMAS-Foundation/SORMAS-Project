@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.location;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.text.DecimalFormat;
 
 import javax.persistence.Column;
@@ -29,8 +32,8 @@ import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
-import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -38,7 +41,7 @@ import de.symeda.sormas.app.backend.region.Region;
 @Entity(name = Location.TABLE_NAME)
 @DatabaseTable(tableName = Location.TABLE_NAME)
 @EmbeddedAdo
-public class Location extends PseudonymizableAdo {
+public class Location extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 392776645668778670L;
 
@@ -46,11 +49,11 @@ public class Location extends PseudonymizableAdo {
 	public static final String I18N_PREFIX = "Location";
 	public static final String COMMUNITY = "community";
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String address;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String details;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String city;
 	@Column
 	private AreaType areaType;
@@ -69,7 +72,7 @@ public class Location extends PseudonymizableAdo {
 	@DatabaseField
 	private Float latLonAccuracy;
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String postalCode;
 
 	@Bindable

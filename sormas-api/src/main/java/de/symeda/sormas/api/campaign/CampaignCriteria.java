@@ -1,11 +1,11 @@
 package de.symeda.sormas.api.campaign;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
-
-import java.io.Serializable;
-import java.util.Date;
 
 public class CampaignCriteria extends BaseCriteria implements Serializable {
 

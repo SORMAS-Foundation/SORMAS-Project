@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -273,7 +275,7 @@ public class EpiData extends AbstractDomainObject {
 		this.otherAnimals = otherAnimals;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOtherAnimalsDetails() {
 		return otherAnimalsDetails;
 	}
@@ -291,7 +293,7 @@ public class EpiData extends AbstractDomainObject {
 		this.waterSource = waterSource;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getWaterSourceOther() {
 		return waterSourceOther;
 	}
@@ -309,7 +311,7 @@ public class EpiData extends AbstractDomainObject {
 		this.waterBody = waterBody;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getWaterBodyDetails() {
 		return waterBodyDetails;
 	}
@@ -381,7 +383,7 @@ public class EpiData extends AbstractDomainObject {
 		this.kindOfExposureOther = kindOfExposureOther;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getKindOfExposureDetails() {
 		return kindOfExposureDetails;
 	}
@@ -399,7 +401,7 @@ public class EpiData extends AbstractDomainObject {
 		this.dateOfLastExposure = dateOfLastExposure;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPlaceOfLastExposure() {
 		return placeOfLastExposure;
 	}
@@ -574,7 +576,7 @@ public class EpiData extends AbstractDomainObject {
 		this.sickDeadAnimals = sickDeadAnimals;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSickDeadAnimalsDetails() {
 		return sickDeadAnimalsDetails;
 	}
@@ -592,7 +594,7 @@ public class EpiData extends AbstractDomainObject {
 		this.sickDeadAnimalsDate = sickDeadAnimalsDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSickDeadAnimalsLocation() {
 		return sickDeadAnimalsLocation;
 	}
@@ -619,7 +621,7 @@ public class EpiData extends AbstractDomainObject {
 		this.eatingRawAnimals = eatingRawAnimals;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getEatingRawAnimalsDetails() {
 		return eatingRawAnimalsDetails;
 	}
@@ -672,4 +674,5 @@ public class EpiData extends AbstractDomainObject {
 	public void setSnakes(YesNoUnknown snakes) {
 		this.snakes = snakes;
 	}
+
 }
