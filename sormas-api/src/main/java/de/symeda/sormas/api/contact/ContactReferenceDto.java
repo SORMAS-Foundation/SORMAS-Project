@@ -17,14 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.Serializable;
 
 public class ContactReferenceDto extends ReferenceDto {
 
