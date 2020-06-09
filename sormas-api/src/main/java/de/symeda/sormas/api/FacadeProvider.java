@@ -254,7 +254,6 @@ public class FacadeProvider {
 	public static GeocodingFacade getGeocodingFacade() {
 		return get().lookupEjbRemote(GeocodingFacade.class);
 	}
-
 	public static CampaignFacade getCampaignFacade() {
 		return get().lookupEjbRemote(CampaignFacade.class);
 	}

@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -29,7 +24,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -41,12 +35,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.campaign.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
-import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
-import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
-import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
-import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
+import de.symeda.sormas.ui.configuration.infrastructure.*;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
@@ -60,6 +49,11 @@ import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Content of the UI when the user is logged in.
@@ -167,11 +161,8 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
 			ControllerProvider.getCampaignController().registerViews(navigator);
-			menu.addView(
-				CampaignsView.class,
-				CampaignsView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuCampaigns),
-				VaadinIcons.CLIPBOARD_CHECK);
+			menu.addView(CampaignsView.class, CampaignsView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
