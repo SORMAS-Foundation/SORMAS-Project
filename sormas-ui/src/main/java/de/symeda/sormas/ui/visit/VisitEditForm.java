@@ -27,6 +27,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,8 +35,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
@@ -53,9 +57,15 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean isInJurisdiction) {
 
-		super(VisitDto.class, VisitDto.I18N_PREFIX);
+		super(
+			VisitDto.class,
+			VisitDto.I18N_PREFIX,
+			false,
+			null,
+			new FieldAccessCheckers()
+				.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), create || isInJurisdiction)));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -94,6 +104,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
 
 		setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
+
+		initializeAccessAndAllowedAccesses();
 
 		if (contact != null) {
 			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {

@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -73,7 +72,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -83,7 +81,6 @@ import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -211,7 +208,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
 		SampleDto existingSampleDto = toDto(existingSample);
 
-		if(existingSampleDto != null) {
+		if (existingSampleDto != null) {
 			boolean inJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSample);
 			pseudonymizationService.restorePseudonymizedValues(SampleDto.class, dto, existingSampleDto, inJurisdiction);
 		}
@@ -376,14 +373,17 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples,
-			s -> sampleJurisdictionChecker.isInJurisdiction(s.getAssociatedCaseJurisdiction(), s.getAssociatedContactJurisdiction()), (s, isInJurisdiction) -> {
-			pseudonymizeEmbeddedObjects(
-				s.getAssociatedCase(),
-				s.getAssociatedCaseJurisdiction(),
-				s.getAssociatedContact(),
-				s.getAssociatedContactJurisdiction());
-		});
+		pseudonymizationService.pseudonymizeDtoCollection(
+			SampleIndexDto.class,
+			samples,
+			s -> sampleJurisdictionChecker.isInJurisdiction(s.getAssociatedCaseJurisdiction(), s.getAssociatedContactJurisdiction()),
+			(s, isInJurisdiction) -> {
+				pseudonymizeEmbeddedObjects(
+					s.getAssociatedCase(),
+					s.getAssociatedCaseJurisdiction(),
+					s.getAssociatedContact(),
+					s.getAssociatedContactJurisdiction());
+			});
 
 		return samples;
 	}
@@ -551,18 +551,20 @@ public class SampleFacadeEjb implements SampleFacade {
 		for (SampleExportDto exportDto : resultList) {
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), null);
 
-			if (exportDto.getAssociatedCase() != null) {
-				pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
-			}
+			pseudonymizationService.pseudonymizeDto(SampleExportDto.class, exportDto, isInJurisdiction, s -> {
+				pseudonymizationService
+					.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, s.getPersonAddress(), isInJurisdiction, null);
 
-			if (exportDto.getAssociatedContact() != null) {
-				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
-			}
-			pseudonymizationService
-				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
+				if (exportDto.getAssociatedCase() != null) {
+					pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, s.getAssociatedCase(), isInJurisdiction, null);
+				}
 
-			List<PathogenTest> pathogenTests =
-					pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
+				if (exportDto.getAssociatedContact() != null) {
+					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, s.getAssociatedContact(), isInJurisdiction, null);
+				}
+			});
+
+			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
 				switch (++count) {
@@ -751,12 +753,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		SampleDto dto = toDto(source);
 
 		if (dto != null) {
-
-			CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
-			ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
-
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(source);
 			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
+				ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
+
 				pseudonymizeEmbeddedObjects(s.getAssociatedCase(), caseJurisdiction, s.getAssociatedContact(), contactJurisdiction);
 			});
 
@@ -772,7 +773,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		ContactJurisdictionDto contactJurisdiction) {
 
 		if (sampleCase != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, sampleCase, sampleJurisdictionChecker.isInJurisdiction(caseJurisdiction, null), null);
+			pseudonymizationService
+				.pseudonymizeDto(CaseReferenceDto.class, sampleCase, sampleJurisdictionChecker.isInJurisdiction(caseJurisdiction, null), null);
 		}
 
 		if (sampleContact != null) {

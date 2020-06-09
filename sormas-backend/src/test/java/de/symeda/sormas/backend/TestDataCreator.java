@@ -399,19 +399,19 @@ public class TestDataCreator {
 		return createVisit(disease, person, visitDateTime, VisitStatus.COOPERATIVE);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, UserReferenceDto visitUser) {
-		return createVisit(disease, person, new Date(), VisitStatus.COOPERATIVE, visitUser);
-	}
-
 	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus) {
 		return createVisit(disease, person, visitDateTime, visitStatus, null);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus, UserReferenceDto visitUser) {
+	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus, Consumer<VisitDto> customConfig) {
 		VisitDto visit = VisitDto.build(person, disease);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
-		visit.setVisitUser(visitUser);
+
+		if(customConfig != null){
+			customConfig.accept(visit);
+		}
+
 		visit = beanTest.getVisitFacade().saveVisit(visit);
 
 		return visit;

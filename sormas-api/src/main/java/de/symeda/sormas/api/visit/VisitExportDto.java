@@ -13,6 +13,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class VisitExportDto implements Serializable {
 
@@ -35,7 +36,9 @@ public class VisitExportDto implements Serializable {
 	private String visitRemarks;
 	private SymptomsDto symptoms;
 
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
 
 	private String personUuid;

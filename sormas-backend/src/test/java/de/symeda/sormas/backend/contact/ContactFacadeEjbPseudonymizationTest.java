@@ -239,7 +239,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
 		ContactDto contact2 =
-			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+			creator.createContact(user1.toReference(), user1.toReference(), createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		List<ContactFollowUpDto> matchingContacts =
 			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
@@ -248,9 +248,15 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(followup1.getPerson().getFirstName(), is("James"));
 		assertThat(followup1.getPerson().getLastName(), is("Smith"));
 
+		//sensitive data
+		assertThat(followup1.getContactOfficer(), is(user2));
+
 		ContactFollowUpDto followup2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
 		assertThat(followup2.getPerson().getFirstName(), isEmptyString());
 		assertThat(followup2.getPerson().getLastName(), isEmptyString());
+
+		//sensitive data
+		assertThat(followup2.getContactOfficer(), is(nullValue()));
 	}
 
 	@Test

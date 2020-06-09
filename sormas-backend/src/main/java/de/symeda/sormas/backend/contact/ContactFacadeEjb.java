@@ -655,11 +655,10 @@ public class ContactFacadeEjb implements ContactFacade {
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
-				pseudonymizationService.pseudonymizeDto(
-					PersonReferenceDto.class,
-					contactFollowUpDto.getPerson(),
-					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
-					null);
+				boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction());
+				pseudonymizationService.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, f -> {
+					pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, f.getPerson(), isInJurisdiction, null);
+				});
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);

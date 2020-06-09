@@ -57,7 +57,7 @@ public class VisitController {
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		VisitReferenceDto referenceDto = visit.toReference();
 		PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
-		VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+		VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, !contact.isPseudonymized());
 		editForm.setValue(visit);
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
 			editForm,
@@ -103,7 +103,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true);
 		createForm.setValue(visit);
 		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
 			createForm,

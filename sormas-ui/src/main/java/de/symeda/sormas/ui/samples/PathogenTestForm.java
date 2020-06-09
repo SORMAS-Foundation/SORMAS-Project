@@ -43,6 +43,10 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
@@ -69,8 +73,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	private final SampleDto sample;
 	private int caseSampleCount;
 
-	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount) {
-		super(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX);
+	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isInJurisdiction) {
+		super(
+			PathogenTestDto.class,
+			PathogenTestDto.I18N_PREFIX,
+			false,
+			new FieldVisibilityCheckers(),
+			new FieldAccessCheckers()
+				.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), create || isInJurisdiction)));
 
 		this.sample = sample;
 		this.caseSampleCount = caseSampleCount;
@@ -119,6 +129,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		fourFoldIncrease.setVisible(false);
 		fourFoldIncrease.setEnabled(false);
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(3);
+
+		initializeAccessAndAllowedAccesses();
+
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			PathogenTestDto.TEST_TYPE_TEXT,

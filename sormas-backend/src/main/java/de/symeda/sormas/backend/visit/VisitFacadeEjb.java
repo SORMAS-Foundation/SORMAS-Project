@@ -41,6 +41,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
@@ -157,18 +158,23 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
+		final String visitUuid = dto.getUuid();
+		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
+		final VisitDto existingDto = toDto( existingVisit);
+
+		if(existingDto != null){
+			boolean isInJurisdiction = existingVisit.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+			pseudonymizationService.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
+		}
 
 		this.validate(dto);
-
-		final String visitUuid = dto.getUuid();
-		final VisitDto existingVisit = toDto(visitUuid != null ? visitService.getByUuid(visitUuid) : null);
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
 
 		visitService.ensurePersisted(entity);
 
-		onVisitChanged(existingVisit, entity);
+		onVisitChanged(existingDto, entity);
 
 		return convertToDto(entity);
 	}
@@ -336,7 +342,10 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			personJoin.get(Person.UUID));
 
-		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
+		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
+		if(filter != null) {
+			cq.where(filter);
+		}
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
 		List<VisitExportDto> resultList =

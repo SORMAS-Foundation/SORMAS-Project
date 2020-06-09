@@ -167,7 +167,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getCaze().getLastName(), isEmptyString());
 
 		TaskIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(index3.getContact().getCaption(), is("John SMITH to case John Smith"));
+		assertThat(index3.getContact().getCaption(), is("John SMITH"));
 
 		TaskIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(index4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -215,7 +215,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH to case John Smith"));
+		assertThat(active3.getContact().getCaption(), is("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -262,7 +262,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH to case John Smith"));
+		assertThat(active3.getContact().getCaption(), is("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -324,7 +324,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<TaskDto> contact1Tasks = getTaskFacade().getAllByContact(contact1.toReference());
 		TaskDto active1 = contact1Tasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active1.getContact().getCaption(), is("John SMITH to case John Smith"));
+		assertThat(active1.getContact().getCaption(), is("John SMITH"));
 
 		List<TaskDto> contact2Tasks = getTaskFacade().getAllByContact(contact2.toReference());
 		TaskDto active2 = contact2Tasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();

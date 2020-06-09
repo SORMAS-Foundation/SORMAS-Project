@@ -23,13 +23,23 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitExportDto;
+import de.symeda.sormas.api.visit.VisitExportType;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.person.Person;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -56,33 +66,100 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(),
 				"Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
-		person = creator.createPerson("John", "Smith");
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
+
+		person = creator.createPerson("John", "Smith");
 	}
 
 	@Test
 	public void testGetVisitInJurisdiction(){
-		VisitDto visit = createVisit(user2, creator.createContact(user2.toReference(), person.toReference()));
+		VisitDto visit = createVisit(user2, creator.createContact(user2.toReference(), person.toReference(), Disease.CORONAVIRUS), person);
 
 		assertNotPseudonymized(getVisitFacade().getVisitByUuid(visit.getUuid()));
 	}
 
 	@Test
 	public void testGetVisitOutsideJurisdiction(){
-		VisitDto visit = createVisit(user1, creator.createContact(user1.toReference(), person.toReference()));
+		VisitDto visit = createVisit(user1, creator.createContact(user1.toReference(), person.toReference(), Disease.CORONAVIRUS), person);
 
 		assertPseudonymized(getVisitFacade().getVisitByUuid(visit.getUuid()));
 	}
 
-	private VisitDto createVisit(UserDto visitUser, ContactDto contact) {
-		VisitDto visitDto = creator.createVisit(Disease.CORONAVIRUS, person.toReference(), visitUser.toReference());
+	@Test
+	public void testPseudonymizeExportList(){
+		PersonDto newPerson = creator.createPerson("First", "Last");
+		VisitDto visit1 = createVisit(user1, creator.createContact(user1.toReference(), newPerson.toReference(), Disease.CORONAVIRUS), newPerson);
+		VisitDto visit2 = createVisit(user2, creator.createContact(user2.toReference(), person.toReference(), Disease.CORONAVIRUS), person);
 
-		Visit visit = getVisitService().getByUuid(visitDto.getUuid());
-		visit.getContacts().add(getContactService().getByUuid(contact.getUuid()));
+		List<VisitExportDto> exportList = getVisitFacade().getVisitsExportList(new VisitCriteria(), VisitExportType.CONTACT_VISITS, 0, 100, null);
 
-		getVisitService().ensurePersisted(visit);
+		VisitExportDto export1 = exportList.stream().filter(v -> v.getUuid().equals(visit1.getUuid())).findFirst().get();
+		assertThat(export1.getFirstName(), isEmptyString());
+		assertThat(export1.getLastName(), isEmptyString());
 
-		return getVisitFacade().getVisitByUuid(visitDto.getUuid());
+		//sensitive data
+		assertThat(export1.getReportLat(), is(nullValue()));
+		assertThat(export1.getReportLon(), is(nullValue()));
+
+		VisitExportDto export2 = exportList.stream().filter(v -> v.getUuid().equals(visit2.getUuid())).findFirst().get();
+		assertThat(export2.getFirstName(), is("John"));
+		assertThat(export2.getLastName(), is("Smith"));
+
+		//sensitive data
+		assertThat(export2.getReportLat(), is(43.532));
+		assertThat(export2.getReportLon(), is(23.4332));
+	}
+
+	@Test
+	public void testUpdatePseudonymized(){
+		VisitDto visit = createVisit(user1, creator.createContact(user1.toReference(), person.toReference(), Disease.CORONAVIRUS), person);
+
+		visit.setReportLat(null);
+		visit.setReportLon(null);
+		visit.setReportLatLonAccuracy(null);
+
+		getVisitFacade().saveVisit(visit);
+
+		Visit updated = getVisitService().getByUuid(visit.getUuid());
+
+		assertThat(updated.getReportLat(), is(43.532));
+		assertThat(updated.getReportLon(), is(23.4332));
+		assertThat(updated.getReportLatLonAccuracy(), is(10f));
+	}
+
+	@Test
+	public void testUpdateWithPseudonymizedDto(){
+		VisitDto visit = createVisit(user2, creator.createContact(user2.toReference(), person.toReference(), Disease.CORONAVIRUS), person);
+
+		visit.setPseudonymized(true);
+		visit.setReportLat(null);
+		visit.setReportLon(null);
+		visit.setReportLatLonAccuracy(null);
+
+		getVisitFacade().saveVisit(visit);
+
+		Visit updated = getVisitService().getByUuid(visit.getUuid());
+
+		assertThat(updated.getReportLat(), is(43.532));
+		assertThat(updated.getReportLon(), is(23.4332));
+		assertThat(updated.getReportLatLonAccuracy(), is(10f));
+	}
+
+	private VisitDto createVisit(UserDto visitUser, ContactDto contact, PersonDto person) {
+		VisitDto visitDto = creator.createVisit(Disease.CORONAVIRUS, person.toReference(), new Date(), VisitStatus.COOPERATIVE, (v) -> {
+			v.setVisitUser(visitUser.toReference());
+			v.setReportLat(43.532);
+			v.setReportLon(23.4332);
+			v.setReportLatLonAccuracy(10f);
+		});
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, 1);
+		contact.setFollowUpUntil(calendar.getTime());
+
+		getContactFacade().saveContact(contact);
+
+		return visitDto;
 	}
 
 	private void assertNotPseudonymized(VisitDto visit){
@@ -97,6 +174,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	private void assertPseudonymized(VisitDto visit){
+		assertThat(visit.isPseudonymized(), is(true));
 		assertThat(visit.getPerson().getFirstName(), isEmptyString());
 		assertThat(visit.getPerson().getLastName(), isEmptyString());
 
