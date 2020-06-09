@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.Disease;
-
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import de.symeda.sormas.api.Disease;
 
 public final class CssStyles {
 

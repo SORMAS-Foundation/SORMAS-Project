@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
+import java.util.Collections;
+
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-
-import java.util.Collections;
 
 public class ContactJurisdictionHelper {
 
