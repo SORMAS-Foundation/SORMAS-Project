@@ -44,6 +44,13 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -352,10 +359,13 @@ public class VisitFacadeEjb implements VisitFacade {
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
+			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
+
 			for (VisitExportDto exportDto : resultList) {
-				List<Contact> visitContacts =
-					contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(exportDto.getPersonUuid())), null);
-				boolean inJurisdiction = visitContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
+				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+
 				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
 
 				if (symptoms != null) {
@@ -505,9 +515,72 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 	}
 
+	private Map<Long, List<VisitContactJurisdiction>> getVisitContactJurisdictions(List<Long> visitIds) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<VisitContactJurisdiction> cq = cb.createQuery(VisitContactJurisdiction.class);
+		final Root<Visit> visitRoot = cq.from(Visit.class);
+		VisitJoins joins = new VisitJoins(visitRoot, JoinType.INNER);
+
+		cq.multiselect(
+			visitRoot.get(Visit.ID),
+			joins.getContactReportingUser().get(User.UUID),
+			joins.getContactRegion().get(Region.UUID),
+			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCaseReportingUser().get(User.UUID),
+			joins.getContactCaseRegion().get(Region.UUID),
+			joins.getContactCaseDistrict().get(District.UUID),
+			joins.getContactCaseCommunity().get(Community.UUID),
+			joins.getContactCaseHealthFacility().get(Facility.UUID),
+			joins.getContactCasePointOfEntry().get(PointOfEntry.UUID));
+
+		cq.where(visitRoot.get(Visit.ID).in(visitIds));
+		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
+
+		List<VisitContactJurisdiction> jurisdictions = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+
+		return jurisdictions.stream().collect(Collectors.groupingBy(VisitContactJurisdiction::getVisitId));
+	}
+
 	@LocalBean
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
 
+	}
+
+	static class VisitContactJurisdiction extends ContactJurisdictionDto {
+
+		private long visitId;
+
+		public VisitContactJurisdiction(
+			long visitId,
+			String reportingUserUuid,
+			String regionUuid,
+			String districtUuid,
+			String caseReportingUserUuid,
+			String caseRegionUui,
+			String caseDistrictUud,
+			String caseCommunityUuid,
+			String caseHealthFacilityUuid,
+			String casePointOfEntryUuid) {
+
+			super(
+				reportingUserUuid,
+				regionUuid,
+				districtUuid,
+				caseReportingUserUuid != null
+					? new CaseJurisdictionDto(
+						caseReportingUserUuid,
+						caseRegionUui,
+						caseDistrictUud,
+						caseCommunityUuid,
+						caseHealthFacilityUuid,
+						casePointOfEntryUuid)
+					: null);
+			this.visitId = visitId;
+		}
+
+		public long getVisitId() {
+			return visitId;
+		}
 	}
 }
