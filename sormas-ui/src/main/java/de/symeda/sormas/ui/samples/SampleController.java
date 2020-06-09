@@ -91,7 +91,7 @@ public class SampleController {
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
-		final SampleCreateForm createForm = new SampleCreateForm(true);
+		final SampleCreateForm createForm = new SampleCreateForm();
 		createForm.setValue(sampleDto);
 		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -110,7 +110,7 @@ public class SampleController {
 
 	public void createReferral(SampleDto sample) {
 
-		final SampleCreateForm createForm = new SampleCreateForm(true);
+		final SampleCreateForm createForm = new SampleCreateForm();
 		final SampleDto referralSample = SampleDto.buildReferral(UserProvider.getCurrent().getUserReference(), sample);
 		createForm.setValue(referralSample);
 		final CommitDiscardWrapperComponent<SampleCreateForm> createView = new CommitDiscardWrapperComponent<>(
@@ -159,7 +159,7 @@ public class SampleController {
 
 	public CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(final String sampleUuid, boolean isInJurisdiction) {
 
-		SampleEditForm form = new SampleEditForm(isInJurisdiction);
+		SampleEditForm form = new SampleEditForm();
 		form.setWidth(form.getWidth() * 10 / 12, Unit.PIXELS);
 		SampleDto dto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
 		form.setValue(dto);

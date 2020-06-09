@@ -350,7 +350,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples, 
-			s -> sampleJurisdictionChecker.isInJurisdiction(s.getAssociatedCaseJurisdiction(), s.getAssociatedContactJurisdiction()),, (s, isInJurisdiction) -> {
+			s -> sampleJurisdictionChecker.isInJurisdiction(s.getAssociatedCaseJurisdiction(), s.getAssociatedContactJurisdiction()), (s, isInJurisdiction) -> {
 			pseudonymizeEmbeddedObjects(
 				s.getAssociatedCase(),
 				s.getAssociatedCaseJurisdiction(),
@@ -527,8 +527,6 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
 			pseudonymizationService
 				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
-
-			});
 
 			List<PathogenTest> pathogenTests =
 					pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
@@ -753,7 +751,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizationService.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getCaseName(),
-				isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
+				sampleJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
 				null);
 		}
 	}
