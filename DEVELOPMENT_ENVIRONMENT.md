@@ -54,12 +54,13 @@
 	- edit your domain config ..\payara5\glassfish\domains\sormas\config\domain.xml and make sure the java-config node contains:
 	 ``<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...``
 - Configure code formatting:
-	- install Eclipse code formatter for IntelliJ(https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
-	- open the plugin and check the "Use the Eclipse code formatter"
-	- browse to ``sormas-base/java-formatter-profile.xml`` and select it for Eclipse Java Formatter config file
-	- check optimize imports and select for Import order the ``sormas-base/java-importorder-profile.importorder`` file
+	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"
+	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
+	- check optimize imports and, for "Iport order", select ``sormas-base/java-importorder-profile.importorder``
+	- **Important:** select "Do not format other file types by IntelliJ formatter"
 	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
-	- for IntelliJ code formatting is usually used with Ctrl+Alt+L shortcut - if you wish to do the formating with save please use the plugin Save actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
+	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 ## Android Studio
 **Note: This is only needed for development of the SORMAS Android app
@@ -73,11 +74,10 @@
 * Add an emulator with SDK version between the minSdkVersion and targetSdkVersion properties from build.gradle
 * On first start of the application enter the Sormas rest service URL for the server URL: http://10.0.2.2:6080/sormas-rest/ (see: https://developer.android.com/studio/run/emulator-networking)
 * Configure code formatting:
-	- install Eclipse code formatter for Android studio (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
-	- open the plugin ("File -> Settings -> Other Settings") and check the "Use the Eclipse code formatter"
-	- browse to ``sormas-base/java-formatter-profile.xml`` and select it for Eclipse Java Formatter config file
-	- check optimize imports and select for Import order the ``sormas-base/java-importorder-profile.importorder`` file
+	- install Eclipse Code Formatter for Android studio (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
+	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"
+	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
+	- check optimize imports and, for "Iport order", select ``sormas-base/java-importorder-profile.importorder``
+	- **Important:** select "Do not format other file types by IntelliJ formatter"
 	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
-	- for Android Studio code formatting is usually used with Ctrl+Alt+L shortcut - if you wish to do the formating with save please use the plugin Save actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
-
-
+	- for Android Studio, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)

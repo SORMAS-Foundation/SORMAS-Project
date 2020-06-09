@@ -32,6 +32,7 @@ public class CampaignDataForm extends AbstractEditForm<CampaignDto> {
 	private Boolean isCreateForm = null;
 
 	public CampaignDataForm(boolean create) {
+
 		super(CampaignDto.class, CampaignDto.I18N_PREFIX);
 
 		isCreateForm = create;
@@ -48,6 +49,7 @@ public class CampaignDataForm extends AbstractEditForm<CampaignDto> {
 
 	@Override
 	protected void addFields() {
+
 		if (isCreateForm == null) {
 			return;
 		}

@@ -27,6 +27,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 	@SuppressWarnings("unchecked")
 	public CampaignGrid(CampaignCriteria criteria) {
+
 		super(CampaignIndexDto.class);
 
 		setSizeFull();
@@ -62,6 +63,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 	}
 
 	public void setLazyDataProvider() {
+
 		DataProvider<CampaignIndexDto, CampaignCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCampaignFacade()
 				.getIndexList(
@@ -79,6 +81,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 	}
 
 	public void setEagerDataProvider() {
+
 		ListDataProvider<CampaignIndexDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getCampaignFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);

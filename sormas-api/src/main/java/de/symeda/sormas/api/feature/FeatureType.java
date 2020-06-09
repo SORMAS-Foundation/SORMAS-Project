@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.feature;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * New server features are automatically added to the database in FeatureConfigurationService.createMissingFeatureConfigurations().

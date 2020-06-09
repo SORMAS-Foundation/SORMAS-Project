@@ -31,6 +31,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 
 	public Predicate buildCriteriaFilter(CampaignCriteria campaignCriteria, CriteriaBuilder cb, Root<Campaign> from) {
+
 		Predicate filter = null;
 		if (campaignCriteria.getDeleted() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));

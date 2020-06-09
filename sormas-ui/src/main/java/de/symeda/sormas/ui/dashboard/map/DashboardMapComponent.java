@@ -1289,7 +1289,9 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			LeafletMarker marker = new LeafletMarker();
-			if (event.getReportLat() != null && event.getReportLon() != null) {
+			if (event.getLocationLat() != null && event.getLocationLon() != null) {
+				marker.setLatLon(event.getLocationLat(), event.getLocationLon());
+			} else if (event.getReportLat() != null && event.getReportLon() != null) {
 				marker.setLatLon(event.getReportLat(), event.getReportLon());
 			} else if (event.getDistrict() != null) {
 				GeoLatLon districtCenter = FacadeProvider.getGeoShapeProvider().getCenterOfDistrict(event.getDistrict());

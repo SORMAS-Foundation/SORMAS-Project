@@ -26,6 +26,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class CampaignController {
 
 	public void createOrEdit(String uuid) {
+
 		CommitDiscardWrapperComponent<CampaignDataForm> campaignComponent;
 		String heading;
 		if (uuid != null) {
@@ -66,6 +67,7 @@ public class CampaignController {
 	}
 
 	private void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {
+
 		if (archive) {
 			Label contentLabel = new Label(
 				String.format(
@@ -106,6 +108,7 @@ public class CampaignController {
 	}
 
 	public CommitDiscardWrapperComponent<CampaignDataForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
+
 		CampaignDataForm campaignForm = new CampaignDataForm(campaignDto == null);
 
 		final CommitDiscardWrapperComponent<CampaignDataForm> view =
