@@ -16,4 +16,3 @@ WebUI.verifyMatch(attribute, '10', false, FailureHandling.OPTIONAL)
 if (isStandalone) {
 	WebUI.closeBrowser()
 }
-WebUI.closeBrowser()

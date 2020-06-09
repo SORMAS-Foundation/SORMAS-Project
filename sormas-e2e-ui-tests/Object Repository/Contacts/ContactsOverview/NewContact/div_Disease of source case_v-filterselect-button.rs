@@ -6,15 +6,15 @@
    <elementGuidId>defbbee1-7090-4f7a-8bf5-a548b3e37552</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>XPATH</key>
-         <value>//div[@id='disease']/div</value>
-      </entry>
-      <entry>
          <key>BASIC</key>
          <value>id(&quot;disease&quot;)/div[@class=&quot;v-filterselect-button&quot;][count(. | //*[@class = 'v-filterselect-button']) = count(//*[@class = 'v-filterselect-button'])]</value>
       </entry>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='disease']/div</value>
+      </entry>
    </selectorCollection>
-   <selectorMethod>BASIC</selectorMethod>
+   <selectorMethod>XPATH</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>

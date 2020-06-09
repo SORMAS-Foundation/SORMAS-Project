@@ -6,12 +6,12 @@
    <elementGuidId>42f483bd-7a40-474d-be91-a4db5ebaf452</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>XPATH</key>
-         <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td</value>
+         <key>BASIC</key>
+         <value>//*[@role = 'listitem' and (text() = 'External lab testing' or . = 'External lab testing')]</value>
       </entry>
       <entry>
-         <key>BASIC</key>
-         <value>//*[(text() = 'External lab testing' or . = 'External lab testing')]</value>
+         <key>XPATH</key>
+         <value>//div[@id='VAADIN_COMBOBOX_OPTIONLIST']/div/div[2]/table/tbody/tr[2]/td</value>
       </entry>
    </selectorCollection>
    <selectorMethod>BASIC</selectorMethod>
@@ -31,7 +31,7 @@
       <value>gwt-MenuItem gwt-MenuItem-selected</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>role</name>
       <type>Main</type>

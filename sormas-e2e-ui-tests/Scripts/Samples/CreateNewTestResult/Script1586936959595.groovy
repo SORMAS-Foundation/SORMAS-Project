@@ -42,7 +42,7 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/div_Save'))
 WebUI.delay(1)
 
 String dateToCheck = WebUI.getText(findTestObject('Samples/SampleInformation/last_testResultDateTime'))
-String expectedDateTime = resultDate + ' ' + resultTime
+String expectedDateTime = resultDate + ' ' +resultTime
 if (!dateToCheck.equals(expectedDateTime)) {
 	WebUI.closeBrowser()
  	throw new StepFailedException('Expected to find in the first testresult the another date-time string. expected: ' + expectedDateTime + ' found: ' + dateToCheck)

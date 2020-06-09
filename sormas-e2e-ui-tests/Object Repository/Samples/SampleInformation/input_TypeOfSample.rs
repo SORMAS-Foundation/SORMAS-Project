@@ -7,7 +7,15 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//div[2]/div/div/div/div[2]/input</value>
+         <value>//div[@id='sampleMaterial']/input</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//*[@type = 'text' and @id = 'gwt-uid-27']</value>
+      </entry>
+      <entry>
+         <key>CSS</key>
+         <value></value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>

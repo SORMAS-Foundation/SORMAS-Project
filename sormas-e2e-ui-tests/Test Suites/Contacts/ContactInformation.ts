@@ -11,12 +11,6 @@
    <rerunFailedTestCasesOnly>false</rerunFailedTestCasesOnly>
    <testSuiteGuid>163f2d4c-b804-42f6-a144-8c26f9e451f4</testSuiteGuid>
    <testCaseLink>
-      <guid>dd02951c-deb0-485b-a057-748f4f4358d4</guid>
-      <isReuseDriver>false</isReuseDriver>
-      <isRun>true</isRun>
-      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
-   </testCaseLink>
-   <testCaseLink>
       <guid>33f2ac07-44c5-494a-a883-a7b8209f2487</guid>
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
@@ -39,6 +33,12 @@
       <isReuseDriver>false</isReuseDriver>
       <isRun>true</isRun>
       <testCaseId>Test Cases/Contacts/CreateNewTaskForContact</testCaseId>
+   </testCaseLink>
+   <testCaseLink>
+      <guid>dd02951c-deb0-485b-a057-748f4f4358d4</guid>
+      <isReuseDriver>false</isReuseDriver>
+      <isRun>true</isRun>
+      <testCaseId>Test Cases/Contacts/CancelNewTaskForContact</testCaseId>
    </testCaseLink>
    <testCaseLink>
       <guid>a499b915-7484-4c13-a9fd-9b3ca05d80f8</guid>
