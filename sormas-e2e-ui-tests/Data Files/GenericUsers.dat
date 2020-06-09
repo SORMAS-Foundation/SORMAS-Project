@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataFileEntity>
+   <description></description>
+   <name>GenericUsers</name>
+   <tag></tag>
+   <containsHeaders>true</containsHeaders>
+   <csvSeperator></csvSeperator>
+   <dataFileGUID>46d2f8ab-2950-4d29-8545-e84b6857c653</dataFileGUID>
+   <dataSourceUrl></dataSourceUrl>
+   <driver>InternalData</driver>
+   <data>surveillance first_name_case Gen1</data>
+   <data>surveillance last_name_case Case</data>
+   <data>surveillance first_name_contact UserC</data>
+   <data>surveillance last_name_contact test</data>
+   <data>event first_name_event_community Barak</data>
+   <data>event last_name_event_community Obama</data>
+   <data>event first_name_event_person Donald</data>
+   <data>event last_name_event_person Trump</data>
+   <internalDataColumns>
+      <columnIndex>0</columnIndex>
+      <name>section</name>
+      <size>8</size>
+   </internalDataColumns>
+   <internalDataColumns>
+      <columnIndex>1</columnIndex>
+      <name>key</name>
+      <size>8</size>
+   </internalDataColumns>
+   <internalDataColumns>
+      <columnIndex>2</columnIndex>
+      <name>value</name>
+      <size>8</size>
+   </internalDataColumns>
+   <isInternalPath>false</isInternalPath>
+   <query></query>
+   <secureUserAccount>false</secureUserAccount>
+   <sheetName></sheetName>
+   <usingGlobalDBSetting>false</usingGlobalDBSetting>
+</DataFileEntity>
