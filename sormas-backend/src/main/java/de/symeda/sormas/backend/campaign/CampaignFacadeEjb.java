@@ -50,6 +50,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
@@ -95,6 +96,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public long count(CampaignCriteria campaignCriteria) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
@@ -113,13 +115,14 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public CampaignDto saveCampaign(CampaignDto dto) {
+
 		Campaign campaign = fromDto(dto);
 		campaignService.ensurePersisted(campaign);
-
 		return toDto(campaign);
 	}
 
 	public Campaign fromDto(@NotNull CampaignDto source) {
+
 		Campaign target = campaignService.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new Campaign();
@@ -140,9 +143,11 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	public static CampaignDto toDto(Campaign source) {
+
 		if (source == null) {
 			return null;
 		}
+
 		CampaignDto target = new CampaignDto();
 		DtoHelper.fillDto(target, source);
 
@@ -162,6 +167,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public boolean isArchived(String uuid) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Campaign> from = cq.from(Campaign.class);
@@ -177,6 +183,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public void deleteCampaign(String campaignUuid) {
+
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
 			.contains(UserRight.CAMPAIGN_DELETE)) {
@@ -190,6 +197,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {
+
 		Campaign campaign = campaignService.getByUuid(campaignUuid);
 		campaign.setArchived(archive);
 		campaignService.ensurePersisted(campaign);
@@ -198,5 +206,6 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@LocalBean
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {
+
 	}
 }

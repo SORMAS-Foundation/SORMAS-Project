@@ -549,8 +549,15 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		for (SampleExportDto exportDto : resultList) {
 			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), exportDto.getAssociatedContactJurisdiction());
-			pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
+
+			if (exportDto.getAssociatedCase() != null) {
+				pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
+			}
+
+			if (exportDto.getAssociatedContact() != null) {
+				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
+			}
+
 			pseudonymizationService
 				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
 

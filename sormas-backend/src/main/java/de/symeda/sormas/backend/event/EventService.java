@@ -139,6 +139,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.EVENT_DATE),
 				event.get(Event.REPORT_LAT),
 				event.get(Event.REPORT_LON),
+				eventLocation.get(Location.LATITUDE),
+				eventLocation.get(Location.LONGITUDE),
 				eventDistrict.get(District.UUID));
 
 			result = em.createQuery(cq).getResultList();

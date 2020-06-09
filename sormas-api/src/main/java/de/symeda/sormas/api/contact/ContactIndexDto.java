@@ -73,37 +73,16 @@ public class ContactIndexDto implements Serializable {
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
 
-	//formatter:off
-	public ContactIndexDto(
-		String uuid,
-		String personFirstName,
-		String personLastName,
-		String cazeUuid,
-		Disease disease,
-		String diseaseDetails,
-		String caseFirstName,
-		String caseLastName,
-		String regionUuid,
-		String districtUuid,
-		Date lastContactDate,
-		ContactCategory contactCategory,
-		ContactProximity contactProximity,
-		ContactClassification contactClassification,
-		ContactStatus contactStatus,
-		FollowUpStatus followUpStatus,
-		Date followUpUntil,
-		String contactOfficerUuid,
-		String reportingUserUuid,
-		Date reportDateTime,
-		CaseClassification caseClassification,
-		String caseReportingUserUid,
-		String caseRegionUuid,
-		String caseDistrictUud,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid,
-		int visitCount) {
-		//@formatter:on
+	//@formatter:off
+	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
+						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+						   CaseClassification caseClassification,
+						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   int visitCount) {
+	//@formatter:on
 
 		this.uuid = uuid;
 		this.firstName = personFirstName;
