@@ -19,15 +19,22 @@ package de.symeda.sormas.rest;
 
 import javax.ws.rs.ApplicationPath;
 
+import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
+import io.swagger.v3.jaxrs2.ext.OpenAPIExtensions;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
  */
-@ApplicationPath("*")
+@ApplicationPath("/")
 public class RestConfig extends ResourceConfig {
+
+	private static boolean populatedSwaggerExtensions;
 
 	public RestConfig() {
 
@@ -40,5 +47,16 @@ public class RestConfig extends ResourceConfig {
 		register(RolesAllowedDynamicFeature.class);
 
 		register(JacksonFeature.class);
+
+		if (!populatedSwaggerExtensions) {
+			// Register Swagger Generator Extensions
+			List<OpenAPIExtension> swaggerExtensions = new ArrayList<>();
+			swaggerExtensions.addAll(OpenAPIExtensions.getExtensions());
+
+			swaggerExtensions.add(new JaxRs2Extension());
+
+			OpenAPIExtensions.setExtensions(swaggerExtensions);
+			populatedSwaggerExtensions = true;
+		}
 	}
 }

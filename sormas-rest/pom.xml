@@ -7,6 +7,10 @@
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
+	<properties>
+		<sormasRest.apiRoot>/sormas-rest</sormasRest.apiRoot>
+	</properties>
+
 	<artifactId>sormas-rest</artifactId>
 	<name>${project.artifactId}</name>
 	<packaging>war</packaging>
@@ -38,17 +42,83 @@
 		    <artifactId>jersey-media-json-jackson</artifactId>
 		</dependency>
 
-      <dependency>
-        <groupId>javax.security.enterprise</groupId>
-        <artifactId>javax.security.enterprise-api</artifactId>
-        <version>1.0</version>
-        <scope>provided</scope>
-</dependency>
+      	<dependency>
+			<groupId>javax.security.enterprise</groupId>
+			<artifactId>javax.security.enterprise-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-jaxrs2</artifactId>
+			<version>2.1.2</version>
+		</dependency>
 
 	</dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp/META-INF</directory>
+							<includes>
+								<include>context.xml</include>
+							</includes>
+							<targetPath>/META-INF</targetPath>
+							<filtering>true</filtering>
+						</resource>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<targetPath>/</targetPath>
+							<filtering>false</filtering>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.openapitools.swagger</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<configuration>
+					<!-- Swagger Generation Config -->
+					<resourcePackages>
+						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
+					</resourcePackages>
+					<outputDirectory>${basedir}/target/</outputDirectory>
+					<outputFilename>swagger</outputFilename>
+					<outputFormats>JSON,YAML</outputFormats>
+					<prettyPrint>true</prettyPrint>
+
+					<!-- Swagger API documentation metadata -->
+					<swaggerConfig>
+						<info>
+							<title>SORMAS REST API</title>
+							<version>${project.version}</version>
+						</info>
+						<servers>
+							<server>
+								<url>${sormasRest.apiRoot}</url>
+							</server>
+						</servers>
+					</swaggerConfig>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>
