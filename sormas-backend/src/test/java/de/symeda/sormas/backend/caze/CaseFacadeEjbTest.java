@@ -1024,7 +1024,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
 		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid()));
-		getCaseFacade().saveCase(caze);
+		caze = getCaseFacade().saveCase(caze);
 		assertNull(caze.getSurveillanceOfficer());
 
 		// Surveillance officer is set to the associated officer of an informant if available
@@ -1032,7 +1032,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
 		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
-		getCaseFacade().saveCase(caze);
+		caze = getCaseFacade().saveCase(caze);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
 	}
 
