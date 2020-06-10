@@ -19,6 +19,7 @@ package de.symeda.sormas.rest;
 
 import javax.ws.rs.ApplicationPath;
 
+import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtensions;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -50,12 +51,20 @@ public class RestConfig extends ResourceConfig {
 
 		if (!populatedSwaggerExtensions) {
 			// Register Swagger Generator Extensions
+			SwaggerExtension sormasSwaggerExtension = new SwaggerExtension();
+
+			// Operations-Level extensions
 			List<OpenAPIExtension> swaggerExtensions = new ArrayList<>();
 			swaggerExtensions.addAll(OpenAPIExtensions.getExtensions());
 
-			swaggerExtensions.add(new JaxRs2Extension());
+			swaggerExtensions.add(sormasSwaggerExtension);
 
 			OpenAPIExtensions.setExtensions(swaggerExtensions);
+
+			// Schema-Level extensions
+			ModelConverters modelConverters = ModelConverters.getInstance();
+			modelConverters.addConverter(sormasSwaggerExtension);
+
 			populatedSwaggerExtensions = true;
 		}
 	}
