@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks the creation and cancellation of new calls within the contacts-view</description>
+   <name>CreateCancelNewCall</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>a7615f20-638c-45b5-9cc9-e5cb04d1dd9a</testCaseGuid>
+</TestCaseEntity>

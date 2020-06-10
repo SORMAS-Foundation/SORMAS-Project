@@ -17,6 +17,7 @@ public enum Language {
 	DE(new Locale("de", "DE"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM"),
 	ES_EC(new Locale("es", "EC"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	ES_CU(new Locale("es", "CU"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
+	IT(new Locale("it", "IT"), "dd/MM/yyyy", "dd/MM/yyyy H:mm", "dd/MM"),
 	FI(new Locale("fi", "FI"), "dd.MM.yyyy", "dd.MM.yyyy H.mm", "dd.MM");
 
 	/**

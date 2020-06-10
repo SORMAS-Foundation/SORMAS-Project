@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>test</name>
+   <tag></tag>
+   <defaultProfile>false</defaultProfile>
+   <GlobalVariableEntity>
+      <description>Sormas Testapplication</description>
+      <initValue>'https://test.sormas.netzlink.com/'</initValue>
+      <name>gUrl</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Username for user in Surveillance Supervisor section</description>
+      <initValue>'SurvSup'</initValue>
+      <name>gUsernameSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for user in Surveillance Supervisor section</description>
+      <initValue>'SurvSup'</initValue>
+      <name>gPasswordSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Username for second user in Surveillance Supervisor section</description>
+      <initValue>'SurvSup3'</initValue>
+      <name>gUsernameSecondSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for second user in Surveillance Supervisor section</description>
+      <initValue>'whr4hwmTwJwZ'</initValue>
+      <name>gPasswordSecondSurveillanceSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Username for ContactSupervisor</description>
+      <initValue>'ContSup'</initValue>
+      <name>gUsernameContactSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Password for Contact Supervisor</description>
+      <initValue>'ContSup'</initValue>
+      <name>gPasswordContactSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'CliNic'</initValue>
+      <name>gUsernameClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'6mFGmqxiREMb'</initValue>
+      <name>gPasswordClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'EveOff'</initValue>
+      <name>gUsernameEventOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'EveOff'</initValue>
+      <name>gPasswordEventOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'PoeSup'</initValue>
+      <name>gUsernamePoeSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'PoeSup'</initValue>
+      <name>gPasswordPoeSupervisor</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'LabOff'</initValue>
+      <name>gUsernameLabOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'LabOff'</initValue>
+      <name>gPasswordLabOfficer</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatUser'</initValue>
+      <name>gUsernameNationalUser</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatUser'</initValue>
+      <name>gPasswordNationalUser</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatClin'</initValue>
+      <name>gUsernameNationalClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'NatClin'</initValue>
+      <name>gPasswordNationalClinician</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'testContactTestData'</initValue>
+      <name>gContactTestDataName</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description></description>
+      <initValue>'defaultSamplesTestData'</initValue>
+      <name>gSamplesTestDataName</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Downloadpath for file download in browser</description>
+      <initValue>'C:\\Users\\raghavender.pola\\Downloads'</initValue>
+      <name>gDownloadPath</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>
