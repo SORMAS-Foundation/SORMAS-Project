@@ -19,14 +19,15 @@ public enum FeatureType {
 	TASK_GENERATION_CASE_SURVEILLANCE(true, true),
 	TASK_GENERATION_CONTACT_TRACING(true, true),
 	TASK_GENERATION_EVENT_SURVEILLANCE(true, true),
-	TASK_GENERATION_GENERAL(true, true);
-	
+	TASK_GENERATION_GENERAL(true, true),
+	CAMPAIGNS(true, false);
+
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
 	 * is supposed to operate.
 	 */
 	private final boolean serverFeature;
-	
+
 	/**
 	 * Is the feature enabled by default?
 	 */
@@ -36,19 +37,19 @@ public enum FeatureType {
 		this.serverFeature = serverFeature;
 		this.enabledDefault = enabledDefault;
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public boolean isServerFeature() {
 		return serverFeature;
 	}
-	
+
 	public boolean isEnabledDefault() {
 		return enabledDefault;
 	}
-	
+
 	public static List<FeatureType> getAllServerFeatures() {
 		List<FeatureType> serverFeatures = new ArrayList<>();
 		for (FeatureType featureType : values()) {
@@ -56,8 +57,7 @@ public enum FeatureType {
 				serverFeatures.add(featureType);
 			}
 		}
-		
+
 		return serverFeatures;
 	}
-	
 }

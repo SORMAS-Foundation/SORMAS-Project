@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -32,26 +32,26 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final long serialVersionUID = 7573666294384000190L;
 
 	private static final String HTML_LAYOUT =
-			fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) +
-			fluidRowLocs(DistrictDto.REGION) + 
-			fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
+		fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) + fluidRowLocs(DistrictDto.REGION) + fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
 
 	private boolean create;
-	
+
 	public DistrictEditForm(boolean create) {
+
 		super(DistrictDto.class, DistrictDto.I18N_PREFIX, false);
 		this.create = create;
-		
+
 		setWidth(540, Unit.PIXELS);
-		
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
 		addFields();
 	}
-	
+
 	@Override
 	protected void addFields() {
+
 		addField(DistrictDto.NAME, TextField.class);
 		addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
@@ -61,9 +61,9 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
 		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
-		
-		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());		
-		
+
+		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+
 		// TODO: Workaround until cases and other data is properly transfered when infrastructure data changes
 		if (!create) {
 			region.setEnabled(false);
@@ -74,5 +74,4 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

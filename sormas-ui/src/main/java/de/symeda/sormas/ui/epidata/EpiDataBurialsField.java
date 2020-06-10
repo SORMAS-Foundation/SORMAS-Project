@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -56,6 +56,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		Table table = getTable();
 
 		table.addGeneratedColumn(PERIOD, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
@@ -72,6 +73,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		});
 
 		table.addGeneratedColumn(CITY, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
@@ -81,6 +83,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		});
 
 		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataBurialDto burial = (EpiDataBurialDto) itemId;
@@ -90,14 +93,14 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		});
 
 		table.setVisibleColumns(
-				EDIT_COLUMN_ID,
-				EpiDataBurialDto.BURIAL_PERSON_NAME,
-				EpiDataBurialDto.BURIAL_RELATION,
-				PERIOD,
-				CITY,
-				DISTRICT,
-				EpiDataBurialDto.BURIAL_ILL,
-				EpiDataBurialDto.BURIAL_TOUCHING);
+			EDIT_COLUMN_ID,
+			EpiDataBurialDto.BURIAL_PERSON_NAME,
+			EpiDataBurialDto.BURIAL_RELATION,
+			PERIOD,
+			CITY,
+			DISTRICT,
+			EpiDataBurialDto.BURIAL_ILL,
+			EpiDataBurialDto.BURIAL_TOUCHING);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataBurialDto.BURIAL_PERSON_NAME, 0);
@@ -145,17 +148,20 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		if (create && entry.getUuid() == null) {
 			entry.setUuid(DataHelper.createUuid());
 		}
-		
+
 		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create);
 		editForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityBurial));
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -166,6 +172,7 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					popupWindow.close();
@@ -181,5 +188,4 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 		burial.getBurialAddress().setRegion(UserProvider.getCurrent().getUser().getRegion());
 		return burial;
 	}
-
 }

@@ -8,7 +8,7 @@ import de.symeda.sormas.api.utils.IgnoreForUrl;
 public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = -941515738028452495L;
-	
+
 	private CaseCriteria caseCriteria;
 	private String firstName;
 	private String lastName;
@@ -16,8 +16,9 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 
 	@Override
 	public CaseCriteria clone() {
+
 		try {
-			return (CaseCriteria)super.clone();
+			return (CaseCriteria) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
@@ -52,15 +53,14 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 		this.reportDate = reportDate;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public CaseCriteria getCaseCriteria() {
 		return caseCriteria;
 	}
-	
+
 	public CaseSimilarityCriteria caseCriteria(CaseCriteria caseCriteria) {
 		this.caseCriteria = caseCriteria;
 		return this;
 	}
-	
 }

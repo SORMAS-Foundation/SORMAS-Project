@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
@@ -30,9 +30,9 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 public class HospitalizationDto extends EntityDto {
 
 	private static final long serialVersionUID = 4846215199480684369L;
-	
+
 	public static final String I18N_PREFIX = "CaseHospitalization";
-	
+
 	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
@@ -46,7 +46,7 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
 
 	// Fields are declared in the order they should appear in the import template
-	
+
 	@Outbreaks
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
@@ -60,37 +60,41 @@ public class HospitalizationDto extends EntityDto {
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
-	
+
 	public static HospitalizationDto build() {
 		HospitalizationDto hospitalization = new HospitalizationDto();
 		hospitalization.setUuid(DataHelper.createUuid());
 		return hospitalization;
 	}
-	
+
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
+
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
-	
+
 	public Date getDischargeDate() {
 		return dischargeDate;
 	}
+
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
-	
+
 	public YesNoUnknown getIsolated() {
 		return isolated;
 	}
+
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
 	}
-	
+
 	public Date getIsolationDate() {
 		return isolationDate;
 	}
+
 	public void setIsolationDate(Date isolationDate) {
 		this.isolationDate = isolationDate;
 	}
@@ -99,6 +103,7 @@ public class HospitalizationDto extends EntityDto {
 	public YesNoUnknown getHospitalizedPreviously() {
 		return hospitalizedPreviously;
 	}
+
 	public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
 		this.hospitalizedPreviously = hospitalizedPreviously;
 	}
@@ -107,13 +112,15 @@ public class HospitalizationDto extends EntityDto {
 	public List<PreviousHospitalizationDto> getPreviousHospitalizations() {
 		return previousHospitalizations;
 	}
+
 	public void setPreviousHospitalizations(List<PreviousHospitalizationDto> previousHospitalizations) {
 		this.previousHospitalizations = previousHospitalizations;
 	}
-	
+
 	public YesNoUnknown getAdmittedToHealthFacility() {
 		return admittedToHealthFacility;
 	}
+
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
@@ -145,7 +152,8 @@ public class HospitalizationDto extends EntityDto {
 	public YesNoUnknown getLeftAgainstAdvice() {
 		return leftAgainstAdvice;
 	}
+
 	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
 		this.leftAgainstAdvice = leftAgainstAdvice;
-	}	
+	}
 }

@@ -4247,7 +4247,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (207, 'Added table f
 ALTER TABLE contact ADD COLUMN additionaldetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN additionaldetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (208, '2020-05-11 Add additionalDetails to contact #1933');
+INSERT INTO schema_version (version_number, comment) VALUES (208, 'Add additionalDetails to contact #1933');
 
 -- 2020-05-18 Add Trimester and Postpartum selection to case #1981
 ALTER TABLE cases ADD COLUMN postpartum varchar(255);
@@ -4283,5 +4283,38 @@ ALTER TABLE samples ALTER COLUMN associatedcase_id DROP NOT NULL;
 ALTER TABLE samples_history ADD COLUMN associatedcontact_id bigint;
 ALTER TABLE samples_history ALTER COLUMN associatedcase_id DROP NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (211, '2020-05-07 Add samples to contacts #1753');
+INSERT INTO schema_version (version_number, comment) VALUES (211, 'Add samples to contacts #1753');
+
+-- 2020-05-28 Rename misspelled enum values #2094
+UPDATE contact SET contactproximity = 'MEDICAL_UNSAFE' WHERE contactproximity = 'MEDICAL_UNSAVE';
+UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'MEDICAL_SAVE';
+
+INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');                                                                                                                        
+
+--2020-05-25 Add campaigns #1984
+CREATE TABLE campaigns(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(255),
+	description varchar(512),
+	startdate timestamp,
+	enddate timestamp,
+	creatinguser_id bigint,
+	deleted boolean DEFAULT false,
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE campaigns OWNER TO sormas_user;
+ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
+CREATE TABLE campaigns_history (LIKE campaigns);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigns
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', true);
+ALTER TABLE campaigns_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (213, 'Add campaigns #1984');
+
 -- *** Insert new sql commands BEFORE this line ***

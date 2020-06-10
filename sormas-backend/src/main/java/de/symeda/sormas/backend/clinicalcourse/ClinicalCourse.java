@@ -15,12 +15,12 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class ClinicalCourse extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -2664896907352864261L;
-	
+
 	public static final String TABLE_NAME = "clinicalcourse";
-	
+
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String CASE = "caze";
-	
+
 	private HealthConditions healthConditions;
 	private Case caze;
 
@@ -42,5 +42,4 @@ public class ClinicalCourse extends AbstractDomainObject {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-
 }

@@ -60,7 +60,7 @@
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
   * Unzip the ZIP archive (e.g. into you download directory)
   * Open Git Bash and navigate to the setup sub-directory
-* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin)
+* Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
 * Set up the database and a Payara domain for SORMAS by executing the setup script: ``sudo -s ./server-setup.sh`` Press enter whenever asked for it
 * **IMPORTANT**: Make sure the script executed successfully. If anything goes wrong you need to fix the problem (or ask for help), then delete the created domain directory and re-execute the script.
 * **IMPORTANT**: Adjust the SORMAS configuration for your country in /opt/domains/sormas/sormas.properties

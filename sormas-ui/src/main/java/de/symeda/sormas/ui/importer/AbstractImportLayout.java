@@ -28,14 +28,14 @@ public class AbstractImportLayout extends VerticalLayout {
 	protected Upload upload;
 	protected final UserReferenceDto currentUser;
 	protected final UI currentUI;
-	
+
 	public AbstractImportLayout() {
 		currentUser = UserProvider.getCurrent().getUserReference();
 		currentUI = UI.getCurrent();
 		setSpacing(false);
 		setMargin(true);
 	}
-	
+
 	protected void addDownloadResourcesComponent(int step, ClassResource importGuideResource, ClassResource dataDictionaryResource) {
 		String headline = I18nProperties.getString(Strings.headingDownloadImportGuide);
 		String infoText = I18nProperties.getString(Strings.infoDownloadImportGuide);
@@ -46,29 +46,38 @@ public class AbstractImportLayout extends VerticalLayout {
 		importGuideDownloader.extend(importGuideComponent.getButton());
 		addComponent(importGuideComponent);
 
-		Button dataDictionaryButton = ButtonHelper.createIconButton(Captions.importDownloadDataDictionary, VaadinIcons.FILE_TABLE, null,
-				ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_2);
+		Button dataDictionaryButton = ButtonHelper.createIconButton(
+			Captions.importDownloadDataDictionary,
+			VaadinIcons.FILE_TABLE,
+			null,
+			ValoTheme.BUTTON_PRIMARY,
+			CssStyles.VSPACE_TOP_3,
+			CssStyles.VSPACE_2);
 
 		FileDownloader dataDictionaryDownloader = new FileDownloader(dataDictionaryResource);
 		dataDictionaryDownloader.extend(dataDictionaryButton);
 
 		addComponent(dataDictionaryButton);
 	}
-	
+
 	protected void addDownloadImportTemplateComponent(int step, String templateFilePath, String templateFileName) {
 		String headline = I18nProperties.getString(Strings.headingDownloadImportTemplate);
 		String infoText = I18nProperties.getString(Strings.infoDownloadImportTemplate);
 		Resource buttonIcon = VaadinIcons.DOWNLOAD;
 		String buttonCaption = I18nProperties.getCaption(Captions.importDownloadImportTemplate);
 		ImportLayoutComponent importTemplateComponent = new ImportLayoutComponent(step, headline, infoText, buttonIcon, buttonCaption);
-		StreamResource templateResource = DownloadUtil.createFileStreamResource(templateFilePath, templateFileName, "text/csv",
-				I18nProperties.getString(Strings.headingTemplateNotAvailable), I18nProperties.getString(Strings.messageTemplateNotAvailable));
+		StreamResource templateResource = DownloadUtil.createFileStreamResource(
+			templateFilePath,
+			templateFileName,
+			"text/csv",
+			I18nProperties.getString(Strings.headingTemplateNotAvailable),
+			I18nProperties.getString(Strings.messageTemplateNotAvailable));
 		FileDownloader templateFileDownloader = new FileDownloader(templateResource);
 		templateFileDownloader.extend(importTemplateComponent.getButton());
 		CssStyles.style(importTemplateComponent, CssStyles.VSPACE_2);
 		addComponent(importTemplateComponent);
 	}
-	
+
 	protected void addImportCsvComponent(int step, ImportReceiver receiver) {
 		String headline = I18nProperties.getString(Strings.headingImportCsvFile);
 		String infoText = I18nProperties.getString(Strings.infoImportCsvFile);
@@ -80,7 +89,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		upload.addSucceededListener(receiver);
 		addComponent(upload);
 	}
-	
+
 	protected void addDownloadErrorReportComponent(int step) {
 		String headline = I18nProperties.getString(Strings.headingDownloadErrorReport);
 		String infoText = I18nProperties.getString(Strings.infoDownloadErrorReport);
@@ -91,7 +100,7 @@ public class AbstractImportLayout extends VerticalLayout {
 		errorReportComponent.getButton().setEnabled(false);
 		addComponent(errorReportComponent);
 	}
-	
+
 	protected void resetDownloadErrorReportButton() {
 		downloadErrorReportButton.setEnabled(false);
 		for (int i = 0; i < downloadErrorReportButton.getExtensions().size(); i++) {
@@ -99,11 +108,10 @@ public class AbstractImportLayout extends VerticalLayout {
 			downloadErrorReportButton.removeExtension(ext);
 		}
 	}
-	
+
 	protected void extendDownloadErrorReportButton(StreamResource streamResource) {
 		FileDownloader fileDownloader = new FileDownloader(streamResource);
 		fileDownloader.extend(downloadErrorReportButton);
 		downloadErrorReportButton.setEnabled(true);
 	}
-
 }

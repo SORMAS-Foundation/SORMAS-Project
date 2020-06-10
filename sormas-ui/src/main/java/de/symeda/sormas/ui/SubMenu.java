@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -34,98 +34,103 @@ import com.vaadin.ui.Link;
 @SuppressWarnings("serial")
 public class SubMenu extends CssLayout {
 
-    private Map<String, AbstractComponent> viewMenuItemMap = new HashMap<String, AbstractComponent>();
+	private Map<String, AbstractComponent> viewMenuItemMap = new HashMap<String, AbstractComponent>();
 
-    private CssLayout menuItemsLayout;
-    
-    public SubMenu() {
-        setWidth(100, Unit.PERCENTAGE);
-        setHeightUndefined();
-        setPrimaryStyleName("v-tabsheet");
+	private CssLayout menuItemsLayout;
 
-        menuItemsLayout = new CssLayout();
-        menuItemsLayout.setPrimaryStyleName("v-tabsheet-tabcontainer");
-        menuItemsLayout.setWidth(100, Unit.PERCENTAGE);
-        menuItemsLayout.setHeightUndefined();
-        addComponent(menuItemsLayout);
-    }
+	public SubMenu() {
 
-    public void addView(final String name, String caption) {
-    	addView(name, caption, null, true);
-    }
-    
-    public void addView(final String name, String caption, String params) {
-    	addView(name, caption, params, false);
-    }
-    
-    public void addView(final String name, String caption, String params, boolean isBackNavigation) {
-    	String target = "#!" + name+(params != null ? "/"+params : "");
+		setWidth(100, Unit.PERCENTAGE);
+		setHeightUndefined();
+		setPrimaryStyleName("v-tabsheet");
 
-    	CssLayout tabItemCell = new CssLayout();
-    	tabItemCell.setSizeUndefined();
-    	tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
+		menuItemsLayout = new CssLayout();
+		menuItemsLayout.setPrimaryStyleName("v-tabsheet-tabcontainer");
+		menuItemsLayout.setWidth(100, Unit.PERCENTAGE);
+		menuItemsLayout.setHeightUndefined();
+		addComponent(menuItemsLayout);
+	}
 
-    	CssLayout tabItem = new CssLayout();
-    	tabItem.setId("tab-" + name.replaceAll("/", "-"));
-    	tabItem.setSizeUndefined();
-    	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
-    	if (isBackNavigation) {
-    		tabItem.addStyleName("back");
-    	}
-    	tabItemCell.addComponent(tabItem);
+	public void addView(final String name, String caption) {
+		addView(name, caption, null, true);
+	}
 
-    	Link link = new Link(caption, new ExternalResource(target));
-    	link.addStyleName("v-caption");
-    	if (isBackNavigation)
-    		link.setIcon(VaadinIcons.ARROW_CIRCLE_LEFT);
-    	tabItem.addComponent(link);
-    	
-    	menuItemsLayout.addComponent(tabItemCell);
-    	viewMenuItemMap.put(name, tabItem);
-    }
-    
-    public void addView(final String name, String caption, LayoutClickListener onClick) {
-    	CssLayout tabItemCell = new CssLayout();
-    	tabItemCell.setSizeUndefined();
-    	tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
+	public void addView(final String name, String caption, String params) {
+		addView(name, caption, params, false);
+	}
 
-    	CssLayout tabItem = new CssLayout();
-    	tabItem.setSizeUndefined();
-    	tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
-    	tabItemCell.addComponent(tabItem);
+	public void addView(final String name, String caption, String params, boolean isBackNavigation) {
 
-    	Link link = new Link(caption, null);
-    	link.addStyleName("v-caption");
-    	
-    	tabItem.addComponent(link);
-    	tabItem.addLayoutClickListener(onClick);
-    	tabItem.addLayoutClickListener((e) -> {
-    		this.setActiveView(name);
-    	});
-    	
-    	menuItemsLayout.addComponent(tabItemCell);
-    	viewMenuItemMap.put(name, tabItem);
-    }
-    
-    public void removeAllViews() {
-    	menuItemsLayout.removeAllComponents();
-    	viewMenuItemMap.clear();
-    }
+		String target = "#!" + name + (params != null ? "/" + params : "");
 
-    /**
-     * Highlights a view navigation button as the currently active view in the
-     * menu. This method does not perform the actual navigation.
-     *
-     * @param viewName
-     *            the name of the view to show as active
-     */
-    public void setActiveView(String viewName) {
-        for (AbstractComponent button : viewMenuItemMap.values()) {
-            button.removeStyleName("selected");
-        }
-        AbstractComponent selected = viewMenuItemMap.get(viewName);
-        if (selected != null) {
-            selected.addStyleName("selected");
-        }
-    }
+		CssLayout tabItemCell = new CssLayout();
+		tabItemCell.setSizeUndefined();
+		tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
+
+		CssLayout tabItem = new CssLayout();
+		tabItem.setId("tab-" + name.replaceAll("/", "-"));
+		tabItem.setSizeUndefined();
+		tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+		if (isBackNavigation) {
+			tabItem.addStyleName("back");
+		}
+		tabItemCell.addComponent(tabItem);
+
+		Link link = new Link(caption, new ExternalResource(target));
+		link.addStyleName("v-caption");
+		if (isBackNavigation)
+			link.setIcon(VaadinIcons.ARROW_CIRCLE_LEFT);
+		tabItem.addComponent(link);
+
+		menuItemsLayout.addComponent(tabItemCell);
+		viewMenuItemMap.put(name, tabItem);
+	}
+
+	public void addView(final String name, String caption, LayoutClickListener onClick) {
+
+		CssLayout tabItemCell = new CssLayout();
+		tabItemCell.setSizeUndefined();
+		tabItemCell.setPrimaryStyleName("v-tabsheet-tabitemcell");
+
+		CssLayout tabItem = new CssLayout();
+		tabItem.setSizeUndefined();
+		tabItem.setPrimaryStyleName("v-tabsheet-tabitem");
+		tabItemCell.addComponent(tabItem);
+
+		Link link = new Link(caption, null);
+		link.addStyleName("v-caption");
+
+		tabItem.addComponent(link);
+		tabItem.addLayoutClickListener(onClick);
+		tabItem.addLayoutClickListener((e) -> {
+			this.setActiveView(name);
+		});
+
+		menuItemsLayout.addComponent(tabItemCell);
+		viewMenuItemMap.put(name, tabItem);
+	}
+
+	public void removeAllViews() {
+
+		menuItemsLayout.removeAllComponents();
+		viewMenuItemMap.clear();
+	}
+
+	/**
+	 * Highlights a view navigation button as the currently active view in the
+	 * menu. This method does not perform the actual navigation.
+	 *
+	 * @param viewName
+	 *            the name of the view to show as active
+	 */
+	public void setActiveView(String viewName) {
+
+		for (AbstractComponent button : viewMenuItemMap.values()) {
+			button.removeStyleName("selected");
+		}
+		AbstractComponent selected = viewMenuItemMap.get(viewName);
+		if (selected != null) {
+			selected.addStyleName("selected");
+		}
+	}
 }

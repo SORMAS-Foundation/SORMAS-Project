@@ -30,19 +30,21 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 	protected OptionGroup pickCase;
 	protected OptionGroup createCase;
 	protected Consumer<Boolean> selectionChangeCallback;
-	
+
 	protected VerticalLayout mainLayout;
 
 	public CasePickOrCreateField(List<CaseIndexDto> similarCases) {
+
 		this.similarCases = similarCases;
-		
+
 		mainLayout = new VerticalLayout();
 		mainLayout.setSpacing(true);
 		mainLayout.setSizeUndefined();
 		mainLayout.setWidth(100, Unit.PERCENTAGE);
 	}
 
-	protected void addInfoComponent() {	
+	protected void addInfoComponent() {
+
 		HorizontalLayout infoLayout = new HorizontalLayout();
 		infoLayout.setWidth(100, Unit.PERCENTAGE);
 		infoLayout.setSpacing(true);
@@ -57,8 +59,9 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		mainLayout.addComponent(infoLayout);
 		CssStyles.style(infoLayout, CssStyles.VSPACE_3);
 	}
-	
+
 	protected void addPickCaseComponent() {
+
 		pickCase = new OptionGroup(null);
 		pickCase.addItem(PICK_CASE);
 		pickCase.setItemCaption(PICK_CASE, I18nProperties.getCaption(Captions.casePickCase));
@@ -78,10 +81,11 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		});
 		mainLayout.addComponent(pickCase);
 	}
-	
+
 	protected void addAndConfigureGrid() {
+
 		initGrid();
-		
+
 		grid.setEnabled(false);
 		grid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
@@ -96,8 +100,9 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 			}
 		});
 	}
-	
+
 	protected void addCreateCaseComponent() {
+
 		createCase = new OptionGroup(null);
 		createCase.addItem(CREATE_CASE);
 		createCase.setItemCaption(CREATE_CASE, I18nProperties.getCaption(Captions.caseCreateCase));
@@ -113,14 +118,15 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 		});
 		mainLayout.addComponent(createCase);
 	}
-	
+
 	@Override
 	protected Component initContent() {
-		addInfoComponent();	
+
+		addInfoComponent();
 		addPickCaseComponent();
 		addAndConfigureGrid();
 		addCreateCaseComponent();
-		
+
 		grid.setEnabled(false);
 
 		return mainLayout;
@@ -131,37 +137,38 @@ public class CasePickOrCreateField extends CustomField<CaseIndexDto> {
 			grid = new CaseSelectionGrid(similarCases);
 		}
 	}
-	
+
 	@Override
 	protected void setInternalValue(CaseIndexDto newValue) {
+
 		super.setInternalValue(newValue);
-		
+
 		if (pickCase != null) {
 			pickCase.setValue(PICK_CASE);
 		}
-		
+
 		if (newValue != null) {
 			grid.select(newValue);
 		}
 	}
-	
+
 	@Override
 	protected CaseIndexDto getInternalValue() {
+
 		if (grid != null) {
 			CaseIndexDto value = (CaseIndexDto) grid.getSelectedRow();
 			return value;
 		}
-		
+
 		return super.getInternalValue();
 	}
-	
+
 	@Override
 	public Class<? extends CaseIndexDto> getType() {
 		return CaseIndexDto.class;
 	}
-	
+
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
 		this.selectionChangeCallback = callback;
 	}
-
 }

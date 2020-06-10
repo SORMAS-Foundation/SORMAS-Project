@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -72,15 +72,13 @@ public class UserRoleConfigService extends AbstractAdoService<UserRoleConfig> {
 
 	public List<String> getDeletedUuids(Date since) {
 
-		String queryString = "SELECT " + AbstractDomainObject.UUID 
-				+ " FROM " + UserRoleConfig.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"
-				+ " WHERE sys_period @> CAST (?1 AS timestamptz)"
-				+ " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME 
-					+ " WHERE " + AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
+		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRoleConfig.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX
+			+ " h" + " WHERE sys_period @> CAST (?1 AS timestamptz)" + " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME + " WHERE "
+			+ AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
 		Query nativeQuery = em.createNativeQuery(queryString);
 		nativeQuery.setParameter(1, since);
 		@SuppressWarnings("unchecked")
-		List<String> results = (List<String>)nativeQuery.getResultList();
+		List<String> results = (List<String>) nativeQuery.getResultList();
 		return results;
 	}
 }

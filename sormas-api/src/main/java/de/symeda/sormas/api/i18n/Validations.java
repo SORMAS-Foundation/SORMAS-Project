@@ -15,6 +15,7 @@ public interface Validations {
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
+	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
 	String exportNoNameSpecified = "exportNoNameSpecified";

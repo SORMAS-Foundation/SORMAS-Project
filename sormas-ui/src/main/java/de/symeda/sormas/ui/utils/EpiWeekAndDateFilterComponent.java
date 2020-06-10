@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -53,8 +53,14 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		this(applyButton, fillAutomatically, showCaption, infoText, null, null, null);
 	}
 
-	public EpiWeekAndDateFilterComponent(Button applyButton, boolean fillAutomatically, boolean showCaption,
-			String infoText, Class<E> dateType, String dateTypePrompt, Enum<E> defaultDateType) {
+	public EpiWeekAndDateFilterComponent(
+		Button applyButton,
+		boolean fillAutomatically,
+		boolean showCaption,
+		String infoText,
+		Class<E> dateType,
+		String dateTypePrompt,
+		Enum<E> defaultDateType) {
 		setSpacing(true);
 
 		Calendar c = Calendar.getInstance();
@@ -70,7 +76,7 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 		// Date filter options
 		dateFilterOptionFilter.setId("dateFilterOption");
 		dateFilterOptionFilter.setWidth(200, Unit.PIXELS);
-		dateFilterOptionFilter.addItems((Object[])DateFilterOption.values());
+		dateFilterOptionFilter.addItems((Object[]) DateFilterOption.values());
 		dateFilterOptionFilter.setNullSelectionAllowed(false);
 		dateFilterOptionFilter.select(DateFilterOption.EPI_WEEK);
 		if (showCaption) {
@@ -200,8 +206,8 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 				applyButton.setEnabled(true);
 			});
 		}
-	}	
-	
+	}
+
 	public ComboBox getDateFilterOptionFilter() {
 		return dateFilterOptionFilter;
 	}
@@ -225,5 +231,4 @@ public class EpiWeekAndDateFilterComponent<E extends Enum<E>> extends Horizontal
 	public PopupDateField getDateToFilter() {
 		return dateToFilter;
 	}
-
 }

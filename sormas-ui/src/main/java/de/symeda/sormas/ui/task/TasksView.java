@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
@@ -23,7 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -39,35 +38,37 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class TasksView extends AbstractView {
 
 	public static final String VIEW_NAME = "tasks";
-	
+
 	private final TaskGridComponent taskListComponent;
 	private ViewConfiguration viewConfiguration;
 
-    public TasksView() {
-    	super(VIEW_NAME);
+	public TasksView() {
 
-    	if (!ViewModelProviders.of(TasksView.class).has(TaskCriteria.class)) {
-    		// init default filter
-    		TaskCriteria taskCriteria = new TaskCriteria();
-    		taskCriteria.taskStatus(TaskStatus.PENDING);
-    		ViewModelProviders.of(TasksView.class).get(TaskCriteria.class, taskCriteria);
-    	}
+		super(VIEW_NAME);
+
+		if (!ViewModelProviders.of(TasksView.class).has(TaskCriteria.class)) {
+			// init default filter
+			TaskCriteria taskCriteria = new TaskCriteria();
+			taskCriteria.taskStatus(TaskStatus.PENDING);
+			ViewModelProviders.of(TasksView.class).get(TaskCriteria.class, taskCriteria);
+		}
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
-        taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
-        addComponent(taskListComponent);
-        
+		taskListComponent = new TaskGridComponent(getViewTitleLabel(), this);
+		addComponent(taskListComponent);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 
 			addHeaderComponent(btnEnterBulkEditMode);
-			
-			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 
 			addHeaderComponent(btnLeaveBulkEditMode);
-			
+
 			btnEnterBulkEditMode.addClickListener(e -> {
 				taskListComponent.getBulkOperationsDropdown().setVisible(true);
 				viewConfiguration.setInEagerMode(true);
@@ -84,23 +85,24 @@ public class TasksView extends AbstractView {
 				navigateTo(taskListComponent.getCriteria());
 			});
 		}
-		
-    	if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
-	    	Button createButton = ButtonHelper.createIconButton(Captions.taskNewTask, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
-					ValoTheme.BUTTON_PRIMARY);
 
-		    addHeaderComponent(createButton);
-    	}
-    }
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
+			Button createButton = ButtonHelper.createIconButton(
+				Captions.taskNewTask,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getTaskController().create(TaskContext.GENERAL, null, taskListComponent.getGrid()::reload),
+				ValoTheme.BUTTON_PRIMARY);
 
-    @Override
-    public void enter(ViewChangeEvent event) {
-    	taskListComponent.reload(event);
-    }
-	
+			addHeaderComponent(createButton);
+		}
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		taskListComponent.reload(event);
+	}
+
 	public ViewConfiguration getViewConfiguration() {
 		return viewConfiguration;
 	}
-	
 }

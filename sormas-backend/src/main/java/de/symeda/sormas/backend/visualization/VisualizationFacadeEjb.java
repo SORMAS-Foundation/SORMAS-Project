@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.visualization;
 
@@ -54,6 +54,7 @@ import org.jsoup.parser.Parser;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -76,7 +77,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 //	private static final String TRANSMISSION_CHAIN_SCRIPT = "transmission_chain.r";
 	private static final String TRANSMISSION_CHAIN_SCRIPT = "transform_contact.R";
-	private static final String[] REQUIRED_SCRIPTS = {"encodeGraphic.R", "networkFunction.R"};
+	private static final String[] REQUIRED_SCRIPTS = {
+		"encodeGraphic.R",
+		"networkFunction.R" };
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
@@ -89,72 +92,79 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
-	public String buildTransmissionChainJson(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
-		
+	public String buildTransmissionChainJson(
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		Collection<Disease> diseases,
+		Language language) {
+
 		String rExecutable = configFacade.getRScriptExecutable();
 		if (StringUtils.isBlank(rExecutable)) {
 			return null;
 		}
 		Path tempBasePath = new File(configFacade.getTempFilesPath()).toPath();
-		
+
 		Collection<Long> contactIds = getContactIds(region, district, diseases);
-		
+
 		if (contactIds.isEmpty()) {
 			return null;
 		}
-		
+
 		//working dir is the config directory of the domain
 		Path domainXmlPath = Paths.get("domain.xml");
-		
-		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds);
+
+		return buildTransmissionChainJson(rExecutable, tempBasePath, domainXmlPath, contactIds, language);
 	}
-	
 
 	private Collection<Long> getContactIds(RegionReferenceDto region, DistrictReferenceDto district, Collection<Disease> diseases) {
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Contact> root = cq.from(Contact.class);
 		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
 
-		cq.where(AbstractAdoService.and(cb,
+		cq.where(
+			AbstractAdoService.and(
+				cb,
 				contactService.createUserFilter(cb, cq, root),
 				contactService.createActiveContactsFilter(cb, root),
 				contactService.createDefaultFilter(cb, root),
 				cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),
-				cb.or(cb.isNull(caze), 
-					cb.and(
-						caseService.createDefaultFilter(cb, caze), 
-						cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
+				cb.or(
+					cb.isNull(caze),
+					cb.and(caseService.createDefaultFilter(cb, caze), cb.notEqual(caze.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE))),
 				root.get(Contact.DISEASE).in(diseases),
 				region == null ? null : cb.equal(root.join(Contact.REGION).get(Region.UUID), region.getUuid()),
-				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())
-		));
-		
+				district == null ? null : cb.equal(root.join(Contact.DISTRICT).get(District.UUID), district.getUuid())));
+
 		cq.select(root.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
 	}
 
 	enum EnvParam {
+
 		DB_USER("user"),
 		DB_PASS("password"),
 		DB_NAME("databaseName"),
-		DB_HOST("serverName"), 
-		DB_PORT("portNumber"), 
+		DB_HOST("serverName"),
+		DB_PORT("portNumber"),
 		CONTACT_IDS,
 		HIERARCHICAL,
 		OUTFILE;
+
 		private final String propertyName;
 
 		EnvParam() {
 			this(null);
 		}
+
 		EnvParam(String propertyName) {
 			this.propertyName = propertyName;
-			
+
 		}
+
 		String toEnv(String value) {
-			return  value == null ? null : (this.name() + '=' + value);
+			return value == null ? null : (this.name() + '=' + value);
 		}
 
 		void put(Map<String, String> env, String value) {
@@ -164,13 +174,18 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				env.put(this.name(), value);
 			}
 		}
-		
+
 		void putFrom(Map<String, String> env, Map<String, String> properties) {
 			env.put(this.name(), properties.get(propertyName));
 		}
 	}
-	
-	static String buildTransmissionChainJson(String rScriptExecutable, Path tempBasePath, Path domainXmlPath, Collection<Long> contactIds) {
+
+	static String buildTransmissionChainJson(
+		String rScriptExecutable,
+		Path tempBasePath,
+		Path domainXmlPath,
+		Collection<Long> contactIds,
+		Language language) {
 
 		Path tempDir;
 		try {
@@ -178,33 +193,39 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		
+
 		try {
 			copyVisualisationResourceFile(tempDir, TRANSMISSION_CHAIN_SCRIPT);
 
-			Arrays.stream(REQUIRED_SCRIPTS)
-				.forEach(s -> copyVisualisationResourceFile(tempDir, s));
-			
+			Arrays.stream(REQUIRED_SCRIPTS).forEach(s -> copyVisualisationResourceFile(tempDir, s));
+
 			Path scriptFile = tempDir.resolve(TRANSMISSION_CHAIN_SCRIPT);
-			
+
 			Path outputFile = tempDir.resolve("result.html");
-			
+
 			try {
 				ProcessBuilder pb;
 				if (rScriptExecutable.toUpperCase().contains("RSCRIPT")) {
-					pb = new ProcessBuilder(new String[] {rScriptExecutable, scriptFile.toString()});
+					pb = new ProcessBuilder(
+						new String[] {
+							rScriptExecutable,
+							scriptFile.toString() });
 				} else {
-					pb = new ProcessBuilder(new String[] {rScriptExecutable, "-f", scriptFile.toString()});
+					pb = new ProcessBuilder(
+						new String[] {
+							rScriptExecutable,
+							"-f",
+							scriptFile.toString() });
 				}
 				pb.directory(tempDir.toFile());
-					
+
 				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, "sormasDataPool");
 				Map<String, String> env = pb.environment();
-	
+
 				EnvParam.DB_USER.putFrom(env, poolProperties);
 				EnvParam.DB_PASS.putFrom(env, poolProperties);
 				EnvParam.DB_NAME.putFrom(env, poolProperties);
-				EnvParam.DB_HOST.putFrom(env, poolProperties); 
+				EnvParam.DB_HOST.putFrom(env, poolProperties);
 				EnvParam.DB_PORT.putFrom(env, poolProperties);
 
 				String contactIdStr;
@@ -218,34 +239,33 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					});
 					contactIdStr = sb.substring(0, sb.length() - 1);
 				}
-				
+
 				EnvParam.CONTACT_IDS.put(env, contactIdStr);
 				EnvParam.OUTFILE.put(env, outputFile.toString());
-				
+
 //				File outFile = tempDir.resolve("console.log").toFile();
 //				pb.redirectOutput(outFile );
 //				pb.redirectError(outFile);
-				
+
 				Process pr = pb.start();
 				int exitCode = pr.waitFor();
-				
+
 				if (exitCode == 0) {
 					String html = new String(Files.readAllBytes(outputFile));
-					return extractJson(html);
+					return extractJson(html, language);
 				} else {
-					LoggerFactory
-						.getLogger(VisualizationFacadeEjb.class)
+					LoggerFactory.getLogger(VisualizationFacadeEjb.class)
 						.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
 					return null;
 				}
-				
+
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
-				
+
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-			
+
 		} finally {
 			try {
 				FileUtils.deleteDirectory(tempDir.toFile());
@@ -256,7 +276,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	}
 
 	private static void copyVisualisationResourceFile(Path dir, String resourceName) {
-		
+
 		Path outFile = dir.resolve(resourceName);
 		try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("visualisation/" + resourceName)) {
 			if (in == null) {
@@ -267,73 +287,74 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
-	static String extractJson(String html) {
-		
+
+	static String extractJson(String html, Language language) {
+
 		final Parser parser = Parser.htmlParser();
 		final Document doc = parser.parseInput(html, "");
-		
+
 		Element jsonScripElement = doc.select("script[type='application/json']").first();
-		
+
 		String json = jsonScripElement.html();
-		json = doI18n(json);
+		json = doI18n(json, language);
 		return json;
 	}
-	
+
 	private static final Map<String, Enum<?>> supportedEnums;
 	static {
 		Map<String, Enum<?>> map = new HashMap<>();
-		Arrays.stream(CaseClassification.values())
-		.forEach(e -> map.put("Classification." + e.name(), e));
+		Arrays.stream(CaseClassification.values()).forEach(e -> map.put("Classification." + e.name(), e));
 		supportedEnums = Collections.unmodifiableMap(map);
 	}
 
 	private static final Pattern ENUM_PATTERN = Pattern.compile("\"(([A-Za-z]+)\\.([A-Z_]+))\"");
-	
-	private static String doI18n(String json) {
-		
-		Matcher m = ENUM_PATTERN.matcher(json);
-		
-		StringBuffer sb = new StringBuffer(json.length());
-		 while (m.find()) {
-			String replacement = Optional.of(m.group(1))
-			.map(supportedEnums::get)
-			.map(I18nProperties::getEnumCaption)
-			//TODO real json escaping
-			.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
-			.orElseGet(() -> {
-				//TODO i18n of Classification.HEALTHY
-				if (m.group(2).equals("Classification")) {
-					String name = m.group(3);
-					return "\"" + name.charAt(0) + name.substring(1).toLowerCase() + "\"";
-				} else {
-					return m.group();
-				}
-			});
-			 
-		     m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
-		 }
-		 m.appendTail(sb);
-		
-		 return sb.toString();
-		
-	}
 
+	private static String doI18n(String json, Language language) {
+
+		Matcher m = ENUM_PATTERN.matcher(json);
+
+		StringBuffer sb = new StringBuffer(json.length());
+		while (m.find()) {
+			String replacement = Optional.of(m.group(1))
+				.map(supportedEnums::get)
+				.map(c -> I18nProperties.getEnumCaption(language, c))
+				//TODO real json escaping
+				.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
+				.orElseGet(
+					() -> {
+						//TODO i18n of Classification.HEALTHY
+						if (m.group(2).equals("Classification")) {
+							String name = m.group(3);
+							return "\"" + name.charAt(0) + name.substring(1).toLowerCase() + "\"";
+						} else {
+							return m.group();
+						}
+					});
+
+			m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+		}
+		m.appendTail(sb);
+
+		return sb.toString();
+
+	}
 
 	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
 		final Parser parser = Parser.xmlParser();
 		final org.jsoup.nodes.Document doc;
-		try ( Reader rd = Files.newBufferedReader(domPath)) {
+		try (Reader rd = Files.newBufferedReader(domPath)) {
 			doc = parser.parseInput(rd, "");
 		}
-		
-		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=" + poolName + "] > property").stream()
-		.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
+
+		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=" + poolName + "] > property")
+			.stream()
+			.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
 		return dbProperties;
 	}
 
 	@LocalBean
 	@Stateless
 	public static class VisualizationFacadeEjbLocal extends VisualizationFacadeEjb {
-	}	
+
+	}
 }

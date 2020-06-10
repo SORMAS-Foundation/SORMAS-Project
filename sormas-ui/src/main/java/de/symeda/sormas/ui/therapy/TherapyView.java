@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.therapy;
 
@@ -23,8 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
@@ -76,6 +74,7 @@ public class TherapyView extends AbstractCaseView {
 	}
 
 	private VerticalLayout createPrescriptionsHeader() {
+
 		VerticalLayout prescriptionsHeader = new VerticalLayout();
 		prescriptionsHeader.setMargin(false);
 		prescriptionsHeader.setSpacing(false);
@@ -93,15 +92,16 @@ public class TherapyView extends AbstractCaseView {
 
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
-								public void run() {
-									reloadPrescriptionGrid();
-								}
-							});
-						})
-				);
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getTherapyController().deleteAllSelectedPrescriptions(prescriptionGrid.getSelectedRows(), new Runnable() {
+
+							public void run() {
+								reloadPrescriptionGrid();
+							}
+						});
+					}));
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
@@ -164,15 +164,16 @@ public class TherapyView extends AbstractCaseView {
 
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
-								public void run() {
-									reloadTreatmentGrid();
-								}
-							});
-						})
-				);
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getTherapyController().deleteAllSelectedTreatments(treatmentGrid.getSelectedRows(), new Runnable() {
+
+							public void run() {
+								reloadTreatmentGrid();
+							}
+						});
+					}));
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
@@ -272,7 +273,7 @@ public class TherapyView extends AbstractCaseView {
 		container.setExpandRatio(treatmentGrid, 1);
 
 		setSubComponent(container);
-		
+
 		update();
 		reloadPrescriptionGrid();
 		reloadTreatmentGrid();

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -34,15 +34,23 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseDataDto;
 
 @Path("/cases")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class CaseResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<CaseDataDto> getAllCases(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
+	}
+
+	@GET
+	@Path("/allWithExtendedChangeDateFilters/{since}")
+	public List<CaseDataDto> getAllCasesWithExtendedChangeDateFilters(@PathParam("since") long since) {
+		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), true);
 	}
 
 	@POST
@@ -68,7 +76,7 @@ public class CaseResource extends EntityDtoResource {
 	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getArchivedUuidsSince(new Date(since));
 	}
-	
+
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {

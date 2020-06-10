@@ -6,11 +6,11 @@ import de.symeda.sormas.ui.utils.ViewMode;
 public class ContactsViewConfiguration extends ViewConfiguration {
 
 	private ContactsViewType viewType;
-	
+
 	public ContactsViewConfiguration() {
 		super();
 	}
-	
+
 	public ContactsViewConfiguration(ViewMode viewMode, ContactsViewType viewType) {
 		super(viewMode);
 		this.viewType = viewType;
@@ -23,5 +23,4 @@ public class ContactsViewConfiguration extends ViewConfiguration {
 	public void setViewType(ContactsViewType viewType) {
 		this.viewType = viewType;
 	}
-	
 }

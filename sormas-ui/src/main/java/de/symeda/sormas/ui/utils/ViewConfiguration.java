@@ -1,14 +1,14 @@
 package de.symeda.sormas.ui.utils;
 
 public class ViewConfiguration {
-	
+
 	private ViewMode viewMode;
 	private boolean inEagerMode;
 
 	public ViewConfiguration() {
-		
+
 	}
-	
+
 	public ViewConfiguration(ViewMode viewMode) {
 		this.setViewMode(viewMode);
 	}
@@ -28,5 +28,4 @@ public class ViewConfiguration {
 	public void setInEagerMode(boolean inEagerMode) {
 		this.inEagerMode = inEagerMode;
 	}
-
 }

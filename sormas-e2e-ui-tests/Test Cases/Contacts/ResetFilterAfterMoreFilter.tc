@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks that new filter options are available after more filters are selected</description>
+   <name>ResetFilterAfterMoreFilter</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>bf0cb2d6-2da8-4770-a10d-b4e1331255af</testCaseGuid>
+</TestCaseEntity>

@@ -9,17 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
@@ -71,12 +72,13 @@ public class FacadeProvider {
 	private static FacadeProvider instance;
 
 	protected FacadeProvider() {
+
 		try {
 			ic = new InitialContext();
 		} catch (NamingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-	} 
+	}
 
 	public static FacadeProvider get() {
 		if (instance == null) {
@@ -124,7 +126,7 @@ public class FacadeProvider {
 	public static PathogenTestFacade getPathogenTestFacade() {
 		return get().lookupEjbRemote(PathogenTestFacade.class);
 	}
-	
+
 	public static AdditionalTestFacade getAdditionalTestFacade() {
 		return get().lookupEjbRemote(AdditionalTestFacade.class);
 	}
@@ -192,23 +194,23 @@ public class FacadeProvider {
 	public static CaseClassificationFacade getCaseClassificationFacade() {
 		return get().lookupEjbRemote(CaseClassificationFacade.class);
 	}
-	
+
 	public static TherapyFacade getTherapyFacade() {
 		return get().lookupEjbRemote(TherapyFacade.class);
 	}
-	
+
 	public static PrescriptionFacade getPrescriptionFacade() {
 		return get().lookupEjbRemote(PrescriptionFacade.class);
 	}
-	
+
 	public static TreatmentFacade getTreatmentFacade() {
 		return get().lookupEjbRemote(TreatmentFacade.class);
 	}
-	
+
 	public static ClinicalCourseFacade getClinicalCourseFacade() {
 		return get().lookupEjbRemote(ClinicalCourseFacade.class);
 	}
-	
+
 	public static ClinicalVisitFacade getClinicalVisitFacade() {
 		return get().lookupEjbRemote(ClinicalVisitFacade.class);
 	}
@@ -216,15 +218,15 @@ public class FacadeProvider {
 	public static DiseaseFacade getDiseaseFacade() {
 		return get().lookupEjbRemote(DiseaseFacade.class);
 	}
-	
+
 	public static DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
 		return get().lookupEjbRemote(DiseaseConfigurationFacade.class);
 	}
-	
+
 	public static MaternalHistoryFacade getMaternalHistoryFacade() {
 		return get().lookupEjbRemote(MaternalHistoryFacade.class);
 	}
-	
+
 	public static PointOfEntryFacade getPointOfEntryFacade() {
 		return get().lookupEjbRemote(PointOfEntryFacade.class);
 	}
@@ -232,19 +234,19 @@ public class FacadeProvider {
 	public static PopulationDataFacade getPopulationDataFacade() {
 		return get().lookupEjbRemote(PopulationDataFacade.class);
 	}
-	
+
 	public static InfrastructureFacade getInfrastructureFacade() {
 		return get().lookupEjbRemote(InfrastructureFacade.class);
 	}
-	
+
 	public static FeatureConfigurationFacade getFeatureConfigurationFacade() {
 		return get().lookupEjbRemote(FeatureConfigurationFacade.class);
 	}
-	
+
 	public static AggregateReportFacade getAggregateReportFacade() {
 		return get().lookupEjbRemote(AggregateReportFacade.class);
 	}
-	
+
 	public static VisualizationFacade getVisualizationFacade() {
 		return get().lookupEjbRemote(VisualizationFacade.class);
 	}
@@ -252,7 +254,11 @@ public class FacadeProvider {
 	public static GeocodingFacade getGeocodingFacade() {
 		return get().lookupEjbRemote(GeocodingFacade.class);
 	}
-	
+
+	public static CampaignFacade getCampaignFacade() {
+		return get().lookupEjbRemote(CampaignFacade.class);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <P> P lookupEjbRemote(Class<P> clazz) {
 		try {

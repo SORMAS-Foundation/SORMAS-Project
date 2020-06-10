@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value;
 
@@ -30,9 +30,9 @@ public interface SimpleValueContainer extends ValueContainer {
 	 * Saves the Boolean to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Boolean value);
 
@@ -40,9 +40,9 @@ public interface SimpleValueContainer extends ValueContainer {
 	 * Saves the {@link Enum} to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Enum<?> value);
 
@@ -50,9 +50,9 @@ public interface SimpleValueContainer extends ValueContainer {
 	 * Saves the {@link Number} to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Number value);
 
@@ -60,9 +60,9 @@ public interface SimpleValueContainer extends ValueContainer {
 	 * Saves the {@link Date} to audit.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} will be saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} will be saved as the value.
 	 */
 	void put(String key, Date date, String datePattern);
 }

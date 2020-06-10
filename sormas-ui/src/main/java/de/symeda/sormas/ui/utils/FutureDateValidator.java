@@ -16,9 +16,11 @@ public class FutureDateValidator extends AbstractValidator<Date> {
 	private int allowedDaysInFuture;
 
 	public FutureDateValidator(Field<?> field, int allowedDaysInFuture, String caption) {
-		super(allowedDaysInFuture > 0 ?
-				I18nProperties.getValidationError(Validations.futureDate, caption, allowedDaysInFuture) :
-					I18nProperties.getValidationError(Validations.futureDateStrict, caption));
+
+		super(
+			allowedDaysInFuture > 0
+				? I18nProperties.getValidationError(Validations.futureDate, caption, allowedDaysInFuture)
+				: I18nProperties.getValidationError(Validations.futureDateStrict, caption));
 
 		this.field = field;
 		this.allowedDaysInFuture = allowedDaysInFuture;
@@ -29,15 +31,15 @@ public class FutureDateValidator extends AbstractValidator<Date> {
 		if (field.isReadOnly()) {
 			return true;
 		}
-		
+
 		if (date == null) {
 			return true;
 		}
-		
+
 		if (date.before(new Date())) {
 			return true;
 		}
-		
+
 		if (allowedDaysInFuture > 0) {
 			return DateHelper.getFullDaysBetween(new Date(), date) <= allowedDaysInFuture;
 		} else {
@@ -49,5 +51,4 @@ public class FutureDateValidator extends AbstractValidator<Date> {
 	public Class<Date> getType() {
 		return Date.class;
 	}
-
 }

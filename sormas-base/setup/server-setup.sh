@@ -19,7 +19,7 @@
 
 #!/bin/bash
 
-rm setup.log
+rm -f setup.log
 exec > >(tee -ia setup.log)
 exec 2> >(tee -ia setup.log)
 
@@ -86,6 +86,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=sormas_db
 DB_NAME_AUDIT=sormas_audit_db
+# Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
 
 # ------ Config END ------

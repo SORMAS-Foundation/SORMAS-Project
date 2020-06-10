@@ -18,54 +18,58 @@ public class PointOfEntryCriteria extends BaseCriteria implements Serializable, 
 	private PointOfEntryType type;
 	private Boolean active;
 	private EntityRelevanceStatus relevanceStatus;
-	
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
+
 	public PointOfEntryCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
+
 	public PointOfEntryCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
-	
+
 	public String getNameLike() {
 		return nameLike;
 	}
+
 	public PointOfEntryCriteria nameLike(String nameLike) {
 		this.nameLike = nameLike;
 		return this;
 	}
-	
+
 	public PointOfEntryType getType() {
 		return type;
 	}
+
 	public PointOfEntryCriteria type(PointOfEntryType type) {
 		this.type = type;
 		return this;
 	}
-	
+
 	public Boolean getActive() {
 		return active;
 	}
+
 	public void active(Boolean active) {
 		this.active = active;
-	}	
-	
+	}
+
 	public PointOfEntryCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
 }

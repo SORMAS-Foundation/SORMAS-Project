@@ -9,9 +9,8 @@ public enum VisitResult {
 	UNAVAILABLE,
 	UNCOOPERATIVE,
 	NOT_PERFORMED;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

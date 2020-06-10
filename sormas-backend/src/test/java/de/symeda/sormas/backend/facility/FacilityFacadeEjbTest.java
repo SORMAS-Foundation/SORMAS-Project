@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.facility;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -72,31 +74,34 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetActiveHealthFacilitiesByCommunity() throws Exception {
+	public void testGetActiveHealthFacilitiesByCommunity() {
+
 		Region r = creator.createRegion("r");
 		District d = creator.createDistrict("d", r);
 		Community c = creator.createCommunity("c", d);
 		creator.createFacility("f1", r, d, c);
 		Facility f2 = creator.createFacility("f2", r, d, c);
 		getFacilityFacade().archive(f2.getUuid());
-		
+
 		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByCommunity(new CommunityReferenceDto(c.getUuid()), false).size());
 	}
 
 	@Test
-	public void testGetActiveHealthFacilitiesByDistrict() throws Exception {
+	public void testGetActiveHealthFacilitiesByDistrict() {
+
 		Region r = creator.createRegion("r");
 		District d = creator.createDistrict("d", r);
 		Community c = creator.createCommunity("c", d);
 		creator.createFacility("f1", r, d, c);
 		Facility f2 = creator.createFacility("f2", r, d, c);
 		getFacilityFacade().archive(f2.getUuid());
-		
+
 		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByDistrict(new DistrictReferenceDto(d.getUuid()), false).size());
 	}
 
 	@Test
-	public void testGetAllActiveLaboratories() throws Exception {
+	public void testGetAllActiveLaboratories() {
+
 		RDCF rdcf = creator.createRDCF("r", "d", "c", "f");
 		FacilityDto f1 = getFacilityFacade().getByUuid(rdcf.facility.getUuid());
 		getFacilityFacade().archive(f1.getUuid());
@@ -107,8 +112,16 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		f2 = getFacilityFacade().getByUuid(f2.getUuid());
 		f2.setType(FacilityType.LABORATORY);
 		getFacilityFacade().saveFacility(f2);
-		
+
 		assertEquals(1, getFacilityFacade().getAllActiveLaboratories(false).size());
 	}
-	
+
+	/**
+	 * If no facilities are present, no parent of them is archived.
+	 */
+	@Test
+	public void testHasArchivedParentInfrastructureNoFacilities() {
+
+		assertFalse(getFacilityFacade().hasArchivedParentInfrastructure(Collections.emptyList()));
+	}
 }

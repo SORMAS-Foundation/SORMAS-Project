@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
@@ -26,7 +26,6 @@ import java.util.stream.Stream;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -58,8 +57,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
 
-	@SuppressWarnings("unchecked")
 	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
+
 		super(beanType);
 		setSizeFull();
 
@@ -77,23 +76,22 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		initColumns();
 
 		addItemClickListener(e -> {
-			if ((e.getColumn() != null && CaseIndexDto.UUID.equals(e.getColumn().getId()))
-					|| e.getMouseEventDetails().isDoubleClick()) {
+			if ((e.getColumn() != null && CaseIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
 				ControllerProvider.getCaseController().navigateToCase(e.getItem().getUuid());
 			}
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initColumns() {
-		Column<IndexDto, String> diseaseShortColumn = addColumn(caze ->
-				DiseaseHelper.toString(caze.getDisease(), caze.getDiseaseDetails()));
+
+		Column<IndexDto, String> diseaseShortColumn = addColumn(caze -> DiseaseHelper.toString(caze.getDisease(), caze.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
 
 		addComponentColumn(indexDto -> {
-			Label label = new Label(indexDto.getCompleteness() != null
-					? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %"
-					: "-");
+			Label label =
+				new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
 			if (indexDto.getCompleteness() != null) {
 				if (indexDto.getCompleteness() < 0.25f) {
 					CssStyles.style(label, CssStyles.LABEL_CRITICAL);
@@ -116,36 +114,55 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
 		}
 
-		getColumn(COLUMN_COMPLETENESS)
-				.setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
+		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(CaseIndexDto.I18N_PREFIX, CaseIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, String>) getColumn(CaseIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
-			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
 		}
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(),
-					CaseIndexDto.I18N_PREFIX, PersonDto.I18N_PREFIX, LocationDto.I18N_PREFIX
-			));
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(
+					column.getId(),
+					column.getCaption(),
+					CaseIndexDto.I18N_PREFIX,
+					PersonDto.I18N_PREFIX,
+					LocationDto.I18N_PREFIX));
 		}
 	}
 
 	protected Stream<String> getGridColumns() {
+
 		return Stream.of(
-				Stream.of(CaseIndexDto.UUID, CaseIndexDto.EPID_NUMBER, CaseIndexDto.EXTERNAL_ID, DISEASE_SHORT,
-						CaseIndexDto.CASE_CLASSIFICATION, CaseIndexDto.OUTCOME, CaseIndexDto.INVESTIGATION_STATUS),
-				getPersonColumns(),
-				Stream.of(CaseIndexDto.DISTRICT_NAME, CaseIndexDto.HEALTH_FACILITY_NAME, CaseIndexDto.POINT_OF_ENTRY_NAME,
-						CaseIndexDto.REPORT_DATE, CaseIndexDto.QUARANTINE_TO, CaseIndexDto.CREATION_DATE, COLUMN_COMPLETENESS))
-				.flatMap(s -> s);
+			Stream.of(
+				CaseIndexDto.UUID,
+				CaseIndexDto.EPID_NUMBER,
+				CaseIndexDto.EXTERNAL_ID,
+				DISEASE_SHORT,
+				CaseIndexDto.CASE_CLASSIFICATION,
+				CaseIndexDto.OUTCOME,
+				CaseIndexDto.INVESTIGATION_STATUS),
+			getPersonColumns(),
+			Stream.of(
+				CaseIndexDto.DISTRICT_NAME,
+				CaseIndexDto.HEALTH_FACILITY_NAME,
+				CaseIndexDto.POINT_OF_ENTRY_NAME,
+				CaseIndexDto.REPORT_DATE,
+				CaseIndexDto.QUARANTINE_TO,
+				CaseIndexDto.CREATION_DATE,
+				COLUMN_COMPLETENESS))
+			.flatMap(s -> s);
 	}
 
 	protected Stream<String> getPersonColumns() {
@@ -153,6 +170,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	public void reload() {
+
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
@@ -182,23 +200,27 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	public void setLazyDataProvider() {
+
 		DataProvider<IndexDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> getGridData(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-								.collect(Collectors.toList())).stream(),
-				query -> (int) FacadeProvider.getCaseFacade().count(
-						query.getFilter().orElse(null)));
+			query -> getGridData(
+				query.getFilter().orElse(null),
+				query.getOffset(),
+				query.getLimit(),
+				query.getSortOrders()
+					.stream()
+					.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+					.collect(Collectors.toList())).stream(),
+			query -> (int) FacadeProvider.getCaseFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void setEagerDataProvider() {
+
 		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-
 }

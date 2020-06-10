@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
@@ -57,12 +57,12 @@ public class AuditorTest {
 	public void shouldDetectNewEntity() {
 
 		Entity simpleEntity = new Entity("uuid-1", false, "someValue", 2);
-	
+
 		Auditor auditor = new Auditor();
 
 		ChangeEvent changeEvent = auditor.detectChanges(simpleEntity);
 		Map<String, String> changes = changeEvent.getNewValues();
-	
+
 		assertThat(changeEvent.getChangeType(), is(ChangeType.CREATE));
 		assertThat(changes.size(), is(3));
 		assertThat(changes.get(Entity.STRING), is("someValue"));
@@ -71,7 +71,7 @@ public class AuditorTest {
 
 	@Test
 	public void shouldDetectChangedEntity() {
-		
+
 		Entity simpleEntity = new Entity("uuid-1", false, "someValue", 2);
 
 		Auditor auditor = new Auditor();
@@ -154,24 +154,40 @@ public class AuditorTest {
 		assertThat(changes.get(AnonymizedEntity.PWD), is(AnonymizedEntity.ANONYMIZING));
 
 	}
-	
+
 	@Test
 	public void shouldRespectExcludingAnnotations() {
-		
+
 		Auditor auditor = new Auditor();
-		
+
 		EntityWithHelperAttributes helperEntity1 = new EntityWithHelperAttributes("uuid-h1");
 		EntityWithHelperAttributes helperEntity2 = new EntityWithHelperAttributes("uuid-h2");
 		EntityWithHelperAttributes helperEntity3 = new EntityWithHelperAttributes("uuid-h3");
 		EntityWithHelperAttributes helperEntity4 = new EntityWithHelperAttributes("uuid-h4");
-		EntityWithIgnoredMethods entityState1 = new EntityWithIgnoredMethods("uuid-1", "qwertz", "asdf", "hjkl", "two-123", helperEntity1, Arrays.asList(helperEntity2, helperEntity3), helperEntity4);
-		EntityWithIgnoredMethods entityState2 = new EntityWithIgnoredMethods("uuid-1", "ztrewq", "fdsa", "lkjh", "321-owt", helperEntity2, Arrays.asList(helperEntity1, helperEntity4), helperEntity3);
-		
+		EntityWithIgnoredMethods entityState1 = new EntityWithIgnoredMethods(
+			"uuid-1",
+			"qwertz",
+			"asdf",
+			"hjkl",
+			"two-123",
+			helperEntity1,
+			Arrays.asList(helperEntity2, helperEntity3),
+			helperEntity4);
+		EntityWithIgnoredMethods entityState2 = new EntityWithIgnoredMethods(
+			"uuid-1",
+			"ztrewq",
+			"fdsa",
+			"lkjh",
+			"321-owt",
+			helperEntity2,
+			Arrays.asList(helperEntity1, helperEntity4),
+			helperEntity3);
+
 		ValueContainer pastState = auditor.inspectEntity(entityState1);
 		ValueContainer futureState = auditor.inspectEntity(entityState2);
-		
+
 		final SortedMap<String, String> changes = futureState.compare(pastState);
-		
+
 		assertThat(changes.size(), is(2));
 		assertThat(changes.get(EntityWithIgnoredMethods.SOME_ATTRIBUTE), is("ztrewq"));
 		assertThat(changes.get(EntityWithIgnoredMethods.ONE_TO_ONE_ATTRIBUTE_UNMAPPED), is("uuid-h3"));
@@ -247,14 +263,14 @@ public class AuditorTest {
 		assertThat(changes.get("firstEmbeddable.entity"), is("uuid-2"));
 		assertThat(changes.get("someAttribute"), is("someValue"));
 	}
-	
+
 	@Test
 	public void testDetectAnnotationChangesFast() {
- 
+
 		Auditor auditor = new Auditor();
- 
+
 		Entity entity = new Entity("uuid-1", false, "changed", 42);
- 
+
 		// Unterschiedliche Initialisierungszeiten ausmerzen, indem inspectEntity einmal vorweg aufgerufen wird.
 		long t0 = System.nanoTime();
 		auditor.inspectEntity(entity);
@@ -263,7 +279,7 @@ public class AuditorTest {
 		// Hier ist der relevante Aufruf für den Test
 		ValueContainer annotationChanges = auditor.inspectEntity(entity);
 		long t2 = System.nanoTime() - t0 - t1;
- 
+
 		//sicherstellen, dass beide Varianten auch der Erwartung entsprechen (und nicht nur gleich leer sind)
 		final SortedMap<String, String> annotationAttributes = annotationChanges.getAttributes();
 		assertThat(annotationAttributes.size(), is(3));

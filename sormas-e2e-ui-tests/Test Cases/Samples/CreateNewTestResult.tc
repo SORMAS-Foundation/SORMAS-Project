@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks the creation of a new testresult in a test sample</description>
+   <name>CreateNewTestResult</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>7f1dded5-ebaa-4562-b34f-7039b986b045</testCaseGuid>
+</TestCaseEntity>

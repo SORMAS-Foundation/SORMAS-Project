@@ -9,18 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum UserRightGroup {
-	
+
 	CASE_INVESTIGATION,
 	CONTACT_TRACING,
 	SAMPLE_COLLECTION,
@@ -30,7 +30,7 @@ public enum UserRightGroup {
 	USER_MANAGEMENT,
 	SYSTEM_CONFIGURATION,
 	MISCELLANEOUS;
-	
+
 //	private List<UserRight> userRights;
 //	
 //	public List<UserRight> getUserRights() {
@@ -44,9 +44,8 @@ public enum UserRightGroup {
 //		}
 //		return userRights;
 //	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

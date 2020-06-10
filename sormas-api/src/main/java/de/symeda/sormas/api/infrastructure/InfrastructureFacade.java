@@ -6,5 +6,4 @@ import javax.ejb.Remote;
 public interface InfrastructureFacade {
 
 	InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates);
-	
 }

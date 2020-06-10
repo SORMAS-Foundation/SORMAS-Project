@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.geocoding;
 
@@ -31,10 +31,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -42,72 +45,85 @@ import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 
 /**
- * Geocoding for German addresses using the OpenSearch GeoTemporal Service (OSGTS)  
+ * Geocoding for German addresses using the OpenSearch GeoTemporal Service (OSGTS)
+ * 
  * @see https://www.bkg.bund.de/SharedDocs/Produktinformationen/BKG/DE/P-2015/150119-Geokodierung.html
  */
 @Stateless
 @LocalBean
 public class GeocodingService {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 
 	public boolean isEnabled() {
-		return configFacade.getGeocodingOsgtsEndpoint() != null; 
+		return configFacade.getGeocodingOsgtsEndpoint() != null;
 	}
-	
-	
+
 	public GeoLatLon getLatLon(String query) {
-		
+
 		String endpoint = configFacade.getGeocodingOsgtsEndpoint();
 		if (endpoint == null) {
 			return null;
 		}
-		
+
 		return getLatLon(query, endpoint);
 	}
-		
-		
-	 GeoLatLon getLatLon(String query, String endpoint) {
-		
-		Client client = ClientBuilder.newBuilder()
-		.connectTimeout(10, TimeUnit.SECONDS)
-		.readTimeout(10, TimeUnit.SECONDS)
-		.build();
 
-		URI url;   
-		
+	GeoLatLon getLatLon(String query, String endpoint) {
+
+		Client client = ClientBuilder.newBuilder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
+		URI url;
+
 		try {
 			URIBuilder ub = new URIBuilder(endpoint + "/geosearch.json");
 			ub.addParameter("query", query);
 			ub.addParameter("filter", "typ:haus");
 			ub.addParameter("count", "2");
-			
+
 			url = ub.build();
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e); 
+			throw new IllegalArgumentException(e);
 		}
-		
-		
-	    WebTarget target = client.target(url);
-	    Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
-	    
-	    FeatureCollection fc = response.readEntity(FeatureCollection.class);
-	    
-	    return Optional.of(fc)
-	    		.map(c -> c.getFeatures())
-	    		.filter(ArrayUtils::isNotEmpty)
-	    		.map(a -> a[0])
-	    		.map(f -> f.getGeometry())
-	    		.map(g -> g.getCoordinates())
-	    		//reverse coordinates
-	    		.map(g -> new GeoLatLon(g[1], g[0]))
-	    		.orElse(null);  
+
+		WebTarget target = client.target(url);
+		Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
+
+		if (response.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
+			if (logger.isErrorEnabled()) {
+				logger
+					.error("geosearch query '{}' returned {} - {}:\n{}", query, response.getStatus(), response.getStatusInfo(), readAsText(response));
+			}
+			return null;
+		}
+
+		FeatureCollection fc = response.readEntity(FeatureCollection.class);
+
+		return Optional.of(fc)
+			.map(FeatureCollection::getFeatures)
+			.filter(ArrayUtils::isNotEmpty)
+			.map(a -> a[0])
+			.map(Feature::getGeometry)
+			.map(Geometry::getCoordinates)
+			//reverse coordinates
+			.map(g -> new GeoLatLon(g[1], g[0]))
+			.orElse(null);
 	}
-	
+
+	private String readAsText(Response response) {
+		try {
+			return response.readEntity(String.class).trim();
+		} catch (RuntimeException e) {
+			return "(Exception when retrieving body: " + e + ")";
+		}
+	}
+
 	@XmlRootElement
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class FeatureCollection implements Serializable {
+
 		private static final long serialVersionUID = -1;
 		public String type;
 		private Feature[] features;
@@ -124,14 +140,14 @@ public class GeocodingService {
 		public void setFeatures(Feature[] features) {
 			this.features = features;
 		}
-		
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Feature implements Serializable {
+
 		private static final long serialVersionUID = -1;
 		private Geometry geometry;
-		public FeatureProperties properties;
+		private FeatureProperties properties;
 
 		@Override
 		public String toString() {
@@ -145,11 +161,11 @@ public class GeocodingService {
 		public void setGeometry(Geometry geometry) {
 			this.geometry = geometry;
 		}
-		
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Geometry implements Serializable {
+
 		private static final long serialVersionUID = -1;
 		private String type;
 		private double[] coordinates;
@@ -178,6 +194,7 @@ public class GeocodingService {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class FeatureProperties implements Serializable {
+
 		private static final long serialVersionUID = -1;
 
 		private String text;
@@ -196,7 +213,7 @@ public class GeocodingService {
 		private String strasse;
 		private String haus;
 		private String qualitaet;
-		
+
 		public String getText() {
 			return text;
 		}
@@ -324,8 +341,5 @@ public class GeocodingService {
 		public void setQualitaet(String qualitaet) {
 			this.qualitaet = qualitaet;
 		}
-
 	}
-	
-	
 }

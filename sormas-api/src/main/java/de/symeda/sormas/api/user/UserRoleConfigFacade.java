@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -28,15 +28,15 @@ public interface UserRoleConfigFacade {
 
 	List<UserRoleConfigDto> getAllAfter(Date date);
 
-    List<UserRoleConfigDto> getAll();
-    
+	List<UserRoleConfigDto> getAll();
+
 	List<String> getAllUuids();
 
 	List<String> getDeletedUuids(Date date);
 
 	UserRoleConfigDto getByUuid(String uuid);
-    
-    UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
+
+	UserRoleConfigDto saveUserRoleConfig(UserRoleConfigDto dto);
 
 	void deleteUserRoleConfig(UserRoleConfigDto dto);
 

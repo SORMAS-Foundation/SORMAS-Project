@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -63,7 +63,7 @@ public class SampleDto extends EntityDto {
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
-	
+
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
 	private String labSampleID;
@@ -179,7 +179,7 @@ public class SampleDto extends EntityDto {
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
 	}
-	
+
 	public SamplePurpose getSamplePurpose() {
 		return samplePurpose;
 	}
@@ -297,7 +297,7 @@ public class SampleDto extends EntityDto {
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
 	}
-	
+
 	public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
 		this.pathogenTestingRequested = pathogenTestingRequested;
 	}
@@ -306,7 +306,7 @@ public class SampleDto extends EntityDto {
 	public Boolean getAdditionalTestingRequested() {
 		return additionalTestingRequested;
 	}
-	
+
 	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
 		this.additionalTestingRequested = additionalTestingRequested;
 	}
@@ -348,18 +348,21 @@ public class SampleDto extends EntityDto {
 	}
 
 	public static SampleDto build(UserReferenceDto userRef, CaseReferenceDto caseRef) {
+
 		final SampleDto sampleDto = getSampleDto(userRef);
 		sampleDto.setAssociatedCase(caseRef);
 		return sampleDto;
 	}
 
 	public static SampleDto build(UserReferenceDto userRef, ContactReferenceDto contactRef) {
+
 		final SampleDto sampleDto = getSampleDto(userRef);
 		sampleDto.setAssociatedContact(contactRef);
 		return sampleDto;
 	}
 
 	private static SampleDto getSampleDto(UserReferenceDto userRef) {
+
 		SampleDto sample = new SampleDto();
 		sample.setUuid(DataHelper.createUuid());
 
@@ -371,6 +374,7 @@ public class SampleDto extends EntityDto {
 	}
 
 	public static SampleDto buildReferral(UserReferenceDto userRef, SampleDto referredSample) {
+
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
 		if (associatedCase != null) {

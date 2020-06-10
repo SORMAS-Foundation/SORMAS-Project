@@ -109,6 +109,16 @@ public interface Captions {
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
+	String Campaign = "Campaign";
+	String Campaign_creatingUser = "Campaign.creatingUser";
+	String Campaign_description = "Campaign.description";
+	String Campaign_endDate = "Campaign.endDate";
+	String Campaign_name = "Campaign.name";
+	String Campaign_startDate = "Campaign.startDate";
+	String campaignActiveCampaigns = "campaignActiveCampaigns";
+	String campaignAllCampaigns = "campaignAllCampaigns";
+	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
+	String campaignNewCampaign = "campaignNewCampaign";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -162,6 +172,7 @@ public interface Captions {
 	String CaseData_pointOfEntryDetails = "CaseData.pointOfEntryDetails";
 	String CaseData_pointOfEntryName = "CaseData.pointOfEntryName";
 	String CaseData_portHealthInfo = "CaseData.portHealthInfo";
+	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
@@ -191,6 +202,7 @@ public interface Captions {
 	String CaseData_surveillanceOfficer = "CaseData.surveillanceOfficer";
 	String CaseData_symptoms = "CaseData.symptoms";
 	String CaseData_therapy = "CaseData.therapy";
+	String CaseData_trimester = "CaseData.trimester";
 	String CaseData_uuid = "CaseData.uuid";
 	String CaseData_vaccination = "CaseData.vaccination";
 	String CaseData_vaccinationDate = "CaseData.vaccinationDate";
@@ -390,8 +402,6 @@ public interface Captions {
 	String ContactExport_lastName = "ContactExport.lastName";
 	String ContactExport_sourceCaseUuid = "ContactExport.sourceCaseUuid";
 	String contactFollowUpDay = "contactFollowUpDay";
-	String contactFromFollowUpOverviewReferenceDate = "From";
-	String contactToFollowUpOverviewReferenceDate = "TO";
 	String contactFollowUpVisitsOverview = "contactFollowUpVisitsOverview";
 	String contactLostToFollowUp = "contactLostToFollowUp";
 	String contactMinusDays = "contactMinusDays";
@@ -739,6 +749,7 @@ public interface Captions {
 	String HealthConditions_hepatitis = "HealthConditions.hepatitis";
 	String HealthConditions_hiv = "HealthConditions.hiv";
 	String HealthConditions_hivArt = "HealthConditions.hivArt";
+	String HealthConditions_immunodeficiencyIncludingHiv = "HealthConditions.immunodeficiencyIncludingHiv";
 	String HealthConditions_immunodeficiencyOtherThanHiv = "HealthConditions.immunodeficiencyOtherThanHiv";
 	String HealthConditions_malignancyChemotherapy = "HealthConditions.malignancyChemotherapy";
 	String HealthConditions_obesity = "HealthConditions.obesity";
@@ -791,6 +802,7 @@ public interface Captions {
 	String LoginSidebar_poweredBy = "LoginSidebar.poweredBy";
 	String mainMenuAbout = "mainMenuAbout";
 	String mainMenuAggregateReports = "mainMenuAggregateReports";
+	String mainMenuCampaigns = "mainMenuCampaigns";
 	String mainMenuCases = "mainMenuCases";
 	String mainMenuConfiguration = "mainMenuConfiguration";
 	String mainMenuContacts = "mainMenuContacts";
@@ -1023,6 +1035,7 @@ public interface Captions {
 	String sampleActiveSamples = "sampleActiveSamples";
 	String sampleAllSamples = "sampleAllSamples";
 	String sampleArchivedSamples = "sampleArchivedSamples";
+	String sampleAssociationType = "sampleAssociationType";
 	String SampleExport_additionalTestingRequested = "SampleExport.additionalTestingRequested";
 	String SampleExport_altSgpt = "SampleExport.altSgpt";
 	String SampleExport_arterialVenousBloodGas = "SampleExport.arterialVenousBloodGas";
@@ -1031,15 +1044,15 @@ public interface Captions {
 	String SampleExport_arterialVenousGasPco2 = "SampleExport.arterialVenousGasPco2";
 	String SampleExport_arterialVenousGasPH = "SampleExport.arterialVenousGasPH";
 	String SampleExport_astSgot = "SampleExport.astSgot";
-	String SampleExport_caseAddress = "SampleExport.caseAddress";
-	String SampleExport_caseAge = "SampleExport.caseAge";
+	String SampleExport_caseAddress = "SampleExport.personAddress";
+	String SampleExport_caseAge = "SampleExport.personAge";
 	String SampleExport_caseCommunity = "SampleExport.caseCommunity";
 	String SampleExport_caseDistrict = "SampleExport.caseDistrict";
 	String SampleExport_caseFacility = "SampleExport.caseFacility";
 	String SampleExport_caseOutcome = "SampleExport.caseOutcome";
 	String SampleExport_caseRegion = "SampleExport.caseRegion";
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
-	String SampleExport_caseSex = "SampleExport.caseSex";
+	String SampleExport_caseSex = "SampleExport.personSex";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
 	String SampleExport_creatinine = "SampleExport.creatinine";
@@ -1084,8 +1097,10 @@ public interface Captions {
 	String SampleExport_totalBilirubin = "SampleExport.totalBilirubin";
 	String SampleExport_urea = "SampleExport.urea";
 	String SampleExport_wbcCount = "SampleExport.wbcCount";
+	String sampleIncludeTestOnCreation = "sampleIncludeTestOnCreation";
 	String sampleNewSample = "sampleNewSample";
-	String sampleNoSamples = "sampleNoSamples";
+	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
+	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";
@@ -1100,7 +1115,6 @@ public interface Captions {
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
-	String sampleAssociationType = "sampleAssociationType";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";
@@ -1172,12 +1186,14 @@ public interface Captions {
 	String Symptoms_excitation = "Symptoms.excitation";
 	String Symptoms_eyePainLightSensitive = "Symptoms.eyePainLightSensitive";
 	String Symptoms_eyesBleeding = "Symptoms.eyesBleeding";
+	String Symptoms_fastHeartRate = "Symptoms.fastHeartRate";
 	String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
 	String Symptoms_fever = "Symptoms.fever";
 	String Symptoms_firstSymptom = "Symptoms.firstSymptom";
 	String Symptoms_fluidInLungCavity = "Symptoms.fluidInLungCavity";
 	String Symptoms_fluidInLungCavityAuscultation = "Symptoms.fluidInLungCavityAuscultation";
 	String Symptoms_fluidInLungCavityXray = "Symptoms.fluidInLungCavityXray";
+	String Symptoms_generalSignsOfDisease = "Symptoms.generalSignsOfDisease";
 	String Symptoms_glasgowComaScale = "Symptoms.glasgowComaScale";
 	String Symptoms_gumsBleeding = "Symptoms.gumsBleeding";
 	String Symptoms_headache = "Symptoms.headache";
@@ -1246,6 +1262,7 @@ public interface Captions {
 	String Symptoms_otherNonHemorrhagicSymptoms = "Symptoms.otherNonHemorrhagicSymptoms";
 	String Symptoms_otherNonHemorrhagicSymptomsText = "Symptoms.otherNonHemorrhagicSymptomsText";
 	String Symptoms_otitisMedia = "Symptoms.otitisMedia";
+	String Symptoms_oxygenSaturationLower94 = "Symptoms.oxygenSaturationLower94";
 	String Symptoms_painfulLymphadenitis = "Symptoms.painfulLymphadenitis";
 	String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
@@ -1262,6 +1279,7 @@ public interface Captions {
 	String Symptoms_rapidBreathing = "Symptoms.rapidBreathing";
 	String Symptoms_redBloodVomit = "Symptoms.redBloodVomit";
 	String Symptoms_refusalFeedorDrink = "Symptoms.refusalFeedorDrink";
+	String Symptoms_respiratoryDiseaseVentilation = "Symptoms.respiratoryDiseaseVentilation";
 	String Symptoms_respiratoryRate = "Symptoms.respiratoryRate";
 	String Symptoms_runnyNose = "Symptoms.runnyNose";
 	String Symptoms_seizures = "Symptoms.seizures";
@@ -1356,6 +1374,7 @@ public interface Captions {
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
+	String View_campaigns = "View.campaigns";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";
@@ -1440,6 +1459,7 @@ public interface Captions {
 	String WeeklyReportOfficerSummary_informantReports = "WeeklyReportOfficerSummary.informantReports";
 	String WeeklyReportOfficerSummary_informants = "WeeklyReportOfficerSummary.informants";
 	String WeeklyReportOfficerSummary_informantZeroReports = "WeeklyReportOfficerSummary.informantZeroReports";
+	String WeeklyReportOfficerSummary_officer = "WeeklyReportOfficerSummary.officer";
 	String WeeklyReportOfficerSummary_officerReportDate = "WeeklyReportOfficerSummary.officerReportDate";
 	String WeeklyReportOfficerSummary_totalCaseCount = "WeeklyReportOfficerSummary.totalCaseCount";
 	String weeklyReportRegionInformants = "weeklyReportRegionInformants";

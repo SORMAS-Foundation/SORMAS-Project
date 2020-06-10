@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -30,7 +30,7 @@ public class ClassificationEpiDataCriteriaDto extends ClassificationCaseCriteria
 	public ClassificationEpiDataCriteriaDto() {
 		super();
 	}
-	
+
 	public ClassificationEpiDataCriteriaDto(String propertyId) {
 		super(propertyId, YesNoUnknown.YES);
 	}
@@ -38,7 +38,7 @@ public class ClassificationEpiDataCriteriaDto extends ClassificationCaseCriteria
 	public ClassificationEpiDataCriteriaDto(String propertyId, Object... propertyValues) {
 		super(propertyId, propertyValues);
 	}
-	
+
 	@Override
 	protected Class<? extends EntityDto> getInvokeClass() {
 		return EpiDataDto.class;
@@ -53,5 +53,4 @@ public class ClassificationEpiDataCriteriaDto extends ClassificationCaseCriteria
 	public String buildDescription() {
 		return I18nProperties.getPrefixCaption(EpiDataDto.I18N_PREFIX, propertyId);
 	}
-	
 }

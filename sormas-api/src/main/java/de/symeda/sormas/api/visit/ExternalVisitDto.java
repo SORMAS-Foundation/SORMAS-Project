@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
 
@@ -14,96 +15,117 @@ import de.symeda.sormas.api.utils.Required;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExternalVisitDto implements Serializable, Cloneable {
 
-    @Required
-    private String contactUuid;
-    @Required
-    private Date visitDateTime;
-    @Required
-    private VisitStatus visitStatus;
+	private static final long serialVersionUID = 7909093498222091926L;
 
-    private String visitRemarks;
+	@Required
+	private String personUuid;
+	@Required
+	private Disease disease;
+	@Required
+	private Date visitDateTime;
+	@Required
+	private VisitStatus visitStatus;
 
-    private SymptomsDto symptoms;
+	private String visitRemarks;
 
-    private Double reportLat;
-    private Double reportLon;
-    private Float reportLatLonAccuracy;
+	private SymptomsDto symptoms;
 
-    public static ExternalVisitDto build(String contactUuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks, SymptomsDto symptoms, Double reportLat, Double reportLon,
-                                         Float reportLatLonAccuracy) {
-        final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
-        externalVisitDto.setContactUuid(contactUuid);
-        externalVisitDto.setVisitDateTime(visitDateTime);
-        externalVisitDto.setVisitStatus(visitStatus);
-        externalVisitDto.setVisitRemarks(visitRemarks);
-        externalVisitDto.setSymptoms(symptoms);
-        externalVisitDto.setReportLat(reportLat);
-        externalVisitDto.setReportLon(reportLon);
-        externalVisitDto.setReportLatLonAccuracy(reportLatLonAccuracy);
-        return externalVisitDto;
-    }
+	private Double reportLat;
+	private Double reportLon;
+	private Float reportLatLonAccuracy;
 
-    public Date getVisitDateTime() {
-        return visitDateTime;
-    }
+	public static ExternalVisitDto build(
+		String personUuid,
+		Disease disease,
+		Date visitDateTime,
+		VisitStatus visitStatus,
+		String visitRemarks,
+		SymptomsDto symptoms,
+		Double reportLat,
+		Double reportLon,
+		Float reportLatLonAccuracy) {
+		final ExternalVisitDto externalVisitDto = new ExternalVisitDto();
+		externalVisitDto.setPersonUuid(personUuid);
+		externalVisitDto.setDisease(disease);
+		externalVisitDto.setVisitDateTime(visitDateTime);
+		externalVisitDto.setVisitStatus(visitStatus);
+		externalVisitDto.setVisitRemarks(visitRemarks);
+		externalVisitDto.setSymptoms(symptoms);
+		externalVisitDto.setReportLat(reportLat);
+		externalVisitDto.setReportLon(reportLon);
+		externalVisitDto.setReportLatLonAccuracy(reportLatLonAccuracy);
+		return externalVisitDto;
+	}
 
-    public void setVisitDateTime(Date visitDateTime) {
-        this.visitDateTime = visitDateTime;
-    }
+	public Date getVisitDateTime() {
+		return visitDateTime;
+	}
 
-    public VisitStatus getVisitStatus() {
-        return visitStatus;
-    }
+	public void setVisitDateTime(Date visitDateTime) {
+		this.visitDateTime = visitDateTime;
+	}
 
-    public void setVisitStatus(VisitStatus visitStatus) {
-        this.visitStatus = visitStatus;
-    }
+	public VisitStatus getVisitStatus() {
+		return visitStatus;
+	}
 
-    public String getVisitRemarks() {
-        return visitRemarks;
-    }
+	public void setVisitStatus(VisitStatus visitStatus) {
+		this.visitStatus = visitStatus;
+	}
 
-    public void setVisitRemarks(String visitRemarks) {
-        this.visitRemarks = visitRemarks;
-    }
+	public String getVisitRemarks() {
+		return visitRemarks;
+	}
 
-    public SymptomsDto getSymptoms() {
-        return symptoms;
-    }
+	public void setVisitRemarks(String visitRemarks) {
+		this.visitRemarks = visitRemarks;
+	}
 
-    public void setSymptoms(SymptomsDto symptoms) {
-        this.symptoms = symptoms;
-    }
+	public SymptomsDto getSymptoms() {
+		return symptoms;
+	}
 
-    public Double getReportLat() {
-        return reportLat;
-    }
+	public void setSymptoms(SymptomsDto symptoms) {
+		this.symptoms = symptoms;
+	}
 
-    public void setReportLat(Double reportLat) {
-        this.reportLat = reportLat;
-    }
+	public Double getReportLat() {
+		return reportLat;
+	}
 
-    public Double getReportLon() {
-        return reportLon;
-    }
+	public void setReportLat(Double reportLat) {
+		this.reportLat = reportLat;
+	}
 
-    public void setReportLon(Double reportLon) {
-        this.reportLon = reportLon;
-    }
+	public Double getReportLon() {
+		return reportLon;
+	}
 
-    public Float getReportLatLonAccuracy() {
-        return reportLatLonAccuracy;
-    }
+	public void setReportLon(Double reportLon) {
+		this.reportLon = reportLon;
+	}
 
-    public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
-        this.reportLatLonAccuracy = reportLatLonAccuracy;
-    }
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
 
-    public String getContactUuid() {
-        return contactUuid;
-    }
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
 
-    public void setContactUuid(String contactUuid) {
-        this.contactUuid = contactUuid;
-    }
+	public String getPersonUuid() {
+		return personUuid;
+	}
+
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
 }

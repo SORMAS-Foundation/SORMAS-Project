@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>EditEvent</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>08e7359d-527a-42a0-9875-54b1f9ff4acf</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>2607cf7b-e19c-48b1-97cd-b3f2269fe7fd</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>
