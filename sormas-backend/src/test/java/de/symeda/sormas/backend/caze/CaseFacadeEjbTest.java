@@ -140,6 +140,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testMovingCaseUpdatesTaskAssigneeAndCreatesPreviousHospitalization() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -151,8 +152,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		UserDto caseOfficer =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
+		UserDto caseOfficer = creator
+			.createUser(newRDCF.region.getUuid(), newRDCF.district.getUuid(), newRDCF.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
 		TaskDto pendingTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
@@ -171,8 +172,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			user.toReference());
-
-		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 
 		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
 		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
