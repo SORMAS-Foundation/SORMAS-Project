@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -81,7 +83,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 		this.visitDateTime = visitDateTime;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}
@@ -90,7 +92,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 		this.visitRemarks = visitRemarks;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVisitingPerson() {
 		return visitingPerson;
 	}

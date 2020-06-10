@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.caze.maternalhistory;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -198,7 +200,7 @@ public class MaternalHistory extends AbstractDomainObject {
 		this.otherComplicationsMonth = otherComplicationsMonth;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOtherComplicationsDetails() {
 		return otherComplicationsDetails;
 	}
@@ -277,4 +279,5 @@ public class MaternalHistory extends AbstractDomainObject {
 	public void setRashExposureCommunity(Community rashExposureCommunity) {
 		this.rashExposureCommunity = rashExposureCommunity;
 	}
+
 }

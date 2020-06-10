@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -58,7 +60,7 @@ public class Community extends InfrastructureAdo {
 		this.district = district;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}

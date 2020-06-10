@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.therapy;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -56,31 +59,31 @@ public class Prescription extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date prescriptionEnd;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String prescribingClinician;
 
 	@Enumerated(EnumType.STRING)
 	private TreatmentType prescriptionType;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String prescriptionDetails;
 
 	@Enumerated(EnumType.STRING)
 	private TypeOfDrug typeOfDrug;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String frequency;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String dose;
 
 	@Enumerated(EnumType.STRING)
 	private TreatmentRoute route;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String routeDetails;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalNotes;
 
 	@ParentAdo
@@ -192,4 +195,5 @@ public class Prescription extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.backend.caze.maternalhistory;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -62,7 +64,7 @@ public class MaternalHistory extends AbstractDomainObject {
 	private Date otherComplicationsOnset;
 	@Column
 	private Integer otherComplicationsMonth;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherComplicationsDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown rubella;

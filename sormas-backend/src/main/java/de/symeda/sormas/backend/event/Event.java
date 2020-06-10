@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.List;
 
@@ -114,7 +117,7 @@ public class Event extends CoreAdo {
 		this.eventPersons = eventPersons;
 	}
 
-	@Column(length = 512, nullable = false)
+	@Column(length = COLUMN_LENGTH_BIG, nullable = false)
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -173,7 +176,7 @@ public class Event extends CoreAdo {
 		this.typeOfPlace = typeOfPlace;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -182,7 +185,7 @@ public class Event extends CoreAdo {
 		this.srcFirstName = srcFirstName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSrcLastName() {
 		return srcLastName;
 	}
@@ -191,7 +194,7 @@ public class Event extends CoreAdo {
 		this.srcLastName = srcLastName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
@@ -200,7 +203,7 @@ public class Event extends CoreAdo {
 		this.srcTelNo = srcTelNo;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSrcEmail() {
 		return srcEmail;
 	}
@@ -218,7 +221,7 @@ public class Event extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -236,7 +239,7 @@ public class Event extends CoreAdo {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTypeOfPlaceText() {
 		return typeOfPlaceText;
 	}
@@ -291,4 +294,5 @@ public class Event extends CoreAdo {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
+
 }

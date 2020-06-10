@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -78,19 +80,19 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown areaInfectedAnimals;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "poultrySick")
 	private YesNoUnknown sickDeadAnimals;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	@DatabaseField(columnName = "poultrySickDetails")
 	private String sickDeadAnimalsDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, columnName = "poultryDate")
 	private Date sickDeadAnimalsDate;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	@DatabaseField(columnName = "poultryLocation")
 	private String sickDeadAnimalsLocation;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "poultry")
 	private YesNoUnknown eatingRawAnimalsInInfectedArea;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "poultryEat")
 	private YesNoUnknown eatingRawAnimals;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	@DatabaseField(columnName = "poultryDetails")
 	private String eatingRawAnimalsDetails;
 
@@ -116,16 +118,16 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown rabbits;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown otherAnimals;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherAnimalsDetails;
 
 	@Enumerated(EnumType.STRING)
 	private WaterSource waterSource;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String waterSourceOther;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown waterBody;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String waterBodyDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -135,7 +137,7 @@ public class EpiData extends AbstractDomainObject {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date dateOfLastExposure;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String placeOfLastExposure;
 	@Enumerated(EnumType.STRING)
 	private AnimalCondition animalCondition;
@@ -156,7 +158,7 @@ public class EpiData extends AbstractDomainObject {
 	private YesNoUnknown kindOfExposureLick;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown kindOfExposureOther;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String kindOfExposureDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown visitedHealthFacility;

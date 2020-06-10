@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.event;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -44,7 +46,7 @@ public class EventParticipant extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
 	private Person person;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String involvementDescription;
 
 	@DatabaseField

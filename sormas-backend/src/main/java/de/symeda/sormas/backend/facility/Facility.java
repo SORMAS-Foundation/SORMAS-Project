@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -94,7 +96,7 @@ public class Facility extends InfrastructureAdo {
 		this.community = community;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCity() {
 		return city;
 	}
@@ -136,7 +138,7 @@ public class Facility extends InfrastructureAdo {
 		this.publicOwnership = publicOwnership;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
