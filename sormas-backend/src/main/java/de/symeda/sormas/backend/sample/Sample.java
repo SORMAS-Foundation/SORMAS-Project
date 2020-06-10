@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -157,7 +160,7 @@ public class Sample extends CoreAdo {
 		this.associatedContact = associatedContact;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabSampleID() {
 		return labSampleID;
 	}
@@ -166,7 +169,7 @@ public class Sample extends CoreAdo {
 		this.labSampleID = labSampleID;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFieldSampleID() {
 		return fieldSampleID;
 	}
@@ -215,7 +218,7 @@ public class Sample extends CoreAdo {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
 	}
@@ -244,7 +247,7 @@ public class Sample extends CoreAdo {
 		this.lab = lab;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -262,7 +265,7 @@ public class Sample extends CoreAdo {
 		this.shipmentDate = shipmentDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getShipmentDetails() {
 		return shipmentDetails;
 	}
@@ -289,7 +292,7 @@ public class Sample extends CoreAdo {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
@@ -316,7 +319,7 @@ public class Sample extends CoreAdo {
 		this.additionalTests = additionalTests;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}
@@ -478,7 +481,7 @@ public class Sample extends CoreAdo {
 		requestedAdditionalTests = null;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
@@ -487,7 +490,7 @@ public class Sample extends CoreAdo {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
@@ -535,4 +538,5 @@ public class Sample extends CoreAdo {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
+
 }

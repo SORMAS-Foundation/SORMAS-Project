@@ -4317,9 +4317,309 @@ ALTER TABLE campaigns_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (213, 'Add campaigns #1984');
 
+-- 2020-06-04 Change text field lengths #580´
+ALTER TABLE campaigns ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE campaigns_history ALTER COLUMN description TYPE varchar(4096);
+
+ALTER TABLE cases ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE cases ALTER COLUMN additionalDetails TYPE varchar(4096);
+ALTER TABLE cases_history ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE cases_history ALTER COLUMN additionalDetails TYPE varchar(4096);
+
+ALTER TABLE porthealthinfo ALTER COLUMN details TYPE varchar(4096);
+ALTER TABLE porthealthinfo_history ALTER COLUMN details TYPE varchar(4096);
+
+ALTER TABLE healthconditions ALTER COLUMN otherconditions TYPE varchar(4096);
+ALTER TABLE healthconditions_history ALTER COLUMN otherconditions TYPE varchar(4096);
+
+ALTER TABLE contact ALTER COLUMN followUpComment TYPE varchar(4096);
+ALTER TABLE contact ALTER COLUMN caseoreventinformation TYPE varchar(4096);
+ALTER TABLE contact ALTER COLUMN additionaldetails TYPE varchar(4096);
+ALTER TABLE contact ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE contact_history ADD COLUMN followUpComment varchar(4096);
+ALTER TABLE contact_history ALTER COLUMN caseoreventinformation TYPE varchar(4096);
+ALTER TABLE contact_history ALTER COLUMN additionaldetails TYPE varchar(4096);
+ALTER TABLE contact_history ALTER COLUMN description TYPE varchar(4096);
+
+ALTER TABLE epidatagathering ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE epidatagathering_history ALTER COLUMN description TYPE varchar(4096);
+
+ALTER TABLE events ALTER COLUMN eventdesc TYPE varchar(4096);
+ALTER TABLE events_history ALTER COLUMN eventdesc TYPE varchar(4096);
+
+ALTER TABLE previoushospitalization ALTER COLUMN description TYPE varchar(4096);
+ALTER TABLE previoushospitalization_history ALTER COLUMN description TYPE varchar(4096);
+
+ALTER TABLE location ALTER COLUMN address TYPE varchar(4096);
+ALTER TABLE location_history ALTER COLUMN address TYPE varchar(4096);
+
+ALTER TABLE additionaltest ALTER COLUMN othertestresults TYPE varchar(4096);
+ALTER TABLE additionaltest_history ALTER COLUMN othertestresults TYPE varchar(4096);
+
+ALTER TABLE pathogentest ALTER COLUMN testresulttext TYPE varchar(4096);
+ALTER TABLE pathogentest_history ALTER COLUMN testresulttext TYPE varchar(4096);
+
+ALTER TABLE samples ALTER COLUMN comment TYPE varchar(4096);
+ALTER TABLE samples_history ALTER COLUMN comment TYPE varchar(4096);
+
+ALTER TABLE task ALTER COLUMN creatorcomment TYPE varchar(4096);
+ALTER TABLE task ALTER COLUMN assigneereply TYPE varchar(4096);
+ALTER TABLE task_history ALTER COLUMN creatorcomment TYPE varchar(4096);
+ALTER TABLE task_history ALTER COLUMN assigneereply TYPE varchar(4096);
+
+ALTER TABLE prescription ALTER COLUMN additionalnotes TYPE varchar(4096);
+ALTER TABLE prescription_history ALTER COLUMN additionalnotes TYPE varchar(4096);
+
+ALTER TABLE treatment ALTER COLUMN additionalnotes TYPE varchar(4096);
+ALTER TABLE treatment_history ALTER COLUMN additionalnotes TYPE varchar(4096);
+
+ALTER TABLE cases ALTER COLUMN diseasedetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN classificationcomment TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN healthfacilitydetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN cliniciandetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN clinicianphone TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN clinicianemail TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN vaccinationdoses TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN vaccine TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN epidnumber TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN sequelaedetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN notifyingclinicdetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN pointofentrydetails TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN quarantinehelpneeded TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN quarantinehomepossiblecomment TYPE varchar(512);
+ALTER TABLE cases ALTER COLUMN quarantinehomesupplyensuredcomment TYPE varchar(512);
+ALTER TABLE cases_history ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE cases_history ADD COLUMN classificationcomment varchar(512);
+ALTER TABLE cases_history ADD COLUMN healthfacilitydetails varchar(512);
+ALTER TABLE cases_history ALTER COLUMN cliniciandetails TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN clinicianphone TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN clinicianemail TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN vaccinationdoses TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN vaccine TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN epidnumber TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN sequelaedetails TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN notifyingclinicdetails TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN pointofentrydetails TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN quarantinehelpneeded TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN quarantinehomepossiblecomment TYPE varchar(512);
+ALTER TABLE cases_history ALTER COLUMN quarantinehomesupplyensuredcomment TYPE varchar(512);
+
+ALTER TABLE maternalhistory ALTER COLUMN othercomplicationsdetails TYPE varchar(512);
+ALTER TABLE maternalhistory_history ALTER COLUMN othercomplicationsdetails TYPE varchar(512);
+
+ALTER TABLE porthealthinfo ALTER COLUMN airlinename TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN flightnumber TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN seatnumber TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN departureairport TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN transitstopdetails1 TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN transitstopdetails2 TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN transitstopdetails3 TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN transitstopdetails4 TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN transitstopdetails5 TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN vesselname TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN vesseldetails TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN portofdeparture TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN lastportofcall TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN conveyancetypedetails TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN departurelocation TYPE varchar(512);
+ALTER TABLE porthealthinfo ALTER COLUMN finaldestination TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN airlinename TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN flightnumber TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN seatnumber TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN departureairport TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN transitstopdetails1 TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN transitstopdetails2 TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN transitstopdetails3 TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN transitstopdetails4 TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN transitstopdetails5 TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN vesselname TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN vesseldetails TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN portofdeparture TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN lastportofcall TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN conveyancetypedetails TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN departurelocation TYPE varchar(512);
+ALTER TABLE porthealthinfo_history ALTER COLUMN finaldestination TYPE varchar(512);
+
+ALTER TABLE clinicalvisit ALTER COLUMN visitremarks TYPE varchar(512);
+ALTER TABLE clinicalvisit ALTER COLUMN visitingperson TYPE varchar(512);
+ALTER TABLE clinicalvisit_history ALTER COLUMN visitremarks TYPE varchar(512);
+ALTER TABLE clinicalvisit_history ALTER COLUMN visitingperson TYPE varchar(512);
+
+ALTER TABLE contact ALTER COLUMN diseasedetails TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN relationdescription TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN immunosuppressiveTherapyBasicDiseaseDetails TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN caseidexternalsystem TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN contactproximitydetails TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN quarantinehelpneeded TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN quarantinehomepossiblecomment TYPE varchar(512);
+ALTER TABLE contact ALTER COLUMN quarantinehomesupplyensuredcomment TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN diseasedetails TYPE varchar(512);
+ALTER TABLE contact_history ADD COLUMN relationdescription varchar(512);
+ALTER TABLE contact_history ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN immunosuppressiveTherapyBasicDiseaseDetails TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN caseidexternalsystem TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN contactproximitydetails TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN quarantinehelpneeded TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN quarantinehomepossiblecomment TYPE varchar(512);
+ALTER TABLE contact_history ALTER COLUMN quarantinehomesupplyensuredcomment TYPE varchar(512);
+
+ALTER TABLE epidata ALTER COLUMN otheranimalsdetails TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN watersourceother TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN waterbodydetails TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN kindofexposuredetails TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN placeoflastexposure TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN sickdeadanimalsdetails TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN sickdeadanimalslocation TYPE varchar(512);
+ALTER TABLE epidata ALTER COLUMN eatingrawanimalsdetails TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN otheranimalsdetails TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN watersourceother TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN waterbodydetails TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN kindofexposuredetails TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN placeoflastexposure TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN sickdeadanimalsdetails TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN sickdeadanimalslocation TYPE varchar(512);
+ALTER TABLE epidata_history ALTER COLUMN eatingrawanimalsdetails TYPE varchar(512);
+
+ALTER TABLE epidataburial ALTER COLUMN burialpersonname TYPE varchar(512);
+ALTER TABLE epidataburial ALTER COLUMN burialrelation TYPE varchar(512);
+ALTER TABLE epidataburial_history ALTER COLUMN burialpersonname TYPE varchar(512);
+ALTER TABLE epidataburial_history ALTER COLUMN burialrelation TYPE varchar(512);
+
+ALTER TABLE epidatatravel ALTER COLUMN traveldestination TYPE varchar(512);
+ALTER TABLE epidatatravel_history ALTER COLUMN traveldestination TYPE varchar(512);
+
+ALTER TABLE events ALTER COLUMN srcfirstname TYPE varchar(512);
+ALTER TABLE events ALTER COLUMN srclastname TYPE varchar(512);
+ALTER TABLE events ALTER COLUMN srctelno TYPE varchar(512);
+ALTER TABLE events ALTER COLUMN srcemail TYPE varchar(512);
+ALTER TABLE events ALTER COLUMN diseasedetails TYPE varchar(512);
+ALTER TABLE events ALTER COLUMN typeofplacetext TYPE varchar(512);
+ALTER TABLE events_history ALTER COLUMN srcfirstname TYPE varchar(512);
+ALTER TABLE events_history ALTER COLUMN srclastname TYPE varchar(512);
+ALTER TABLE events_history ALTER COLUMN srctelno TYPE varchar(512);
+ALTER TABLE events_history ALTER COLUMN srcemail TYPE varchar(512);
+ALTER TABLE events_history ADD COLUMN diseasedetails varchar(512);
+ALTER TABLE events_history ALTER COLUMN typeofplacetext TYPE varchar(512);
+
+ALTER TABLE facility ALTER COLUMN city TYPE varchar(512);
+ALTER TABLE facility ALTER COLUMN externalid TYPE varchar(512);
+
+ALTER TABLE previoushospitalization ALTER COLUMN healthfacilitydetails TYPE varchar(512);
+ALTER TABLE previoushospitalization_history ALTER COLUMN healthfacilitydetails TYPE varchar(512);
+
+ALTER TABLE exportconfiguration ALTER COLUMN name TYPE varchar(512);
+ALTER TABLE exportconfiguration_history ALTER COLUMN name TYPE varchar(512);
+
+ALTER TABLE pointofentry ALTER COLUMN name TYPE varchar(512);
+ALTER TABLE pointofentry ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE pointofentry ALTER COLUMN name TYPE varchar(512);
+ALTER TABLE pointofentry ALTER COLUMN externalid TYPE varchar(512);
+
+ALTER TABLE location ALTER COLUMN details TYPE varchar(512);
+ALTER TABLE location ALTER COLUMN city TYPE varchar(512);
+ALTER TABLE location ALTER COLUMN postalcode TYPE varchar(512);
+ALTER TABLE location_history ALTER COLUMN details TYPE varchar(512);
+ALTER TABLE location_history ALTER COLUMN city TYPE varchar(512);
+ALTER TABLE location_history ALTER COLUMN postalcode TYPE varchar(512);
+
+ALTER TABLE person ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN nickname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN mothersname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN fathersname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN placeofbirthfacilitydetails TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN generalpractitionerdetails TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN nickname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN mothersname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN fathersname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN placeofbirthfacilitydetails TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN generalpractitionerdetails TYPE varchar(512);
+
+ALTER TABLE users ALTER COLUMN username TYPE varchar(512);
+ALTER TABLE users ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE users ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN username TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN lastname TYPE varchar(512);
+
+ALTER TABLE community ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE district ALTER COLUMN externalid TYPE varchar(512);
+ALTER TABLE region ALTER COLUMN externalid TYPE varchar(512);
+
+ALTER TABLE pathogentest ALTER COLUMN testeddiseasedetails TYPE varchar(512);
+ALTER TABLE pathogentest ALTER COLUMN testtypetext TYPE varchar(512);
+ALTER TABLE pathogentest ALTER COLUMN labdetails TYPE varchar(512);
+ALTER TABLE pathogentest ALTER COLUMN serotype TYPE varchar(512);
+ALTER TABLE pathogentest_history ALTER COLUMN testeddiseasedetails TYPE varchar(512);
+ALTER TABLE pathogentest_history ALTER COLUMN testtypetext TYPE varchar(512);
+ALTER TABLE pathogentest_history ALTER COLUMN labdetails TYPE varchar(512);
+ALTER TABLE pathogentest_history ALTER COLUMN serotype TYPE varchar(512);
+
+ALTER TABLE samples ALTER COLUMN labsampleid TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN fieldsampleid TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN samplematerialtext TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN labdetails TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN shipmentdetails TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN notestpossiblereason TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN requestedotherpathogentests TYPE varchar(512);
+ALTER TABLE samples ALTER COLUMN requestedotheradditionaltests TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN labsampleid TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN fieldsampleid TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN samplematerialtext TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN labdetails TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN shipmentdetails TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN notestpossiblereason TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN requestedotherpathogentests TYPE varchar(512);
+ALTER TABLE samples_history ALTER COLUMN requestedotheradditionaltests TYPE varchar(512);
+
+ALTER TABLE symptoms ALTER COLUMN patientilllocation TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN onsetsymptom TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN otherhemorrhagicsymptomstext TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN othernonhemorrhagicsymptomstext TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN congenitalheartdiseasedetails TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN symptomscomments TYPE varchar(512);
+ALTER TABLE symptoms ALTER COLUMN otherComplicationsText TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN patientilllocation TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN onsetsymptom TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN otherhemorrhagicsymptomstext TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN othernonhemorrhagicsymptomstext TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN congenitalheartdiseasedetails TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN symptomscomments TYPE varchar(512);
+ALTER TABLE symptoms_history ALTER COLUMN otherComplicationsText TYPE varchar(512);
+
+ALTER TABLE prescription ALTER COLUMN prescribingclinician TYPE varchar(512);
+ALTER TABLE prescription ALTER COLUMN prescriptiondetails TYPE varchar(512);
+ALTER TABLE prescription ALTER COLUMN frequency TYPE varchar(512);
+ALTER TABLE prescription ALTER COLUMN dose TYPE varchar(512);
+ALTER TABLE prescription ALTER COLUMN routedetails TYPE varchar(512);
+ALTER TABLE prescription_history ALTER COLUMN prescribingclinician TYPE varchar(512);
+ALTER TABLE prescription_history ALTER COLUMN prescriptiondetails TYPE varchar(512);
+ALTER TABLE prescription_history ALTER COLUMN frequency TYPE varchar(512);
+ALTER TABLE prescription_history ALTER COLUMN dose TYPE varchar(512);
+ALTER TABLE prescription_history ALTER COLUMN routedetails TYPE varchar(512);
+
+ALTER TABLE treatment ALTER COLUMN executingclinician TYPE varchar(512);
+ALTER TABLE treatment ALTER COLUMN treatmentdetails TYPE varchar(512);
+ALTER TABLE treatment ALTER COLUMN dose TYPE varchar(512);
+ALTER TABLE treatment ALTER COLUMN routedetails TYPE varchar(512);
+ALTER TABLE treatment_history ALTER COLUMN executingclinician TYPE varchar(512);
+ALTER TABLE treatment_history ALTER COLUMN treatmentdetails TYPE varchar(512);
+ALTER TABLE treatment_history ALTER COLUMN dose TYPE varchar(512);
+ALTER TABLE treatment_history ALTER COLUMN routedetails TYPE varchar(512);
+
+ALTER TABLE visit ALTER COLUMN visitremarks TYPE varchar(512);
+ALTER TABLE visit_history ALTER COLUMN visitremarks TYPE varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (214, 'Change text field lengths #580');
+
 -- 2020-06-10 Remove wrongly assigned surveillance officers from cases #2284
 UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillanceofficer_id = users.id AND cases.district_id != users.district_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (214, 'Remove wrongly assigned surveillance officers from cases #2284');
+INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
 -- *** Insert new sql commands BEFORE this line ***

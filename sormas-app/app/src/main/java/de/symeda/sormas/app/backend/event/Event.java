@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.event;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -67,7 +70,7 @@ public class Event extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private EventStatus eventStatus;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String eventDesc;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -85,28 +88,28 @@ public class Event extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private TypeOfPlace typeOfPlace;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcFirstName;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcLastName;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcTelNo;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcEmail;
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User surveillanceOfficer;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String typeOfPlaceText;
 
 	@DatabaseField

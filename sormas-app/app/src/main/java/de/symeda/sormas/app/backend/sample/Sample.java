@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.sample;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -68,10 +71,10 @@ public class Sample extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Contact associatedContact;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String labSampleID;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fieldSampleID;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -93,13 +96,13 @@ public class Sample extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SampleMaterial sampleMaterial;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String sampleMaterialText;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility lab;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String labDetails;
 
 	@Enumerated(EnumType.STRING)
@@ -108,7 +111,7 @@ public class Sample extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date shipmentDate;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String shipmentDetails;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -117,10 +120,10 @@ public class Sample extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private SpecimenCondition specimenCondition;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String noTestPossibleReason;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String comment;
 
 	@Enumerated(EnumType.STRING)
@@ -144,10 +147,10 @@ public class Sample extends AbstractDomainObject {
 	@DatabaseField
 	private Boolean additionalTestingRequested;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedPathogenTestsString;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedAdditionalTestsString;
 
 	@Transient
@@ -156,10 +159,10 @@ public class Sample extends AbstractDomainObject {
 	@Transient
 	private Set<AdditionalTestType> requestedAdditionalTests;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedOtherPathogenTests;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String requestedOtherAdditionalTests;
 
 	public Case getAssociatedCase() {

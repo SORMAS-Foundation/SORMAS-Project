@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.ui.AbstractField;
@@ -252,6 +254,12 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		"rawtypes",
 		"hiding" })
 	protected <T extends Field> T addDefaultAdditionalValidators(T field) {
+		final Class fieldType = field.getClass();
+		if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+		} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+		}
 		addFutureDateValidator(field, 0);
 		return field;
 	}

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.task;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -98,13 +100,13 @@ public class Task extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User creatorUser;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String creatorComment;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User assigneeUser;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String assigneeReply;
 
 	@DatabaseField

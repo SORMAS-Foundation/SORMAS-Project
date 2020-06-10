@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -115,7 +117,7 @@ public class Visit extends AbstractDomainObject {
 		this.visitStatus = visitStatus;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}
@@ -177,4 +179,5 @@ public class Visit extends AbstractDomainObject {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
+
 }

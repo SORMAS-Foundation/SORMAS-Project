@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.facility;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -56,7 +58,7 @@ public class Facility extends InfrastructureAdo {
 	private District district;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String city;
 
 	@DatabaseField

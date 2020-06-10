@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -64,7 +66,7 @@ public class HealthConditions extends AbstractDomainObject {
 	private YesNoUnknown downSyndrome;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown congenitalSyphilis;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String otherConditions;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown immunodeficiencyOtherThanHiv;
@@ -271,4 +273,5 @@ public class HealthConditions extends AbstractDomainObject {
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
 	}
+
 }

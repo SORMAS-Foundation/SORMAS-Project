@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.visit;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -64,7 +66,7 @@ public class Visit extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private VisitStatus visitStatus;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String visitRemarks;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)

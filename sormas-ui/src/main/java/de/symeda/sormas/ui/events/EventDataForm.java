@@ -17,12 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
@@ -31,8 +25,8 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -49,7 +43,13 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
-import de.symeda.sormas.ui.utils.ValidationConstants;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -106,7 +106,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
 		descriptionField.setRows(2);
-		descriptionField.addValidator(new MaxLengthValidator(ValidationConstants.TEXT_AREA_MAX_LENGTH));
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
