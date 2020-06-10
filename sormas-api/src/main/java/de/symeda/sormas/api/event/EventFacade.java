@@ -65,5 +65,7 @@ public interface EventFacade {
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
+	boolean exists(String uuid);
+
 	String getUuidByCaseUuidOrPersonUuid(String value);
 }

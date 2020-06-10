@@ -1227,6 +1227,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		return contacts;
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {
