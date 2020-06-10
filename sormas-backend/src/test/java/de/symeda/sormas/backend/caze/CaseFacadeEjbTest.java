@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1000,6 +1001,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+	}
+
+	@Test
+	public void testSetResponsibleSurveillanceOfficer() {
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+		RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto survOff2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto survOff3 = creator.createUser(rdcf2, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserDto informant = creator.createUser(rdcf, UserRole.HOSPITAL_INFORMANT);
+		informant.setAssociatedOfficer(survOff3);
+		getUserFacade().saveUser(informant);
+
+		// Reporting user is set as surveillance officer
+		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);
+		assertThat(caze.getSurveillanceOfficer(), is(survOff2));
+
+		// Surveillance officer is removed if the district changes
+		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid()));
+		getCaseFacade().saveCase(caze);
+		assertNull(caze.getSurveillanceOfficer());
+
+		// Surveillance officer is set to the associated officer of an informant if available
+		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
+		getCaseFacade().saveCase(caze);
+		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
 	}
 
 //	@Test

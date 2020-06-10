@@ -4291,7 +4291,7 @@ UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'M
 
 INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');                                                                                                                        
 
---2020-05-25 Add campaigns #1984
+-- 2020-05-25 Add campaigns #1984
 CREATE TABLE campaigns(
 	id bigint not null,
 	uuid varchar(36) not null unique,
@@ -4316,5 +4316,10 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', tru
 ALTER TABLE campaigns_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (213, 'Add campaigns #1984');
+
+-- 2020-06-10 Remove wrongly assigned surveillance officers from cases #2284
+UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillanceofficer_id = users.id AND cases.district_id != users.district_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (214, 'Remove wrongly assigned surveillance officers from cases #2284');
 
 -- *** Insert new sql commands BEFORE this line ***
