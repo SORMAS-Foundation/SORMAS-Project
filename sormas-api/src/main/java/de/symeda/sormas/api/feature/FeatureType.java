@@ -25,7 +25,7 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true, true, null),
 	CAMPAIGNS(true, true, null),
 	CASE_SURVEILANCE(true, true, null),
-	CONTACT_TRACING(true, false, new FeatureType[]{CASE_SURVEILANCE}),
+	CONTACT_TRACING(true, true, new FeatureType[]{CASE_SURVEILANCE}),
 	SAMPLES_LAB(true, true, new FeatureType[]{CASE_SURVEILANCE, CONTACT_TRACING});
 
 	/**
@@ -84,7 +84,7 @@ public enum FeatureType {
 
 	public List<FeatureType> checkDependency(List<FeatureType> featureTypeList){
 		List<FeatureType> listOfEnabledDependentFeatures = new ArrayList<>();
-		featureTypeList.stream().forEach(featureType -> {
+		for(FeatureType featureType : featureTypeList) {
 			if (featureType.isDependent()){
 				listOfEnabledDependentFeatures.addAll(checkDependency(Arrays.asList(featureType.dependentFeatures)));
 			}
@@ -92,7 +92,7 @@ public enum FeatureType {
 			if (featureType.isEnabledDefault() && !featureType.isDependent()){
 				listOfEnabledDependentFeatures.add(featureType);
 			}
-		});
+		};
 		return  listOfEnabledDependentFeatures;
 	}
 }
