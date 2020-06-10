@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -39,16 +39,18 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 	protected List<ClassificationCriteriaDto> classificationCriteria;
 
 	public ClassificationXOfCriteriaDto() {
-		
+
 	}
-	
+
 	public ClassificationXOfCriteriaDto(int requiredAmount, ClassificationCriteriaDto... criteria) {
+
 		this.requiredAmount = requiredAmount;
 		this.classificationCriteria = Arrays.asList(criteria);
 	}
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+
 		int amount = 0;
 		for (ClassificationCriteriaDto classificationCriteria : classificationCriteria) {
 			if (classificationCriteria.eval(caze, person, sampleTests)) {
@@ -102,11 +104,11 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 		private static final long serialVersionUID = 8374870595895910414L;
 
 		private boolean isAddition = true;
-		
+
 		public ClassificationXOfSubCriteriaDto() {
 			super();
 		}
-		
+
 		public ClassificationXOfSubCriteriaDto(int requiredAmount, boolean isAddition, ClassificationCriteriaDto... criteria) {
 			super(requiredAmount, criteria);
 			this.isAddition = isAddition;
@@ -114,13 +116,14 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 
 		@Override
 		public String buildDescription() {
+
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<b> ").append(I18nProperties.getString(Strings.classificationOneOf).toUpperCase()).append("</b>");
 			for (int i = 0; i < classificationCriteria.size(); i++) {
 				stringBuilder.append("<br/>- ");
-				stringBuilder.append(classificationCriteria.get(i).buildDescription());	
+				stringBuilder.append(classificationCriteria.get(i).buildDescription());
 			}
-			
+
 			return stringBuilder.toString();
 		}
 
@@ -131,9 +134,8 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 		public void setAddition(boolean isAddition) {
 			this.isAddition = isAddition;
 		}
-		
 	}
-	
+
 	/**
 	 * Has a different buildDescription method to display all sub criteria in one line, separated by commas and
 	 * an "OR" for the last criteria. Functionality is identical to ClassificationXOfCriteria.
@@ -145,7 +147,7 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 		public ClassificationOneOfCompactCriteriaDto() {
 			super();
 		}
-		
+
 		public ClassificationOneOfCompactCriteriaDto(ClassificationCriteriaDto... criteria) {
 			super(1, criteria);
 		}
@@ -158,16 +160,14 @@ public class ClassificationXOfCriteriaDto extends ClassificationCriteriaDto impl
 					if (i + 1 < classificationCriteria.size()) {
 						stringBuilder.append(", ");
 					} else {
-						stringBuilder.append(" <b>").append( I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
+						stringBuilder.append(" <b>").append(I18nProperties.getString(Strings.or).toUpperCase()).append("</b> ");
 					}
 				}
-				
-				stringBuilder.append(classificationCriteria.get(i).buildDescription());	
+
+				stringBuilder.append(classificationCriteria.get(i).buildDescription());
 			}
-			
+
 			return stringBuilder.toString();
 		}
-		
 	}
-
 }

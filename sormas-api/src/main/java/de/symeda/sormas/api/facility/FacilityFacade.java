@@ -9,17 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -34,32 +35,44 @@ public interface FacilityFacade {
 	List<FacilityDto> getIndexList(FacilityCriteria facilityCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	long count(FacilityCriteria criteria);
-	
-    List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
-    List<FacilityReferenceDto> getActiveHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);
-    List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory);
+
+	List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
+
+	List<FacilityReferenceDto> getActiveHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);
+
+	List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory);
 
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
+
 	List<FacilityDto> getAllWithoutRegionAfter(Date date);
-	
+
 	FacilityReferenceDto getFacilityReferenceByUuid(String uuid);
-	
+
+	FacilityReferenceDto getFacilityReferenceById(long id);
+
 	FacilityDto getByUuid(String uuid);
-	
+
 	List<FacilityDto> getByUuids(List<String> uuids);
 
 	List<String> getAllUuids();
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
-	
-	List<FacilityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, CommunityReferenceDto communityRef, boolean includeArchivedEntities);
-	
+
+	List<FacilityReferenceDto> getByName(
+		String name,
+		DistrictReferenceDto districtRef,
+		CommunityReferenceDto communityRef,
+		boolean includeArchivedEntities);
+
 	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);
-	
+
 	void archive(String facilityUuid);
-	
+
 	void dearchive(String facilityUuid);
-	
+
 	boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids);
-	
+
+	Map<String, String> getDistrictUuidsForFacilities(List<FacilityReferenceDto> facilities);
+
+	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
 }

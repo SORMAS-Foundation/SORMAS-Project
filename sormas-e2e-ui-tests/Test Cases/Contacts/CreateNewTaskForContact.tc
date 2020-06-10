@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks if a new created task is visible in the table</description>
+   <name>CreateNewTaskForContact</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>886f02eb-9fb3-4f78-96f8-cd2bd453ea8b</testCaseGuid>
+</TestCaseEntity>

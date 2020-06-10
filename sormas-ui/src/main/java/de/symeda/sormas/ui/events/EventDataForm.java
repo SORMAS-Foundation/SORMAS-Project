@@ -9,19 +9,13 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
-
-import java.util.Arrays;
-import java.util.List;
 
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
@@ -31,8 +25,8 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -42,12 +36,20 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.MaxLengthValidator;
-import de.symeda.sormas.ui.utils.ValidationConstants;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -55,6 +57,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final String STATUS_CHANGE = "statusChange";
 
+	//@formatter:off
 	private static final String HTML_LAYOUT = 
 			h3(I18nProperties.getString(Strings.headingEventData)) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
@@ -70,12 +73,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
+	//@formatter:on
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
 
 	public EventDataForm(boolean create) {
-		super(EventDto.class, EventDto.I18N_PREFIX);
+		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), new FieldAccessCheckers());
 
 		isCreateForm = create;
 		if (create) {
@@ -102,7 +106,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
 		descriptionField.setRows(2);
-		descriptionField.addValidator(new MaxLengthValidator(ValidationConstants.TEXT_AREA_MAX_LENGTH));
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
@@ -125,28 +128,22 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE,
-				Arrays.asList(TypeOfPlace.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE,
-				Arrays.asList(Disease.OTHER), true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS),
-				Arrays.asList(Disease.OTHER));
+		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
-		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC,
-				EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 
 		districtField.addValueChangeListener(e -> {
 			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getUserRefsByDistrict((DistrictReferenceDto) districtField.getValue(), false,
-							UserRole.SURVEILLANCE_OFFICER);
+				.getUserRefsByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 
-		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName,
-				srcTelNo);
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
 	}
 
 	@Override
@@ -156,19 +153,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	@SuppressWarnings("rawtypes")
 	public void setTypeOfPlaceTextRequirement() {
+
 		FieldGroup fieldGroup = getFieldGroup();
 		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
-		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 
-		// initialize
-		{
-			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
-		}
-
-		typeOfPlaceField.addValueChangeListener(event -> {
-			typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
-		});
+		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
+		typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
+		typeOfPlaceField.addValueChangeListener(event -> typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER));
 	}
-
 }

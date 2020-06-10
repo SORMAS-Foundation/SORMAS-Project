@@ -24,7 +24,8 @@ public class CaseExportConfigurationsLayout extends VerticalLayout {
 	private Button btnExport;
 	private CaseExportConfigurationsGrid grid;
 
-	public CaseExportConfigurationsLayout(Runnable closeCallback) {	
+	public CaseExportConfigurationsLayout(Runnable closeCallback) {
+
 		lblDescription = new Label(I18nProperties.getString(Strings.infoCustomCaseExport));
 		lblDescription.setWidth(100, Unit.PERCENTAGE);
 		addComponent(lblDescription);
@@ -43,13 +44,12 @@ public class CaseExportConfigurationsLayout extends VerticalLayout {
 		addComponent(btnClose);
 		setComponentAlignment(btnClose, Alignment.MIDDLE_RIGHT);
 	}
-	
+
 	public Button getExportButton() {
 		return btnExport;
 	}
-	
+
 	public void setExportCallback(Consumer<ExportConfigurationDto> exportCallback) {
 		grid.setExportCallback(exportCallback);
 	}
-	
 }

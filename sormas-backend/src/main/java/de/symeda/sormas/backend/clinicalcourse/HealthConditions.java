@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,7 +16,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class HealthConditions extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -6688718889862479948L;
-	
+
 	public static final String TABLE_NAME = "healthconditions";
 
 	private YesNoUnknown tuberculosis;
@@ -45,6 +47,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getTuberculosis() {
 		return tuberculosis;
 	}
+
 	public void setTuberculosis(YesNoUnknown tuberculosis) {
 		this.tuberculosis = tuberculosis;
 	}
@@ -53,6 +56,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getAsplenia() {
 		return asplenia;
 	}
+
 	public void setAsplenia(YesNoUnknown asplenia) {
 		this.asplenia = asplenia;
 	}
@@ -61,6 +65,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getHepatitis() {
 		return hepatitis;
 	}
+
 	public void setHepatitis(YesNoUnknown hepatitis) {
 		this.hepatitis = hepatitis;
 	}
@@ -69,6 +74,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getDiabetes() {
 		return diabetes;
 	}
+
 	public void setDiabetes(YesNoUnknown diabetes) {
 		this.diabetes = diabetes;
 	}
@@ -77,6 +83,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getHiv() {
 		return hiv;
 	}
+
 	public void setHiv(YesNoUnknown hiv) {
 		this.hiv = hiv;
 	}
@@ -85,6 +92,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getHivArt() {
 		return hivArt;
 	}
+
 	public void setHivArt(YesNoUnknown hivArt) {
 		this.hivArt = hivArt;
 	}
@@ -93,6 +101,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getChronicLiverDisease() {
 		return chronicLiverDisease;
 	}
+
 	public void setChronicLiverDisease(YesNoUnknown chronicLiverDisease) {
 		this.chronicLiverDisease = chronicLiverDisease;
 	}
@@ -101,6 +110,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getMalignancyChemotherapy() {
 		return malignancyChemotherapy;
 	}
+
 	public void setMalignancyChemotherapy(YesNoUnknown malignancyChemotherapy) {
 		this.malignancyChemotherapy = malignancyChemotherapy;
 	}
@@ -109,6 +119,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getChronicHeartFailure() {
 		return chronicHeartFailure;
 	}
+
 	public void setChronicHeartFailure(YesNoUnknown chronicHeartFailure) {
 		this.chronicHeartFailure = chronicHeartFailure;
 	}
@@ -117,6 +128,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getChronicPulmonaryDisease() {
 		return chronicPulmonaryDisease;
 	}
+
 	public void setChronicPulmonaryDisease(YesNoUnknown chronicPulmonaryDisease) {
 		this.chronicPulmonaryDisease = chronicPulmonaryDisease;
 	}
@@ -125,6 +137,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getChronicKidneyDisease() {
 		return chronicKidneyDisease;
 	}
+
 	public void setChronicKidneyDisease(YesNoUnknown chronicKidneyDisease) {
 		this.chronicKidneyDisease = chronicKidneyDisease;
 	}
@@ -133,6 +146,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getChronicNeurologicCondition() {
 		return chronicNeurologicCondition;
 	}
+
 	public void setChronicNeurologicCondition(YesNoUnknown chronicNeurologicCondition) {
 		this.chronicNeurologicCondition = chronicNeurologicCondition;
 	}
@@ -141,6 +155,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getDownSyndrome() {
 		return downSyndrome;
 	}
+
 	public void setDownSyndrome(YesNoUnknown downSyndrome) {
 		this.downSyndrome = downSyndrome;
 	}
@@ -149,22 +164,25 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getCongenitalSyphilis() {
 		return congenitalSyphilis;
 	}
+
 	public void setCongenitalSyphilis(YesNoUnknown congenitalSyphilis) {
 		this.congenitalSyphilis = congenitalSyphilis;
 	}
-	
-	@Column(length = 512)
+
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getOtherConditions() {
 		return otherConditions;
 	}
+
 	public void setOtherConditions(String otherConditions) {
 		this.otherConditions = otherConditions;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getImmunodeficiencyOtherThanHiv() {
 		return immunodeficiencyOtherThanHiv;
 	}
+
 	public void setImmunodeficiencyOtherThanHiv(YesNoUnknown immunodeficiencyOtherThanHiv) {
 		this.immunodeficiencyOtherThanHiv = immunodeficiencyOtherThanHiv;
 	}
@@ -173,6 +191,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getCardiovascularDiseaseIncludingHypertension() {
 		return cardiovascularDiseaseIncludingHypertension;
 	}
+
 	public void setCardiovascularDiseaseIncludingHypertension(YesNoUnknown cardiovascularDiseaseIncludingHypertension) {
 		this.cardiovascularDiseaseIncludingHypertension = cardiovascularDiseaseIncludingHypertension;
 	}
@@ -181,6 +200,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getObesity() {
 		return obesity;
 	}
+
 	public void setObesity(YesNoUnknown obesity) {
 		this.obesity = obesity;
 	}
@@ -189,6 +209,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getCurrentSmoker() {
 		return currentSmoker;
 	}
+
 	public void setCurrentSmoker(YesNoUnknown currentSmoker) {
 		this.currentSmoker = currentSmoker;
 	}
@@ -197,6 +218,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getFormerSmoker() {
 		return formerSmoker;
 	}
+
 	public void setFormerSmoker(YesNoUnknown formerSmoker) {
 		this.formerSmoker = formerSmoker;
 	}
@@ -205,6 +227,7 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getAsthma() {
 		return asthma;
 	}
+
 	public void setAsthma(YesNoUnknown asthma) {
 		this.asthma = asthma;
 	}
@@ -213,17 +236,18 @@ public class HealthConditions extends AbstractDomainObject {
 	public YesNoUnknown getSickleCellDisease() {
 		return sickleCellDisease;
 	}
+
 	public void setSickleCellDisease(YesNoUnknown sickleCellDisease) {
 		this.sickleCellDisease = sickleCellDisease;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getImmunodeficiencyIncludingHiv() {
 		return immunodeficiencyIncludingHiv;
 	}
+
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
-	
-	
+
 }

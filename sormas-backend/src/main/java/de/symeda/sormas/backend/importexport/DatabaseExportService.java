@@ -97,9 +97,11 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.FACILITIES, new DatabaseExportConfiguration(Facility.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, new DatabaseExportConfiguration(Outbreak.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CASE_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME));
-		
+
 		EXPORT_CONFIGS.put(DatabaseTable.VISIT_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME, Visit.TABLE_NAME, "id", "symptoms_id"));
-		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_VISIT_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
+		EXPORT_CONFIGS.put(
+			DatabaseTable.CLINICAL_VISIT_SYMPTOMS,
+			new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -121,13 +123,12 @@ public class DatabaseExportService {
 			DatabaseExportConfiguration config = getConfig(databaseTable);
 			final String sql;
 			if (config.isUseJoinTable()) {
-				sql = String
-						.format(
-							COPY_WITH_JOIN_TABLE,
-							config.getTableName(),
-							config.getJoinTableName(),
-							config.getColumnName(),
-							config.getJoinColumnName());
+				sql = String.format(
+					COPY_WITH_JOIN_TABLE,
+					config.getTableName(),
+					config.getJoinTableName(),
+					config.getColumnName(),
+					config.getJoinColumnName());
 			} else {
 				sql = String.format(COPY_SINGLE_TABLE, config.getTableName());
 			}
@@ -135,21 +136,22 @@ public class DatabaseExportService {
 			writer.flush();
 			zos.closeEntry();
 			// Be able to check performance for each export query
-			logger
-				.trace(
-					"exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'",
-					databaseTable.getFileName(),
-					System.currentTimeMillis() - startTime,
-					sql);
+			logger.trace(
+				"exportAsCsvFiles(): Exported '{}' in {} ms. sql='{}'",
+				databaseTable.getFileName(),
+				System.currentTimeMillis() - startTime,
+				sql);
 		}
 	}
 
 	/**
 	 * Run an export command and write the result directly into a Writer
+	 * 
 	 * @param writer
 	 * @param sql
 	 *            Actual native sql command to copy data to CSV.
-	 * @param fileName for debugging purposes: Human readable file name similar to selected entry
+	 * @param fileName
+	 *            for debugging purposes: Human readable file name similar to selected entry
 	 */
 	private void writeCsv(Writer writer, String sql, String fileName) {
 		/*

@@ -23,5 +23,4 @@ public class HealthConditionsService extends AbstractAdoService<HealthConditions
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
-	
 }

@@ -1,35 +1,33 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.dashboard.contact;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
@@ -60,226 +58,228 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ContactSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, ContactSummaryAdapter> {
 
-    public static final String TAG = ContactSummaryFragment.class.getSimpleName();
+	public static final String TAG = ContactSummaryFragment.class.getSimpleName();
 
-    private CompositeSubscription mSubscription = new CompositeSubscription();
-    private ContactSummaryAdapter mAdapter;
-    private GridLayoutManager mLayoutManager;
+	private CompositeSubscription mSubscription = new CompositeSubscription();
+	private ContactSummaryAdapter mAdapter;
+	private GridLayoutManager mLayoutManager;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
-        //showPreloader();
-        Subscription mDataSubscription = Observable
-                .zip(getTotalDataObservable(), getCircularDataObservable(), getMergeDataObservable())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SummaryObservableDataResult>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.d(TAG, "Completed");
-                    }
+		//showPreloader();
+		Subscription mDataSubscription = Observable.zip(getTotalDataObservable(), getCircularDataObservable(), getMergeDataObservable())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<SummaryObservableDataResult>() {
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage(), e);
-                        hidePreloader();
-                        showEmptySummaryHint();
-                    }
+				@Override
+				public void onCompleted() {
+					Log.d(TAG, "Completed");
+				}
 
-                    @Override
-                    public void onNext(SummaryObservableDataResult summparyObservableDataResult) {
-                        final List<SummaryTotalData> totalData = summparyObservableDataResult.getTotalData();
-                        final List<SummaryCircularData> circularData = summparyObservableDataResult.getCircularData();
+				@Override
+				public void onError(Throwable e) {
+					Log.e(TAG, e.getMessage(), e);
+					hidePreloader();
+					showEmptySummaryHint();
+				}
 
-                        try {
-                            getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
-                                @Override
-                                public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                    context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
-                                }
-                            })
-                            .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
-                                @Override
-                                public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                    context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
-                                }
-                            });
-                            hidePreloader();
-                        } catch (IllegalAccessException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        } catch (java.lang.InstantiationException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        }
-                    }
-                });
+				@Override
+				public void onNext(SummaryObservableDataResult summparyObservableDataResult) {
+					final List<SummaryTotalData> totalData = summparyObservableDataResult.getTotalData();
+					final List<SummaryCircularData> circularData = summparyObservableDataResult.getCircularData();
 
-        mSubscription.add(mDataSubscription);
-        configure();
-    }
+					try {
+						getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
 
+							@Override
+							public void register(IAdapterRegistrationContext context)
+								throws java.lang.InstantiationException, IllegalAccessException {
+								context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
+							}
+						}).forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
 
-    //<editor-fold desc="More Overrides">
-    @Override
-    protected int getSectionTitleResId() {
-        return R.string.heading_contact_summary;
-    }
+							@Override
+							public void register(IAdapterRegistrationContext context)
+								throws java.lang.InstantiationException, IllegalAccessException {
+								context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+							}
+						});
+						hidePreloader();
+					} catch (IllegalAccessException e) {
+						Log.e(TAG, e.getMessage(), e);
+					} catch (java.lang.InstantiationException e) {
+						Log.e(TAG, e.getMessage(), e);
+					}
+				}
+			});
 
-    @Override
-    protected int getEntityResId() {
-        return R.string.entity_contact;
-    }
+		mSubscription.add(mDataSubscription);
+		configure();
+	}
 
-    @Override
-    protected ContactSummaryAdapter createSummaryAdapter() {
-        if (mAdapter == null) {
-            mAdapter = new ContactSummaryAdapter(getActivity());
-        }
-        return mAdapter;
-    }
+	//<editor-fold desc="More Overrides">
+	@Override
+	protected int getSectionTitleResId() {
+		return R.string.heading_contact_summary;
+	}
 
-    @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
-        if (mLayoutManager == null) {
-            mLayoutManager = new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
-        }
-        return mLayoutManager;
-    }
+	@Override
+	protected int getEntityResId() {
+		return R.string.entity_contact;
+	}
 
-    @Override
-    protected int getContainerResId() {
-        return R.id.fragment_frame_contact;
-    }
+	@Override
+	protected ContactSummaryAdapter createSummaryAdapter() {
+		if (mAdapter == null) {
+			mAdapter = new ContactSummaryAdapter(getActivity());
+		}
+		return mAdapter;
+	}
 
-    @Override
-    public String getIdentifier() {
-        return TAG;
-    }
+	@Override
+	protected RecyclerView.LayoutManager createLayoutManager() {
+		if (mLayoutManager == null) {
+			mLayoutManager = new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
+		}
+		return mLayoutManager;
+	}
 
-    @Override
-    public void onPause() {
-        super.onPause();
+	@Override
+	protected int getContainerResId() {
+		return R.id.fragment_frame_contact;
+	}
 
-        if (mSubscription != null && !mSubscription.isUnsubscribed())
-            mSubscription.unsubscribe();
-    }
+	@Override
+	public String getIdentifier() {
+		return TAG;
+	}
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+	@Override
+	public void onPause() {
+		super.onPause();
 
-        if (mSubscription != null && !mSubscription.isUnsubscribed())
-            mSubscription.unsubscribe();
-    }
-    //</editor-fold>
+		if (mSubscription != null && !mSubscription.isUnsubscribed())
+			mSubscription.unsubscribe();
+	}
 
-    //<editor-fold desc="Observable Methods">
-    private Observable<List<SummaryTotalData>> getTotalDataObservable() {
-        return Observable.defer(new Func0<Observable<List<SummaryTotalData>>>() {
-            @Override
-            public Observable<List<SummaryTotalData>> call() {
-                return Observable.create(new Observable.OnSubscribe<List<SummaryTotalData>>() {
-                    @Override
-                    public void call(Subscriber<? super List<SummaryTotalData>> subscriber) {
-                        try {
-                            subscriber.onNext(getTotalDataAsync());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 
-    private Observable<List<SummaryCircularData>> getCircularDataObservable() {
-        return Observable.defer(new Func0<Observable<List<SummaryCircularData>>>() {
-            @Override
-            public Observable<List<SummaryCircularData>> call() {
-                return Observable.create(new Observable.OnSubscribe<List<SummaryCircularData>>() {
-                    @Override
-                    public void call(Subscriber<? super List<SummaryCircularData>> subscriber) {
-                        try {
-                            subscriber.onNext(getCircularDataAsync());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
+		if (mSubscription != null && !mSubscription.isUnsubscribed())
+			mSubscription.unsubscribe();
+	}
+	//</editor-fold>
 
-    private Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult> getMergeDataObservable() {
-        return new Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult>() {
-            @Override
-            public SummaryObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryCircularData) {
-                return new SummaryObservableDataResult(summaryTotalData, summaryCircularData);
-            }
-        };
-    }
-    //</editor-fold>
+	//<editor-fold desc="Observable Methods">
+	private Observable<List<SummaryTotalData>> getTotalDataObservable() {
+		return Observable.defer(new Func0<Observable<List<SummaryTotalData>>>() {
 
-    //<editor-fold desc="Private Methods">
-    private List<SummaryTotalData> getTotalDataAsync() {
-        List<SummaryTotalData> dataSet = new ArrayList<>();
-        SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_contacts);
-        data.dataValue = String.valueOf(new Random().nextInt(10000));
-        dataSet.add(data);
+			@Override
+			public Observable<List<SummaryTotalData>> call() {
+				return Observable.create(new Observable.OnSubscribe<List<SummaryTotalData>>() {
 
-        return dataSet;
-    }
+					@Override
+					public void call(Subscriber<? super List<SummaryTotalData>> subscriber) {
+						try {
+							subscriber.onNext(getTotalDataAsync());
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				});
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+	}
 
-    private List<SummaryCircularData> getCircularDataAsync() {
-        Random random = new Random();
-        List<SummaryCircularData> dataSet = new ArrayList<>();
+	private Observable<List<SummaryCircularData>> getCircularDataObservable() {
+		return Observable.defer(new Func0<Observable<List<SummaryCircularData>>>() {
 
-        String titleUnconfirmed = ResourceUtils.getString(getActivity(), R.string.caption_unconfirmed);
-        String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.caption_confirmed);
-        String titleNotAContact = ResourceUtils.getString(getActivity(), R.string.caption_not_a_contact);
-        String titleConvertedToCase = ResourceUtils.getString(getActivity(), R.string.caption_converted_to_case);
-        String titleDropped = ResourceUtils.getString(getActivity(), R.string.caption_dropped);
+			@Override
+			public Observable<List<SummaryCircularData>> call() {
+				return Observable.create(new Observable.OnSubscribe<List<SummaryCircularData>>() {
 
-        //Confirmed Cases
-        SummaryCircularData data1 = new SummaryCircularData(titleUnconfirmed, random.nextInt(10000), random.nextInt(100));
+					@Override
+					public void call(Subscriber<? super List<SummaryCircularData>> subscriber) {
+						try {
+							subscriber.onNext(getCircularDataAsync());
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				});
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+	}
 
-        //Probable Cases
-        SummaryCircularData data2 = new SummaryCircularData(titleConfirmed, random.nextInt(10000), random.nextInt(100));
+	private Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult> getMergeDataObservable() {
+		return new Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult>() {
 
-        //Suspected Case
-        SummaryCircularData data3 = new SummaryCircularData(titleNotAContact, random.nextInt(10000), random.nextInt(100));
+			@Override
+			public SummaryObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryCircularData) {
+				return new SummaryObservableDataResult(summaryTotalData, summaryCircularData);
+			}
+		};
+	}
+	//</editor-fold>
 
-        //Fatalities
-        SummaryCircularData data4 = new SummaryCircularData(titleConvertedToCase, random.nextInt(10000), random.nextInt(100));
+	//<editor-fold desc="Private Methods">
+	private List<SummaryTotalData> getTotalDataAsync() {
+		List<SummaryTotalData> dataSet = new ArrayList<>();
+		SummaryTotalData data = new SummaryTotalData();
+		data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_contacts);
+		data.dataValue = String.valueOf(new Random().nextInt(10000));
+		dataSet.add(data);
 
-        //Case Fatality Rate
-        SummaryCircularData data5 = new SummaryCircularData(titleDropped, random.nextInt(10000), random.nextInt(100));
+		return dataSet;
+	}
 
-        dataSet.add(data1);
-        dataSet.add(data2);
-        dataSet.add(data3);
-        dataSet.add(data4);
-        dataSet.add(data5);
+	private List<SummaryCircularData> getCircularDataAsync() {
+		Random random = new Random();
+		List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        return dataSet;
-    }
-    //</editor-fold>
+		String titleUnconfirmed = ResourceUtils.getString(getActivity(), R.string.caption_unconfirmed);
+		String titleConfirmed = ResourceUtils.getString(getActivity(), R.string.caption_confirmed);
+		String titleNotAContact = ResourceUtils.getString(getActivity(), R.string.caption_not_a_contact);
+		String titleConvertedToCase = ResourceUtils.getString(getActivity(), R.string.caption_converted_to_case);
+		String titleDropped = ResourceUtils.getString(getActivity(), R.string.caption_dropped);
 
+		//Confirmed Cases
+		SummaryCircularData data1 = new SummaryCircularData(titleUnconfirmed, random.nextInt(10000), random.nextInt(100));
 
-    public static ContactSummaryFragment newInstance() {
-        return newInstance(ContactSummaryFragment.class, null);
-    }
+		//Probable Cases
+		SummaryCircularData data2 = new SummaryCircularData(titleConfirmed, random.nextInt(10000), random.nextInt(100));
+
+		//Suspected Case
+		SummaryCircularData data3 = new SummaryCircularData(titleNotAContact, random.nextInt(10000), random.nextInt(100));
+
+		//Fatalities
+		SummaryCircularData data4 = new SummaryCircularData(titleConvertedToCase, random.nextInt(10000), random.nextInt(100));
+
+		//Case Fatality Rate
+		SummaryCircularData data5 = new SummaryCircularData(titleDropped, random.nextInt(10000), random.nextInt(100));
+
+		dataSet.add(data1);
+		dataSet.add(data2);
+		dataSet.add(data3);
+		dataSet.add(data4);
+		dataSet.add(data5);
+
+		return dataSet;
+	}
+	//</editor-fold>
+
+	public static ContactSummaryFragment newInstance() {
+		return newInstance(ContactSummaryFragment.class, null);
+	}
 }

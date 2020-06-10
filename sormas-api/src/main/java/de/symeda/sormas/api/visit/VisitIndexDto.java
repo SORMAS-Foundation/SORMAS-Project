@@ -9,9 +9,9 @@ import de.symeda.sormas.api.symptoms.TemperatureSource;
 public class VisitIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -2707325548819626469L;
-	
+
 	public static final String I18N_PREFIX = "Visit";
-	
+
 	public static final String UUID = "uuid";
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_STATUS = "visitStatus";
@@ -21,7 +21,7 @@ public class VisitIndexDto implements Serializable {
 	public static final String SYMPTOMATIC = "symptomatic";
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
-	
+
 	private String uuid;
 	private Date visitDateTime;
 	private VisitStatus visitStatus;
@@ -30,9 +30,17 @@ public class VisitIndexDto implements Serializable {
 	private Boolean symptomatic;
 	private Float temperature;
 	private TemperatureSource temperatureSource;
-	
-	public VisitIndexDto(String uuid, Date visitDateTime, VisitStatus visitStatus, String visitRemarks,
-			Disease disease, Boolean symptomatic, Float temperature, TemperatureSource temperatureSource) {
+
+	public VisitIndexDto(
+		String uuid,
+		Date visitDateTime,
+		VisitStatus visitStatus,
+		String visitRemarks,
+		Disease disease,
+		Boolean symptomatic,
+		Float temperature,
+		TemperatureSource temperatureSource) {
+
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
 		this.visitStatus = visitStatus;
@@ -106,5 +114,4 @@ public class VisitIndexDto implements Serializable {
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
 	}
-
 }

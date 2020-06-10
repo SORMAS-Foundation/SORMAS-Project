@@ -9,13 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -24,9 +27,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
@@ -40,10 +53,11 @@ import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
-@Entity(name="samples")
+@Entity(name = "samples")
 @Audited
 public class Sample extends CoreAdo {
 
@@ -82,7 +96,8 @@ public class Sample extends CoreAdo {
 	public static final String REQUESTED_ADDITIONAL_TESTS_STRING = "requestedAdditionalTestsString";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
-	
+	public static final String PATHOGENTESTS = "pathogenTests";
+
 	private Case associatedCase;
 	private Contact associatedContact;
 	private String labSampleID;
@@ -130,6 +145,7 @@ public class Sample extends CoreAdo {
 	public Case getAssociatedCase() {
 		return associatedCase;
 	}
+
 	public void setAssociatedCase(Case associatedCase) {
 		this.associatedCase = associatedCase;
 	}
@@ -139,75 +155,84 @@ public class Sample extends CoreAdo {
 	public Contact getAssociatedContact() {
 		return associatedContact;
 	}
+
 	public void setAssociatedContact(Contact associatedContact) {
 		this.associatedContact = associatedContact;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabSampleID() {
 		return labSampleID;
 	}
+
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFieldSampleID() {
 		return fieldSampleID;
 	}
+
 	public void setFieldSampleID(String fieldSampleID) {
 		this.fieldSampleID = fieldSampleID;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getSampleDateTime() {
 		return sampleDateTime;
 	}
+
 	public void setSampleDateTime(Date sampleDateTime) {
 		this.sampleDateTime = sampleDateTime;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public SampleMaterial getSampleMaterial() {
 		return sampleMaterial;
 	}
+
 	public void setSampleMaterial(SampleMaterial sampleMaterial) {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
 	}
+
 	public void setSampleMaterialText(String sampleMaterialText) {
 		this.sampleMaterialText = sampleMaterialText;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public SamplePurpose getSamplePurpose() {
 		return samplePurpose;
 	}
+
 	public void setSamplePurpose(SamplePurpose samplePurpose) {
 		this.samplePurpose = samplePurpose;
 	}
@@ -217,14 +242,16 @@ public class Sample extends CoreAdo {
 	public Facility getLab() {
 		return lab;
 	}
+
 	public void setLab(Facility lab) {
 		this.lab = lab;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
+
 	public void setLabDetails(String labDetails) {
 		this.labDetails = labDetails;
 	}
@@ -233,14 +260,16 @@ public class Sample extends CoreAdo {
 	public Date getShipmentDate() {
 		return shipmentDate;
 	}
+
 	public void setShipmentDate(Date shipmentDate) {
 		this.shipmentDate = shipmentDate;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getShipmentDetails() {
 		return shipmentDetails;
 	}
+
 	public void setShipmentDetails(String shipmentDetails) {
 		this.shipmentDetails = shipmentDetails;
 	}
@@ -249,6 +278,7 @@ public class Sample extends CoreAdo {
 	public Date getReceivedDate() {
 		return receivedDate;
 	}
+
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
 	}
@@ -257,38 +287,43 @@ public class Sample extends CoreAdo {
 	public SpecimenCondition getSpecimenCondition() {
 		return specimenCondition;
 	}
+
 	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
+
 	public void setNoTestPossibleReason(String noTestPossibleReason) {
 		this.noTestPossibleReason = noTestPossibleReason;
 	}
 
-	@OneToMany(cascade = {}, mappedBy = PathogenTest.SAMPLE)
-	public List<PathogenTest> getSampleTests() {
+	@OneToMany(mappedBy = PathogenTest.SAMPLE, fetch = FetchType.LAZY)
+	public List<PathogenTest> getPathogenTests() {
 		return pathogenTests;
 	}
-	public void setSampleTests(List<PathogenTest> pathogenTests) {
+
+	public void setPathogenTests(List<PathogenTest> pathogenTests) {
 		this.pathogenTests = pathogenTests;
 	}
-	
+
 	@OneToMany(cascade = {}, mappedBy = AdditionalTest.SAMPLE)
 	public List<AdditionalTest> getAdditionalTests() {
 		return additionalTests;
 	}
+
 	public void setAdditionalTests(List<AdditionalTest> additionalTests) {
 		this.additionalTests = additionalTests;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}
+
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
@@ -297,6 +332,7 @@ public class Sample extends CoreAdo {
 	public SampleSource getSampleSource() {
 		return sampleSource;
 	}
+
 	public void setSampleSource(SampleSource sampleSource) {
 		this.sampleSource = sampleSource;
 	}
@@ -306,6 +342,7 @@ public class Sample extends CoreAdo {
 	public Sample getReferredTo() {
 		return referredTo;
 	}
+
 	public void setReferredTo(Sample referredTo) {
 		this.referredTo = referredTo;
 	}
@@ -314,6 +351,7 @@ public class Sample extends CoreAdo {
 	public boolean isShipped() {
 		return shipped;
 	}
+
 	public void setShipped(boolean shipped) {
 		this.shipped = shipped;
 	}
@@ -322,6 +360,7 @@ public class Sample extends CoreAdo {
 	public boolean isReceived() {
 		return received;
 	}
+
 	public void setReceived(boolean received) {
 		this.received = received;
 	}
@@ -330,6 +369,7 @@ public class Sample extends CoreAdo {
 	public PathogenTestResultType getPathogenTestResult() {
 		return pathogenTestResult;
 	}
+
 	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
 		this.pathogenTestResult = pathogenTestResult;
 	}
@@ -338,14 +378,16 @@ public class Sample extends CoreAdo {
 	public Date getPathogenTestResultChangeDate() {
 		return pathogenTestResultChangeDate;
 	}
+
 	public void setPathogenTestResultChangeDate(Date pathogenTestResultChangeDate) {
 		this.pathogenTestResultChangeDate = pathogenTestResultChangeDate;
 	}
-	
+
 	@Column
 	public Boolean getPathogenTestingRequested() {
 		return pathogenTestingRequested;
 	}
+
 	public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
 		this.pathogenTestingRequested = pathogenTestingRequested;
 	}
@@ -354,6 +396,7 @@ public class Sample extends CoreAdo {
 	public Boolean getAdditionalTestingRequested() {
 		return additionalTestingRequested;
 	}
+
 	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
 		this.additionalTestingRequested = additionalTestingRequested;
 	}
@@ -364,20 +407,20 @@ public class Sample extends CoreAdo {
 			if (StringUtils.isEmpty(requestedPathogenTestsString)) {
 				requestedPathogenTests = new HashSet<>();
 			} else {
-				requestedPathogenTests = Arrays.stream(requestedPathogenTestsString.split(","))
-						.map(PathogenTestType::valueOf)
-						.collect(Collectors.toSet());
+				requestedPathogenTests =
+					Arrays.stream(requestedPathogenTestsString.split(",")).map(PathogenTestType::valueOf).collect(Collectors.toSet());
 			}
 		}
 		return requestedPathogenTests;
 	}
+
 	public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
 		this.requestedPathogenTests = requestedPathogenTests;
-		
+
 		if (this.requestedPathogenTests == null) {
 			return;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		requestedPathogenTests.stream().forEach(t -> {
 			sb.append(t.name());
@@ -387,7 +430,7 @@ public class Sample extends CoreAdo {
 			sb.substring(0, sb.lastIndexOf(","));
 		}
 		requestedPathogenTestsString = sb.toString();
-	}	
+	}
 
 	@Transient
 	public Set<AdditionalTestType> getRequestedAdditionalTests() {
@@ -395,20 +438,20 @@ public class Sample extends CoreAdo {
 			if (StringUtils.isEmpty(requestedAdditionalTestsString)) {
 				requestedAdditionalTests = new HashSet<>();
 			} else {
-				requestedAdditionalTests = Arrays.stream(requestedAdditionalTestsString.split(","))
-						.map(AdditionalTestType::valueOf)
-						.collect(Collectors.toSet());
+				requestedAdditionalTests =
+					Arrays.stream(requestedAdditionalTestsString.split(",")).map(AdditionalTestType::valueOf).collect(Collectors.toSet());
 			}
 		}
 		return requestedAdditionalTests;
 	}
+
 	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
 		this.requestedAdditionalTests = requestedAdditionalTests;
-		
+
 		if (this.requestedAdditionalTests == null) {
 			return;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		requestedAdditionalTests.stream().forEach(t -> {
 			sb.append(t.name());
@@ -423,6 +466,7 @@ public class Sample extends CoreAdo {
 	public String getRequestedPathogenTestsString() {
 		return requestedPathogenTestsString;
 	}
+
 	public void setRequestedPathogenTestsString(String requestedPathogenTestsString) {
 		this.requestedPathogenTestsString = requestedPathogenTestsString;
 		requestedPathogenTests = null;
@@ -431,55 +475,66 @@ public class Sample extends CoreAdo {
 	public String getRequestedAdditionalTestsString() {
 		return requestedAdditionalTestsString;
 	}
+
 	public void setRequestedAdditionalTestsString(String requestedAdditionalTestsString) {
 		this.requestedAdditionalTestsString = requestedAdditionalTestsString;
 		requestedAdditionalTests = null;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
+
 	public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
+
 	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
 		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
 	}
 
 	@Override
 	public String toString() {
-		return SampleReferenceDto.buildCaption(getSampleMaterial(),
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null, getAssociatedContact() != null ?
-						getAssociatedContact().getUuid() : null);
+		return SampleReferenceDto.buildCaption(
+			getSampleMaterial(),
+			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(getUuid(), getSampleMaterial(), 
-				getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-				getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+		return new SampleReferenceDto(
+			getUuid(),
+			getSampleMaterial(),
+			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
 	}
 
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
+
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
+
 	public Float getReportLatLonAccuracy() {
 		return reportLatLonAccuracy;
 	}
+
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}

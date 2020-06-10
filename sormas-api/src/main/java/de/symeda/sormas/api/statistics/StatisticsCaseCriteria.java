@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
@@ -32,7 +32,9 @@ import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -54,8 +56,8 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<QuarterOfYear> reportQuartersOfYear;
 	private List<MonthOfYear> onsetMonthsOfYear;
 	private List<MonthOfYear> reportMonthsOfYear;
-	private List<EpiWeek> onsetEpiWeeksOfYear; 
-	private List<EpiWeek> reportEpiWeeksOfYear; 
+	private List<EpiWeek> onsetEpiWeeksOfYear;
+	private List<EpiWeek> reportEpiWeeksOfYear;
 	private Date onsetDateFrom;
 	private Date onsetDateTo;
 	private Date reportDateFrom;
@@ -69,12 +71,14 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<CaseOutcome> outcomes;
 	private List<RegionReferenceDto> regions;
 	private List<DistrictReferenceDto> districts;
+	private List<CommunityReferenceDto> communities;
+	private List<FacilityReferenceDto> healthFacilities;
 	private List<UserRole> reportingUserRoles;
-	
+
 	public List<Year> getOnsetYears() {
 		return onsetYears;
 	}
-	
+
 	public List<Year> getReportYears() {
 		return reportYears;
 	}
@@ -154,7 +158,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	public List<IntegerRange> getAgeIntervals() {
 		return ageIntervals;
 	}
-	
+
 	public List<AgeGroup> getAgeGroups() {
 		return ageGroups;
 	}
@@ -177,6 +181,14 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<DistrictReferenceDto> getDistricts() {
 		return districts;
+	}
+
+	public List<CommunityReferenceDto> getCommunities() {
+		return communities;
+	}
+
+	public List<FacilityReferenceDto> getHealthFacilities() {
+		return healthFacilities;
 	}
 
 	public List<UserRole> getReportingUserRoles() {
@@ -319,16 +331,16 @@ public class StatisticsCaseCriteria implements Serializable {
 		if (this.ageIntervals == null) {
 			this.ageIntervals = new ArrayList<>();
 		}
-		
+
 		this.ageIntervals.addAll(ageIntervals);
 		return this;
 	}
-	
+
 	public StatisticsCaseCriteria addAgeGroups(List<AgeGroup> ageGroups) {
 		if (this.ageGroups == null) {
 			this.ageGroups = new ArrayList<>();
 		}
-		
+
 		this.ageGroups.addAll(ageGroups);
 		return this;
 	}
@@ -358,18 +370,35 @@ public class StatisticsCaseCriteria implements Serializable {
 		return this;
 	}
 
+	public StatisticsCaseCriteria communities(List<CommunityReferenceDto> communities) {
+		this.communities = communities;
+		return this;
+	}
+
+	public StatisticsCaseCriteria healthFacilities(List<FacilityReferenceDto> healthFacilities) {
+		this.healthFacilities = healthFacilities;
+		return this;
+	}
+
 	public StatisticsCaseCriteria reportingUserRoles(List<UserRole> reportingUserRoles) {
 		this.reportingUserRoles = reportingUserRoles;
 		return this;
 	}
 
-	public List<? extends StatisticsGroupingKey> getFilterValuesForGrouping(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute) {
+	public List<? extends StatisticsGroupingKey> getFilterValuesForGrouping(
+		StatisticsCaseAttribute attribute,
+		StatisticsCaseSubAttribute subAttribute) {
+
 		if (subAttribute != null) {
 			switch (subAttribute) {
 			case REGION:
 				return regions;
 			case DISTRICT:
 				return districts;
+			case COMMUNITY:
+				return communities;
+			case HEALTH_FACILITY:
+				return healthFacilities;
 			case YEAR:
 				switch (attribute) {
 				case ONSET_TIME:
@@ -433,7 +462,8 @@ public class StatisticsCaseCriteria implements Serializable {
 				default:
 					throw new IllegalArgumentException(attribute.toString());
 				}
-			default: throw new IllegalArgumentException(subAttribute.toString());
+			default:
+				throw new IllegalArgumentException(subAttribute.toString());
 			}
 		} else {
 			switch (attribute) {
@@ -454,15 +484,22 @@ public class StatisticsCaseCriteria implements Serializable {
 				return ageIntervals;
 			case REPORTING_USER_ROLE:
 				return reportingUserRoles;
-			default: throw new IllegalArgumentException(attribute.toString());
+			default:
+				throw new IllegalArgumentException(attribute.toString());
 			}
 		}
 	}
 
 	public boolean hasOnsetDate() {
-		return onsetDateFrom != null || onsetDateTo != null || onsetEpiWeeks != null || onsetEpiWeeksOfYear != null
-				|| onsetMonths != null || onsetMonthsOfYear != null || onsetQuarters != null || onsetQuartersOfYear != null
-				|| onsetYears != null;
+
+		return onsetDateFrom != null
+			|| onsetDateTo != null
+			|| onsetEpiWeeks != null
+			|| onsetEpiWeeksOfYear != null
+			|| onsetMonths != null
+			|| onsetMonthsOfYear != null
+			|| onsetQuarters != null
+			|| onsetQuartersOfYear != null
+			|| onsetYears != null;
 	}
-	
 }

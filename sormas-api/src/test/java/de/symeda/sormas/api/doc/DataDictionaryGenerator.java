@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.doc;
 
@@ -115,12 +115,18 @@ public class DataDictionaryGenerator {
 	}
 
 	private enum EntityColumn {
-		FIELD, TYPE, CAPTION, DESCRIPTION, REQUIRED, NEW_DISEASE, DISEASES, OUTBREAKS,
+		FIELD,
+		TYPE,
+		CAPTION,
+		DESCRIPTION,
+		REQUIRED,
+		NEW_DISEASE,
+		DISEASES,
+		OUTBREAKS,
 	}
 
 	@SuppressWarnings("unchecked")
-	private XSSFSheet createEntitySheet(XSSFWorkbook workbook, Class<? extends EntityDto> entityClass,
-			String i18nPrefix) {
+	private XSSFSheet createEntitySheet(XSSFWorkbook workbook, Class<? extends EntityDto> entityClass, String i18nPrefix) {
 		String name = I18nProperties.getCaption(i18nPrefix);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
@@ -236,8 +242,8 @@ public class DataDictionaryGenerator {
 				outbreakCell.setCellValue(true);
 		}
 
-		AreaReference reference = workbook.getCreationHelper().createAreaReference(new CellReference(0, 0),
-				new CellReference(rowNumber - 1, columnCount - 1));
+		AreaReference reference =
+			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
 		table.setCellReferences(reference);
 		table.getCTTable().addNewAutoFilter();
 
@@ -249,7 +255,11 @@ public class DataDictionaryGenerator {
 	}
 
 	private enum EnumColumn {
-		TYPE, VALUE, CAPTION, DESCRIPTION, SHORT
+		TYPE,
+		VALUE,
+		CAPTION,
+		DESCRIPTION,
+		SHORT
 	}
 
 	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType) {
@@ -300,8 +310,8 @@ public class DataDictionaryGenerator {
 			cell.setCellValue(DataHelper.equal(caption, shortCaption) ? "" : shortCaption);
 		}
 
-		AreaReference reference = new AreaReference(new CellReference(startRow, 0),
-				new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
+		AreaReference reference =
+			new AreaReference(new CellReference(startRow, 0), new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
 		table.setCellReferences(reference);
 		table.getCTTable().addNewAutoFilter();
 

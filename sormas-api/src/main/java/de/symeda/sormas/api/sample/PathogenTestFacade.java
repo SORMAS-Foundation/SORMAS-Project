@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -28,27 +28,26 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public interface PathogenTestFacade {
 
 	List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date);
-	
+
 	List<PathogenTestDto> getAllBySample(SampleReferenceDto sampleRef);
-	
+
 	PathogenTestDto getByUuid(String uuid);
-	
+
 	PathogenTestDto savePathogenTest(PathogenTestDto dto);
 
 	List<String> getAllActiveUuids();
 
 	List<PathogenTestDto> getByUuids(List<String> uuids);
-	
+
 	void deletePathogenTest(String pathogenTestUuid);
-	
+
 	boolean hasPathogenTest(SampleReferenceDto sample);
-	
+
 	void validate(PathogenTestDto pathogenTest) throws ValidationRuntimeException;
-	
+
 	List<String> getDeletedUuidsSince(Date since);
-	
+
 	Date getLatestPathogenTestDate(String sampleUuid);
-	
+
 	List<PathogenTestDto> getBySampleUuids(List<String> sampleUuids);
-	
 }

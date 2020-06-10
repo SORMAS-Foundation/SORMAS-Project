@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.epidata;
 
@@ -29,40 +29,89 @@ public class EpiDataTravelDto extends EntityDto {
 	private static final long serialVersionUID = 7369710205233407286L;
 
 	public static final String I18N_PREFIX = "EpiDataTravel";
-	
+
 	public static final String TRAVEL_TYPE = "travelType";
 	public static final String TRAVEL_DESTINATION = "travelDestination";
 	public static final String TRAVEL_DATE_FROM = "travelDateFrom";
 	public static final String TRAVEL_DATE_TO = "travelDateTo";
-	
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private TravelType travelType;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private String travelDestination;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private Date travelDateFrom;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private Date travelDateTo;
 
-	
 	public TravelType getTravelType() {
 		return travelType;
 	}
+
 	public void setTravelType(TravelType travelType) {
 		this.travelType = travelType;
 	}
-	
+
 	public String getTravelDestination() {
 		return travelDestination;
 	}
+
 	public void setTravelDestination(String travelDestination) {
 		this.travelDestination = travelDestination;
 	}
@@ -70,6 +119,7 @@ public class EpiDataTravelDto extends EntityDto {
 	public Date getTravelDateFrom() {
 		return travelDateFrom;
 	}
+
 	public void setTravelDateFrom(Date travelDateFrom) {
 		this.travelDateFrom = travelDateFrom;
 	}
@@ -77,6 +127,7 @@ public class EpiDataTravelDto extends EntityDto {
 	public Date getTravelDateTo() {
 		return travelDateTo;
 	}
+
 	public void setTravelDateTo(Date travelDateTo) {
 		this.travelDateTo = travelDateTo;
 	}

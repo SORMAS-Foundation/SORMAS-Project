@@ -9,21 +9,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.PersonalData;
 
-public class LocationDto extends EntityDto {
+public class LocationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -1399197327930368752L;
 
@@ -43,26 +44,37 @@ public class LocationDto extends EntityDto {
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@PersonalData
 	private CommunityReferenceDto community;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String details;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private AreaType areaType;
+	@PersonalData
 	private Double latitude;
+	@PersonalData
 	private Double longitude;
+	@PersonalData
 	private Float latLonAccuracy;
+	@PersonalData
 	private String postalCode;
-	
+
 	public String getAddress() {
 		return address;
 	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 	public String getDetails() {
 		return details;
 	}
+
 	public void setDetails(String details) {
 		this.details = details;
 	}
@@ -70,73 +82,93 @@ public class LocationDto extends EntityDto {
 	public String getCity() {
 		return city;
 	}
+
 	public void setCity(String city) {
 		this.city = city;
 	}
+
 	public AreaType getAreaType() {
 		return areaType;
 	}
+
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
 	}
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
+
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
+
 	public CommunityReferenceDto getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
 	}
+
 	public Double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
+
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
+
 	@Override
 	public String toString() {
+
 		return LocationReferenceDto.buildCaption(
-				region != null ? region.getCaption() : null, 
-				district != null ? district.getCaption() : null, 
-				community != null ? community.getCaption() : null, city, address);
+			region != null ? region.getCaption() : null,
+			district != null ? district.getCaption() : null,
+			community != null ? community.getCaption() : null,
+			city,
+			address);
 	}
-	
+
 	public LocationReferenceDto toReference() {
-		return new LocationReferenceDto(getUuid(), 
-				region != null ? region.getCaption() : null, 
-				district != null ? district.getCaption() : null, 
-				community != null ? community.getCaption() : null, city, address);
+
+		return new LocationReferenceDto(
+			getUuid(),
+			region != null ? region.getCaption() : null,
+			district != null ? district.getCaption() : null,
+			community != null ? community.getCaption() : null,
+			city,
+			address);
 	}
-	
+
 	public boolean isEmptyLocation() {
-		return address == null && details == null && city == null && areaType == null 
-				&& region == null && district == null && community == null;
+		return address == null && details == null && city == null && areaType == null && region == null && district == null && community == null;
 	}
-	
+
 	public Float getLatLonAccuracy() {
 		return latLonAccuracy;
 	}
+
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
-	
+
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -146,6 +178,7 @@ public class LocationDto extends EntityDto {
 	}
 
 	public static LocationDto build() {
+
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
 		return location;

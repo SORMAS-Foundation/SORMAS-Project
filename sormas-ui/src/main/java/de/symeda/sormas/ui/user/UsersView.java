@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
@@ -93,14 +93,18 @@ public class UsersView extends AbstractView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.userNewUser, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getUserController().create(), ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.userNewUser,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getUserController().create(),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
 	}
 
 	public HorizontalLayout createFilterBar() {
+
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
@@ -113,7 +117,9 @@ public class UsersView extends AbstractView {
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
 		activeFilter.addValueChangeListener(e -> {
-			criteria.active(ACTIVE_FILTER.equals(e.getProperty().getValue()) ? Boolean.TRUE
+			criteria.active(
+				ACTIVE_FILTER.equals(e.getProperty().getValue())
+					? Boolean.TRUE
 					: INACTIVE_FILTER.equals(e.getProperty().getValue()) ? Boolean.FALSE : null);
 			navigateTo(criteria);
 		});
@@ -141,11 +147,11 @@ public class UsersView extends AbstractView {
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-				
+
 				if (!DataHelper.equal(region, criteria.getRegion())) {
 					criteria.district(null);
 				}
-				
+
 				criteria.region(region);
 				navigateTo(criteria);
 			});
@@ -181,6 +187,7 @@ public class UsersView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		if (event != null) {
 			String params = event.getParameters().trim();
 			if (params.startsWith("?")) {
@@ -193,11 +200,11 @@ public class UsersView extends AbstractView {
 	}
 
 	public void updateFilterComponents() {
+
 		applyingCriteria = true;
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		activeFilter
-		.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
+		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
 		regionFilter.setValue(criteria.getRegion());
 
@@ -210,7 +217,7 @@ public class UsersView extends AbstractView {
 		} else {
 			districtFilter.setEnabled(false);
 		}
-		
+
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());
 

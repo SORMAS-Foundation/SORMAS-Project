@@ -21,14 +21,14 @@ public class PopulationData extends AbstractDomainObject {
 	private static final long serialVersionUID = 238546887753417535L;
 
 	public static final String TABLE_NAME = "populationdata";
-	
+
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String SEX = "sex";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";
 	public static final String COLLECTION_DATE = "collectionDate";
-	
+
 	private Region region;
 	private District district;
 	private Sex sex;
@@ -40,7 +40,7 @@ public class PopulationData extends AbstractDomainObject {
 	public Region getRegion() {
 		return region;
 	}
-	
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
@@ -49,7 +49,7 @@ public class PopulationData extends AbstractDomainObject {
 	public District getDistrict() {
 		return district;
 	}
-	
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
@@ -58,7 +58,7 @@ public class PopulationData extends AbstractDomainObject {
 	public Sex getSex() {
 		return sex;
 	}
-	
+
 	public void setSex(Sex sex) {
 		this.sex = sex;
 	}
@@ -67,15 +67,15 @@ public class PopulationData extends AbstractDomainObject {
 	public AgeGroup getAgeGroup() {
 		return ageGroup;
 	}
-	
+
 	public void setAgeGroup(AgeGroup ageGroup) {
 		this.ageGroup = ageGroup;
 	}
-	
+
 	public Integer getPopulation() {
 		return population;
 	}
-	
+
 	public void setPopulation(Integer population) {
 		this.population = population;
 	}
@@ -84,9 +84,8 @@ public class PopulationData extends AbstractDomainObject {
 	public Date getCollectionDate() {
 		return collectionDate;
 	}
-	
+
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
-	
 }

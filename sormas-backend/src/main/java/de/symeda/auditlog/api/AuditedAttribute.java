@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
@@ -36,7 +36,7 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
  * @since 08.04.2016
  */
 @Target({
-		ElementType.METHOD })
+	ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AuditedAttribute {
@@ -52,7 +52,8 @@ public @interface AuditedAttribute {
 	 * Determines the formatter the inspected attribute will be formatted with. This String representation is also the foundation for
 	 * the discovery of a change.
 	 * 
-	 * @return Default: {@link DefaultValueFormatter}; if a {@link Date} is annotated with {@link Temporal}, a matching {@link UtilDateFormatter} will be used.
+	 * @return Default: {@link DefaultValueFormatter}; if a {@link Date} is annotated with {@link Temporal}, a matching
+	 *         {@link UtilDateFormatter} will be used.
 	 */
 	Class<? extends ValueFormatter<?>> value() default DefaultValueFormatter.class;
 

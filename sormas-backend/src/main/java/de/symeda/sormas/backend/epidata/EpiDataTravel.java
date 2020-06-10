@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -39,13 +41,13 @@ public class EpiDataTravel extends AbstractDomainObject {
 	private static final long serialVersionUID = -4280455878066233175L;
 
 	public static final String TABLE_NAME = "epidatatravel";
-	
+
 	public static final String TRAVEL_TYPE = "travelType";
 	public static final String TRAVEL_DESTINATION = "travelDestination";
 	public static final String TRAVEL_DATE_FROM = "travelDateFrom";
 	public static final String TRAVEL_DATE_TO = "travelDateTo";
 	public static final String EPI_DATA = "epiData";
-	
+
 	private EpiData epiData;
 	private TravelType travelType;
 	private String travelDestination;
@@ -57,22 +59,25 @@ public class EpiDataTravel extends AbstractDomainObject {
 	public EpiData getEpiData() {
 		return epiData;
 	}
+
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public TravelType getTravelType() {
 		return travelType;
 	}
+
 	public void setTravelType(TravelType travelType) {
 		this.travelType = travelType;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTravelDestination() {
 		return travelDestination;
 	}
+
 	public void setTravelDestination(String travelDestination) {
 		this.travelDestination = travelDestination;
 	}
@@ -81,6 +86,7 @@ public class EpiDataTravel extends AbstractDomainObject {
 	public Date getTravelDateFrom() {
 		return travelDateFrom;
 	}
+
 	public void setTravelDateFrom(Date travelDateFrom) {
 		this.travelDateFrom = travelDateFrom;
 	}
@@ -89,8 +95,9 @@ public class EpiDataTravel extends AbstractDomainObject {
 	public Date getTravelDateTo() {
 		return travelDateTo;
 	}
+
 	public void setTravelDateTo(Date travelDateTo) {
 		this.travelDateTo = travelDateTo;
 	}
-	
+
 }

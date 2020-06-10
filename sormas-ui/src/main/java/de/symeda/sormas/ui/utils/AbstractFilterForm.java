@@ -25,6 +25,9 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
+
+	private static final long serialVersionUID = -692949260096914243L;
+
 	public static final String FILTER_ITEM_STYLE = "filter-item";
 
 	private static final String RESET_BUTTON_ID = "reset";
@@ -35,7 +38,8 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	private boolean skipChangeEvents;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
-		super(type, propertyI18nPrefix, true);
+
+		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(null, null), true);
 
 		String moreFiltersHtmlLayout = createMoreFiltersHtmlLayout();
 		boolean hasMoreFilters = moreFiltersHtmlLayout != null && moreFiltersHtmlLayout.length() > 0;
@@ -54,8 +58,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID)) +
-				loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID)) + loc(MORE_FILTERS_ID));
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -69,24 +72,26 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected void addDefaultButtons() {
+
 		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
 
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
 
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
-			Button showHideMoreButton = ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
-				Button showHideButton = e.getButton();
-				boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
-				showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
-				showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
+			Button showHideMoreButton =
+				ButtonHelper.createIconButtonWithCaption("showHideMoreFilters", showMoreCaption, VaadinIcons.CHEVRON_DOWN, e -> {
+					Button showHideButton = e.getButton();
+					boolean isShowMore = showHideButton.getCaption().equals(showMoreCaption);
+					showHideButton.setCaption(isShowMore ? I18nProperties.getCaption(Captions.actionShowLessFilters) : showMoreCaption);
+					showHideButton.setIcon(isShowMore ? VaadinIcons.CHEVRON_UP : VaadinIcons.CHEVRON_DOWN);
 
-				if (isShowMore) {
-					getContent().getComponent(MORE_FILTERS_ID).setVisible(true);
-				} else {
-					getContent().getComponent(MORE_FILTERS_ID).setVisible(false);
-				}
-			}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
+					if (isShowMore) {
+						getContent().getComponent(MORE_FILTERS_ID).setVisible(true);
+					} else {
+						getContent().getComponent(MORE_FILTERS_ID).setVisible(false);
+					}
+				}, ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.LABEL_PRIMARY, RESET_BUTTON_ID);
 
 			getContent().addComponent(showHideMoreButton, EXPAND_COLLAPSE_ID);
 		}
@@ -97,7 +102,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	@Override
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
 	protected <T1 extends Field> void formatField(T1 field, String propertyId) {
+
 		super.formatField(field, propertyId);
 
 		field.addStyleName(FILTER_ITEM_STYLE);
@@ -119,6 +128,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	protected void applyFieldConfiguration(FieldConfiguration configuration, Field field) {
 		super.applyFieldConfiguration(configuration, field);
 
@@ -129,32 +139,32 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	@Override
 	public void setValue(T newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+
 		doWithoutChangeHandler(() -> {
 			super.setValue(newFieldValue);
 
 			applyDependenciesOnNewValue(newFieldValue);
 
 			updateResetButtonState();
-			if(moreFiltersLayout != null) {
-				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout)
-						.anyMatch(f -> !f.isEmpty());
+			if (moreFiltersLayout != null) {
+				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
 				moreFiltersLayout.setVisible(hasExpandedFilter);
 			}
 		});
 	}
 
 	public void updateResetButtonState() {
-		boolean hasFilter = streamFieldsForEmptyCheck(getContent())
-				.anyMatch(f -> !f.isEmpty());
+		boolean hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
 
 		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
 		return FieldHelper.streamFields(layout);
 	}
 
-	protected void applyDependenciesOnNewValue(T newValue){
+	protected void applyDependenciesOnNewValue(T newValue) {
 
 	}
 
@@ -183,6 +193,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private <T1 extends Field> void setFieldCaption(T1 field, String caption) {
 		field.setCaption(null);
 		if (field instanceof ComboBox) {
@@ -197,6 +208,7 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	interface Callable {
+
 		void call();
 	}
 }

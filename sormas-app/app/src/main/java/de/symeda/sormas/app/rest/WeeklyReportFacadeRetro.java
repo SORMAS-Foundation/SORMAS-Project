@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.rest;
@@ -30,15 +27,15 @@ import retrofit2.http.Path;
 
 public interface WeeklyReportFacadeRetro {
 
-    @GET("weeklyreports/all/{since}")
-    Call<List<WeeklyReportDto>> pullAllSince(@Path("since") long since);
+	@GET("weeklyreports/all/{since}")
+	Call<List<WeeklyReportDto>> pullAllSince(@Path("since") long since);
 
-    @POST("weeklyreports/query")
-    Call<List<WeeklyReportDto>> pullByUuids(@Body List<String> uuids);
+	@POST("weeklyreports/query")
+	Call<List<WeeklyReportDto>> pullByUuids(@Body List<String> uuids);
 
-    @POST("weeklyreports/push")
-    Call<List<PushResult>> pushAll(@Body List<WeeklyReportDto> dtos);
+	@POST("weeklyreports/push")
+	Call<List<PushResult>> pushAll(@Body List<WeeklyReportDto> dtos);
 
-    @GET("weeklyreports/uuids")
-    Call<List<String>> pullUuids();
+	@GET("weeklyreports/uuids")
+	Call<List<String>> pullUuids();
 }

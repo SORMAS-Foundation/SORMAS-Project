@@ -19,7 +19,7 @@
 
 #!/bin/bash
 
-rm setup.log
+rm -f setup.log
 exec > >(tee -ia setup.log)
 exec 2> >(tee -ia setup.log)
 

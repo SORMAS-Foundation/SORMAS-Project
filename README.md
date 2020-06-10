@@ -23,7 +23,7 @@ Have a look at our [*Contributing Readme*](CONTRIBUTING.md) and contact us at so
 Please [create a new issue](https://github.com/hzi-braunschweig/SORMAS-Project/issues/new/choose) and read the [*Submitting an Issue*](CONTRIBUTING.md#submitting-an-issue) guide for more detailed instructions. We appreciate your help!
 
 #### Which Browsers and Android Versions Are Supported?
-SORMAS officially supports **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting with **Android 7.0** (Nougat).
+SORMAS officially supports and is tested on **Chromium-based browsers** (like Google Chrome) and **Mozilla Firefox**, and all Android versions starting from **Android 7.0** (Nougat). In principle, SORMAS should be usable with all web browsers that are supported by Vaadin 8 (Chrome, Firefox, Safari, Edge, Internet Explorer 11; see https://vaadin.com/faq).
 
 <p align="center"><img src="https://user-images.githubusercontent.com/23701005/74659600-ebb8fc00-5194-11ea-836b-a7ca9d682301.png"/></p>
 

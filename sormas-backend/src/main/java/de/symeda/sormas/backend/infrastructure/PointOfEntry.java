@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.infrastructure;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,14 +43,16 @@ public class PointOfEntry extends InfrastructureAdo {
 	public PointOfEntryType getPointOfEntryType() {
 		return pointOfEntryType;
 	}
+
 	public void setPointOfEntryType(PointOfEntryType pointOfEntryType) {
 		this.pointOfEntryType = pointOfEntryType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -57,6 +61,7 @@ public class PointOfEntry extends InfrastructureAdo {
 	public Region getRegion() {
 		return region;
 	}
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
@@ -65,32 +70,36 @@ public class PointOfEntry extends InfrastructureAdo {
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
-	
+
 	public Double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	
+
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
-	
+
 	public boolean isActive() {
 		return active;
 	}
+
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
-	@Column(length = 255)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -103,5 +112,5 @@ public class PointOfEntry extends InfrastructureAdo {
 	public String toString() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
-	
+
 }

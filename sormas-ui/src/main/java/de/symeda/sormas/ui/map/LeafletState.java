@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.map;
 
@@ -33,34 +33,43 @@ public class LeafletState extends JavaScriptComponentState {
 
 	private boolean tileLayerVisible;
 	private float tileLayerOpacity;
-	
+
 	public int getZoom() {
 		return zoom;
 	}
+
 	public void setZoom(int zoom) {
 		this.zoom = zoom;
 	}
+
 	public double getCenterLatitude() {
 		return centerLatitude;
 	}
+
 	public void setCenterLatitude(double centerLatitude) {
 		this.centerLatitude = centerLatitude;
 	}
+
 	public double getCenterLongitude() {
 		return centerLongitude;
 	}
+
 	public void setCenterLongitude(double centerLongitude) {
 		this.centerLongitude = centerLongitude;
 	}
+
 	public boolean isTileLayerVisible() {
 		return tileLayerVisible;
 	}
+
 	public void setTileLayerVisible(boolean tileLayerVisible) {
 		this.tileLayerVisible = tileLayerVisible;
 	}
+
 	public float getTileLayerOpacity() {
 		return tileLayerOpacity;
 	}
+
 	public void setTileLayerOpacity(float tileLayerOpacity) {
 		this.tileLayerOpacity = tileLayerOpacity;
 	}

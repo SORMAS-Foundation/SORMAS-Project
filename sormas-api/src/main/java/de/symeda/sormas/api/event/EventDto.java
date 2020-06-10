@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
@@ -29,9 +29,9 @@ import de.symeda.sormas.api.utils.Required;
 public class EventDto extends EntityDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
-	
+
 	public static final String I18N_PREFIX = "Event";
-	
+
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
@@ -50,7 +50,7 @@ public class EventDto extends EntityDto {
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
-	
+
 	@Required
 	private EventStatus eventStatus;
 	@Required
@@ -73,7 +73,7 @@ public class EventDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
-	
+
 	public static EventDto build() {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
@@ -84,81 +84,83 @@ public class EventDto extends EntityDto {
 
 		return event;
 	}
-	
+
 	public EventStatus getEventStatus() {
 		return eventStatus;
 	}
-	
+
 	public void setEventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
 	}
-	
+
 	public String getEventDesc() {
 		return eventDesc;
 	}
-	
+
 	public void setEventDesc(String eventDesc) {
 		this.eventDesc = eventDesc;
 	}
-	
+
 	public Date getEventDate() {
 		return eventDate;
 	}
+
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
-	
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
-	
+
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
-	
+
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	public TypeOfPlace getTypeOfPlace() {
 		return typeOfPlace;
 	}
-	
+
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
 	}
-	
+
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
-	
+
 	public void setSrcFirstName(String srcFirstName) {
 		this.srcFirstName = srcFirstName;
 	}
-	
+
 	public String getSrcLastName() {
 		return srcLastName;
 	}
-	
+
 	public void setSrcLastName(String srcLastName) {
 		this.srcLastName = srcLastName;
 	}
-	
+
 	public String getSrcTelNo() {
 		return srcTelNo;
 	}
-	
+
 	public void setSrcTelNo(String srcTelNo) {
 		this.srcTelNo = srcTelNo;
 	}
-	
+
 	public String getSrcEmail() {
 		return srcEmail;
 	}
-	
+
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
 	}
@@ -170,35 +172,35 @@ public class EventDto extends EntityDto {
 	public void setEventLocation(LocationDto eventLocation) {
 		this.eventLocation = eventLocation;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
-	
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
-	
+
 	public void setDiseaseDetails(String diseaseDetails) {
 		this.diseaseDetails = diseaseDetails;
 	}
-	
+
 	public UserReferenceDto getSurveillanceOfficer() {
 		return surveillanceOfficer;
 	}
-	
+
 	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
-	
+
 	public String getTypeOfPlaceText() {
 		return typeOfPlaceText;
 	}
-	
+
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
 	}
@@ -230,5 +232,4 @@ public class EventDto extends EntityDto {
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
 	}
-	
 }

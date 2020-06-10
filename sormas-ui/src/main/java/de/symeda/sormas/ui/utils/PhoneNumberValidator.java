@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -21,19 +21,18 @@ import com.vaadin.v7.data.validator.AbstractValidator;
 
 @SuppressWarnings("serial")
 public class PhoneNumberValidator extends AbstractValidator<String> {
-	
+
 	public PhoneNumberValidator(String errorMessage) {
 		super(errorMessage);
 	}
-	
+
 	@Override
 	protected boolean isValidValue(String phoneNumber) {
-		return phoneNumber == null  || phoneNumber.isEmpty() || phoneNumber.startsWith("+");
+		return phoneNumber == null || phoneNumber.isEmpty() || phoneNumber.startsWith("+");
 	}
-	
+
 	@Override
 	public Class<String> getType() {
 		return String.class;
 	}
-
 }

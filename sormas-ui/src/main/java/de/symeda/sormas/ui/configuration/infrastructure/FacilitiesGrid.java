@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -40,12 +40,13 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 	private static final long serialVersionUID = 4488941182432777837L;
 
 	public FacilitiesGrid(FacilityCriteria criteria, Class<? extends AbstractFacilitiesView> viewClass) {
+
 		super(FacilityDto.class);
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
-		
+
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -54,41 +55,54 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 			setCriteria(criteria);
 		}
 
-		setColumns(FacilityDto.NAME, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY, FacilityDto.CITY,
-				FacilityDto.LATITUDE, FacilityDto.LONGITUDE, FacilityDto.EXTERNAL_ID);
+		setColumns(
+			FacilityDto.NAME,
+			FacilityDto.REGION,
+			FacilityDto.DISTRICT,
+			FacilityDto.COMMUNITY,
+			FacilityDto.CITY,
+			FacilityDto.LATITUDE,
+			FacilityDto.LONGITUDE,
+			FacilityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editHealthFacility(e.getItem().getUuid()));
 		}
-		
-		for(Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					FacilityDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
 	public void reload() {
 		getDataProvider().refreshAll();
 	}
-	
+
 	public void setLazyDataProvider() {
+
 		DataProvider<FacilityDto, FacilityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getFacilityFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getFacilityFacade().count(
-						query.getFilter().orElse(null));
-				});
+			query -> FacadeProvider.getFacilityFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getFacilityFacade().count(query.getFilter().orElse(null));
+			});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<FacilityDto> dataProvider = DataProvider.fromStream(FacadeProvider.getFacilityFacade().getIndexList(getCriteria(), null, null, null).stream());
+
+		ListDataProvider<FacilityDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getFacilityFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-
 }

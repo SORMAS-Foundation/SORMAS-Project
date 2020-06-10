@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -44,8 +44,21 @@ public class MapContactDto implements Serializable {
 	private String casePersonFirstName;
 	private String casePersonLastName;
 
-	public MapContactDto(String uuid, ContactClassification contactClassification, Double reportLat, Double reportLon, Double addressLat, Double addressLon, Date caseOnsetDate, 
-			Date caseReportDate, Date contactReportDate, String personFirstName, String personLastName, String casePersonFirstName, String casePersonLastName) {
+	public MapContactDto(
+		String uuid,
+		ContactClassification contactClassification,
+		Double reportLat,
+		Double reportLon,
+		Double addressLat,
+		Double addressLon,
+		Date caseOnsetDate,
+		Date caseReportDate,
+		Date contactReportDate,
+		String personFirstName,
+		String personLastName,
+		String casePersonFirstName,
+		String casePersonLastName) {
+
 		this.uuid = uuid;
 		this.contactClassification = contactClassification;
 		this.reportLat = reportLat;
@@ -64,6 +77,7 @@ public class MapContactDto implements Serializable {
 	public String getUuid() {
 		return uuid;
 	}
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -71,6 +85,7 @@ public class MapContactDto implements Serializable {
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
+
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}
@@ -78,6 +93,7 @@ public class MapContactDto implements Serializable {
 	public Double getReportLat() {
 		return reportLat;
 	}
+
 	public void setReportLat(Double reportLat) {
 		this.reportLat = reportLat;
 	}
@@ -85,6 +101,7 @@ public class MapContactDto implements Serializable {
 	public Double getReportLon() {
 		return reportLon;
 	}
+
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
@@ -171,6 +188,7 @@ public class MapContactDto implements Serializable {
 
 	@Override
 	public String toString() {
+
 		StringBuilder builder = new StringBuilder();
 		builder.append(personFirstName).append(" ").append(personLastName.toUpperCase());
 		if (casePersonFirstName != null && casePersonLastName != null) {
@@ -179,5 +197,4 @@ public class MapContactDto implements Serializable {
 		}
 		return builder.toString();
 	}
-
 }

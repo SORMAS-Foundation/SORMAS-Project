@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -27,38 +27,40 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	private static final long serialVersionUID = -1;
-	
+
+	//@formatter:off
 	private static final String HTML_LAYOUT = 
 			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
 			fluidRowLocs(RegionDto.EXTERNAL_ID);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
+	//@formatter:on
 
 	public RegionEditForm(boolean create) {
+
 		super(RegionDto.class, RegionDto.I18N_PREFIX);
-		
+
 		setWidth(540, Unit.PIXELS);
-		
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
 	}
-	
+
 	@Override
 	protected void addFields() {
+
 		addField(RegionDto.NAME, TextField.class);
 		addField(RegionDto.EPID_CODE, TextField.class);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
-		
+
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
 	}
-	
 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

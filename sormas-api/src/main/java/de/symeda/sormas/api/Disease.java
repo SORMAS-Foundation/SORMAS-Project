@@ -9,19 +9,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public enum Disease implements StatisticsGroupingKey {
-	
+public enum Disease
+	implements
+	StatisticsGroupingKey {
+
 	AFP(true, true, true, false, 0),
 	CHOLERA(true, true, true, true, 5),
 	CONGENITAL_RUBELLA(true, true, true, true, 21),
@@ -78,7 +80,7 @@ public enum Disease implements StatisticsGroupingKey {
 	C_PNEUMONIAE(true, false, true, false, 0),
 	OTHER(true, true, true, true, 21),
 	UNDEFINED(true, true, true, true, 0);
-	
+
 	private boolean defaultActive;
 	private boolean defaultPrimary;
 	private boolean defaultCaseBased;
@@ -93,28 +95,29 @@ public enum Disease implements StatisticsGroupingKey {
 		this.defaultFollowUpEnabled = defaultFollowUpEnabled;
 		this.defaultFollowUpDuration = defaultFollowUpDuration;
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);
 	}
-	
+
 	public String getName() {
 		return this.name();
 	}
-	
+
 	public boolean usesSimpleViewForOutbreaks() {
-		switch(this) {
+
+		switch (this) {
 		case CSM:
 			return true;
 		default:
-			return false;		
+			return false;
 		}
 	}
-	
+
 	public boolean isDefaultActive() {
 		return defaultActive;
 	}
@@ -122,11 +125,11 @@ public enum Disease implements StatisticsGroupingKey {
 	public boolean isDefaultPrimary() {
 		return defaultPrimary;
 	}
-	
+
 	public boolean isDefaultCaseBased() {
 		return defaultCaseBased;
 	}
-	
+
 	public boolean isDefaultFollowUpEnabled() {
 		return defaultFollowUpEnabled;
 	}
@@ -138,16 +141,18 @@ public enum Disease implements StatisticsGroupingKey {
 	public boolean isDiseaseGroup() {
 		return this == UNSPECIFIED_VHF;
 	}
-	
+
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
-		
+
 		return this.toString().compareTo(o.toString());
 	}
 }

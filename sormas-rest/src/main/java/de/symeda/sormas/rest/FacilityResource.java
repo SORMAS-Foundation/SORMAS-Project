@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -37,31 +37,35 @@ import de.symeda.sormas.api.facility.FacilityDto;
  *
  */
 @Path("/facilities")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class FacilityResource {
 
-	@GET @Path("/region/{regionUuid}/{since}")
+	@GET
+	@Path("/region/{regionUuid}/{since}")
 	public List<FacilityDto> getAllByRegion(@PathParam("regionUuid") String regionUuid, @PathParam("since") long since) {
 		return FacadeProvider.getFacilityFacade().getAllByRegionAfter(regionUuid, new Date(since));
 	}
-	
-	@GET @Path("/general/{since}")
+
+	@GET
+	@Path("/general/{since}")
 	public List<FacilityDto> getAllWithoutRegion(@PathParam("since") long since) {
 		return FacadeProvider.getFacilityFacade().getAllWithoutRegionAfter(new Date(since));
 	}
-	
+
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
 		return FacadeProvider.getFacilityFacade().getAllUuids();
 	}
-	
+
 	@POST
 	@Path("/query")
 	public List<FacilityDto> getByUuids(List<String> uuids) {
 
-		List<FacilityDto> result = FacadeProvider.getFacilityFacade().getByUuids(uuids); 
+		List<FacilityDto> result = FacadeProvider.getFacilityFacade().getByUuids(uuids);
 		return result;
 	}
 }

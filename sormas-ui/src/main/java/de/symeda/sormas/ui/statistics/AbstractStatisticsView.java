@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -28,9 +28,9 @@ import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
 public class AbstractStatisticsView extends AbstractSubNavigationView {
-	
+
 	public static final String ROOT_VIEW_NAME = "statistics";
-	
+
 	protected AbstractStatisticsView(String viewName) {
 		super(viewName);
 	}
@@ -42,8 +42,7 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			menu.addView(DatabaseExportView.VIEW_NAME, I18nProperties.getCaption(Captions.statisticsDatabaseExport), params);
 		}
-	
+
 		hideInfoLabel();
 	}
-	
 }

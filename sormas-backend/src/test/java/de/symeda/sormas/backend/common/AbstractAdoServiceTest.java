@@ -20,12 +20,13 @@ import org.junit.Test;
 public class AbstractAdoServiceTest {
 
 	@Test
-	public void testReduce() throws Exception {
+	public void testReduce() {
+
 		//all null
 		assertThat(AbstractAdoService.reduce(null), nullValue());
 		assertThat(AbstractAdoService.reduce(null, (Predicate) null), nullValue());
 		assertThat(AbstractAdoService.reduce(null, null, null), nullValue());
-		
+
 		DummyPredicate p0 = new DummyPredicate();
 
 		//one non-null
@@ -33,7 +34,6 @@ public class AbstractAdoServiceTest {
 		assertThat(AbstractAdoService.reduce(null, p0, null), sameInstance(p0));
 		assertThat(AbstractAdoService.reduce(null, null, p0), sameInstance(p0));
 		assertThat(AbstractAdoService.reduce(null, null, null, null, null, p0, null, null, null), sameInstance(p0));
-		
 
 		DummyPredicate p1 = new DummyPredicate();
 		DummyPredicate p2 = new DummyPredicate();
@@ -41,26 +41,25 @@ public class AbstractAdoServiceTest {
 
 		DummyPredicate pr = new DummyPredicate();
 		List<Predicate> restrictions = new ArrayList<>();
-		
+
 		Function<Predicate[], Predicate> op = a -> {
 			restrictions.clear();
 			restrictions.addAll(Arrays.asList(a));
 			return pr;
 		};
-		
+
 		//two Arguments
 		assertThat(AbstractAdoService.reduce(op, p0, p1), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1));
-		
+
 		assertThat(AbstractAdoService.reduce(op, null, null, p0, null, p1, null, null), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1));
 
 		//4 Arguments
 		assertThat(AbstractAdoService.reduce(op, null, null, p0, null, p1, null, p2, p3, null), sameInstance(pr));
 		assertThat(restrictions, Matchers.contains(p0, p1, p2, p3));
-		
 	}
-	
+
 	private static class DummyPredicate implements Predicate {
 
 		@Override
@@ -142,7 +141,5 @@ public class AbstractAdoServiceTest {
 		public Predicate not() {
 			return null;
 		}
-		
 	}
-
 }

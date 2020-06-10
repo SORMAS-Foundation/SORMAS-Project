@@ -28,16 +28,18 @@ public class ClinicalCourseController {
 	}
 
 	public void openClinicalVisitCreateForm(ClinicalCourseReferenceDto clinicalCourse, String caseUuid, Runnable callback) {
+
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(clinicalCourse, caze.getDisease());
-		ClinicalVisitForm form = new ClinicalVisitForm(true, clinicalVisit.getDisease(),
-				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
+		ClinicalVisitForm form =
+			new ClinicalVisitForm(true, clinicalVisit.getDisease(), FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
 		form.setValue(clinicalVisit);
 
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_CREATE), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -50,29 +52,30 @@ public class ClinicalCourseController {
 				}
 			}
 		});
-		
+
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewClinicalVisit));
 		// Clinical visit form is too big for typical screens
-		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS); 
-		popupWindow.setHeight(80, Unit.PERCENTAGE); 
+		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
+		popupWindow.setHeight(80, Unit.PERCENTAGE);
 	}
 
 	public void openClinicalVisitEditForm(ClinicalVisitIndexDto clinicalVisitIndex, String caseUuid, Runnable callback) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 		ClinicalVisitDto clinicalVisit = FacadeProvider.getClinicalVisitFacade().getClinicalVisitByUuid(clinicalVisitIndex.getUuid());
-		ClinicalVisitForm form = new ClinicalVisitForm(false, clinicalVisit.getDisease(), 
-				FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
+		ClinicalVisitForm form =
+			new ClinicalVisitForm(false, clinicalVisit.getDisease(), FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()));
 		form.setValue(clinicalVisit);
 
-		final CommitDiscardWrapperComponent<ClinicalVisitForm> view = new CommitDiscardWrapperComponent<>(form, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_EDIT), form.getFieldGroup());
+		final CommitDiscardWrapperComponent<ClinicalVisitForm> view =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_VISIT_EDIT), form.getFieldGroup());
 		view.setWidth(100, Unit.PERCENTAGE);
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingEditClinicalVisit));
 		// Clinical visit form is too big for typical screens
-		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS); 
-		popupWindow.setHeight(80, Unit.PERCENTAGE); 
-		
+		popupWindow.setWidth(form.getWidth() + 90, Unit.PIXELS);
+		popupWindow.setHeight(80, Unit.PERCENTAGE);
+
 		view.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!form.getFieldGroup().isModified()) {
@@ -99,21 +102,27 @@ public class ClinicalCourseController {
 			}, I18nProperties.getString(Strings.entityClinicalVisit));
 		}
 	}
-	
+
 	public void deleteAllSelectedClinicalVisits(Collection<Object> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoClinicalVisitsSelected),
-					I18nProperties.getString(Strings.messageNoClinicalVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoClinicalVisitsSelected),
+				I18nProperties.getString(Strings.messageNoClinicalVisitsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), () -> {
-				for (Object selectedRow : selectedRows) {
-					FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid());
-				}
-				callback.run();
-				new Notification(I18nProperties.getString(Strings.headingClinicalVisitsDeleted),
-						I18nProperties.getString(Strings.messageClinicalVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-			});
+			VaadinUiUtil
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), selectedRows.size()), () -> {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getClinicalVisitFacade().deleteClinicalVisit(((ClinicalVisitIndexDto) selectedRow).getUuid());
+					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingClinicalVisitsDeleted),
+						I18nProperties.getString(Strings.messageClinicalVisitsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
 		}
 	}
-
 }

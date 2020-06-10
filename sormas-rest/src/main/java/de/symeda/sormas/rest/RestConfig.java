@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -27,17 +27,18 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
  */
 @ApplicationPath("*")
-public class RestConfig extends ResourceConfig  {
-	
+public class RestConfig extends ResourceConfig {
+
 	public RestConfig() {
-        super(RestConfig.class);
-        
-        // Resources.
-        packages(getClass().getPackage().getName());
-        
-        // as described in https://jersey.github.io/documentation/latest/security.html
-        register(RolesAllowedDynamicFeature.class);
-        
-        register(JacksonFeature.class);
-    }
+
+		super(RestConfig.class);
+
+		// Resources.
+		packages(getClass().getPackage().getName());
+
+		// as described in https://jersey.github.io/documentation/latest/security.html
+		register(RolesAllowedDynamicFeature.class);
+
+		register(JacksonFeature.class);
+	}
 }

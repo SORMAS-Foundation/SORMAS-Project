@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -45,6 +45,7 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public String toString() {
+
 		if (from != null && to != null) {
 			if (from == to) {
 				return String.valueOf(from);
@@ -62,6 +63,7 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
@@ -71,6 +73,7 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -93,25 +96,26 @@ public class IntegerRange implements Serializable, StatisticsGroupingKey {
 
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
 
 		if (this.equals(o)) {
 			return 0;
 		}
 		IntegerRange oir = (IntegerRange) o;
-		
+
 		if (this.getFrom() == null) {
 			return 1;
 		} else if (oir.getFrom() == null) {
 			return -1;
 		}
-		
+
 		return Integer.compare(this.getFrom(), oir.getFrom());
 	}
-
 }

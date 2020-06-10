@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -237,7 +239,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.onsetDate = onsetDate;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPatientIllLocation() {
 		return patientIllLocation;
 	}
@@ -614,7 +616,7 @@ public class Symptoms extends AbstractDomainObject {
 		return neckStiffness;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOnsetSymptom() {
 		return onsetSymptom;
 	}
@@ -653,7 +655,7 @@ public class Symptoms extends AbstractDomainObject {
 		return otherHemorrhagicSymptoms;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOtherHemorrhagicSymptomsText() {
 		return otherHemorrhagicSymptomsText;
 	}
@@ -663,7 +665,7 @@ public class Symptoms extends AbstractDomainObject {
 		return otherNonHemorrhagicSymptoms;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOtherNonHemorrhagicSymptomsText() {
 		return otherNonHemorrhagicSymptomsText;
 	}
@@ -1348,7 +1350,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.congenitalHeartDiseaseType = congenitalHeartDiseaseType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCongenitalHeartDiseaseDetails() {
 		return congenitalHeartDiseaseDetails;
 	}
@@ -1573,7 +1575,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.pneumoniaClinicalOrRadiologic = pneumoniaClinicalOrRadiologic;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSymptomsComments() {
 		return symptomsComments;
 	}
@@ -1704,7 +1706,7 @@ public class Symptoms extends AbstractDomainObject {
 		this.otherComplications = otherComplications;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getOtherComplicationsText() {
 		return otherComplicationsText;
 	}
@@ -1810,10 +1812,10 @@ public class Symptoms extends AbstractDomainObject {
 		appendTrue(string, lesionsGenitals, SymptomsDto.LESIONS_GENITALS);
 		appendTrue(string, lesionsAllOverBody, SymptomsDto.LESIONS_ALL_OVER_BODY);
 		// TODO images should have more specific caption to be included here
-		//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
-		//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
-		//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
-		//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
+//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
+//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
+//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
+//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
 		appendNotNullDateValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE, language);
 		appendYesSymptom(string, lymphadenopathy, SymptomsDto.LYMPHADENOPATHY);
 		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
@@ -1883,8 +1885,7 @@ public class Symptoms extends AbstractDomainObject {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
-					.append(": ");
+			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null)).append(": ");
 
 			stringBuilder.append(value);
 		}

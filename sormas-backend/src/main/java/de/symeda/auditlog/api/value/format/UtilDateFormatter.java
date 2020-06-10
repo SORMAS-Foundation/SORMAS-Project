@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -49,7 +49,7 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param temporalType
-	 * 			For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified.
+	 *            For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified.
 	 * @see #toPattern(TemporalType)
 	 */
 	public UtilDateFormatter(TemporalType temporalType) {
@@ -59,14 +59,14 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param pattern
-	 * 			The {@link DateFormat} pattern to use.
+	 *            The {@link DateFormat} pattern to use.
 	 */
 	public UtilDateFormatter(String pattern) {
 		this.pattern = pattern;
 	}
 
 	/**
-	 * @return 	The {@link DateFormat} pattern to use.
+	 * @return The {@link DateFormat} pattern to use.
 	 */
 	public String getPattern() {
 		return pattern;
@@ -80,9 +80,9 @@ public class UtilDateFormatter implements ValueFormatter<Date> {
 
 	/**
 	 * @param temporalType
-	 * 			For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified. Returns a detailed pattern
-	 * 			if temporalType is <code>null</code>.
-	 * @return	A matching pattern for the given {@link TemporalType}.
+	 *            For this {@link TemporalType}, a matching {@link DateFormat} pattern shall be identified. Returns a detailed pattern
+	 *            if temporalType is <code>null</code>.
+	 * @return A matching pattern for the given {@link TemporalType}.
 	 */
 	public static String toPattern(TemporalType temporalType) {
 
