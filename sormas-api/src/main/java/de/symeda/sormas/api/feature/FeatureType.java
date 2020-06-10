@@ -2,11 +2,12 @@ package de.symeda.sormas.api.feature;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
  * New server features are automatically added to the database in FeatureConfigurationService.createMissingFeatureConfigurations().
@@ -23,7 +24,7 @@ public enum FeatureType {
 	TASK_GENERATION_CONTACT_TRACING(true, true, null),
 	TASK_GENERATION_EVENT_SURVEILLANCE(true, true, null),
 	TASK_GENERATION_GENERAL(true, true, null),
-	CAMPAIGNS(true, true, null),
+	CAMPAIGNS(true, false, null),
 	CASE_SURVEILANCE(true, true, null),
 	CONTACT_TRACING(true, true, new FeatureType[]{CASE_SURVEILANCE}),
 	SAMPLES_LAB(true, true, new FeatureType[]{CASE_SURVEILANCE, CONTACT_TRACING});

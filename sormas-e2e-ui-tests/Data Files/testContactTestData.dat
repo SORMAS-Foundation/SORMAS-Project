@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataFileEntity>
+   <description>Test data for contact tests</description>
+   <name>testContactTestData</name>
+   <tag></tag>
+   <containsHeaders>true</containsHeaders>
+   <csvSeperator></csvSeperator>
+   <dataFileGUID>cc24f675-dd8f-45d3-b567-45ae339c4c2f</dataFileGUID>
+   <dataSourceUrl></dataSourceUrl>
+   <driver>InternalData</driver>
+   <data>userName-A UserC+test null</data>
+   <data>defaultCaseName American+User null</data>
+   <data>caseName-A American+User casename+with+changeable+EpidNumber</data>
+   <data>caseName-B British+User casename+with+changeable+EpidNumber</data>
+   <data>unchangable-epid-number-A TTZEQU-N57LT3-FSPVE2-GBKQSJUU null</data>
+   <data>unchangable-epid-number-B XU7LM3-HZ4UNH-FEPVLU-ZIF7CMNE null</data>
+   <data>userName-B UserB+test null</data>
+   <internalDataColumns>
+      <columnIndex>0</columnIndex>
+      <name>Key</name>
+      <size>7</size>
+   </internalDataColumns>
+   <internalDataColumns>
+      <columnIndex>1</columnIndex>
+      <name>Value</name>
+      <size>7</size>
+   </internalDataColumns>
+   <internalDataColumns>
+      <columnIndex>2</columnIndex>
+      <name>Description</name>
+      <size>7</size>
+   </internalDataColumns>
+   <isInternalPath>false</isInternalPath>
+   <query></query>
+   <secureUserAccount>false</secureUserAccount>
+   <sheetName></sheetName>
+   <usingGlobalDBSetting>false</usingGlobalDBSetting>
+</DataFileEntity>

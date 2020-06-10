@@ -1,0 +1,21 @@
+
+/bin/
+/Libs/
+/.settings/
+/.classpath
+.svn/
+.DS_Store*
+.project
+.idea
+/settings/
+
+.gradle
+gradle*
+.project
+
+# Exclude folder content (except .gitkeep)
+Reports/*
+!Reports/.gitkeep
+
+Checkpoints/*
+!Checkpoints/.gitkeep

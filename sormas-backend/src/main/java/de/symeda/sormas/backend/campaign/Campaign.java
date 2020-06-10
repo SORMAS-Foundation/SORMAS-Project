@@ -1,11 +1,17 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
-
-import javax.persistence.*;
-import java.util.Date;
 
 @Entity(name = "campaigns")
 @Audited

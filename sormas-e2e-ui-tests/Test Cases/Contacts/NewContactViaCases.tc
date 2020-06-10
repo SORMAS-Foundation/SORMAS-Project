@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks the creation of a new contact through an existing case</description>
+   <name>NewContactViaCases</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>3ce1d354-b134-4d0c-95a6-2a557512b785</testCaseGuid>
+</TestCaseEntity>

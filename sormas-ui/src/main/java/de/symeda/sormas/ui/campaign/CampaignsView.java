@@ -38,6 +38,7 @@ public class CampaignsView extends AbstractView {
 	private com.vaadin.v7.ui.ComboBox relevanceStatusFilter;
 
 	public CampaignsView() {
+
 		super(VIEW_NAME);
 
 		ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
@@ -71,6 +72,7 @@ public class CampaignsView extends AbstractView {
 	}
 
 	private HorizontalLayout createFilterBar() {
+
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 		filterLayout.setSpacing(true);
@@ -109,6 +111,7 @@ public class CampaignsView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		if (event != null) {
 			String params = event.getParameters().trim();
 			if (params.startsWith("?")) {
@@ -121,6 +124,7 @@ public class CampaignsView extends AbstractView {
 	}
 
 	private void updateFilterComponents() {
+
 		applyingCriteria = true;
 
 		if (relevanceStatusFilter != null) {
@@ -130,5 +134,4 @@ public class CampaignsView extends AbstractView {
 
 		applyingCriteria = false;
 	}
-
 }
