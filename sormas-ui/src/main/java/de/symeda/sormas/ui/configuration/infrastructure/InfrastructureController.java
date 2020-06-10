@@ -492,6 +492,17 @@ public class InfrastructureController {
 		FacilityType facilityType,
 		Runnable callback) {
 
+		// Check that at least one entry is selected
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoRowsSelected),
+				I18nProperties.getString(Strings.messageNoRowsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		// Check if archiving/dearchiving is allowed concerning the hierarchy
 		if (InfrastructureType.REGION.equals(infrastructureType)
 			&& FacadeProvider.getRegionFacade()
 				.isUsedInOtherInfrastructureData(selectedRows.stream().map(row -> ((RegionIndexDto) row).getUuid()).collect(Collectors.toSet()))
@@ -521,131 +532,122 @@ public class InfrastructureController {
 			return;
 		}
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoRowsSelected),
-				I18nProperties.getString(Strings.messageNoRowsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			String confirmationMessage, notificationMessage;
-
-			switch (infrastructureType) {
-			case REGION:
+		final String confirmationMessage;
+		final String notificationMessage;
+		switch (infrastructureType) {
+		case REGION:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveRegions)
+				: I18nProperties.getString(Strings.confirmationDearchiveRegions);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageRegionsArchived) : I18nProperties.getString(Strings.messageRegionsDearchived);
+			break;
+		case DISTRICT:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveDistricts)
+				: I18nProperties.getString(Strings.confirmationDearchiveDistricts);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageDistrictsArchived) : I18nProperties.getString(Strings.messageDistrictsDearchived);
+			break;
+		case COMMUNITY:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveCommunities)
+				: I18nProperties.getString(Strings.confirmationDearchiveCommunities);
+			notificationMessage = archive
+				? I18nProperties.getString(Strings.messageCommunitiesArchived)
+				: I18nProperties.getString(Strings.messageCommunitiesDearchived);
+			break;
+		case FACILITY:
+			if (FacilityType.LABORATORY.equals(facilityType)) {
 				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchiveRegions)
-					: I18nProperties.getString(Strings.confirmationDearchiveRegions);
-				notificationMessage =
-					archive ? I18nProperties.getString(Strings.messageRegionsArchived) : I18nProperties.getString(Strings.messageRegionsDearchived);
-				break;
-			case DISTRICT:
-				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchiveDistricts)
-					: I18nProperties.getString(Strings.confirmationDearchiveDistricts);
+					? I18nProperties.getString(Strings.confirmationArchiveLaboratories)
+					: I18nProperties.getString(Strings.confirmationDearchiveLaboratories);
 				notificationMessage = archive
-					? I18nProperties.getString(Strings.messageDistrictsArchived)
-					: I18nProperties.getString(Strings.messageDistrictsDearchived);
-				break;
-			case COMMUNITY:
+					? I18nProperties.getString(Strings.messageLaboratoriesArchived)
+					: I18nProperties.getString(Strings.messageLaboratoriesDearchived);
+			} else {
 				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchiveCommunities)
-					: I18nProperties.getString(Strings.confirmationDearchiveCommunities);
+					? I18nProperties.getString(Strings.confirmationArchiveFacilities)
+					: I18nProperties.getString(Strings.confirmationDearchiveFacilities);
 				notificationMessage = archive
-					? I18nProperties.getString(Strings.messageCommunitiesArchived)
-					: I18nProperties.getString(Strings.messageCommunitiesDearchived);
-				break;
-			case FACILITY:
-				if (FacilityType.LABORATORY.equals(facilityType)) {
-					confirmationMessage = archive
-						? I18nProperties.getString(Strings.confirmationArchiveLaboratories)
-						: I18nProperties.getString(Strings.confirmationDearchiveLaboratories);
-					notificationMessage = archive
-						? I18nProperties.getString(Strings.messageLaboratoriesArchived)
-						: I18nProperties.getString(Strings.messageLaboratoriesDearchived);
-				} else {
-					confirmationMessage = archive
-						? I18nProperties.getString(Strings.confirmationArchiveFacilities)
-						: I18nProperties.getString(Strings.confirmationDearchiveFacilities);
-					notificationMessage = archive
-						? I18nProperties.getString(Strings.messageFacilitiesArchived)
-						: I18nProperties.getString(Strings.messageFacilitiesDearchived);
-				}
-				break;
-			case POINT_OF_ENTRY:
-				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchivePointsOfEntry)
-					: I18nProperties.getString(Strings.confirmationDearchivePointsOfEntry);
-				notificationMessage = archive
-					? I18nProperties.getString(Strings.messagePointsOfEntryArchived)
-					: I18nProperties.getString(Strings.messagePointsOfEntryDearchived);
-				break;
-			default:
-				throw new IllegalArgumentException(infrastructureType.name());
+					? I18nProperties.getString(Strings.messageFacilitiesArchived)
+					: I18nProperties.getString(Strings.messageFacilitiesDearchived);
 			}
-
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmArchiving),
-				new Label(String.format(confirmationMessage, selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue()) {
-
-						switch (infrastructureType) {
-						case REGION:
-							for (RegionIndexDto selectedRow : (Collection<RegionIndexDto>) selectedRows) {
-								if (archive) {
-									FacadeProvider.getRegionFacade().archive(selectedRow.getUuid());
-								} else {
-									FacadeProvider.getRegionFacade().dearchive(selectedRow.getUuid());
-								}
-							}
-							break;
-						case DISTRICT:
-							for (DistrictIndexDto selectedRow : (Collection<DistrictIndexDto>) selectedRows) {
-								if (archive) {
-									FacadeProvider.getDistrictFacade().archive(selectedRow.getUuid());
-								} else {
-									FacadeProvider.getDistrictFacade().dearchive(selectedRow.getUuid());
-								}
-							}
-							break;
-						case COMMUNITY:
-							for (CommunityDto selectedRow : (Collection<CommunityDto>) selectedRows) {
-								if (archive) {
-									FacadeProvider.getCommunityFacade().archive(selectedRow.getUuid());
-								} else {
-									FacadeProvider.getCommunityFacade().dearchive(selectedRow.getUuid());
-								}
-							}
-							break;
-						case FACILITY:
-							for (FacilityDto selectedRow : (Collection<FacilityDto>) selectedRows) {
-								if (archive) {
-									FacadeProvider.getFacilityFacade().archive(selectedRow.getUuid());
-								} else {
-									FacadeProvider.getFacilityFacade().dearchive(selectedRow.getUuid());
-								}
-							}
-							break;
-						case POINT_OF_ENTRY:
-							for (PointOfEntryDto selectedRow : (Collection<PointOfEntryDto>) selectedRows) {
-								if (archive) {
-									FacadeProvider.getPointOfEntryFacade().archive(selectedRow.getUuid());
-								} else {
-									FacadeProvider.getPointOfEntryFacade().dearchive(selectedRow.getUuid());
-								}
-							}
-							break;
-						default:
-							throw new IllegalArgumentException(infrastructureType.name());
-						}
-
-						callback.run();
-						Notification.show(notificationMessage, Type.ASSISTIVE_NOTIFICATION);
-					}
-				});
+			break;
+		case POINT_OF_ENTRY:
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchivePointsOfEntry)
+				: I18nProperties.getString(Strings.confirmationDearchivePointsOfEntry);
+			notificationMessage = archive
+				? I18nProperties.getString(Strings.messagePointsOfEntryArchived)
+				: I18nProperties.getString(Strings.messagePointsOfEntryDearchived);
+			break;
+		default:
+			throw new IllegalArgumentException(infrastructureType.name());
 		}
+
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingConfirmArchiving),
+			new Label(String.format(confirmationMessage, selectedRows.size())),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			null,
+			e -> {
+				if (e.booleanValue()) {
+
+					switch (infrastructureType) {
+					case REGION:
+						for (RegionIndexDto selectedRow : (Collection<RegionIndexDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getRegionFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getRegionFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case DISTRICT:
+						for (DistrictIndexDto selectedRow : (Collection<DistrictIndexDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getDistrictFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getDistrictFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case COMMUNITY:
+						for (CommunityDto selectedRow : (Collection<CommunityDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getCommunityFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getCommunityFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case FACILITY:
+						for (FacilityDto selectedRow : (Collection<FacilityDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getFacilityFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getFacilityFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					case POINT_OF_ENTRY:
+						for (PointOfEntryDto selectedRow : (Collection<PointOfEntryDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getPointOfEntryFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getPointOfEntryFacade().dearchive(selectedRow.getUuid());
+							}
+						}
+						break;
+					default:
+						throw new IllegalArgumentException(infrastructureType.name());
+					}
+
+					callback.run();
+					Notification.show(notificationMessage, Type.ASSISTIVE_NOTIFICATION);
+				}
+			});
 	}
 }
