@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -260,7 +263,7 @@ public class Case extends CoreAdo {
 		this.person = person;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -278,7 +281,7 @@ public class Case extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -343,7 +346,7 @@ public class Case extends CoreAdo {
 		this.classificationDate = classificationDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClassificationComment() {
 		return classificationComment;
 	}
@@ -417,7 +420,7 @@ public class Case extends CoreAdo {
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -435,7 +438,7 @@ public class Case extends CoreAdo {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = 512, name = "cliniciandetails")
+	@Column(length = COLUMN_LENGTH_DEFAULT, name = "cliniciandetails")
 	public String getClinicianName() {
 		return clinicianName;
 	}
@@ -444,7 +447,7 @@ public class Case extends CoreAdo {
 		this.clinicianName = clinicianName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClinicianPhone() {
 		return clinicianPhone;
 	}
@@ -453,7 +456,7 @@ public class Case extends CoreAdo {
 		this.clinicianPhone = clinicianPhone;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClinicianEmail() {
 		return clinicianEmail;
 	}
@@ -612,7 +615,7 @@ public class Case extends CoreAdo {
 		this.vaccination = vaccination;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
@@ -630,7 +633,7 @@ public class Case extends CoreAdo {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVaccine() {
 		return vaccine;
 	}
@@ -666,7 +669,7 @@ public class Case extends CoreAdo {
 		this.vaccinationDate = vaccinationDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -764,7 +767,7 @@ public class Case extends CoreAdo {
 		this.sequelae = sequelae;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSequelaeDetails() {
 		return sequelaeDetails;
 	}
@@ -782,7 +785,7 @@ public class Case extends CoreAdo {
 		this.notifyingClinic = notifyingClinic;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNotifyingClinicDetails() {
 		return notifyingClinicDetails;
 	}
@@ -855,7 +858,7 @@ public class Case extends CoreAdo {
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPointOfEntryDetails() {
 		return pointOfEntryDetails;
 	}
@@ -872,7 +875,7 @@ public class Case extends CoreAdo {
 		this.completeness = completeness;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
@@ -881,7 +884,7 @@ public class Case extends CoreAdo {
 		this.additionalDetails = additionalDetails;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -926,7 +929,7 @@ public class Case extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -980,7 +983,7 @@ public class Case extends CoreAdo {
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -998,7 +1001,7 @@ public class Case extends CoreAdo {
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}

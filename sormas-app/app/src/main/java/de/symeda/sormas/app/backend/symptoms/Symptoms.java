@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.symptoms;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -45,13 +47,13 @@ public class Symptoms extends AbstractDomainObject {
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date onsetDate;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String onsetSymptom;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String symptomsComments;
 	@DatabaseField
 	private Boolean symptomatic;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String patientIllLocation;
 
 	@Deprecated
@@ -316,11 +318,11 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState convulsion;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherHemorrhagicSymptoms;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherHemorrhagicSymptomsText;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherNonHemorrhagicSymptoms;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherNonHemorrhagicSymptomsText;
 
 	// complications
@@ -366,7 +368,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState congenitalHeartDisease;
 	@Enumerated(EnumType.STRING)
 	private CongenitalHeartDiseaseType congenitalHeartDiseaseType;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String congenitalHeartDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private SymptomState fluidInLungCavityAuscultation;
@@ -394,7 +396,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState inDrawingOfChestWall;
 	@Enumerated(EnumType.STRING)
 	private SymptomState otherComplications;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherComplicationsText;
 
 	@Override

@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.therapy;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -91,7 +94,7 @@ public class Prescription extends AbstractDomainObject {
 		this.prescriptionEnd = prescriptionEnd;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPrescribingClinician() {
 		return prescribingClinician;
 	}
@@ -110,7 +113,7 @@ public class Prescription extends AbstractDomainObject {
 		this.prescriptionType = prescriptionType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPrescriptionDetails() {
 		return prescriptionDetails;
 	}
@@ -128,7 +131,7 @@ public class Prescription extends AbstractDomainObject {
 		this.typeOfDrug = typeOfDrug;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFrequency() {
 		return frequency;
 	}
@@ -137,7 +140,7 @@ public class Prescription extends AbstractDomainObject {
 		this.frequency = frequency;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDose() {
 		return dose;
 	}
@@ -155,7 +158,7 @@ public class Prescription extends AbstractDomainObject {
 		this.route = route;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRouteDetails() {
 		return routeDetails;
 	}
@@ -164,7 +167,7 @@ public class Prescription extends AbstractDomainObject {
 		this.routeDetails = routeDetails;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalNotes() {
 		return additionalNotes;
 	}
@@ -172,4 +175,5 @@ public class Prescription extends AbstractDomainObject {
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
+
 }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.importexport;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +38,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	private String propertiesString;
 	private Set<String> properties;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getName() {
 		return name;
 	}
@@ -85,8 +87,8 @@ public class ExportConfiguration extends AbstractDomainObject {
 	}
 
 	public void setProperties(Set<String> properties) {
-
 		this.properties = properties;
+
 		if (this.properties == null) {
 			return;
 		}
@@ -100,4 +102,5 @@ public class ExportConfiguration extends AbstractDomainObject {
 		}
 		propertiesString = sb.toString();
 	}
+
 }

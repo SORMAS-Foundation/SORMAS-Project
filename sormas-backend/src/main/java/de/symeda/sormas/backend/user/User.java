@@ -48,6 +48,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 @Entity(name = "users")
 @Audited
 public class User extends AbstractDomainObject {
@@ -106,7 +108,7 @@ public class User extends AbstractDomainObject {
 
 	private Language language;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getUserName() {
 		return userName;
 	}
@@ -145,7 +147,7 @@ public class User extends AbstractDomainObject {
 		this.active = active;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -154,7 +156,7 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
