@@ -405,11 +405,6 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
-	@Override
-	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
-		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
-	}
-
 	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
@@ -434,6 +429,16 @@ public class EventFacadeEjb implements EventFacade {
 
 			em.createQuery(cu).executeUpdate();
 		}
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return eventService.exists(uuid);
+	}
+
+	@Override
+	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
+		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
 	}
 
 	@LocalBean
