@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
@@ -30,6 +31,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -503,31 +505,24 @@ public class InfrastructureController {
 		}
 
 		// Check if archiving/dearchiving is allowed concerning the hierarchy
+		Set<String> selectedRowsUuids = selectedRows.stream().map(row -> ((HasUuid) row).getUuid()).collect(Collectors.toSet());
 		if (InfrastructureType.REGION.equals(infrastructureType)
-			&& FacadeProvider.getRegionFacade()
-				.isUsedInOtherInfrastructureData(selectedRows.stream().map(row -> ((RegionIndexDto) row).getUuid()).collect(Collectors.toSet()))
+			&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.DISTRICT.equals(infrastructureType)
-				&& FacadeProvider.getDistrictFacade()
-					.isUsedInOtherInfrastructureData(selectedRows.stream().map(row -> ((DistrictIndexDto) row).getUuid()).collect(Collectors.toSet()))
+				&& FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.COMMUNITY.equals(infrastructureType)
-				&& FacadeProvider.getCommunityFacade()
-					.isUsedInOtherInfrastructureData(selectedRows.stream().map(row -> ((CommunityDto) row).getUuid()).collect(Collectors.toSet()))) {
+				&& FacadeProvider.getCommunityFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)) {
 			showArchivingNotPossibleWindow(infrastructureType, true);
 			return;
 		}
 		if (InfrastructureType.DISTRICT.equals(infrastructureType)
-			&& FacadeProvider.getDistrictFacade()
-				.hasArchivedParentInfrastructure(selectedRows.stream().map(row -> ((DistrictIndexDto) row).getUuid()).collect(Collectors.toSet()))
+			&& FacadeProvider.getDistrictFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.COMMUNITY.equals(infrastructureType)
-				&& FacadeProvider.getCommunityFacade()
-					.hasArchivedParentInfrastructure(selectedRows.stream().map(row -> ((CommunityDto) row).getUuid()).collect(Collectors.toSet()))
+				&& FacadeProvider.getCommunityFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.FACILITY.equals(infrastructureType)
-				&& FacadeProvider.getFacilityFacade()
-					.hasArchivedParentInfrastructure(selectedRows.stream().map(row -> ((FacilityDto) row).getUuid()).collect(Collectors.toSet()))
+				&& FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType)
-				&& FacadeProvider.getPointOfEntryFacade()
-					.hasArchivedParentInfrastructure(
-						selectedRows.stream().map(row -> ((PointOfEntryDto) row).getUuid()).collect(Collectors.toSet()))) {
+				&& FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(selectedRowsUuids)) {
 			showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
 			return;
 		}
