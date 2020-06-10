@@ -25,6 +25,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 
 @SuppressWarnings("serial")
@@ -71,9 +73,20 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 	public void enter(ViewChangeEvent event) {
 
 		params = event.getParameters();
-		refreshMenu(subNavigationMenu, infoLabel, infoLabelSub, params);
-		selectInMenu();
+		if (params == null || getReference(params) == null) {
+			SormasUI.get().getNavigator().navigateTo(getRootViewName());
+		} else {
+			refreshMenu(subNavigationMenu, infoLabel, infoLabelSub, params);
+			selectInMenu();
+			initView(params.trim());
+		}
 	}
+
+	protected abstract void initView(String params);
+
+	protected abstract ReferenceDto getReference(String params);
+
+	protected abstract String getRootViewName();
 
 	public abstract void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params);
 

@@ -56,8 +56,7 @@ public class OutbreaksView extends AbstractConfigurationView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	protected void initView(String params) {
 		grid.reload();
-		super.enter(event);
 	}
 }

@@ -157,8 +157,7 @@ public class ContactVisitsView extends AbstractContactView {
 //	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	public void initView(String params) {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null

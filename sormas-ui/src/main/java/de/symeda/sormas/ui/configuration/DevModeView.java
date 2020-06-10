@@ -617,11 +617,6 @@ public class DevModeView extends AbstractConfigurationView {
 
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-	}
-
 	private static class CaseGenerationConfig {
 
 		private int caseCount = 10;

@@ -21,6 +21,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -30,7 +31,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
-public class AbstractEventView extends AbstractSubNavigationView {
+public abstract class AbstractEventView extends AbstractSubNavigationView {
 
 	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
 
@@ -38,6 +39,25 @@ public class AbstractEventView extends AbstractSubNavigationView {
 
 	protected AbstractEventView(String viewName) {
 		super(viewName);
+	}
+
+
+	@Override
+	public ReferenceDto getReference(String params) {
+
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
+
+		if (FacadeProvider.getEventFacade().exists(params)) {
+			return FacadeProvider.getEventFacade().getReferenceByUuid(params);
+		}
+		return null;
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override

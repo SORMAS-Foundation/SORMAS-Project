@@ -22,6 +22,7 @@ import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -40,6 +41,24 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	public ReferenceDto getReference(String params) {
+
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
+
+		if (FacadeProvider.getContactFacade().exists(params)) {
+			return FacadeProvider.getContactFacade().getReferenceByUuid(params);
+		}
+		return null;
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override

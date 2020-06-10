@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.statistics;
 
 import com.vaadin.ui.Label;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -33,6 +34,21 @@ public class AbstractStatisticsView extends AbstractSubNavigationView {
 
 	protected AbstractStatisticsView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	protected void initView(String params) {
+
+	}
+
+	@Override
+	public ReferenceDto getReference(String params) {
+		return new ReferenceDto() {};
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override

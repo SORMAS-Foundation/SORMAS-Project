@@ -59,8 +59,7 @@ public class SampleDataView extends AbstractSampleView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(

@@ -24,6 +24,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -49,6 +50,21 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 
 	protected AbstractConfigurationView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	public ReferenceDto getReference(String params) {
+		return new ReferenceDto() {};
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
+	}
+
+	@Override
+	protected void initView(String params) {
+
 	}
 
 	@Override

@@ -184,11 +184,6 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		return indent;
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-	}
-
 	public Map<CheckBox, DatabaseTable> getDatabaseTableToggles() {
 		return databaseTableToggles;
 	}

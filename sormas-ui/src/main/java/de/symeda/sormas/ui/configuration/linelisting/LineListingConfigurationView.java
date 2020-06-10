@@ -181,12 +181,11 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void initView(String param) {
 
-		super.enter(event);
 		Disease disease = null;
 
-		String[] params = event.getParameters().split("\\?");
+		String[] params = param.split("\\?");
 		if (params.length > 0) {
 			String regionUuid = params[0].replaceAll("/", "");
 			this.region = FacadeProvider.getRegionFacade().getRegionReferenceByUuid(regionUuid);

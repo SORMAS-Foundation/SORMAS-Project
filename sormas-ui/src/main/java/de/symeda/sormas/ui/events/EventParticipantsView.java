@@ -100,11 +100,7 @@ public class EventParticipantsView extends AbstractEventView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-
-		if (event != null) {
-			super.enter(event);
-		}
+	public void initView(String params) {
 
 		criteria.event(getEventRef());
 

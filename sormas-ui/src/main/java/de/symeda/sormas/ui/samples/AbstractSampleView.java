@@ -21,6 +21,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -37,7 +38,7 @@ import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
-public class AbstractSampleView extends AbstractSubNavigationView {
+public abstract class AbstractSampleView extends AbstractSubNavigationView {
 
 	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
 
@@ -45,6 +46,25 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 
 	protected AbstractSampleView(String viewName) {
 		super(viewName);
+	}
+
+	@Override
+	public ReferenceDto getReference(String params) {
+
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
+
+		if (FacadeProvider.getSampleFacade().exists(params)) {
+			return FacadeProvider.getSampleFacade().getReferenceByUuid(params);
+		}
+
+		return null;
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override

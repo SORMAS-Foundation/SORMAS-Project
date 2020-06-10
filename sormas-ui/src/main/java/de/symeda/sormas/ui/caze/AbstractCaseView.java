@@ -28,6 +28,7 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -38,6 +39,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -101,6 +103,24 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			}
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
+	}
+
+	@Override
+	public ReferenceDto getReference(String params) {
+
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
+		}
+
+		if (FacadeProvider.getCaseFacade().exists(params)) {
+			return FacadeProvider.getCaseFacade().getReferenceByUuid(params);
+		}
+		return null;
+	}
+
+	@Override
+	public String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override
@@ -198,30 +218,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 				? DataHelper.toStringNullable(caze.getDisease())
 				: DataHelper.toStringNullable(caze.getDiseaseDetails()));
 	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-
-		super.enter(event);
-
-		if (caseRef == null) {
-			// NOOP: opening a case centric view without a case defaults to another view
-		} else {
-			if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
-				ControllerProvider.getCaseController().navigateToCase(caseRef.getUuid());
-			} else {
-				initView(event.getParameters().trim());
-			}
-		}
-	}
-
-	/**
-	 * We be called by {@link #enter(ViewChangeEvent)}, when a case is selected and the view shall show its specific content.
-	 * 
-	 * @param params
-	 *            The URL parameters String
-	 */
-	protected abstract void initView(String params);
 
 	@Override
 	protected void setSubComponent(Component newComponent) {

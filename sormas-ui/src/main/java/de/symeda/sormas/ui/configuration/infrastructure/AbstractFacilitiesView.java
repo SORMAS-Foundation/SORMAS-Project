@@ -315,9 +315,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
-		String params = event.getParameters().trim();
+	public void initView(String params) {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);

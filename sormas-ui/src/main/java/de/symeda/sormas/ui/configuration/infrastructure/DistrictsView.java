@@ -271,10 +271,8 @@ public class DistrictsView extends AbstractConfigurationView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void initView(String params) {
 
-		super.enter(event);
-		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);

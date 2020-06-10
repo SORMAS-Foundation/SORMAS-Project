@@ -68,9 +68,8 @@ public class ContactDataView extends AbstractContactView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void initView(String params) {
 
-		super.enter(event);
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(

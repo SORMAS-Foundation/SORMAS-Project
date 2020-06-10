@@ -405,6 +405,11 @@ public class EventFacadeEjb implements EventFacade {
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return eventService.exists(uuid);
+	}
+
 	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);

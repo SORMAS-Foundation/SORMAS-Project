@@ -2454,4 +2454,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		Case caze = caseService.getByUuid(caseUuid);
 		return caseJurisdictionChecker.isInJurisdiction(caze);
 	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return caseService.exists(uuid);
+	}
 }

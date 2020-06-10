@@ -1238,4 +1238,9 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact contact = contactService.getByUuid(contactUuid);
 		return contactJurisdictionChecker.isInJurisdiction(contact);
 	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
+	}
 }
