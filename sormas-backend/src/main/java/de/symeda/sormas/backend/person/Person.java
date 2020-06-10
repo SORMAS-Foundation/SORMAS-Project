@@ -156,7 +156,7 @@ public class Person extends AbstractDomainObject {
 	private String passportNumber;
 	private String nationalHealthId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -165,7 +165,7 @@ public class Person extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
@@ -174,6 +174,7 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNickname() {
 		return nickname;
 	}

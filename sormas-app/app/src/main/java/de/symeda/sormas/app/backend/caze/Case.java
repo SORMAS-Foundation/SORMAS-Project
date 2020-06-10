@@ -97,13 +97,13 @@ public class Case extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Enumerated(EnumType.STRING)
 	private PlagueType plagueType;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Enumerated(EnumType.STRING)
 	private DengueFeverType dengueFeverType;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
+	@Enumerated(EnumType.STRING)
 	private RabiesType rabiesType;
 
 	@Enumerated(EnumType.STRING)

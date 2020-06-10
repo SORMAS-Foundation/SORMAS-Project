@@ -4526,14 +4526,27 @@ ALTER TABLE location_history ALTER COLUMN details TYPE varchar(512);
 ALTER TABLE location_history ALTER COLUMN city TYPE varchar(512);
 ALTER TABLE location_history ALTER COLUMN postalcode TYPE varchar(512);
 
+ALTER TABLE person ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE person ALTER COLUMN nickname TYPE varchar(512);
 ALTER TABLE person ALTER COLUMN mothersname TYPE varchar(512);
 ALTER TABLE person ALTER COLUMN fathersname TYPE varchar(512);
 ALTER TABLE person ALTER COLUMN placeofbirthfacilitydetails TYPE varchar(512);
 ALTER TABLE person ALTER COLUMN generalpractitionerdetails TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE person_history ALTER COLUMN nickname TYPE varchar(512);
 ALTER TABLE person_history ALTER COLUMN mothersname TYPE varchar(512);
 ALTER TABLE person_history ALTER COLUMN fathersname TYPE varchar(512);
 ALTER TABLE person_history ALTER COLUMN placeofbirthfacilitydetails TYPE varchar(512);
 ALTER TABLE person_history ALTER COLUMN generalpractitionerdetails TYPE varchar(512);
+
+ALTER TABLE users ALTER COLUMN username TYPE varchar(512);
+ALTER TABLE users ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE users ALTER COLUMN lastname TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN username TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN firstname TYPE varchar(512);
+ALTER TABLE users_history ALTER COLUMN lastname TYPE varchar(512);
 
 ALTER TABLE community ALTER COLUMN externalid TYPE varchar(512);
 ALTER TABLE district ALTER COLUMN externalid TYPE varchar(512);
