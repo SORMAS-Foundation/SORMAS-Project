@@ -61,6 +61,7 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
+			<!-- Provide WebApp context path via value of `sormasRest.apiRoot` property -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -84,6 +85,8 @@
 					</webResources>
 				</configuration>
 			</plugin>
+
+			<!-- Swagger Generation -->
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
