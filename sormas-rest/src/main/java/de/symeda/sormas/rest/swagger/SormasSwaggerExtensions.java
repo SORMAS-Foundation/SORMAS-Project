@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.rest;
+package de.symeda.sormas.rest.swagger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -45,7 +45,7 @@ import de.symeda.sormas.api.utils.Required;
  *
  * @author Jan-Niklas Brandes
  */
-public class SwaggerExtension extends AbstractOpenAPIExtension implements ModelConverter {
+public class SormasSwaggerExtensions extends AbstractOpenAPIExtension implements ModelConverter {
 
 	public static final String XPROP_PREFIX = "x-sormas-";
 	public static final String XPROP_PERSONAL_DATA = XPROP_PREFIX + "personal-data";
@@ -72,21 +72,27 @@ public class SwaggerExtension extends AbstractOpenAPIExtension implements ModelC
 			ModelConverter next = iterator.next();
 			Schema<?> schema = next.resolve(annotatedType, modelConverterContext, iterator);
 
+			//@formatter:off
 			if (schema != null && annotatedType.getCtxAnnotations() != null) {
 				// Required field documentation
 				if (annotatedType.isSchemaProperty()) {
 					boolean isRequired =
-						Arrays.stream(annotatedType.getCtxAnnotations()).anyMatch((Annotation a) -> a.annotationType() == Required.class);
+						Arrays.stream(annotatedType.getCtxAnnotations())
+							.anyMatch((Annotation a) -> a.annotationType() == Required.class);
 
 					String propName = annotatedType.getPropertyName();
 					List<String> currRequired = annotatedType.getParent().getRequired();
-					if (isRequired && (currRequired == null || currRequired.stream().noneMatch((String prop) -> prop.equals(propName)))) {
+					if (isRequired && (currRequired == null || currRequired.stream()
+						.noneMatch((String prop) -> prop.equals(propName)))) {
+
 						annotatedType.getParent().addRequiredItem(propName);
 					}
 				}
 
 				// Personal data documentation
-				if (Arrays.stream(annotatedType.getCtxAnnotations()).anyMatch((Annotation a) -> a.annotationType() == PersonalData.class)) {
+				if (Arrays.stream(annotatedType.getCtxAnnotations())
+					.anyMatch((Annotation a) -> a.annotationType() == PersonalData.class)) {
+
 					schema.addExtension(XPROP_PERSONAL_DATA, true);
 				}
 
@@ -95,10 +101,8 @@ public class SwaggerExtension extends AbstractOpenAPIExtension implements ModelC
 				Set<String> excludeCountries = new HashSet<>();
 
 				List<Annotation> hfcs = Arrays.stream(annotatedType.getCtxAnnotations()).filter((Annotation a) ->
-					//@formatter:off
 						a.annotationType() == HideForCountries.class ||
 						a.annotationType() == HideForCountriesExcept.class)
-						//@formatter:on
 					.collect(Collectors.toList());
 
 				for (Annotation hfcAnnotation : hfcs) {
@@ -130,6 +134,7 @@ public class SwaggerExtension extends AbstractOpenAPIExtension implements ModelC
 				if (dependencies.size() > 0) {
 					schema.addExtension(XPROP_DEPENDS_ON, dependencies);
 				}
+				//@formatter:on
 			}
 
 			return schema;

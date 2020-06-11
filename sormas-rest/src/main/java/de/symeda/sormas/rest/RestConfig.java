@@ -17,26 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
-import io.swagger.v3.core.converter.ModelConverters;
-import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
-import io.swagger.v3.jaxrs2.ext.OpenAPIExtensions;
-
 import javax.ws.rs.ApplicationPath;
+
+import de.symeda.sormas.rest.swagger.SwaggerConfig;
 
 /**
  * @see <a href="https://jersey.github.io/documentation/latest/index.html">Jersey documentation</a>
  */
 @ApplicationPath("/")
 public class RestConfig extends ResourceConfig {
-
-	private static boolean populatedSwaggerExtensions;
 
 	public RestConfig() {
 
@@ -50,23 +43,6 @@ public class RestConfig extends ResourceConfig {
 
 		register(JacksonFeature.class);
 
-		// >>>>> SWAGGER DOCUMENTATION GENERATION CONFIG >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		if (!populatedSwaggerExtensions) {
-			// Register Swagger Generator Extensions
-			SwaggerExtension sormasSwaggerExtension = new SwaggerExtension();
-
-			// Operations-Level extensions
-			List<OpenAPIExtension> swaggerExtensions = new ArrayList<>(OpenAPIExtensions.getExtensions());
-			swaggerExtensions.add(sormasSwaggerExtension);
-
-			OpenAPIExtensions.setExtensions(swaggerExtensions);
-
-			// Schema-Level extensions
-			ModelConverters modelConverters = ModelConverters.getInstance();
-			modelConverters.addConverter(sormasSwaggerExtension);
-
-			// Only run this code once
-			populatedSwaggerExtensions = true;
-		}
+		SwaggerConfig.init();
 	}
 }
