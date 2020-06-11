@@ -38,6 +38,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -365,6 +366,7 @@ public class Contact extends CoreAdo {
 		this.tasks = tasks;
 	}
 
+	@AuditedIgnore
 	@ManyToMany(mappedBy = Visit.CONTACTS, fetch = FetchType.LAZY)
 	public Set<Visit> getVisits() {
 		return visits;
