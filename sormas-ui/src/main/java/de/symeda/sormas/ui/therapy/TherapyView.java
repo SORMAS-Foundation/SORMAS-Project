@@ -67,7 +67,7 @@ public class TherapyView extends AbstractCaseView {
 	private TextField treatmentTextFilter;
 
 	public TherapyView() {
-		super(VIEW_NAME, false);
+		super(VIEW_NAME);
 
 		prescriptionCriteria = ViewModelProviders.of(TherapyView.class).get(PrescriptionCriteria.class);
 		treatmentCriteria = ViewModelProviders.of(TherapyView.class).get(TreatmentCriteria.class);

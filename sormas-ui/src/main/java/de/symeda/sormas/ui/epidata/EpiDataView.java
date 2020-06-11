@@ -27,7 +27,7 @@ public class EpiDataView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 
 	public EpiDataView() {
-		super(VIEW_NAME, true);
+		super(VIEW_NAME);
 	}
 
 	@Override

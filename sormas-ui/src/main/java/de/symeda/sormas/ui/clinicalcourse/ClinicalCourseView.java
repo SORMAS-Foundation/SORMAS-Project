@@ -54,7 +54,7 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 	public ClinicalCourseView() {
 
-		super(VIEW_NAME, true);
+		super(VIEW_NAME);
 
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}

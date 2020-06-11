@@ -99,7 +99,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 	public CaseContactsView() {
 
-		super(VIEW_NAME, false);
+		super(VIEW_NAME);
 		setSizeFull();
 
 		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);

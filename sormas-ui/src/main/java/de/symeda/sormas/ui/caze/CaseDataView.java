@@ -53,7 +53,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String SAMPLES_LOC = "samples";
 
 	public CaseDataView() {
-		super(VIEW_NAME, false);
+		super(VIEW_NAME);
 	}
 
 	@Override

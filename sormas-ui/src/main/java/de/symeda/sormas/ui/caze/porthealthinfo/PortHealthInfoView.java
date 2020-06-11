@@ -26,7 +26,7 @@ public class PortHealthInfoView extends AbstractCaseView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/porthealthinfo";
 
 	public PortHealthInfoView() {
-		super(VIEW_NAME, false);
+		super(VIEW_NAME);
 	}
 
 	@Override

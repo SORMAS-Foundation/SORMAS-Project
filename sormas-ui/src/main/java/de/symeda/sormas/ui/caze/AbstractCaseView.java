@@ -65,11 +65,10 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	private Boolean hasOutbreak;
 
 	private final ViewConfiguration viewConfiguration;
-	private final boolean redirectSimpleModeToCaseDataView;
 	private final OptionGroup viewModeToggle;
 	private final Property.ValueChangeListener viewModeToggleListener;
 
-	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
+	protected AbstractCaseView(String viewName) {
 
 		super(viewName);
 
@@ -82,7 +81,6 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 		}
 
 		this.viewConfiguration = ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class);
-		this.redirectSimpleModeToCaseDataView = redirectSimpleModeToCaseDataView;
 
 		viewModeToggle = new OptionGroup();
 		CssStyles.style(viewModeToggle, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY, CssStyles.VSPACE_TOP_3);
