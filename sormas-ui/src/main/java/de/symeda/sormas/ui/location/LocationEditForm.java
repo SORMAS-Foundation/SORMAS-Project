@@ -17,6 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.location;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
+
+import java.util.Collections;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -28,6 +41,7 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -42,21 +56,7 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.MaxLengthValidator;
-import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-import org.apache.commons.lang3.ObjectUtils;
-
-import java.util.Collections;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -114,9 +114,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
+		tfLatitude.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfLatitude);
+		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
+		tfLongitude.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfLongitude);
+		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		tfAccuracy.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfAccuracy);
 
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);

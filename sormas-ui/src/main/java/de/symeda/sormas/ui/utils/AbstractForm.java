@@ -7,6 +7,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.ui.AbstractField;
@@ -277,6 +278,14 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 
 		return field;
+	}
+
+	protected <T extends Field> void removeMaxLengthValidators(T field) {
+		for (Validator validator : field.getValidators()) {
+			if (validator instanceof MaxLengthValidator) {
+				field.removeValidator(validator);
+			}
+		}
 	}
 
 	public Field<?> getField(String fieldOrPropertyId) {
