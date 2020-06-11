@@ -370,9 +370,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
-		addField(CaseDataDto.REPORT_LAT, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
+		tfReportLat.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfReportLat);
+		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
+		tfReportLon.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfReportLon);
+		TextField tfReportAccuracy = addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+		removeMaxLengthValidators(tfReportAccuracy);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);

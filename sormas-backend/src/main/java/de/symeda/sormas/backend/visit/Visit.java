@@ -38,6 +38,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -89,6 +90,7 @@ public class Visit extends AbstractDomainObject {
 		this.person = person;
 	}
 
+	@AuditedIgnore
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = CONTACTS_VISITS_TABLE_NAME, joinColumns = @JoinColumn(name = "visit_id"), inverseJoinColumns = @JoinColumn(name = "contact_id"))
 	public Set<Contact> getContacts() {

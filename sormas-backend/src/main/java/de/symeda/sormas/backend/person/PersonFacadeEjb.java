@@ -45,7 +45,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -69,11 +68,9 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -483,20 +480,23 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private boolean isPersonInJurisdiction(Person person) {
 
-		List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
-		boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
+		return true;
 
-		if (!isInJurisdiction) {
-			List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())), null);
-			isInJurisdiction = personContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-		}
-
-		if (!isInJurisdiction) {
-			List<EventParticipant> personEventParticipants = eventParticipantSerice.getAllByPerson(person);
-			isInJurisdiction = personEventParticipants.stream().anyMatch(p -> eventJurisdictionChecker.isInJurisdiction(p.getEvent()));
-		}
-
-		return isInJurisdiction;
+		// @TODO This code is extremely slow; we need to replace this
+		/*
+		 * List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
+		 * boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
+		 * if (!isInJurisdiction) {
+		 * List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())),
+		 * null);
+		 * isInJurisdiction = personContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+		 * }
+		 * if (!isInJurisdiction) {
+		 * List<EventParticipant> personEventParticipants = eventParticipantSerice.getAllByPerson(person);
+		 * isInJurisdiction = personEventParticipants.stream().anyMatch(p -> eventJurisdictionChecker.isInJurisdiction(p.getEvent()));
+		 * }
+		 * return isInJurisdiction;
+		 */
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
