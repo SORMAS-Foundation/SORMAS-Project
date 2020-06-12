@@ -25,14 +25,20 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 
+	public static final String EVENT_DATE_FROM = "eventDateFrom";
+	public static final String EVENT_DATE_TO = "eventDateTo";
 	public static String REPORTING_USER_ROLE = "reportingUserRole";
+	public static String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static String FREE_TEXT = "freeText";
 
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -43,6 +49,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
 	private EntityRelevanceStatus relevanceStatus;
+	private Date eventDateFrom;
+	private Date eventDateTo;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	private UserReferenceDto surveillanceOfficer;
+	private String freeText;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -139,5 +150,57 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public Date getReportedDateTo() {
 		return reportedDateTo;
+	}
+
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, DateFilterOption dateFilterOption) {
+		this.eventDateFrom = eventDateFrom;
+		this.eventDateTo = eventDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public EventCriteria eventDateFrom(Date eventDateFrom) {
+		this.eventDateFrom = eventDateFrom;
+		return this;
+	}
+
+	public Date getEventDateFrom() {
+		return eventDateFrom;
+	}
+
+	public EventCriteria eventDateTo(Date eventDateTo) {
+		this.eventDateTo = eventDateTo;
+		return this;
+	}
+
+	public Date getEventDateTo() {
+		return eventDateTo;
+	}
+
+	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+		return this;
+	}
+
+	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+	}
+
+	public UserReferenceDto getSurveillanceOfficer() {
+		return surveillanceOfficer;
+	}
+
+	public EventCriteria freeText(String freeText) {
+		this.freeText = freeText;
+		return this;
+	}
+
+	public void setFreeText(String freeText) {
+		this.freeText = freeText;
+	}
+
+	@IgnoreForUrl
+	public String getFreeText() {
+		return freeText;
 	}
 }

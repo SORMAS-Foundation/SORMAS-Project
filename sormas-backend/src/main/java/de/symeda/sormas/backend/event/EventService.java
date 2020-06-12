@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -34,6 +35,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -43,12 +46,15 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
@@ -396,6 +402,30 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			filter =
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
 		}
+		if (eventCriteria.getEventDateFrom() != null && eventCriteria.getEventDateTo() != null) {
+			filter = and(cb, filter, cb.between(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()));
+		} else if (eventCriteria.getEventDateFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom()));
+		} else if (eventCriteria.getEventDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateTo()));
+		}
+		if (eventCriteria.getSurveillanceOfficer() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.equal(from.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), eventCriteria.getSurveillanceOfficer().getUuid()));
+		}
+		if (eventCriteria.getFreeText() != null) {
+			String[] textFilters = eventCriteria.getFreeText().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters =
+						cb.or(cb.like(cb.lower(from.get(Event.UUID)), textFilter), cb.like(cb.lower(from.get(Event.EVENT_DESC)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
 
 		return filter;
 	}
@@ -413,5 +443,33 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Event> root) {
 		return cb.isFalse(root.get(Event.DELETED));
+	}
+
+	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
+
+		if (StringUtils.isEmpty(searchTerm)) {
+			return null;
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Event> root = cq.from(Event.class);
+		Join<Event, EventParticipant> eventParticipant = root.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<EventParticipant, Person> eventParticipantPerson = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<EventParticipant, Case> eventParticipantCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+
+		Predicate filter = cb.or(
+			cb.equal(cb.lower(eventParticipantCase.get(Case.UUID)), searchTerm.toLowerCase()),
+			cb.equal(cb.lower(eventParticipantPerson.get(Person.UUID)), searchTerm.toLowerCase()));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(root.get(Event.REPORT_DATE_TIME)));
+		cq.select(root.get(Event.UUID));
+
+		try {
+			return em.createQuery(cq).setMaxResults(1).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 }
