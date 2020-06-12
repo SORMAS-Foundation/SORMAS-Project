@@ -29,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -97,6 +98,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createRowCountLayout());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -247,11 +249,12 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
+				
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(
-						FacilityType.LABORATORY.equals(criteria.getType()) ? Captions.facilityActiveLaboratories : Captions.facilityActiveFacilities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(FacilityType.LABORATORY.equals(criteria.getType()) ? Captions.facilityActiveLaboratories : Captions.facilityActiveFacilities));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(
 						FacilityType.LABORATORY.equals(criteria.getType()) ? Captions.facilityArchivedLaboratories : Captions.facilityArchivedFacilities));
+								
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(
 						FacilityType.LABORATORY.equals(criteria.getType()) ? Captions.facilityAllLaboratories : Captions.facilityAllFacilities));
 				relevanceStatusFilter.addValueChangeListener(e -> {
@@ -289,6 +292,30 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		filterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return filterLayout;
+	}
+	
+	public HorizontalLayout createRowCountLayout() {
+		HorizontalLayout totalLayout = new HorizontalLayout();
+		totalLayout.setMargin(false);
+		totalLayout.addStyleName(CssStyles.VSPACE_4);
+		totalLayout.setSpacing(true);
+		totalLayout.setWidth(100, Unit.PERCENTAGE);
+		
+		String labelText = FacilityType.LABORATORY.equals(criteria.getType()) ? Strings.labelNumberOfLaboratories : Strings.labelNumberOfFacilities;
+		
+		Label labelTotal = new Label(I18nProperties.getString(labelText) + ":");
+		
+		labelTotal.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
+		totalLayout.addComponent(labelTotal);
+		totalLayout.setExpandRatio(labelTotal, 1);
+		totalLayout.setComponentAlignment(labelTotal, Alignment.MIDDLE_RIGHT);
+
+		Label totalLabelValue = new Label(String.valueOf(grid.getItemCount()));
+		totalLabelValue.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
+		totalLayout.addComponent(totalLabelValue);
+		totalLayout.setComponentAlignment(totalLabelValue, Alignment.MIDDLE_RIGHT);
+
+		return totalLayout;
 	}
 
 	@Override
