@@ -123,7 +123,7 @@ public class EventParticipantsController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
