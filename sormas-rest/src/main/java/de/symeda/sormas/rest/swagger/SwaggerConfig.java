@@ -20,7 +20,11 @@ package de.symeda.sormas.rest.swagger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtensions;
 
@@ -36,6 +40,10 @@ public class SwaggerConfig {
 	static {
 		// Real initialization routine
 		registerExtensions();
+
+		// Swagger uses a Jackson ObjectMapper in the process of type resolution; there are some
+		// settings for that ObjectMapper we need to adjust for the Swagger Specification to be correct
+		tweakObjectMapping(Json.mapper());
 	}
 
 	public static void init() {
@@ -58,5 +66,10 @@ public class SwaggerConfig {
 		// Schema-Level extensions
 		ModelConverters modelConverters = ModelConverters.getInstance();
 		modelConverters.addConverter(sormasSwaggerExtension);
+	}
+
+	private static void tweakObjectMapping(ObjectMapper swaggerObjectMapper) {
+		// Do not use toString() on enum values
+		swaggerObjectMapper.disable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
 	}
 }
