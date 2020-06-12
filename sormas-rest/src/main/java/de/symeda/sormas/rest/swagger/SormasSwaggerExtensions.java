@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,9 +35,12 @@ import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 
+import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 
@@ -52,6 +56,9 @@ public class SormasSwaggerExtensions extends AbstractOpenAPIExtension implements
 	public static final String XPROP_FOR_COUNTRIES = XPROP_PREFIX + "countries-for";
 	public static final String XPROP_EXCEPT_COUNTRIES = XPROP_PREFIX + "countries-except";
 	public static final String XPROP_DEPENDS_ON = XPROP_PREFIX + "depends-on";
+	public static final String XPROP_DISEASES = XPROP_PREFIX + "diseases";
+	public static final String XPROP_OUTBREAKS = XPROP_PREFIX + "outbreaks";
+	public static final String XPROP_COMPLICATIONS = XPROP_PREFIX + "complications";
 
 	@Override
 	public void decorateOperation(Operation operation, Method method, Iterator<OpenAPIExtension> chain) {
@@ -73,20 +80,20 @@ public class SormasSwaggerExtensions extends AbstractOpenAPIExtension implements
 			Schema<?> schema = next.resolve(annotatedType, modelConverterContext, iterator);
 
 			//@formatter:off
-			if (schema != null && annotatedType.getCtxAnnotations() != null) {
+			if (schema != null && annotatedType.getCtxAnnotations() != null
+				&& annotatedType.isSchemaProperty()) {
+
 				// Required field documentation
-				if (annotatedType.isSchemaProperty()) {
-					boolean isRequired =
-						Arrays.stream(annotatedType.getCtxAnnotations())
-							.anyMatch((Annotation a) -> a.annotationType() == Required.class);
+				boolean isRequired =
+					Arrays.stream(annotatedType.getCtxAnnotations())
+						.anyMatch((Annotation a) -> a.annotationType() == Required.class);
 
-					String propName = annotatedType.getPropertyName();
-					List<String> currRequired = annotatedType.getParent().getRequired();
-					if (isRequired && (currRequired == null || currRequired.stream()
-						.noneMatch((String prop) -> prop.equals(propName)))) {
+				String propName = annotatedType.getPropertyName();
+				List<String> currRequired = annotatedType.getParent().getRequired();
+				if (isRequired && (currRequired == null || currRequired.stream()
+					.noneMatch((String prop) -> prop.equals(propName)))) {
 
-						annotatedType.getParent().addRequiredItem(propName);
-					}
+					annotatedType.getParent().addRequiredItem(propName);
 				}
 
 				// Personal data documentation
@@ -133,6 +140,30 @@ public class SormasSwaggerExtensions extends AbstractOpenAPIExtension implements
 					.collect(Collectors.toList());
 				if (dependencies.size() > 0) {
 					schema.addExtension(XPROP_DEPENDS_ON, dependencies);
+				}
+
+				// Disease association documentation
+				Optional<Diseases> associatedDiseases = Arrays.stream(annotatedType.getCtxAnnotations())
+					.filter((Annotation a) -> a.annotationType() == Diseases.class)
+					.map((Annotation a) -> (Diseases) a)
+					.findFirst();
+
+				if (associatedDiseases.isPresent() && associatedDiseases.get().value().length > 0) {
+					schema.addExtension(XPROP_DISEASES, associatedDiseases.get().value());
+				}
+
+				// Outbreak visibility documentation
+				if (Arrays.stream(annotatedType.getCtxAnnotations())
+					.anyMatch((Annotation a) -> a.annotationType() == Outbreaks.class)) {
+
+					schema.addExtension(XPROP_OUTBREAKS, true);
+				}
+
+				// Complications documentation
+				if (Arrays.stream(annotatedType.getCtxAnnotations())
+					.anyMatch((Annotation a) -> a.annotationType() == Complication.class)) {
+
+					schema.addExtension(XPROP_COMPLICATIONS, true);
 				}
 				//@formatter:on
 			}
