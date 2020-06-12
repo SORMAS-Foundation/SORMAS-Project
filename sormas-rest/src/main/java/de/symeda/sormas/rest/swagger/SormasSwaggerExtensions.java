@@ -19,13 +19,8 @@ package de.symeda.sormas.rest.swagger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
@@ -35,6 +30,7 @@ import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DependantOn;
 import de.symeda.sormas.api.utils.Diseases;
@@ -83,87 +79,54 @@ public class SormasSwaggerExtensions extends AbstractOpenAPIExtension implements
 			if (schema != null && annotatedType.getCtxAnnotations() != null
 				&& annotatedType.isSchemaProperty()) {
 
-				// Required field documentation
-				boolean isRequired =
-					Arrays.stream(annotatedType.getCtxAnnotations())
-						.anyMatch((Annotation a) -> a.annotationType() == Required.class);
+				for (Annotation a : annotatedType.getCtxAnnotations()) {
+					if (a.annotationType() == Required.class) {
+						// Required field documentation
+						String propName = annotatedType.getPropertyName();
+						List<String> currRequired = annotatedType.getParent().getRequired();
 
-				String propName = annotatedType.getPropertyName();
-				List<String> currRequired = annotatedType.getParent().getRequired();
-				if (isRequired && (currRequired == null || currRequired.stream()
-					.noneMatch((String prop) -> prop.equals(propName)))) {
+						if (currRequired == null || currRequired.stream()
+							.noneMatch((String prop) -> prop.equals(propName))) {
 
-					annotatedType.getParent().addRequiredItem(propName);
-				}
-
-				// Personal data documentation
-				if (Arrays.stream(annotatedType.getCtxAnnotations())
-					.anyMatch((Annotation a) -> a.annotationType() == PersonalData.class)) {
-
-					schema.addExtension(XPROP_PERSONAL_DATA, true);
-				}
-
-				// Geo-filtering documentation
-				Set<String> includeCountries = new HashSet<>();
-				Set<String> excludeCountries = new HashSet<>();
-
-				List<Annotation> hfcs = Arrays.stream(annotatedType.getCtxAnnotations()).filter((Annotation a) ->
-						a.annotationType() == HideForCountries.class ||
-						a.annotationType() == HideForCountriesExcept.class)
-					.collect(Collectors.toList());
-
-				for (Annotation hfcAnnotation : hfcs) {
-					if (hfcAnnotation instanceof HideForCountries) {
-						for (String country : ((HideForCountries) hfcAnnotation).countries()) {
-							excludeCountries.add(country);
-							includeCountries.remove(country);
+							annotatedType.getParent().addRequiredItem(propName);
 						}
-					} else if (hfcAnnotation instanceof HideForCountriesExcept) {
-						for (String country : ((HideForCountriesExcept) hfcAnnotation).countries()) {
-							includeCountries.add(country);
-							excludeCountries.remove(country);
+
+					} else if (a.annotationType() == PersonalData.class) {
+						// Outbreak visibility documentation
+						schema.addExtension(XPROP_PERSONAL_DATA, true);
+
+					} else if (a.annotationType() == Outbreaks.class) {
+						// Complications documentation
+						schema.addExtension(XPROP_OUTBREAKS, true);
+
+					} else if (a.annotationType() == Complication.class) {
+						// Complications documentation
+						schema.addExtension(XPROP_COMPLICATIONS, true);
+
+					} else if (a.annotationType() == Diseases.class) {
+						// Disease association documentation
+						Disease[] diseases = ((Diseases) a).value();
+						if (diseases.length > 0) {
+							schema.addExtension(XPROP_DISEASES, diseases);
+						}
+
+					} else if (a.annotationType() == DependantOn.class) {
+						// Field dependency documentation
+						schema.addExtension(XPROP_DEPENDS_ON, ((DependantOn) a).value());
+
+					} else if (a.annotationType() == HideForCountries.class) {
+						// Documentation of countries to hide the field from
+						if (schema.getExtensions() != null) {
+							schema.getExtensions().remove(XPROP_FOR_COUNTRIES);
+						}
+						schema.addExtension(XPROP_EXCEPT_COUNTRIES, ((HideForCountries) a).countries());
+
+					} else if (a.annotationType() == HideForCountriesExcept.class) {
+						// Documentation of countries to show field for
+						if (schema.getExtensions() == null || !schema.getExtensions().containsKey(XPROP_EXCEPT_COUNTRIES)) {
+							schema.addExtension(XPROP_FOR_COUNTRIES, ((HideForCountriesExcept) a).countries());
 						}
 					}
-				}
-
-				if (includeCountries.size() > 0) {
-					schema.addExtension(XPROP_FOR_COUNTRIES, includeCountries);
-				}
-				if (excludeCountries.size() > 0) {
-					schema.addExtension(XPROP_EXCEPT_COUNTRIES, excludeCountries);
-				}
-
-				// Field dependency
-				List<String> dependencies = Arrays.stream(annotatedType.getCtxAnnotations())
-					.filter((Annotation a) -> a.annotationType() == DependantOn.class)
-					.map((Annotation a) -> ((DependantOn) a).value())
-					.collect(Collectors.toList());
-				if (dependencies.size() > 0) {
-					schema.addExtension(XPROP_DEPENDS_ON, dependencies);
-				}
-
-				// Disease association documentation
-				Optional<Diseases> associatedDiseases = Arrays.stream(annotatedType.getCtxAnnotations())
-					.filter((Annotation a) -> a.annotationType() == Diseases.class)
-					.map((Annotation a) -> (Diseases) a)
-					.findFirst();
-
-				if (associatedDiseases.isPresent() && associatedDiseases.get().value().length > 0) {
-					schema.addExtension(XPROP_DISEASES, associatedDiseases.get().value());
-				}
-
-				// Outbreak visibility documentation
-				if (Arrays.stream(annotatedType.getCtxAnnotations())
-					.anyMatch((Annotation a) -> a.annotationType() == Outbreaks.class)) {
-
-					schema.addExtension(XPROP_OUTBREAKS, true);
-				}
-
-				// Complications documentation
-				if (Arrays.stream(annotatedType.getCtxAnnotations())
-					.anyMatch((Annotation a) -> a.annotationType() == Complication.class)) {
-
-					schema.addExtension(XPROP_COMPLICATIONS, true);
 				}
 				//@formatter:on
 			}
