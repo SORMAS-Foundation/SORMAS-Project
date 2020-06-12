@@ -19,8 +19,10 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -74,6 +76,8 @@ public class UsersView extends AbstractView {
 	private ComboBox districtFilter;
 	private TextField searchField;
 
+	private Label totalLabelValue;
+
 	public UsersView() {
 		super(VIEW_NAME);
 
@@ -83,7 +87,9 @@ public class UsersView extends AbstractView {
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
+		gridLayout.addComponent(createRowCountLayout());
 		gridLayout.addComponent(grid);
+
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
@@ -173,10 +179,32 @@ public class UsersView extends AbstractView {
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
 			grid.reload();
+			totalLabelValue.setValue(String.valueOf(grid.getItemCount()));
 		});
 		filterLayout.addComponent(searchField);
 
 		return filterLayout;
+	}
+
+	public HorizontalLayout createRowCountLayout() {
+		HorizontalLayout totalLayout = new HorizontalLayout();
+		totalLayout.setMargin(false);
+		totalLayout.addStyleName(CssStyles.VSPACE_4);
+		totalLayout.setSpacing(true);
+		totalLayout.setWidth(100, Unit.PERCENTAGE);
+
+		Label labelTotal = new Label(I18nProperties.getString(Strings.labelNumberOfUsers)+":");
+		labelTotal.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
+		totalLayout.addComponent(labelTotal);
+		totalLayout.setExpandRatio(labelTotal, 1);
+		totalLayout.setComponentAlignment(labelTotal, Alignment.MIDDLE_RIGHT);
+
+		totalLabelValue = new Label(String.valueOf(grid.getItemCount()));
+		totalLabelValue.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
+		totalLayout.addComponent(totalLabelValue);
+		totalLayout.setComponentAlignment(totalLabelValue, Alignment.MIDDLE_RIGHT);
+
+		return totalLayout;
 	}
 
 	@Override
