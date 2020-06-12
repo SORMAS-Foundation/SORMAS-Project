@@ -960,6 +960,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testDoesEpidNumberExistLargeNumbers() {
+
+		assertFalse(getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER));
+	}
+
+	@Test
 	public void testArchiveAllArchivableCases() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
