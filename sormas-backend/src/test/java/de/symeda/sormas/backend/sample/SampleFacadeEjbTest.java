@@ -58,6 +58,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -115,10 +116,22 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
 		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
 		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		SampleDto sample =
-			creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		SampleDto referredSample =
-			creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		cazeSample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
+		getSampleFacade().saveSample(cazeSample);
+		SampleDto sample = creator.createSample(
+			contact.toReference(),
+			DateHelper.subtractDays(new Date(), 4),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
+		SampleDto referredSample = creator.createSample(
+			contact.toReference(),
+			DateHelper.subtractDays(new Date(), 3),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
@@ -170,10 +183,22 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference());
 		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		SampleDto sample =
-			creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		SampleDto referredSample =
-			creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		cazeSample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
+		getSampleFacade().saveSample(cazeSample);
+		SampleDto sample = creator.createSample(
+			contact.toReference(),
+			DateHelper.subtractDays(new Date(), 4),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
+		SampleDto referredSample = creator.createSample(
+			contact.toReference(),
+			DateHelper.subtractDays(new Date(), 3),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
