@@ -27,7 +27,7 @@
     <string name="notAnswered">Senza risposta</string>
     <string name="system">Sistema</string>
     <string name="yes">Sì</string>
-    <string name="all">All</string>
+    <string name="all">Tutti</string>
     <string name="completed">completato</string>
     <string name="action_add_missing_case">Aggiungi casi mancanti</string>
     <string name="action_allow_gps_access">Consenti Accesso Gps</string>
@@ -55,7 +55,7 @@
     <string name="action_edit_case">Modifica Caso</string>
     <string name="action_edit_contact">Modifica contatto</string>
     <string name="action_edit_event">Modifica evento</string>
-    <string name="action_edit_sample">Edit Sample</string>
+    <string name="action_edit_sample">Modifica campione</string>
     <string name="action_forgot_PIN">PIN dimenticato?</string>
     <string name="action_help">Aiuto</string>
     <string name="action_install_app">Installa</string>
@@ -70,7 +70,7 @@
     <string name="action_new_case">Nuovo caso</string>
     <string name="action_new_contact">Nuovo contatto</string>
     <string name="action_new_event">Nuovo Evento</string>
-    <string name="action_new_sample">New Sample</string>
+    <string name="action_new_sample">Nuovo campione</string>
     <string name="action_new_task">Nuovo incarico</string>
     <string name="action_not_executable">Non eseguibile</string>
     <string name="action_ok">OK</string>
@@ -280,7 +280,7 @@
     <string name="heading_enter_pin">Enter PIN</string>
     <string name="heading_environmental_exposure">Environmental Exposure</string>
     <string name="heading_epidemiological_info">Epidemiological Info</string>
-    <string name="heading_error_dialog">Error!</string>
+    <string name="heading_error_dialog">Errore!</string>
     <string name="heading_error_notification_dialog">Oops, something went wrong.</string>
     <string name="heading_event_edit">Edit Event</string>
     <string name="heading_event_new">New Event</string>
@@ -521,13 +521,13 @@
     <string name="value_disease_unknown">Disease N/A</string>
     <string name="value_executing_clinician_unknown">Executing Clinician N/A</string>
     <string name="value_facility_unknown">Health Facility N/A</string>
-    <string name="value_frequency_unknown">Frequency N/A</string>
+    <string name="value_frequency_unknown">Frequenza N/A</string>
     <string name="value_sex_unknown">Sex N/A</string>
     <string name="value_heart_rate_unknown">Heart Rate N/A</string>
     <string name="value_inadequate_specimen_condition">Specimen condition not adequate</string>
-    <string name="value_lab_unknown">Lab N/A</string>
-    <string name="value_location_unknown">Location N/A</string>
-    <string name="value_missing_report">Missing report</string>
+    <string name="value_lab_unknown">Laboratorio N/A</string>
+    <string name="value_location_unknown">Posizione N/A</string>
+    <string name="value_missing_report">Rapporto mancante</string>
     <string name="value_no_resulting_case">No Resulting Case</string>
     <string name="value_no_username">No Username</string>
     <string name="value_not_available">N/A</string>
