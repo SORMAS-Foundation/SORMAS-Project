@@ -30,6 +30,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -169,6 +170,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
 		Root<Case> from = cq.from(getElementClass());
+		from.fetch(Case.SYMPTOMS);
+		from.fetch(Case.THERAPY);
+		Fetch<Case, ClinicalCourse> clinicalCourseFetch = from.fetch(Case.CLINICAL_COURSE);
+		clinicalCourseFetch.fetch(ClinicalCourse.HEALTH_CONDITIONS);
+		from.fetch(Case.HOSPITALIZATION);
+		from.fetch(Case.EPI_DATA);
+		from.fetch(Case.PORT_HEALTH_INFO);
+		from.fetch(Case.MATERNAL_HISTORY);
 
 		Predicate filter = createActiveCasesFilter(cb, from);
 

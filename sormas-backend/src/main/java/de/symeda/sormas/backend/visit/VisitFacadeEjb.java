@@ -358,14 +358,14 @@ public class VisitFacadeEjb implements VisitFacade {
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
-			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
-				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
+//			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+//				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
 
 			for (VisitExportDto exportDto : resultList) {
-				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
-				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-
-				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
+//				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
+//				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+//
+//				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
 
 				if (symptoms != null) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))

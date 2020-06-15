@@ -47,7 +47,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
@@ -271,11 +270,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person person = personService.getByUuid(source.getUuid());
 		PersonDto existingPerson = toDto(person);
 
-		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = isPersonInJurisdiction(person);
-			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
-		}
+//		if (person != null && existingPerson != null) {
+//			boolean isInJurisdiction = isPersonInJurisdiction(person);
+//			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
+//			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+//		}
 
 		validate(source);
 
@@ -467,13 +466,13 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		PersonDto dto = toDto(person);
 
-		if (dto != null) {
-			boolean isInJurisdiction = isPersonInJurisdiction(person);
-
-			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-			});
-		}
+//		if (dto != null) {
+//			boolean isInJurisdiction = isPersonInJurisdiction(person);
+//
+//			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+//				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+//			});
+//		}
 
 		return dto;
 	}
