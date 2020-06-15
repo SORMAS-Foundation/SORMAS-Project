@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -79,12 +80,15 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	//@formatter:on
 
-	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode) {
+	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isInJurisdiction) {
 
 		super(
 			HospitalizationDto.class,
 			HospitalizationDto.I18N_PREFIX,
-			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)));
+			false,
+			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)),
+				FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction))
+		);
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();
@@ -120,6 +124,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(

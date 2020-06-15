@@ -274,11 +274,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Person person = personService.getByUuid(source.getUuid());
 		PersonDto existingPerson = toDto(person);
 
-		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = isPersonInJurisdiction(person);
-			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
-		}
+		restorePseudonymizedDto(source, person, existingPerson);
 
 		validate(source);
 
@@ -470,6 +466,12 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		PersonDto dto = toDto(person);
 
+		pseudonymizeDto(person, dto);
+
+		return dto;
+	}
+
+	private void pseudonymizeDto(Person person, PersonDto dto) {
 		if (dto != null) {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
 
@@ -477,8 +479,14 @@ public class PersonFacadeEjb implements PersonFacade {
 				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
 			});
 		}
+	}
 
-		return dto;
+	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
+		if (person != null && existingPerson != null) {
+			boolean isInJurisdiction = isPersonInJurisdiction(person);
+			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
+			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+		}
 	}
 
 	private boolean isPersonInJurisdiction(Person person) {

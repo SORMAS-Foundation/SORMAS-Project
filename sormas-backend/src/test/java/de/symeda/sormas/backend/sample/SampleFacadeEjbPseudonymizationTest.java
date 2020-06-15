@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -174,6 +176,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testPseudonymizeExportList() {
 		CaseDataDto caze1 = creator.createCase(user2.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf2);
 		SampleDto sample1 = createCaseSample(caze1, user2);
+		createPathogenTest(sample1, user2);
 
 		CaseDataDto caze2 = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		ContactDto contact1 = creator.createContact(
@@ -186,6 +189,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			Disease.CORONAVIRUS,
 			rdcf2);
 		SampleDto sample2 = createCaseSample(caze2, user1);
+		createPathogenTest(sample2, user1);
+		createPathogenTest(sample2, user1);
+		createPathogenTest(sample2, user1);
+		createPathogenTest(sample2, user1);
+
 		SampleDto sample3 = createContactSample(contact1);
 
 		ContactDto contact2 = creator.createContact(
@@ -203,12 +211,22 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
 		assertThat(export1.getAssociatedCase().getFirstName(), is("John"));
 		assertThat(export1.getAssociatedCase().getLastName(), is("Smith"));
-		assertThat(export1.getLab(), is("Lab"));
+		assertThat(export1.getLab(), is("Lab - Test lab details"));
+		assertThat(export1.getPathogenTestLab1(), is("Lab - Test lab details"));
+		assertThat(export1.getPathogenTestType1(), is("Test type text"));
+
 
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
 		assertThat(export2.getAssociatedCase().getFirstName(), isEmptyString());
 		assertThat(export2.getAssociatedCase().getLastName(), isEmptyString());
 		assertThat(export2.getLab(), isEmptyString());
+		assertThat(export2.getPathogenTestLab1(), isEmptyString());
+		assertThat(export2.getPathogenTestType1(), isEmptyString());
+		assertThat(export2.getPathogenTestLab2(), isEmptyString());
+		assertThat(export2.getPathogenTestType2(), isEmptyString());
+		assertThat(export2.getPathogenTestLab3(), isEmptyString());
+		assertThat(export2.getPathogenTestType3(), isEmptyString());
+		assertThat(export2.getOtherPathogenTestsDetails(), is("2020-06-10 (COVID-19, Pending)"));
 
 		// export contact sample not yet implemented
 		Optional<SampleExportDto> export3 = exportList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
@@ -216,6 +234,15 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Optional<SampleExportDto> export4 = exportList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst();
 		assertThat(export4.isPresent(), is(false));
+	}
+
+	private void createPathogenTest(SampleDto sample, UserDto user) {
+		Date testDateTime = new Date(1591747200000L);//2020-06-10
+		creator.createPathogenTest(sample.toReference(), PathogenTestType.ISOLATION, Disease.CORONAVIRUS, testDateTime, sample.getLab(), user.toReference(), PathogenTestResultType.PENDING, "", true, t -> {
+			t.setLabDetails("Test lab details");
+			t.setTestType(PathogenTestType.OTHER);
+			t.setTestTypeText("Test type text");
+		});
 	}
 
 	@Test
@@ -315,6 +342,9 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			s.setReportLat(43.4321);
 			s.setReportLon(23.4321);
 			s.setReportLatLonAccuracy(10f);
+			s.setLabDetails("Test lab details");
+			s.setShipmentDetails("Test shipment details");
+			s.setComment("Test comment");
 		});
 	}
 
@@ -335,6 +365,9 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLon(), is(23.4321));
 		assertThat(sample.getReportLatLonAccuracy(), is(10f));
 		assertThat(sample.getLab(), is(notNullValue()));
+		assertThat(sample.getLabDetails(), is("Test lab details"));
+		assertThat(sample.getShipmentDetails(), is("Test shipment details"));
+		assertThat(sample.getComment(), is("Test comment"));
 	}
 
 	private void assertPseudonymized(SampleDto sample) {
@@ -347,6 +380,9 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(nullValue()));
 		assertThat(sample.getLab(), is(nullValue()));
+		assertThat(sample.getLabDetails(), isEmptyString());
+		assertThat(sample.getShipmentDetails(), isEmptyString());
+		assertThat(sample.getComment(), isEmptyString());
 	}
 
 }

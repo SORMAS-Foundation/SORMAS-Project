@@ -33,6 +33,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class ContactExportDto implements Serializable {
@@ -83,6 +84,7 @@ public class ContactExportDto implements Serializable {
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 
 	private ContactJurisdictionDto jurisdiction;

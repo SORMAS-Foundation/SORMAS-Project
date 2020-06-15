@@ -28,6 +28,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -40,6 +42,14 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
 	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private FieldAccessCheckers fieldAccessCheckers;
+
+	public EpiDataTravelsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
 
 	@Override
 	public Class<EpiDataTravelDto> getEntryType() {
@@ -106,7 +116,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm();
+		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(

@@ -41,6 +41,9 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.ui.UserProvider;
 
 public final class FieldHelper {
 
@@ -560,5 +563,13 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static Stream<Field> streamFields(Component parent) {
 		return FieldHelper.stream(parent).filter(c -> c instanceof Field).map(c -> (Field) c);
+	}
+
+	public static PersonalDataFieldAccessChecker createPersonalDataFieldAccessChecker(boolean isInJurisdiction){
+		return new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction);
+	}
+
+	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker(boolean isInJurisdiction){
+		return new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction);
 	}
 }

@@ -33,8 +33,9 @@ public class EpiDataView extends AbstractCaseView {
 	@Override
 	protected void initView(String params) {
 
+
 		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), isCaseEditAllowed());
 		setSubComponent(epidDataForm);
 		setCaseEditPermission(epidDataForm);
 	}

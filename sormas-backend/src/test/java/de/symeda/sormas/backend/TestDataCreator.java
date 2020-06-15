@@ -47,7 +47,6 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -149,7 +148,7 @@ public class TestDataCreator {
 		Integer birthdateYYYY,
 		Integer birthdateMM,
 		Integer birthdateDD,
-		LocationDto address) {
+		Consumer<PersonDto> customConfig) {
 
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
@@ -159,8 +158,8 @@ public class TestDataCreator {
 		person.setBirthdateMM(birthdateMM);
 		person.setBirthdateDD(birthdateDD);
 
-		if (address != null) {
-			person.setAddress(address);
+		if (customConfig != null) {
+			customConfig.accept(person);
 		}
 
 		person = beanTest.getPersonFacade().savePerson(person);
@@ -186,6 +185,10 @@ public class TestDataCreator {
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCFEntities rdcf) {
 		return createCase(user, person, Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf);
+	}
+
+	public CaseDataDto createCase(UserReferenceDto user, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
+		return createCase(user, createPerson().toReference(), Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
 	}
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
@@ -263,31 +266,61 @@ public class TestDataCreator {
 	}
 
 	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze) {
+		return createClinicalVisit(caze, null);
+	}
+
+	public ClinicalVisitDto createClinicalVisit(CaseDataDto caze, Consumer<ClinicalVisitDto> extraConfig) {
 
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(caze.getClinicalCourse().toReference(), caze.getDisease());
+
+		if(extraConfig != null){
+			extraConfig.accept(clinicalVisit);
+		}
+
 		clinicalVisit = beanTest.getClinicalVisitFacade().saveClinicalVisit(clinicalVisit, caze.getUuid());
 		return clinicalVisit;
 	}
 
 	public PrescriptionDto createPrescription(CaseDataDto caze) {
+		return createPrescription(caze, null);
+	}
+
+	public PrescriptionDto createPrescription(CaseDataDto caze, Consumer<PrescriptionDto> customConfig) {
 
 		PrescriptionDto prescription = PrescriptionDto.buildPrescription(caze.getTherapy().toReference());
 		prescription.setPrescriptionType(TreatmentType.BLOOD_TRANSFUSION);
+
+		if(customConfig != null){
+			customConfig.accept(prescription);
+		}
+
 		prescription = beanTest.getPrescriptionFacade().savePrescription(prescription);
+
 		return prescription;
 	}
 
 	public TreatmentDto createTreatment(CaseDataDto caze) {
+		return createTreatment(caze, null);
+	}
+
+	public TreatmentDto createTreatment(CaseDataDto caze, Consumer<TreatmentDto> customConfig) {
 
 		TreatmentDto treatment = TreatmentDto.build(caze.getTherapy().toReference());
 		treatment.setTreatmentType(TreatmentType.BLOOD_TRANSFUSION);
+
+		if(customConfig != null){
+			customConfig.accept(treatment);
+		}
+
 		treatment = beanTest.getTreatmentFacade().saveTreatment(treatment);
+
 		return treatment;
 	}
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}
+
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
@@ -526,6 +559,25 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(
+			CaseReferenceDto associatedCase,
+			Date sampleDateTime,
+			Date reportDateTime,
+			UserReferenceDto reportingUser,
+			SampleMaterial sampleMaterial,
+			FacilityReferenceDto lab) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
 	@Deprecated
 	public SampleDto createSample(
 		ContactReferenceDto associatedContact,
@@ -566,15 +618,29 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
-		SampleReferenceDto sample,
-		PathogenTestType testType,
-		Disease testedDisease,
-		Date testDateTime,
-		Facility lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		String testResultText,
-		boolean verified) {
+			SampleReferenceDto sample,
+			PathogenTestType testType,
+			Disease testedDisease,
+			Date testDateTime,
+			Facility lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			String testResultText,
+			boolean verified) {
+		return createPathogenTest(sample, testType, testedDisease, testDateTime, lab, labUser, testResult, testResultText, verified, null);
+	}
+
+	public PathogenTestDto createPathogenTest(
+			SampleReferenceDto sample,
+			PathogenTestType testType,
+			Disease testedDisease,
+			Date testDateTime,
+			Facility lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			String testResultText,
+			boolean verified,
+			Consumer<PathogenTestDto> extraConfig) {
 
 		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestedDisease(testedDisease);
@@ -584,6 +650,39 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
+
+		if(extraConfig != null){
+			extraConfig.accept(sampleTest);
+		}
+
+		sampleTest = beanTest.getSampleTestFacade().savePathogenTest(sampleTest);
+		return sampleTest;
+	}
+
+	public PathogenTestDto createPathogenTest(
+			SampleReferenceDto sample,
+			PathogenTestType testType,
+			Disease testedDisease,
+			Date testDateTime,
+			FacilityReferenceDto lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			String testResultText,
+			boolean verified,
+			Consumer<PathogenTestDto> extraConfig) {
+
+		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
+		sampleTest.setTestedDisease(testedDisease);
+		sampleTest.setTestType(testType);
+		sampleTest.setTestDateTime(testDateTime);
+		sampleTest.setLab(lab);
+		sampleTest.setTestResult(testResult);
+		sampleTest.setTestResultText(testResultText);
+		sampleTest.setTestResultVerified(verified);
+
+		if(extraConfig != null){
+			extraConfig.accept(sampleTest);
+		}
 
 		sampleTest = beanTest.getSampleTestFacade().savePathogenTest(sampleTest);
 		return sampleTest;

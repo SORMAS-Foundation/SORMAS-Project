@@ -156,9 +156,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease)).add(new OutbreakFieldVisibilityChecker(viewMode)),
-			new FieldAccessCheckers().add(new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction))
-				.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
+			FieldVisibilityCheckers.withDisease(disease).add(new OutbreakFieldVisibilityChecker(viewMode)),
+			FieldAccessCheckers.withCheckers(
+				FieldHelper.createPersonalDataFieldAccessChecker(isInJurisdiction),
+				FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;

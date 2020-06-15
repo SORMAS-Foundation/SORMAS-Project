@@ -18,6 +18,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -43,8 +45,9 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 	//@formatter:on
 
-	public MaternalHistoryForm(ViewMode viewMode) {
-		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX);
+	public MaternalHistoryForm(ViewMode viewMode, boolean isInJurisdiction) {
+		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
+				FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 		this.viewMode = viewMode;
 	}
 
@@ -93,6 +96,8 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		ComboBox cbRashExposureRegion = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_REGION);
 		ComboBox cbRashExposureDistrict = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT);
 		ComboBox cbRashExposureCommunity = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
+
+		initializeAccessAndAllowedAccesses();
 
 		cbRashExposureRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

@@ -67,6 +67,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
@@ -188,15 +189,23 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> lesionsLocationFieldIds;
 	private List<String> monkeypoxImageFieldIds;
 
-	public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext, ViewMode viewMode) {
+	public SymptomsForm(
+		CaseDataDto caze,
+		Disease disease,
+		PersonDto person,
+		SymptomsContext symptomsContext,
+		ViewMode viewMode,
+		FieldAccessCheckers fieldAccessCheckers) {
 
 		// TODO add user right parameter
 		super(
 			SymptomsDto.class,
 			I18N_PREFIX,
+			false,
 			new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())));
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				fieldAccessCheckers);
 
 		this.caze = caze;
 		this.disease = disease;
@@ -437,6 +446,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		// Set initial visibilities
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		if (symptomsContext != SymptomsContext.CLINICAL_VISIT) {
 			setVisible(
@@ -667,24 +677,31 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			getFieldGroup().getField(OTHER_HEMORRHAGIC_SYMPTOMS),
-			Arrays.asList(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
-			Arrays.asList(SymptomState.YES),
-			disease);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			getFieldGroup().getField(OTHER_NON_HEMORRHAGIC_SYMPTOMS),
-			Arrays.asList(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
-			Arrays.asList(SymptomState.YES),
-			disease);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			getFieldGroup().getField(OTHER_COMPLICATIONS),
-			Arrays.asList(OTHER_COMPLICATIONS_TEXT),
-			Arrays.asList(SymptomState.YES),
-			disease);
+		if(isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					getFieldGroup().getField(OTHER_HEMORRHAGIC_SYMPTOMS),
+					Arrays.asList(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
+					Arrays.asList(SymptomState.YES),
+					disease);
+		}
+		if(isEditableAllowed(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)) {
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					getFieldGroup().getField(OTHER_NON_HEMORRHAGIC_SYMPTOMS),
+					Arrays.asList(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
+					Arrays.asList(SymptomState.YES),
+					disease);
+		}
+		if(isEditableAllowed(OTHER_COMPLICATIONS_TEXT)) {
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					getFieldGroup().getField(OTHER_COMPLICATIONS),
+					Arrays.asList(OTHER_COMPLICATIONS_TEXT),
+					Arrays.asList(SymptomState.YES),
+					disease);
+		}
+
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);
 		FieldHelper
 			.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), monkeypoxImageFieldIds, Arrays.asList(SymptomState.YES), disease);

@@ -1,13 +1,15 @@
 package de.symeda.sormas.api.clinicalcourse;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class HealthConditionsDto extends EntityDto {
+public class HealthConditionsDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -6688718889862479948L;
 
@@ -74,6 +76,7 @@ public class HealthConditionsDto extends EntityDto {
 	private YesNoUnknown sickleCellDisease;
 	@HideForCountriesExcept
 	private YesNoUnknown immunodeficiencyIncludingHiv;
+	@SensitiveData
 	private String otherConditions;
 
 	public static HealthConditionsDto build() {

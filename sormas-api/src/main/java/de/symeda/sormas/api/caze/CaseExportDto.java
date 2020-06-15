@@ -18,7 +18,9 @@
 package de.symeda.sormas.api.caze;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -160,16 +163,10 @@ public class CaseExportDto implements Serializable {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
-	private Date sampleDateTime1;
-	private String sampleLab1;
-	private PathogenTestResultType sampleResult1;
-	private Date sampleDateTime2;
-	private String sampleLab2;
-	private PathogenTestResultType sampleResult2;
-	private Date sampleDateTime3;
-	private String sampleLab3;
-	private PathogenTestResultType sampleResult3;
-	private String otherSamples = "";
+	private CaseExportSampleDto sample1 = new CaseExportSampleDto();
+	private CaseExportSampleDto sample2 = new CaseExportSampleDto();
+	private CaseExportSampleDto sample3 = new CaseExportSampleDto();
+	private List<CaseExportSampleDto> otherSamples = new ArrayList<>();
 
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
@@ -934,7 +931,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime1() {
-		return sampleDateTime1;
+		return sample1.dateTime;
 	}
 
 	@Order(121)
@@ -943,7 +940,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab1() {
-		return sampleLab1;
+		return sample1.lab;
 	}
 
 	@Order(122)
@@ -952,7 +949,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult1() {
-		return sampleResult1;
+		return sample1.result;
 	}
 
 	@Order(123)
@@ -961,7 +958,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime2() {
-		return sampleDateTime2;
+		return sample2.dateTime;
 	}
 
 	@Order(124)
@@ -970,7 +967,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab2() {
-		return sampleLab2;
+		return sample2.lab;
 	}
 
 	@Order(125)
@@ -979,7 +976,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult2() {
-		return sampleResult2;
+		return sample2.result;
 	}
 
 	@Order(126)
@@ -988,7 +985,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime3() {
-		return sampleDateTime3;
+		return sample3.dateTime;
 	}
 
 	@Order(127)
@@ -997,7 +994,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab3() {
-		return sampleLab3;
+		return sample3.lab;
 	}
 
 	@Order(128)
@@ -1006,7 +1003,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult3() {
-		return sampleResult3;
+		return sample3.result;
 	}
 
 	@Order(130)
@@ -1014,8 +1011,15 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	public String getOtherSamples() {
-		return otherSamples;
+	public String getOtherSamplesString() {
+		StringBuilder samples = new StringBuilder();
+		String separator = ", ";
+
+		for (CaseExportSampleDto sample : otherSamples) {
+			samples.append(sample.stringFormat()).append(separator);
+		}
+
+		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
 	}
 
 	public void setCountry(String country) {
@@ -1197,10 +1201,7 @@ public class CaseExportDto implements Serializable {
 //	public void setOnsetDate(Date onsetDate) {
 //		this.onsetDate = onsetDate;
 //	}
-//
-//	public void setSymptoms(String symptoms) {
-//		this.symptoms = symptoms;
-//	}
+
 
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
@@ -1230,47 +1231,68 @@ public class CaseExportDto implements Serializable {
 		this.numberOfClinicalVisits = numberOfClinicalVisits;
 	}
 
-	public void setSampleDateTime1(Date sampleDateTime1) {
-		this.sampleDateTime1 = sampleDateTime1;
+	public CaseExportSampleDto getSample1() {
+		return sample1;
 	}
 
-	public void setSampleLab1(String sampleLab1) {
-		this.sampleLab1 = sampleLab1;
+	public void setSample1(CaseExportSampleDto sample1) {
+		this.sample1 = sample1;
 	}
 
-	public void setSampleResult1(PathogenTestResultType sampleResult1) {
-		this.sampleResult1 = sampleResult1;
+	public CaseExportSampleDto getSample2() {
+		return sample2;
 	}
 
-	public void setSampleDateTime2(Date sampleDateTime2) {
-		this.sampleDateTime2 = sampleDateTime2;
+	public void setSample2(CaseExportSampleDto sample2) {
+		this.sample2 = sample2;
 	}
 
-	public void setSampleLab2(String sampleLab2) {
-		this.sampleLab2 = sampleLab2;
+	public CaseExportSampleDto getSample3() {
+		return sample3;
 	}
 
-	public void setSampleResult2(PathogenTestResultType sampleResult2) {
-		this.sampleResult2 = sampleResult2;
+	public void setSample3(CaseExportSampleDto sample3) {
+		this.sample3 = sample3;
 	}
 
-	public void setSampleDateTime3(Date sampleDateTime3) {
-		this.sampleDateTime3 = sampleDateTime3;
+	public List<CaseExportSampleDto> getOtherSamples() {
+		return otherSamples;
 	}
 
-	public void setSampleLab3(String sampleLab3) {
-		this.sampleLab3 = sampleLab3;
-	}
-
-	public void setSampleResult3(PathogenTestResultType sampleResult3) {
-		this.sampleResult3 = sampleResult3;
-	}
-
-	public void setOtherSamples(String otherSamples) {
-		this.otherSamples = otherSamples;
+	public void addOtherSample(CaseExportSampleDto otherSample) {
+		this.otherSamples.add(otherSample);
 	}
 
 	public CaseJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public static class CaseExportSampleDto implements Serializable {
+
+		private Date dateTime;
+		@SensitiveData
+		private String lab;
+		private PathogenTestResultType result;
+
+		public CaseExportSampleDto() {
+		}
+
+		public CaseExportSampleDto(Date dateTime, String lab, PathogenTestResultType result) {
+			this.dateTime = dateTime;
+			this.lab = lab;
+			this.result = result;
+		}
+
+		public String stringFormat() {
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(DateHelper.formatDateForExport(dateTime)).append(" (");
+			if (lab != null && lab.length() > 0) {
+				sb.append(lab).append(", ");
+			}
+			sb.append(result).append(")");
+
+			return sb.toString();
+		}
 	}
 }

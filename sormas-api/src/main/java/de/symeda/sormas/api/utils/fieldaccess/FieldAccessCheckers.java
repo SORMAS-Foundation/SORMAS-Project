@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 
 public class FieldAccessCheckers {
 
@@ -86,6 +87,10 @@ public class FieldAccessCheckers {
 
 	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
 		return withCheckers(new PersonalDataFieldAccessChecker(rightCheck, isInJurisdiction));
+	}
+
+	public static FieldAccessCheckers withSensitiveData(SensitiveDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
+		return withCheckers(new SensitiveDataFieldAccessChecker(rightCheck, isInJurisdiction));
 	}
 
 	public static FieldAccessCheckers withCheckers(Checker... checkers) {

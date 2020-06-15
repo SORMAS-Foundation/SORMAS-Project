@@ -30,6 +30,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SampleEditForm extends AbstractSampleForm {
 
@@ -42,7 +43,7 @@ public class SampleEditForm extends AbstractSampleForm {
 		super(
 			SampleDto.class,
 			SampleDto.I18N_PREFIX,
-			new FieldAccessCheckers().add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 	}
 
 	@SuppressWarnings("deprecation")

@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -176,7 +178,11 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze1 = createCase(rdcf1, user1);
 		// create contact in current jurisdiction to have access on pseudonymized case
 		creator.createContact(user2.toReference(), createPerson().toReference(), caze1);
+		Date sampleDate = new Date(1591747200000L);//2020-06-10
+		creator.createSample(caze1.toReference(), sampleDate, sampleDate, user1.toReference(), SampleMaterial.BLOOD, rdcf1.facility);
+
 		CaseDataDto caze2 = createCase(rdcf2, user2);
+		creator.createSample(caze2.toReference(), sampleDate, sampleDate, user2.toReference(), SampleMaterial.BLOOD, rdcf2.facility);
 
 		List<CaseExportDto> exportList =
 			getCaseFacade().getExportList(new CaseCriteria(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
@@ -191,6 +197,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex1.getAddress(), isEmptyString());
 		assertThat(caseIndex1.getPostalCode(), isEmptyString());
 		assertThat(caseIndex1.getAddressGpsCoordinates(), isEmptyString());
+		assertThat(caseIndex1.getBurialInfo().getBurialPlaceDescription(), is(isEmptyString()));
+		assertThat(caseIndex1.getSample1().stringFormat(), is("2020-06-10 (Pending)"));
 
 		CaseExportDto caseIndex2 = exportList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
 		assertThat(caseIndex2.getCommunity(), is(rdcf2.community.getCaption()));
@@ -201,6 +209,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex2.getAddress(), is("Test address"));
 		assertThat(caseIndex2.getPostalCode(), is("12345"));
 		assertThat(caseIndex2.getAddressGpsCoordinates(), is("26.533, 46.233 +-10m"));
+		assertThat(caseIndex2.getBurialInfo().getBurialPlaceDescription(), is("Burial place desc"));
+		assertThat(caseIndex2.getSample1().stringFormat(), is("2020-06-10 (Facility 2, Pending)"));
 	}
 
 	@Test
@@ -287,7 +297,11 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setLatitude(26.533);
 		address.setLatLonAccuracy(10F);
 
-		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, address);
+		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
+			p.setAddress(address);
+			p.setPresentCondition(PresentCondition.BURIED);
+			p.setBurialPlaceDescription("Burial place desc");
+		});
 	}
 
 	private void assertNotPseudonymized(CaseDataDto caze) {

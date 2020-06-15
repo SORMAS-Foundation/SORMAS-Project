@@ -39,6 +39,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -63,8 +64,8 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					loc(OTHER_CONDITIONS);
 	//@formatter:on
 
-	public HealthConditionsForm() {
-		super(HealthConditionsDto.class, I18N_PREFIX, FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 	}
 
 	@Override
@@ -96,6 +97,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 		addField(OTHER_CONDITIONS, TextArea.class).setRows(3);
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), HIV_ART, HIV, Arrays.asList(YesNoUnknown.YES), true);
 	}

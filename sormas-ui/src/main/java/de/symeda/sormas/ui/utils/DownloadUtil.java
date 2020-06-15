@@ -51,6 +51,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
@@ -116,6 +117,7 @@ import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 import de.symeda.sormas.ui.statistics.DatabaseExportView;
 
 public final class DownloadUtil {
+	private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
 
 	private DownloadUtil() {
 		// Hide Utility Class Constructor
@@ -139,7 +141,7 @@ public final class DownloadUtil {
 					String zipPath = FacadeProvider.getExportFacade().generateDatabaseExportArchive(tablesToExport);
 					return new BufferedInputStream(Files.newInputStream(new File(zipPath).toPath()));
 				} catch (IOException | ExportErrorException e) {
-					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					logger.error(e.getMessage(), e);
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
 					databaseExportView.showExportErrorNotification();
@@ -388,7 +390,7 @@ public final class DownloadUtil {
 				zos.close();
 				return new BufferedInputStream(new FileInputStream(new File(zipFile)));
 			} catch (IOException e) {
-				LoggerFactory.getLogger(DownloadUtil.class).error("Failed to generate a zip file for case management export.");
+				logger.error("Failed to generate a zip file for case management export.");
 				return null;
 			}
 		}, exportFileName);
@@ -704,6 +706,12 @@ public final class DownloadUtil {
 						startIndex += DETAILED_EXPORT_STEP_SIZE;
 						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					}
+				}
+				catch (Exception e){
+					// log error because it results in null pointer exception in the parent thread
+					// with no meaningful information
+					logger.error("Failed to export list of " + exportRowClass.getSimpleName(), e);
+					throw e;
 				}
 			},
 				e -> {

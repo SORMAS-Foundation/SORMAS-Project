@@ -87,7 +87,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
-			return (T) new HealthConditionsForm();
+			return (T) new HealthConditionsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 			DateTimeField field = new DateTimeField();
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
@@ -99,13 +99,13 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PreviousHospitalizationsField();
+			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataBurialsField();
+			return (T) new EpiDataBurialsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataGatheringsField();
+			return (T) new EpiDataGatheringsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataTravelsField();
+			return (T) new EpiDataTravelsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {

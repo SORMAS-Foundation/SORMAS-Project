@@ -42,8 +42,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS)
 		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
 
-	public EpiDataBurialEditForm(boolean create) {
-		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), new FieldAccessCheckers());
+	public EpiDataBurialEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);
 
@@ -75,6 +75,8 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		addField(EpiDataBurialDto.BURIAL_ILL, OptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_TOUCHING, OptionGroup.class);
 		addField(EpiDataBurialDto.BURIAL_ADDRESS, LocationEditForm.class).setCaption(null);
+
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.addSoftRequiredStyle(burialDateFrom, burialDateTo);
 		setRequired(true, EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);

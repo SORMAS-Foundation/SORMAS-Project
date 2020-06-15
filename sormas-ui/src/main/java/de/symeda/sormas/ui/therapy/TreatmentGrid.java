@@ -27,8 +27,11 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 	private static final String EDIT_BTN_ID = "edit";
 
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
+	private boolean isInJurisdiction;
 
-	public TreatmentGrid() {
+	public TreatmentGrid(boolean isInJurisdiction) {
+		this.isInJurisdiction = isInJurisdiction;
+
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -47,7 +50,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			TreatmentIndexDto.TREATMENT_TYPE,
 			TreatmentIndexDto.TREATMENT_DATE_TIME,
 			TreatmentIndexDto.DOSE,
-			TreatmentIndexDto.ROUTE,
+			TreatmentIndexDto.TREATMENT_ROUTE,
 			TreatmentIndexDto.EXECUTING_CLINICIAN);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
@@ -66,7 +69,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			}
 
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload);
+				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, isInJurisdiction);
 			}
 		});
 	}

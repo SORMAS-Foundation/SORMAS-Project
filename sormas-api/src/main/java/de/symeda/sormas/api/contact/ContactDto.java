@@ -91,6 +91,7 @@ public class ContactDto extends PseudonymizableDto {
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
+	@SensitiveData
 	private String caseOrEventInformation;
 	private Disease disease;
 	private String diseaseDetails;
@@ -112,21 +113,26 @@ public class ContactDto extends PseudonymizableDto {
 	@Required
 	private Date lastContactDate;
 	private ContactProximity contactProximity;
+	@SensitiveData
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
+	@SensitiveData
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	@SensitiveData
 	private String description;
 	private ContactRelation relationToCase;
+	@SensitiveData
 	private String relationDescription;
 	private String externalID;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
+	@SensitiveData
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 
@@ -144,6 +150,7 @@ public class ContactDto extends PseudonymizableDto {
 	@PersonnelData
 	private UserReferenceDto resultingCaseUser;
 
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -152,11 +159,14 @@ public class ContactDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
+	@SensitiveData
 	private String additionalDetails;
 
 	public static ContactDto build() {

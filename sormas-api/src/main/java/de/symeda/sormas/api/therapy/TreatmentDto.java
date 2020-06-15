@@ -20,9 +20,11 @@ package de.symeda.sormas.api.therapy;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class TreatmentDto extends EntityDto {
+public class TreatmentDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 816932182306785932L;
 
@@ -42,13 +44,17 @@ public class TreatmentDto extends EntityDto {
 
 	private TherapyReferenceDto therapy;
 	private Date treatmentDateTime;
+	@SensitiveData
 	private String executingClinician;
 	private TreatmentType treatmentType;
+	@SensitiveData
 	private String treatmentDetails;
 	private TypeOfDrug typeOfDrug;
 	private String dose;
 	private TreatmentRoute route;
+	@SensitiveData
 	private String routeDetails;
+	@SensitiveData
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
 

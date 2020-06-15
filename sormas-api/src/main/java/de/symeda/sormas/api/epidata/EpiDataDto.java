@@ -24,12 +24,14 @@ import java.util.List;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class EpiDataDto extends EntityDto {
+public class EpiDataDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 6292411396563549093L;
 
@@ -301,6 +303,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String sickDeadAnimalsDetails;
 	@Diseases({
 		Disease.AFP,
@@ -322,6 +325,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String sickDeadAnimalsLocation;
 	@Diseases({
 		Disease.AFP,
@@ -352,6 +356,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String eatingRawAnimalsDetails;
 	@Diseases({
 		Disease.AFP,
@@ -484,6 +489,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String otherAnimalsDetails;
 	@Diseases({
 		Disease.AFP,
@@ -500,6 +506,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String waterSourceOther;
 	@Diseases({
 		Disease.AFP,
@@ -516,6 +523,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String waterBodyDetails;
 	@Diseases({
 		Disease.AFP,
@@ -582,6 +590,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String kindOfExposureDetails;
 	@Diseases({
 		Disease.AFP,
@@ -602,6 +611,7 @@ public class EpiDataDto extends EntityDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String placeOfLastExposure;
 	@Diseases({
 		Disease.AFP,

@@ -140,8 +140,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			new FieldAccessCheckers()
-					.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
@@ -286,6 +286,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
+		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 
 		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);

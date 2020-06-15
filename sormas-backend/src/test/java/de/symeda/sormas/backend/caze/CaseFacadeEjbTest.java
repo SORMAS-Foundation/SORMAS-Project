@@ -808,7 +808,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMergeCase() {
 
-		useSurveillanceOfficerLogin(null);
+		useNationalUserLogin();
 		// 1. Create
 
 		// Create leadCase
@@ -894,10 +894,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNull(mergedPerson.getBirthdateDD());
 
 		// Check 'lead and other have different values'
-		assertEquals(leadPerson.getFirstName(), mergedPerson.getFirstName());
+		assertEquals(leadCase.getPerson().getFirstName(), mergedPerson.getFirstName());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadPerson.getLastName(), mergedPerson.getLastName());
+		assertEquals(leadCase.getPerson().getLastName(), mergedPerson.getLastName());
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());

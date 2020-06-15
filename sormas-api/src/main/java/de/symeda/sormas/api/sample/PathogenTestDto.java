@@ -60,12 +60,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private String testedDiseaseDetails;
 	@Required
 	private PathogenTestType testType;
+	@SensitiveData
 	private String testTypeText;
 	@Required
 	private Date testDateTime;
 	@Required
 	@SensitiveData
 	private FacilityReferenceDto lab;
+	@SensitiveData
 	private String labDetails;
 	@Required
 	@PersonnelData
@@ -73,10 +75,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Required
 	private PathogenTestResultType testResult;
 	@Required
+	@SensitiveData
 	private String testResultText;
 	@Required
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	@SensitiveData
 	private String serotype;
 	private Float cqValue;
 

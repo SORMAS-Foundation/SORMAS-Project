@@ -57,6 +57,7 @@ public class VisitDto extends PseudonymizableDto {
 	private UserReferenceDto visitUser;
 	@Required
 	private VisitStatus visitStatus;
+	@SensitiveData
 	private String visitRemarks;
 	private SymptomsDto symptoms;
 

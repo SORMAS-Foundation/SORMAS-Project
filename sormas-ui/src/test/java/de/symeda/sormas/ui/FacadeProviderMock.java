@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -92,7 +92,7 @@ public final class FacadeProviderMock extends FacadeProvider {
 		} else if (HospitalizationFacade.class == clazz) {
 			return (P) bm.getBean(HospitalizationFacadeEjbLocal.class);
 		} else if (EpiDataFacade.class == clazz) {
-			return (P) bm.getBean(EpiDataFacadeEjbLocal.class);
+			return (P) bm.getBean(EpiDataFacadeEjb.EpiDataFacadeEjbLocal.class);
 		} else if (WeeklyReportFacade.class == clazz) {
 			return (P) bm.getBean(WeeklyReportFacadeEjbLocal.class);
 		} else if (GeoShapeProvider.class == clazz) {

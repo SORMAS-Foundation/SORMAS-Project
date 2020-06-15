@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class ClinicalVisitExportDto implements Serializable {
 
@@ -15,13 +18,18 @@ public class ClinicalVisitExportDto implements Serializable {
 	public static final String I18N_PREFIX = "ClinicalVisitExport";
 
 	private String caseUuid;
+	@PersonalData
 	private String caseName;
 	private Disease disease;
 	private Date visitDateTime;
+	@SensitiveData
 	private String visitRemarks;
+	@SensitiveData
 	private String visitingPerson;
 	private long symptomsId;
 	private SymptomsDto symptoms;
+
+	private CaseJurisdictionDto caseJurisdiction;
 
 	public ClinicalVisitExportDto(
 		String caseUuid,
@@ -31,7 +39,13 @@ public class ClinicalVisitExportDto implements Serializable {
 		Date visitDateTime,
 		String visitRemarks,
 		String visitingPerson,
-		long symptomsId) {
+		long symptomsId,
+		String caseReportingUserUuid,
+		String caseRegionUuid,
+		String caseDistrictUuid,
+		String caseCommunityUuid,
+		String caseHealthFacilityUuid,
+		String casePointOfEntryUuid) {
 
 		this.caseUuid = caseUuid;
 		this.caseName = PersonDto.buildCaption(caseFirstName, caseLastName);
@@ -40,6 +54,8 @@ public class ClinicalVisitExportDto implements Serializable {
 		this.visitRemarks = visitRemarks;
 		this.visitingPerson = visitingPerson;
 		this.symptomsId = symptomsId;
+
+		this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 	}
 
 	@Order(0)
@@ -111,5 +127,9 @@ public class ClinicalVisitExportDto implements Serializable {
 
 	public void setSymptomsId(long symptomsId) {
 		this.symptomsId = symptomsId;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
 	}
 }

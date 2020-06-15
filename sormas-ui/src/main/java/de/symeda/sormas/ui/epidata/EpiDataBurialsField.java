@@ -29,6 +29,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -45,6 +47,14 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	private static final String PERIOD = Captions.EpiDataBurialTable_burialPeriod;
 	private static final String CITY = LocationDto.CITY;
 	private static final String DISTRICT = LocationDto.DISTRICT;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private FieldAccessCheckers fieldAccessCheckers;
+
+	public EpiDataBurialsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
 
 	@Override
 	public Class<EpiDataBurialDto> getEntryType() {
@@ -149,13 +159,13 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create);
+		EpiDataBurialEditForm editForm = new EpiDataBurialEditForm(create, fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<EpiDataBurialEditForm>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataBurialEditForm> editView = new CommitDiscardWrapperComponent<>(
+				editForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+				editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityBurial));

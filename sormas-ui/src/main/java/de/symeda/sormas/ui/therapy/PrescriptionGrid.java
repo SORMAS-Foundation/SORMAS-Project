@@ -34,8 +34,11 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 	private static final String DOCUMENT_TREATMENT_BTN_ID = "documentTreatment";
 
 	private PrescriptionCriteria prescriptionCriteria = new PrescriptionCriteria();
+	private boolean isInJurisdiction;
 
-	public PrescriptionGrid(TherapyView parentView) {
+	public PrescriptionGrid(TherapyView parentView, boolean isInJurisdiction) {
+		this.isInJurisdiction = isInJurisdiction;
+
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -69,14 +72,20 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 			PrescriptionIndexDto.PRESCRIPTION_PERIOD,
 			PrescriptionIndexDto.FREQUENCY,
 			PrescriptionIndexDto.DOSE,
-			PrescriptionIndexDto.ROUTE,
+			PrescriptionIndexDto.PRESCRIPTION_ROUTE,
 			PrescriptionIndexDto.PRESCRIBING_CLINICIAN,
 			DOCUMENT_TREATMENT_BTN_ID);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
-		getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
-		getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
+		if(isInJurisdiction) {
+			getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
+			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
+		}
+		else {
+			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(true);
+		}
+
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_DATE).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 		getColumn(PrescriptionIndexDto.PRESCRIPTION_PERIOD).setConverter(new PeriodDtoConverter());
 
@@ -95,7 +104,8 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 					FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(((PrescriptionIndexDto) e.getItemId()).getUuid());
 				ControllerProvider.getTherapyController().openTreatmentCreateForm(prescription, (Runnable) () -> parentView.reloadTreatmentGrid());
 			} else if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false);
+				ControllerProvider.getTherapyController()
+					.openPrescriptionEditForm((PrescriptionIndexDto) e.getItemId(), this::reload, false, isInJurisdiction);
 			}
 		});
 	}

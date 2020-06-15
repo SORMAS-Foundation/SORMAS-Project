@@ -23,7 +23,10 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -36,8 +39,13 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 		+ fluidRowLocs(EpiDataGatheringDto.DESCRIPTION)
 		+ fluidRowLocs(EpiDataGatheringDto.GATHERING_ADDRESS);
 
-	public EpiDataGatheringEditForm() {
-		super(EpiDataGatheringDto.class, EpiDataGatheringDto.I18N_PREFIX, new FieldVisibilityCheckers());
+	public EpiDataGatheringEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(
+			EpiDataGatheringDto.class,
+			EpiDataGatheringDto.I18N_PREFIX,
+			true,
+			fieldVisibilityCheckers,
+			fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);
 	}
@@ -47,6 +55,8 @@ public class EpiDataGatheringEditForm extends AbstractEditForm<EpiDataGatheringD
 		DateField gatheringDate = addField(EpiDataGatheringDto.GATHERING_DATE, DateField.class);
 		addField(EpiDataGatheringDto.DESCRIPTION, TextArea.class).setRows(2);
 		addField(EpiDataGatheringDto.GATHERING_ADDRESS, LocationEditForm.class).setCaption(null);
+
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.addSoftRequiredStyle(gatheringDate);
 	}

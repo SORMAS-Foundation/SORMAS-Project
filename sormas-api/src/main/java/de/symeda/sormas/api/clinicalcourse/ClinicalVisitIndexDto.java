@@ -3,8 +3,10 @@ package de.symeda.sormas.api.clinicalcourse;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class ClinicalVisitIndexDto implements Serializable {
 
@@ -22,13 +24,17 @@ public class ClinicalVisitIndexDto implements Serializable {
 
 	private String uuid;
 	private Date visitDateTime;
+	@SensitiveData
 	private String visitingPerson;
+	@SensitiveData
 	private String visitRemarks;
 	private String temperature;
 	private String bloodPressure;
 	private String heartRate;
 	private Integer signsAndSymptomsCount;
 	private Long symptomsId;
+
+	private CaseJurisdictionDto caseJurisdiction;
 
 	public ClinicalVisitIndexDto(
 		String uuid,
@@ -40,7 +46,13 @@ public class ClinicalVisitIndexDto implements Serializable {
 		Integer bloodPressureSystolic,
 		Integer bloodPressureDiastolic,
 		Integer heartRate,
-		Long symptomsId) {
+		Long symptomsId,
+		String caseReportingUserUuid,
+		String caseRegionUuid,
+		String caseDistrictUuid,
+		String caseCommunityUuid,
+		String caseHealthFacilityUuid,
+		String casePointOfEntryUuid) {
 
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
@@ -50,6 +62,8 @@ public class ClinicalVisitIndexDto implements Serializable {
 		this.bloodPressure = SymptomsHelper.getBloodPressureString(bloodPressureSystolic, bloodPressureDiastolic);
 		this.heartRate = heartRate != null ? SymptomsHelper.getHeartRateString(heartRate) : "";
 		this.symptomsId = symptomsId;
+
+		this.caseJurisdiction = new CaseJurisdictionDto(caseReportingUserUuid, caseRegionUuid, caseDistrictUuid, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid);
 	}
 
 	public String getUuid() {
@@ -122,5 +136,9 @@ public class ClinicalVisitIndexDto implements Serializable {
 
 	public void setSymptomsId(Long symptomsId) {
 		this.symptomsId = symptomsId;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
 	}
 }

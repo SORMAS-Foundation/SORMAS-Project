@@ -28,6 +28,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -42,6 +44,14 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	private static final String PERIOD = Captions.CasePreviousHospitalization_prevHospPeriod;
 	private static final String COMMUNITY = Captions.community;
 	private static final String DISTRICT = Captions.district;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private FieldAccessCheckers fieldAccessCheckers;
+
+	public PreviousHospitalizationsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
 
 	@Override
 	public Class<PreviousHospitalizationDto> getEntryType() {
@@ -144,7 +154,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create);
+		PreviousHospitalizationEditForm editForm = new PreviousHospitalizationEditForm(create, fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<PreviousHospitalizationEditForm> editView =

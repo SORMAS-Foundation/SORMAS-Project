@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
+import java.util.Date;
+import java.util.Set;
+
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -27,9 +30,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-
-import java.util.Date;
-import java.util.Set;
 
 public class SampleDto extends PseudonymizableDto {
 
@@ -87,18 +87,23 @@ public class SampleDto extends PseudonymizableDto {
 
 	@Required
 	private SampleMaterial sampleMaterial;
+	@SensitiveData
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
 	@Required
 	@SensitiveData
 	private FacilityReferenceDto lab;
+	@SensitiveData
 	private String labDetails;
 	private Date shipmentDate;
+	@SensitiveData
 	private String shipmentDetails;
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
+	@SensitiveData
 	private String noTestPossibleReason;
+	@SensitiveData
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleReferenceDto referredTo;

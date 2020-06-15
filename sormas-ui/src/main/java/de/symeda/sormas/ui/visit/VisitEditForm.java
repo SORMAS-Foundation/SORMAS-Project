@@ -64,8 +64,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			VisitDto.I18N_PREFIX,
 			false,
 			null,
-			new FieldAccessCheckers()
-				.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), create || isInJurisdiction)));
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(create || isInJurisdiction)));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -99,7 +98,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
 		addField(VisitDto.VISIT_REMARKS, TextField.class);
 
-		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
+		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
 

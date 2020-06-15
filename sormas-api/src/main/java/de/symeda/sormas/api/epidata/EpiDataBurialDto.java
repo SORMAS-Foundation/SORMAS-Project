@@ -21,12 +21,14 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class EpiDataBurialDto extends EntityDto {
+public class EpiDataBurialDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -6274798743525238569L;
 
@@ -49,6 +51,7 @@ public class EpiDataBurialDto extends EntityDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String burialPersonName;
 	@Diseases({
 		Disease.AFP,
@@ -59,6 +62,7 @@ public class EpiDataBurialDto extends EntityDto {
 		Disease.POLIO,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String burialRelation;
 	@Diseases({
 		Disease.AFP,

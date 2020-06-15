@@ -179,6 +179,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date classificationDate;
 	@Outbreaks
+	@SensitiveData
 	private String classificationComment;
 	@Outbreaks
 	@Required
@@ -190,6 +191,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
+	@SensitiveData
 	private String sequelaeDetails;
 	@Outbreaks
 	@Required
@@ -280,14 +282,18 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonnelData
 	private UserReferenceDto surveillanceOfficer;
+	@SensitiveData
 	private String clinicianName;
+	@SensitiveData
 	private String clinicianPhone;
+	@SensitiveData
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	private HospitalWardType notifyingClinic;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private String notifyingClinicDetails;
 	@Deprecated
 	@PersonnelData
@@ -305,6 +311,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
 	private String creationVersion;
+	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData
@@ -313,12 +320,14 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String pointOfEntryDetails;
+	@SensitiveData
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -327,10 +336,12 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;

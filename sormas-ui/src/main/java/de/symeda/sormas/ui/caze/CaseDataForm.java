@@ -76,6 +76,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -188,8 +189,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)
-					.add(new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction)));
+			FieldAccessCheckers.withCheckers(
+				FieldHelper.createPersonalDataFieldAccessChecker(isInJurisdiction),
+				FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 
 		this.person = person;
 		this.disease = disease;
@@ -632,7 +634,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			// Set health facility/point of entry visibility based on case origin
 			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
-				setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
+				if (getValue().getPointOfEntry() != null) {
+					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
+				}
 
 				if (getValue().getHealthFacility() == null) {
 					setVisible(false, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);

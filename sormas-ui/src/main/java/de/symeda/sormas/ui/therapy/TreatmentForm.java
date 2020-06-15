@@ -14,6 +14,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -29,8 +31,13 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 		+ loc(TreatmentDto.ROUTE_DETAILS)
 		+ loc(TreatmentDto.ADDITIONAL_NOTES);
 
-	public TreatmentForm(boolean create) {
-		super(TreatmentDto.class, TreatmentDto.I18N_PREFIX);
+	public TreatmentForm(boolean create, boolean isInJurisdiction) {
+		super(
+			TreatmentDto.class,
+			TreatmentDto.I18N_PREFIX,
+			true,
+			new FieldVisibilityCheckers(),
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 
 		setWidth(680, Unit.PIXELS);
 
@@ -53,13 +60,20 @@ public class TreatmentForm extends AbstractEditForm<TreatmentDto> {
 		addField(TreatmentDto.ROUTE_DETAILS, TextField.class);
 		addField(TreatmentDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
 
+		initializeAccessAndAllowedAccesses();
+
 		setRequired(true, TreatmentDto.TREATMENT_TYPE, TreatmentDto.TREATMENT_DATE_TIME);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			treatmentTypeField,
-			Arrays.asList(TreatmentDto.TREATMENT_DETAILS),
-			Arrays.asList(TreatmentType.OTHER, TreatmentType.DRUG_INTAKE));
-		FieldHelper.setRequiredWhen(getFieldGroup(), routeField, Arrays.asList(TreatmentDto.ROUTE_DETAILS), Arrays.asList(TreatmentRoute.OTHER));
+		if (isEditableAllowed(TreatmentDto.TREATMENT_DETAILS)) {
+			FieldHelper.setRequiredWhen(
+				getFieldGroup(),
+				treatmentTypeField,
+				Arrays.asList(TreatmentDto.TREATMENT_DETAILS),
+				Arrays.asList(TreatmentType.OTHER, TreatmentType.DRUG_INTAKE));
+		}
+		if (isEditableAllowed(TreatmentDto.ROUTE_DETAILS)) {
+			FieldHelper.setRequiredWhen(getFieldGroup(), routeField, Arrays.asList(TreatmentDto.ROUTE_DETAILS), Arrays.asList(TreatmentRoute.OTHER));
+		}
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), TreatmentDto.ROUTE_DETAILS, TreatmentDto.ROUTE, Arrays.asList(TreatmentRoute.OTHER), true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), TreatmentDto.TYPE_OF_DRUG, TreatmentDto.TREATMENT_TYPE, Arrays.asList(TreatmentType.DRUG_INTAKE), true);

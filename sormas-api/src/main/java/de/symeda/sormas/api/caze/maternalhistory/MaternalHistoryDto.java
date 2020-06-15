@@ -3,13 +3,15 @@ package de.symeda.sormas.api.caze.maternalhistory;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class MaternalHistoryDto extends EntityDto {
+public class MaternalHistoryDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5534360436146186436L;
 
@@ -59,6 +61,7 @@ public class MaternalHistoryDto extends EntityDto {
 	private YesNoUnknown otherComplications;
 	private Date otherComplicationsOnset;
 	private Integer otherComplicationsMonth;
+	@SensitiveData
 	private String otherComplicationsDetails;
 	private YesNoUnknown rubella;
 	private Date rubellaOnset;

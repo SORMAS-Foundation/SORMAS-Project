@@ -9,9 +9,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 
@@ -25,8 +28,13 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public ClinicalVisitForm(boolean create, Disease disease, PersonDto person) {
-		super(ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX);
+	public ClinicalVisitForm(boolean create, Disease disease, PersonDto person, boolean isInJurisdiction) {
+		super(
+			ClinicalVisitDto.class,
+			ClinicalVisitDto.I18N_PREFIX,
+			false,
+			new FieldVisibilityCheckers(),
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -59,11 +67,13 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 		addField(ClinicalVisitDto.VISITING_PERSON, TextField.class);
 		addField(ClinicalVisitDto.VISIT_REMARKS, TextField.class);
 
-		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.CLINICAL_VISIT, null);
+		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.CLINICAL_VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, ClinicalVisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, ClinicalVisitDto.SYMPTOMS);
 
 		setRequired(true, ClinicalVisitDto.VISIT_DATE_TIME);
+
+		initializeAccessAndAllowedAccesses();
 	}
 
 	@Override

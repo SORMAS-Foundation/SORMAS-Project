@@ -1,10 +1,13 @@
 package de.symeda.sormas.api.sample;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -42,7 +45,7 @@ public class SampleExportDto implements Serializable {
 	private String contactDistrict;
 	private String disease;
 	private Date sampleDateTime;
-	private String sampleMaterial;
+	private Material sampleMaterial;
 	private String samplePurpose;
 	private SampleSource sampleSource;
 	@SensitiveData
@@ -56,11 +59,14 @@ public class SampleExportDto implements Serializable {
 	private String requestedOtherAdditionalTests;
 	private boolean shipped;
 	private Date shipmentDate;
+	@SensitiveData
 	private String shipmentDetails;
 	private boolean received;
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
+	@SensitiveData
 	private String noTestPossibleReason;
+	@SensitiveData
 	private String comment;
 	private String referredToUuid;
 	private String caseUuid;
@@ -71,25 +77,10 @@ public class SampleExportDto implements Serializable {
 	private Date caseReportDate;
 	private CaseClassification caseClassification;
 	private CaseOutcome caseOutcome;
-	private String pathogenTestType1;
-	private String pathogenTestDisease1;
-	private Date pathogenTestDateTime1;
-	private String pathogenTestLab1;
-	private PathogenTestResultType pathogenTestResult1;
-	private Boolean pathogenTestVerified1;
-	private String pathogenTestType2;
-	private String pathogenTestDisease2;
-	private Date pathogenTestDateTime2;
-	private String pathogenTestLab2;
-	private PathogenTestResultType pathogenTestResult2;
-	private Boolean pathogenTestVerified2;
-	private String pathogenTestType3;
-	private String pathogenTestDisease3;
-	private Date pathogenTestDateTime3;
-	private String pathogenTestLab3;
-	private PathogenTestResultType pathogenTestResult3;
-	private Boolean pathogenTestVerified3;
-	private String otherPathogenTestsDetails = "";
+	private SamplePathogenTest pathogenTest1 = new SamplePathogenTest();
+	private SamplePathogenTest pathogenTest2 = new SamplePathogenTest();
+	private SamplePathogenTest pathogenTest3 = new SamplePathogenTest();
+	private List<SamplePathogenTest> otherPathogenTests = new ArrayList<>();
 	private AdditionalTestDto additionalTest;
 	private String otherAdditionalTestsDetails = "";
 	private Date contactReportDate;
@@ -167,7 +158,7 @@ public class SampleExportDto implements Serializable {
 			? DiseaseHelper.toString(caseDisease, caseDiseaseDetails)
 			: DiseaseHelper.toString(contactDisease, contactDiseaseDetails);
 		this.sampleDateTime = sampleDateTime;
-		this.sampleMaterial = SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
+		this.sampleMaterial = new Material(sampleMaterial, sampleMaterialDetails);
 		if (samplePurpose != null)
 			this.samplePurpose = samplePurpose.toString();
 		this.sampleSource = sampleSource;
@@ -294,12 +285,12 @@ public class SampleExportDto implements Serializable {
 	}
 
 	@Order(11)
-	public String getSampleMaterial() {
-		return sampleMaterial;
+	public String getSampleMaterialString() {
+		return sampleMaterial.stringFormat();
 	}
 
-	public void setSampleMaterial(String sampleMaterial) {
-		this.sampleMaterial = sampleMaterial;
+	public Material getSampleMaterial() {
+		return sampleMaterial;
 	}
 
 	@Order(12)
@@ -594,173 +585,108 @@ public class SampleExportDto implements Serializable {
 
 	@Order(71)
 	public String getPathogenTestType1() {
-		return pathogenTestType1;
-	}
-
-	public void setPathogenTestType1(String pathogenTestType1) {
-		this.pathogenTestType1 = pathogenTestType1;
+		return pathogenTest1.formatType();
 	}
 
 	@Order(72)
 	public String getPathogenTestDisease1() {
-		return pathogenTestDisease1;
-	}
-
-	public void setPathogenTestDisease1(String pathogenTestDisease1) {
-		this.pathogenTestDisease1 = pathogenTestDisease1;
+		return pathogenTest1.disease;
 	}
 
 	@Order(73)
 	public Date getPathogenTestDateTime1() {
-		return pathogenTestDateTime1;
-	}
-
-	public void setPathogenTestDateTime1(Date pathogenTestDateTime1) {
-		this.pathogenTestDateTime1 = pathogenTestDateTime1;
+		return pathogenTest1.dateTime;
 	}
 
 	@Order(74)
 	public String getPathogenTestLab1() {
-		return pathogenTestLab1;
-	}
-
-	public void setPathogenTestLab1(String pathogenTestLab1) {
-		this.pathogenTestLab1 = pathogenTestLab1;
+		return pathogenTest1.lab;
 	}
 
 	@Order(75)
 	public PathogenTestResultType getPathogenTestResult1() {
-		return pathogenTestResult1;
-	}
-
-	public void setPathogenTestResult1(PathogenTestResultType pathogenTestResult1) {
-		this.pathogenTestResult1 = pathogenTestResult1;
+		return pathogenTest1.testResult;
 	}
 
 	@Order(76)
 	public Boolean getPathogenTestVerified1() {
-		return pathogenTestVerified1;
-	}
-
-	public void setPathogenTestVerified1(Boolean pathogenTestVerified1) {
-		this.pathogenTestVerified1 = pathogenTestVerified1;
+		return pathogenTest1.verified;
 	}
 
 	@Order(81)
 	public String getPathogenTestType2() {
-		return pathogenTestType2;
-	}
-
-	public void setPathogenTestType2(String pathogenTestType2) {
-		this.pathogenTestType2 = pathogenTestType2;
+		return pathogenTest2.formatType();
 	}
 
 	@Order(82)
 	public String getPathogenTestDisease2() {
-		return pathogenTestDisease2;
-	}
-
-	public void setPathogenTestDisease2(String pathogenTestDisease2) {
-		this.pathogenTestDisease2 = pathogenTestDisease2;
+		return pathogenTest2.disease;
 	}
 
 	@Order(83)
 	public Date getPathogenTestDateTime2() {
-		return pathogenTestDateTime2;
-	}
-
-	public void setPathogenTestDateTime2(Date pathogenTestDateTime2) {
-		this.pathogenTestDateTime2 = pathogenTestDateTime2;
+		return pathogenTest2.dateTime;
 	}
 
 	@Order(84)
 	public String getPathogenTestLab2() {
-		return pathogenTestLab2;
-	}
-
-	public void setPathogenTestLab2(String pathogenTestLab2) {
-		this.pathogenTestLab2 = pathogenTestLab2;
+		return pathogenTest2.lab;
 	}
 
 	@Order(85)
 	public PathogenTestResultType getPathogenTestResult2() {
-		return pathogenTestResult2;
-	}
-
-	public void setPathogenTestResult2(PathogenTestResultType pathogenTestResult2) {
-		this.pathogenTestResult2 = pathogenTestResult2;
+		return pathogenTest2.testResult;
 	}
 
 	@Order(86)
 	public Boolean getPathogenTestVerified2() {
-		return pathogenTestVerified2;
-	}
-
-	public void setPathogenTestVerified2(Boolean pathogenTestVerified2) {
-		this.pathogenTestVerified2 = pathogenTestVerified2;
+		return pathogenTest2.verified;
 	}
 
 	@Order(91)
 	public String getPathogenTestType3() {
-		return pathogenTestType3;
-	}
-
-	public void setPathogenTestType3(String pathogenTestType3) {
-		this.pathogenTestType3 = pathogenTestType3;
+		return pathogenTest3.formatType();
 	}
 
 	@Order(92)
 	public String getPathogenTestDisease3() {
-		return pathogenTestDisease3;
-	}
-
-	public void setPathogenTestDisease3(String pathogenTestDisease3) {
-		this.pathogenTestDisease3 = pathogenTestDisease3;
+		return pathogenTest3.disease;
 	}
 
 	@Order(93)
 	public Date getPathogenTestDateTime3() {
-		return pathogenTestDateTime3;
-	}
-
-	public void setPathogenTestDateTime3(Date pathogenTestDateTime3) {
-		this.pathogenTestDateTime3 = pathogenTestDateTime3;
+		return pathogenTest3.dateTime;
 	}
 
 	@Order(94)
 	public String getPathogenTestLab3() {
-		return pathogenTestLab3;
-	}
-
-	public void setPathogenTestLab3(String pathogenTestLab3) {
-		this.pathogenTestLab3 = pathogenTestLab3;
+		return pathogenTest3.lab;
 	}
 
 	@Order(95)
 	public PathogenTestResultType getPathogenTestResult3() {
-		return pathogenTestResult3;
-	}
-
-	public void setPathogenTestResult3(PathogenTestResultType pathogenTestResult3) {
-		this.pathogenTestResult3 = pathogenTestResult3;
+		return pathogenTest3.testResult;
 	}
 
 	@Order(96)
 	public Boolean getPathogenTestVerified3() {
-		return pathogenTestVerified3;
-	}
-
-	public void setPathogenTestVerified3(Boolean pathogenTestVerified3) {
-		this.pathogenTestVerified3 = pathogenTestVerified3;
+		return pathogenTest3.verified;
 	}
 
 	@Order(97)
 	public String getOtherPathogenTestsDetails() {
-		return otherPathogenTestsDetails;
+		StringBuilder sb = new StringBuilder();
+		String separator = ", ";
+
+		for (SamplePathogenTest otherPathogenTest : otherPathogenTests) {
+			sb.append(otherPathogenTest.stringFormat()).append(separator);
+		}
+
+		return sb.length() > 0 ? sb.substring(0, sb.length() - separator.length()) : "";
 	}
 
-	public void setOtherPathogenTestsDetails(String otherPathogenTestsDetails) {
-		this.otherPathogenTestsDetails = otherPathogenTestsDetails;
+	public void addOtherPathogenTest(SamplePathogenTest pathogenTest) {
+		otherPathogenTests.add(pathogenTest);
 	}
 
 	@Order(101)
@@ -787,6 +713,48 @@ public class SampleExportDto implements Serializable {
 
 	public ContactJurisdictionDto getAssociatedContactJurisdiction() {
 		return associatedContactJurisdiction;
+	}
+
+	public SamplePathogenTest getPathogenTest1() {
+		return pathogenTest1;
+	}
+
+	public void setPathogenTest1(SamplePathogenTest pathogenTest1) {
+		this.pathogenTest1 = pathogenTest1;
+	}
+
+	public SamplePathogenTest getPathogenTest2() {
+		return pathogenTest2;
+	}
+
+	public void setPathogenTest2(SamplePathogenTest pathogenTest2) {
+		this.pathogenTest2 = pathogenTest2;
+	}
+
+	public SamplePathogenTest getPathogenTest3() {
+		return pathogenTest3;
+	}
+
+	public void setPathogenTest3(SamplePathogenTest pathogenTest3) {
+		this.pathogenTest3 = pathogenTest3;
+	}
+
+	public List<SamplePathogenTest> getOtherPathogenTests() {
+		return otherPathogenTests;
+	}
+
+	public static class Material {
+		private SampleMaterial sampleMaterial;
+		private String sampleMaterialDetails;
+
+		public Material(SampleMaterial sampleMaterial, String sampleMaterialDetails) {
+			this.sampleMaterial = sampleMaterial;
+			this.sampleMaterialDetails = sampleMaterialDetails;
+		}
+
+		public String stringFormat(){
+			return SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
+		}
 	}
 
 	public static class AssociatedCase extends CaseReferenceDto {
@@ -858,6 +826,56 @@ public class SampleExportDto implements Serializable {
 			this.community = community;
 			this.city = city;
 			this.address = address;
+		}
+	}
+
+	public static class SamplePathogenTest {
+
+		private PathogenTestType testType;
+		@SensitiveData
+		private String testTypeText;
+		private String disease;
+		private Date dateTime;
+		@SensitiveData
+		private String lab;
+		private PathogenTestResultType testResult;
+		private Boolean verified;
+
+		public SamplePathogenTest() {
+		}
+
+		public SamplePathogenTest(
+			PathogenTestType testType,
+			String testTypeText,
+			String disease,
+			Date dateTime,
+			String lab,
+			PathogenTestResultType testResult,
+			Boolean verified) {
+			this.testType = testType;
+			this.testTypeText = testTypeText;
+			this.disease = disease;
+			this.dateTime = dateTime;
+			this.lab = lab;
+			this.testResult = testResult;
+			this.verified = verified;
+		}
+
+		public String formatType() {
+			return PathogenTestType.toString(testType, testTypeText);
+		}
+
+		public String stringFormat() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(DateHelper.formatDateForExport(dateTime)).append(" (");
+			String type = formatType();
+			if (type.length() > 0) {
+				sb.append(type).append(", ");
+			}
+
+			sb.append(disease).append(", ").append(testResult).append(")");
+
+			return sb.toString();
 		}
 	}
 }

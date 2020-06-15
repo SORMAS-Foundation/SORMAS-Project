@@ -26,6 +26,8 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -37,8 +39,8 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO)
 		+ fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
 
-	public EpiDataTravelEditForm() {
-		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX);
+	public EpiDataTravelEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);
 	}
@@ -63,6 +65,8 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 				I18nProperties.getValidationError(Validations.afterDate, travelDateFrom.getCaption(), travelDateTo.getCaption())));
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
+
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.addSoftRequiredStyle(travelDateFrom, travelDateTo);
 	}

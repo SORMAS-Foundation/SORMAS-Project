@@ -20,15 +20,17 @@ package de.symeda.sormas.api.hospitalization;
 import java.util.Date;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class PreviousHospitalizationDto extends EntityDto {
+public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -7544440109802739018L;
 
@@ -48,10 +50,14 @@ public class PreviousHospitalizationDto extends EntityDto {
 	private Date dischargeDate;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	@SensitiveData
 	private CommunityReferenceDto community;
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
+	@SensitiveData
 	private String healthFacilityDetails;
 	private YesNoUnknown isolated;
+	@SensitiveData
 	private String description;
 
 	public static PreviousHospitalizationDto build(CaseDataDto caze) {

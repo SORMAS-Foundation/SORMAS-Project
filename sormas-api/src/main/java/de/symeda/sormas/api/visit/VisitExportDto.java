@@ -33,6 +33,7 @@ public class VisitExportDto implements Serializable {
 	private Date visitDateTime;
 	private Long visitUserId;
 	private VisitStatus visitStatus;
+	@SensitiveData
 	private String visitRemarks;
 	private SymptomsDto symptoms;
 

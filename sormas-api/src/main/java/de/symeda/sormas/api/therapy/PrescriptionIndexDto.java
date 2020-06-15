@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.therapy;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.utils.SensitiveData;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,17 +17,20 @@ public class PrescriptionIndexDto implements Serializable {
 	public static final String PRESCRIPTION_PERIOD = "prescriptionPeriod";
 	public static final String FREQUENCY = "frequency";
 	public static final String DOSE = "dose";
-	public static final String ROUTE = "route";
+	public static final String PRESCRIPTION_ROUTE = "prescriptionRoute";
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 
 	private String uuid;
-	private String prescriptionType;
+	private Type type;
 	private Date prescriptionDate;
 	private PeriodDto prescriptionPeriod;
 	private String frequency;
 	private String dose;
-	private String route;
+	private Route route;
+	@SensitiveData
 	private String prescribingClinician;
+
+	private CaseJurisdictionDto caseJurisdiction;
 
 	public PrescriptionIndexDto(
 		String uuid,
@@ -38,16 +44,30 @@ public class PrescriptionIndexDto implements Serializable {
 		String dose,
 		TreatmentRoute route,
 		String routeDetails,
-		String prescribingClinician) {
+		String prescribingClinician,
+		String caseReportingUserUuid,
+		String caseRegionUuid,
+		String caseDistrictUuid,
+		String caseCommunityUuid,
+		String caseHealthFacilityUuid,
+		String casePointOfEntryUuid) {
 
 		this.uuid = uuid;
-		this.prescriptionType = TreatmentType.buildCaption(prescriptionType, prescriptionDetails, typeOfDrug);
+		this.type = new Type(prescriptionType, prescriptionDetails, typeOfDrug);
 		this.prescriptionDate = prescriptionDate;
 		this.prescriptionPeriod = new PeriodDto(prescriptionStart, prescriptionEnd);
 		this.frequency = frequency;
 		this.dose = dose;
-		this.route = TreatmentRoute.buildCaption(route, routeDetails);
+		this.route = new Route(route, routeDetails);
 		this.prescribingClinician = prescribingClinician;
+
+		this.caseJurisdiction = new CaseJurisdictionDto(
+			caseReportingUserUuid,
+			caseRegionUuid,
+			caseDistrictUuid,
+			caseCommunityUuid,
+			caseHealthFacilityUuid,
+			casePointOfEntryUuid);
 	}
 
 	public String getUuid() {
@@ -59,11 +79,11 @@ public class PrescriptionIndexDto implements Serializable {
 	}
 
 	public String getPrescriptionType() {
-		return prescriptionType;
+		return type.stringFormat();
 	}
 
-	public void setPrescriptionType(String prescriptionType) {
-		this.prescriptionType = prescriptionType;
+	public Type getType(){
+		return type;
 	}
 
 	public Date getPrescriptionDate() {
@@ -98,12 +118,12 @@ public class PrescriptionIndexDto implements Serializable {
 		this.dose = dose;
 	}
 
-	public String getRoute() {
-		return route;
+	public String getPrescriptionRoute() {
+		return route.stringFormat();
 	}
 
-	public void setRoute(String route) {
-		this.route = route;
+	public Route getRoute(){
+		return route;
 	}
 
 	public String getPrescribingClinician() {
@@ -112,5 +132,43 @@ public class PrescriptionIndexDto implements Serializable {
 
 	public void setPrescribingClinician(String prescribingClinician) {
 		this.prescribingClinician = prescribingClinician;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
+	}
+
+	public static class Type implements Serializable {
+
+		private TreatmentType prescriptionType;
+		@SensitiveData
+		private String prescriptionDetails;
+		private TypeOfDrug typeOfDrug;
+
+		public Type(TreatmentType prescriptionType, String prescriptionDetails, TypeOfDrug typeOfDrug) {
+			this.prescriptionType = prescriptionType;
+			this.prescriptionDetails = prescriptionDetails;
+			this.typeOfDrug = typeOfDrug;
+		}
+
+		public String stringFormat() {
+			return TreatmentType.buildCaption(prescriptionType, prescriptionDetails, typeOfDrug);
+		}
+	}
+
+	public static class Route implements Serializable {
+
+		private TreatmentRoute route;
+		@SensitiveData
+		private String routeDetails;
+
+		public Route(TreatmentRoute route, String routeDetails) {
+			this.route = route;
+			this.routeDetails = routeDetails;
+		}
+
+		public String stringFormat() {
+			return TreatmentRoute.buildCaption(route, routeDetails);
+		}
 	}
 }

@@ -26,8 +26,13 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
+import de.symeda.sormas.backend.therapy.PrescriptionService;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -83,7 +88,6 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -243,6 +247,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SymptomsFacadeEjbLocal.class);
 	}
 
+	public SymptomsService getSymptomsService() {
+		return getBean(SymptomsService.class);
+	}
+
 	public PointOfEntryFacade getPointOfEntryFacade() {
 		return getBean(PointOfEntryFacadeEjbLocal.class);
 	}
@@ -280,7 +288,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public EpiDataFacade getEpiDataFacade() {
-		return getBean(EpiDataFacadeEjbLocal.class);
+		return getBean(EpiDataFacadeEjb.EpiDataFacadeEjbLocal.class);
 	}
 
 	public WeeklyReportFacade getWeeklyReportFacade() {
@@ -327,6 +335,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ClinicalVisitFacadeEjbLocal.class);
 	}
 
+	public ClinicalVisitService getClinicalVisitService() {
+		return getBean(ClinicalVisitService.class);
+	}
+
 	public TherapyFacade getTherapyFacade() {
 		return getBean(TherapyFacadeEjbLocal.class);
 	}
@@ -335,8 +347,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PrescriptionFacadeEjbLocal.class);
 	}
 
+	public PrescriptionService getPrescriptionService() {
+		return getBean(PrescriptionService.class);
+	}
+
 	public TreatmentFacade getTreatmentFacade() {
 		return getBean(TreatmentFacadeEjbLocal.class);
+	}
+
+	public TreatmentService getTreatmentService() {
+		return getBean(TreatmentService.class);
 	}
 
 	public DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
@@ -374,6 +394,15 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 		return survOff;
 	}
+
+	protected UserDto useNationalUserLogin() {
+		UserDto natUser =
+			creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
+		return natUser;
+	}
+
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
 	}

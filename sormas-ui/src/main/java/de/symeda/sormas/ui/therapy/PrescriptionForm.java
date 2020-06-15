@@ -4,6 +4,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -16,6 +17,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -32,10 +35,13 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		+ fluidRowLocs(PrescriptionDto.ROUTE, PrescriptionDto.ROUTE_DETAILS)
 		+ loc(PrescriptionDto.ADDITIONAL_NOTES);
 
-	public PrescriptionForm(boolean create, boolean readOnly) {
-		super(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX);
+	public PrescriptionForm(boolean create, boolean readOnly, boolean isInJurisdiction) {
+		super(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX, false, new FieldVisibilityCheckers(),
+				FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
 
 		getFieldGroup().setReadOnly(readOnly);
+
+		addFields();
 
 		setWidth(680, Unit.PIXELS);
 
@@ -62,13 +68,22 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
 		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
 
+		initializeAccessAndAllowedAccesses();
+
 		setRequired(true, PrescriptionDto.PRESCRIPTION_TYPE, PrescriptionDto.PRESCRIPTION_DATE);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			prescriptionTypeField,
-			Arrays.asList(PrescriptionDto.PRESCRIPTION_DETAILS),
-			Arrays.asList(TreatmentType.OTHER, TreatmentType.DRUG_INTAKE));
-		FieldHelper.setRequiredWhen(getFieldGroup(), routeField, Arrays.asList(PrescriptionDto.ROUTE_DETAILS), Arrays.asList(TreatmentRoute.OTHER));
+
+		if(isEditableAllowed(PrescriptionDto.PRESCRIPTION_DETAILS)) {
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					prescriptionTypeField,
+					Collections.singletonList(PrescriptionDto.PRESCRIPTION_DETAILS),
+					Arrays.asList(TreatmentType.OTHER, TreatmentType.DRUG_INTAKE));
+		}
+
+		if(isEditableAllowed(PrescriptionDto.ROUTE_DETAILS)) {
+			FieldHelper.setRequiredWhen(getFieldGroup(), routeField, Arrays.asList(PrescriptionDto.ROUTE_DETAILS), Arrays.asList(TreatmentRoute.OTHER));
+		}
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), PrescriptionDto.ROUTE_DETAILS, PrescriptionDto.ROUTE, Arrays.asList(TreatmentRoute.OTHER), true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

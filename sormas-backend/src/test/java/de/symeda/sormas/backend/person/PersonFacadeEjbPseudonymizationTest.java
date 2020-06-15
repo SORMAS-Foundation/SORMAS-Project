@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.person.PresentCondition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,7 +110,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateCasePersonInJurisdictionWithPseudonymizedDto() {
 
 		creator.createCase(user1.toReference(), person.toReference(), rdcf2);
-		updatePersonPseudonymisedDto();
+		updatePersonPseudonymizedDto();
 		assertPersonNotUpdated();
 	}
 
@@ -220,7 +221,14 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setLatitude(26.533);
 		address.setLatLonAccuracy(10F);
 
-		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, address);
+		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
+			p.setAddress(address);
+
+			p.setPhone("1234567");
+			p.setPresentCondition(PresentCondition.DEAD);
+			p.setCauseOfDeathDetails("Test cause of death details");
+			p.setPassportNumber("Test passport num");
+		});
 	}
 
 	private void updatePerson(boolean pseudonymized) {
@@ -249,7 +257,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		getPersonFacade().savePerson(person);
 	}
 
-	private void updatePersonPseudonymisedDto() {
+	private void updatePersonPseudonymizedDto() {
 
 		person.setPseudonymized(true);
 		person.setFirstName("");
@@ -293,6 +301,11 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getLongitude(), is(46.233));
 		assertThat(person.getAddress().getLatitude(), is(26.533));
 		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
+
+		// sensitive data
+		assertThat(person.getPhone(), is("1234567"));
+		assertThat(person.getCauseOfDeathDetails(), is("Test cause of death details"));
+		assertThat(person.getPassportNumber(), is("Test passport num"));
 	}
 
 	private void assertPseudonymised(PersonDto person) {
@@ -313,6 +326,11 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getLongitude(), is(nullValue()));
 		assertThat(person.getAddress().getLatitude(), is(nullValue()));
 		assertThat(person.getAddress().getLatLonAccuracy(), is(nullValue()));
+
+		// sensitive data
+		assertThat(person.getPhone(), isEmptyString());
+		assertThat(person.getCauseOfDeathDetails(), isEmptyString());
+		assertThat(person.getPassportNumber(), isEmptyString());
 	}
 
 	private void assertPersonUpdated() {

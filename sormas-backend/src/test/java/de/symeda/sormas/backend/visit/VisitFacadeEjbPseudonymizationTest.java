@@ -21,17 +21,21 @@ package de.symeda.sormas.backend.visit;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
 import de.symeda.sormas.api.visit.VisitExportType;
+import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -86,6 +90,23 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testPseudonymizeIndexList(){
+		PersonDto newPerson = creator.createPerson("First", "Last");
+		ContactDto contact1 = creator.createContact(user1.toReference(), newPerson.toReference(), Disease.CORONAVIRUS);
+		createVisit(user1, contact1, newPerson);
+		ContactDto contact2 = creator.createContact(user2.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		createVisit(user2, contact2, person);
+
+		List<VisitIndexDto> indexList1 = getVisitFacade().getIndexList(new VisitCriteria().contact(contact1.toReference()), 0, 100, null);
+		VisitIndexDto index1 = indexList1.get(0);
+		assertThat(index1.getVisitRemarks(), isEmptyString());
+
+		List<VisitIndexDto> indexList2 = getVisitFacade().getIndexList(new VisitCriteria().contact(contact2.toReference()), 0, 100, null);
+		VisitIndexDto index2 = indexList2.get(0);
+		assertThat(index2.getVisitRemarks(), is("Test remarks"));
+	}
+
+	@Test
 	public void testPseudonymizeExportList(){
 		PersonDto newPerson = creator.createPerson("First", "Last");
 		VisitDto visit1 = createVisit(user1, creator.createContact(user1.toReference(), newPerson.toReference(), Disease.CORONAVIRUS), newPerson);
@@ -117,6 +138,8 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		visit.setReportLat(null);
 		visit.setReportLon(null);
 		visit.setReportLatLonAccuracy(null);
+		visit.getSymptoms().setPatientIllLocation(null);
+		visit.getSymptoms().setOtherHemorrhagicSymptomsText(null);
 
 		getVisitFacade().saveVisit(visit);
 
@@ -125,6 +148,10 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updated.getReportLat(), is(43.532));
 		assertThat(updated.getReportLon(), is(23.4332));
 		assertThat(updated.getReportLatLonAccuracy(), is(10f));
+
+		Symptoms symptoms = getSymptomsService().getByUuid(visit.getSymptoms().getUuid());
+		assertThat(symptoms.getPatientIllLocation(), is("Test ill location"));
+		assertThat(symptoms.getOtherHemorrhagicSymptomsText(), is("OtherHemorrhagic"));
 	}
 
 	@Test
@@ -151,6 +178,12 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			v.setReportLat(43.532);
 			v.setReportLon(23.4332);
 			v.setReportLatLonAccuracy(10f);
+
+			v.getSymptoms().setPatientIllLocation("Test ill location");
+			v.getSymptoms().setOtherHemorrhagicSymptoms(SymptomState.YES);
+			v.getSymptoms().setOtherHemorrhagicSymptomsText("OtherHemorrhagic");
+
+			v.setVisitRemarks("Test remarks");
 		});
 
 		Calendar calendar = Calendar.getInstance();
@@ -168,6 +201,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// sensitive data
 		assertThat(visit.getVisitUser(), is(user2));
+		assertThat(visit.getVisitRemarks(), is("Test remarks"));
 		assertThat(visit.getReportLat(), is(43.532));
 		assertThat(visit.getReportLon(), is(23.4332));
 		assertThat(visit.getReportLatLonAccuracy(), is(10F));
@@ -180,6 +214,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		// sensitive data
 		assertThat(visit.getVisitUser(), is(nullValue()));
+		assertThat(visit.getVisitRemarks(), isEmptyString());
 		assertThat(visit.getReportLat(), is(nullValue()));
 		assertThat(visit.getReportLon(), is(nullValue()));
 		assertThat(visit.getReportLatLonAccuracy(), is(nullValue()));

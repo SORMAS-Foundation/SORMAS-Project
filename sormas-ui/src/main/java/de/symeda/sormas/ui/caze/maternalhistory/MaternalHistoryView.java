@@ -32,6 +32,6 @@ public class MaternalHistoryView extends AbstractCaseView {
 	@Override
 	protected void initView(String params) {
 
-		setSubComponent(ControllerProvider.getCaseController().getMaternalHistoryComponent(getCaseRef().getUuid(), getViewMode()));
+		setSubComponent(ControllerProvider.getCaseController().getMaternalHistoryComponent(getCaseRef().getUuid(), getViewMode(), isCaseEditAllowed()));
 	}
 }

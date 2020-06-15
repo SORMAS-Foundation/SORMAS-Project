@@ -159,10 +159,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 
-		if (existingSampleTestDto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSampleTest.getSample());
-			pseudonymizationService.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
-		}
+		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);
 
 		PathogenTest pathogenTest = fromDto(dto);
 		pathogenTestService.ensurePersisted(pathogenTest);
@@ -295,9 +292,24 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private PathogenTestDto convertToDto(PathogenTest source) {
 		PathogenTestDto target = toDto(source);
 
-		pseudonymizationService.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdiction(source.getSample()), null);
+		pseudonymizeDto(source, target);
 
 		return target;
+	}
+
+	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target) {
+		if (source != null && target != null) {
+			pseudonymizationService
+				.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdiction(source.getSample()), null);
+		}
+	}
+
+	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
+		if (existingSampleTestDto != null) {
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSampleTest.getSample());
+
+			pseudonymizationService.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);
+		}
 	}
 
 	public static PathogenTestDto toDto(PathogenTest source) {

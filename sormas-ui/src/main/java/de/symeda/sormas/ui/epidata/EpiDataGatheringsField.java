@@ -29,6 +29,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -43,6 +45,14 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	private static final String CITY = Captions.city;
 	private static final String DISTRICT = Captions.district;
 	private static final String GATHERING_DAY = Captions.EpiDataGathering_gatheringDay;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+	private FieldAccessCheckers fieldAccessCheckers;
+
+	public EpiDataGatheringsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
 
 	@Override
 	public Class<EpiDataGatheringDto> getEntryType() {
@@ -124,7 +134,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm();
+		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(

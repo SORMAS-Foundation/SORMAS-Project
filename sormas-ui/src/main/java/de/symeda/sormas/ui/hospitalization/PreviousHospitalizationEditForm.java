@@ -35,6 +35,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -49,8 +51,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
-	public PreviousHospitalizationEditForm(boolean create) {
-		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX);
+	public PreviousHospitalizationEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);
 
@@ -75,6 +77,8 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		healthFacilityDetails.setVisible(false);
 
 		healthFacility.setImmediate(true);
+
+		initializeAccessAndAllowedAccesses();
 
 		facilityRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -152,7 +156,13 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				I18nProperties.getValidationError(Validations.afterDate, dischargeDate.getCaption(), admissionDate.getCaption())));
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
-		setRequired(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT, PreviousHospitalizationDto.HEALTH_FACILITY);
+
+		if(isEditableAllowed(PreviousHospitalizationDto.HEALTH_FACILITY)) {
+			setRequired(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT, PreviousHospitalizationDto.HEALTH_FACILITY);
+		}
+		else {
+			setReadOnly(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT);
+		}
 	}
 
 	@Override

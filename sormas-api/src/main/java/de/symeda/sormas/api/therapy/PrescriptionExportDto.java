@@ -20,8 +20,10 @@ package de.symeda.sormas.api.therapy;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PrescriptionExportDto implements Serializable {
 
@@ -30,19 +32,26 @@ public class PrescriptionExportDto implements Serializable {
 	public static final String I18N_PREFIX = "PrescriptionExport";
 
 	private String caseUuid;
+	@SensitiveData
 	private String caseName;
 	private Date prescriptionDate;
 	private Date prescriptionStart;
 	private Date prescriptionEnd;
+	@SensitiveData
 	private String prescribingClinician;
 	private TreatmentType prescriptionType;
+	@SensitiveData
 	private String prescriptionDetails;
 	private TypeOfDrug typeOfDrug;
 	private String frequency;
 	private String dose;
 	private TreatmentRoute route;
+	@SensitiveData
 	private String routeDetails;
+	@SensitiveData
 	private String additionalNotes;
+
+	private CaseJurisdictionDto caseJurisdiction;
 
 	public PrescriptionExportDto(
 		String caseUuid,
@@ -59,7 +68,13 @@ public class PrescriptionExportDto implements Serializable {
 		String dose,
 		TreatmentRoute route,
 		String routeDetails,
-		String additionalNotes) {
+		String additionalNotes,
+		String caseReportingUserUuid,
+		String caseRegionUuid,
+		String caseDistrictUuid,
+		String caseCommunityUuid,
+		String caseHealthFacilityUuid,
+		String casePointOfEntryUuid) {
 
 		this.caseUuid = caseUuid;
 		this.caseName = PersonDto.buildCaption(caseFirstName, caseLastName);
@@ -75,6 +90,15 @@ public class PrescriptionExportDto implements Serializable {
 		this.route = route;
 		this.routeDetails = routeDetails;
 		this.additionalNotes = additionalNotes;
+
+		this.caseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
+
 	}
 
 	@Order(0)
@@ -201,5 +225,9 @@ public class PrescriptionExportDto implements Serializable {
 
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
+	}
+
+	public CaseJurisdictionDto getCaseJurisdiction() {
+		return caseJurisdiction;
 	}
 }

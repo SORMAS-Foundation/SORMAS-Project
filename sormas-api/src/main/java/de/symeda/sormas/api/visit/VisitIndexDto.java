@@ -5,6 +5,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class VisitIndexDto implements Serializable {
 
@@ -22,9 +23,11 @@ public class VisitIndexDto implements Serializable {
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
 
+	private Long id;
 	private String uuid;
 	private Date visitDateTime;
 	private VisitStatus visitStatus;
+	@SensitiveData
 	private String visitRemarks;
 	private Disease disease;
 	private Boolean symptomatic;
@@ -32,6 +35,7 @@ public class VisitIndexDto implements Serializable {
 	private TemperatureSource temperatureSource;
 
 	public VisitIndexDto(
+			Long id,
 		String uuid,
 		Date visitDateTime,
 		VisitStatus visitStatus,
@@ -41,6 +45,7 @@ public class VisitIndexDto implements Serializable {
 		Float temperature,
 		TemperatureSource temperatureSource) {
 
+		this.id = id;
 		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
 		this.visitStatus = visitStatus;
@@ -49,6 +54,10 @@ public class VisitIndexDto implements Serializable {
 		this.symptomatic = symptomatic;
 		this.temperature = temperature;
 		this.temperatureSource = temperatureSource;
+	}
+
+	public Long getId() {
+		return id;
 	}
 
 	public String getUuid() {

@@ -259,7 +259,9 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createPrescriptionsHeader());
 
-		prescriptionGrid = new PrescriptionGrid(this);
+		Boolean caseEditAllowed = isCaseEditAllowed();
+
+		prescriptionGrid = new PrescriptionGrid(this, caseEditAllowed);
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
@@ -267,7 +269,7 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createTreatmentsHeader());
 
-		treatmentGrid = new TreatmentGrid();
+		treatmentGrid = new TreatmentGrid(caseEditAllowed);
 		treatmentGrid.setCriteria(treatmentCriteria);
 		container.addComponent(treatmentGrid);
 		container.setExpandRatio(treatmentGrid, 1);
