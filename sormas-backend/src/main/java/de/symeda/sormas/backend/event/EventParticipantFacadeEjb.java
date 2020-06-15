@@ -44,7 +44,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -134,9 +134,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
 
-		User user = userService.getCurrentUser();
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities.");
+		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
 		}
 
 		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantRef);

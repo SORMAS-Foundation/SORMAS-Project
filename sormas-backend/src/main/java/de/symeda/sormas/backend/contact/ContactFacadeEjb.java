@@ -428,11 +428,11 @@ public class ContactFacadeEjb implements ContactFacade {
 						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
-				pseudonymizationService.pseudonymizeDto(
-					ContactExportDto.class,
-					exportContact,
-					contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()),
-					null);
+//				pseudonymizationService.pseudonymizeDto(
+//					ContactExportDto.class,
+//					exportContact,
+//					contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()),
+//					null);
 			}
 		}
 
@@ -651,11 +651,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
-				pseudonymizationService.pseudonymizeDto(
-					PersonReferenceDto.class,
-					contactFollowUpDto.getPerson(),
-					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
-					null);
+//				pseudonymizationService.pseudonymizeDto(
+//					PersonReferenceDto.class,
+//					contactFollowUpDto.getPerson(),
+//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
+//					null);
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
@@ -693,19 +693,19 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			ContactIndexDto.class,
-			dtos,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				if (c.getCaze() != null) {
-					pseudonymizationService.pseudonymizeDto(
-						CaseReferenceDto.class,
-						c.getCaze(),
-						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
-						null);
-				}
-			});
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			ContactIndexDto.class,
+//			dtos,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			(c, isInJurisdiction) -> {
+//				if (c.getCaze() != null) {
+//					pseudonymizationService.pseudonymizeDto(
+//						CaseReferenceDto.class,
+//						c.getCaze(),
+//						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
+//						null);
+//				}
+//			});
 
 		return dtos;
 	}
@@ -726,11 +726,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			ContactIndexDetailedDto.class,
-			dtos,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			null);
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			ContactIndexDetailedDto.class,
+//			dtos,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			null);
 
 		return dtos;
 	}
@@ -927,17 +927,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactDto dto = toDto(source);
 
-		if (dto != null) {
-			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
-				if (c.getCaze() != null) {
-					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
-				}
-
-				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
-			});
-		}
+//		if (dto != null) {
+//			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
+//			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
+//				if (c.getCaze() != null) {
+//					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
+//					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
+//				}
+//
+//				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
+//			});
+//		}
 
 		return dto;
 	}
@@ -946,17 +946,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactReferenceDto dto = toReferenceDto(source);
 
-		if (dto != null) {
-			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
-				if (source.getCaze() != null) {
-					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
-				}
-
-				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
-			});
-		}
+//		if (dto != null) {
+//			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
+//			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
+//				if (source.getCaze() != null) {
+//					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
+//					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
+//				}
+//
+//				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
+//			});
+//		}
 
 		return dto;
 	}
@@ -1209,20 +1209,20 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			SimilarContactDto.class,
-			contacts,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				CaseReferenceDto contactCase = c.getCaze();
-				if (contactCase != null) {
-					pseudonymizationService.pseudonymizeDto(
-						CaseReferenceDto.class,
-						contactCase,
-						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
-						null);
-				}
-			});
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			SimilarContactDto.class,
+//			contacts,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			(c, isInJurisdiction) -> {
+//				CaseReferenceDto contactCase = c.getCaze();
+//				if (contactCase != null) {
+//					pseudonymizationService.pseudonymizeDto(
+//						CaseReferenceDto.class,
+//						contactCase,
+//						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
+//						null);
+//				}
+//			});
 
 		return contacts;
 	}

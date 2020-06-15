@@ -77,6 +77,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
+		from.fetch(Event.EVENT_LOCATION);
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
