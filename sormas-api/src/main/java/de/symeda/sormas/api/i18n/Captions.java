@@ -391,6 +391,7 @@ public interface Captions {
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
 	String contactCreateNew = "contactCreateNew";
+	String contactCreatePIAAccount = "contactCreatePIAAccount";
 	String contactDetailedOverview = "contactDetailedOverview";
 	String ContactExport_address = "ContactExport.address";
 	String ContactExport_addressDistrict = "ContactExport.addressDistrict";

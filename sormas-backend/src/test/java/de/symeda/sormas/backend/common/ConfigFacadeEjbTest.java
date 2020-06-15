@@ -32,6 +32,21 @@ import de.symeda.sormas.backend.MockProducer;
 public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
+	public void testValidateExternalUrls() {
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "https://www.google.com");
+		getConfigFacade().validateExternalUrls();
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "http://www.google.com");
+		getConfigFacade().validateExternalUrls();
+
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "htps://www.google.com#");
+		} catch (IllegalArgumentException ignored) {
+		}
+	}
+
+	@Test
 	public void testValidateAppUrls() {
 
 		Mockito.when(InfoProvider.get().getVersion()).thenReturn("0.7.0");

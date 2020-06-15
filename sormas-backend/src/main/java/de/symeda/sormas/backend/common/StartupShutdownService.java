@@ -176,6 +176,7 @@ public class StartupShutdownService {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		configFacade.validateAppUrls();
+		configFacade.validateExternalUrls();
 	}
 
 	private void createDefaultInfrastructureData() {
