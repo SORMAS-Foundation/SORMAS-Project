@@ -587,6 +587,10 @@ public class CasesView extends AbstractView {
 			criteria.fromUrlParams(params);
 		}
 
+		if (viewConfiguration.isInEagerMode()) {
+			grid.setEagerDataProvider();
+		}
+
 		updateFilterComponents();
 	}
 
