@@ -9,13 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,11 +39,11 @@ import de.symeda.sormas.backend.region.Region;
 @Entity
 @Audited
 public class Location extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = 392776645668778670L;
 
 	public static final String TABLE_NAME = "location";
-	
+
 	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
@@ -56,54 +59,58 @@ public class Location extends AbstractDomainObject {
 	private String details;
 	private String city;
 	private AreaType areaType;
-	
+
 	private Region region;
 	private District district;
 	private Community community;
-	
+
 	private Double latitude;
 	private Double longitude;
 	private Float latLonAccuracy;
-	
+
 	private String postalCode;
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAddress() {
 		return address;
 	}
+
 	public void setAddress(String address) {
 		this.address = address;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
 		return details;
 	}
+
 	public void setDetails(String details) {
 		this.details = details;
 	}
-	
-	@Column(length = 255)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCity() {
 		return city;
 	}
+
 	public void setCity(String city) {
 		this.city = city;
 	}
 
-	@Column(length = 255)
 	@Enumerated(EnumType.STRING)
 	public AreaType getAreaType() {
 		return areaType;
 	}
+
 	public void setAreaType(AreaType areaType) {
 		this.areaType = areaType;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;
 	}
+
 	public void setRegion(Region region) {
 		this.region = region;
 	}
@@ -112,6 +119,7 @@ public class Location extends AbstractDomainObject {
 	public District getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(District district) {
 		this.district = district;
 	}
@@ -120,20 +128,23 @@ public class Location extends AbstractDomainObject {
 	public Community getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(Community community) {
 		this.community = community;
 	}
-	
+
 	public Double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	
+
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
@@ -141,11 +152,12 @@ public class Location extends AbstractDomainObject {
 	public Float getLatLonAccuracy() {
 		return latLonAccuracy;
 	}
+
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
-	
-	@Column(length = 255)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -169,8 +181,10 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return LocationReferenceDto.buildCaption(
-				region != null ? region.getName() : null, 
-				district != null ? district.getName() : null, 
-				community != null ? community.getName() : null, city, address);
+			region != null ? region.getName() : null,
+			district != null ? district.getName() : null,
+			community != null ? community.getName() : null,
+			city,
+			address);
 	}
 }

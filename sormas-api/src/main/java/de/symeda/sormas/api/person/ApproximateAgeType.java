@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
@@ -30,10 +30,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 
 public enum ApproximateAgeType {
+
 	YEARS,
 	MONTHS,
-	DAYS,
-	;
+	DAYS;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
@@ -48,26 +48,25 @@ public enum ApproximateAgeType {
 		public static Pair<Integer, ApproximateAgeType> getApproximateAge(Date birthDate, Date deathDate) {
 
 			if (birthDate == null) {
-	            return Pair.createPair(null, ApproximateAgeType.YEARS);
+				return Pair.createPair(null, ApproximateAgeType.YEARS);
 			}
 
-	        DateTime toDate = deathDate==null?DateTime.now(): new DateTime(deathDate);
-	        DateTime startDate = new DateTime(birthDate);
-	        Years years = Years.yearsBetween(startDate, toDate);
+			DateTime toDate = deathDate == null ? DateTime.now() : new DateTime(deathDate);
+			DateTime startDate = new DateTime(birthDate);
+			Years years = Years.yearsBetween(startDate, toDate);
 
-	        if (years.getYears() < 1) {
-	            Months months = Months.monthsBetween(startDate, toDate);
-	            if (months.getMonths() < 1) {
-	            	Days days = Days.daysBetween(startDate, toDate);
-	            	return Pair.createPair(days.getDays(), ApproximateAgeType.DAYS);
-	            } else {
-	            	return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
-	            }
-	        }
-	        else {
-	            return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
-	        }
-	        
+			if (years.getYears() < 1) {
+				Months months = Months.monthsBetween(startDate, toDate);
+				if (months.getMonths() < 1) {
+					Days days = Days.daysBetween(startDate, toDate);
+					return Pair.createPair(days.getDays(), ApproximateAgeType.DAYS);
+				} else {
+					return Pair.createPair(months.getMonths(), ApproximateAgeType.MONTHS);
+				}
+			} else {
+				return Pair.createPair(years.getYears(), ApproximateAgeType.YEARS);
+			}
+
 //	 		Same code for Java8		
 //			if (birthDate == null)
 //				return Pair.createPair(null, ApproximateAgeType.YEARS);
@@ -95,14 +94,13 @@ public enum ApproximateAgeType {
 			Date deathDate) {
 
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(birthdateYYYY,
-					birthdateMM !=null ? birthdateMM - 1 : 0, 
-							birthdateDD != null ? birthdateDD : 1);
+			birthdate.set(birthdateYYYY, birthdateMM != null ? birthdateMM - 1 : 0, birthdateDD != null ? birthdateDD : 1);
 
 			return getApproximateAge(birthdate.getTime(), deathDate);
 		}
 
 		public static String formatApproximateAge(Integer approximateAge, ApproximateAgeType approximateAgeType) {
+
 			if (approximateAge == null) {
 				return "";
 			} else if (approximateAgeType != null) {
@@ -119,12 +117,13 @@ public enum ApproximateAgeType {
 				return approximateAge.toString();
 			}
 		}
-		
+
 		public static Integer getAgeYears(Integer age, ApproximateAgeType approximateAgeType) {
+
 			if (age == null || approximateAgeType == null) {
 				return age;
 			}
-			
+
 			switch (approximateAgeType) {
 			case YEARS:
 				return age;
@@ -134,15 +133,15 @@ public enum ApproximateAgeType {
 				return Math.floorDiv(age, 365);
 			default:
 				throw new IllegalArgumentException(approximateAgeType.toString());
-			}	
+			}
 		}
-		
+
 		public static String getAgeGroupFromAge(Integer age, ApproximateAgeType ageType) {
 			Integer ageYears = ApproximateAgeHelper.getAgeYears(age, ageType);
 			if (ageYears == null) {
 				return null;
 			}
-			
+
 			int lowerAgeBoundary = (int) Math.floor(ageYears / 5f) * 5;
 			if (lowerAgeBoundary >= 120) {
 				return "120+";

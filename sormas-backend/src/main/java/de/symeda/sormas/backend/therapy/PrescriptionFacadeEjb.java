@@ -26,7 +26,7 @@ import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -41,7 +41,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	
+
 	@EJB
 	private PrescriptionService service;
 	@EJB
@@ -50,138 +50,133 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private TherapyService therapyService;
 	@EJB
 	private CaseService caseService;
-	
+
 	@Override
 	public List<PrescriptionIndexDto> getIndexList(PrescriptionCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PrescriptionIndexDto> cq = cb.createQuery(PrescriptionIndexDto.class);
 		Root<Prescription> prescription = cq.from(Prescription.class);
-		
+
 		cq.multiselect(
-				prescription.get(Prescription.UUID),
-				prescription.get(Prescription.PRESCRIPTION_TYPE),
-				prescription.get(Prescription.PRESCRIPTION_DETAILS),
-				prescription.get(Prescription.TYPE_OF_DRUG),
-				prescription.get(Prescription.PRESCRIPTION_DATE),
-				prescription.get(Prescription.PRESCRIPTION_START),
-				prescription.get(Prescription.PRESCRIPTION_END),
-				prescription.get(Prescription.FREQUENCY),
-				prescription.get(Prescription.DOSE),
-				prescription.get(Prescription.ROUTE),
-				prescription.get(Prescription.ROUTE_DETAILS),
-				prescription.get(Prescription.PRESCRIBING_CLINICIAN));
-		
+			prescription.get(Prescription.UUID),
+			prescription.get(Prescription.PRESCRIPTION_TYPE),
+			prescription.get(Prescription.PRESCRIPTION_DETAILS),
+			prescription.get(Prescription.TYPE_OF_DRUG),
+			prescription.get(Prescription.PRESCRIPTION_DATE),
+			prescription.get(Prescription.PRESCRIPTION_START),
+			prescription.get(Prescription.PRESCRIPTION_END),
+			prescription.get(Prescription.FREQUENCY),
+			prescription.get(Prescription.DOSE),
+			prescription.get(Prescription.ROUTE),
+			prescription.get(Prescription.ROUTE_DETAILS),
+			prescription.get(Prescription.PRESCRIBING_CLINICIAN));
+
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
 		}
-		
+
 		cq.orderBy(cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
-	
+
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	@Override
 	public PrescriptionDto getPrescriptionByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}
-	
+
 	@Override
 	public PrescriptionDto savePrescription(PrescriptionDto prescription) {
+
 		Prescription entity = fromDto(prescription);
-		
 		service.ensurePersisted(entity);
-		
 		return toDto(entity);
 	}
 
 	@Override
 	public void deletePrescription(String prescriptionUuid) {
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper user right call #944
-		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
-			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
+
+		if (!userService.hasRight(UserRight.PRESCRIPTION_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete prescriptions");
 		}
-		
+
 		Prescription prescription = service.getByUuid(prescriptionUuid);
 		service.delete(prescription);
 	}
-	
+
 	@Override
 	public List<PrescriptionDto> getAllActivePrescriptionsAfter(Date date) {
+
 		User user = userService.getCurrentUser();
-		
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
-		return service.getAllActivePrescriptionsAfter(date, user).stream()
-				.map(p -> toDto(p))
-				.collect(Collectors.toList());
+
+		return service.getAllActivePrescriptionsAfter(date, user).stream().map(p -> toDto(p)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<PrescriptionDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids)
-				.stream()
-				.map(p -> toDto(p))
-				.collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(p -> toDto(p)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<String> getAllActiveUuids() {
-		User user = userService.getCurrentUser();
 
+		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return service.getAllActiveUuids(user);
 	}
-	
+
 	@Override
 	public List<PrescriptionExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PrescriptionExportDto> cq = cb.createQuery(PrescriptionExportDto.class);
 		Root<Prescription> prescription = cq.from(Prescription.class);
 		Join<Prescription, Therapy> therapy = prescription.join(Prescription.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-		
+
 		cq.multiselect(
-				caze.get(Case.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				prescription.get(Prescription.PRESCRIPTION_DATE),
-				prescription.get(Prescription.PRESCRIPTION_START),
-				prescription.get(Prescription.PRESCRIPTION_END),
-				prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-				prescription.get(Prescription.PRESCRIPTION_TYPE),
-				prescription.get(Prescription.PRESCRIPTION_DETAILS),
-				prescription.get(Prescription.TYPE_OF_DRUG),
-				prescription.get(Prescription.FREQUENCY),
-				prescription.get(Prescription.DOSE),
-				prescription.get(Prescription.ROUTE),
-				prescription.get(Prescription.ROUTE_DETAILS),
-				prescription.get(Prescription.ADDITIONAL_NOTES));
-		
+			caze.get(Case.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			prescription.get(Prescription.PRESCRIPTION_DATE),
+			prescription.get(Prescription.PRESCRIPTION_START),
+			prescription.get(Prescription.PRESCRIPTION_END),
+			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
+			prescription.get(Prescription.PRESCRIPTION_TYPE),
+			prescription.get(Prescription.PRESCRIPTION_DETAILS),
+			prescription.get(Prescription.TYPE_OF_DRUG),
+			prescription.get(Prescription.FREQUENCY),
+			prescription.get(Prescription.DOSE),
+			prescription.get(Prescription.ROUTE),
+			prescription.get(Prescription.ROUTE_DETAILS),
+			prescription.get(Prescription.ADDITIONAL_NOTES));
+
 		Predicate filter = service.createUserFilter(cb, cq, prescription);
 		Join<Case, Case> casePath = therapy.join(Therapy.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(prescription.get(Prescription.PRESCRIPTION_DATE)));
-		
+
 		return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 	}
-	
+
 	public static PrescriptionDto toDto(Prescription source) {
+
 		if (source == null) {
 			return null;
 		}
-		
+
 		PrescriptionDto target = new PrescriptionDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setTherapy(TherapyFacadeEjb.toReferenceDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());
 		target.setPrescriptionDetails(source.getPrescriptionDetails());
@@ -195,22 +190,23 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
-		
+
 		return target;
 	}
-	
+
 	public static PrescriptionReferenceDto toReferenceDto(Prescription source) {
 		if (source == null) {
 			return null;
 		}
-		
+
 		PrescriptionReferenceDto reference = new PrescriptionReferenceDto(source.getUuid(), source.toString());
 		return reference;
 	}
-	
+
 	public Prescription fromDto(@NotNull PrescriptionDto source) {
+
 		Prescription target = service.getByUuid(source.getUuid());
-		
+
 		if (target == null) {
 			target = new Prescription();
 			target.setUuid(source.getUuid());
@@ -218,9 +214,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		
+
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setTherapy(therapyService.getByReferenceDto(source.getTherapy()));
 		target.setPrescriptionType(source.getPrescriptionType());
 		target.setPrescriptionDetails(source.getPrescriptionDetails());
@@ -234,7 +230,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
-		
+
 		return target;
 	}
 
@@ -243,5 +239,4 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	public static class PrescriptionFacadeEjbLocal extends PrescriptionFacadeEjb {
 
 	}
-	
 }

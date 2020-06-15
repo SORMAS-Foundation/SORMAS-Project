@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>FilterCasesNotYetClasifiedInSearchView</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>555c2034-0ca0-4cda-9958-c810760080f2</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description>Set when it is called by other test case (Browser won't close))</description>
+      <id>d8128a1b-46b1-439c-ad80-7a186301977a</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

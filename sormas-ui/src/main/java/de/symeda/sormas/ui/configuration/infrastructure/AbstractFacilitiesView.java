@@ -80,6 +80,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	private MenuBar bulkOperationsDropdown;
 
 	protected AbstractFacilitiesView(String viewName, FacilityType type) {
+
 		super(viewName);
 		Class<? extends AbstractFacilitiesView> viewClass =
 			FacilityType.LABORATORY.equals(type) ? LaboratoriesView.class : HealthFacilitiesView.class;
@@ -369,5 +370,4 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 
 		applyingCriteria = false;
 	}
-
 }

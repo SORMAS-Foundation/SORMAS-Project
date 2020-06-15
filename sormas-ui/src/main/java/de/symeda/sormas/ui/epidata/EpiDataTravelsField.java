@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -51,6 +51,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		Table table = getTable();
 
 		table.addGeneratedColumn(PERIOD, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
@@ -66,17 +67,13 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			}
 		});
 
-		table.setVisibleColumns(
-				EDIT_COLUMN_ID,
-				EpiDataTravelDto.TRAVEL_TYPE,
-				EpiDataTravelDto.TRAVEL_DESTINATION,
-				PERIOD);
+		table.setVisibleColumns(EDIT_COLUMN_ID, EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION, PERIOD);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataTravelDto.TRAVEL_TYPE, 0);
 		table.setColumnExpandRatio(EpiDataTravelDto.TRAVEL_DESTINATION, 0);
 		table.setColumnExpandRatio(PERIOD, 0);
-		
+
 		for (Object columnId : table.getVisibleColumns()) {
 			if (!columnId.equals(EDIT_COLUMN_ID)) {
 				table.setColumnHeader(columnId, I18nProperties.getPrefixCaption(EpiDataTravelDto.I18N_PREFIX, (String) columnId));
@@ -108,17 +105,20 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 		if (create && entry.getUuid() == null) {
 			entry.setUuid(DataHelper.createUuid());
 		}
-		
+
 		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm();
 		editForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityTravel));
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -129,6 +129,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					popupWindow.close();

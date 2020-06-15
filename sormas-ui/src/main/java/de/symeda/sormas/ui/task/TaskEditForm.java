@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
@@ -25,7 +25,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
@@ -55,172 +54,192 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
 
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
-	
-    private static final String HTML_LAYOUT = 
-    		fluidRow(
-    				loc(TaskDto.TASK_CONTEXT), 
-    				locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
+
+	private static final long serialVersionUID = 1L;
+
+	//@formatter:off
+	private static final String HTML_LAYOUT = 
+			fluidRow(
+					loc(TaskDto.TASK_CONTEXT), 
+					locs(TaskDto.CAZE, TaskDto.EVENT, TaskDto.CONTACT)) +
 			fluidRowLocs(TaskDto.TASK_TYPE) +
 			fluidRowLocs(TaskDto.SUGGESTED_START, TaskDto.DUE_DATE) +
 			fluidRowLocs(TaskDto.ASSIGNEE_USER, TaskDto.PRIORITY) +
 			fluidRowLocs(TaskDto.CREATOR_COMMENT) +
 			fluidRowLocs(TaskDto.ASSIGNEE_REPLY) +
 			fluidRowLocs(TaskDto.TASK_STATUS);
+	//@formatter:off
 
-    private UserRight editOrCreateUserRight;
-    
-    public TaskEditForm(boolean create) {
-        super(TaskDto.class, TaskDto.I18N_PREFIX);
-        this.editOrCreateUserRight = editOrCreateUserRight;
-        addValueChangeListener(e -> {
-    		updateByTaskContext();
-    		updateByCreatingAndAssignee();
-        });
-        
-        setWidth(680, Unit.PIXELS);
-        
-        if (create) {
-        	hideValidationUntilNextCommit();
-        }
-    }
-    
+	private UserRight editOrCreateUserRight;
+
+	public TaskEditForm(boolean create) {
+
+		super(TaskDto.class, TaskDto.I18N_PREFIX);
+		this.editOrCreateUserRight = editOrCreateUserRight;
+		addValueChangeListener(e -> {
+			updateByTaskContext();
+			updateByCreatingAndAssignee();
+		});
+
+		setWidth(680, Unit.PIXELS);
+
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
+	}
+
 	@Override
 	protected void addFields() {
-    	addField(TaskDto.CAZE, ComboBox.class);
-    	addField(TaskDto.EVENT, ComboBox.class);
-    	addField(TaskDto.CONTACT, ComboBox.class);
-    	DateTimeField startDate = addDateField(TaskDto.SUGGESTED_START, DateTimeField.class, -1);
-    	DateTimeField dueDate = addDateField(TaskDto.DUE_DATE, DateTimeField.class, -1);
-    	dueDate.setImmediate(true);
-    	addField(TaskDto.PRIORITY, ComboBox.class);
-    	OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);
-    	OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
-    	taskContext.setImmediate(true);
-    	taskContext.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				updateByTaskContext();
+
+		addField(TaskDto.CAZE, ComboBox.class);
+		addField(TaskDto.EVENT, ComboBox.class);
+		addField(TaskDto.CONTACT, ComboBox.class);
+		DateTimeField startDate = addDateField(TaskDto.SUGGESTED_START, DateTimeField.class, -1);
+		DateTimeField dueDate = addDateField(TaskDto.DUE_DATE, DateTimeField.class, -1);
+		dueDate.setImmediate(true);
+		addField(TaskDto.PRIORITY, ComboBox.class);
+		OptionGroup taskStatus = addField(TaskDto.TASK_STATUS, OptionGroup.class);
+		OptionGroup taskContext = addField(TaskDto.TASK_CONTEXT, OptionGroup.class);
+		taskContext.setImmediate(true);
+		taskContext.addValueChangeListener(event -> updateByTaskContext());
+
+		ComboBox taskTypeField = addField(TaskDto.TASK_TYPE, ComboBox.class);
+		taskTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
+		taskTypeField.setImmediate(true);
+		taskTypeField.addValueChangeListener(e -> {
+			TaskType taskType = (TaskType) e.getProperty().getValue();
+			if (taskType != null) {
+				setRequired(taskType.isCreatorCommentRequired(), TaskDto.CREATOR_COMMENT);
 			}
 		});
-    	    	
-    	ComboBox taskTypeField = addField(TaskDto.TASK_TYPE, ComboBox.class);
-    	taskTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-    	taskTypeField.setImmediate(true);
-    	taskTypeField.addValueChangeListener(e -> {
-    		TaskType taskType = (TaskType)e.getProperty().getValue();
-    		if (taskType != null) {
-    			setRequired(taskType.isCreatorCommentRequired(), TaskDto.CREATOR_COMMENT);
-    		}
-    	});
-    	
-    	ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
-    	assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
-    	assigneeUser.setImmediate(true);
 
-    	TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
-    	creatorComment.setRows(2);
-    	creatorComment.setImmediate(true);
-    	addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
+		ComboBox assigneeUser = addField(TaskDto.ASSIGNEE_USER, ComboBox.class);
+		assigneeUser.addValueChangeListener(e -> updateByCreatingAndAssignee());
+		assigneeUser.setImmediate(true);
 
-    	setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
-    	setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
-    	
-    	addValueChangeListener(e -> {
-	    	TaskDto taskDto = getValue();
-	    	
-	    	if (taskDto.getTaskType() == TaskType.CASE_INVESTIGATION && taskDto.getCaze() != null) {
-	        	taskStatus.addValidator(new TaskStatusValidator(taskDto.getCaze().getUuid(), I18nProperties.getValidationError(Validations.investigationStatusUnclassifiedCase)));
-	    	}
-	    	
-	    	DistrictReferenceDto district = null;
-	    	RegionReferenceDto region = null;
-	    	if (taskDto.getCaze() != null) {
-	    		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
-	    		district = caseDto.getDistrict();
-	    		region = caseDto.getRegion();
-	    	} else if (taskDto.getContact() != null) {
-	    		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
-	    		if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
-	    			district = contactDto.getDistrict();
-	    			region = contactDto.getRegion();
-	    		} else {
-	    			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-		    		district = caseDto.getDistrict();
-		    		region = caseDto.getRegion();
-	    		}
-	    	} else if (taskDto.getEvent() != null) {
-	    		EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
-	    		district = eventDto.getEventLocation().getDistrict();
-	    		region = eventDto.getEventLocation().getRegion();
-	    	} else {
-	    		UserDto userDto = UserProvider.getCurrent().getUser();
-	    		district = userDto.getDistrict();
-	    		region = userDto.getRegion();
-	    	}
-	    	
-	    	List<UserReferenceDto> users = new ArrayList<>();
-	    	if (district != null) {
-	    		users = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
-	    	} else if (region != null) {
-	    		users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
-	    	} else {
-	    		// fallback - just show all users
-	    		users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
-	    	}
-	    	
-	    	// Validation
-			startDate.addValidator(new DateComparisonValidator(startDate, dueDate, true, false, 
+		TextArea creatorComment = addField(TaskDto.CREATOR_COMMENT, TextArea.class);
+		creatorComment.setRows(2);
+		creatorComment.setImmediate(true);
+		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(2);
+
+		setRequired(true, TaskDto.TASK_CONTEXT, TaskDto.TASK_TYPE, TaskDto.ASSIGNEE_USER, TaskDto.DUE_DATE);
+		setReadOnly(true, TaskDto.TASK_CONTEXT, TaskDto.CAZE, TaskDto.CONTACT, TaskDto.EVENT);
+
+		addValueChangeListener(e -> {
+			TaskDto taskDto = getValue();
+
+			if (taskDto.getTaskType() == TaskType.CASE_INVESTIGATION && taskDto.getCaze() != null) {
+				taskStatus.addValidator(
+					new TaskStatusValidator(
+						taskDto.getCaze().getUuid(),
+						I18nProperties.getValidationError(Validations.investigationStatusUnclassifiedCase)));
+			}
+
+			DistrictReferenceDto district = null;
+			RegionReferenceDto region = null;
+			if (taskDto.getCaze() != null) {
+				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(taskDto.getCaze().getUuid());
+				district = caseDto.getDistrict();
+				region = caseDto.getRegion();
+			} else if (taskDto.getContact() != null) {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(taskDto.getContact().getUuid());
+				if (contactDto.getRegion() != null && contactDto.getDistrict() != null) {
+					district = contactDto.getDistrict();
+					region = contactDto.getRegion();
+				} else {
+					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
+					district = caseDto.getDistrict();
+					region = caseDto.getRegion();
+				}
+			} else if (taskDto.getEvent() != null) {
+				EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(taskDto.getEvent().getUuid());
+				district = eventDto.getEventLocation().getDistrict();
+				region = eventDto.getEventLocation().getRegion();
+			} else {
+				UserDto userDto = UserProvider.getCurrent().getUser();
+				district = userDto.getDistrict();
+				region = userDto.getRegion();
+			}
+
+			List<UserReferenceDto> users = new ArrayList<>();
+			if (district != null) {
+				users = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
+			} else if (region != null) {
+				users = FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region);
+			} else {
+				// fallback - just show all users
+				users = FacadeProvider.getUserFacade().getAllAfterAsReference(null);
+			}
+
+			// Validation
+			startDate.addValidator(
+				new DateComparisonValidator(
+					startDate,
+					dueDate,
+					true,
+					false,
 					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), dueDate.getCaption())));
-			dueDate.addValidator(new DateComparisonValidator(dueDate, startDate, false, false, 
+			dueDate.addValidator(
+				new DateComparisonValidator(
+					dueDate,
+					startDate,
+					false,
+					false,
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
-	    	
-	    	TaskController taskController = ControllerProvider.getTaskController();
-    		for (UserReferenceDto user : users) {
-    			assigneeUser.addItem(user);
-    			assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
-    		}
-    	});
-    }
+
+			TaskController taskController = ControllerProvider.getTaskController();
+			for (UserReferenceDto user : users) {
+				assigneeUser.addItem(user);
+				assigneeUser.setItemCaption(user, taskController.getUserCaptionWithPendingTaskCount(user));
+			}
+		});
+	}
 
 	private void updateByCreatingAndAssignee() {
-		
+
 		TaskDto value = getValue();
 		if (value != null) {
 			boolean creating = value.getCreationDate() == null;
-	
+
 			UserDto user = UserProvider.getCurrent().getUser();
 			boolean creator = user.equals(value.getCreatorUser());
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
-			
+
 			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			if (creating && !assignee) {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
-			
+
 			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
 				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
 				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
-				setReadOnly(!creator, TaskDto.TASK_TYPE, TaskDto.PRIORITY, 
-						TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
-						TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
-				setReadOnly(!(creator || supervisor), 
-						TaskDto.PRIORITY, TaskDto.SUGGESTED_START, TaskDto.DUE_DATE,
-						TaskDto.ASSIGNEE_USER, TaskDto.CREATOR_COMMENT);
+				setReadOnly(
+					!creator,
+					TaskDto.TASK_TYPE,
+					TaskDto.PRIORITY,
+					TaskDto.SUGGESTED_START,
+					TaskDto.DUE_DATE,
+					TaskDto.ASSIGNEE_USER,
+					TaskDto.CREATOR_COMMENT);
+				setReadOnly(
+					!(creator || supervisor),
+					TaskDto.PRIORITY,
+					TaskDto.SUGGESTED_START,
+					TaskDto.DUE_DATE,
+					TaskDto.ASSIGNEE_USER,
+					TaskDto.CREATOR_COMMENT);
 			}
 		}
 	}
 
-	private void updateByTaskContext() {		
-		TaskContext taskContext = (TaskContext)getFieldGroup().getField(TaskDto.TASK_CONTEXT).getValue();
-		
+	private void updateByTaskContext() {
+		TaskContext taskContext = (TaskContext) getFieldGroup().getField(TaskDto.TASK_CONTEXT).getValue();
+
 		// Task types depending on task context
 		ComboBox taskType = (ComboBox) getFieldGroup().getField(TaskDto.TASK_TYPE);
 		FieldHelper.updateItems(taskType, TaskType.getTaskTypes(taskContext));
-		
+
 		// context reference depending on task context
 		ComboBox caseField = (ComboBox) getFieldGroup().getField(TaskDto.CAZE);
 		ComboBox eventField = (ComboBox) getFieldGroup().getField(TaskDto.EVENT);
@@ -249,9 +268,9 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			FieldHelper.setFirstRequired(null, caseField, eventField, contactField);
 		}
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
-		 return HTML_LAYOUT;
+		return HTML_LAYOUT;
 	}
 }

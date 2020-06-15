@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -33,23 +35,24 @@ public class ClinicalVisit extends AbstractDomainObject {
 	public static final String VISIT_DATE_TIME = "visitDateTime";
 	public static final String VISIT_REMARKS = "visitRemarks";
 	public static final String VISITING_PERSON = "visitingPerson";
-	
+
 	private ClinicalCourse clinicalCourse;
 	private Symptoms symptoms;
 	private Disease disease;
 	private Date visitDateTime;
 	private String visitRemarks;
 	private String visitingPerson;
-	
+
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public ClinicalCourse getClinicalCourse() {
 		return clinicalCourse;
 	}
+
 	public void setClinicalCourse(ClinicalCourse clinicalCourse) {
 		this.clinicalCourse = clinicalCourse;
 	}
-	
+
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public Symptoms getSymptoms() {
 		if (symptoms == null) {
@@ -57,6 +60,7 @@ public class ClinicalVisit extends AbstractDomainObject {
 		}
 		return symptoms;
 	}
+
 	public void setSymptoms(Symptoms symptoms) {
 		this.symptoms = symptoms;
 	}
@@ -65,32 +69,35 @@ public class ClinicalVisit extends AbstractDomainObject {
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getVisitDateTime() {
 		return visitDateTime;
 	}
+
 	public void setVisitDateTime(Date visitDateTime) {
 		this.visitDateTime = visitDateTime;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVisitRemarks() {
 		return visitRemarks;
 	}
+
 	public void setVisitRemarks(String visitRemarks) {
 		this.visitRemarks = visitRemarks;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVisitingPerson() {
 		return visitingPerson;
 	}
+
 	public void setVisitingPerson(String visitingPerson) {
 		this.visitingPerson = visitingPerson;
 	}
-	
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.reports;
 
@@ -114,12 +114,15 @@ public class ReportsView extends AbstractView {
 		});
 		filterLayout.addComponent(epiWeekFilter);
 
-		Button lastWeekButton = ButtonHelper.createButtonWithCaption(Captions.dashboardLastWeek, String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
-				e -> {
-					EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
-					yearFilter.select(epiWeek.getYear());
-					epiWeekFilter.select(epiWeek.getWeek());
-				}, CssStyles.FORCE_CAPTION);
+		Button lastWeekButton = ButtonHelper.createButtonWithCaption(
+			Captions.dashboardLastWeek,
+			String.format(I18nProperties.getCaption(Captions.dashboardLastWeek), DateHelper.getPreviousEpiWeek(new Date()).toString()),
+			e -> {
+				EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+				yearFilter.select(epiWeek.getYear());
+				epiWeekFilter.select(epiWeek.getWeek());
+			},
+			CssStyles.FORCE_CAPTION);
 
 		filterLayout.addComponent(lastWeekButton);
 
@@ -152,8 +155,8 @@ public class ReportsView extends AbstractView {
 		if (grid instanceof WeeklyReportRegionsGrid) {
 			((WeeklyReportRegionsGrid) grid).reload((int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		} else {
-			((WeeklyReportOfficersGrid) grid).reload(UserProvider.getCurrent().getUser().getRegion(),
-					(int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
+			((WeeklyReportOfficersGrid) grid)
+				.reload(UserProvider.getCurrent().getUser().getRegion(), (int) yearFilter.getValue(), (int) epiWeekFilter.getValue());
 		}
 	}
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -31,37 +31,36 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 public interface SampleFacade {
 
 	List<SampleDto> getAllActiveSamplesAfter(Date date);
-	
+
 	List<SampleIndexDto> getIndexList(SampleCriteria sampleCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
-	
+
 	List<SampleExportDto> getExportList(SampleCriteria sampleCriteria, int first, int max);
-	
+
 	List<SampleExportDto> getExportList(CaseCriteria caseCriteria, int first, int max);
-	
+
 	long count(SampleCriteria sampleCriteria);
-	
+
 	SampleDto getSampleByUuid(String uuid);
-	
+
 	SampleDto saveSample(SampleDto dto);
-	
+
 	SampleReferenceDto getReferenceByUuid(String uuid);
-	
+
 	SampleReferenceDto getReferredFrom(String sampleUuid);
 
 	List<String> getAllActiveUuids();
 
 	List<SampleDto> getByUuids(List<String> uuids);
-	
+
 	void deleteSample(SampleReferenceDto sampleRef);
-	
+
 	void validate(SampleDto sample) throws ValidationRuntimeException;
-	
+
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String sampleUuid);
-	
+
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
-	
+
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
-	
 }

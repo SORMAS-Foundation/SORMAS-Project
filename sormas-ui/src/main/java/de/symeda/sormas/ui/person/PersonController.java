@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
@@ -59,8 +59,10 @@ public class PersonController {
 
 		if (personSelect.hasMatches()) {
 			// TODO add user right parameter
-			final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
+			final CommitDiscardWrapperComponent<PersonSelectionField> component =
+				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
 			component.addCommitListener(new CommitListener() {
+
 				@Override
 				public void onCommit() {
 					PersonIndexDto selectedPerson = personSelect.getValue();
@@ -68,9 +70,9 @@ public class PersonController {
 						if (resultConsumer != null) {
 							resultConsumer.accept(selectedPerson.toReference());
 						}
-					} else {	
+					} else {
 						PersonDto savedPerson = personFacade.savePerson(person);
-						resultConsumer.accept(savedPerson.toReference()); 
+						resultConsumer.accept(savedPerson.toReference());
 					}
 				}
 			});
@@ -83,20 +85,29 @@ public class PersonController {
 			personSelect.selectBestMatch();
 		} else {
 			PersonDto savedPerson = personFacade.savePerson(person);
-			resultConsumer.accept(savedPerson.toReference()); 
+			resultConsumer.accept(savedPerson.toReference());
 		}
 	}
 
-	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(String personUuid, Disease disease, String diseaseDetails, UserRight editUserRight, final ViewMode viewMode) {
-		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, viewMode);
+	public CommitDiscardWrapperComponent<PersonEditForm> getPersonEditComponent(
+		String personUuid,
+		Disease disease,
+		String diseaseDetails,
+		UserRight editUserRight,
+		final ViewMode viewMode,
+		boolean isInJurisdiction) {
+		PersonEditForm editForm = new PersonEditForm(disease, diseaseDetails, viewMode, isInJurisdiction);
 
 		PersonDto personDto = personFacade.getPersonByUuid(personUuid);
 		editForm.setValue(personDto);
-		
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
-		
+
+		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(editUserRight),
+			editForm.getFieldGroup());
+
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -114,35 +125,38 @@ public class PersonController {
 		List<CaseDataDto> personCases = FacadeProvider.getCaseFacade().getAllCasesOfPerson(personDto.getUuid());
 
 		onPersonChanged(existingPerson, personDto);
-		
+
 		personFacade.savePerson(personDto);
-		
+
 		// Check whether the classification of any of this person's cases has changed
 		CaseClassification newClassification = null;
 		for (CaseDataDto personCase : personCases) {
 			CaseDataDto updatedPersonCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(personCase.getUuid());
-			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification() && updatedPersonCase.getClassificationUser() == null) {
+			if (personCase.getCaseClassification() != updatedPersonCase.getCaseClassification()
+				&& updatedPersonCase.getClassificationUser() == null) {
 				newClassification = updatedPersonCase.getCaseClassification();
 				break;
 			}
 		}
-		
+
 		if (newClassification != null) {
-			Notification notification = new Notification(String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()), Type.WARNING_MESSAGE);
+			Notification notification = new Notification(
+				String.format(I18nProperties.getString(Strings.messagePersonSavedClassificationChanged), newClassification.toString()),
+				Type.WARNING_MESSAGE);
 			notification.setDelayMsec(-1);
 			notification.show(Page.getCurrent());
 		} else {
 			Notification.show(I18nProperties.getString(Strings.messagePersonSaved), Type.WARNING_MESSAGE);
 		}
-		
+
 		SormasUI.refreshView();
 	}
 
 	private void onPersonChanged(PersonDto existingPerson, PersonDto changedPerson) {
 		// approximate age reference date
 		if (existingPerson == null
-				|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
-				|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
+			|| !DataHelper.equal(changedPerson.getApproximateAge(), existingPerson.getApproximateAge())
+			|| !DataHelper.equal(changedPerson.getApproximateAgeType(), existingPerson.getApproximateAgeType())) {
 			if (changedPerson.getApproximateAge() == null) {
 				changedPerson.setApproximateAgeReferenceDate(null);
 			} else {

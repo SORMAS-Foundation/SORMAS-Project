@@ -18,9 +18,10 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PrescriptionFacadeEjbTest extends AbstractBeanTest {
-	
+
 	@Test
 	public void testPrescriptionDeletion() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf, UserRole.ADMIN);
@@ -36,18 +37,18 @@ public class PrescriptionFacadeEjbTest extends AbstractBeanTest {
 		// Database should not contain the deleted visit
 		assertNull(getPrescriptionFacade().getPrescriptionByUuid(prescription.getUuid()));
 	}
-	
+
 	@Test
 	public void testPrescriptionIndexListGeneration() {
+
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		creator.createPrescription(caze);
-		
+
 		List<PrescriptionIndexDto> results = getPrescriptionFacade().getIndexList(null);
-		
+
 		assertEquals(1, results.size());
 	}
-	
 }

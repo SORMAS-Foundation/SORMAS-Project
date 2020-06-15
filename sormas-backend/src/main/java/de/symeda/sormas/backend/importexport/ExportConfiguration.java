@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.importexport;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,18 +31,18 @@ public class ExportConfiguration extends AbstractDomainObject {
 	public static final String USER = "user";
 	public static final String PROPERTIES_STRING = "propertiesString";
 	public static final String PROPERTIES = "properties";
-	
+
 	private String name;
 	private ExportType exportType;
 	private User user;
 	private String propertiesString;
 	private Set<String> properties;
-	
-	@Column(length = 512)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -49,7 +51,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	public ExportType getExportType() {
 		return exportType;
 	}
-	
+
 	public void setExportType(ExportType exportType) {
 		this.exportType = exportType;
 	}
@@ -59,7 +61,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	public User getUser() {
 		return user;
 	}
-	
+
 	public void setUser(User user) {
 		this.user = user;
 	}
@@ -67,7 +69,7 @@ public class ExportConfiguration extends AbstractDomainObject {
 	public String getPropertiesString() {
 		return propertiesString;
 	}
-	
+
 	public void setPropertiesString(String propertiesString) {
 		this.propertiesString = propertiesString;
 	}
@@ -83,14 +85,14 @@ public class ExportConfiguration extends AbstractDomainObject {
 		}
 		return properties;
 	}
-	
+
 	public void setProperties(Set<String> properties) {
 		this.properties = properties;
-		
+
 		if (this.properties == null) {
 			return;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		properties.stream().forEach(p -> {
 			sb.append(p).append(",");
@@ -100,5 +102,5 @@ public class ExportConfiguration extends AbstractDomainObject {
 		}
 		propertiesString = sb.toString();
 	}
-	
+
 }

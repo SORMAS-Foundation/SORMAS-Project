@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -42,7 +44,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 	private static final long serialVersionUID = 866789458483672591L;
 
 	public static final String TABLE_NAME = "epidataburial";
-	
+
 	public static final String BURIAL_PERSON_NAME = "burialPersonName";
 	public static final String BURIAL_RELATION = "burialRelation";
 	public static final String BURIAL_DATE_FROM = "burialDateFrom";
@@ -51,7 +53,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public static final String BURIAL_ILL = "burialIll";
 	public static final String BURIAL_TOUCHING = "burialTouching";
 	public static final String EPI_DATA = "epiData";
-	
+
 	private EpiData epiData;
 	private String burialPersonName;
 	private String burialRelation;
@@ -66,22 +68,25 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public EpiData getEpiData() {
 		return epiData;
 	}
+
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getBurialPersonName() {
 		return burialPersonName;
 	}
+
 	public void setBurialPersonName(String burialPersonName) {
 		this.burialPersonName = burialPersonName;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getBurialRelation() {
 		return burialRelation;
 	}
+
 	public void setBurialRelation(String burialRelation) {
 		this.burialRelation = burialRelation;
 	}
@@ -90,6 +95,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public Date getBurialDateFrom() {
 		return burialDateFrom;
 	}
+
 	public void setBurialDateFrom(Date burialDateFrom) {
 		this.burialDateFrom = burialDateFrom;
 	}
@@ -98,6 +104,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public Date getBurialDateTo() {
 		return burialDateTo;
 	}
+
 	public void setBurialDateTo(Date burialDateTo) {
 		this.burialDateTo = burialDateTo;
 	}
@@ -109,6 +116,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 		}
 		return burialAddress;
 	}
+
 	public void setBurialAddress(Location burialAddress) {
 		this.burialAddress = burialAddress;
 	}
@@ -117,6 +125,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public YesNoUnknown getBurialIll() {
 		return burialIll;
 	}
+
 	public void setBurialIll(YesNoUnknown burialIll) {
 		this.burialIll = burialIll;
 	}
@@ -125,8 +134,9 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public YesNoUnknown getBurialTouching() {
 		return burialTouching;
 	}
+
 	public void setBurialTouching(YesNoUnknown burialTouching) {
 		this.burialTouching = burialTouching;
 	}
-	
+
 }

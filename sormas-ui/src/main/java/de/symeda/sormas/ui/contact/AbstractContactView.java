@@ -9,16 +9,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -26,10 +28,15 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactView extends AbstractSubNavigationView {
@@ -40,6 +47,17 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
+
+		if (FacadeProvider.getConfigFacade().getPIAUrl() != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
+			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
+			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
+			btnCreatePIAAccount.addClickListener(e -> {
+				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+				ControllerProvider.getContactController().openPIAAccountCreationWindow(contactPerson);
+			});
+			getButtonsLayout().addComponent(btnCreatePIAAccount);
+		}
 	}
 
 	@Override
@@ -62,9 +80,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 
 		infoLabel.setValue(contactRef.getCaption());
 		infoLabelSub.setValue(
-				contact.getDisease() != Disease.OTHER 
-				? contact.getDisease().toShortString()
-						: DataHelper.toStringNullable(contact.getDiseaseDetails()));
+			contact.getDisease() != Disease.OTHER ? contact.getDisease().toShortString() : DataHelper.toStringNullable(contact.getDiseaseDetails()));
 	}
 
 	@Override
@@ -79,7 +95,7 @@ public abstract class AbstractContactView extends AbstractSubNavigationView {
 	public ContactReferenceDto getContactRef() {
 		return contactRef;
 	}
-	
+
 	public void setContactEditPermission(Component component) {
 		Boolean isContactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
 		if (!isContactEditAllowed) {

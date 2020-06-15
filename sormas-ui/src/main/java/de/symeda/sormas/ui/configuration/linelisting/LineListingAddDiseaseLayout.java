@@ -13,7 +13,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class LineListingAddDiseaseLayout extends HorizontalLayout {
@@ -47,6 +46,7 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 	}
 
 	private void buildLayout() {
+
 		cbDiseases = new ComboBox<>();
 		cbDiseases.setId("disease");
 		cbDiseases.setItems(diseases);
@@ -69,5 +69,4 @@ public class LineListingAddDiseaseLayout extends HorizontalLayout {
 
 		setExpandRatio(btnAddDisease, 1);
 	}
-
 }

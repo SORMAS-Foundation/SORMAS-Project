@@ -9,13 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -25,11 +31,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
-
-import javax.ejb.Remote;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Remote
 public interface ContactFacade {
@@ -50,22 +51,36 @@ public interface ContactFacade {
 
 	List<ContactDto> getByUuids(List<String> uuids);
 
-	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date fromDate, Date toDate, List<MapCaseDto> mapCaseDtos);
+	List<MapContactDto> getContactsForMap(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date fromDate,
+		Date toDate,
+		List<MapCaseDto> mapCaseDtos);
 
 	void deleteContact(String contactUuid);
 
-	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max,
-									   List<SortProperty> sortProperties);
+	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<ContactIndexDetailedDto> getIndexDetailedList(ContactCriteria contactCriteria, Integer first, Integer max,
-			List<SortProperty> sortProperties);
+	List<ContactIndexDetailedDto> getIndexDetailedList(
+		ContactCriteria contactCriteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
 
 	List<ContactExportDto> getExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
 	List<VisitSummaryExportDto> getVisitSummaryExportList(ContactCriteria contactCriteria, int first, int max, Language userLanguage);
 
 	long countMaximumFollowUpDays(ContactCriteria contactCriteria);
-	List<DashboardContactDto> getContactsForDashboard(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+
+	List<DashboardContactDto> getContactsForDashboard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to);
 
 	Map<ContactStatus, Long> getNewContactCountPerStatus(ContactCriteria contactCriteria);
 
@@ -80,9 +95,14 @@ public interface ContactFacade {
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String contactUuid);
-	
-	List<ContactFollowUpDto> getContactFollowUpList(ContactCriteria contactCriteria, Date referenceDate, int interval, Integer first, Integer max,
-			List<SortProperty> sortProperties);
+
+	List<ContactFollowUpDto> getContactFollowUpList(
+		ContactCriteria contactCriteria,
+		Date referenceDate,
+		int interval,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
 
 	int[] getContactCountsByCasesForDashboard(List<Long> contactIds);
 
@@ -98,5 +118,4 @@ public interface ContactFacade {
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
 	boolean isContactEditAllowed(String contactUuid);
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -38,12 +38,11 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	private static final long serialVersionUID = 1952619382018965255L;
 
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION) +
-			fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY) +
-			fluidRowLocs(FacilityDto.CITY) +
-			fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE) +
-			fluidRowLocs(RegionDto.EXTERNAL_ID);
+	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION)
+		+ fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY)
+		+ fluidRowLocs(FacilityDto.CITY)
+		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
+		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean laboratory;
 	private boolean create;
@@ -71,9 +70,11 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
 		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));
+		removeMaxLengthValidators(latitude);
 		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
 		longitude.setConverter(new StringToAngularLocationConverter());
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
+		removeMaxLengthValidators(longitude);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
 		name.setRequired(true);
@@ -84,16 +85,16 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+			FieldHelper
+				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 
 		district.addValueChangeListener(e -> {
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(community,
-					districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
-							: null);
+			FieldHelper.updateItems(
+				community,
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 		});
 
 		community.addValueChangeListener(e -> {
@@ -117,5 +118,4 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

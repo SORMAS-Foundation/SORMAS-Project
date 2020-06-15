@@ -14,7 +14,7 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 	private static final long serialVersionUID = 6512756286608581221L;
 
 	public static final String ARCHIVED = "archived";
-	
+
 	private boolean archived;
 
 	@Column
@@ -25,5 +25,4 @@ public abstract class InfrastructureAdo extends AbstractDomainObject {
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
-	
 }

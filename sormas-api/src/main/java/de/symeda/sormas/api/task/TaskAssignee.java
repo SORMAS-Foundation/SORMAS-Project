@@ -7,9 +7,8 @@ public enum TaskAssignee {
 	ALL,
 	CURRENT_USER,
 	OTHER_USERS;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

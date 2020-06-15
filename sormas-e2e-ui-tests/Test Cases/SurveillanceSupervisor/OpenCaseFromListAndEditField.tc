@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>OpenCaseFromListAndEditField</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>ca489c04-f86d-484a-b70e-1ca63f03c04c</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>b11b8249-34e0-4232-9d13-874af26613c6</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

@@ -9,13 +9,15 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -39,12 +41,12 @@ public class EpiDataGathering extends AbstractDomainObject {
 	private static final long serialVersionUID = 5491651166245301869L;
 
 	public static final String TABLE_NAME = "epidatagathering";
-	
+
 	public static final String DESCRIPTION = "description";
 	public static final String GATHERING_DATE = "gatheringDate";
 	public static final String GATHERING_ADDRESS = "gatheringAddress";
 	public static final String EPI_DATA = "epiData";
-	
+
 	private EpiData epiData;
 	private String description;
 	private Date gatheringDate;
@@ -55,14 +57,16 @@ public class EpiDataGathering extends AbstractDomainObject {
 	public EpiData getEpiData() {
 		return epiData;
 	}
+
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -71,6 +75,7 @@ public class EpiDataGathering extends AbstractDomainObject {
 	public Date getGatheringDate() {
 		return gatheringDate;
 	}
+
 	public void setGatheringDate(Date gatheringDate) {
 		this.gatheringDate = gatheringDate;
 	}
@@ -82,8 +87,9 @@ public class EpiDataGathering extends AbstractDomainObject {
 		}
 		return gatheringAddress;
 	}
+
 	public void setGatheringAddress(Location gatheringAddress) {
 		this.gatheringAddress = gatheringAddress;
 	}
-	
+
 }

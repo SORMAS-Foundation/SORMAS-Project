@@ -10,19 +10,20 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 public class ApproximateAgeTypeTest {
 
 	@Test
-	public void testGetAgeYears() throws Exception {
+	public void testGetAgeYears() {
+
 		assertNull(ApproximateAgeHelper.getAgeYears(null, null));
 		assertNull(ApproximateAgeHelper.getAgeYears(null, ApproximateAgeType.DAYS));
-		assertEquals((Integer)5, ApproximateAgeHelper.getAgeYears(5, null));
-		assertEquals((Integer)13, ApproximateAgeHelper.getAgeYears(13, ApproximateAgeType.YEARS));
-		assertEquals((Integer)0, ApproximateAgeHelper.getAgeYears(0, ApproximateAgeType.MONTHS));
-		assertEquals((Integer)0, ApproximateAgeHelper.getAgeYears(11, ApproximateAgeType.MONTHS));
-		assertEquals((Integer)1, ApproximateAgeHelper.getAgeYears(12, ApproximateAgeType.MONTHS));
-		assertEquals((Integer)0, ApproximateAgeHelper.getAgeYears(0, ApproximateAgeType.DAYS));
-		assertEquals((Integer)0, ApproximateAgeHelper.getAgeYears(364, ApproximateAgeType.DAYS));
-		assertEquals((Integer)1, ApproximateAgeHelper.getAgeYears(365, ApproximateAgeType.DAYS));
+		assertEquals((Integer) 5, ApproximateAgeHelper.getAgeYears(5, null));
+		assertEquals((Integer) 13, ApproximateAgeHelper.getAgeYears(13, ApproximateAgeType.YEARS));
+		assertEquals((Integer) 0, ApproximateAgeHelper.getAgeYears(0, ApproximateAgeType.MONTHS));
+		assertEquals((Integer) 0, ApproximateAgeHelper.getAgeYears(11, ApproximateAgeType.MONTHS));
+		assertEquals((Integer) 1, ApproximateAgeHelper.getAgeYears(12, ApproximateAgeType.MONTHS));
+		assertEquals((Integer) 0, ApproximateAgeHelper.getAgeYears(0, ApproximateAgeType.DAYS));
+		assertEquals((Integer) 0, ApproximateAgeHelper.getAgeYears(364, ApproximateAgeType.DAYS));
+		assertEquals((Integer) 1, ApproximateAgeHelper.getAgeYears(365, ApproximateAgeType.DAYS));
 	}
-	
+
 	@Test
 	public void testAgeGroupCalculation() {
 		assertEquals("0--4", ApproximateAgeHelper.getAgeGroupFromAge(380, ApproximateAgeType.DAYS));

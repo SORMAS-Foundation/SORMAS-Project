@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -90,18 +90,20 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @RunAs(UserRole._SYSTEM)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
-	
+
 	static final String SORMAS_SCHEMA = "sql/sormas_schema.sql";
-	
+
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 
+	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
 			"^\\s*INSERT\\s+INTO\\s+schema_version\\s*" + 
 			"\\(\\s*version_number\\s*,[^)]+\\)\\s*" +
 			"VALUES\\s*\\(\\s*([0-9]+)\\s*,.+");
-	
+	//@formatter:on
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -148,7 +150,7 @@ public class StartupShutdownService {
 	public void startup() {
 
 		checkDatabaseConfig(em);
-		
+
 		logger.info("Initiating automatic database update of main database...");
 		updateDatabase(em, SORMAS_SCHEMA);
 
@@ -174,6 +176,7 @@ public class StartupShutdownService {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		configFacade.validateAppUrls();
+		configFacade.validateExternalUrls();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -226,8 +229,7 @@ public class StartupShutdownService {
 		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
 			healthFacility = new Facility();
 			healthFacility.setUuid(DataHelper.createUuid());
-			healthFacility
-			.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+			healthFacility.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
@@ -321,6 +323,7 @@ public class StartupShutdownService {
 	}
 
 	private void createDefaultUsers() {
+
 		if (userService.count() == 0) {
 
 			Region region = regionService.getAll().get(0);
@@ -338,29 +341,25 @@ public class StartupShutdownService {
 			userService.persist(admin);
 
 			// Create Surveillance Supervisor
-			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance",
-					"Supervisor", "SurvSup");
+			User surveillanceSupervisor = MockDataGenerator.createUser(UserRole.SURVEILLANCE_SUPERVISOR, "Surveillance", "Supervisor", "SurvSup");
 			surveillanceSupervisor.setUserName("SurvSup");
 			surveillanceSupervisor.setRegion(region);
 			userService.persist(surveillanceSupervisor);
 
 			// Create Case Supervisor
-			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor",
-					"CaseSup");
+			User caseSupervisor = MockDataGenerator.createUser(UserRole.CASE_SUPERVISOR, "Case", "Supervisor", "CaseSup");
 			caseSupervisor.setUserName("CaseSup");
 			caseSupervisor.setRegion(region);
 			userService.persist(caseSupervisor);
 
 			// Create Contact Supervisor
-			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor",
-					"ContSup");
+			User contactSupervisor = MockDataGenerator.createUser(UserRole.CONTACT_SUPERVISOR, "Contact", "Supervisor", "ContSup");
 			contactSupervisor.setUserName("ContSup");
 			contactSupervisor.setRegion(region);
 			userService.persist(contactSupervisor);
 
 			// Create Point of Entry Supervisor
-			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor",
-					"PoeSup");
+			User poeSupervisor = MockDataGenerator.createUser(UserRole.POE_SUPERVISOR, "Point of Entry", "Supervisor", "PoeSup");
 			poeSupervisor.setUserName("PoeSup");
 			poeSupervisor.setRegion(region);
 			userService.persist(poeSupervisor);
@@ -383,22 +382,19 @@ public class StartupShutdownService {
 			userService.persist(nationalUser);
 
 			// Create National Clinician
-			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician",
-					"NatClin");
+			User nationalClinician = MockDataGenerator.createUser(UserRole.NATIONAL_CLINICIAN, "National", "Clinician", "NatClin");
 			nationalClinician.setUserName("NatClin");
 			userService.persist(nationalClinician);
 
 			// Create Surveillance Officer
-			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance",
-					"Officer", "SurvOff");
+			User surveillanceOfficer = MockDataGenerator.createUser(UserRole.SURVEILLANCE_OFFICER, "Surveillance", "Officer", "SurvOff");
 			surveillanceOfficer.setUserName("SurvOff");
 			surveillanceOfficer.setRegion(region);
 			surveillanceOfficer.setDistrict(district);
 			userService.persist(surveillanceOfficer);
 
 			// Create Hospital Informant
-			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant",
-					"HospInf");
+			User hospitalInformant = MockDataGenerator.createUser(UserRole.HOSPITAL_INFORMANT, "Hospital", "Informant", "HospInf");
 			hospitalInformant.setUserName("HospInf");
 			hospitalInformant.setRegion(region);
 			hospitalInformant.setDistrict(district);
@@ -453,18 +449,20 @@ public class StartupShutdownService {
 	}
 
 	private void updateDatabase(EntityManager entityManager, String schemaFileName) {
+
 		logger.info("Starting automatic database update...");
 
-		boolean hasSchemaVersion = !entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
+		boolean hasSchemaVersion =
+			!entityManager.createNativeQuery("SELECT 1 FROM information_schema.tables WHERE table_name = 'schema_version'").getResultList().isEmpty();
 		Integer databaseVersion;
 		if (hasSchemaVersion) {
-			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();	
+			databaseVersion = (Integer) entityManager.createNativeQuery("SELECT MAX(version_number) FROM schema_version").getSingleResult();
 		} else {
 			databaseVersion = null;
 		}
 
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaFileName);
-				Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
+			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
 			StringBuilder nextUpdateBuilder = new StringBuilder();
 			boolean currentVersionReached = databaseVersion == null;
 
@@ -474,7 +472,7 @@ public class StartupShutdownService {
 				if (isBlankOrSqlComment(nextLine)) {
 					continue;
 				}
-				
+
 				Integer schemaLineVersion = extractSchemaVersion(nextLine);
 
 				//skip until current version of database is reached
@@ -506,21 +504,21 @@ public class StartupShutdownService {
 	static boolean isBlankOrSqlComment(String sqlLine) {
 		return SQL_COMMENT_PATTERN.matcher(sqlLine).matches();
 	}
-	
+
 	static Integer extractSchemaVersion(String sqlLine) {
+
 		return Optional.ofNullable(sqlLine)
-				.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
-				.filter(Matcher::matches)
-				.map(m -> m.group(1))
-				.map(Integer::parseInt)
-				.orElse(null);
+			.map(SCHEMA_VERSION_SQL_PATTERN::matcher)
+			.filter(Matcher::matches)
+			.map(m -> m.group(1))
+			.map(Integer::parseInt)
+			.orElse(null);
 	}
 
 	private void upgrade() {
+
 		@SuppressWarnings("unchecked")
-		List<Integer> versionsNeedingUpgrade = em
-		.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded")
-		.getResultList();
+		List<Integer> versionsNeedingUpgrade = em.createNativeQuery("SELECT version_number FROM schema_version WHERE upgradeNeeded").getResultList();
 
 		// IMPORTANT: Never write code to go through all entities in a table and do something
 		// here. This will make the deployment fail when there are too many entities in the database.
@@ -529,27 +527,27 @@ public class StartupShutdownService {
 			switch (versionNeedingUpgrade) {
 			case 95:
 				// update follow up and status for all contacts
-				for (Contact contact : contactService.getAll()) {				
+				for (Contact contact : contactService.getAll()) {
 					contactService.updateFollowUpUntilAndStatus(contact);
 					contactService.udpateContactStatus(contact);
 				}
 				break;
 
 			default:
-				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade)); 
-			} 
+				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
+			}
 
-			int updatedRows = em
-					.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=?1")
-					.setParameter(1, versionNeedingUpgrade)
-					.executeUpdate();
+			int updatedRows = em.createNativeQuery("UPDATE schema_version SET upgradeNeeded=false WHERE version_number=?1")
+				.setParameter(1, versionNeedingUpgrade)
+				.executeUpdate();
 			if (updatedRows != 1) {
 				logger.error("Could not UPDATE schema_version table. Missing user rights?");
 			}
-		}		
+		}
 	}
 
 	private void createImportTemplateFiles() {
+
 		try {
 			importFacade.generateCaseImportTemplateFile();
 		} catch (IOException e) {
@@ -609,6 +607,7 @@ public class StartupShutdownService {
 	}
 
 	private void createMissingDiseaseConfigurations() {
+
 		List<DiseaseConfiguration> diseaseConfigurations = diseaseConfigurationService.getAll();
 		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {

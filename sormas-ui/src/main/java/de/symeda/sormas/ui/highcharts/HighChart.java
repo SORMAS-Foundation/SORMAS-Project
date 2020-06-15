@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.highcharts;
 
@@ -21,7 +21,9 @@ import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
 /**
- * <p>Abstract Highcharts chart.</p>
+ * <p>
+ * Abstract Highcharts chart.
+ * </p>
  * <p>
  * Download jquery and highcharts.js (if not already loaded in your webapp) and save them in the resource directory org/vaadin/highcharts.
  * Create a new class in the package org.vaadin.highcharts (e.g. "HighChart") and inherit it from AbstractHighChart.
@@ -30,7 +32,10 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  * Make sure your project complies with the licenses of those libraries.
  * At the end of this list add "highcharts-connector.js".
  * </p>
- * <p>Example of how to extend <code>AbstractHighChart</code>:</p>
+ * <p>
+ * Example of how to extend <code>AbstractHighChart</code>:
+ * </p>
+ * 
  * <pre>
  * package org.vaadin.highcharts;
  *
@@ -42,10 +47,15 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  *
  * @author Stefan Endrullis
  * 
- * Based on https://github.com/xylo/highcharts-vaadin7 (Apache 2.0 license)
+ *         Based on https://github.com/xylo/highcharts-vaadin7 (Apache 2.0 license)
  */
-@JavaScript({"jquery-min.js", "highcharts.js", "highcharts-connector.js", "highcharts-exporting.js"})
+@JavaScript({
+	"jquery-min.js",
+	"highcharts.js",
+	"highcharts-connector.js",
+	"highcharts-exporting.js" })
 public class HighChart extends AbstractJavaScriptComponent {
+
 	private static final long serialVersionUID = 7738496276049495017L;
 
 	protected static int currChartId = 0;
@@ -89,10 +99,16 @@ public class HighChart extends AbstractJavaScriptComponent {
 	 * Sets the Highcharts JavaScript code describing the chart.
 	 * Note that this code needs to bind the the JSON definition of the chart to a JS variable called <code>options</code>.
 	 * </p>
-	 * <p>Example:</p>
-	 * <pre>  chart.setHcjs("var options = { chart: { title: 'my title' } };")</pre>
+	 * <p>
+	 * Example:
+	 * </p>
+	 * 
+	 * <pre>
+	 * chart.setHcjs("var options = { chart: { title: 'my title' } };")
+	 * </pre>
 	 *
-	 * @param hcjs Highcharts JavaScript code describing the chart
+	 * @param hcjs
+	 *            Highcharts JavaScript code describing the chart
 	 */
 	public void setHcjs(String hcjs) {
 		getState().setHcjs(hcjs);

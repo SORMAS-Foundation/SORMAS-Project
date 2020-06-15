@@ -1,26 +1,21 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.epidata;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -28,6 +23,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -43,74 +42,74 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 @EmbeddedAdo(parentAccessor = EpiDataTravel.EPI_DATA)
 public class EpiDataTravel extends AbstractDomainObject {
 
-    private static final long serialVersionUID = -4280455878066233175L;
+	private static final long serialVersionUID = -4280455878066233175L;
 
-    public static final String TABLE_NAME = "epidatatravel";
-    public static final String I18N_PREFIX = "EpiDataTravel";
-    public static final String EPI_DATA = "epiData";
+	public static final String TABLE_NAME = "epidatatravel";
+	public static final String I18N_PREFIX = "EpiDataTravel";
+	public static final String EPI_DATA = "epiData";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private EpiData epiData;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EpiData epiData;
 
-    @Enumerated(EnumType.STRING)
-    private TravelType travelType;
+	@Enumerated(EnumType.STRING)
+	private TravelType travelType;
 
-    @Column(length=512)
-    private String travelDestination;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String travelDestination;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date travelDateFrom;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date travelDateFrom;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date travelDateTo;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date travelDateTo;
 
-    public EpiData getEpiData() {
-        return epiData;
-    }
+	public EpiData getEpiData() {
+		return epiData;
+	}
 
-    public void setEpiData(EpiData epiData) {
-        this.epiData = epiData;
-    }
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
+	}
 
-    public TravelType getTravelType() {
-        return travelType;
-    }
+	public TravelType getTravelType() {
+		return travelType;
+	}
 
-    public void setTravelType(TravelType travelType) {
-        this.travelType = travelType;
-    }
+	public void setTravelType(TravelType travelType) {
+		this.travelType = travelType;
+	}
 
-    public String getTravelDestination() {
-        return travelDestination;
-    }
+	public String getTravelDestination() {
+		return travelDestination;
+	}
 
-    public void setTravelDestination(String travelDestination) {
-        this.travelDestination = travelDestination;
-    }
+	public void setTravelDestination(String travelDestination) {
+		this.travelDestination = travelDestination;
+	}
 
-    public Date getTravelDateFrom() {
-        return travelDateFrom;
-    }
+	public Date getTravelDateFrom() {
+		return travelDateFrom;
+	}
 
-    public void setTravelDateFrom(Date travelDateFrom) {
-        this.travelDateFrom = travelDateFrom;
-    }
+	public void setTravelDateFrom(Date travelDateFrom) {
+		this.travelDateFrom = travelDateFrom;
+	}
 
-    public Date getTravelDateTo() {
-        return travelDateTo;
-    }
+	public Date getTravelDateTo() {
+		return travelDateTo;
+	}
 
-    public void setTravelDateTo(Date travelDateTo) {
-        this.travelDateTo = travelDateTo;
-    }
+	public void setTravelDateTo(Date travelDateTo) {
+		this.travelDateTo = travelDateTo;
+	}
 
-    @Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
-    }
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " " + DateFormatHelper.formatLocalDate(getTravelDateTo());
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " " + DateFormatHelper.formatLocalDate(getTravelDateTo());
+	}
 }

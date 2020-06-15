@@ -118,7 +118,7 @@
     <string name="caption_case_contacts">Contacts de cas</string>
     <string name="caption_case_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_case_fatality_rate">Taux de Fatalité de Cas</string>
-    <string name="caption_case_health_conditions">Conditions Préexistantes</string>
+    <string name="caption_case_health_conditions">Antécédents médicaux</string>
     <string name="caption_case_hospitalization">Infos sur l\'hospitalisation</string>
     <string name="caption_case_information">Informations sur le cas</string>
     <string name="caption_case_maternal_history">Histoire maternelle</string>
@@ -156,7 +156,7 @@
     <string name="caption_sex">Sexe</string>
     <string name="caption_inadequate_specimen">Spécimen Inadéquat</string>
     <string name="caption_indeterminate">Indéterminé</string>
-    <string name="caption_informant_reports">Rapports informants</string>
+    <string name="caption_informant_reports">Rapports d\'informateurs</string>
     <string name="caption_issued_on">Émis le </string>
     <string name="caption_last_case">Dernier cas</string>
     <string name="caption_last_name">Nom De Famille</string>
@@ -294,7 +294,7 @@
     <string name="heading_gps_permission">Autoriser l\'accès GPS</string>
     <string name="heading_health_conditions">Conditions Préexistantes</string>
     <string name="heading_help">Aide</string>
-    <string name="heading_informant_reports">Rapports informants</string>
+    <string name="heading_informant_reports">Rapports d\'informateurs</string>
     <string name="heading_install_app">Prêt à installer</string>
     <string name="heading_install_app_failed">L\'installation de l\'application a échoué</string>
     <string name="heading_location">Localisation</string>
@@ -330,7 +330,7 @@
     <string name="heading_social_events">Événements sociaux</string>
     <string name="heading_source_case">Cas source</string>
     <string name="heading_source_of_information">Source d\'information</string>
-    <string name="heading_surveillance_outbreak">Épidémie de surveillance</string>
+    <string name="heading_surveillance_outbreak">Surveillance épidémiologique</string>
     <string name="heading_symptoms">Symptoms</string>
     <string name="heading_sync_conflicts">Conflit de synchronisation</string>
     <string name="heading_synchronization">Synchronisation</string>

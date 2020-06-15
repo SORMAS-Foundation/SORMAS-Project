@@ -49,6 +49,7 @@
 		<class>de.symeda.sormas.backend.infrastructure.PopulationData</class>
 		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
 		<class>de.symeda.sormas.backend.report.AggregateReport</class>
+		<class>de.symeda.sormas.backend.campaign.Campaign</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

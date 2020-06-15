@@ -10,8 +10,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
@@ -48,6 +46,8 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class PointsOfEntryView extends AbstractConfigurationView {
 
+	private static final long serialVersionUID = 169878675780777319L;
+
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/pointsofentry";
 
 	private PointOfEntryCriteria criteria;
@@ -70,13 +70,14 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private MenuBar bulkOperationsDropdown;
 
 	public PointsOfEntryView() {
+
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(PointsOfEntryView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(PointsOfEntryView.class).get(PointOfEntryCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}	
+		}
 
 		grid = new PointsOfEntryGrid(criteria);
 		gridLayout = new VerticalLayout();
@@ -100,20 +101,27 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 			addHeaderComponent(importButton);
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_pointsofentry", "sormas_pointsofentry_" + DateHelper.formatDateForExport(new Date()) + ".csv", PointsOfEntryGrid.EDIT_BTN_ID);
+			StreamResource streamResource = new GridExportStreamResource(
+				grid,
+				"sormas_pointsofentry",
+				"sormas_pointsofentry_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				PointsOfEntryGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.actionNewEntry, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getInfrastructureController().createPointOfEntry(), ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.actionNewEntry,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getInfrastructureController().createPointOfEntry(),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -151,6 +159,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	}
 
 	private HorizontalLayout createFilterBar() {
+
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
@@ -177,8 +186,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			criteria.region(region);
 			navigateTo(criteria);
-			FieldHelper.updateItems(districtFilter,
-					region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			FieldHelper
+				.updateItems(districtFilter, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 		filterLayout.addComponent(regionFilter);
 
@@ -235,8 +244,10 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.pointOfEntryActivePointsOfEntry));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.pointOfEntryActivePointsOfEntry));
+				relevanceStatusFilter
+					.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.pointOfEntryArchivedPointsOfEntry));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.pointOfEntryAllPointsOfEntry));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
@@ -246,24 +257,39 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 				// Bulk operation dropdown
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-									public void run() {
-										navigateTo(criteria);
-									}
-								});
-							}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.POINT_OF_ENTRY, null, new Runnable() {
-									public void run() {
-										navigateTo(criteria);
-									}
-								});
-							}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()))
-					);
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+							ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									true,
+									grid.asMultiSelect().getSelectedItems(),
+									InfrastructureType.POINT_OF_ENTRY,
+									null,
+									new Runnable() {
 
-					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+										public void run() {
+											navigateTo(criteria);
+										}
+									});
+						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+							ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									false,
+									grid.asMultiSelect().getSelectedItems(),
+									InfrastructureType.POINT_OF_ENTRY,
+									null,
+									new Runnable() {
+
+										public void run() {
+											navigateTo(criteria);
+										}
+									});
+						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+
+					bulkOperationsDropdown
+						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -295,10 +321,10 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 
 		return totalLayout;
 	}
-	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		super.enter(event);
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
@@ -310,6 +336,7 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	}
 
 	public void updateFilterComponents() {
+
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
@@ -325,6 +352,5 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		activeFilter.setValue(criteria.getActive());
 
 		applyingCriteria = false;
-	}	
-
+	}
 }

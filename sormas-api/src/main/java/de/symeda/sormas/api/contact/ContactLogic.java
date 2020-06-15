@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
@@ -24,16 +24,17 @@ import de.symeda.sormas.api.utils.DateHelper;
 public final class ContactLogic {
 
 	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
-	
+
 	private ContactLogic() {
 		// Hide Utility Class Constructor
 	}
 
 	public static int getNumberOfRequiredVisitsSoFar(Date contactReportDate, Date contactFollowUpUntil) {
+
 		if (contactFollowUpUntil == null) {
 			return 0;
 		}
-		
+
 		Date now = new Date();
 		if (now.before(contactFollowUpUntil)) {
 			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), now);
@@ -41,11 +42,11 @@ public final class ContactLogic {
 			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), contactFollowUpUntil);
 		}
 	}
-	
+
 	public static Date getStartDate(Date lastContactDate, Date reportDate) {
 		return lastContactDate != null ? lastContactDate : reportDate;
 	}
-	
+
 	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
 		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
 	}

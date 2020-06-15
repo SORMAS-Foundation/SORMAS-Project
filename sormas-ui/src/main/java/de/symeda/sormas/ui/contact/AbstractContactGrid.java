@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
@@ -55,6 +55,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
+	@SuppressWarnings("rawtypes")
 	Class viewClass;
 
 	public <V extends View> AbstractContactGrid(Class<IndexDTO> beanType, ContactCriteria criteria, Class<V> viewClass) {
@@ -78,16 +79,16 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		initColumns();
 
 		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId()))
-					|| e.getMouseEventDetails().isDoubleClick()) {
+			if ((e.getColumn() != null && ContactIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
 				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
 			}
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initColumns() {
-		Column<IndexDTO, String> diseaseShortColumn = addColumn(entry ->
-				DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
+
+		Column<IndexDTO, String> diseaseShortColumn = addColumn(entry -> DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(ContactIndexDto.DISEASE);
 
@@ -100,8 +101,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 				if (numberOfMissedVisits < 0) {
 					numberOfMissedVisits = 0;
 				}
-				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat),
-						numberOfVisits, numberOfMissedVisits);
+				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
 			} else {
 				return "-";
 			}
@@ -110,9 +110,10 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
-		Column<IndexDTO, String> pendingTasksColumn = addColumn(entry ->
-				String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
-						FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
+		Column<IndexDTO, String> pendingTasksColumn = addColumn(
+			entry -> String.format(
+				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
+				FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
 		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 		pendingTasksColumn.setSortable(false);
 
@@ -122,24 +123,32 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL))
-				.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.findPrefixCaptionWithDefault(column.getId(), column.getCaption(),
-					ContactIndexDto.I18N_PREFIX, PersonDto.I18N_PREFIX, LocationDto.I18N_PREFIX));
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(
+					column.getId(),
+					column.getCaption(),
+					ContactIndexDto.I18N_PREFIX,
+					PersonDto.I18N_PREFIX,
+					LocationDto.I18N_PREFIX));
 		}
 	}
 
 	protected Stream<String> getColumnList() {
+
 		return Stream.of(
-				Stream.of(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS),
-				getPersonColumns(),
-				Stream.of(ContactIndexDto.CONTACT_CATEGORY, ContactIndexDto.CONTACT_PROXIMITY,
-						ContactIndexDto.FOLLOW_UP_STATUS, ContactIndexDto.FOLLOW_UP_UNTIL,
-						NUMBER_OF_VISITS,
-						NUMBER_OF_PENDING_TASKS))
-				.flatMap(s -> s);
+			Stream.of(ContactIndexDto.UUID, DISEASE_SHORT, ContactIndexDto.CONTACT_CLASSIFICATION, ContactIndexDto.CONTACT_STATUS),
+			getPersonColumns(),
+			Stream.of(
+				ContactIndexDto.CONTACT_CATEGORY,
+				ContactIndexDto.CONTACT_PROXIMITY,
+				ContactIndexDto.FOLLOW_UP_STATUS,
+				ContactIndexDto.FOLLOW_UP_UNTIL,
+				NUMBER_OF_VISITS,
+				NUMBER_OF_PENDING_TASKS))
+			.flatMap(s -> s);
 	}
 
 	protected Stream<String> getPersonColumns() {
@@ -147,6 +156,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	}
 
 	public void reload() {
+
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
@@ -157,6 +167,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
 		}
 
+		@SuppressWarnings("unchecked")
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
 		if (viewConfiguration.isInEagerMode()) {
 			setEagerDataProvider();
@@ -166,12 +177,17 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	}
 
 	public void setLazyDataProvider() {
+
 		DataProvider<IndexDTO, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> getGridData(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-								.collect(Collectors.toList())).stream(),
-				query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
+			query -> getGridData(
+				query.getFilter().orElse(null),
+				query.getOffset(),
+				query.getLimit(),
+				query.getSortOrders()
+					.stream()
+					.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+					.collect(Collectors.toList())).stream(),
+			query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

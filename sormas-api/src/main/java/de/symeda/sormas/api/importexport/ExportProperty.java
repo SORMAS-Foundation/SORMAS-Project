@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface ExportProperty {
 
 	String value();
+
 	boolean combined() default false;
-	
 }

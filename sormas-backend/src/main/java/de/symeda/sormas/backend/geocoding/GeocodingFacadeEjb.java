@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.geocoding;
 
@@ -35,8 +35,9 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 
 	/**
 	 * @see https://www.bkg.bund.de/SharedDocs/Produktinformationen/BKG/DE/P-Download/Doku-Geokodierungsdienst.pdf?__blob=publicationFile&v=3
-	 * 4.3.1.10 Sonderzeichen 
+	 *      4.3.1.10 Sonderzeichen
 	 */
+	//@formatter:off
 	private static final Pattern TO_BE_ESCAPED = Pattern
 		.compile(
 			Stream
@@ -60,24 +61,25 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 			":")
 	.map(Pattern::quote)
 	.collect(Collectors.joining("|")));
+	//@formatter:on
 
 	@EJB
 	private GeocodingService geocodingService;
 
 	@Override
 	public boolean isEnabled() {
-		return geocodingService.isEnabled(); 
+		return geocodingService.isEnabled();
 	}
-	
+
 	@Override
 	public GeoLatLon getLatLon(String address, String postalCode, String city) {
-		
+
 		if (StringUtils.isBlank(address)) {
 			return null;
 		}
-		
+
 		String textValue = join(", ", address.replaceAll("\\s", " "), join(" ", postalCode, city));
-		
+
 		String query = textValue;
 //		Stream.of(
 //			property("text", textValue),
@@ -87,20 +89,17 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 //		)
 //		.filter(Objects::nonNull)
 //		.collect(Collectors.joining(" AND "));
-		
+
 		if (StringUtils.isBlank(query)) {
 			return null;
 		}
-		
+
 		return geocodingService.getLatLon(query);
 	}
-	
-	private String join(String delimiter, String ... values) {
-		
-		String result = Arrays.stream(values)
-		.filter(StringUtils::isNotBlank)
-		.collect(Collectors.joining(delimiter));
 
+	private String join(String delimiter, String... values) {
+
+		String result = Arrays.stream(values).filter(StringUtils::isNotBlank).collect(Collectors.joining(delimiter));
 		if (StringUtils.isBlank(result)) {
 			return null;
 		} else {
@@ -109,14 +108,14 @@ public class GeocodingFacadeEjb implements GeocodingFacade {
 	}
 
 	private static String property(String key, String value) {
-		
-		if (StringUtils.isBlank(value))  {
+
+		if (StringUtils.isBlank(value)) {
 			return "";
 		}
 
 		return key + ":\"" + escape(value.trim()) + "\" ";
 	}
-	
+
 	static String escape(String raw) {
 		return TO_BE_ESCAPED.matcher(raw.replace("\\", "\\\\")).replaceAll("\\\\$0");
 	}

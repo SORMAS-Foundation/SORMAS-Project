@@ -28,7 +28,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -49,7 +49,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	
+
 	@EJB
 	private ClinicalVisitService service;
 	@EJB
@@ -68,25 +68,26 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private SymptomsService symptomsService;
 
 	//	private String countPositiveSymptomsQuery;
-	
+
 	@Override
 	public List<ClinicalVisitIndexDto> getIndexList(ClinicalVisitCriteria criteria) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitIndexDto> cq = cb.createQuery(ClinicalVisitIndexDto.class);
 		Root<ClinicalVisit> visit = cq.from(ClinicalVisit.class);
 		Join<ClinicalVisit, Symptoms> symptoms = visit.join(ClinicalVisit.SYMPTOMS, JoinType.LEFT);
 
 		cq.multiselect(
-				visit.get(ClinicalVisit.UUID),
-				visit.get(ClinicalVisit.VISIT_DATE_TIME),
-				visit.get(ClinicalVisit.VISITING_PERSON),
-				visit.get(ClinicalVisit.VISIT_REMARKS),
-				symptoms.get(Symptoms.TEMPERATURE),
-				symptoms.get(Symptoms.TEMPERATURE_SOURCE),
-				symptoms.get(Symptoms.BLOOD_PRESSURE_SYSTOLIC),
-				symptoms.get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
-				symptoms.get(Symptoms.HEART_RATE),
-				symptoms.get(Symptoms.ID));
+			visit.get(ClinicalVisit.UUID),
+			visit.get(ClinicalVisit.VISIT_DATE_TIME),
+			visit.get(ClinicalVisit.VISITING_PERSON),
+			visit.get(ClinicalVisit.VISIT_REMARKS),
+			symptoms.get(Symptoms.TEMPERATURE),
+			symptoms.get(Symptoms.TEMPERATURE_SOURCE),
+			symptoms.get(Symptoms.BLOOD_PRESSURE_SYSTOLIC),
+			symptoms.get(Symptoms.BLOOD_PRESSURE_DIASTOLIC),
+			symptoms.get(Symptoms.HEART_RATE),
+			symptoms.get(Symptoms.ID));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, visit));
@@ -140,7 +141,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		return results;
 	}
-	
+
 	@Override
 	public ClinicalVisitDto getClinicalVisitByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
@@ -150,7 +151,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid) {
 		return saveClinicalVisit(clinicalVisit, caseUuid, true);
 	}
-	
+
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 		ClinicalVisit entity = fromDto(clinicalVisit);
@@ -164,66 +165,62 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
 			caseFacade.saveCase(caze);
 		}
-		
+
 		return toDto(entity);
 	}
 
-	
 	/**
 	 * Should only be used for synchronization purposes since the associated
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit) {
+
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
-				
 		return saveClinicalVisit(clinicalVisit, clinicalCourse.getCaze().getUuid());
 	}
 
 	@Override
 	public void deleteClinicalVisit(String clinicalVisitUuid) {
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
-			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete clinical visits");
+
+		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete clinical visits");
 		}
 
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
 		service.delete(clinicalVisit);
 	}
-	
+
 	@Override
 	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date) {
+
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-		
-		return service.getAllActiveClinicalVisitsAfter(date).stream()
-				.map(t -> toDto(t))
-				.collect(Collectors.toList());
+
+		return service.getAllActiveClinicalVisitsAfter(date).stream().map(t -> toDto(t)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids)
-				.stream()
-				.map(t -> toDto(t))
-				.collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(t -> toDto(t)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<String> getAllActiveUuids() {
+
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return service.getAllActiveUuids(user);
 	}
-	
+
 	@Override
 	public List<ClinicalVisitExportDto> getExportList(CaseCriteria criteria, int first, int max) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisitExportDto> cq = cb.createQuery(ClinicalVisitExportDto.class);
 		Root<ClinicalVisit> clinicalVisit = cq.from(ClinicalVisit.class);
@@ -231,34 +228,35 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = clinicalVisit.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
 		Join<Case, Person> person = caze.join(Case.PERSON, JoinType.LEFT);
-		
+
 		cq.multiselect(
-				caze.get(Case.UUID),
-				person.get(Person.FIRST_NAME),
-				person.get(Person.LAST_NAME),
-				clinicalVisit.get(ClinicalVisit.DISEASE),
-				clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME),
-				clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
-				clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
-				symptoms.get(Symptoms.ID));
-		
+			caze.get(Case.UUID),
+			person.get(Person.FIRST_NAME),
+			person.get(Person.LAST_NAME),
+			clinicalVisit.get(ClinicalVisit.DISEASE),
+			clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME),
+			clinicalVisit.get(ClinicalVisit.VISIT_REMARKS),
+			clinicalVisit.get(ClinicalVisit.VISITING_PERSON),
+			symptoms.get(Symptoms.ID));
+
 		Predicate filter = service.createUserFilter(cb, cq, clinicalVisit);
 		Join<Case, Case> casePath = clinicalCourse.join(ClinicalCourse.CASE);
 		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, cb, cq, casePath);
 		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		cq.where(filter);
 		cq.orderBy(cb.desc(caze.get(Case.UUID)), cb.desc(clinicalVisit.get(ClinicalVisit.VISIT_DATE_TIME)));
-		
+
 		List<ClinicalVisitExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		
+
 		for (ClinicalVisitExportDto exportDto : resultList) {
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 		}
-		
+
 		return resultList;
 	}
-	
+
 	public static ClinicalVisitDto toDto(ClinicalVisit source) {
+
 		if (source == null) {
 			return null;
 		}
@@ -275,8 +273,9 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		return target;
 	}
-	
+
 	public ClinicalVisit fromDto(@NotNull ClinicalVisitDto source) {
+
 		ClinicalVisit target = service.getByUuid(source.getUuid());
 
 		if (target == null) {
@@ -304,5 +303,4 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	public static class ClinicalVisitFacadeEjbLocal extends ClinicalVisitFacadeEjb {
 
 	}
-	
 }

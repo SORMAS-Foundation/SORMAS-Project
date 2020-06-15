@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -23,33 +23,33 @@ import de.symeda.sormas.api.region.GeoLatLon;
 
 @Remote
 public interface ConfigFacade {
-	
+
 	String getCountryName();
-	
+
 	String getCountryLocale();
 
 	boolean isGermanServer();
-	
+
 	String getEpidPrefix();
-	
+
 	String getAppUrl();
-	
+
 	boolean isFeatureAutomaticCaseClassification();
-	
+
 	String getEmailSenderAddress();
-	
+
 	String getEmailSenderName();
-	
+
 	String getSmsSenderName();
-	
+
 	String getSmsAuthKey();
-	
+
 	String getSmsAuthSecret();
-	
+
 	String getTempFilesPath();
-	
+
 	String getGeneratedFilesPath();
-	
+
 	String getCustomFilesPath();
 
 	String getRScriptExecutable();
@@ -61,9 +61,9 @@ public interface ConfigFacade {
 	void validateAppUrls();
 
 	boolean isDevMode();
-	
+
 	double getNameSimilarityThreshold();
-	
+
 	int getInfrastructureSyncThreshold();
 
 	int getDaysAfterCaseGetsArchived();
@@ -75,5 +75,8 @@ public interface ConfigFacade {
 	int getMapZoom();
 
 	String getGeocodingOsgtsEndpoint();
-	
+
+	String getPIAUrl();
+
+	void validateExternalUrls();
 }

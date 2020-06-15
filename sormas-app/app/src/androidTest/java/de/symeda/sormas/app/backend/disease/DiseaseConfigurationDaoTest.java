@@ -1,63 +1,58 @@
 package de.symeda.sormas.app.backend.disease;
 
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.UUID;
+import androidx.test.runner.AndroidJUnit4;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.TestBackendActivity;
 import de.symeda.sormas.app.TestHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-import static org.junit.Assert.*;
-
 @RunWith(AndroidJUnit4.class)
 public class DiseaseConfigurationDaoTest {
 
-    @Before
-    public void initTest() {
-        TestHelper.initTestEnvironment(false);
-    }
+	@Before
+	public void initTest() {
+		TestHelper.initTestEnvironment(false);
+	}
 
-    @Test
-    public void testCreateAndUpdate() throws DaoException {
-        DiseaseConfigurationCache cache = DiseaseConfigurationCache.getInstance();
+	@Test
+	public void testCreateAndUpdate() throws DaoException {
+		DiseaseConfigurationCache cache = DiseaseConfigurationCache.getInstance();
 
-        Disease disease = cache.getAllActiveDiseases().get(0);
+		Disease disease = cache.getAllActiveDiseases().get(0);
 
-        DiseaseConfigurationDao dao = DatabaseHelper.getDiseaseConfigurationDao();
+		DiseaseConfigurationDao dao = DatabaseHelper.getDiseaseConfigurationDao();
 
-        DiseaseConfiguration configuration = dao.build();
-        configuration.setDisease(disease);
+		DiseaseConfiguration configuration = dao.build();
+		configuration.setDisease(disease);
 
-        //Test create
-        configuration.setActive(false);
-        configuration.setFollowUpEnabled(true);
+		//Test create
+		configuration.setActive(false);
+		configuration.setFollowUpEnabled(true);
 
-        dao.mergeOrCreate(configuration);
+		dao.mergeOrCreate(configuration);
 
-        cache = DiseaseConfigurationCache.getInstance();
+		cache = DiseaseConfigurationCache.getInstance();
 
-        assertFalse(cache.getAllActiveDiseases().contains(disease));
-        assertTrue(cache.getAllDiseasesWithFollowUp().contains(disease));
+		assertFalse(cache.getAllActiveDiseases().contains(disease));
+		assertTrue(cache.getAllDiseasesWithFollowUp().contains(disease));
 
-        //Test update
-        configuration.setFollowUpEnabled(false);
+		//Test update
+		configuration.setFollowUpEnabled(false);
 
-        dao.mergeOrCreate(configuration);
+		dao.mergeOrCreate(configuration);
 
-        cache = DiseaseConfigurationCache.getInstance();
+		cache = DiseaseConfigurationCache.getInstance();
 
-        assertFalse(cache.getAllActiveDiseases().contains(disease));
-        assertFalse(cache.getAllDiseasesWithFollowUp().contains(disease));
-    }
+		assertFalse(cache.getAllActiveDiseases().contains(disease));
+		assertFalse(cache.getAllDiseasesWithFollowUp().contains(disease));
+	}
 }

@@ -1,5 +1,8 @@
 package de.symeda.sormas.backend.therapy;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -20,11 +23,11 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Entity
 @Audited
 public class Prescription extends AbstractDomainObject {
-	
+
 	private static final long serialVersionUID = -5028702472324192079L;
 
 	public static final String TABLE_NAME = "prescription";
-	
+
 	public static final String THERAPY = "therapy";
 	public static final String PRESCRIPTION_DATE = "prescriptionDate";
 	public static final String PRESCRIPTION_START = "prescriptionStart";
@@ -38,7 +41,7 @@ public class Prescription extends AbstractDomainObject {
 	public static final String ROUTE = "route";
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
-	
+
 	private Therapy therapy;
 	private Date prescriptionDate;
 	private Date prescriptionStart;
@@ -54,19 +57,21 @@ public class Prescription extends AbstractDomainObject {
 	private String additionalNotes;
 
 	@ManyToOne(cascade = {})
-	@JoinColumn(nullable=false)
+	@JoinColumn(nullable = false)
 	public Therapy getTherapy() {
 		return therapy;
 	}
+
 	public void setTherapy(Therapy therapy) {
 		this.therapy = therapy;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public Date getPrescriptionDate() {
 		return prescriptionDate;
 	}
+
 	public void setPrescriptionDate(Date prescriptionDate) {
 		this.prescriptionDate = prescriptionDate;
 	}
@@ -75,6 +80,7 @@ public class Prescription extends AbstractDomainObject {
 	public Date getPrescriptionStart() {
 		return prescriptionStart;
 	}
+
 	public void setPrescriptionStart(Date prescriptionStart) {
 		this.prescriptionStart = prescriptionStart;
 	}
@@ -83,31 +89,35 @@ public class Prescription extends AbstractDomainObject {
 	public Date getPrescriptionEnd() {
 		return prescriptionEnd;
 	}
+
 	public void setPrescriptionEnd(Date prescriptionEnd) {
 		this.prescriptionEnd = prescriptionEnd;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPrescribingClinician() {
 		return prescribingClinician;
 	}
+
 	public void setPrescribingClinician(String prescribingClinician) {
 		this.prescribingClinician = prescribingClinician;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable=false)
+	@Column(nullable = false)
 	public TreatmentType getPrescriptionType() {
 		return prescriptionType;
 	}
+
 	public void setPrescriptionType(TreatmentType prescriptionType) {
 		this.prescriptionType = prescriptionType;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPrescriptionDetails() {
 		return prescriptionDetails;
 	}
+
 	public void setPrescriptionDetails(String prescriptionDetails) {
 		this.prescriptionDetails = prescriptionDetails;
 	}
@@ -116,22 +126,25 @@ public class Prescription extends AbstractDomainObject {
 	public TypeOfDrug getTypeOfDrug() {
 		return typeOfDrug;
 	}
+
 	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
 		this.typeOfDrug = typeOfDrug;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFrequency() {
 		return frequency;
 	}
+
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDose() {
 		return dose;
 	}
+
 	public void setDose(String dose) {
 		this.dose = dose;
 	}
@@ -140,24 +153,27 @@ public class Prescription extends AbstractDomainObject {
 	public TreatmentRoute getRoute() {
 		return route;
 	}
+
 	public void setRoute(TreatmentRoute route) {
 		this.route = route;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRouteDetails() {
 		return routeDetails;
 	}
+
 	public void setRouteDetails(String routeDetails) {
 		this.routeDetails = routeDetails;
 	}
 
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalNotes() {
 		return additionalNotes;
 	}
+
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
-	
+
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
@@ -59,13 +59,11 @@ public abstract class AbstractDashboardView extends AbstractView {
 		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SURVEILLANCE);
-			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE,
-					I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
+			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE, I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CONTACTS);
-			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS,
-					I18nProperties.getEnumCaption(DashboardType.CONTACTS));
+			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS, I18nProperties.getEnumCaption(DashboardType.CONTACTS));
 		}
 		dashboardSwitcher.setValue(dashboardType);
 		dashboardSwitcher.addValueChangeListener(e -> {
@@ -96,7 +94,6 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 		addComponent(dashboardLayout);
 	}
-
 
 	public void refreshDashboard() {
 		dashboardDataProvider.refreshData();

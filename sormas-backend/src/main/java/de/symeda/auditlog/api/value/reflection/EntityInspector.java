@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.reflection;
 
@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -46,8 +47,8 @@ import de.symeda.auditlog.api.value.format.ValueFormatter;
 public class EntityInspector {
 
 	private static final String[] METHOD_PREFIXES = {
-			"get",
-			"is" };
+		"get",
+		"is" };
 
 	private final Object entity;
 
@@ -72,8 +73,8 @@ public class EntityInspector {
 
 	/**
 	 * @param clazz
-	 *      	This class and all super classes that are annotated with {@link Audited} are checked for methods to be audited.	
-	 * @return 	All methods to be audited of the given {@code clazz}.
+	 *            This class and all super classes that are annotated with {@link Audited} are checked for methods to be audited.
+	 * @return All methods to be audited of the given {@code clazz}.
 	 */
 	private List<Method> getAuditedAttributes(Class<?> clazz) {
 
@@ -96,7 +97,7 @@ public class EntityInspector {
 					}
 				}
 			}
-			
+
 			// Check all super classes that are audited
 			auditedMethods.addAll(getAuditedAttributes(clazz.getSuperclass()));
 		}
@@ -110,8 +111,8 @@ public class EntityInspector {
 	 * relation that is mapped by a different class.
 	 * 
 	 * @param method
-	 * 			The method to check.
-	 * @return	True if the method should be audited, false if not.
+	 *            The method to check.
+	 * @return True if the method should be audited, false if not.
 	 */
 	private boolean isAudited(Method method) {
 		if (method.getAnnotation(AuditedIgnore.class) != null) {
@@ -119,9 +120,11 @@ public class EntityInspector {
 		} else if (method.getAnnotation(AuditedAttribute.class) != null || method.getAnnotation(AuditedCollection.class) != null) {
 			return true;
 		} else {
-			return method.getAnnotation(Transient.class) == null 
-					&& (method.getAnnotation(OneToMany.class) == null || method.getAnnotation(OneToMany.class).mappedBy().isEmpty()) 
-					&& (method.getAnnotation(OneToOne.class) == null || method.getAnnotation(OneToOne.class).mappedBy().isEmpty());
+			return method.getAnnotation(Transient.class) == null
+				&& (method.getAnnotation(OneToMany.class) == null || method.getAnnotation(OneToMany.class).mappedBy().isEmpty())
+				&& (method.getAnnotation(OneToOne.class) == null
+					|| method.getAnnotation(OneToOne.class).mappedBy().isEmpty()
+						&& (method.getAnnotation(ManyToMany.class) == null || method.getAnnotation(ManyToMany.class).mappedBy().isEmpty()));
 		}
 	}
 
@@ -129,20 +132,20 @@ public class EntityInspector {
 	 * Returns the actual value of an attribute. It is assumed that this method is a getter.
 	 * 
 	 * @param method
-	 * 			The attribute to inspect.
+	 *            The attribute to inspect.
 	 * @throws IllegalAccessException
-	 * 			If an error occurs during the call of the getter (original exception).
+	 *             If an error occurs during the call of the getter (original exception).
 	 * @throws IllegalArgumentException
-	 * 			If an error occurs during the call of the getter (original exception).
+	 *             If an error occurs during the call of the getter (original exception).
 	 * @throws InvocationTargetException
-	 * 			If an error occurs during the call of the getter (original exception).
-	 * @see	Method#invoke(Object, Object...)
+	 *             If an error occurs during the call of the getter (original exception).
+	 * @see Method#invoke(Object, Object...)
 	 */
 	public Object getAttributeValue(Method method) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		return method.invoke(entity);
 	}
-	
+
 	/**
 	 * Returns an instance of the configured {@link ValueFormatter} for this annotation.
 	 */
@@ -161,8 +164,8 @@ public class EntityInspector {
 	 * Returns an instance of the configured {@link CollectionFormatter} for this annotation.
 	 */
 	@SuppressWarnings({
-			"rawtypes",
-			"unchecked" })
+		"rawtypes",
+		"unchecked" })
 	public static CollectionFormatter<?> getCollectionFormatter(AuditedCollection annotation) {
 		Class<? extends ValueFormatter<?>> formatterClass;
 		if (annotation == null) {
@@ -170,7 +173,7 @@ public class EntityInspector {
 		} else {
 			formatterClass = annotation.value();
 		}
-		
+
 		ValueFormatter declaredFormatter = buildFormatter(formatterClass);
 
 		final CollectionFormatter resultingCollectionFormatter;

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -30,15 +30,16 @@ public class ViewModelProviders {
 	private Map<Class<?>, ViewModelProvider> viewModelProviders = new HashMap<Class<?>, ViewModelProvider>();
 
 	public static <V extends View> ViewModelProvider of(Class<V> viewClass) {
+
 		ViewModelProviders providers = getCurrent();
 		if (!providers.viewModelProviders.containsKey(viewClass)) {
 			providers.viewModelProviders.put(viewClass, new ViewModelProvider());
 		}
 		return providers.viewModelProviders.get(viewClass);
 	}
-	
+
 	/**
-	 * Gets the provider for the current UI belongs. 
+	 * Gets the provider for the current UI belongs.
 	 *
 	 * @see UI#getCurrent()
 	 *
@@ -46,6 +47,7 @@ public class ViewModelProviders {
 	 */
 	@NotNull
 	private static ViewModelProviders getCurrent() {
+
 		UI currentUI = UI.getCurrent();
 		if (currentUI instanceof HasViewModelProviders) {
 			return ((HasViewModelProviders) currentUI).getViewModelProviders();
@@ -54,6 +56,7 @@ public class ViewModelProviders {
 	}
 
 	public interface HasViewModelProviders {
+
 		@NotNull
 		ViewModelProviders getViewModelProviders();
 	}

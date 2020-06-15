@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -32,7 +32,7 @@ import de.symeda.auditlog.api.value.ValueContainer;
  * 
  * @author Stefan Kock
  * @param <V>
- * 			Type of the {@code value} to format within the {@link Collection}.
+ *            Type of the {@code value} to format within the {@link Collection}.
  */
 public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatter<V> {
 
@@ -42,9 +42,9 @@ public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatte
 	 * <code>nullString = {@link ValueContainer#DEFAULT_NULL_STRING}</code>
 	 * 
 	 * @param comparator
-	 * 			{@link Comparator} used for a reliable sorting of the values.
+	 *            {@link Comparator} used for a reliable sorting of the values.
 	 * @param valueFormatter
-	 * 			{@link ValueFormatter} to be used to format the individual values.
+	 *            {@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparatorCollectionFormatter(Comparator<V> comparator, ValueFormatter<V> valueFormatter) {
 
@@ -53,11 +53,11 @@ public class ComparatorCollectionFormatter<V> extends AbstractCollectionFormatte
 
 	/**
 	 * @param nullString
-				Placeholder for {@code null} values.
+	 *            Placeholder for {@code null} values.
 	 * @param comparator
-	 * 			{@link Comparator} used for a reliable sorting of the values.
+	 *            {@link Comparator} used for a reliable sorting of the values.
 	 * @param valueFormatter
-	 * 			{@link ValueFormatter} to be used to format the individual values.
+	 *            {@link ValueFormatter} to be used to format the individual values.
 	 */
 	public ComparatorCollectionFormatter(String nullString, Comparator<V> comparator, ValueFormatter<V> valueFormatter) {
 

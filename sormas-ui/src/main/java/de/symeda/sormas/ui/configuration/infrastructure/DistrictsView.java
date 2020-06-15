@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -28,8 +28,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -82,13 +80,14 @@ public class DistrictsView extends AbstractConfigurationView {
 	private MenuBar bulkOperationsDropdown;
 
 	public DistrictsView() {
+
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(DistrictsView.class).get(ViewConfiguration.class);
 		criteria = ViewModelProviders.of(DistrictsView.class).get(DistrictCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}	
+		}
 
 		grid = new DistrictsGrid(criteria);
 		gridLayout = new VerticalLayout();
@@ -103,8 +102,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
-				Window window = VaadinUiUtil
-						.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.DISTRICT));
+				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.DISTRICT));
 				window.setCaption(I18nProperties.getString(Strings.headingImportDistricts));
 				window.addCloseListener(c -> {
 					grid.reload();
@@ -119,14 +117,21 @@ public class DistrictsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_districts", "sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv", DistrictsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = new GridExportStreamResource(
+				grid,
+				"sormas_districts",
+				"sormas_districts_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.actionNewEntry, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getInfrastructureController().createDistrict(), ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.actionNewEntry,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getInfrastructureController().createDistrict(),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -136,7 +141,8 @@ public class DistrictsView extends AbstractConfigurationView {
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
 
-			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setId("leaveBulkEditMode");
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnLeaveBulkEditMode);
@@ -164,6 +170,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	}
 
 	private HorizontalLayout createFilterBar() {
+
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
 		filterLayout.setSpacing(true);
@@ -221,24 +228,39 @@ public class DistrictsView extends AbstractConfigurationView {
 
 				// Bulk operation dropdown
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(true, grid.asMultiSelect().getSelectedItems(), InfrastructureType.DISTRICT, null, new Runnable() {
-									public void run() {
-										navigateTo(criteria);
-									}
-								});
-							}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-								ControllerProvider.getInfrastructureController().archiveOrDearchiveAllSelectedItems(false, grid.asMultiSelect().getSelectedItems(), InfrastructureType.DISTRICT, null, new Runnable() {
-									public void run() {
-										navigateTo(criteria);
-									}
-								});
-							}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus()))
-					);
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+							ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									true,
+									grid.asMultiSelect().getSelectedItems(),
+									InfrastructureType.DISTRICT,
+									null,
+									new Runnable() {
 
-					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
+										public void run() {
+											navigateTo(criteria);
+										}
+									});
+						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+							ControllerProvider.getInfrastructureController()
+								.archiveOrDearchiveAllSelectedItems(
+									false,
+									grid.asMultiSelect().getSelectedItems(),
+									InfrastructureType.DISTRICT,
+									null,
+									new Runnable() {
+
+										public void run() {
+											navigateTo(criteria);
+										}
+									});
+						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+
+					bulkOperationsDropdown
+						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
 				}
 			}
@@ -273,6 +295,7 @@ public class DistrictsView extends AbstractConfigurationView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+
 		super.enter(event);
 		String params = event.getParameters().trim();
 		if (params.startsWith("?")) {
@@ -284,6 +307,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	}
 
 	public void updateFilterComponents() {
+
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
@@ -296,6 +320,5 @@ public class DistrictsView extends AbstractConfigurationView {
 		regionFilter.setValue(criteria.getRegion());
 
 		applyingCriteria = false;
-	}	
-
+	}
 }

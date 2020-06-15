@@ -17,6 +17,6 @@ import de.symeda.sormas.api.visit.VisitExportType;
 public @interface ExportTarget {
 
 	CaseExportType[] caseExportTypes() default CaseExportType.CASE_SURVEILLANCE;
-	VisitExportType[] visitExportTypes() default VisitExportType.CONTACT_VISITS;
 
+	VisitExportType[] visitExportTypes() default VisitExportType.CONTACT_VISITS;
 }

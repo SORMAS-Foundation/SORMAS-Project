@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -47,14 +47,16 @@ public final class DataHelper {
 	}
 
 	public static String createUuid() {
+
 		//uuid = java.util.UUID.randomUUID().toString();
 		java.util.UUID randomUuid = java.util.UUID.randomUUID();
 		byte[] bytes = longToBytes(randomUuid.getLeastSignificantBits(), randomUuid.getMostSignificantBits());
 		String uuid = Base32.encode(bytes, 6);
 		return uuid;
 	}
-		
+
 	public static boolean isSame(HasUuid left, HasUuid right) {
+
 		if (left == null && right == null) {
 			return true;
 		} else if (left != null && right != null) {
@@ -68,6 +70,7 @@ public final class DataHelper {
 	 * @return a equals b, where a and/or b are allowed to be null
 	 */
 	public static boolean equal(Object a, Object b) {
+
 		boolean equal = a == b || (a != null && a.equals(b));
 		if (a instanceof String) {
 			equal = equal || (b == null && ((String) a).isEmpty());
@@ -78,12 +81,13 @@ public final class DataHelper {
 
 		return equal;
 	}
-	
+
 	/**
 	 * @return a equals b, where a and/or b are allowed to be null
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> int compare(Comparable<T> a, Comparable<T> b) {
+
 		if (a == null) {
 			if (b == null) {
 				return 0;
@@ -93,7 +97,7 @@ public final class DataHelper {
 		} else if (b == null) {
 			return 1;
 		}
-		return a.compareTo((T)b);
+		return a.compareTo((T) b);
 	}
 
 	/**
@@ -101,6 +105,7 @@ public final class DataHelper {
 	 * @return "" if null
 	 */
 	public static String toStringNullable(Object nullable) {
+
 		if (nullable == null) {
 			return "";
 		}
@@ -108,6 +113,7 @@ public final class DataHelper {
 	}
 
 	public static boolean isNullOrEmpty(String string) {
+
 		if (string == null) {
 			return true;
 		} else if (string.isEmpty()) {
@@ -121,18 +127,24 @@ public final class DataHelper {
 	 * @return Type is a "value" type like a primtive, enum, number, date or string
 	 */
 	public static boolean isValueType(Class<?> type) {
-		return (type.isPrimitive() && type != void.class) ||
-				type.isEnum() ||
-				type == Double.class || type == Float.class || type == Long.class ||
-				type == Integer.class || type == Short.class || type == Character.class ||
-				type == Byte.class || 
-				type == Boolean.class || 
-				type == String.class ||
-				type == Date.class;	        
+
+		return (type.isPrimitive() && type != void.class)
+			|| type.isEnum()
+			|| type == Double.class
+			|| type == Float.class
+			|| type == Long.class
+			|| type == Integer.class
+			|| type == Short.class
+			|| type == Character.class
+			|| type == Byte.class
+			|| type == Boolean.class
+			|| type == String.class
+			|| type == Date.class;
 	}
 
 	public static byte[] longToBytes(long x, long y) {
-		ByteBuffer buffer = ByteBuffer.allocate(2*Long.SIZE/8);
+
+		ByteBuffer buffer = ByteBuffer.allocate(2 * Long.SIZE / 8);
 		buffer.putLong(x);
 		buffer.putLong(y);
 		return buffer.array();
@@ -143,6 +155,7 @@ public final class DataHelper {
 	}
 
 	public static String getShortUuid(String uuid) {
+
 		if (uuid == null)
 			return null;
 		return uuid.substring(0, 6).toUpperCase();
@@ -151,7 +164,7 @@ public final class DataHelper {
 	public static class Pair<K, V> implements Serializable {
 
 		private static final long serialVersionUID = 7135988167451005820L;
-		
+
 		private final K element0;
 		private final V element1;
 
@@ -188,19 +201,19 @@ public final class DataHelper {
 		}
 		return sb.toString();
 	}
-	
+
 	public static String capitalize(String input) {
 		return input.substring(0, 1).toUpperCase() + input.substring(1);
 	}
-	
+
 	public static BigDecimal getTruncatedBigDecimal(BigDecimal number) {
-		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0,  RoundingMode.HALF_UP) : number;
+		return number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 ? number.setScale(0, RoundingMode.HALF_UP) : number;
 	}
-	
+
 	public static List<Integer> buildIntegerList(int min, int max) {
 		return buildIntegerList(min, max, 1);
 	}
-	
+
 	public static List<Integer> buildIntegerList(int min, int max, int step) {
 		List<Integer> x = new ArrayList<>();
 		for (int i = min; i <= max; i += step) {
@@ -208,26 +221,27 @@ public final class DataHelper {
 		}
 		return x;
 	}
-	
-	public static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
-	    SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
-	        new Comparator<Map.Entry<K,V>>() {
-	            @Override 
-	            public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
-	                int res = e1.getValue().compareTo(e2.getValue());
-	                return res != 0 ? res : 1;
-	            }
-	        }
-	    );
-	    sortedEntries.addAll(map.entrySet());
-	    return sortedEntries;
+
+	public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map) {
+
+		SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(new Comparator<Map.Entry<K, V>>() {
+
+			@Override
+			public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
+				int res = e1.getValue().compareTo(e2.getValue());
+				return res != 0 ? res : 1;
+			}
+		});
+		sortedEntries.addAll(map.entrySet());
+		return sortedEntries;
 	}
-	
+
 	/**
 	 * Returns a String that prints all numbers from 0 to 12 spelled out. Higher numbers
 	 * are simply transformed into a String.
 	 */
 	public static String parseNumberToString(int number) {
+
 		switch (number) {
 		case 1:
 			return I18nProperties.getString(Strings.numberOne).toUpperCase();
@@ -257,8 +271,9 @@ public final class DataHelper {
 			return Integer.toString(number);
 		}
 	}
-	
+
 	public static String parseBoolean(Boolean value) {
+
 		if (value == null) {
 			return "";
 		} else if (Boolean.TRUE.equals(value)) {
@@ -267,36 +282,40 @@ public final class DataHelper {
 			return I18nProperties.getString(Strings.no);
 		}
 	}
-	
+
 	public static String getSexAndAgeGroupString(AgeGroup ageGroup, Sex sex) {
+
 		if (sex == null) {
 			return I18nProperties.getString(Strings.total) + " " + ageGroup.toString();
 		} else {
 			return sex.toString() + " " + ageGroup.toString();
 		}
 	}
-	
+
 	public static String getHumanClassName(Class<?> classType) {
+
 		String className = classType.getSimpleName();
 		className = className.replaceAll("Dto$", "");
 		return className;
 	}
-	
+
 	/**
 	 * @return null when NumberFormatException is thrown
 	 */
 	public static Integer tryParseInt(String value) {
+
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @return null when NumberFormatException is thrown
 	 */
 	public static Long tryParseLong(String value) {
+
 		try {
 			return Long.parseLong(value);
 		} catch (NumberFormatException e) {
@@ -305,6 +324,7 @@ public final class DataHelper {
 	}
 
 	public static boolean isParseableInt(String value) {
+
 		try {
 			Integer.parseInt(value);
 			return true;

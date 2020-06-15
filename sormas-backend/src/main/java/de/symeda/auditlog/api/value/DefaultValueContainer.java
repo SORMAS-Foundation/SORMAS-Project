@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value;
 
@@ -83,9 +83,9 @@ public class DefaultValueContainer implements SimpleValueContainer {
 	 * Saves the value to be audited.
 	 * 
 	 * @param key
-	 * 			Identifier for attribute of the audited entity.
+	 *            Identifier for attribute of the audited entity.
 	 * @param value
-	 * 			If {@code null}, the {@link #getNullString()} is saved as the value.
+	 *            If {@code null}, the {@link #getNullString()} is saved as the value.
 	 */
 	protected void putToMap(String key, Object value) {
 
@@ -127,6 +127,7 @@ public class DefaultValueContainer implements SimpleValueContainer {
 
 	/**
 	 * Replaces changed values when they are designated for anonymization by {@link #getAnonymizeConfig()}.
+	 * 
 	 * @param result
 	 */
 	private void anonymizeValues(SortedMap<String, String> result) {
@@ -180,9 +181,9 @@ public class DefaultValueContainer implements SimpleValueContainer {
 	 * {@code anonymizeValue} will be returned instead of the new value.
 	 * 
 	 * @param key
-	 * 			The attribute to anonymize.
+	 *            The attribute to anonymize.
 	 * @param anonymizeValue
-	 * 			The value that is returned instead of the actual new value.
+	 *            The value that is returned instead of the actual new value.
 	 */
 	public void configureAnonymizeValue(String key, String anonymizeValue) {
 

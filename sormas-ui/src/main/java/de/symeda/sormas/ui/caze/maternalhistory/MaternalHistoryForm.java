@@ -23,11 +23,12 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private final ViewMode viewMode;
-	
+
+	//@formatter:off
 	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingMaternalHistory)) +
 			fluidRowLocs(MaternalHistoryDto.CHILDREN_NUMBER, MaternalHistoryDto.AGE_AT_BIRTH, "") +
@@ -40,35 +41,55 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 			fluidRowLocs(MaternalHistoryDto.RUBELLA, MaternalHistoryDto.RUBELLA_ONSET, "") +
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE, MaternalHistoryDto.RASH_EXPOSURE_DATE, MaternalHistoryDto.RASH_EXPOSURE_MONTH) +
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
-	
+	//@formatter:on
+
 	public MaternalHistoryForm(ViewMode viewMode) {
 		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX);
 		this.viewMode = viewMode;
 	}
-	
+
 	@Override
 	protected void addFields() {
+
 		TextField tfChildrenNumber = addField(MaternalHistoryDto.CHILDREN_NUMBER, TextField.class);
 		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfChildrenNumber.getCaption()));
+		removeMaxLengthValidators(tfChildrenNumber);
 		TextField tfAgeAtBirth = addField(MaternalHistoryDto.AGE_AT_BIRTH, TextField.class);
 		tfAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfAgeAtBirth.getCaption()));
+		removeMaxLengthValidators(tfAgeAtBirth);
 		TextField tfConjunctivitisMonth = addField(MaternalHistoryDto.CONJUNCTIVITIS_MONTH, TextField.class);
-		tfConjunctivitisMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfConjunctivitisMonth.getCaption()));
+		tfConjunctivitisMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfConjunctivitisMonth.getCaption()));
+		removeMaxLengthValidators(tfConjunctivitisMonth);
 		TextField tfMaculopapularRashMonth = addField(MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH, TextField.class);
-		tfMaculopapularRashMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
+		tfMaculopapularRashMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
+		removeMaxLengthValidators(tfMaculopapularRashMonth);
 		TextField tfSwollenLymphsMonth = addField(MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH, TextField.class);
 		tfSwollenLymphsMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfSwollenLymphsMonth.getCaption()));
+		removeMaxLengthValidators(tfSwollenLymphsMonth);
 		TextField tfArthralgiaArthritisMonth = addField(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH, TextField.class);
-		tfArthralgiaArthritisMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
+		tfArthralgiaArthritisMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
+		removeMaxLengthValidators(tfArthralgiaArthritisMonth);
 		TextField otherComplicationsMonth = addField(MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, TextField.class);
-		otherComplicationsMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, otherComplicationsMonth.getCaption()));
+		otherComplicationsMonth
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, otherComplicationsMonth.getCaption()));
+		removeMaxLengthValidators(otherComplicationsMonth);
 		TextField rashExposureMonth = addField(MaternalHistoryDto.RASH_EXPOSURE_MONTH, TextField.class);
 		rashExposureMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, rashExposureMonth.getCaption()));
-		
-		addFields(MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET,
-				MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET, MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET, MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS,
-				MaternalHistoryDto.RUBELLA_ONSET, MaternalHistoryDto.RASH_EXPOSURE_DATE);
-		
+		removeMaxLengthValidators(rashExposureMonth);
+
+		addFields(
+			MaternalHistoryDto.CONJUNCTIVITIS_ONSET,
+			MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET,
+			MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET,
+			MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET,
+			MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET,
+			MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS,
+			MaternalHistoryDto.RUBELLA_ONSET,
+			MaternalHistoryDto.RASH_EXPOSURE_DATE);
+
 		addField(MaternalHistoryDto.CONJUNCTIVITIS, OptionGroup.class);
 		addField(MaternalHistoryDto.MACULOPAPULAR_RASH, OptionGroup.class);
 		addField(MaternalHistoryDto.SWOLLEN_LYMPHS, OptionGroup.class);
@@ -76,36 +97,80 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		addField(MaternalHistoryDto.OTHER_COMPLICATIONS, OptionGroup.class);
 		addField(MaternalHistoryDto.RUBELLA, OptionGroup.class);
 		addField(MaternalHistoryDto.RASH_EXPOSURE, OptionGroup.class);
-		
+
 		ComboBox cbRashExposureRegion = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_REGION);
 		ComboBox cbRashExposureDistrict = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT);
 		ComboBox cbRashExposureCommunity = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 
-		initializeVisibilitiesAndAllowedVisibilities(null, viewMode);
-		
 		cbRashExposureRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbRashExposureDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+			FieldHelper.updateItems(
+				cbRashExposureDistrict,
+				region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 		cbRashExposureDistrict.addValueChangeListener(e -> {
 			FieldHelper.removeItems(cbRashExposureCommunity);
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbRashExposureCommunity, district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
+			FieldHelper.updateItems(
+				cbRashExposureCommunity,
+				district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
 		});
 		cbRashExposureRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH), MaternalHistoryDto.CONJUNCTIVITIS, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH), MaternalHistoryDto.MACULOPAPULAR_RASH, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET, MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH), MaternalHistoryDto.SWOLLEN_LYMPHS, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH), MaternalHistoryDto.ARTHRALGIA_ARTHRITIS, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET, MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS), MaternalHistoryDto.OTHER_COMPLICATIONS, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.RUBELLA_ONSET), MaternalHistoryDto.RUBELLA, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(MaternalHistoryDto.RASH_EXPOSURE_DATE, MaternalHistoryDto.RASH_EXPOSURE_MONTH, MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY), MaternalHistoryDto.RASH_EXPOSURE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH),
+			MaternalHistoryDto.CONJUNCTIVITIS,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH),
+			MaternalHistoryDto.MACULOPAPULAR_RASH,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET, MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH),
+			MaternalHistoryDto.SWOLLEN_LYMPHS,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_ONSET, MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH),
+			MaternalHistoryDto.ARTHRALGIA_ARTHRITIS,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(
+				MaternalHistoryDto.OTHER_COMPLICATIONS_ONSET,
+				MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH,
+				MaternalHistoryDto.OTHER_COMPLICATIONS_DETAILS),
+			MaternalHistoryDto.OTHER_COMPLICATIONS,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(MaternalHistoryDto.RUBELLA_ONSET),
+			MaternalHistoryDto.RUBELLA,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(
+				MaternalHistoryDto.RASH_EXPOSURE_DATE,
+				MaternalHistoryDto.RASH_EXPOSURE_MONTH,
+				MaternalHistoryDto.RASH_EXPOSURE_REGION,
+				MaternalHistoryDto.RASH_EXPOSURE_DISTRICT,
+				MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY),
+			MaternalHistoryDto.RASH_EXPOSURE,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
 	}
 
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

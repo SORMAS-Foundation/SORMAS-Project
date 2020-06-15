@@ -17,9 +17,11 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.report.AggregateReportDto;
 
 @Path("/aggregatereports")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class AggregateReportResource extends EntityDtoResource {
 
 	@GET

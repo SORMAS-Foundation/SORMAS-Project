@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.utils;
 import com.vaadin.server.Sizeable;
 
 public class FieldConfiguration {
+
 	private String propertyId;
 	private Float width;
 	private Sizeable.Unit widthUnit;
@@ -63,5 +64,4 @@ public class FieldConfiguration {
 
 		return configuration;
 	}
-
 }

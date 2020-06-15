@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -48,18 +48,22 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventParticipantsController {
-	
+
 	private EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private PersonFacade personFacade = FacadeProvider.getPersonFacade();
-	
+
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
 		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef);
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent = new CommitDiscardWrapperComponent<EventParticipantCreateForm>(createForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE), createForm.getFieldGroup());
-		
+		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =
+			new CommitDiscardWrapperComponent<EventParticipantCreateForm>(
+				createForm,
+				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
+				createForm.getFieldGroup());
+
 		createComponent.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
@@ -67,8 +71,9 @@ public class EventParticipantsController {
 					final PersonDto person = PersonDto.build();
 					person.setFirstName(createForm.getPersonFirstName());
 					person.setLastName(createForm.getPersonLastName());
-					
-					ControllerProvider.getPersonController().selectOrCreatePerson(
+
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(
 							person,
 							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
 							selectedPerson -> {
@@ -76,44 +81,55 @@ public class EventParticipantsController {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-				        			ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());
+									ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid(), doneConsumer);
 								}
 							});
 				}
 			}
 		});
-		
+
 		Window window = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewEventParticipant));
 		window.addCloseListener(e -> {
 			doneConsumer.accept(null);
 		});
 	}
-	
+
 	public void editEventParticipant(String eventParticipantUuid) {
+		editEventParticipant(eventParticipantUuid, null);
+	}
+
+	public void editEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
+
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		EventParticipantEditForm editForm = new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()));
+		EventParticipantEditForm editForm =
+			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()));
 		editForm.setValue(eventParticipant);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> editView = new CommitDiscardWrapperComponent<EventParticipantEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT),
+			editForm.getFieldGroup());
 
 		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEventParticipant));
-        // form is too big for typical screens
-		window.setHeight(80, Unit.PERCENTAGE); 
-		
+		// form is too big for typical screens
+		window.setHeight(80, Unit.PERCENTAGE);
+
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
-				if(!editForm.getFieldGroup().isModified()) {
+				if (!editForm.getFieldGroup().isModified()) {
 					EventParticipantDto dto = editForm.getValue();
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+					if (doneConsumer != null)
+						doneConsumer.accept(null);
 					refreshView();
 				}
 			}
 		});
-		
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
@@ -121,29 +137,37 @@ public class EventParticipantsController {
 			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
 		}
 	}
-	
+
 	private void refreshView() {
 		View currentView = SormasUI.get().getNavigator().getCurrentView();
-    	if (currentView instanceof EventParticipantsView) {
-    		// force refresh, because view didn't change
-    		((EventParticipantsView)currentView).enter(null);
-    	}
+		if (currentView instanceof EventParticipantsView) {
+			// force refresh, because view didn't change
+			((EventParticipantsView) currentView).enter(null);
+		}
 	}
 
 	public void deleteAllSelectedItems(Collection<EventParticipantIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoEventParticipantsSelected), 
-					I18nProperties.getString(Strings.messageNoEventParticipantsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventParticipantsSelected),
+				I18nProperties.getString(Strings.messageNoEventParticipantsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()), () -> {
-				for (Object selectedRow : selectedRows) {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()));
-				}
-				callback.run();
-				new Notification(I18nProperties.getString(Strings.headingEventParticipantsDeleted),
-						I18nProperties.getString(Strings.messageEventParticipantsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-			});
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
+				() -> {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getEventParticipantFacade()
+							.deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()));
+					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingEventParticipantsDeleted),
+						I18nProperties.getString(Strings.messageEventParticipantsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
 		}
 	}
-
 }
