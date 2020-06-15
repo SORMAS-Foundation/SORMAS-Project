@@ -17,33 +17,34 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Collections;
+import java.util.Set;
 
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ContactJurisdictionHelper {
 
-	public static boolean isInJurisdiction(RoleCheck roleCheck, UserJurisdiction userJurisdiction, ContactJurisdictionDto contactJurisdiction) {
+	public static boolean isInJurisdiction(Set<UserRole> userRoles, UserJurisdiction userJurisdiction, ContactJurisdictionDto contactJurisdiction) {
 
 		if (contactJurisdiction.getReportingUserUuid() != null
 			&& DataHelper.equal(userJurisdiction.getUuid(), contactJurisdiction.getReportingUserUuid())) {
 			return true;
 		}
 
-		if (contactJurisdiction.getRegionUuid() != null && roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
+		if (contactJurisdiction.getRegionUuid() != null && UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.REGION) {
 			return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
 		}
 
-		if (contactJurisdiction.getDistrictUuid() != null && roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
+		if (contactJurisdiction.getDistrictUuid() != null && UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.DISTRICT) {
 			return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
 		}
 
 		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(roleCheck, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
+			return CaseJurisdictionHelper.isInJurisdiction(userRoles, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
 		}
 
-		return roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER));
+		return UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.NATION;
 	}
 }

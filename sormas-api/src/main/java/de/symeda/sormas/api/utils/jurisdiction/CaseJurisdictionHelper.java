@@ -17,39 +17,40 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Collections;
+import java.util.Set;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseJurisdictionHelper {
 
-	public static Boolean isInJurisdiction(RoleCheck roleCheck, UserJurisdiction userJurisdiction, CaseJurisdictionDto caseJurisdictionDto) {
+	public static Boolean isInJurisdiction(Set<UserRole> userRoles, UserJurisdiction userJurisdiction, CaseJurisdictionDto caseJurisdictionDto) {
 
-		if (roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER))
+		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.NATION
 			|| caseJurisdictionDto.getReportingUserUuid() != null
 				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid())) {
 			return true;
 		}
 
-		if (roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
+		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.REGION) {
 			return DataHelper.equal(caseJurisdictionDto.getRegionUuid(), userJurisdiction.getRegionUuid());
 		}
 
-		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
+		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.DISTRICT) {
 			return DataHelper.equal(caseJurisdictionDto.getDistrictUuid(), userJurisdiction.getDistrictUuid());
 		}
 
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.COMMUNITY_INFORMANT)))) {
+		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.COMMUNITY)) {
 			return DataHelper.equal(caseJurisdictionDto.getCommunityUuid(), userJurisdiction.getCommunityUuid());
 		}
 
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.HOSPITAL_INFORMANT)))) {
+		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.HEALTH_FACILITY)) {
 			return DataHelper.equal(caseJurisdictionDto.getHealthFacilityUuid(), userJurisdiction.getHealthFacilityUuid());
 		}
 
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.POE_INFORMANT)))) {
+		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.POINT_OF_ENTRY)) {
 			return DataHelper.equal(caseJurisdictionDto.getPointOfEntryUuid(), userJurisdiction.getPointOfEntryUuid());
 		}
 

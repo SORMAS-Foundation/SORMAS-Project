@@ -20,19 +20,78 @@ package de.symeda.sormas.api.user;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class UserRoleTest {
 
 	@Test
-	public void checkConsistencyOfCombinableRoles() {
+	public void testUserRolesCombinationValidity() {
 
-		for (UserRole userRole : UserRole.values()) {
-			for (UserRole combinableUserRole : userRole.getCombinableRoles()) {
-				assertThat(
-					combinableUserRole.toString() + " should also have the user role as entry",
-					combinableUserRole.getCombinableRoles(),
-					hasItem(userRole));
+		assertValidRolesCombination(UserRole.ADMIN, UserRole.NATIONAL_USER);
+
+		assertValidRolesCombination(
+			UserRole.ADMIN,
+			UserRole.NATIONAL_USER,
+			UserRole.LAB_USER,
+			UserRole.REST_USER,
+			UserRole.REST_EXTERNAL_VISITS_USER,
+			UserRole.IMPORT_USER);
+
+		assertValidRolesCombination(
+			UserRole.NATIONAL_USER,
+			UserRole.NATIONAL_OBSERVER,
+			UserRole.NATIONAL_CLINICIAN,
+			UserRole.POE_NATIONAL_USER,
+			UserRole.REST_EXTERNAL_VISITS_USER);
+
+		assertValidRolesCombination(
+			UserRole.NATIONAL_USER,
+			UserRole.LAB_USER);
+
+		assertInvalidRolesCombination(
+			UserRole.NATIONAL_USER,
+			UserRole.EXTERNAL_LAB_USER);
+
+		assertValidRolesCombination(
+			UserRole.SURVEILLANCE_SUPERVISOR,
+			UserRole.CASE_SUPERVISOR,
+			UserRole.CONTACT_SUPERVISOR,
+			UserRole.EVENT_OFFICER,
+			UserRole.STATE_OBSERVER,
+			UserRole.POE_SUPERVISOR);
+
+		assertValidRolesCombination(
+			UserRole.SURVEILLANCE_OFFICER,
+			UserRole.CASE_OFFICER,
+			UserRole.CONTACT_OFFICER,
+			UserRole.DISTRICT_OBSERVER);
+		
+		assertValidRolesCombination(UserRole.HOSPITAL_INFORMANT);
+
+		assertValidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.IMPORT_USER);
+
+		assertInvalidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.HOSPITAL_INFORMANT);
+		assertInvalidRolesCombination(UserRole.ADMIN, UserRole.NATIONAL_USER, UserRole.SURVEILLANCE_SUPERVISOR);
+		assertInvalidRolesCombination(UserRole.NATIONAL_USER, UserRole.EVENT_OFFICER);
+	}
+
+	private void assertValidRolesCombination(final UserRole... userRoles) {
+		isValidRolesCombination(true, userRoles);
+	}
+
+	private void assertInvalidRolesCombination(final UserRole... userRoles) {
+		isValidRolesCombination(false, userRoles);
+	}
+
+	private void isValidRolesCombination(final Boolean isValid, final UserRole... userRoles) {
+		try {
+			UserRole.validate(Arrays.asList(userRoles));
+		} catch (UserRole.UserRoleValidationException e) {
+			if (isValid) {
+				Assert.fail(e.getMessage());
 			}
 		}
 	}

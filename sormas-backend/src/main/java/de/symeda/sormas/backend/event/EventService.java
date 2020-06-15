@@ -42,6 +42,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -266,12 +267,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		// National users can access all events in the system
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(
-			UserRole.NATIONAL_USER,
-			UserRole.NATIONAL_CLINICIAN,
-			UserRole.NATIONAL_OBSERVER,
-			UserRole.POE_NATIONAL_USER,
-			UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -281,23 +278,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = null;
 		// allow event access based on user role
-		if (currentUser.hasAnyUserRole(
-			UserRole.SURVEILLANCE_SUPERVISOR,
-			UserRole.CONTACT_SUPERVISOR,
-			UserRole.CASE_SUPERVISOR,
-			UserRole.POE_SUPERVISOR,
-			UserRole.EVENT_OFFICER,
-			UserRole.STATE_OBSERVER) && currentUser.getRegion() != null) {
+		if (jurisdictionLevel == JurisdictionLevel.REGION && currentUser.getRegion() != null) {
 			// supervisors see all events of their region
 			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
 		}
-		if (currentUser.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER, UserRole.CONTACT_OFFICER, UserRole.CASE_OFFICER, UserRole.DISTRICT_OBSERVER)
-			&& currentUser.getDistrict() != null) {
+		if (jurisdictionLevel == JurisdictionLevel.DISTRICT	&& currentUser.getDistrict() != null) {
 			// officers see all events of their district
 			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
 		}
-		if (currentUser
-			.hasAnyUserRole(UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT, UserRole.POE_INFORMANT, UserRole.EXTERNAL_LAB_USER)) {
+		if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY
+			|| jurisdictionLevel == JurisdictionLevel.COMMUNITY
+			|| jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY
+			|| jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			//NOOP
 			// informants don't see events
 		}

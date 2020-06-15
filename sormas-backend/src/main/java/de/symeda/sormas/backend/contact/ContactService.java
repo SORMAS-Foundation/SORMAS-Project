@@ -41,6 +41,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -824,7 +825,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -837,9 +839,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
 
 		// users have access to all contacts in their region/district
-		if (currentUser.getDistrict() != null) {
+		if (jurisdictionLevel == JurisdictionLevel.DISTRICT && currentUser.getDistrict() != null) {
 			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
-		} else if (currentUser.getRegion() != null) {
+		} else if (jurisdictionLevel == JurisdictionLevel.REGION && currentUser.getRegion() != null) {
 			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
 		}
 

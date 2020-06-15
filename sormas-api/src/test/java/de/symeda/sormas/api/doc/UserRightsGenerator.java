@@ -104,6 +104,21 @@ public class UserRightsGenerator {
 			sheet.setColumnWidth(userRole.ordinal() + 2, 256 * 14);
 		}
 
+		// Jurisdiction row (header)
+		final Row jurisdictionRow = sheet.createRow(rowCounter++);
+		final Cell jurisdictionHeadlineCell = jurisdictionRow.createCell(0);
+		jurisdictionHeadlineCell.setCellValue("Jurisdiction");
+		jurisdictionHeadlineCell.setCellStyle(boldStyle);
+		final Cell jurDescHeadlineCell = jurisdictionRow.createCell(1);
+		jurDescHeadlineCell.setCellValue("Jurisdiction of role");
+		jurDescHeadlineCell.setCellStyle(boldStyle);
+		for (UserRole userRole : UserRole.values()) {
+			final String columnCaption = userRole.getJurisdictionLevel().toString();
+			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 2);
+			headerCell.setCellValue(columnCaption);
+			headerCell.setCellStyle(boldStyle);
+		}
+
 		// User right rows
 		for (UserRight userRight : UserRight.values()) {
 			Row row = sheet.createRow(rowCounter++);

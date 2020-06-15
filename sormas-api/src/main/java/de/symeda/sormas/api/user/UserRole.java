@@ -17,11 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -36,29 +33,29 @@ public enum UserRole
 	implements
 	StatisticsGroupingKey {
 
-	ADMIN(false, false, false, false),
-	NATIONAL_USER(false, false, false, false),
-	SURVEILLANCE_SUPERVISOR(true, false, false, false),
-	SURVEILLANCE_OFFICER(false, true, false, false),
-	HOSPITAL_INFORMANT(false, false, true, false),
-	COMMUNITY_INFORMANT(false, false, true, false),
-	CASE_SUPERVISOR(true, false, false, false),
-	CASE_OFFICER(false, true, false, false),
-	CONTACT_SUPERVISOR(true, false, false, false),
-	CONTACT_OFFICER(false, true, false, false),
-	EVENT_OFFICER(true, false, false, false),
-	LAB_USER(false, false, false, false),
-	EXTERNAL_LAB_USER(false, false, false, false),
-	NATIONAL_OBSERVER(false, false, false, false),
-	STATE_OBSERVER(false, false, false, false),
-	DISTRICT_OBSERVER(false, false, false, false),
-	NATIONAL_CLINICIAN(false, false, false, false),
-	POE_INFORMANT(false, false, true, true),
-	POE_SUPERVISOR(true, false, false, true),
-	POE_NATIONAL_USER(false, false, false, true),
-	IMPORT_USER(false, false, false, false),
-	REST_EXTERNAL_VISITS_USER(false, false, false, false),
-	REST_USER(false, false, false, false);
+	ADMIN(false, false, false, false, JurisdictionLevel.NONE),
+	NATIONAL_USER(false, false, false, false, JurisdictionLevel.NATION),
+	SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
+	SURVEILLANCE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
+	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY),
+	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY),
+	CASE_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
+	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
+	CONTACT_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION),
+	CONTACT_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT),
+	EVENT_OFFICER(true, false, false, false, JurisdictionLevel.REGION),
+	LAB_USER(false, false, false, false, JurisdictionLevel.LABORATORY),
+	EXTERNAL_LAB_USER(false, false, false, false, JurisdictionLevel.EXTERNAL_LABORATORY),
+	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION),
+	STATE_OBSERVER(false, false, false, false, JurisdictionLevel.REGION),
+	DISTRICT_OBSERVER(false, false, false, false, JurisdictionLevel.DISTRICT),
+	NATIONAL_CLINICIAN(false, false, false, false, JurisdictionLevel.NATION),
+	POE_INFORMANT(false, false, false, true, JurisdictionLevel.POINT_OF_ENTRY),
+	POE_SUPERVISOR(true, false, false, true, JurisdictionLevel.REGION),
+	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION),
+	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
+	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NONE),
+	REST_USER(false, false, false, false, JurisdictionLevel.NONE);
 
 	/*
 	 * Hint for SonarQube issues:
@@ -89,31 +86,27 @@ public enum UserRole
 	public static final String _REST_EXTERNAL_VISITS_USER = REST_EXTERNAL_VISITS_USER.name();
 	public static final String _REST_USER = REST_USER.name();
 
-	private static final Set<UserRole> NATIONAL_ROLES =
-		EnumSet.of(UserRole.NATIONAL_OBSERVER, UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.POE_NATIONAL_USER);
-
-	private final boolean supervisor;
-	private final boolean officer;
-	private final boolean informant;
-
-	/**
-	 * Whether the user is directly responsible for managing port health cases
-	 */
-	private final boolean portHealthUser;
-
 	private Set<UserRight> defaultUserRights = null;
 
-	private static Set<UserRole> supervisorRoles = null;
-	private static Set<UserRole> officerRoles = null;
-	private static Set<UserRole> informantRoles = null;
-	private static Set<UserRole> portHealthUserRoles = null;
+	private final boolean supervisor;
+	private final boolean hasOptionalHealthFacility;
+	private final boolean hasAssociatedOfficer;
+	private final boolean portHealthUser;
 
-	UserRole(boolean supervisor, boolean officer, boolean informant, boolean portHealthUser) {
+	private final JurisdictionLevel jurisdictionLevel;
+
+	UserRole(
+		boolean supervisor,
+		boolean hasOptionalHealthFacility,
+		boolean hasAssociatedOfficer,
+		boolean portHealthUser,
+		JurisdictionLevel jurisdictionLevel) {
 
 		this.supervisor = supervisor;
-		this.officer = officer;
-		this.informant = informant;
+		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
+		this.hasAssociatedOfficer = hasAssociatedOfficer;
 		this.portHealthUser = portHealthUser;
+		this.jurisdictionLevel = jurisdictionLevel;
 	}
 
 	public String toString() {
@@ -128,20 +121,12 @@ public enum UserRole
 		return supervisor;
 	}
 
-	public boolean isOfficer() {
-		return officer;
-	}
-
-	public boolean isInformant() {
-		return informant;
+	public boolean hasAssociatedOfficer() {
+		return hasAssociatedOfficer;
 	}
 
 	public boolean isPortHealthUser() {
 		return portHealthUser;
-	}
-
-	public boolean isNational() {
-		return NATIONAL_ROLES.contains(this);
 	}
 
 	public Set<UserRight> getDefaultUserRights() {
@@ -238,65 +223,26 @@ public enum UserRole
 		return result;
 	}
 
-	public Collection<UserRole> getCombinableRoles() {
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
 
-		switch (this) {
-		case ADMIN:
-			return Arrays.asList(
-				SURVEILLANCE_SUPERVISOR,
-				CASE_SUPERVISOR,
-				CONTACT_SUPERVISOR,
-				EVENT_OFFICER,
-				LAB_USER,
-				NATIONAL_USER,
-				NATIONAL_OBSERVER,
-				NATIONAL_CLINICIAN,
-				IMPORT_USER);
-		case NATIONAL_USER:
-			return Arrays.asList(LAB_USER, ADMIN, NATIONAL_CLINICIAN, IMPORT_USER);
-		case NATIONAL_OBSERVER:
-			return Arrays.asList(ADMIN, IMPORT_USER);
-		case NATIONAL_CLINICIAN:
-			return Arrays.asList(ADMIN, NATIONAL_USER, IMPORT_USER);
-		case CASE_SUPERVISOR:
-		case CONTACT_SUPERVISOR:
-		case SURVEILLANCE_SUPERVISOR:
-		case EVENT_OFFICER:
-			return Arrays.asList(SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR, EVENT_OFFICER, LAB_USER, ADMIN, IMPORT_USER);
-		case LAB_USER:
-			return Arrays
-				.asList(SURVEILLANCE_SUPERVISOR, CASE_SUPERVISOR, CONTACT_SUPERVISOR, EVENT_OFFICER, LAB_USER, NATIONAL_USER, ADMIN, IMPORT_USER);
-		case SURVEILLANCE_OFFICER:
-		case CASE_OFFICER:
-		case CONTACT_OFFICER:
-			return Arrays.asList(SURVEILLANCE_OFFICER, CASE_OFFICER, CONTACT_OFFICER, IMPORT_USER);
-		case HOSPITAL_INFORMANT:
-			return Arrays.asList(HOSPITAL_INFORMANT, IMPORT_USER);
-		case COMMUNITY_INFORMANT:
-			return Arrays.asList(COMMUNITY_INFORMANT, IMPORT_USER);
-		case EXTERNAL_LAB_USER:
-			return Arrays.asList(EXTERNAL_LAB_USER, IMPORT_USER);
-		case STATE_OBSERVER:
-		case DISTRICT_OBSERVER:
-		case POE_INFORMANT:
-		case POE_SUPERVISOR:
-		case POE_NATIONAL_USER:
-			return Arrays.asList(IMPORT_USER);
-		case IMPORT_USER:
-			final List<UserRole> userRoles = new ArrayList<>();
-			for (UserRole userRole : UserRole.values()) {
-				if (userRole != REST_EXTERNAL_VISITS_USER && userRole != REST_USER) {
-					userRoles.add(userRole);
-				}
+	/**
+	 * Expects the roles have been validated.
+	 * 
+	 * @param roles
+	 * @return
+	 */
+	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
+
+		for (UserRole role : roles) {
+			JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY) {
+				return jurisdictionLevel;
 			}
-			return userRoles;
-		case REST_EXTERNAL_VISITS_USER:
-			return Arrays.asList(REST_EXTERNAL_VISITS_USER);
-		case REST_USER:
-			return Arrays.asList(REST_USER);
-		default:
-			throw new UnsupportedOperationException("getCombinableRoles not implemented for user role: " + this);
 		}
+
+		return JurisdictionLevel.NONE;
 	}
 
 	public static boolean isSupervisor(Collection<UserRole> roles) {
@@ -309,34 +255,20 @@ public enum UserRole
 		return false;
 	}
 
-	public static boolean isOfficer(Collection<UserRole> roles) {
+	public static boolean hasAssociatedOfficer(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
-			if (role.isOfficer()) {
+			if (role.hasAssociatedOfficer()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static boolean isAdmin(Collection<UserRole> roles) {
-		return roles.contains(UserRole.ADMIN);
-	}
-
-	public static boolean isInformant(Collection<UserRole> roles) {
+	public static boolean hasOptionalHealthFacility(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
-			if (role.isInformant()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isNational(Collection<UserRole> roles) {
-
-		for (UserRole role : roles) {
-			if (role.isNational()) {
+			if (role.hasOptionalHealthFacility) {
 				return true;
 			}
 		}
@@ -357,76 +289,18 @@ public enum UserRole
 		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
 
-	public static UserRole getFirstDifferentUserRole(Collection<UserRole> roles, UserRole ignoredUserRole, Collection<UserRole> ignoredRoles) {
-
-		for (UserRole userRole : roles) {
-			if (!ignoredRoles.contains(userRole) && ignoredUserRole != userRole) {
-				return userRole;
-			}
-		}
-		return null;
-	}
-
 	public static void validate(Collection<UserRole> roles) throws UserRoleValidationException {
-
+		UserRole previousCheckedRole = null;
 		for (UserRole userRole : roles) {
-			UserRole forbiddenUserRole = getFirstDifferentUserRole(roles, userRole, userRole.getCombinableRoles());
-			if (forbiddenUserRole != null) {
-				throw new UserRoleValidationException(userRole, forbiddenUserRole);
-			}
-		}
-	}
-
-	public static Set<UserRole> getSupervisorRoles() {
-
-		if (supervisorRoles == null) {
-			supervisorRoles = EnumSet.noneOf(UserRole.class);
-			for (UserRole userRole : values()) {
-				if (userRole.isSupervisor()) {
-					supervisorRoles.add(userRole);
+			final JurisdictionLevel jurisdictionLevel = userRole.getJurisdictionLevel();
+			if (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY) {
+				if (previousCheckedRole != null && previousCheckedRole.getJurisdictionLevel() != jurisdictionLevel) {
+					throw new UserRoleValidationException(userRole, previousCheckedRole);
+				} else {
+					previousCheckedRole = userRole;
 				}
 			}
 		}
-		return supervisorRoles;
-	}
-
-	public static Set<UserRole> getOfficerRoles() {
-
-		if (officerRoles == null) {
-			officerRoles = EnumSet.noneOf(UserRole.class);
-			for (UserRole userRole : values()) {
-				if (userRole.isOfficer()) {
-					officerRoles.add(userRole);
-				}
-			}
-		}
-		return officerRoles;
-	}
-
-	public static Set<UserRole> getInformantRoles() {
-
-		if (informantRoles == null) {
-			informantRoles = EnumSet.noneOf(UserRole.class);
-			for (UserRole userRole : values()) {
-				if (userRole.isInformant()) {
-					informantRoles.add(userRole);
-				}
-			}
-		}
-		return informantRoles;
-	}
-
-	public static Set<UserRole> getPortHealthUserRoles() {
-
-		if (portHealthUserRoles == null) {
-			portHealthUserRoles = EnumSet.noneOf(UserRole.class);
-			for (UserRole userRole : values()) {
-				if (userRole.isPortHealthUser()) {
-					portHealthUserRoles.add(userRole);
-				}
-			}
-		}
-		return portHealthUserRoles;
 	}
 
 	@SuppressWarnings("serial")
