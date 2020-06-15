@@ -81,7 +81,7 @@ public class EventParticipantsController {
 									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
 									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
 									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-									ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());
+									ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid(), doneConsumer);
 								}
 							});
 				}
@@ -95,6 +95,10 @@ public class EventParticipantsController {
 	}
 
 	public void editEventParticipant(String eventParticipantUuid) {
+		editEventParticipant(eventParticipantUuid, null);
+	}
+
+	public void editEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm =
@@ -118,12 +122,14 @@ public class EventParticipantsController {
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
+					if (doneConsumer != null)
+						doneConsumer.accept(null);
 					refreshView();
 				}
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
