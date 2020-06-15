@@ -463,11 +463,14 @@ public class ContactsView extends AbstractView {
 				scrollLayout.setMargin(false);
 
 				DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+				toReferenceDate.setId("toReferenceDateField");
 				LocalDate fromReferenceLocal =
 					DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
 				DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
+				fromReferenceDate.setId("fromReferenceDateField");
 
 				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
+				minusDaysButton.setId("previousDaysButton");
 				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				minusDaysButton.addClickListener(e -> {
 					followUpRangeInterval =
@@ -501,6 +504,7 @@ public class ContactsView extends AbstractView {
 				scrollLayout.addComponent(toReferenceDate);
 
 				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
+				plusDaysButton.setId("nextDaysButton");
 				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
 				plusDaysButton.addClickListener(e -> {
 					followUpRangeInterval =
