@@ -20,8 +20,8 @@
     <string name="age_with_birth_date_format">%1$s %2$s (%3$s)</string>
     <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
     <string name="date_range_format">%1$s - %2$s</string>
-    <string name="due_timeago_format">scaduto %1$s</string>
-    <string name="message_unsynchronized_changes_confirmation">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word %1$s into the text field below to continue.</string>
+    <string name="due_timeago_format">scadenza %1$s</string>
+    <string name="message_unsynchronized_changes_confirmation">Esistono modifiche non sincronizzate sul dispositivo.\nSe si procede, queste andranno perse e non sarà possibile ripristinarle. Digita la parola %1$s nel campo di testo in basso per continuare.</string>
     <string name="number_of_cases_format">%1$s</string>
     <string name="number_of_visits_long_format">%1$d visite (%2$d perse)</string>
     <string name="person_name_format">%1$s %2$s</string>
