@@ -61,4 +61,6 @@ public interface PersonFacade {
 	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
 
 	Boolean isValidPersonUuid(String personUuid);
+
+	String getPIAAccountCreationUrl(PersonDto person);
 }

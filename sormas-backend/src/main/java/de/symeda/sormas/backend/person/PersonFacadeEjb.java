@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventJurisdictionChecker;
@@ -116,6 +117,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private PseudonymizationService pseudonymizationService;
 	@EJB
@@ -295,6 +298,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
+	}
+
+	@Override
+	public String getPIAAccountCreationUrl(PersonDto person) {
+		return configFacade.getPIAUrl() + "#" + "firstname=" + person.getFirstName() + "&lastname=" + person.getLastName() + "&email="
+			+ person.getEmailAddress() + "&uuid=" + person.getUuid() + "&userUuid=" + userService.getCurrentUser().getUuid();
 	}
 
 	/**
