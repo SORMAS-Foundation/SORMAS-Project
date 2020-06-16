@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -54,6 +57,7 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -72,6 +76,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -848,9 +853,14 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), viewMode);
-		epiDataForm.setValue(caze.getEpiData());
 
+		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), viewMode);
+		EpiDataDto dto = caze.getEpiData();
+
+		//default values
+		setDefaultValues(dto);
+
+		epiDataForm.setValue(dto);
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
@@ -867,6 +877,28 @@ public class CaseController {
 		});
 
 		return editView;
+	}
+
+	public void setDefaultValues(EpiDataDto epiDataDto) {
+		if (epiDataDto == null) {
+			return;
+		}
+
+		try {
+			for (PropertyDescriptor pd : Introspector.getBeanInfo(EpiDataDto.class, EntityDto.class).getPropertyDescriptors()) {
+				if (pd.getWriteMethod() != null && (pd.getReadMethod().getReturnType().equals(YesNoUnknown.class))) {
+					try {
+						if (pd.getReadMethod().invoke(epiDataDto) == null)
+							pd.getWriteMethod().invoke(epiDataDto, YesNoUnknown.NO);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public CommitDiscardWrapperComponent<ClinicalCourseForm> getClinicalCourseComponent(String caseUuid, ViewMode viewMode) {
