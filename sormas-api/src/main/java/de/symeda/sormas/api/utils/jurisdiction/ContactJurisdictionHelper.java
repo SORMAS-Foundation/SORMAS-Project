@@ -17,34 +17,49 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Set;
-
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class ContactJurisdictionHelper {
 
-	public static boolean isInJurisdiction(Set<UserRole> userRoles, UserJurisdiction userJurisdiction, ContactJurisdictionDto contactJurisdiction) {
+	public static boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		ContactJurisdictionDto contactJurisdiction) {
 
 		if (contactJurisdiction.getReportingUserUuid() != null
 			&& DataHelper.equal(userJurisdiction.getUuid(), contactJurisdiction.getReportingUserUuid())) {
 			return true;
 		}
 
-		if (contactJurisdiction.getRegionUuid() != null && UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.REGION) {
-			return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
-		}
-
-		if (contactJurisdiction.getDistrictUuid() != null && UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.DISTRICT) {
-			return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
-		}
-
 		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(userRoles, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
+			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
 		}
 
-		return UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.NATION;
+		switch (jurisdictionLevel) {
+		case NONE:
+			return false;
+		case NATION:
+			return true;
+		case REGION:
+			return contactJurisdiction.getRegionUuid() != null
+				&& DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+		case DISTRICT:
+			return contactJurisdiction.getDistrictUuid() != null
+				&& DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+		case COMMUNITY:
+			return false;
+		case HEALTH_FACILITY:
+			return false;
+		case LABORATORY:
+			return false;
+		case EXTERNAL_LABORATORY:
+			return false;
+		case POINT_OF_ENTRY:
+			return false;
+		default:
+			return false;
+		}
 	}
 }

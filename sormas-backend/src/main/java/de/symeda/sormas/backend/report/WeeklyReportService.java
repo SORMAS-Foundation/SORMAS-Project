@@ -170,7 +170,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		User currentUser = getCurrentUser();
 		// National users can access all reports in the system
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
 				|| (jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.POE_NATIONAL_USER))
 				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
@@ -208,7 +208,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 			return usersStream;
 		}
 
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
+		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
 		// National users can access all reports in the system
 		if (jurisdictionLevel == JurisdictionLevel.NATION && !user.hasAnyUserRole(UserRole.POE_NATIONAL_USER)) {
 			return usersStream;

@@ -775,42 +775,54 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
 			filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), currentUser);
 			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
 			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), currentUser));
 
-			// allow case access based on user role
-			if (jurisdictionLevel == JurisdictionLevel.REGION && currentUser.getRegion() != null) {
-				// supervisors see all cases of their region
-				filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), currentUser.getRegion()));
-			}
-			if (jurisdictionLevel == JurisdictionLevel.DISTRICT && currentUser.getDistrict() != null) {
-				// officers see all cases of their district
-				filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), currentUser.getDistrict()));
-			}
-			if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY && currentUser.getHealthFacility() != null) {
-				// hospital informants see all cases of their facility
-				filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), currentUser.getHealthFacility()));
-			}
-			if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && currentUser.getCommunity() != null) {
-				// community informants see all cases of their community
-				filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), currentUser.getCommunity()));
-			}
-			if (jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY && currentUser.getPointOfEntry() != null) {
-				// poe informants see all cases of their point of entry
-				filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
-			}
-			if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
-				// get all cases based on the user's sample association
+			switch (jurisdictionLevel) {
+			case REGION:
+				final Region region = currentUser.getRegion();
+				if (region != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), region));
+				}
+				break;
+			case DISTRICT:
+				final District district = currentUser.getDistrict();
+				if (district != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), district));
+				}
+				break;
+			case HEALTH_FACILITY:
+				final Facility healthFacility = currentUser.getHealthFacility();
+				if (healthFacility != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), healthFacility));
+				}
+				break;
+			case COMMUNITY:
+				final Community community = currentUser.getCommunity();
+				if (community != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), community));
+				}
+				break;
+			case POINT_OF_ENTRY:
+				final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+				if (pointOfEntry != null) {
+					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), pointOfEntry));
+				}
+				break;
+			case LABORATORY:
 				Subquery<Long> sampleCaseSubquery = cq.subquery(Long.class);
 				Root<Sample> sampleRoot = sampleCaseSubquery.from(Sample.class);
 				sampleCaseSubquery.where(sampleService.createUserFilterWithoutCase(cb, new SampleJoins(sampleRoot)));
 				sampleCaseSubquery.select(sampleRoot.get(Sample.ASSOCIATED_CASE).get(Case.ID));
 				filter = or(cb, filter, cb.in(casePath.get(Case.ID)).value(sampleCaseSubquery));
+				break;
+			default:
 			}
+
 
 			// get all cases based on the user's contact association
 			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {

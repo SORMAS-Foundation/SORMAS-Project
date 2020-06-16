@@ -23,6 +23,6 @@ public class ContactJurisdictionChecker {
 
 	public boolean isInJurisdiction(ContactJurisdictionDto contactJurisdiction) {
 		final User user = userService.getCurrentUser();
-		return ContactJurisdictionHelper.isInJurisdiction(user.getUserRoles(), JurisdictionHelper.createUserJurisdiction(user), contactJurisdiction);
+		return ContactJurisdictionHelper.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), contactJurisdiction);
 	}
 }

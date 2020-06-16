@@ -38,6 +38,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -314,5 +315,10 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
+	}
+
+	@Transient
+	public JurisdictionLevel getJurisdictionLevel(){
+		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 }

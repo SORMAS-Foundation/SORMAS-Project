@@ -115,7 +115,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		// National users can access all tasks in the system
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
 				|| (jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.POE_NATIONAL_USER))
 				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {

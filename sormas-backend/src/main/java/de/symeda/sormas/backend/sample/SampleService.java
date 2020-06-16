@@ -295,7 +295,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		//filter = cb.equal(samplePath.get(Sample.REPORTING_USER), user);
 
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		// lab users can see samples assigned to their laboratory
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			if (currentUser.getLaboratory() != null) {

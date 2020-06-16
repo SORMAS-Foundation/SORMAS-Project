@@ -17,43 +17,40 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Set;
-
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseJurisdictionHelper {
 
-	public static Boolean isInJurisdiction(Set<UserRole> userRoles, UserJurisdiction userJurisdiction, CaseJurisdictionDto caseJurisdictionDto) {
+	public static Boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		CaseJurisdictionDto caseJurisdictionDto) {
 
-		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.NATION
-			|| caseJurisdictionDto.getReportingUserUuid() != null
-				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid())) {
-			return true;
-		}
+		switch (jurisdictionLevel) {
 
-		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.REGION) {
+		case NONE:
+			return false;
+		case NATION:
+			return caseJurisdictionDto.getReportingUserUuid() != null
+				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid());
+		case REGION:
 			return DataHelper.equal(caseJurisdictionDto.getRegionUuid(), userJurisdiction.getRegionUuid());
-		}
-
-		if (UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.DISTRICT) {
+		case DISTRICT:
 			return DataHelper.equal(caseJurisdictionDto.getDistrictUuid(), userJurisdiction.getDistrictUuid());
-		}
-
-		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.COMMUNITY)) {
+		case COMMUNITY:
 			return DataHelper.equal(caseJurisdictionDto.getCommunityUuid(), userJurisdiction.getCommunityUuid());
-		}
-
-		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.HEALTH_FACILITY)) {
+		case HEALTH_FACILITY:
 			return DataHelper.equal(caseJurisdictionDto.getHealthFacilityUuid(), userJurisdiction.getHealthFacilityUuid());
-		}
-
-		if ((UserRole.getJurisdictionLevel(userRoles) == JurisdictionLevel.POINT_OF_ENTRY)) {
+		case LABORATORY:
+			return false;
+		case EXTERNAL_LABORATORY:
+			return false;
+		case POINT_OF_ENTRY:
 			return DataHelper.equal(caseJurisdictionDto.getPointOfEntryUuid(), userJurisdiction.getPointOfEntryUuid());
+		default:
+			return false;
 		}
-
-		return false;
 	}
 }
