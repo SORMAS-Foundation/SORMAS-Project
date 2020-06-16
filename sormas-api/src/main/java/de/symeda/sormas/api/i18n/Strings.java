@@ -300,6 +300,7 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
+	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";

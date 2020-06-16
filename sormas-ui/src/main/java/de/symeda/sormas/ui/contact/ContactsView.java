@@ -593,6 +593,9 @@ public class ContactsView extends AbstractView {
 		if (ContactsViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			((ContactFollowUpGrid) grid).reload();
 		} else {
+			if (viewConfiguration.isInEagerMode()) {
+				((AbstractContactGrid<?>) grid).setEagerDataProvider();
+			}
 			((AbstractContactGrid<?>) grid).reload();
 		}
 	}

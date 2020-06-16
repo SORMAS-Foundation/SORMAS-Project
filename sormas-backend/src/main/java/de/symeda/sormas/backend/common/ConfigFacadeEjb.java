@@ -24,6 +24,8 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
+
+	public static final String INTERFACE_PIA_URL = "interface.pia.url";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
@@ -277,6 +281,29 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingOsgtsEndpoint() {
 		return getProperty(GEOCODING_OSGTS_ENDPOINT, null);
+	}
+
+	@Override
+	public String getPIAUrl() {
+		return getProperty(INTERFACE_PIA_URL, null);
+	}
+
+	@Override
+	public void validateExternalUrls() {
+
+		String piaUrl = getPIAUrl();
+
+		if (StringUtils.isBlank(piaUrl)) {
+			return;
+		}
+
+		// Must be a valid URL
+		if (!new UrlValidator(
+			new String[] {
+				"http",
+				"https" }).isValid(piaUrl)) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_PIA_URL + "' is not a valid URL");
+		}
 	}
 
 	@Override
