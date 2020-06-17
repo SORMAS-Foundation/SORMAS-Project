@@ -27,13 +27,13 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.ParentAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 
 @Entity(name = ClinicalVisit.TABLE_NAME)
 @DatabaseTable(tableName = ClinicalVisit.TABLE_NAME)
-public class ClinicalVisit extends AbstractDomainObject {
+public class ClinicalVisit extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -8220449896773019721L;
 

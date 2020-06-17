@@ -70,6 +70,8 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -90,6 +92,8 @@ public class PrescriptionDtoHelper extends AdoDtoHelper<Prescription, Prescripti
 		target.setRoute(source.getRoute());
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static PrescriptionReferenceDto toReferenceDto(Prescription ado) {

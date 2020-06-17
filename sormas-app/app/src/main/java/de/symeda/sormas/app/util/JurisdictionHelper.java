@@ -1,8 +1,11 @@
 package de.symeda.sormas.app.util;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.user.User;
 
 public class JurisdictionHelper {
@@ -54,6 +57,30 @@ public class JurisdictionHelper {
 		}
 		if (caze.getPointOfEntry() != null) {
 			dto.setPointOfEntryUuid(caze.getPointOfEntry().getUuid());
+		}
+
+		return dto;
+	}
+
+	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+		if (contact == null) {
+			return null;
+		}
+		ContactJurisdictionDto dto = new ContactJurisdictionDto();
+
+		if (contact.getReportingUser() != null) {
+			dto.setReportingUserUuid(contact.getReportingUser().getUuid());
+		}
+		if (contact.getRegion() != null) {
+			dto.setRegionUuid(contact.getRegion().getUuid());
+		}
+		if (contact.getDistrict() != null) {
+			dto.setDistrictUuid(contact.getDistrict().getUuid());
+		}
+
+		if (contact.getCaseUuid() != null) {
+			Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+			JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
 		}
 
 		return dto;

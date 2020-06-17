@@ -28,7 +28,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.user.User;
@@ -36,7 +36,7 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name = Visit.TABLE_NAME)
 @DatabaseTable(tableName = Visit.TABLE_NAME)
-public class Visit extends AbstractDomainObject {
+public class Visit extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "visits";
 	public static final String I18N_PREFIX = "Visit";
@@ -58,7 +58,7 @@ public class Visit extends AbstractDomainObject {
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
 	private Date visitDateTime;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3, canBeNull = false)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private User visitUser;
 
 	@Enumerated(EnumType.STRING)

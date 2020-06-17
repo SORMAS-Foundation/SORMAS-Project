@@ -25,11 +25,13 @@ import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.therapy.Prescription;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -47,7 +49,12 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 	// Static methods
 
 	public static PrescriptionEditFragment newInstance(Prescription activityRootData) {
-		return newInstance(PrescriptionEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			PrescriptionEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(!activityRootData.isPseudonymized())));
 	}
 
 	// Instance methods
@@ -105,6 +112,7 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 
 	@Override
 	public void onAfterLayoutBinding(FragmentPrescriptionEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(PrescriptionDto.class, contentBinding.mainContent);
 		setUpFieldVisibilities(contentBinding);
 
 		// Initialize fields

@@ -68,6 +68,8 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
 		target.setRouteDetails(source.getRouteDetails());
 		target.setAdditionalNotes(source.getAdditionalNotes());
 		target.setPrescription(DatabaseHelper.getPrescriptionDao().getByReferenceDto(source.getPrescription()));
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -89,5 +91,7 @@ public class TreatmentDtoHelper extends AdoDtoHelper<Treatment, TreatmentDto> {
 			Prescription prescription = DatabaseHelper.getPrescriptionDao().queryForId(source.getTherapy().getId());
 			target.setPrescription(PrescriptionDtoHelper.toReferenceDto(prescription));
 		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

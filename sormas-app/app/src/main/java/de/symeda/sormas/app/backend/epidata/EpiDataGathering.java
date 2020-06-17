@@ -24,8 +24,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
@@ -36,7 +36,7 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 @Entity(name = EpiDataGathering.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataGathering.TABLE_NAME)
 @EmbeddedAdo(parentAccessor = EpiDataGathering.EPI_DATA)
-public class EpiDataGathering extends AbstractDomainObject {
+public class EpiDataGathering extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 5491651166245301869L;
 

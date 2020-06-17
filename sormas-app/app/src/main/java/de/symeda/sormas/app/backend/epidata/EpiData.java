@@ -32,8 +32,8 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 
 /**
  * Created by Mate Strysewske on 08.03.2017.
@@ -42,7 +42,7 @@ import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 @Entity(name = EpiData.TABLE_NAME)
 @DatabaseTable(tableName = EpiData.TABLE_NAME)
 @EmbeddedAdo
-public class EpiData extends AbstractDomainObject {
+public class EpiData extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -8294812479501735785L;
 

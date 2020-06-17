@@ -29,14 +29,14 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name = PathogenTest.TABLE_NAME)
 @DatabaseTable(tableName = PathogenTest.TABLE_NAME)
-public class PathogenTest extends AbstractDomainObject {
+public class PathogenTest extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 2290351143518627813L;
 

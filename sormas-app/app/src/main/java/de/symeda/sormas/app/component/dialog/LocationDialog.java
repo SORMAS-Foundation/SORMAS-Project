@@ -35,17 +35,15 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
-public class LocationDialog extends AbstractDialog {
+public class LocationDialog extends FormDialog {
 
 	public static final String TAG = LocationDialog.class.getSimpleName();
 
 	private Location data;
 	private DialogLocationLayoutBinding contentBinding;
-	private FieldAccessCheckers fieldAccessCheckers;
 
 	// Constructor
 
@@ -56,10 +54,10 @@ public class LocationDialog extends AbstractDialog {
 			R.layout.dialog_location_layout,
 			R.layout.dialog_root_two_button_panel_layout,
 			R.string.heading_location,
-			-1);
+			-1,
+			fieldAccessCheckers);
 
 		this.data = location;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	// Overrides
@@ -89,8 +87,8 @@ public class LocationDialog extends AbstractDialog {
 			initialCommunities,
 			data.getCommunity());
 
-		FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent, null, fieldAccessCheckers);
-		if (!FieldVisibilityAndAccessHelper.isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY, fieldAccessCheckers)) {
+		setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent);
+		if (!isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY)) {
 			this.contentBinding.locationRegion.setEnabled(false);
 			this.contentBinding.locationDistrict.setEnabled(false);
 		}

@@ -23,13 +23,13 @@ import javax.persistence.Enumerated;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 
 @Entity(name = HealthConditions.TABLE_NAME)
 @DatabaseTable(tableName = HealthConditions.TABLE_NAME)
 @EmbeddedAdo
-public class HealthConditions extends AbstractDomainObject {
+public class HealthConditions extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -6688718889862479948L;
 

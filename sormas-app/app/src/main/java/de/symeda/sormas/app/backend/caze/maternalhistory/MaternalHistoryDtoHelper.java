@@ -82,6 +82,8 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 		target.setOtherComplicationsOnset(source.getOtherComplicationsOnset());
 		target.setOtherComplicationsMonth(source.getOtherComplicationsMonth());
 		target.setOtherComplicationsDetails(source.getOtherComplicationsDetails());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -129,5 +131,7 @@ public class MaternalHistoryDtoHelper extends AdoDtoHelper<MaternalHistory, Mate
 		target.setOtherComplicationsOnset(source.getOtherComplicationsOnset());
 		target.setOtherComplicationsMonth(source.getOtherComplicationsMonth());
 		target.setOtherComplicationsDetails(source.getOtherComplicationsDetails());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

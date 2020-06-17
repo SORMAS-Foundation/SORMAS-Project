@@ -71,6 +71,8 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
 		target.setGatheringAddress(locationHelper.fillOrCreateFromDto(target.getGatheringAddress(), source.getGatheringAddress()));
 		target.setDescription(source.getDescription());
 		target.setGatheringDate(source.getGatheringDate());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -81,5 +83,7 @@ public class EpiDataGatheringDtoHelper extends AdoDtoHelper<EpiDataGathering, Ep
 
 		a.setDescription(b.getDescription());
 		a.setGatheringDate(b.getGatheringDate());
+
+		a.setPseudonymized(b.isPseudonymized());
 	}
 }

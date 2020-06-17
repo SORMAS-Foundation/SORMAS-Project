@@ -12,8 +12,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -21,7 +21,7 @@ import de.symeda.sormas.app.backend.region.Region;
 @Entity(name = MaternalHistory.TABLE_NAME)
 @DatabaseTable(tableName = MaternalHistory.TABLE_NAME)
 @EmbeddedAdo
-public class MaternalHistory extends AbstractDomainObject {
+public class MaternalHistory extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -5534360436146186436L;
 

@@ -66,6 +66,8 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
 		target.setTravelDestination(source.getTravelDestination());
 		target.setTravelDateFrom(source.getTravelDateFrom());
 		target.setTravelDateTo(source.getTravelDateTo());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -75,5 +77,7 @@ public class EpiDataTravelDtoHelper extends AdoDtoHelper<EpiDataTravel, EpiDataT
 		a.setTravelDestination(b.getTravelDestination());
 		a.setTravelDateFrom(b.getTravelDateFrom());
 		a.setTravelDateTo(b.getTravelDateTo());
+
+		a.setPseudonymized(b.isPseudonymized());
 	}
 }

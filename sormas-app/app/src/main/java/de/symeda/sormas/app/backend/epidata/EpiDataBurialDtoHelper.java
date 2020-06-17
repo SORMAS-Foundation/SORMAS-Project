@@ -75,6 +75,8 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 		target.setBurialRelation(source.getBurialRelation());
 		target.setBurialIll(source.getBurialIll());
 		target.setBurialTouching(source.getBurialTouching());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -93,5 +95,7 @@ public class EpiDataBurialDtoHelper extends AdoDtoHelper<EpiDataBurial, EpiDataB
 		a.setBurialRelation(b.getBurialRelation());
 		a.setBurialIll(b.getBurialIll());
 		a.setBurialTouching(b.getBurialTouching());
+
+		a.setPseudonymized(b.isPseudonymized());
 	}
 }

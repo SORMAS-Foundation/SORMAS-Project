@@ -30,13 +30,13 @@ import de.symeda.sormas.api.symptoms.CongenitalHeartDiseaseType;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 
 @Entity(name = Symptoms.TABLE_NAME)
 @DatabaseTable(tableName = Symptoms.TABLE_NAME)
 @EmbeddedAdo
-public class Symptoms extends AbstractDomainObject {
+public class Symptoms extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 392886645668778670L;
 

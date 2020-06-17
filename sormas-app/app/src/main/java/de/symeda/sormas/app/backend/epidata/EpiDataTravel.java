@@ -27,8 +27,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.epidata.TravelType;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 /**
@@ -38,7 +38,7 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 @Entity(name = EpiDataTravel.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataTravel.TABLE_NAME)
 @EmbeddedAdo(parentAccessor = EpiDataTravel.EPI_DATA)
-public class EpiDataTravel extends AbstractDomainObject {
+public class EpiDataTravel extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -4280455878066233175L;
 

@@ -120,6 +120,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -210,6 +212,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

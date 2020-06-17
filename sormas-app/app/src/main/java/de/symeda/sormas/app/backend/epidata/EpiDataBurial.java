@@ -27,8 +27,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
@@ -39,7 +39,7 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 @Entity(name = EpiDataBurial.TABLE_NAME)
 @DatabaseTable(tableName = EpiDataBurial.TABLE_NAME)
 @EmbeddedAdo(parentAccessor = EpiDataBurial.EPI_DATA)
-public class EpiDataBurial extends AbstractDomainObject {
+public class EpiDataBurial extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 866789458483672591L;
 

@@ -29,12 +29,12 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.ParentAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 
 @Entity(name = Prescription.TABLE_NAME)
 @DatabaseTable(tableName = Prescription.TABLE_NAME)
-public class Prescription extends AbstractDomainObject {
+public class Prescription extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -5028702472324192079L;
 

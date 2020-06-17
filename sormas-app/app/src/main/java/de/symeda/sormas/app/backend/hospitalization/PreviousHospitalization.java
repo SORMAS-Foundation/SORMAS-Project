@@ -27,8 +27,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
@@ -42,7 +42,7 @@ import de.symeda.sormas.app.util.DateFormatHelper;
 @Entity(name = PreviousHospitalization.TABLE_NAME)
 @DatabaseTable(tableName = PreviousHospitalization.TABLE_NAME)
 @EmbeddedAdo(parentAccessor = PreviousHospitalization.HOSPITALIZATION)
-public class PreviousHospitalization extends AbstractDomainObject {
+public class PreviousHospitalization extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 768263094433806267L;
 

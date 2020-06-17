@@ -74,6 +74,8 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		target.setLab(DatabaseHelper.getFacilityDao().getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setLabUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getLabUser()));
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -111,5 +113,7 @@ public class PathogenTestDtoHelper extends AdoDtoHelper<PathogenTest, PathogenTe
 		} else {
 			target.setLabUser(null);
 		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

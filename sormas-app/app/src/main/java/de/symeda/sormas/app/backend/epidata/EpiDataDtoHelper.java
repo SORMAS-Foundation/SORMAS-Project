@@ -165,6 +165,8 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 			}
 		}
 		target.setTravels(travels);
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -259,5 +261,7 @@ public class EpiDataDtoHelper extends AdoDtoHelper<EpiData, EpiDataDto> {
 			}
 		}
 		target.setTravels(travelDtos);
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }
