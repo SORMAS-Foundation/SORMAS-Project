@@ -114,6 +114,7 @@ public class SampleGridComponent extends VerticalLayout {
 				
 				//open sample if it's the only one
 				if (criteria.getCaseCodeIdLike() != null && criteria.getCaseCodeIdLike().length() > 0 && grid.getItemCount() == 1) {
+					criteria.setCaseCodeIdLike(null);
 					ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
 				}
 			}
