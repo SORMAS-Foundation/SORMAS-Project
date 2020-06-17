@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.action;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -25,10 +26,14 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.action.ActionStatEntry;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.event.Event;
@@ -45,6 +50,42 @@ public class ActionService extends AbstractAdoService<Action> {
 
 	public ActionService() {
 		super(Action.class);
+	}
+
+	public List<Action> getAllActionsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
+		Root<Action> from = cq.from(getElementClass());
+		Predicate filter = null;
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
+		}
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			filter = AbstractAdoService.and(cb, filter, dateFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.orderBy(cb.desc(from.get(Action.CHANGE_DATE)));
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllUuids(User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Action> from = cq.from(getElementClass());
+
+		if (user != null) {
+			cq.where(createUserFilter(cb, cq, from));
+		}
+
+		cq.select(from.get(Action.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Action> getAllByEvent(Event event) {

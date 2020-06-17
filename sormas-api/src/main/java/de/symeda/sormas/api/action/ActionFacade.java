@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.action;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.ejb.Remote;
 
 @Remote
@@ -27,4 +30,10 @@ public interface ActionFacade {
 	ActionDto getByUuid(String uuid);
 
 	void deleteAction(ActionDto ActionDto);
+
+	List<ActionDto> getAllActionsAfter(Date date);
+
+	List<ActionDto> getByUuids(List<String> uuids);
+
+	List<String> getAllUuids();
 }
