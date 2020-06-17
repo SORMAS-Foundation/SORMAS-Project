@@ -20,17 +20,10 @@ package de.symeda.sormas.ui.contact;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -457,32 +450,7 @@ public class ContactController {
 	}
 
 	public void openPIAAccountCreationWindow(PersonDto person) {
-		StringBuilder urlBuilder = new StringBuilder();
-		urlBuilder.append(FacadeProvider.getConfigFacade().getPIAUrl())
-			.append("#")
-			.append("firstname=")
-			.append(person.getFirstName())
-			.append("&lastname=")
-			.append(person.getLastName())
-			.append("&email=")
-			.append(person.getEmailAddress())
-			.append("&uuid=")
-			.append(person.getUuid());
-
-		// Retrieve the URL of the SORMAS server
-		VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
-		HttpServletRequest httpServletRequest = ((VaadinServletRequest) vaadinRequest).getHttpServletRequest();
-		String serverUrl = httpServletRequest.getRequestURL().toString();
-		String requestUri = httpServletRequest.getRequestURI();
-
-		if (StringUtils.isNotBlank(requestUri)) {
-			serverUrl = serverUrl.substring(0, serverUrl.lastIndexOf(requestUri));
-		}
-
-		urlBuilder.append("&url=");
-		urlBuilder.append(serverUrl);
-
-		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(urlBuilder.toString()));
+		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(FacadeProvider.getPersonFacade().getPIAAccountCreationUrl(person)));
 		piaIFrame.setWidth("800px");
 		piaIFrame.setHeight("600px");
 

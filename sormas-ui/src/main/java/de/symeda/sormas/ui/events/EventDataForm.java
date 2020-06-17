@@ -17,6 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Arrays;
+import java.util.List;
+
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
@@ -25,8 +33,8 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -42,34 +50,30 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.MaxLengthValidator;
-import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String EVENT_DATA_HEADING_LOC = "contactDataHeadingLoc";
+	private static final String INFORMATION_SOURCE_HEADING_LOC = "followUpStatusHeadingLoc";
+	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
+
 	private static final String STATUS_CHANGE = "statusChange";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT = 
-			h3(I18nProperties.getString(Strings.headingEventData)) +
+	private static final String HTML_LAYOUT =
+			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
 			fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.EVENT_DESC) + 
-			
-			h3(I18nProperties.getString(Strings.headingInformationSource)) +
+			fluidRowLocs(EventDto.EVENT_DESC) +
+					
+			loc(INFORMATION_SOURCE_HEADING_LOC) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
-			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + 
-			
-			h3(I18nProperties.getString(Strings.headingLocation)) +
+			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
+
+			loc(LOCATION_HEADING_LOC) +
 			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
@@ -98,6 +102,18 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		if (isCreateForm == null) {
 			return;
 		}
+
+		Label eventDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingEventData));
+		eventDataHeadingLabel.addStyleName(H3);
+		getContent().addComponent(eventDataHeadingLabel, EVENT_DATA_HEADING_LOC);
+
+		Label informationSourceHeadingLabel = new Label(I18nProperties.getString(Strings.headingInformationSource));
+		informationSourceHeadingLabel.addStyleName(H3);
+		getContent().addComponent(informationSourceHeadingLabel, INFORMATION_SOURCE_HEADING_LOC);
+
+		Label locationHeadingLabel = new Label(I18nProperties.getString(Strings.headingLocation));
+		locationHeadingLabel.addStyleName(H3);
+		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
 
 		addField(EventDto.UUID, TextField.class);
 		addDiseaseField(EventDto.DISEASE, false);
