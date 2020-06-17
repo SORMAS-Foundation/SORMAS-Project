@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.events;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
@@ -11,9 +12,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -83,7 +86,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateFrom));
 		weekAndDateFilter.getDateToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventDateTo));
 
-		applyButton.setVisible(false);
 		applyButton.addClickListener(e -> {
 			EventCriteria criteria = getValue();
 
@@ -132,6 +134,18 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		dateFilterRowLayout.addComponent(applyButton);
 
 		return dateFilterRowLayout;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
+
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		@SuppressWarnings("unchecked")
+		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter =
+			(EpiWeekAndDateFilterComponent<NewCaseDateType>) dateFilterLayout.getComponent(0);
+
+		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
 	@Override
