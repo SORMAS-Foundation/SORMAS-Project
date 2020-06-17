@@ -181,8 +181,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
-		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY || useHealthFacility || usePointOfEntry;
-		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity;
+		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
+		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);

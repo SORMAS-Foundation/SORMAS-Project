@@ -210,7 +210,7 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 
 		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
 		// National users can access all reports in the system
-		if (jurisdictionLevel == JurisdictionLevel.NATION && !user.hasAnyUserRole(UserRole.POE_NATIONAL_USER)) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(user.getUserRoles())) {
 			return usersStream;
 		}
 
