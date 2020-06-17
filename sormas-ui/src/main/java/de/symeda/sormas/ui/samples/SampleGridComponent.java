@@ -225,6 +225,7 @@ public class SampleGridComponent extends VerticalLayout {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+			criteria.setCaseCodeIdLike(null);
 		}
 		updateFilterComponents();
 		grid.reload();
