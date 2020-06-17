@@ -111,6 +111,11 @@ public class SampleGridComponent extends VerticalLayout {
 			if (!samplesView.navigateTo(criteria, false)) {
 				filterForm.updateResetButtonState();
 				grid.reload();
+				
+				//open sample if it's the only one
+				if (criteria.getCaseCodeIdLike() != null && criteria.getCaseCodeIdLike().length() > 0 && grid.getItemCount() == 1) {
+					ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
+				}
 			}
 		});
 		filterForm.addResetHandler(e -> {
