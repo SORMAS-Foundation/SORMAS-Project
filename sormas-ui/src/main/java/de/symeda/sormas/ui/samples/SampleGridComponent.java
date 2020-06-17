@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -108,14 +109,14 @@ public class SampleGridComponent extends VerticalLayout {
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
+						
+			if (!DataHelper.isNullOrEmpty(criteria.getCaseCodeIdLike()) || !samplesView.navigateTo(criteria, false)) {
 				filterForm.updateResetButtonState();
 				grid.reload();
 				
-				//open sample if it's the only one
-				if (criteria.getCaseCodeIdLike() != null && criteria.getCaseCodeIdLike().length() > 0 && grid.getItemCount() == 1) {
-					criteria.setCaseCodeIdLike(null);
-					ControllerProvider.getSampleController().navigateToData(grid.getFirstItem().getUuid());
+				if (grid.getItemCount() == 1) {
+					String sampleUuid = grid.getFirstItem().getUuid();
+					ControllerProvider.getSampleController().navigateToData(sampleUuid);
 				}
 			}
 		});
