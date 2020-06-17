@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collections;
 import java.util.function.Consumer;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
