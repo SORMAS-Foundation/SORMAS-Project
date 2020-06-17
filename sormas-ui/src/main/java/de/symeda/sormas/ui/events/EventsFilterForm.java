@@ -149,6 +149,26 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	}
 
 	@Override
+	protected void applyDependenciesOnNewValue(EventCriteria criteria) {
+
+		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter;
+		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
+
+		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
+		Date sampleDateFrom = criteria.getEventDateFrom();
+		Date sampleDateTo = criteria.getEventDateTo();
+
+		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
+			weekAndDateFilter.getWeekFromFilter().setValue(sampleDateFrom == null ? null : DateHelper.getEpiWeek(sampleDateFrom));
+			weekAndDateFilter.getWeekToFilter().setValue(sampleDateTo == null ? null : DateHelper.getEpiWeek(sampleDateTo));
+		} else {
+			weekAndDateFilter.getDateFromFilter().setValue(sampleDateFrom);
+			weekAndDateFilter.getDateToFilter().setValue(sampleDateTo);
+		}
+	}
+
+	@Override
 	protected String createMoreFiltersHtmlLayout() {
 		return MORE_FILTERS_HTML_LAYOUT;
 	}

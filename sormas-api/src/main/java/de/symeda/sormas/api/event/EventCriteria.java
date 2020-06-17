@@ -177,6 +177,15 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return eventDateTo;
 	}
 
+	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
 	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
 		this.surveillanceOfficer = surveillanceOfficer;
 		return this;
