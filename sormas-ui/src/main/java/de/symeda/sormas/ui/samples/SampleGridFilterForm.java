@@ -115,12 +115,10 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(SampleCriteria.CASE_CODE_ID_LIKE, I18nProperties.getString(Strings.promptSamplesSearchField), 200));
 		searchField.setNullRepresentation("");
-
 	}
 
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
-
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
@@ -180,6 +178,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 		dateFilterRowLayout.addComponent(weekAndDateFilter);
 		dateFilterRowLayout.addComponent(applyButton);
+
+		dateFilterRowLayout.addStyleName("wrap");
 
 		return dateFilterRowLayout;
 	}
