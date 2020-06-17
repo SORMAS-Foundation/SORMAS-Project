@@ -1,11 +1,12 @@
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h4;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
@@ -22,13 +23,15 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 
 	private static final long serialVersionUID = 7231529309871021783L;
 
+	private static final String BLOOD_GAS_HEADING_LOC = "bloodGasHeadingLoc";
+
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			fluidRowLocs(AdditionalTestDto.TEST_DATE_TIME, "") +
 			fluidRowLocs(AdditionalTestDto.HAEMOGLOBINURIA, AdditionalTestDto.PROTEINURIA) +
 			fluidRowLocs(AdditionalTestDto.HEMATURIA, "") +
-			
-			h4(I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS)) +
+					
+			loc(BLOOD_GAS_HEADING_LOC) +
 			fluidRowLocs(AdditionalTestDto.ARTERIAL_VENOUS_GAS_PH, AdditionalTestDto.ARTERIAL_VENOUS_GAS_PCO2,
 					AdditionalTestDto.ARTERIAL_VENOUS_GAS_PAO2, AdditionalTestDto.ARTERIAL_VENOUS_GAS_HCO3) +
 			fluidRowLocs(AdditionalTestDto.GAS_OXYGEN_THERAPY, "") +
@@ -60,6 +63,11 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 		if (sample == null) {
 			return;
 		}
+
+		Label bloodGasHeadingLabel =
+			new Label(I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, AdditionalTestDto.ARTERIAL_VENOUS_BLOOD_GAS));
+		bloodGasHeadingLabel.addStyleName(H4);
+		getContent().addComponent(bloodGasHeadingLabel, BLOOD_GAS_HEADING_LOC);
 
 		DateTimeField testDateTimeField = addField(AdditionalTestDto.TEST_DATE_TIME, DateTimeField.class);
 		testDateTimeField.setRequired(true);

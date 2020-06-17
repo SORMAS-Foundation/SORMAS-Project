@@ -1,8 +1,10 @@
 package de.symeda.sormas.ui.campaign;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextArea;
@@ -21,8 +23,9 @@ public class CampaignDataForm extends AbstractEditForm<CampaignDto> {
 	private static final long serialVersionUID = 7762204114905664597L;
 
 	private static final String STATUS_CHANGE = "statusChange";
+	private static final String CAMPAIGN_DATA_HEADING_LOC = "campaignDataHeadingLoc";
 
-	private static final String HTML_LAYOUT = h3(I18nProperties.getString(Strings.headingCampaignData))
+	private static final String HTML_LAYOUT = loc(CAMPAIGN_DATA_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.NAME)
@@ -53,6 +56,10 @@ public class CampaignDataForm extends AbstractEditForm<CampaignDto> {
 		if (isCreateForm == null) {
 			return;
 		}
+
+		Label campaignDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignData));
+		campaignDataHeadingLabel.addStyleName(H3);
+		getContent().addComponent(campaignDataHeadingLabel, CAMPAIGN_DATA_HEADING_LOC);
 
 		addField(CampaignDto.UUID, TextField.class);
 		addField(CampaignDto.CREATING_USER);
