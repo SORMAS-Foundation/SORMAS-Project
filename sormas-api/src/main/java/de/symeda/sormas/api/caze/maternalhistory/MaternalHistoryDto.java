@@ -2,7 +2,6 @@ package de.symeda.sormas.api.caze.maternalhistory;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -70,6 +69,7 @@ public class MaternalHistoryDto extends PseudonymizableDto {
 	private Integer rashExposureMonth;
 	private RegionReferenceDto rashExposureRegion;
 	private DistrictReferenceDto rashExposureDistrict;
+	@SensitiveData
 	private CommunityReferenceDto rashExposureCommunity;
 
 	public static MaternalHistoryDto build() {
