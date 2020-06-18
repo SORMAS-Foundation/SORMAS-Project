@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertThat;
-
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -56,6 +53,10 @@ public class UserRoleTest {
 			UserRole.LAB_USER);
 
 		assertInvalidRolesCombination(
+			UserRole.LAB_USER,
+			UserRole.EXTERNAL_LAB_USER);
+
+		assertInvalidRolesCombination(
 			UserRole.NATIONAL_USER,
 			UserRole.EXTERNAL_LAB_USER);
 
@@ -80,6 +81,23 @@ public class UserRoleTest {
 		assertInvalidRolesCombination(UserRole.COMMUNITY_INFORMANT, UserRole.HOSPITAL_INFORMANT);
 		assertInvalidRolesCombination(UserRole.ADMIN, UserRole.NATIONAL_USER, UserRole.SURVEILLANCE_SUPERVISOR);
 		assertInvalidRolesCombination(UserRole.NATIONAL_USER, UserRole.EVENT_OFFICER);
+	}
+
+	@Test
+	public void testUserRolesJurisdiction(){
+
+		assertJurisdictionForRoles(JurisdictionLevel.NONE, UserRole.ADMIN, UserRole.REST_USER);
+		assertJurisdictionForRoles(JurisdictionLevel.NATION, UserRole.ADMIN, UserRole.REST_USER, UserRole.NATIONAL_CLINICIAN);
+		assertJurisdictionForRoles(JurisdictionLevel.DISTRICT, UserRole.ADMIN, UserRole.REST_USER, UserRole.DISTRICT_OBSERVER);
+		assertJurisdictionForRoles(JurisdictionLevel.NATION, UserRole.NATIONAL_USER, UserRole.LAB_USER);
+		assertJurisdictionForRoles(JurisdictionLevel.REGION, UserRole.CASE_SUPERVISOR);
+		assertJurisdictionForRoles(JurisdictionLevel.LABORATORY, UserRole.LAB_USER);
+		assertJurisdictionForRoles(JurisdictionLevel.LABORATORY, UserRole.ADMIN, UserRole.LAB_USER);
+	}
+
+
+	private void assertJurisdictionForRoles(final JurisdictionLevel jurisdictionLevel, final UserRole... userRoles) {
+		Assert.assertEquals(jurisdictionLevel, UserRole.getJurisdictionLevel(Arrays.asList(userRoles)));
 	}
 
 	private void assertValidRolesCombination(final UserRole... userRoles) {

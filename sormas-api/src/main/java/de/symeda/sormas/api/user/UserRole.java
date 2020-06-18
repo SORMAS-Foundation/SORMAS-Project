@@ -235,14 +235,17 @@ public enum UserRole
 	 */
 	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
 
+		boolean laboratoryJurisdictionPresent = false;
 		for (UserRole role : roles) {
 			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
 			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
 				return jurisdictionLevel;
+			} else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
+				laboratoryJurisdictionPresent = true;
 			}
 		}
 
-		return JurisdictionLevel.NONE;
+		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
 	public static boolean isSupervisor(Collection<UserRole> roles) {
