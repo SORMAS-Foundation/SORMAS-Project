@@ -45,14 +45,11 @@
       	<dependency>
 			<groupId>javax.security.enterprise</groupId>
 			<artifactId>javax.security.enterprise-api</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
-			<version>2.1.2</version>
 		</dependency>
 
 	</dependencies>
@@ -65,7 +62,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.5</version>
 				<configuration>
 					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
 					<webResources>
@@ -90,7 +86,6 @@
 			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
-				<version>2.1.2</version>
 				<configuration>
 					<!-- Swagger Generation Config -->
 					<resourcePackages>
@@ -115,13 +110,6 @@
 						</servers>
 					</swaggerConfig>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
