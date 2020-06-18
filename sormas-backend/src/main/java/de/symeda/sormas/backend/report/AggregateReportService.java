@@ -13,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.AggregateReportCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
@@ -83,8 +84,10 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from) {
 
 		User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
-			|| currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
+			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -93,9 +96,7 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		// Allow access based on user role
-		if (currentUser
-			.hasAnyUserRole(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.STATE_OBSERVER)
-			&& currentUser.getRegion() != null) {
+		if (jurisdictionLevel == JurisdictionLevel.REGION && currentUser.getRegion() != null) {
 			// Supervisors see all reports from their region
 			filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
 		}

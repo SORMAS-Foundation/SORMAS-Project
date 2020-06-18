@@ -66,4 +66,6 @@ public interface EventFacade {
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
 	Boolean isEventEditAllowed(String eventUuid);
+
+	String getUuidByCaseUuidOrPersonUuid(String value);
 }

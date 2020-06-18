@@ -284,6 +284,7 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
+	String headingNoEventFound = "headingNoEventFound";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";
@@ -402,6 +403,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
+	String infoSpecificEventSearch = "infoSpecificEventSearch";
 	String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
@@ -529,6 +531,7 @@ public interface Strings {
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoEndDate = "messageNoEndDate";
+	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
@@ -645,6 +648,11 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
+	String promptEventDateFrom = "promptEventDateFrom";
+	String promptEventDateTo = "promptEventDateTo";
+	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
+	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
+	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";

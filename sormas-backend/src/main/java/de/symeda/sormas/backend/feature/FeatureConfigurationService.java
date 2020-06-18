@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -139,9 +138,9 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 				ensurePersisted(savedConfiguration);
 			} else {
 				FeatureConfiguration configuration;
-				if (featureType.isDependent() && featureType.dependencyTriggered()){
+				if (featureType.isDependent() && featureType.dependencyTriggered()) {
 					configuration = FeatureConfiguration.build(featureType, false);
-				}else {
+				} else {
 					configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
 				}
 				ensurePersisted(configuration);

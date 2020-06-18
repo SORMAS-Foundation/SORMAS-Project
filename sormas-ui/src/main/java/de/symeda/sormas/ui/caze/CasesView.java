@@ -34,6 +34,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -60,6 +61,7 @@ import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -443,9 +445,31 @@ public class CasesView extends AbstractView {
 		window.setCaption(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
 		window.setWidth(768, Unit.PIXELS);
 
-		SearchSpecificCaseLayout layout = new SearchSpecificCaseLayout(() -> window.close());
+		SearchSpecificLayout layout = buildSearchSpecificLayout(window);
 		window.setContent(layout);
 		UI.getCurrent().addWindow(window);
+	}
+
+	private SearchSpecificLayout buildSearchSpecificLayout(Window window) {
+
+		String description = I18nProperties.getString(Strings.infoSpecificCaseSearch);
+		String confirmCaption = I18nProperties.getCaption(Captions.caseSearchCase);
+
+		TextField searchField = new TextField();
+		Runnable confirmCallback = () -> {
+			String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue());
+
+			if (foundCaseUuid != null) {
+				ControllerProvider.getCaseController().navigateToCase(foundCaseUuid);
+				window.close();
+			} else {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingNoCaseFound),
+					I18nProperties.getString(Strings.messageNoCaseFound));
+			}
+		};
+
+		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
 	}
 
 	private void enterBulkEditMode() {
