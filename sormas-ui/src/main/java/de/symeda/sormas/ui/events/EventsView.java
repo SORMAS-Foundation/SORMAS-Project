@@ -30,7 +30,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -44,6 +47,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -52,6 +56,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class EventsView extends AbstractView {
@@ -154,6 +159,13 @@ public class EventsView extends AbstractView {
 
 			addHeaderComponent(createButton);
 		}
+
+		Button searchSpecificEventButton = ButtonHelper.createIconButton(
+			Captions.eventSearchSpecificEvent,
+			VaadinIcons.SEARCH,
+			e -> buildAndOpenSearchSpecificEventWindow(),
+			ValoTheme.BUTTON_PRIMARY);
+		addHeaderComponent(searchSpecificEventButton);
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -174,6 +186,38 @@ public class EventsView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
+	}
+
+	private void buildAndOpenSearchSpecificEventWindow() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getCaption(Captions.eventSearchSpecificEvent));
+		window.setWidth(768, Unit.PIXELS);
+
+		SearchSpecificLayout layout = buildSearchSpecificLayout(window);
+		window.setContent(layout);
+		UI.getCurrent().addWindow(window);
+	}
+
+	private SearchSpecificLayout buildSearchSpecificLayout(Window window) {
+
+		String description = I18nProperties.getString(Strings.infoSpecificEventSearch);
+		String confirmCaption = I18nProperties.getCaption(Captions.eventSearchEvent);
+
+		TextField searchField = new TextField();
+		Runnable confirmCallback = () -> {
+			String foundEventUuid = FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchField.getValue());
+
+			if (foundEventUuid != null) {
+				ControllerProvider.getEventController().navigateToData(foundEventUuid);
+				window.close();
+			} else {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingNoEventFound),
+					I18nProperties.getString(Strings.messageNoEventFound));
+			}
+		};
+
+		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
