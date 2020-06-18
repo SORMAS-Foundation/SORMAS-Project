@@ -33,7 +33,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
@@ -65,11 +64,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -77,6 +72,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class PersonEditForm extends AbstractEditForm<PersonDto> {
@@ -157,9 +153,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withDisease(disease).add(new OutbreakFieldVisibilityChecker(viewMode)),
-			FieldAccessCheckers.withCheckers(
-				FieldHelper.createPersonalDataFieldAccessChecker(isInJurisdiction),
-				FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+			UiFieldAccessCheckers.withCheckers(
+				isInJurisdiction,
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;

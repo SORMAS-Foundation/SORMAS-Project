@@ -90,7 +90,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -120,8 +120,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private UserService userService;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
@@ -233,13 +231,14 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		List<PersonDto> result = personService.getAllAfter(date, user).stream().map(this::convertToDto).collect(Collectors.toList());
-		return result;
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return personService.getAllAfter(date, user).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<PersonDto> getByUuids(List<String> uuids) {
-		return personService.getByUuids(uuids).stream().map(this::convertToDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return personService.getByUuids(uuids).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -252,9 +251,10 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 		return personService.getDeathsBetween(fromDate, toDate, district, disease, user)
 			.stream()
-			.map(this::convertToDto)
+			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
 	}
 
@@ -265,7 +265,8 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonDto getPersonByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(this::convertToDto).orElse(null);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(p -> convertToDto(p, pseudonymizer)).orElse(null);
 	}
 
 	@Override
@@ -283,7 +284,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		onPersonChanged(existingPerson, person);
 
-		return convertToDto(person);
+		return convertToDto(person, new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -462,21 +463,21 @@ public class PersonFacadeEjb implements PersonFacade {
 		return target;
 	}
 
-	private PersonDto convertToDto(Person person) {
+	private PersonDto convertToDto(Person person, Pseudonymizer pseudonymizer) {
 
 		PersonDto dto = toDto(person);
 
-		pseudonymizeDto(person, dto);
+		pseudonymizeDto(person, dto, pseudonymizer);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(Person person, PersonDto dto) {
+	private void pseudonymizeDto(Person person, PersonDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
 
-			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
 			});
 		}
 	}
@@ -484,8 +485,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
 		if (person != null && existingPerson != null) {
 			boolean isInJurisdiction = isPersonInJurisdiction(person);
-			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 		}
 	}
 

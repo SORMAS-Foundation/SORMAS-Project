@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "PrescriptionFacade")
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
@@ -57,8 +57,6 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	private TherapyService therapyService;
 	@EJB
 	private CaseService caseService;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 
@@ -96,13 +94,14 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionIndexDto.class,
 			indexList,
 			p -> caseJurisdictionChecker.isInJurisdiction(p.getCaseJurisdiction()),
 			(p, inJurisdiction) -> {
-				pseudonymizationService.pseudonymizeDto(PrescriptionIndexDto.Type.class, p.getType(), inJurisdiction, null);
-				pseudonymizationService.pseudonymizeDto(PrescriptionIndexDto.Route.class, p.getRoute(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.Type.class, p.getType(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.Route.class, p.getRoute(), inJurisdiction, null);
 			});
 
 		return indexList;
@@ -110,7 +109,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@Override
 	public PrescriptionDto getPrescriptionByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid));
+		return convertToDto(service.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -124,7 +123,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		service.ensurePersisted(entity);
 
-		return convertToDto(entity);
+		return convertToDto(entity, new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -148,12 +147,13 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllActivePrescriptionsAfter(date, user).stream().map(p -> convertToDto(p)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return service.getAllActivePrescriptionsAfter(date, user).stream().map(p -> convertToDto(p, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<PrescriptionDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(p -> convertToDto(p)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(p -> convertToDto(p, new Pseudonymizer(userService::hasRight))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -206,7 +206,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		List<PrescriptionExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionExportDto.class,
 			exportList,
 			p -> caseJurisdictionChecker.isInJurisdiction(p.getCaseJurisdiction()),
@@ -215,24 +216,24 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		return exportList;
 	}
 
-	private PrescriptionDto convertToDto(Prescription source) {
+	private PrescriptionDto convertToDto(Prescription source, Pseudonymizer pseudonymizer) {
 		PrescriptionDto dto = toDto(source);
 
-		pseudonymizeDto(source, dto);
+		pseudonymizeDto(source, dto, pseudonymizer);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(Prescription source, PrescriptionDto dto) {
+	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			pseudonymizationService
-				.pseudonymizeDto(PrescriptionDto.class, dto, caseJurisdictionChecker.isInJurisdiction(source.getTherapy().getCaze()), null);
+			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, caseJurisdictionChecker.isInJurisdiction(source.getTherapy().getCaze()), null);
 		}
 	}
 
 	private void restorePseudonymizedDto(PrescriptionDto prescription, Prescription existingPrescription, PrescriptionDto existingPrescriptionDto) {
 		if (existingPrescription != null) {
-			pseudonymizationService.restorePseudonymizedValues(
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			pseudonymizer.restorePseudonymizedValues(
 				PrescriptionDto.class,
 				prescription,
 				existingPrescriptionDto,

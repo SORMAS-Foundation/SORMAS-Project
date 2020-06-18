@@ -26,11 +26,11 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 
@@ -39,7 +39,7 @@ public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
 	private static final String HTML_LAYOUT = fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO)
 		+ fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
 
-	public EpiDataTravelEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public EpiDataTravelEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);

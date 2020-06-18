@@ -35,11 +35,11 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHospitalizationDto> {
 
@@ -51,7 +51,10 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 		+ fluidRowLocs(PreviousHospitalizationDto.ISOLATED, PreviousHospitalizationDto.HEALTH_FACILITY_DETAILS)
 		+ fluidRowLocs(PreviousHospitalizationDto.DESCRIPTION);
 
-	public PreviousHospitalizationEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public PreviousHospitalizationEditForm(
+		boolean create,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		super(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);

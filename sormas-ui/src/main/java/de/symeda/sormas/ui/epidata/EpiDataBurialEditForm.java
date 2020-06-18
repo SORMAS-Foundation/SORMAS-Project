@@ -26,12 +26,12 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 
@@ -42,7 +42,7 @@ public class EpiDataBurialEditForm extends AbstractEditForm<EpiDataBurialDto> {
 		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ADDRESS)
 		+ fluidRowLocs(EpiDataBurialDto.BURIAL_ILL, EpiDataBurialDto.BURIAL_TOUCHING);
 
-	public EpiDataBurialEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public EpiDataBurialEditForm(boolean create, FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(EpiDataBurialDto.class, EpiDataBurialDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		setWidth(540, Unit.PIXELS);

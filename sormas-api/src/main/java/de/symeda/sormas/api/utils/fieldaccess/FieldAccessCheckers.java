@@ -24,22 +24,25 @@ import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessC
 
 public class FieldAccessCheckers {
 
-	private List<Checker> checkers = new ArrayList<>();
+	private List<FieldAccessChecker> checkers = new ArrayList<>();
 
-	public boolean isAccessible(Class<?> parentType, String fieldName) {
+	public FieldAccessCheckers() {
+	}
+
+	public boolean isAccessible(Class<?> parentType, String fieldName, boolean inJurisdiction) {
 
 		Field declaredField = getDeclaredField(parentType, fieldName);
 		if (declaredField == null) {
 			return true;
 		}
 
-		return isAccessible(declaredField);
+		return isAccessible(declaredField, inJurisdiction);
 	}
 
-	public boolean isAccessible(Field field) {
+	public boolean isAccessible(Field field, boolean inJurisdiction) {
 
-		for (Checker checker : checkers) {
-			if (checker.isConfiguredForCheck(field) && !checker.hasRight(field)) {
+		for (FieldAccessChecker checker : checkers) {
+			if (checker.isConfiguredForCheck(field) && !checker.hasRight(inJurisdiction)) {
 				return false;
 			}
 		}
@@ -49,7 +52,7 @@ public class FieldAccessCheckers {
 
 	public boolean isConfiguredForCheck(Field field) {
 
-		for (Checker checker : checkers) {
+		for (FieldAccessChecker checker : checkers) {
 			if (checker.isConfiguredForCheck(field)) {
 				return true;
 			}
@@ -58,20 +61,18 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
-	public boolean hasRights(List<Field> fields) {
+	public boolean hasRights(boolean inJurisdiction) {
 
-		for (Checker checker : checkers) {
-			for (Field field : fields) {
-				if (!checker.hasRight(field)) {
-					return false;
-				}
+		for (FieldAccessChecker checker : checkers) {
+			if (!checker.hasRight(inJurisdiction)) {
+				return false;
 			}
 		}
 
 		return true;
 	}
 
-	public FieldAccessCheckers add(Checker checker) {
+	public FieldAccessCheckers add(FieldAccessChecker checker) {
 		checkers.add(checker);
 		return this;
 	}
@@ -86,27 +87,20 @@ public class FieldAccessCheckers {
 	}
 
 	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
-		return withCheckers(new PersonalDataFieldAccessChecker(rightCheck, isInJurisdiction));
+		return withCheckers(PersonalDataFieldAccessChecker.create(rightCheck));
 	}
 
 	public static FieldAccessCheckers withSensitiveData(SensitiveDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
-		return withCheckers(new SensitiveDataFieldAccessChecker(rightCheck, isInJurisdiction));
+		return withCheckers(SensitiveDataFieldAccessChecker.create(rightCheck));
 	}
 
-	public static FieldAccessCheckers withCheckers(Checker... checkers) {
+	public static FieldAccessCheckers withCheckers(FieldAccessChecker... checkers) {
 
 		FieldAccessCheckers ret = new FieldAccessCheckers();
-		for (Checker checker : checkers) {
+		for (FieldAccessChecker checker : checkers) {
 			ret.add(checker);
 		}
 
 		return ret;
-	}
-
-	public interface Checker {
-
-		boolean isConfiguredForCheck(Field field);
-
-		boolean hasRight(Field field);
 	}
 }

@@ -27,7 +27,6 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
@@ -76,7 +75,6 @@ public class SampleDto extends PseudonymizableDto {
 	@Required
 	private Date reportDateTime;
 	@Required
-	@PersonnelData
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	private Double reportLat;

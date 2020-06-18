@@ -67,7 +67,6 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
@@ -78,6 +77,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
@@ -195,7 +195,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		PersonDto person,
 		SymptomsContext symptomsContext,
 		ViewMode viewMode,
-		FieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 
 		// TODO add user right parameter
 		super(
@@ -205,7 +205,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			new FieldVisibilityCheckers().add(new DiseaseFieldVisibilityChecker(disease))
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-				fieldAccessCheckers);
+			fieldAccessCheckers);
 
 		this.caze = caze;
 		this.disease = disease;
@@ -677,29 +677,29 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			getFieldGroup().getField(PATIENT_ILL_LOCATION).setVisible(false);
 		}
 
-		if(isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
+		if (isEditableAllowed(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT)) {
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					getFieldGroup().getField(OTHER_HEMORRHAGIC_SYMPTOMS),
-					Arrays.asList(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
-					Arrays.asList(SymptomState.YES),
-					disease);
+				getFieldGroup(),
+				getFieldGroup().getField(OTHER_HEMORRHAGIC_SYMPTOMS),
+				Arrays.asList(OTHER_HEMORRHAGIC_SYMPTOMS_TEXT),
+				Arrays.asList(SymptomState.YES),
+				disease);
 		}
-		if(isEditableAllowed(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)) {
+		if (isEditableAllowed(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT)) {
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					getFieldGroup().getField(OTHER_NON_HEMORRHAGIC_SYMPTOMS),
-					Arrays.asList(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
-					Arrays.asList(SymptomState.YES),
-					disease);
+				getFieldGroup(),
+				getFieldGroup().getField(OTHER_NON_HEMORRHAGIC_SYMPTOMS),
+				Arrays.asList(OTHER_NON_HEMORRHAGIC_SYMPTOMS_TEXT),
+				Arrays.asList(SymptomState.YES),
+				disease);
 		}
-		if(isEditableAllowed(OTHER_COMPLICATIONS_TEXT)) {
+		if (isEditableAllowed(OTHER_COMPLICATIONS_TEXT)) {
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					getFieldGroup().getField(OTHER_COMPLICATIONS),
-					Arrays.asList(OTHER_COMPLICATIONS_TEXT),
-					Arrays.asList(SymptomState.YES),
-					disease);
+				getFieldGroup(),
+				getFieldGroup().getField(OTHER_COMPLICATIONS),
+				Arrays.asList(OTHER_COMPLICATIONS_TEXT),
+				Arrays.asList(SymptomState.YES),
+				disease);
 		}
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), getFieldGroup().getField(LESIONS), lesionsFieldIds, Arrays.asList(SymptomState.YES), disease);

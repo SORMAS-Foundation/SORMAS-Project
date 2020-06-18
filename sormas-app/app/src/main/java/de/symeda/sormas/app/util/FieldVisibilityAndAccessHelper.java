@@ -16,7 +16,7 @@ public class FieldVisibilityAndAccessHelper {
 		Class<?> dtoClass,
 		ViewGroup viewGroup,
 		FieldVisibilityCheckers visibilityCheckers,
-		FieldAccessCheckers accessCheckers) {
+		AppFieldAccessCheckers accessCheckers) {
 		for (int i = 0; i < viewGroup.getChildCount(); i++) {
 			View child = viewGroup.getChildAt(i);
 			if (child instanceof ControlPropertyField) {
@@ -41,7 +41,7 @@ public class FieldVisibilityAndAccessHelper {
 		return visibilityCheckers.isVisible(dtoClass, propertyId);
 	}
 
-	public static boolean isFieldAccessible(Class<?> dtoClass, String propertyId, FieldAccessCheckers accessCheckers) {
+	public static boolean isFieldAccessible(Class<?> dtoClass, String propertyId, AppFieldAccessCheckers accessCheckers) {
 		if (accessCheckers == null) {
 			return true;
 		}

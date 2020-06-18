@@ -29,6 +29,7 @@ import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentCaseEditMaternalHistoryLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCaseEditMaternalHistoryLayoutBinding, MaternalHistory, Case> {
@@ -45,8 +46,8 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 			null,
 			activityRootData,
 			null,
-			FieldAccessCheckers
-				.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
+				AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides

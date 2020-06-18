@@ -34,15 +34,14 @@ import java.util.Arrays;
 
 import com.vaadin.v7.ui.TextArea;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> {
 
@@ -64,7 +63,7 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 					loc(OTHER_CONDITIONS);
 	//@formatter:on
 
-	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public HealthConditionsForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(HealthConditionsDto.class, I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 	}
 

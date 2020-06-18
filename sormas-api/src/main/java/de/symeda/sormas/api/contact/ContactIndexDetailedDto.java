@@ -8,8 +8,6 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.PersonnelData;
-import de.symeda.sormas.api.utils.SensitiveData;
 
 public class ContactIndexDetailedDto extends ContactIndexDto {
 
@@ -34,7 +32,6 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	@PersonalData
 	private String postalCode;
 	private String phone;
-	@PersonnelData
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
@@ -99,5 +96,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

@@ -40,7 +40,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractForm<DTO> implements FieldGroup.CommitHandler {// implements DtoEditForm<DTO> {
@@ -48,7 +47,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	private static final long serialVersionUID = 1L;
 
 	protected final FieldVisibilityCheckers fieldVisibilityCheckers;
-	protected final FieldAccessCheckers fieldAccessCheckers;
+	protected final UiFieldAccessCheckers fieldAccessCheckers;
 
 	private boolean hideValidationUntilNextCommit = false;
 	private List<Field<?>> visibleAllowedFields = new ArrayList<>();
@@ -71,7 +70,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		String propertyI18nPrefix,
 		boolean addFields,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		FieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 
 		super(type, propertyI18nPrefix, new SormasFieldGroupFieldFactory(fieldVisibilityCheckers, fieldAccessCheckers), false);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;

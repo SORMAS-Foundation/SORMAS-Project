@@ -27,7 +27,6 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -35,15 +34,13 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
@@ -64,7 +61,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			VisitDto.I18N_PREFIX,
 			false,
 			null,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(create || isInJurisdiction)));
+			UiFieldAccessCheckers.withCheckers(create || isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}

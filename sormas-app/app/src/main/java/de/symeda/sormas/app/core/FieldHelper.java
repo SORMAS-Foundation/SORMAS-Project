@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 
 import androidx.arch.core.util.Function;
 
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
@@ -34,7 +35,11 @@ public final class FieldHelper {
 		return true;
 	}
 
-	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker(boolean inJurisdiction) {
-		return new SensitiveDataFieldAccessChecker(ConfigProvider::hasUserRight, inJurisdiction);
+	public static PersonalDataFieldAccessChecker createPersonalDataFieldAccessChecker() {
+		return PersonalDataFieldAccessChecker.create(ConfigProvider::hasUserRight);
+	}
+
+	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker() {
+		return SensitiveDataFieldAccessChecker.create(ConfigProvider::hasUserRight);
 	}
 }

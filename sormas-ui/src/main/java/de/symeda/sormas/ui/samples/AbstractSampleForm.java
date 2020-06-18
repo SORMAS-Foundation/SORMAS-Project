@@ -44,7 +44,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -54,6 +53,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
@@ -105,7 +105,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		super(type, propertyI18nPrefix);
 	}
 
-	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, FieldAccessCheckers fieldAccessCheckers) {
+	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(type, propertyI18nPrefix, true, null, fieldAccessCheckers);
 	}
 

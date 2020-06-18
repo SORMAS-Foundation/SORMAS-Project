@@ -73,7 +73,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -96,6 +95,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -751,7 +751,10 @@ public class CaseController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(
+		final String caseUuid,
+		ViewMode viewMode,
+		boolean isInJurisdiction) {
 
 		CaseDataDto caze = findCase(caseUuid);
 		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode, isInJurisdiction);
@@ -775,7 +778,10 @@ public class CaseController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(final String caseUuid, ViewMode viewMode, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<MaternalHistoryForm> getMaternalHistoryComponent(
+		final String caseUuid,
+		ViewMode viewMode,
+		boolean isInJurisdiction) {
 
 		CaseDataDto caze = findCase(caseUuid);
 		MaternalHistoryForm form = new MaternalHistoryForm(viewMode, isInJurisdiction);
@@ -839,7 +845,7 @@ public class CaseController {
 			person,
 			SymptomsContext.CASE,
 			viewMode,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		symptomsForm.setValue(caseDataDto.getSymptoms());
 
 		CommitDiscardWrapperComponent<SymptomsForm> editView = new CommitDiscardWrapperComponent<SymptomsForm>(

@@ -28,7 +28,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -36,6 +35,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -46,9 +46,9 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	private static final String DISTRICT = Captions.district;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private FieldAccessCheckers fieldAccessCheckers;
+	private UiFieldAccessCheckers fieldAccessCheckers;
 
-	public PreviousHospitalizationsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public PreviousHospitalizationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}

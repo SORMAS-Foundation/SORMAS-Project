@@ -18,10 +18,10 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
@@ -47,7 +47,7 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 
 	public MaternalHistoryForm(ViewMode viewMode, boolean isInJurisdiction) {
 		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
-				FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.viewMode = viewMode;
 	}
 

@@ -22,6 +22,7 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentClinicalVisitEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinicalVisitEditLayoutBinding, ClinicalVisit, ClinicalVisit> {
 
@@ -33,7 +34,7 @@ public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinical
 			null,
 			activityRootData,
 			null,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(!activityRootData.isPseudonymized())));
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	@Override

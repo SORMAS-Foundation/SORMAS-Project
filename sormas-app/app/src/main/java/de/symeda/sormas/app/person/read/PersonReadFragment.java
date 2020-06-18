@@ -29,8 +29,10 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
@@ -49,7 +51,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
+			AppFieldAccessCheckers.withCheckers(
+				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	public static PersonReadFragment newInstance(Contact activityRootData) {
@@ -58,7 +63,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, ContactEditAuthorization.isContactEditAllowed(activityRootData)));
+				AppFieldAccessCheckers.withCheckers(
+						ContactEditAuthorization.isContactEditAllowed(activityRootData),
+						FieldHelper.createPersonalDataFieldAccessChecker(),
+						FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	public static void setUpFieldVisibilities(

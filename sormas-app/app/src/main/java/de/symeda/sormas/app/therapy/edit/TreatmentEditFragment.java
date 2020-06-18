@@ -24,13 +24,13 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.therapy.Treatment;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentTreatmentEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEditLayoutBinding, Treatment, Treatment> {
@@ -52,7 +52,7 @@ public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEdi
 			null,
 			activityRootData,
 			null,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(!activityRootData.isPseudonymized())));
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 	// Instance methods
 
@@ -111,7 +111,6 @@ public class TreatmentEditFragment extends BaseEditFragment<FragmentTreatmentEdi
 		setFieldVisibilitiesAndAccesses(TreatmentDto.class, contentBinding.mainContent);
 
 		setUpFieldVisibilities(contentBinding);
-
 
 		// Initialize fields
 		contentBinding.treatmentTreatmentType.initializeSpinner(treatmentTypeList);

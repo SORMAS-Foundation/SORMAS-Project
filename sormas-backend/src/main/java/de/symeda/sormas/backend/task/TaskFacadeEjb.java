@@ -90,7 +90,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -118,8 +118,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
@@ -197,7 +195,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		return target;
 	}
 
-	public TaskDto toDto(Task task) {
+	public TaskDto toDto(Task task, Pseudonymizer pseudonymizer) {
 
 		if (task == null) {
 			return null;
@@ -240,11 +238,11 @@ public class TaskFacadeEjb implements TaskFacade {
 			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
 		}
 
-		pseudonymizationService.pseudonymizeDto(
+		pseudonymizer.pseudonymizeDto(
 			TaskDto.class,
 			target,
 			isInJurisdiction,
-			(t) -> pseudonymizeEmbeddedFields(t.getContact(), contactJurisdiction, t.getCaze(), caseJurisdiction));
+			(t) -> pseudonymizeEmbeddedFields(t.getContact(), contactJurisdiction, t.getCaze(), caseJurisdiction, pseudonymizer));
 
 		return target;
 	}
@@ -253,15 +251,16 @@ public class TaskFacadeEjb implements TaskFacade {
 		ContactReferenceDto contact,
 		ContactJurisdictionDto contactJurisdiction,
 		CaseReferenceDto caze,
-		CaseJurisdictionDto caseJurisdiction) {
+		CaseJurisdictionDto caseJurisdiction,
+		Pseudonymizer pseudonymizer) {
 
 		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(
+			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				contact.getCaseName(),
 				caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()),
 				null);
-			pseudonymizationService.pseudonymizeDto(
+			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				contact.getContactName(),
 				contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
@@ -269,7 +268,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		if (caze != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
+			pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
 		}
 	}
 
@@ -316,7 +315,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		return toDto(ado);
+		return toDto(ado, new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -338,7 +337,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.getAllActiveTasksAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return taskService.getAllActiveTasksAfter(date, user).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -458,13 +458,20 @@ public class TaskFacadeEjb implements TaskFacade {
 			tasks = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
 			if (t.getContact() == null) {
 				return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction());
 			}
 
 			return contactJurisdictionChecker.isInJurisdiction(t.getContactJurisdiction());
-		}, (t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getContactJurisdiction(), t.getCaze(), t.getCaseJurisdiction()));
+		},
+			(t, isInJurisdiction) -> pseudonymizeEmbeddedFields(
+				t.getContact(),
+				t.getContactJurisdiction(),
+				t.getCaze(),
+				t.getCaseJurisdiction(),
+				pseudonymizer));
 
 		return tasks;
 	}
@@ -476,7 +483,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().caze(caseRef)).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return taskService.findBy(new TaskCriteria().caze(caseRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -486,7 +494,8 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().contact(contactRef)).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return taskService.findBy(new TaskCriteria().contact(contactRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -496,12 +505,14 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
-		return taskService.findBy(new TaskCriteria().event(eventRef)).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return taskService.findBy(new TaskCriteria().event(eventRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<TaskDto> getByUuids(List<String> uuids) {
-		return taskService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return taskService.getByUuids(uuids).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -511,9 +522,10 @@ public class TaskFacadeEjb implements TaskFacade {
 			return Collections.emptyList();
 		}
 
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING))
 			.stream()
-			.map(c -> toDto(c))
+			.map(c -> toDto(c, pseudonymizer))
 			.collect(Collectors.toList());
 	}
 
@@ -544,7 +556,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public TaskDto getByUuid(String uuid) {
-		return toDto(taskService.getByUuid(uuid));
+		return toDto(taskService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override

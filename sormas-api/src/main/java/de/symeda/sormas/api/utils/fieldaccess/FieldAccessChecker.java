@@ -16,14 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils;
+package de.symeda.sormas.api.utils.fieldaccess;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface PersonnelData {
+public interface FieldAccessChecker {
+
+	boolean isConfiguredForCheck(Field field);
+
+	boolean hasRight(boolean inJurisdiction);
 }

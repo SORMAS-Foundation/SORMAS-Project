@@ -8,8 +8,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.PersonnelData;
-import de.symeda.sormas.api.utils.SensitiveData;
 
 public class CaseIndexDetailedDto extends CaseIndexDto {
 
@@ -29,7 +27,6 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	@PersonalData
 	private String postalCode;
 	private String phone;
-	@PersonnelData
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
@@ -76,5 +73,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

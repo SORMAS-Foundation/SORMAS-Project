@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.util;
 
 import java.lang.reflect.Field;
@@ -26,26 +24,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.UserDataFieldAccessChecker;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 
-@Stateless
-@LocalBean
-public class PseudonymizationService {
+public class Pseudonymizer {
 
-	@EJB
-	private UserService userService;
+	private final FieldAccessCheckers fieldAccessCheckers;
+	private final SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker;
+
+	public Pseudonymizer(RightCheck rightCheck) {
+		sensitiveDataFieldAccessChecker = SensitiveDataFieldAccessChecker.create(rightCheck::hasRight);
+
+		this.fieldAccessCheckers = createFieldAccessCheckers(rightCheck).add(sensitiveDataFieldAccessChecker);
+	}
 
 	public <DTO> void pseudonymizeDtoCollection(
 		Class<DTO> type,
@@ -72,24 +69,47 @@ public class PseudonymizationService {
 	}
 
 	public <DTO extends PseudonymizableDto> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
-		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction, originalDto);
 		List<Field> declaredFields = getDeclaredFields(type);
 
 		declaredFields.forEach(field -> {
-			if (accessCheckers.isConfiguredForCheck(field)) {
-				if (!accessCheckers.isAccessible(field) || dto.isPseudonymized()) {
+			if (fieldAccessCheckers.isConfiguredForCheck(field)) {
+				if (!fieldAccessCheckers.isAccessible(field, isInJurisdiction) || dto.isPseudonymized()) {
 					restoreOriginalValue(dto, field, originalDto);
 				}
 			}
 		});
 	}
 
+	public <DTO> void pseudonymizeUser(User dtoUser, User currentUser, DTO dto, Consumer<UserReferenceDto> setPseudonymizedValue) {
+		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
+
+		if (!sensitiveDataFieldAccessChecker.hasRight(isInJurisdiction)) {
+			setPseudonymizedValue.accept(null);
+
+			if (PseudonymizableDto.class.isAssignableFrom(dto.getClass())) {
+				((PseudonymizableDto) dto).setPseudonymized(true);
+			}
+		}
+	}
+
+	public <DTO extends PseudonymizableDto> void restoreUser(
+		User originalDtoUser,
+		User currentUser,
+		DTO dto,
+		Consumer<UserReferenceDto> setPseudonymizedValue) {
+
+		boolean isInJurisdiction = originalDtoUser == null || isUserInJurisdiction(originalDtoUser, currentUser);
+
+		if (!sensitiveDataFieldAccessChecker.hasRight(isInJurisdiction) || dto.isPseudonymized()) {
+			setPseudonymizedValue.accept(originalDtoUser != null ? originalDtoUser.toReference() : null);
+		}
+	}
+
 	private <DTO> void pseudonymizeDto(DTO dto, List<Field> declaredFields, boolean isInJurisdiction, Consumer<DTO> customPseudonymization) {
-		FieldAccessCheckers accessCheckers = createFieldAccessCheckers(isInJurisdiction, dto);
 
 		AtomicBoolean didPseudonymization = new AtomicBoolean(false);
 		declaredFields.forEach(field -> {
-			if (!accessCheckers.isAccessible(field)) {
+			if (!fieldAccessCheckers.isAccessible(field, isInJurisdiction)) {
 				pseudonymizeField(dto, field);
 				didPseudonymization.set(true);
 			}
@@ -104,21 +124,8 @@ public class PseudonymizationService {
 		}
 	}
 
-	private <DTO> FieldAccessCheckers createFieldAccessCheckers(boolean isInJurisdiction, DTO dto) {
-		return new FieldAccessCheckers().add(new PersonalDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction))
-				.add(new SensitiveDataFieldAccessChecker(r -> userService.hasRight(r), isInJurisdiction))
-				.add(new UserDataFieldAccessChecker(r -> userService.hasRight(r), field -> {
-					try {
-						field.setAccessible(true);
-						UserReferenceDto userRef = (UserReferenceDto) field.get(dto);
-
-						return userRef == null || isUserInJurisdiction(userRef);
-					} catch (IllegalAccessException e) {
-						// ignore
-					}
-
-					return true;
-				}));
+	private FieldAccessCheckers createFieldAccessCheckers(RightCheck rightCheck) {
+		return FieldAccessCheckers.withCheckers(PersonalDataFieldAccessChecker.create(rightCheck::hasRight));
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field) {
@@ -158,9 +165,7 @@ public class PseudonymizationService {
 		return declaredFields;
 	}
 
-	private boolean isUserInJurisdiction(UserReferenceDto userRef) {
-		User user = userService.getByUuid(userRef.getUuid());
-		User currentUser = userService.getCurrentUser();
+	private boolean isUserInJurisdiction(User user, User currentUser) {
 
 		if (currentUser.getDistrict() != null) {
 			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
@@ -179,6 +184,11 @@ public class PseudonymizationService {
 		}
 
 		return true;
+	}
+
+	public interface RightCheck {
+
+		boolean hasRight(UserRight userRight);
 	}
 
 	public interface CustomPseudonymization<DTO> {

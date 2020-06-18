@@ -29,7 +29,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
@@ -37,6 +36,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
@@ -49,9 +49,9 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	private static final String DISTRICT = LocationDto.DISTRICT;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private FieldAccessCheckers fieldAccessCheckers;
+	private UiFieldAccessCheckers fieldAccessCheckers;
 
-	public EpiDataBurialsField(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public EpiDataBurialsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}

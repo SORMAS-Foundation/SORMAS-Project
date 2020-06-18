@@ -565,11 +565,11 @@ public final class FieldHelper {
 		return FieldHelper.stream(parent).filter(c -> c instanceof Field).map(c -> (Field) c);
 	}
 
-	public static PersonalDataFieldAccessChecker createPersonalDataFieldAccessChecker(boolean isInJurisdiction){
-		return new PersonalDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction);
+	public static PersonalDataFieldAccessChecker createPersonalDataFieldAccessChecker() {
+		return PersonalDataFieldAccessChecker.create(r -> UserProvider.getCurrent().hasUserRight(r));
 	}
 
-	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker(boolean isInJurisdiction){
-		return new SensitiveDataFieldAccessChecker(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction);
+	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker() {
+		return SensitiveDataFieldAccessChecker.create(r -> UserProvider.getCurrent().hasUserRight(r));
 	}
 }

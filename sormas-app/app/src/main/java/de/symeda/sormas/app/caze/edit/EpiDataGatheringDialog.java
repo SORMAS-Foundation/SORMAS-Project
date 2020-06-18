@@ -25,7 +25,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.utils.ValidationException;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
@@ -38,6 +37,7 @@ import de.symeda.sormas.app.component.validation.FragmentValidator;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidGatheringEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class EpiDataGatheringDialog extends FormDialog {
 
@@ -56,7 +56,7 @@ public class EpiDataGatheringDialog extends FormDialog {
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_gathering,
 			-1,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(!epiDataGathering.isPseudonymized())));
+			AppFieldAccessCheckers.withCheckers(!epiDataGathering.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		this.data = epiDataGathering;
 	}

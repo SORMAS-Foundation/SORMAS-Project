@@ -33,7 +33,6 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.DependantOn;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -58,6 +57,7 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentSymptomsEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DataUtils;
 
@@ -85,8 +85,8 @@ public class SymptomsEditFragment extends BaseEditFragment<FragmentSymptomsEditL
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			FieldAccessCheckers
-				.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
+			AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	public static SymptomsEditFragment newInstance(Visit activityRootData) {

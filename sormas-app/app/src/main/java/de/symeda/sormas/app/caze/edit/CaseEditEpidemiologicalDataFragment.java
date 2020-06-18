@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -50,6 +49,7 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -75,8 +75,8 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
-			FieldAccessCheckers
-				.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
+			AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods

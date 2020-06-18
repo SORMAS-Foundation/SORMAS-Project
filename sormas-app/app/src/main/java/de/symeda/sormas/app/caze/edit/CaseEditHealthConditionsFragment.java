@@ -27,6 +27,7 @@ import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHealthConditionsLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentCaseEditHealthConditionsLayoutBinding, HealthConditions, Case> {
 
@@ -44,8 +45,8 @@ public class CaseEditHealthConditionsFragment extends BaseEditFragment<FragmentC
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			FieldAccessCheckers
-				.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(CaseEditAuthorization.isCaseEditAllowed(activityRootData))));
+			AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides

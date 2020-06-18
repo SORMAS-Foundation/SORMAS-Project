@@ -60,8 +60,10 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -98,7 +100,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
+			AppFieldAccessCheckers.withCheckers(
+				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods

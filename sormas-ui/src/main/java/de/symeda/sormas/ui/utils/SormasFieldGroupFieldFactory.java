@@ -21,7 +21,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -35,9 +34,9 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	private static final long serialVersionUID = 471700572643936674L;
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
-	private final FieldAccessCheckers fieldAccessCheckers;
+	private final UiFieldAccessCheckers fieldAccessCheckers;
 
-	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}

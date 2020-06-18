@@ -20,7 +20,6 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -30,7 +29,6 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.PersonnelData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -99,7 +97,6 @@ public class ContactDto extends PseudonymizableDto {
 	@Required
 	private Date reportDateTime;
 	@Required
-	@PersonnelData
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	private Double reportLat;
@@ -143,11 +140,11 @@ public class ContactDto extends PseudonymizableDto {
 	@Required
 	private PersonReferenceDto person;
 
-	@PersonnelData
+	@SensitiveData
 	private UserReferenceDto contactOfficer;
 
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
-	@PersonnelData
+	@SensitiveData
 	private UserReferenceDto resultingCaseUser;
 
 	@SensitiveData

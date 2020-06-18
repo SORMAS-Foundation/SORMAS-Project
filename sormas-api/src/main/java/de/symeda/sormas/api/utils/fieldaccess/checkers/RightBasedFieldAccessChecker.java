@@ -18,17 +18,16 @@
 
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public abstract class RightBasedFieldAccessChecker implements FieldAccessCheckers.Checker {
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
+
+public abstract class RightBasedFieldAccessChecker implements FieldAccessChecker {
 	private Class<? extends Annotation> fieldAnnotation;
 	protected final RightCheck rightCheck;
 
-	public RightBasedFieldAccessChecker(Class<? extends Annotation> fieldAnnotation, RightCheck rightCheck) {
+	protected RightBasedFieldAccessChecker(Class<? extends Annotation> fieldAnnotation, RightCheck rightCheck) {
 		this.fieldAnnotation = fieldAnnotation;
 		this.rightCheck = rightCheck;
 	}
@@ -39,13 +38,12 @@ public abstract class RightBasedFieldAccessChecker implements FieldAccessChecker
 	}
 
 	@Override
-	public boolean hasRight(Field field) {
-		return rightCheck.check(getUserRight());
+	public boolean hasRight(boolean inJurisdiction) {
+		return rightCheck.check(inJurisdiction);
 	}
 
-	protected abstract UserRight getUserRight();
-
 	public interface RightCheck {
-		boolean check(UserRight userRight);
+
+		boolean check(boolean inJurisdiction);
 	}
 }

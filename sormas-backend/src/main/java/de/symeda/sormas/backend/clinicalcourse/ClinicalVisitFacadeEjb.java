@@ -49,7 +49,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "ClinicalVisitFacade")
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
@@ -73,8 +73,6 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	private CaseService caseService;
 	@EJB
 	private SymptomsService symptomsService;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 
@@ -113,7 +111,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		List<ClinicalVisitIndexDto> results = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
 			ClinicalVisitIndexDto.class,
 			results,
 			v -> caseJurisdictionChecker.isInJurisdiction(v.getCaseJurisdiction()),
@@ -166,7 +165,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public ClinicalVisitDto getClinicalVisitByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid));
+		return convertToDto(service.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -193,7 +192,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			caseFacade.saveCase(caze);
 		}
 
-		return convertToDto(entity);
+		return convertToDto(entity, new Pseudonymizer(userService::hasRight));
 	}
 
 	/**
@@ -227,12 +226,14 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllActiveClinicalVisitsAfter(date).stream().map(t -> convertToDto(t)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return service.getAllActiveClinicalVisitsAfter(date).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ClinicalVisitDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(t -> convertToDto(t)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return service.getByUuids(uuids).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -278,17 +279,14 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 		List<ClinicalVisitExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 		for (ClinicalVisitExportDto exportDto : resultList) {
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 
 			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(exportDto.getCaseJurisdiction());
-			pseudonymizationService.pseudonymizeDto(
-				ClinicalVisitExportDto.class,
-				exportDto,
-					inJurisdiction,
-					(v) -> {
-						pseudonymizationService.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
-					});
+			pseudonymizer.pseudonymizeDto(ClinicalVisitExportDto.class, exportDto, inJurisdiction, (v) -> {
+				pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
+			});
 		}
 
 		return resultList;
@@ -304,29 +302,31 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			joins.getCasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	public ClinicalVisitDto convertToDto(ClinicalVisit source) {
+	public ClinicalVisitDto convertToDto(ClinicalVisit source, Pseudonymizer pseudonymizer) {
 		ClinicalVisitDto dto = toDto(source);
 
-		pseudonymizeDto(source, dto);
+		pseudonymizeDto(source, dto, pseudonymizer);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto) {
-		if(source != null && dto != null) {
+	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto, Pseudonymizer pseudonymizer) {
+		if (source != null && dto != null) {
 			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getClinicalCourse().getCaze());
-			pseudonymizationService.pseudonymizeDto(ClinicalVisitDto.class, dto, inJurisdiction, v -> {
-				pseudonymizationService.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(ClinicalVisitDto.class, dto, inJurisdiction, v -> {
+				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
 			});
 		}
 	}
 
 	private void restorePseudonymizedDto(ClinicalVisitDto clinicalVisit, ClinicalVisit existingClinicalVisit) {
-		if(existingClinicalVisit != null) {
+		if (existingClinicalVisit != null) {
 			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(existingClinicalVisit.getClinicalCourse().getCaze());
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 			ClinicalVisitDto existingDto = toDto(existingClinicalVisit);
-			pseudonymizationService.restorePseudonymizedValues(ClinicalVisitDto.class, clinicalVisit, existingDto, inJurisdiction);
-			pseudonymizationService.restorePseudonymizedValues(SymptomsDto.class, clinicalVisit.getSymptoms(), existingDto.getSymptoms(), inJurisdiction);
+
+			pseudonymizer.restorePseudonymizedValues(ClinicalVisitDto.class, clinicalVisit, existingDto, inJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, clinicalVisit.getSymptoms(), existingDto.getSymptoms(), inJurisdiction);
 		}
 	}
 

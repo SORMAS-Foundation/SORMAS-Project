@@ -25,7 +25,6 @@ import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -33,6 +32,7 @@ import de.symeda.sormas.app.backend.therapy.Prescription;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescriptionEditLayoutBinding, Prescription, Prescription> {
@@ -54,7 +54,7 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 			null,
 			activityRootData,
 			null,
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(!activityRootData.isPseudonymized())));
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods

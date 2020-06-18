@@ -122,7 +122,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -163,8 +163,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -187,12 +185,14 @@ public class ContactFacadeEjb implements ContactFacade {
 			return Collections.emptyList();
 		}
 
-		return contactService.getAllActiveContactsAfter(date).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return contactService.getAllActiveContactsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ContactDto> getByUuids(List<String> uuids) {
-		return contactService.getByUuids(uuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return contactService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public ContactDto getContactByUuid(String uuid) {
-		return convertToDto(contactService.getByUuid(uuid));
+		return convertToDto(contactService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -415,6 +415,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 			for (ContactExportDto exportContact : exportContacts) {
 				boolean inJurisdiction = contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction());
 
@@ -428,7 +429,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 				exportContact.setNumberOfVisits(visits.size());
 				if (lastCooperativeVisit != null) {
-					pseudonymizationService.pseudonymizeDto(Symptoms.class, lastCooperativeVisit.getSymptoms(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(Symptoms.class, lastCooperativeVisit.getSymptoms(), inJurisdiction, null);
 
 					exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
 					exportContact.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
@@ -436,7 +437,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
-				pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
 			}
 		}
 
@@ -496,9 +497,12 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			Map<Long, VisitSummaryExportDto> visitSummaryMap =
 				visitSummaries.stream().collect(Collectors.toMap(VisitSummaryExportDto::getContactId, Function.identity()));
+
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 			visitSummaryDetails.stream().forEach(v -> {
-				pseudonymizationService
+				pseudonymizer
 					.pseudonymizeDto(Symptoms.class, v.getSymptoms(), contactJurisdictionChecker.isInJurisdiction(v.getJurisdiction()), null);
+
 				visitSummaryMap.get(v.getContactId())
 					.getVisitDetails()
 					.add(
@@ -658,12 +662,15 @@ public class ContactFacadeEjb implements ContactFacade {
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, ContactFollowUpDto> resultMap =
 				resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
+
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
 				boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction());
-				pseudonymizationService.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, f -> {
-					pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, f.getPerson(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, f -> {
+					pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, f.getPerson(), isInJurisdiction, null);
 				});
 			});
 			visits.stream().forEach(v -> {
@@ -702,13 +709,14 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
 			ContactIndexDto.class,
 			dtos,
 			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
 			(c, isInJurisdiction) -> {
 				if (c.getCaze() != null) {
-					pseudonymizationService.pseudonymizeDto(
+					pseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
 						c.getCaze(),
 						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
@@ -735,13 +743,16 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		User currentUser = userService.getCurrentUser();
+		pseudonymizer.pseudonymizeDtoCollection(
 			ContactIndexDetailedDto.class,
 			dtos,
 			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
 			(c, isInJurisdiction) -> {
+				pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c, c::setReportingUser);
 				if (c.getCaze() != null) {
-					pseudonymizationService.pseudonymizeDto(
+					pseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
 						c.getCaze(),
 						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
@@ -940,24 +951,28 @@ public class ContactFacadeEjb implements ContactFacade {
 		return contactService.getFollowUpUntilCount(contactCriteria, user);
 	}
 
-	private ContactDto convertToDto(Contact source) {
+	private ContactDto convertToDto(Contact source, Pseudonymizer pseudonymizer) {
 
 		ContactDto dto = toDto(source);
-		pseudonymizeDto(source, dto);
+		pseudonymizeDto(source, dto, pseudonymizer);
 
 		return dto;
 	}
 
-	private void pseudonymizeDto(Contact source, ContactDto dto) {
+	private void pseudonymizeDto(Contact source, ContactDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
+			User currentUser = userService.getCurrentUser();
+
+			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto, dto::setReportingUser);
+
 				if (c.getCaze() != null) {
 					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
 				}
 
-				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
 			});
 		}
 	}
@@ -965,7 +980,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	private void restorePseudonymizedDto(ContactDto dto, Contact existingContact, ContactDto existingContactDto) {
 		if (existingContactDto != null) {
 			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(existingContact);
-			pseudonymizationService.restorePseudonymizedValues(ContactDto.class, dto, existingContactDto, isInJurisdiction);
+			User currentUser = userService.getCurrentUser();
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+			pseudonymizer.restoreUser(existingContact.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restorePseudonymizedValues(ContactDto.class, dto, existingContactDto, isInJurisdiction);
 		}
 	}
 
@@ -975,13 +994,15 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		if (source != null && dto != null) {
 			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+			pseudonymizer.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
 				if (source.getCaze() != null) {
 					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
 				}
 
-				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
 			});
 		}
 
@@ -1236,14 +1257,15 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
 			SimilarContactDto.class,
 			contacts,
 			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
 			(c, isInJurisdiction) -> {
 				CaseReferenceDto contactCase = c.getCaze();
 				if (contactCase != null) {
-					pseudonymizationService.pseudonymizeDto(
+					pseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
 						contactCase,
 						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),

@@ -39,7 +39,6 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -54,6 +53,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
@@ -78,8 +78,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			null,
 			activityRootData,
 			null,
-			FieldAccessCheckers
-				.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(SampleEditAuthorization.isCaseEditAllowed(activityRootData))));
+			AppFieldAccessCheckers
+				.withCheckers(SampleEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {

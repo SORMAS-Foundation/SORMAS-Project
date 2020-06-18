@@ -9,12 +9,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 
@@ -34,7 +34,7 @@ public class ClinicalVisitForm extends AbstractEditForm<ClinicalVisitDto> {
 			ClinicalVisitDto.I18N_PREFIX,
 			false,
 			new FieldVisibilityCheckers(),
-			FieldAccessCheckers.withCheckers(FieldHelper.createSensitiveDataFieldAccessChecker(isInJurisdiction)));
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
