@@ -43,6 +43,7 @@ public class EventJurisdictionChecker {
 
 		User user = userService.getCurrentUser();
 
-		return EventJurisdictionHelper.isInJurisdiction(userService::hasAnyRole, JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
+		return EventJurisdictionHelper
+			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
 	}
 }

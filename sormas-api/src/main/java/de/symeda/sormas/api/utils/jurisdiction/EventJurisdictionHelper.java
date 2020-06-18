@@ -1,26 +1,19 @@
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Collections;
-
 import de.symeda.sormas.api.event.EventJurisdictionDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventJurisdictionHelper {
 
-	public static boolean isInJurisdiction(RoleCheck roleCheck, UserJurisdiction userJurisdiction, EventJurisdictionDto eventJurisdiction) {
+	public static boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		EventJurisdictionDto eventJurisdiction) {
 
 		if (eventJurisdiction.getReportingUserUuid() != null
 			&& DataHelper.equal(userJurisdiction.getUuid(), eventJurisdiction.getReportingUserUuid())) {
 			return true;
-		}
-
-		if (eventJurisdiction.getRegionUuid() != null && roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
-			return DataHelper.equal(eventJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
-		}
-
-		if (eventJurisdiction.getDistrictUuid() != null && roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
-			return DataHelper.equal(eventJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
 		}
 
 		if (eventJurisdiction.getSurveillanceOfficerUuid() != null
@@ -28,6 +21,28 @@ public class EventJurisdictionHelper {
 			return true;
 		}
 
-		return roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER));
+		switch (jurisdictionLevel) {
+		case NONE:
+			return false;
+		case NATION:
+			return true;
+		case REGION:
+			return eventJurisdiction.getRegionUuid() != null && DataHelper.equal(eventJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+		case DISTRICT:
+			return eventJurisdiction.getDistrictUuid() != null
+				&& DataHelper.equal(eventJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+		case COMMUNITY:
+			return false;
+		case HEALTH_FACILITY:
+			return false;
+		case LABORATORY:
+			return false;
+		case EXTERNAL_LABORATORY:
+			return false;
+		case POINT_OF_ENTRY:
+			return false;
+		default:
+			return false;
+		}
 	}
 }
