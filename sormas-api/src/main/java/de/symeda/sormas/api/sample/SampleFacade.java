@@ -63,4 +63,6 @@ public interface SampleFacade {
 	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
+
+	Boolean isSampleEditAllowed(String sampleUuid);
 }

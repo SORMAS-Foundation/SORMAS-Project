@@ -84,6 +84,8 @@ public class EventFacadeEjb implements EventFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -435,5 +437,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 
+	}
+
+	public Boolean isEventEditAllowed(String eventUuid) {
+
+		Event event = eventService.getByUuid(eventUuid);
+		return eventJurisdictionChecker.isInJurisdiction(event);
 	}
 }

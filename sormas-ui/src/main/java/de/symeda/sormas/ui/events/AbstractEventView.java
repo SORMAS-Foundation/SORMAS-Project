@@ -65,6 +65,15 @@ public class AbstractEventView extends AbstractSubNavigationView {
 		}
 	}
 
+	public void setEventEditPermission(Component component) {
+
+		Boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid());
+
+		if (!isEventEditAllowed) {
+			component.setEnabled(false);
+		}
+	}
+
 	public EventReferenceDto getEventRef() {
 		return eventRef;
 	}

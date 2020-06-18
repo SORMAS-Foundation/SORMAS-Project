@@ -78,6 +78,15 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		}
 	}
 
+	public void setSampleEditPermission(Component component) {
+
+		Boolean isSampleEditAllowed = FacadeProvider.getSampleFacade().isSampleEditAllowed(getSampleRef().getUuid());
+
+		if (!isSampleEditAllowed) {
+			component.setEnabled(false);
+		}
+	}
+
 	public SampleReferenceDto getSampleRef() {
 		return sampleRef;
 	}
