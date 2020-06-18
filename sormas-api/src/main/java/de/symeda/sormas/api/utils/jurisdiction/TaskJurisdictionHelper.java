@@ -34,7 +34,4 @@ public class TaskJurisdictionHelper {
 
         return roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER));
     }
-
-
-
 }

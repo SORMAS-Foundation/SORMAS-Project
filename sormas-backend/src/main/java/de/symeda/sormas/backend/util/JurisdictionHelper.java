@@ -20,12 +20,15 @@ package de.symeda.sormas.backend.util;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.task.TaskJurisdictionDto;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
@@ -180,6 +183,36 @@ public class JurisdictionHelper {
 		Event event = task.getEvent();
 		if (event != null){
 			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
+		}
+
+		return jurisdiction;
+	}
+
+	public static SampleJurisdictionDto createSampleJurisdictionDto(Sample sample) {
+
+		if (sample == null) {
+			return null;
+		}
+
+		SampleJurisdictionDto jurisdiction = new SampleJurisdictionDto();
+
+		if (sample.getReportingUser() != null) {
+			jurisdiction.setReportingUserUuid(sample.getReportingUser().getUuid());
+		}
+
+		Case caze = sample.getAssociatedCase();
+		if (caze != null) {
+			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+		}
+
+		Contact contact = sample.getAssociatedContact();
+		if (contact != null){
+			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+		}
+
+		Facility labFacility = sample.getLab();
+		if (labFacility!=null){
+			jurisdiction.setLabUuid(sample.getLab().getUuid());
 		}
 
 		return jurisdiction;
