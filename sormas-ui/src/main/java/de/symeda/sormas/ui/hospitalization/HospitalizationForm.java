@@ -34,6 +34,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -106,7 +107,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		facilityField.setValue(healthFacility == null ? null : healthFacility.toString());
+		facilityField.setValue(
+			healthFacility == null
+				|| healthFacility.getUuid().equalsIgnoreCase(FacilityDto.OTHER_FACILITY_UUID)
+				|| healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
