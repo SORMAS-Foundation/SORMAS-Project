@@ -22,7 +22,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -96,7 +95,6 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(createRowCountLayout());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -317,29 +315,6 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		filterLayout.setExpandRatio(actionButtonsLayout, 1);
 
 		return filterLayout;
-	}
-
-	public HorizontalLayout createRowCountLayout() {
-		HorizontalLayout totalLayout = new HorizontalLayout();
-		totalLayout.setMargin(false);
-		totalLayout.addStyleName(CssStyles.VSPACE_4);
-		totalLayout.setSpacing(true);
-		totalLayout.setWidth(100, Unit.PERCENTAGE);
-
-		String labelText = FacilityType.LABORATORY.equals(criteria.getType()) ? Strings.labelNumberOfLaboratories : Strings.labelNumberOfFacilities;
-
-		Label labelTotal = new Label(I18nProperties.getString(labelText) + ":");
-		labelTotal.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
-		totalLayout.addComponent(labelTotal);
-		totalLayout.setExpandRatio(labelTotal, 1);
-		totalLayout.setComponentAlignment(labelTotal, Alignment.MIDDLE_RIGHT);
-
-		Label totalLabelValue = new Label(String.valueOf(grid.getItemCount()));
-		totalLabelValue.addStyleNames(CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_NONE);
-		totalLayout.addComponent(totalLabelValue);
-		totalLayout.setComponentAlignment(totalLabelValue, Alignment.MIDDLE_RIGHT);
-
-		return totalLayout;
 	}
 
 	@Override
