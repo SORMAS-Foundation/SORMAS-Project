@@ -17,42 +17,40 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.jurisdiction;
 
-import java.util.Collections;
-
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseJurisdictionHelper {
 
-	public static Boolean isInJurisdiction(RoleCheck roleCheck, UserJurisdiction userJurisdiction, CaseJurisdictionDto caseJurisdictionDto) {
+	public static Boolean isInJurisdiction(
+		JurisdictionLevel jurisdictionLevel,
+		UserJurisdiction userJurisdiction,
+		CaseJurisdictionDto caseJurisdictionDto) {
 
-		if (roleCheck.hasAnyRole(Collections.singleton(UserRole.NATIONAL_USER))
-			|| caseJurisdictionDto.getReportingUserUuid() != null
-				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid())) {
-			return true;
-		}
+		switch (jurisdictionLevel) {
 
-		if (roleCheck.hasAnyRole(UserRole.getSupervisorRoles())) {
+		case NONE:
+			return false;
+		case NATION:
+			return caseJurisdictionDto.getReportingUserUuid() != null
+				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid());
+		case REGION:
 			return DataHelper.equal(caseJurisdictionDto.getRegionUuid(), userJurisdiction.getRegionUuid());
-		}
-
-		if (roleCheck.hasAnyRole(UserRole.getOfficerRoles())) {
+		case DISTRICT:
 			return DataHelper.equal(caseJurisdictionDto.getDistrictUuid(), userJurisdiction.getDistrictUuid());
-		}
-
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.COMMUNITY_INFORMANT)))) {
+		case COMMUNITY:
 			return DataHelper.equal(caseJurisdictionDto.getCommunityUuid(), userJurisdiction.getCommunityUuid());
-		}
-
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.HOSPITAL_INFORMANT)))) {
+		case HEALTH_FACILITY:
 			return DataHelper.equal(caseJurisdictionDto.getHealthFacilityUuid(), userJurisdiction.getHealthFacilityUuid());
-		}
-
-		if ((roleCheck.hasAnyRole(Collections.singleton(UserRole.POE_INFORMANT)))) {
+		case LABORATORY:
+			return false;
+		case EXTERNAL_LABORATORY:
+			return false;
+		case POINT_OF_ENTRY:
 			return DataHelper.equal(caseJurisdictionDto.getPointOfEntryUuid(), userJurisdiction.getPointOfEntryUuid());
+		default:
+			return false;
 		}
-
-		return false;
 	}
 }
