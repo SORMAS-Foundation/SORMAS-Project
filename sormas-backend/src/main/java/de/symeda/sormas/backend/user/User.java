@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -48,8 +50,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = "users")
 @Audited
@@ -318,7 +318,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	@Transient
-	public JurisdictionLevel getJurisdictionLevel(){
+	public JurisdictionLevel getJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 }

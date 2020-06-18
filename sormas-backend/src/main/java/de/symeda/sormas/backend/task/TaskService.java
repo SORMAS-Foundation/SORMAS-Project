@@ -117,7 +117,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
-				|| (jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.POE_NATIONAL_USER))
+				|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}

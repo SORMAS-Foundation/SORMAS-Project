@@ -236,8 +236,8 @@ public enum UserRole
 	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
-			JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
-			if (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY) {
+			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
 				return jurisdictionLevel;
 			}
 		}

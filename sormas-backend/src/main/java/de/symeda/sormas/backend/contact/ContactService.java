@@ -826,7 +826,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.POE_NATIONAL_USER))
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());

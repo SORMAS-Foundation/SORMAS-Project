@@ -51,6 +51,10 @@ public class UserRoleTest {
 			UserRole.NATIONAL_USER,
 			UserRole.LAB_USER);
 
+		assertValidRolesCombination(
+			UserRole.ADMIN,
+			UserRole.LAB_USER);
+
 		assertInvalidRolesCombination(
 			UserRole.NATIONAL_USER,
 			UserRole.EXTERNAL_LAB_USER);
