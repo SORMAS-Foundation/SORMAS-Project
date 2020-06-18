@@ -44,8 +44,11 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -126,9 +129,20 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
 
+		validate(dto);
+
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
 		return toDto(entity);
+	}
+
+	@Override
+	public void validate(EventParticipantDto eventParticipant) throws ValidationRuntimeException {
+
+		// Check whether any required field that does not have a not null constraint in the database is empty
+		if (eventParticipant.getPerson() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
 	}
 
 	@Override

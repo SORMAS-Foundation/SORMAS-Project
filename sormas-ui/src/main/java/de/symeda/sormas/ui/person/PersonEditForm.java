@@ -17,12 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfFourCol;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
@@ -82,6 +82,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final long serialVersionUID = -1L;
 
+	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
@@ -102,7 +103,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingPersonInformation)) +
+			loc(PERSON_INFORMATION_HEADING_LOC) +
 					fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 					fluidRow(
 							fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -175,6 +176,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	@Override
 	protected void addFields() {
+
+		Label personInformationHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonInformation));
+		personInformationHeadingLabel.addStyleName(H3);
+		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);

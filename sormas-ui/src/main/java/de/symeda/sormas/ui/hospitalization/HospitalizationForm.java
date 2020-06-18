@@ -17,16 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.hospitalization;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import com.vaadin.server.UserError;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
@@ -55,6 +57,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String HOSPITALIZATION_HEADING_LOC = "hospitalizationHeadingLoc";
 	private static final String HEALTH_FACILITY = Captions.CaseHospitalization_healthFacility;
 	private final CaseDataDto caze;
 	private final ViewMode viewMode;
@@ -65,7 +68,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingHospitalization)) +
+			loc(HOSPITALIZATION_HEADING_LOC) +
 			fluidRowLocs(HEALTH_FACILITY, HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY) +
 			fluidRowLocs(HospitalizationDto.ADMISSION_DATE, HospitalizationDto.DISCHARGE_DATE, HospitalizationDto.LEFT_AGAINST_ADVICE, "") +
 					fluidRowLocs(3, HospitalizationDto.INTENSIVE_CARE_UNIT, 3,
@@ -96,6 +99,10 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		if (caze == null || viewMode == null) {
 			return;
 		}
+
+		Label hospitalizationHeadingLabel = new Label(I18nProperties.getString(Strings.headingHospitalization));
+		hospitalizationHeadingLabel.addStyleName(H3);
+		getContent().addComponent(hospitalizationHeadingLabel, HOSPITALIZATION_HEADING_LOC);
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();

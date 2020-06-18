@@ -1,11 +1,12 @@
 package de.symeda.sormas.ui.caze.maternalhistory;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
@@ -26,11 +27,13 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String MATERNAL_HISTORY_HEADING_LOC = "maternalHistoryHeadingLoc";
+
 	private final ViewMode viewMode;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingMaternalHistory)) +
+			loc(MATERNAL_HISTORY_HEADING_LOC) +
 			fluidRowLocs(MaternalHistoryDto.CHILDREN_NUMBER, MaternalHistoryDto.AGE_AT_BIRTH, "") +
 			fluidRowLocs(MaternalHistoryDto.CONJUNCTIVITIS, MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH) +
 			fluidRowLocs(MaternalHistoryDto.MACULOPAPULAR_RASH, MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH) +
@@ -50,6 +53,10 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 
 	@Override
 	protected void addFields() {
+
+		Label maternalHistoryHeadingLabel = new Label(I18nProperties.getString(Strings.headingMaternalHistory));
+		maternalHistoryHeadingLabel.addStyleName(H3);
+		getContent().addComponent(maternalHistoryHeadingLabel, MATERNAL_HISTORY_HEADING_LOC);
 
 		TextField tfChildrenNumber = addField(MaternalHistoryDto.CHILDREN_NUMBER, TextField.class);
 		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfChildrenNumber.getCaption()));
