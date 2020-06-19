@@ -42,6 +42,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -91,6 +92,40 @@ public class PathogenTestController {
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
 	}
 
+	public void showBulkTestResultComponent(Collection<? extends SampleIndexDto> selectedSamples, Disease disease) {
+
+		if (selectedSamples.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoSamplesSelected),
+				I18nProperties.getString(Strings.messageNoSamplesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		SampleIndexDto firstSelectedSample = selectedSamples.stream().findFirst().orElse(null);
+		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(firstSelectedSample.getUuid());
+		
+		// Create a temporary pathogenTest in order to use the CommitDiscardWrapperComponent
+		PathogenTestDto bulkResultData = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
+
+		PathogenTestForm form = new PathogenTestForm(sampleDto, true, 1);
+		form.setValue(bulkResultData);
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
+			form,
+			UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE),
+			form.getFieldGroup());
+
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateBulkTests));
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+			}
+		});
+	}
+	
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		// get fresh data
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());

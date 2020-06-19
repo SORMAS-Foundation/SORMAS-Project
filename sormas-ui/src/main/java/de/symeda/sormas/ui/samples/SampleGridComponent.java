@@ -330,5 +330,6 @@ public class SampleGridComponent extends VerticalLayout {
 	}
 	
 	private void createBulkTestResult() {
+		ControllerProvider.getPathogenTestController().showBulkTestResultComponent(grid.asMultiSelect().getSelectedItems(), criteria.getDisease()); 
 	}
 }
