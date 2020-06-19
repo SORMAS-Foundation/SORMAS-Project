@@ -573,6 +573,7 @@ public interface Strings {
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	String messageTestsCreated = "messageTestsCreated";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";

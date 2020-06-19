@@ -46,6 +46,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -122,8 +123,26 @@ public class PathogenTestController {
 
 			@Override
 			public void onCommit() {
+				PathogenTestDto updatedBulkResultData = form.getValue();
+				bulkCreate(selectedSamples, updatedBulkResultData);
+
+				popupWindow.close();
+				Notification.show(I18nProperties.getString(Strings.messageTestsCreated), Type.HUMANIZED_MESSAGE);
 			}
 		});
+	}
+	
+	private void bulkCreate(
+		Collection<? extends SampleIndexDto> selectedSamples,
+		PathogenTestDto updatedBulkResultData) {
+
+		for (SampleIndexDto indexDto : selectedSamples) {
+			
+			updatedBulkResultData.setUuid(DataHelper.createUuid());
+			updatedBulkResultData.setSample(indexDto.toReference());
+			
+			savePathogenTest(updatedBulkResultData, null);
+		}
 	}
 	
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
