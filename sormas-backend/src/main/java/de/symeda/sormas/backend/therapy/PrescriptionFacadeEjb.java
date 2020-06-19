@@ -26,7 +26,7 @@ import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -129,10 +129,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	@Override
 	public void deletePrescription(String prescriptionUuid) {
 
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper user right call #944
-		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
-			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete prescriptions");
+		if (!userService.hasRight(UserRight.PRESCRIPTION_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete prescriptions");
 		}
 
 		Prescription prescription = service.getByUuid(prescriptionUuid);

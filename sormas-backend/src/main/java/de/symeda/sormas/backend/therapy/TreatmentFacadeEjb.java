@@ -25,7 +25,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -127,10 +127,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	@Override
 	public void deleteTreatment(String treatmentUuid) {
 
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper user right call #944
-		if (!user.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_SUPERVISOR)) {
-			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete treatments");
+		if (!userService.hasRight(UserRight.TREATMENT_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete treatments");
 		}
 
 		Treatment treatment = service.getByUuid(treatmentUuid);

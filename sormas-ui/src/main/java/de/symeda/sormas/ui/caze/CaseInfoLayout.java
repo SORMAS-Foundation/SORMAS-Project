@@ -58,10 +58,12 @@ public class CaseInfoLayout extends HorizontalLayout {
 		leftColumnLayout.setMargin(false);
 		leftColumnLayout.setSpacing(true);
 		{
-			addDescLabel(
-				leftColumnLayout,
-				DataHelper.getShortUuid(caseDto.getUuid()),
-				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID)).setDescription(caseDto.getUuid());
+			final Label caseIdLabel = addDescLabel(
+					leftColumnLayout,
+					DataHelper.getShortUuid(caseDto.getUuid()),
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID));
+			caseIdLabel.setId("caseIdLabel");
+			caseIdLabel.setDescription(caseDto.getUuid());
 
 			if (FacadeProvider.getConfigFacade().isGermanServer()) {
 				addDescLabel(

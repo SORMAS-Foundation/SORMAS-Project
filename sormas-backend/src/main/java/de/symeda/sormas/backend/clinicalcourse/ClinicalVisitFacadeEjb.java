@@ -28,7 +28,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
@@ -209,10 +209,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	@Override
 	public void deleteClinicalVisit(String clinicalVisitUuid) {
 
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN) && !user.getUserRoles().contains(UserRole.CASE_SUPERVISOR)) {
-			throw new UnsupportedOperationException("Only admins and clinicians are allowed to delete clinical visits");
+		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete clinical visits");
 		}
 
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);

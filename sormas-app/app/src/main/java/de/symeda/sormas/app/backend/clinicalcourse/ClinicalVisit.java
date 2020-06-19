@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -52,9 +54,9 @@ public class ClinicalVisit extends PseudonymizableAdo {
 	private Disease disease;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date visitDateTime;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String visitRemarks;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String visitingPerson;
 
 	@ParentAdo

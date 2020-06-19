@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.contact;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -92,7 +95,7 @@ public class Contact extends PseudonymizableAdo {
 	private String caseUuid;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
 	private Disease disease;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
@@ -104,19 +107,19 @@ public class Contact extends PseudonymizableAdo {
 	private ContactStatus contactStatus;
 	@Enumerated(EnumType.STRING)
 	private FollowUpStatus followUpStatus;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String followUpComment;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date followUpUntil;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User contactOfficer;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String description;
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String relationDescription;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
 	@DatabaseField
@@ -128,7 +131,7 @@ public class Contact extends PseudonymizableAdo {
 	private boolean highPriority;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown careForPeopleOver60;
@@ -142,18 +145,18 @@ public class Contact extends PseudonymizableAdo {
 
 	@Column
 	private String caseIdExternalSystem;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String caseOrEventInformation;
 
 	@Enumerated(EnumType.STRING)
 	private ContactCategory contactCategory;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String contactProximityDetails;
 
 	@Enumerated(EnumType.STRING)
 	@Deprecated
 	private OrderMeans quarantineOrderMeans;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHelpNeeded;
 	@DatabaseField
 	private boolean quarantineOrderedVerbally;
@@ -165,13 +168,13 @@ public class Contact extends PseudonymizableAdo {
 	private Date quarantineOrderedOfficialDocumentDate;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomePossibleComment;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
 
 	public Person getPerson() {

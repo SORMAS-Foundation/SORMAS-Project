@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -52,10 +54,10 @@ public class EpiDataBurial extends PseudonymizableAdo {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String burialPersonname;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String burialRelation;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -146,4 +148,5 @@ public class EpiDataBurial extends PseudonymizableAdo {
 	public String toString() {
 		return super.toString() + " " + DateFormatHelper.formatLocalDate(getBurialDateTo());
 	}
+
 }

@@ -55,7 +55,6 @@ import de.symeda.sormas.ui.map.MarkerIcon;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ValidationConstants;
@@ -109,7 +108,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	protected void addFields() {
 		TextArea addressField = addField(LocationDto.ADDRESS, TextArea.class);
 		addressField.setRows(5);
-		addressField.addValidator(new MaxLengthValidator(ValidationConstants.TEXT_FIELD_MAX_LENGTH));
 
 		addField(LocationDto.DETAILS, TextField.class);
 		addField(LocationDto.CITY, TextField.class);
@@ -117,9 +115,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
-		addField(LocationDto.LATITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(LocationDto.LONGITUDE, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
+		tfLatitude.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfLatitude);
+		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
+		tfLongitude.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfLongitude);
+		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		tfAccuracy.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfAccuracy);
 
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);

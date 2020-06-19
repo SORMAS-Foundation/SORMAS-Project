@@ -129,26 +129,50 @@ public final class LayoutUtil {
 		return element("span", cssClasses, content);
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String h1(String content) {
 		return element("h1", null, span(content));
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String h2(String content) {
 		return element("h2", null, span(content));
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String h3(String content) {
 		return element("h3", null, span(content));
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String h4(String content) {
 		return element("h4", null, span(content));
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String strong(String cssClasses, String content) {
 		return element("strong", cssClasses, content);
 	}
 
+	/**
+	 * This method must not be used with an internationalized string in an html layout, otherwise the internationalization will not work
+	 * properly.
+	 */
 	public static String small(String cssClasses, String content) {
 		return element("small", cssClasses, content);
 	}

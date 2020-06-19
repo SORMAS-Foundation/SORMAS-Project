@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -52,7 +54,7 @@ public class EpiDataTravel extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private TravelType travelType;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String travelDestination;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)

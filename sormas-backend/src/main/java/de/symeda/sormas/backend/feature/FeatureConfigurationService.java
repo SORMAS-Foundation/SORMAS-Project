@@ -1,8 +1,9 @@
 package de.symeda.sormas.backend.feature;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -120,13 +121,30 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 	public void createMissingFeatureConfigurations() {
 
 		List<FeatureConfiguration> featureConfigurations = getAll();
-		List<FeatureType> existingConfigurations = featureConfigurations.stream()
-			.filter(config -> config.getFeatureType().isServerFeature())
-			.map(config -> config.getFeatureType())
-			.collect(Collectors.toList());
-		FeatureType.getAllServerFeatures().stream().filter(feature -> !existingConfigurations.contains(feature)).forEach(featureType -> {
-			FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
-			ensurePersisted(configuration);
+		Map<FeatureType, FeatureConfiguration> existingListOfConfigurations = new HashMap<>();
+
+		for (FeatureConfiguration singleFeatureConfiguration : featureConfigurations) {
+			existingListOfConfigurations.put(singleFeatureConfiguration.getFeatureType(), singleFeatureConfiguration);
+		}
+
+		FeatureType.getAllServerFeatures().forEach(featureType -> {
+			FeatureConfiguration savedConfiguration = existingListOfConfigurations.get(featureType);
+			if (savedConfiguration != null) {
+				if (featureType.isDependent() && featureType.dependencyTriggered()) {
+					savedConfiguration.setEnabled(false);
+				} else {
+					savedConfiguration.setEnabled(featureType.isEnabledDefault());
+				}
+				ensurePersisted(savedConfiguration);
+			} else {
+				FeatureConfiguration configuration;
+				if (featureType.isDependent() && featureType.dependencyTriggered()) {
+					configuration = FeatureConfiguration.build(featureType, false);
+				} else {
+					configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+				}
+				ensurePersisted(configuration);
+			}
 		});
 	}
 }

@@ -226,7 +226,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
@@ -1324,7 +1323,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		if (newCase.getSurveillanceOfficer() == null) {
+		if (newCase.getSurveillanceOfficer() == null || !newCase.getSurveillanceOfficer().getDistrict().equals(newCase.getDistrict())) {
 			setResponsibleSurveillanceOfficer(newCase);
 		}
 
@@ -1492,7 +1491,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	private void setResponsibleSurveillanceOfficer(Case caze) {
 
-		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)) {
+		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
+			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
 			List<User> informants =
@@ -1504,6 +1504,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				List<User> survOffs = userService.getAllByDistrict(caze.getDistrict(), false, UserRole.SURVEILLANCE_OFFICER);
 				if (!survOffs.isEmpty()) {
 					caze.setSurveillanceOfficer(survOffs.get(rand.nextInt(survOffs.size())));
+				} else {
+					caze.setSurveillanceOfficer(null);
 				}
 			}
 		}

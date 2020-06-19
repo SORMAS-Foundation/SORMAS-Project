@@ -1,11 +1,12 @@
 package de.symeda.sormas.ui.caze.maternalhistory;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
@@ -28,11 +29,13 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String MATERNAL_HISTORY_HEADING_LOC = "maternalHistoryHeadingLoc";
+
 	private final ViewMode viewMode;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingMaternalHistory)) +
+			loc(MATERNAL_HISTORY_HEADING_LOC) +
 			fluidRowLocs(MaternalHistoryDto.CHILDREN_NUMBER, MaternalHistoryDto.AGE_AT_BIRTH, "") +
 			fluidRowLocs(MaternalHistoryDto.CONJUNCTIVITIS, MaternalHistoryDto.CONJUNCTIVITIS_ONSET, MaternalHistoryDto.CONJUNCTIVITIS_MONTH) +
 			fluidRowLocs(MaternalHistoryDto.MACULOPAPULAR_RASH, MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET, MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH) +
@@ -54,26 +57,38 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 	@Override
 	protected void addFields() {
 
+		Label maternalHistoryHeadingLabel = new Label(I18nProperties.getString(Strings.headingMaternalHistory));
+		maternalHistoryHeadingLabel.addStyleName(H3);
+		getContent().addComponent(maternalHistoryHeadingLabel, MATERNAL_HISTORY_HEADING_LOC);
+
 		TextField tfChildrenNumber = addField(MaternalHistoryDto.CHILDREN_NUMBER, TextField.class);
 		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfChildrenNumber.getCaption()));
+		removeMaxLengthValidators(tfChildrenNumber);
 		TextField tfAgeAtBirth = addField(MaternalHistoryDto.AGE_AT_BIRTH, TextField.class);
 		tfAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfAgeAtBirth.getCaption()));
+		removeMaxLengthValidators(tfAgeAtBirth);
 		TextField tfConjunctivitisMonth = addField(MaternalHistoryDto.CONJUNCTIVITIS_MONTH, TextField.class);
 		tfConjunctivitisMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfConjunctivitisMonth.getCaption()));
+		removeMaxLengthValidators(tfConjunctivitisMonth);
 		TextField tfMaculopapularRashMonth = addField(MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH, TextField.class);
 		tfMaculopapularRashMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
+		removeMaxLengthValidators(tfMaculopapularRashMonth);
 		TextField tfSwollenLymphsMonth = addField(MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH, TextField.class);
 		tfSwollenLymphsMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfSwollenLymphsMonth.getCaption()));
+		removeMaxLengthValidators(tfSwollenLymphsMonth);
 		TextField tfArthralgiaArthritisMonth = addField(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH, TextField.class);
 		tfArthralgiaArthritisMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
+		removeMaxLengthValidators(tfArthralgiaArthritisMonth);
 		TextField otherComplicationsMonth = addField(MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, TextField.class);
 		otherComplicationsMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, otherComplicationsMonth.getCaption()));
+		removeMaxLengthValidators(otherComplicationsMonth);
 		TextField rashExposureMonth = addField(MaternalHistoryDto.RASH_EXPOSURE_MONTH, TextField.class);
 		rashExposureMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, rashExposureMonth.getCaption()));
+		removeMaxLengthValidators(rashExposureMonth);
 
 		addFields(
 			MaternalHistoryDto.CONJUNCTIVITIS_ONSET,

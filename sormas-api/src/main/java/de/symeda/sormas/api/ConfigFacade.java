@@ -75,4 +75,8 @@ public interface ConfigFacade {
 	int getMapZoom();
 
 	String getGeocodingOsgtsEndpoint();
+
+	String getPIAUrl();
+
+	void validateExternalUrls();
 }

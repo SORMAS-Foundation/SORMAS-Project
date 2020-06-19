@@ -17,9 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,8 +35,9 @@ public class SampleEditForm extends AbstractSampleForm {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String HTML_LAYOUT =
-		h3(I18nProperties.getString(Strings.headingLaboratorySample)) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
+	private static final String LABORATORY_SAMPLE_HEADING_LOC = "laboratorySampleHeadingLoc";
+
+	private static final String HTML_LAYOUT = loc(LABORATORY_SAMPLE_HEADING_LOC) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
 	public SampleEditForm(boolean isInJurisdiction) {
 		super(
@@ -47,6 +49,10 @@ public class SampleEditForm extends AbstractSampleForm {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
+		Label laboratorySampleHeadingLabel = new Label(I18nProperties.getString(Strings.headingLaboratorySample));
+		laboratorySampleHeadingLabel.addStyleName(H3);
+		getContent().addComponent(laboratorySampleHeadingLabel, LABORATORY_SAMPLE_HEADING_LOC);
+
 		addCommonFields();
 
 		initializeRequestedTestFields();
