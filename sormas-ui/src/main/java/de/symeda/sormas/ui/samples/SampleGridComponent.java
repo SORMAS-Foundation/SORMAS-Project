@@ -186,6 +186,10 @@ public class SampleGridComponent extends VerticalLayout {
 
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(
 					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(
+						I18nProperties.getCaption(Captions.bulkEnterTestResult),
+						VaadinIcons.ELLIPSIS_H,
+						mi -> createBulkTestResult()),
 					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
 						ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
 
@@ -332,5 +336,8 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public SampleCriteria getCriteria() {
 		return criteria;
+	}
+	
+	private void createBulkTestResult() {
 	}
 }
