@@ -674,6 +674,15 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	
+	String labelNumberOfUsers = "labelNumberOfUsers";
+	String labelNumberOfRegions = "labelNumberOfRegions";
+	String labelNumberOfDistricts = "labelNumberOfDistricts";
+	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
+	String labelNumberOfFacilities = "labelNumberOfFacilities";
+	String labelNumberOfLaboratories = "labelNumberOfLaboratories";
+	
 	String toCase = "toCase";
 	String total = "total";
 	String unknown = "unknown";

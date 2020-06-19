@@ -2559,9 +2559,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return caseService.exists(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
+
 	}
 
 	public Boolean isCaseEditAllowed(String caseUuid) {

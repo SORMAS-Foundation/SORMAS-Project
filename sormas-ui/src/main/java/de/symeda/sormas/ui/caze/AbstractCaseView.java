@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Property.ValueChangeEvent;
@@ -47,19 +48,18 @@ import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
-import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public abstract class AbstractCaseView extends AbstractSubNavigationView {
+public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceDto> {
 
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
-	private CaseReferenceDto caseRef = null;
 	private Boolean hasOutbreak;
 
 	private final ViewConfiguration viewConfiguration;
@@ -97,7 +97,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			public void valueChange(ValueChangeEvent event) {
 				viewConfiguration.setViewMode((ViewMode) event.getProperty().getValue());
 				// refresh
-				ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
+				ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 			}
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
@@ -106,19 +106,11 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 
-		String[] passedParams = params.split("\\?");
-		if (passedParams.length > 0) {
-			// Remove possible slash from filters
-			String uuid = passedParams[0].replaceAll("/", "");
-			caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(uuid);
-		}
-
-		if (caseRef == null) {
-			ControllerProvider.getCaseController().navigateToIndex();
+		if (!findReferenceByParams(params)) {
 			return;
 		}
 
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
 
 		// Handle outbreaks for the disease and district of the case
 		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
@@ -194,7 +186,7 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
-		infoLabel.setValue(caseRef.getCaption());
+		infoLabel.setValue(getReference().getCaption());
 
 		infoLabelSub.setValue(
 			caze.getDisease() != Disease.OTHER
@@ -207,37 +199,44 @@ public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 		super.enter(event);
 
-		if (caseRef == null) {
-			// NOOP: opening a case centric view without a case defaults to another view
+		if (getReference() == null) {
+			UI.getCurrent().getNavigator().navigateTo(getRootViewName());
+		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
+			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
 		} else {
-			if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
-				ControllerProvider.getCaseController().navigateToCase(caseRef.getUuid());
-			} else {
-				initView(event.getParameters().trim());
-			}
+			initView(event.getParameters().trim());
 		}
 	}
 
-	/**
-	 * We be called by {@link #enter(ViewChangeEvent)}, when a case is selected and the view shall show its specific content.
-	 * 
-	 * @param params
-	 *            The URL parameters String
-	 */
-	protected abstract void initView(String params);
+	@Override
+	protected String getRootViewName() {
+		return ROOT_VIEW_NAME;
+	}
+
+	@Override
+	protected CaseReferenceDto getReferenceByUuid(String uuid) {
+
+		final CaseReferenceDto reference;
+		if (FacadeProvider.getCaseFacade().exists(uuid)) {
+			reference = FacadeProvider.getCaseFacade().getReferenceByUuid(uuid);
+		} else {
+			reference = null;
+		}
+		return reference;
+	}
 
 	@Override
 	protected void setSubComponent(Component newComponent) {
 
 		super.setSubComponent(newComponent);
 
-		if (caseRef != null && FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
+		if (getReference() != null && FacadeProvider.getCaseFacade().isDeleted(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
 
 	public CaseReferenceDto getCaseRef() {
-		return caseRef;
+		return getReference();
 	}
 
 	public boolean isHasOutbreak() {
