@@ -57,7 +57,6 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.utils.ValidationConstants;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 

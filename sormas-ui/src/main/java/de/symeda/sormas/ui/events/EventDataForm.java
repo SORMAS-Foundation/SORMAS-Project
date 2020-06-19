@@ -49,9 +49,7 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.MaxLengthValidator;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.utils.ValidationConstants;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 

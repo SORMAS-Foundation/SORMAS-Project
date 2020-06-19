@@ -17,20 +17,21 @@ package de.symeda.sormas.api.utils.jurisdiction;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 
 public class SampleJurisdictionHelper {
 
 	public static boolean isInJurisdiction(
-		RoleCheck roleCheck,
+		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		CaseJurisdictionDto associatedCaseJurisdiction,
 		ContactJurisdictionDto associatedContactJurisdiction) {
 		if (associatedCaseJurisdiction != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(roleCheck, userJurisdiction, associatedCaseJurisdiction);
+			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, associatedCaseJurisdiction);
 		}
 
 		if (associatedContactJurisdiction != null) {
-			return ContactJurisdictionHelper.isInJurisdiction(roleCheck, userJurisdiction, associatedContactJurisdiction);
+			return ContactJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, associatedContactJurisdiction);
 		}
 
 		return true;

@@ -43,7 +43,7 @@ public class SampleJurisdictionChecker {
 		User user = userService.getCurrentUser();
 
 		return SampleJurisdictionHelper.isInJurisdiction(
-			userService::hasAnyRole,
+			user.getJurisdictionLevel(),
 			JurisdictionHelper.createUserJurisdiction(user),
 			sampleCaseJurisdiction,
 			sampleContactJurisdiction);
