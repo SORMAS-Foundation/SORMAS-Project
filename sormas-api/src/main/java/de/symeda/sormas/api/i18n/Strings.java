@@ -285,9 +285,11 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
+	String headingNoDiseasesSelected = "headingNoDiseasesSelected";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";
+	String headingNoLaboratoriesSelected = "headingNoLaboratoriesSelected";
 	String headingNoPathogenTestsSelected = "headingNoPathogenTestsSelected";
 	String headingNoPrescriptionsSelected = "headingNoPrescriptionsSelected";
 	String headingNoRowsSelected = "headingNoRowsSelected";
@@ -528,9 +530,11 @@ public interface Strings {
 	String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
+	String messageNoDiseasesSelected = "messageNoDiseasesSelected";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+	String messageNoLaboratoriesSelected = "messageNoLaboratoriesSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
 	String messageNoPrescriptionsSelected = "messageNoPrescriptionsSelected";
 	String messageNoRowsSelected = "messageNoRowsSelected";
