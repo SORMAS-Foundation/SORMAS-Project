@@ -4622,4 +4622,26 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+-- 2020-06-19 Add Area as new infrastructure type #1983
+CREATE TABLE areas(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	externalid varchar(512),
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE areas OWNER TO sormas_user;
+
+CREATE TABLE areas_history (LIKE areas);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+ALTER TABLE areas_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add Area as new infrastructure type #1983');
+
 -- *** Insert new sql commands BEFORE this line ***

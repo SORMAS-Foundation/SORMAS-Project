@@ -21,6 +21,7 @@ public interface Validations {
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
+	String importAreaAlreadyExists = "importAreaAlreadyExists";
 	String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";

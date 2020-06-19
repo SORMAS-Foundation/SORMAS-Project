@@ -1,11 +1,8 @@
 package de.symeda.sormas.api.feature;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
@@ -26,8 +23,16 @@ public enum FeatureType {
 	TASK_GENERATION_GENERAL(true, true, null),
 	CAMPAIGNS(true, false, null),
 	CASE_SURVEILANCE(true, true, null),
-	CONTACT_TRACING(true, true, new FeatureType[]{CASE_SURVEILANCE}),
-	SAMPLES_LAB(true, true, new FeatureType[]{CASE_SURVEILANCE, CONTACT_TRACING});
+	CONTACT_TRACING(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE }),
+	SAMPLES_LAB(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING }),
+	INFRASTRUCTURE_TYPE_AREA(true, false, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
@@ -71,7 +76,7 @@ public enum FeatureType {
 		return serverFeatures;
 	}
 
-	public boolean isDependent(){
+	public boolean isDependent() {
 		return dependentFeatures != null;
 	}
 
@@ -83,17 +88,17 @@ public enum FeatureType {
 		return listOfEnabledDependentFeatures.isEmpty();
 	}
 
-	public List<FeatureType> checkDependency(List<FeatureType> featureTypeList){
+	public List<FeatureType> checkDependency(List<FeatureType> featureTypeList) {
 		List<FeatureType> listOfEnabledDependentFeatures = new ArrayList<>();
-		for(FeatureType featureType : featureTypeList) {
-			if (featureType.isDependent()){
+		for (FeatureType featureType : featureTypeList) {
+			if (featureType.isDependent()) {
 				listOfEnabledDependentFeatures.addAll(checkDependency(Arrays.asList(featureType.dependentFeatures)));
 			}
 
-			if (featureType.isEnabledDefault() && !featureType.isDependent()){
+			if (featureType.isEnabledDefault() && !featureType.isDependent()) {
 				listOfEnabledDependentFeatures.add(featureType);
 			}
-		};
-		return  listOfEnabledDependentFeatures;
+		} ;
+		return listOfEnabledDependentFeatures;
 	}
 }
