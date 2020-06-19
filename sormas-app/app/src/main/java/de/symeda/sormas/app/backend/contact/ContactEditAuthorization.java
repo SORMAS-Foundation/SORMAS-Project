@@ -8,10 +8,12 @@ import de.symeda.sormas.app.util.JurisdictionHelper;
 
 public class ContactEditAuthorization {
 
-    public static boolean isContactEditAllowed(Contact contact) {
-        User user = ConfigProvider.getUser();
+	public static boolean isContactEditAllowed(Contact contact) {
+		User user = ConfigProvider.getUser();
 
-        return ContactJurisdictionHelper
-                .isInJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()), JurisdictionHelper.createUserJurisdiction(user), JurisdictionHelper.createContactJurisdictionDto(contact));
-    }
+		return ContactJurisdictionHelper.isInJurisdiction(
+			UserRole.getJurisdictionLevel(user.getUserRoles()),
+			JurisdictionHelper.createUserJurisdiction(user),
+			JurisdictionHelper.createContactJurisdictionDto(contact));
+	}
 }

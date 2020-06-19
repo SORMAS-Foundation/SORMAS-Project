@@ -32,8 +32,6 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 
-import javax.swing.*;
-
 public class JurisdictionHelper {
 
 	public static UserJurisdiction createUserJurisdiction(User user) {
@@ -118,13 +116,13 @@ public class JurisdictionHelper {
 		return jurisdiction;
 	}
 
-	public static EventJurisdictionDto createEventJurisdictionDto(Event event){
-		if (event == null){
+	public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
+		if (event == null) {
 			return null;
 		}
 
 		Location eventLocation = event.getEventLocation();
-		if (eventLocation == null){
+		if (eventLocation == null) {
 			return null;
 		}
 
@@ -138,15 +136,15 @@ public class JurisdictionHelper {
 			eventJurisdiction.setSurveillanceOfficerUuid(event.getSurveillanceOfficer().getUuid());
 		}
 
-		if (eventLocation.getRegion() != null){
+		if (eventLocation.getRegion() != null) {
 			eventJurisdiction.setRegionUuid(eventLocation.getRegion().getUuid());
 		}
 
-		if (eventLocation.getDistrict() != null){
+		if (eventLocation.getDistrict() != null) {
 			eventJurisdiction.setDistrictUuid(eventLocation.getDistrict().getUuid());
 		}
 
-		if (eventLocation.getCommunity() != null){
+		if (eventLocation.getCommunity() != null) {
 			eventJurisdiction.setCommunityUuid(eventLocation.getCommunity().getUuid());
 
 		}
@@ -176,12 +174,12 @@ public class JurisdictionHelper {
 		}
 
 		Contact contact = task.getContact();
-		if (contact != null){
+		if (contact != null) {
 			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
 		}
 
 		Event event = task.getEvent();
-		if (event != null){
+		if (event != null) {
 			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
 		}
 
@@ -206,12 +204,12 @@ public class JurisdictionHelper {
 		}
 
 		Contact contact = sample.getAssociatedContact();
-		if (contact != null){
+		if (contact != null) {
 			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
 		}
 
 		Facility labFacility = sample.getLab();
-		if (labFacility!=null){
+		if (labFacility != null) {
 			jurisdiction.setLabUuid(sample.getLab().getUuid());
 		}
 

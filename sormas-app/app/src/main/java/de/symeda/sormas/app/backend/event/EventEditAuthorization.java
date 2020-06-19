@@ -8,10 +8,12 @@ import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 
 public class EventEditAuthorization {
 
-    public static boolean isEventEditAllowed(Event event) {
-        User user = ConfigProvider.getUser();
+	public static boolean isEventEditAllowed(Event event) {
+		User user = ConfigProvider.getUser();
 
-        return EventJurisdictionHelper
-                .isInJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()), JurisdictionHelper.createUserJurisdiction(user), JurisdictionHelper.createEventJurisdictionDto(event));
-    }
+		return EventJurisdictionHelper.isInJurisdiction(
+			UserRole.getJurisdictionLevel(user.getUserRoles()),
+			JurisdictionHelper.createUserJurisdiction(user),
+			JurisdictionHelper.createEventJurisdictionDto(event));
+	}
 }

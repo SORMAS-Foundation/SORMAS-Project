@@ -33,7 +33,8 @@ public class PortHealthInfoView extends AbstractCaseView {
 	@Override
 	protected void initView(String params) {
 
-		CommitDiscardWrapperComponent<PortHealthInfoForm> portHealthInfoComponent = ControllerProvider.getCaseController().getPortHealthInfoComponent(getCaseRef().getUuid());
+		CommitDiscardWrapperComponent<PortHealthInfoForm> portHealthInfoComponent =
+			ControllerProvider.getCaseController().getPortHealthInfoComponent(getCaseRef().getUuid());
 		setSubComponent(portHealthInfoComponent);
 
 		setCaseEditPermission(portHealthInfoComponent);
