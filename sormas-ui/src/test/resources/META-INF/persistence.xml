@@ -64,7 +64,7 @@
 
       		<property name="hibernate.hbm2ddl.auto" value="create-drop" />
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 	    	
 			<!-- 			
