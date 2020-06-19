@@ -89,4 +89,8 @@ public interface Validations {
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
+	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
+	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
+	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
+	String campaignFormTranslationLanguageCodeRequired = "campaignFormTranslationLanguageCodeRequired";
 }

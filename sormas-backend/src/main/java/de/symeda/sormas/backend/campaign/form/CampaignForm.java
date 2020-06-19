@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = "campaignforms")
@@ -27,14 +28,12 @@ public class CampaignForm extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignforms";
 
-	public static final String FORM_ID = "formId";
-	public static final String LANGUAGE_CODE = "languageCode";
-	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
-
 	private String formId;
 	private String languageCode;
 	private String campaignFormElements;
 	private List<CampaignFormElement> campaignFormElementsList;
+	private String campaignFormTranslations;
+	private List<CampaignFormTranslations> campaignFormTranslationsList;
 
 	@Column
 	public String getFormId() {
@@ -67,7 +66,7 @@ public class CampaignForm extends AbstractDomainObject {
 	@Transient
 	public List<CampaignFormElement> getCampaignFormElementsList() {
 		if (campaignFormElementsList == null) {
-			if (StringUtils.isEmpty(campaignFormElements)) {
+			if (StringUtils.isBlank(campaignFormElements)) {
 				campaignFormElementsList = new ArrayList<>();
 			} else {
 				try {
@@ -93,6 +92,49 @@ public class CampaignForm extends AbstractDomainObject {
 			campaignFormElements = mapper.writeValueAsString(campaignFormElementsList);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of campaignFormElementsList could not be parsed to JSON String - ID: " + getId());
+		}
+	}
+
+	@Lob
+	public String getCampaignFormTranslations() {
+		return campaignFormTranslations;
+	}
+
+	public void setCampaignFormTranslations(String campaignFormTranslations) {
+		this.campaignFormTranslations = campaignFormTranslations;
+		campaignFormTranslationsList = null;
+	}
+
+	@Transient
+	public List<CampaignFormTranslations> getCampaignFormTranslationsList() {
+		if (campaignFormTranslationsList == null) {
+			if (StringUtils.isBlank(campaignFormTranslations)) {
+				campaignFormTranslationsList = new ArrayList<>();
+			} else {
+				try {
+					ObjectMapper mapper = new ObjectMapper();
+					campaignFormTranslationsList = Arrays.asList(mapper.readValue(campaignFormTranslations, CampaignFormTranslations[].class));
+				} catch (IOException e) {
+					throw new RuntimeException(
+						"Content of campaignFormTranslations could not be parsed to List<CampaignFormTranslations> - ID: " + getId());
+				}
+			}
+		}
+		return campaignFormTranslationsList;
+	}
+
+	public void setCampaignFormTranslationsList(List<CampaignFormTranslations> campaignFormTranslationsList) {
+		this.campaignFormTranslationsList = campaignFormTranslationsList;
+
+		if (this.campaignFormTranslationsList == null) {
+			campaignFormTranslations = null;
+		}
+
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			campaignFormTranslations = mapper.writeValueAsString(campaignFormTranslationsList);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Content of campaignFormTranslationsList could not be parsed to JSON String - ID: " + getId());
 		}
 	}
 }

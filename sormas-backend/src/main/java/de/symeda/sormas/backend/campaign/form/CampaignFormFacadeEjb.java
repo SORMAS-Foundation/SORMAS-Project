@@ -11,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -22,6 +23,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -47,6 +49,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		target.setFormId(source.getFormId());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElementsList(source.getCampaignFormElements());
+		target.setCampaignFormTranslationsList(source.getCampaignFormTranslations());
 
 		return target;
 	}
@@ -62,6 +65,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		target.setFormId(source.getFormId());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
+		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
 
 		return target;
 	}
@@ -76,19 +80,25 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	}
 
 	@Override
-	public CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson) throws IOException {
+	public CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
+		throws IOException {
 		CampaignFormDto campaignForm = new CampaignFormDto();
 		campaignForm.setFormId(formId);
 		campaignForm.setLanguageCode(languageCode);
 		ObjectMapper mapper = new ObjectMapper();
-		campaignForm.setCampaignFormElements(Arrays.asList(mapper.readValue(schemaDefinitionJson, CampaignFormElement[].class)));
+		if (StringUtils.isNotBlank(schemaDefinitionJson)) {
+			campaignForm.setCampaignFormElements(Arrays.asList(mapper.readValue(schemaDefinitionJson, CampaignFormElement[].class)));
+		}
+		if (StringUtils.isNotBlank(translationsJson)) {
+			campaignForm.setCampaignFormTranslations(Arrays.asList(mapper.readValue(translationsJson, CampaignFormTranslations[].class)));
+		}
 
 		return campaignForm;
 	}
 
 	@Override
 	public void validateAndClean(CampaignFormDto campaignFormDto) throws ValidationRuntimeException {
-		if (campaignFormDto.getCampaignFormElements().isEmpty()) {
+		if (CollectionUtils.isEmpty(campaignFormDto.getCampaignFormElements())) {
 			return;
 		}
 
@@ -105,11 +115,34 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 				}
 			});
 
+		// Throw an error if any translation does not have a language code or contains an element without an ID or caption
+		if (CollectionUtils.isNotEmpty(campaignFormDto.getCampaignFormTranslations())) {
+			campaignFormDto.getCampaignFormTranslations().forEach(cft -> {
+				if (StringUtils.isBlank(cft.getLanguageCode())) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormTranslationLanguageCodeRequired));
+				}
+
+				cft.getTranslations()
+					.stream()
+					.filter(t -> StringUtils.isBlank(t.getElementId()) || StringUtils.isBlank(t.getCaption()))
+					.findFirst()
+					.ifPresent(e -> {
+						if (StringUtils.isBlank(e.getElementId())) {
+							throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormTranslationIdRequired));
+						} else {
+							throw new ValidationRuntimeException(
+								I18nProperties
+									.getValidationError(Validations.campaignFormTranslationCaptionRequired, e.getElementId(), cft.getLanguageCode()));
+						}
+					});
+			});
+		}
+
 		Map<String, String> idsAndTypes =
 			campaignFormDto.getCampaignFormElements().stream().collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
 
 		for (CampaignFormElement element : campaignFormDto.getCampaignFormElements()) {
-			// Clean the element caption from all HTML that are not explicitly allowed
+			// Clean the element caption from all HTML tags that are not explicitly allowed
 			if (StringUtils.isNotBlank(element.getCaption())) {
 				Whitelist whitelist = Whitelist.none();
 				whitelist.addTags(CampaignFormElement.ALLOWED_HTML_TAGS);
@@ -124,6 +157,25 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 					I18nProperties.getValidationError(Validations.campaignFormDependingOnValuesMissing, element.getId()));
 			}
 			validateCampaignFormDependency(element.getId(), element.getDependingOn(), element.getDependingOnValues(), idsAndTypes);
+		}
+
+		// Validate element IDs used in translations and clean HTML used in translation captions
+		if (CollectionUtils.isNotEmpty(campaignFormDto.getCampaignFormTranslations())) {
+			for (CampaignFormTranslations translations : campaignFormDto.getCampaignFormTranslations()) {
+				translations.getTranslations().forEach(e -> {
+					if (idsAndTypes.get(e.getElementId()) == null) {
+						throw new ValidationRuntimeException(
+							I18nProperties
+								.getValidationError(Validations.campaignFormTranslationIdInvalid, e.getElementId(), translations.getLanguageCode()));
+					}
+
+					if (StringUtils.isNotBlank(e.getCaption())) {
+						Whitelist whitelist = Whitelist.none();
+						whitelist.addTags(CampaignFormElement.ALLOWED_HTML_TAGS);
+						e.setCaption(Jsoup.clean(e.getCaption(), whitelist));
+					}
+				});
+			}
 		}
 	}
 

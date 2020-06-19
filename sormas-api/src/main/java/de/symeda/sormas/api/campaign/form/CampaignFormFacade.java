@@ -16,6 +16,7 @@ public interface CampaignFormFacade {
 	 */
 	void validateAndClean(CampaignFormDto campaignFormDto);
 
-	CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson) throws IOException;
+	CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
+		throws IOException;
 
 }

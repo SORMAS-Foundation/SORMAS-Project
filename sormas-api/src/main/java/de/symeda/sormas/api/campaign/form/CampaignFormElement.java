@@ -12,6 +12,7 @@ public class CampaignFormElement implements Serializable {
 		CampaignFormElementType.INTEGER.toString(),
 		CampaignFormElementType.STRING.toString(),
 		CampaignFormElementType.YES_NO.toString() };
+
 	public static final String[] VALID_STYLES = {
 		CampaignFormElementStyle.INLINE.toString(),
 		CampaignFormElementStyle.ROW.toString(),
@@ -28,6 +29,7 @@ public class CampaignFormElement implements Serializable {
 		CampaignFormElementStyle.COL_10.toString(),
 		CampaignFormElementStyle.COL_11.toString(),
 		CampaignFormElementStyle.COL_12.toString() };
+
 	public static final String[] ALLOWED_HTML_TAGS = {
 		"br",
 		"p",
