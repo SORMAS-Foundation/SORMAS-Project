@@ -651,6 +651,7 @@ public interface Strings {
 	String promptRegion = "promptRegion";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
+	String promptSampleDateType = "promptSampleDateType";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
 	String promptSampleEpiWeekTo = "promptSampleEpiWeekTo";
 	String promptSamplesSearchField = "promptSamplesSearchField";
