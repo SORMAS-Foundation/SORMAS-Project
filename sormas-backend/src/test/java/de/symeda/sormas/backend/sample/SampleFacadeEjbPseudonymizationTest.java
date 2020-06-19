@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -39,6 +37,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
@@ -209,16 +209,16 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), 0, 100);
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
-		assertThat(export1.getAssociatedCase().getFirstName(), is("John"));
-		assertThat(export1.getAssociatedCase().getLastName(), is("Smith"));
+		assertThat(export1.getSampleExportAssociatedCase().getFirstName(), is("John"));
+		assertThat(export1.getSampleExportAssociatedCase().getLastName(), is("Smith"));
 		assertThat(export1.getLab(), is("Lab - Test lab details"));
 		assertThat(export1.getPathogenTestLab1(), is("Lab - Test lab details"));
 		assertThat(export1.getPathogenTestType1(), is("Test type text"));
 
 
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertThat(export2.getAssociatedCase().getFirstName(), isEmptyString());
-		assertThat(export2.getAssociatedCase().getLastName(), isEmptyString());
+		assertThat(export2.getSampleExportAssociatedCase().getFirstName(), isEmptyString());
+		assertThat(export2.getSampleExportAssociatedCase().getLastName(), isEmptyString());
 		assertThat(export2.getLab(), isEmptyString());
 		assertThat(export2.getPathogenTestLab1(), isEmptyString());
 		assertThat(export2.getPathogenTestType1(), isEmptyString());

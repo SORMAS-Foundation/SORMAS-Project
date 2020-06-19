@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.therapy;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.utils.SensitiveData;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PrescriptionIndexDto implements Serializable {
 
@@ -21,12 +21,12 @@ public class PrescriptionIndexDto implements Serializable {
 	public static final String PRESCRIBING_CLINICIAN = "prescribingClinician";
 
 	private String uuid;
-	private Type type;
+	private PrescriptionIndexType prescriptionIndexType;
 	private Date prescriptionDate;
 	private PeriodDto prescriptionPeriod;
 	private String frequency;
 	private String dose;
-	private Route route;
+	private PrescriptionIndexRoute prescriptionIndexRoute;
 	@SensitiveData
 	private String prescribingClinician;
 
@@ -53,12 +53,12 @@ public class PrescriptionIndexDto implements Serializable {
 		String casePointOfEntryUuid) {
 
 		this.uuid = uuid;
-		this.type = new Type(prescriptionType, prescriptionDetails, typeOfDrug);
+		this.prescriptionIndexType = new PrescriptionIndexType(prescriptionType, prescriptionDetails, typeOfDrug);
 		this.prescriptionDate = prescriptionDate;
 		this.prescriptionPeriod = new PeriodDto(prescriptionStart, prescriptionEnd);
 		this.frequency = frequency;
 		this.dose = dose;
-		this.route = new Route(route, routeDetails);
+		this.prescriptionIndexRoute = new PrescriptionIndexRoute(route, routeDetails);
 		this.prescribingClinician = prescribingClinician;
 
 		this.caseJurisdiction = new CaseJurisdictionDto(
@@ -79,11 +79,11 @@ public class PrescriptionIndexDto implements Serializable {
 	}
 
 	public String getPrescriptionType() {
-		return type.stringFormat();
+		return prescriptionIndexType.stringFormat();
 	}
 
-	public Type getType(){
-		return type;
+	public PrescriptionIndexType getPrescriptionIndexType() {
+		return prescriptionIndexType;
 	}
 
 	public Date getPrescriptionDate() {
@@ -119,11 +119,11 @@ public class PrescriptionIndexDto implements Serializable {
 	}
 
 	public String getPrescriptionRoute() {
-		return route.stringFormat();
+		return prescriptionIndexRoute.stringFormat();
 	}
 
-	public Route getRoute(){
-		return route;
+	public PrescriptionIndexRoute getPrescriptionIndexRoute() {
+		return prescriptionIndexRoute;
 	}
 
 	public String getPrescribingClinician() {
@@ -138,14 +138,14 @@ public class PrescriptionIndexDto implements Serializable {
 		return caseJurisdiction;
 	}
 
-	public static class Type implements Serializable {
+	public static class PrescriptionIndexType implements Serializable {
 
 		private TreatmentType prescriptionType;
 		@SensitiveData
 		private String prescriptionDetails;
 		private TypeOfDrug typeOfDrug;
 
-		public Type(TreatmentType prescriptionType, String prescriptionDetails, TypeOfDrug typeOfDrug) {
+		public PrescriptionIndexType(TreatmentType prescriptionType, String prescriptionDetails, TypeOfDrug typeOfDrug) {
 			this.prescriptionType = prescriptionType;
 			this.prescriptionDetails = prescriptionDetails;
 			this.typeOfDrug = typeOfDrug;
@@ -156,13 +156,13 @@ public class PrescriptionIndexDto implements Serializable {
 		}
 	}
 
-	public static class Route implements Serializable {
+	public static class PrescriptionIndexRoute implements Serializable {
 
 		private TreatmentRoute route;
 		@SensitiveData
 		private String routeDetails;
 
-		public Route(TreatmentRoute route, String routeDetails) {
+		public PrescriptionIndexRoute(TreatmentRoute route, String routeDetails) {
 			this.route = route;
 			this.routeDetails = routeDetails;
 		}

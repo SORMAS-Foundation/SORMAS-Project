@@ -234,7 +234,7 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		if(pointOfEntry == null){
+		if (pointOfEntry == null) {
 			return "";
 		}
 

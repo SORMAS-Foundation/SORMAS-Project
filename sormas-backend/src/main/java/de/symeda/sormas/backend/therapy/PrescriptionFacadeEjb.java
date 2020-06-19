@@ -100,8 +100,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			indexList,
 			p -> caseJurisdictionChecker.isInJurisdiction(p.getCaseJurisdiction()),
 			(p, inJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.Type.class, p.getType(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.Route.class, p.getRoute(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
 			});
 
 		return indexList;

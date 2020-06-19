@@ -29,8 +29,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.sample.SampleMaterial;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -51,8 +49,10 @@ import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.region.CommunityDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -149,7 +149,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeCasIndexData() {
+	public void testPseudonymizeCaseIndexData() {
 
 		CaseDataDto caze1 = createCase(rdcf1, user1);
 		// create contact in current jurisdiction to have access on pseudonymized case
@@ -173,7 +173,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testPseudonymizeCasExportData() {
+	public void testPseudonymizeCaseExportData() {
 
 		CaseDataDto caze1 = createCase(rdcf1, user1);
 		// create contact in current jurisdiction to have access on pseudonymized case

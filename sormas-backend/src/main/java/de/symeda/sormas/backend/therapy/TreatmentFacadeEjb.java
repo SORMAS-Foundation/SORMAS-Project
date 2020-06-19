@@ -100,8 +100,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			indexList,
 			t -> caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction()),
 			(t, inJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.Type.class, t.getType(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.Route.class, t.getRoute(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
 			});
 
 		return indexList;

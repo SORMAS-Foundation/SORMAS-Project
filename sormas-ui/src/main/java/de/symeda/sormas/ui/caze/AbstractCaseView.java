@@ -154,9 +154,8 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					params);
 			}
 			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
-					&& caze.getPointOfEntry() != null
-					&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)
-			) {
+				&& caze.getPointOfEntry() != null
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
@@ -167,12 +166,12 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
-//				&& !caze.isUnreferredPortHealthCase()
+				&& !caze.isUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
-//				&& !caze.isUnreferredPortHealthCase()
+				&& !caze.isUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(
 					ClinicalCourseView.VIEW_NAME,

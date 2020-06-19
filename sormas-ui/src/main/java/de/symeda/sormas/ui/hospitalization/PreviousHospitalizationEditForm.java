@@ -160,10 +160,9 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 
 		FieldHelper.addSoftRequiredStyle(admissionDate, dischargeDate, facilityCommunity, healthFacilityDetails);
 
-		if(isEditableAllowed(PreviousHospitalizationDto.HEALTH_FACILITY)) {
+		if (isEditableAllowed(PreviousHospitalizationDto.HEALTH_FACILITY)) {
 			setRequired(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT, PreviousHospitalizationDto.HEALTH_FACILITY);
-		}
-		else {
+		} else {
 			setReadOnly(true, PreviousHospitalizationDto.REGION, PreviousHospitalizationDto.DISTRICT);
 		}
 	}

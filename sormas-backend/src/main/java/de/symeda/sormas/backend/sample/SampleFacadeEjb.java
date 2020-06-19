@@ -560,7 +560,7 @@ public class SampleFacadeEjb implements SampleFacade {
 					? FacilityHelper
 						.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails())
 					: null;
-				SampleExportDto.SamplePathogenTest samplePathogenTest = new SampleExportDto.SamplePathogenTest(
+				SampleExportDto.SampleExportPathogenTest sampleExportPathogenTest = new SampleExportDto.SampleExportPathogenTest(
 					pathogenTest.getTestType(),
 					pathogenTest.getTestTypeText(),
 					DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()),
@@ -571,16 +571,16 @@ public class SampleFacadeEjb implements SampleFacade {
 
 				switch (++count) {
 				case 1:
-					exportDto.setPathogenTest1(samplePathogenTest);
+					exportDto.setPathogenTest1(sampleExportPathogenTest);
 					break;
 				case 2:
-					exportDto.setPathogenTest2(samplePathogenTest);
+					exportDto.setPathogenTest2(sampleExportPathogenTest);
 					break;
 				case 3:
-					exportDto.setPathogenTest3(samplePathogenTest);
+					exportDto.setPathogenTest3(sampleExportPathogenTest);
 					break;
 				default:
-					exportDto.addOtherPathogenTest(samplePathogenTest);
+					exportDto.addOtherPathogenTest(sampleExportPathogenTest);
 					break;
 				}
 			}
@@ -597,22 +597,23 @@ public class SampleFacadeEjb implements SampleFacade {
 
 			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), null);
 			pseudonymizer.pseudonymizeDto(SampleExportDto.class, exportDto, isInJurisdiction, s -> {
-				pseudonymizer.pseudonymizeDto(SampleExportDto.Material.class, s.getSampleMaterial(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportMaterial.class, s.getSampleSampleExportMaterial(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, s.getPersonAddress(), isInJurisdiction, null);
 
-				if (exportDto.getAssociatedCase() != null) {
-					pseudonymizer.pseudonymizeDto(SampleExportDto.AssociatedCase.class, s.getAssociatedCase(), isInJurisdiction, null);
+				if (exportDto.getSampleExportAssociatedCase() != null) {
+					pseudonymizer
+						.pseudonymizeDto(SampleExportDto.SampleExportAssociatedCase.class, s.getSampleExportAssociatedCase(), isInJurisdiction, null);
 				}
 
 				if (exportDto.getAssociatedContact() != null) {
 					pseudonymizer.pseudonymizeDto(ContactReferenceDto.class, s.getAssociatedContact(), isInJurisdiction, null);
 				}
 
-				pseudonymizer.pseudonymizeDto(SampleExportDto.SamplePathogenTest.class, exportDto.getPathogenTest1(), isInJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(SampleExportDto.SamplePathogenTest.class, exportDto.getPathogenTest2(), isInJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(SampleExportDto.SamplePathogenTest.class, exportDto.getPathogenTest3(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPathogenTest.class, exportDto.getPathogenTest1(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPathogenTest.class, exportDto.getPathogenTest2(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPathogenTest.class, exportDto.getPathogenTest3(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDtoCollection(
-					SampleExportDto.SamplePathogenTest.class,
+					SampleExportDto.SampleExportPathogenTest.class,
 					exportDto.getOtherPathogenTests(),
 					t -> isInJurisdiction,
 					null);
