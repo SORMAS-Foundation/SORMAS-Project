@@ -28,13 +28,17 @@ public class CaseJurisdictionHelper {
 		UserJurisdiction userJurisdiction,
 		CaseJurisdictionDto caseJurisdictionDto) {
 
+		if (caseJurisdictionDto.getReportingUserUuid() != null
+				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid())) {
+			return true;
+		}
+
 		switch (jurisdictionLevel) {
 
 		case NONE:
 			return false;
 		case NATION:
-			return caseJurisdictionDto.getReportingUserUuid() != null
-				&& DataHelper.equal(userJurisdiction.getUuid(), caseJurisdictionDto.getReportingUserUuid());
+			return true;
 		case REGION:
 			return DataHelper.equal(caseJurisdictionDto.getRegionUuid(), userJurisdiction.getRegionUuid());
 		case DISTRICT:

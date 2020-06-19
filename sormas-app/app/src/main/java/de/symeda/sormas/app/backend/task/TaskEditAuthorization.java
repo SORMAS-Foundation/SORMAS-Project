@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.task;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.jurisdiction.TaskJurisdictionHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
@@ -11,6 +12,6 @@ public class TaskEditAuthorization {
         User user = ConfigProvider.getUser();
 
         return TaskJurisdictionHelper
-                .isInJurisdiction(ConfigProvider::hasRole, JurisdictionHelper.createUserJurisdiction(user), JurisdictionHelper.createTaskJurisdictionDto(task));
+                .isInJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()), JurisdictionHelper.createUserJurisdiction(user), JurisdictionHelper.createTaskJurisdictionDto(task));
     }
 }
