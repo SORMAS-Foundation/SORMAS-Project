@@ -30,10 +30,12 @@ import java.util.Collection;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.DateField;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -106,25 +108,43 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		facilityField.setValue(healthFacility == null ? null : healthFacility.toString());
+		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
+		facilityField.setValue(
+			healthFacility == null
+					|| noneFacility ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
-		addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
-		DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
-		DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
+		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
+		final DateField admissionDateField = addField(HospitalizationDto.ADMISSION_DATE, DateField.class);
+		final DateField dischargeDateField = addDateField(HospitalizationDto.DISCHARGE_DATE, DateField.class, 7);
 		intensiveCareUnit = addField(HospitalizationDto.INTENSIVE_CARE_UNIT, OptionGroup.class);
 		intensiveCareUnit.addValueChangeListener(e -> setDateFieldVisibilties());
 		intensiveCareUnitStart = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_START, DateField.class);
 		intensiveCareUnitStart.setVisible(false);
 		intensiveCareUnitEnd = addField(HospitalizationDto.INTENSIVE_CARE_UNIT_END, DateField.class);
 		intensiveCareUnitEnd.setVisible(false);
-		addField(HospitalizationDto.ISOLATION_DATE);
-		addField(HospitalizationDto.ISOLATED, OptionGroup.class);
-		addField(HospitalizationDto.LEFT_AGAINST_ADVICE, OptionGroup.class);
+		final Field isolationDateField = addField(HospitalizationDto.ISOLATION_DATE);
+		final OptionGroup isolatedField = addField(HospitalizationDto.ISOLATED, OptionGroup.class);
+		final OptionGroup leftAgainstAdviceField = addField(HospitalizationDto.LEFT_AGAINST_ADVICE, OptionGroup.class);
 		OptionGroup hospitalizedPreviouslyField = addField(HospitalizationDto.HOSPITALIZED_PREVIOUSLY, OptionGroup.class);
 		CssStyles.style(hospitalizedPreviouslyField, CssStyles.ERROR_COLOR_PRIMARY);
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
+
+		if (noneFacility) {
+			FieldHelper.setEnabled(
+				false,
+				facilityField,
+				admittedToHealthFacilityField,
+				admissionDateField,
+				dischargeDateField,
+				intensiveCareUnit,
+				intensiveCareUnitStart,
+				intensiveCareUnitEnd,
+				isolationDateField,
+				isolatedField,
+				leftAgainstAdviceField);
+		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
