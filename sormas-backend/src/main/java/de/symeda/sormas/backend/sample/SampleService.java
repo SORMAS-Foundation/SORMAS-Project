@@ -379,16 +379,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getContact() != null) {
 			filter = and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), criteria.getContact().getUuid()));
 		}
-		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
-		} else if (criteria.getSampleReportDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
-		} else if (criteria.getSampleReportDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
-		}
+		
+		filter = createSampleDateFilter(cb, filter, sample, criteria);
+		
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
@@ -421,6 +414,33 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			}
 		}
 
+		return filter;
+	}
+	
+	private Predicate createSampleDateFilter(CriteriaBuilder cb, Predicate filter, From<?, ?> sample, SampleCriteria criteria) {
+		
+		String dateProperty = Sample.SAMPLE_DATE_TIME;
+		if (criteria.getSampleDateType() != null) {
+			switch (criteria.getSampleDateType()) {
+				case REPORT: dateProperty = Sample.REPORT_DATE_TIME; break;
+				case SHIPPED: dateProperty = Sample.SHIPMENT_DATE; break;
+				case RECEIVED: dateProperty = Sample.RECEIVED_DATE; break;
+				case RESULT: dateProperty = Sample.PATHOGEN_TEST_RESULT_CHANGE_DATE; break;
+				default: dateProperty = Sample.SAMPLE_DATE_TIME; break;
+			}
+		}
+		
+		if (criteria.getSampleDateFrom() != null && criteria.getSampleDateTo() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.between(sample.get(dateProperty), criteria.getSampleDateFrom(), criteria.getSampleDateTo()));
+		} else if (criteria.getSampleDateFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(sample.get(dateProperty), criteria.getSampleDateFrom()));
+		} else if (criteria.getSampleDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(sample.get(dateProperty), criteria.getSampleDateTo()));
+		}
+		
 		return filter;
 	}
 
