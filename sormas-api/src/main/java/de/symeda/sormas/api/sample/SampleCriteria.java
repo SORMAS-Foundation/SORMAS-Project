@@ -64,6 +64,7 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	private Date sampleReportDateFrom;
 	private Date sampleReportDateTo;
+	private SampleDateType sampleDateType;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public RegionReferenceDto getRegion() {
@@ -117,9 +118,10 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
+	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, SampleDateType sampleDateType, DateFilterOption dateFilterOption) {
 		this.sampleReportDateFrom = reportDateFrom;
 		this.sampleReportDateTo = reportDateTo;
+		this.sampleDateType = sampleDateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
@@ -238,5 +240,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
+	}
+
+	public SampleDateType getSampleDateType() {
+		return sampleDateType;
+	}
+	
+	public void setSampleDateType(SampleDateType sampleActivity) {
+		this.sampleDateType = sampleActivity;
 	}
 }
