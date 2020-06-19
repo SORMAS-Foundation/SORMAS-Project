@@ -21,12 +21,15 @@ import java.util.HashMap;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -34,6 +37,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -339,6 +343,24 @@ public class SampleGridComponent extends VerticalLayout {
 	}
 	
 	private void createBulkTestResult() {
+		if (criteria.getDisease() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoDiseasesSelected),
+				I18nProperties.getString(Strings.messageNoDiseasesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+		
+		if (criteria.getLaboratory() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLaboratoriesSelected),
+				I18nProperties.getString(Strings.messageNoLaboratoriesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
 		ControllerProvider.getPathogenTestController().showBulkTestResultComponent(grid.asMultiSelect().getSelectedItems(), criteria.getDisease()); 
 	}
 }
