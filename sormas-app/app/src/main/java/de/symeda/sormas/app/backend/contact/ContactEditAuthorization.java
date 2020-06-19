@@ -1,5 +1,6 @@
 package de.symeda.sormas.app.backend.contact;
 
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
@@ -11,7 +12,7 @@ public class ContactEditAuthorization {
 		User user = ConfigProvider.getUser();
 
 		return ContactJurisdictionHelper.isInJurisdiction(
-			ConfigProvider::hasRole,
+			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
 			JurisdictionHelper.createContactJurisdictionDto(contact));
 	}

@@ -261,6 +261,6 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	protected Boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
 	}
 }
