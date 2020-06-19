@@ -109,6 +109,11 @@ public class PathogenTestController {
 		
 		// Create a temporary pathogenTest in order to use the CommitDiscardWrapperComponent
 		PathogenTestDto bulkResultData = PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser());
+		
+		//set defaults
+		bulkResultData.setTestDateTime(new java.util.Date());
+		bulkResultData.setTestedDisease(disease);
+		bulkResultData.setTestResultVerified(true);
 
 		PathogenTestForm form = new PathogenTestForm(sampleDto, true, 1);
 		form.setValue(bulkResultData);
