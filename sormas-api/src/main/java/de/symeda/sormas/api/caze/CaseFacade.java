@@ -135,4 +135,6 @@ public interface CaseFacade {
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count);
 
 	Boolean isCaseEditAllowed(String caseUuid);
+
+	boolean exists(String uuid);
 }

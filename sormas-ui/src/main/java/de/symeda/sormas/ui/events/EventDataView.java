@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -42,8 +41,8 @@ public class EventDataView extends AbstractEventView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
+
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EVENT_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC));

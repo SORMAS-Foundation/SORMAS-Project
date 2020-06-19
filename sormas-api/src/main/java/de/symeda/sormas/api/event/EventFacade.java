@@ -67,5 +67,7 @@ public interface EventFacade {
 
 	Boolean isEventEditAllowed(String eventUuid);
 
+	boolean exists(String uuid);
+
 	String getUuidByCaseUuidOrPersonUuid(String value);
 }

@@ -186,6 +186,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	public boolean exists(String uuid) {
+		return sampleService.exists(uuid);
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
