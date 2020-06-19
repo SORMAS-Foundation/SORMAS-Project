@@ -38,6 +38,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
@@ -184,73 +185,71 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     @SuppressWarnings("unchecked")
     private void updateFieldsByUserRole() {
 
-        OptionGroup userRolesField = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
-        boolean isInformant = UserRole.isInformant(userRoles);
-        boolean isOfficer = UserRole.isOfficer(userRoles);
-        boolean isSupervisor = UserRole.isSupervisor(userRoles);
-        boolean isLabUser = UserRole.isLabUser(userRoles);
-        boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
-        boolean isStateObserver = userRoles.contains(UserRole.STATE_OBSERVER);
-        boolean isDistrictObserver = userRoles.contains(UserRole.DISTRICT_OBSERVER);
+		final OptionGroup userRolesField = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+		final Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
 
-        // associated officer
-        ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
-        associatedOfficer.setVisible(isInformant);
-        setRequired(isInformant && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
-        if (!isInformant) {
-            associatedOfficer.clear();
-        }
+		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(userRoles);
 
-        // community
-        ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
-        community.setVisible(userRoles.contains(UserRole.COMMUNITY_INFORMANT));
-        setRequired(userRoles.contains(UserRole.COMMUNITY_INFORMANT), UserDto.COMMUNITY);
-        if (!userRoles.contains(UserRole.COMMUNITY_INFORMANT)) {
-            community.clear();
-        }
+		final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
+		final boolean hasOptionalHealthFacility = UserRole.hasOptionalHealthFacility(userRoles);
+		final boolean isLabUser = UserRole.isLabUser(userRoles);
+		final boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
 
-        // health facility
-        ComboBox healthFacility = (ComboBox) getFieldGroup().getField(UserDto.HEALTH_FACILITY);
-        healthFacility.setVisible(isOfficer || userRoles.contains(UserRole.HOSPITAL_INFORMANT));
-        setRequired(userRoles.contains(UserRole.HOSPITAL_INFORMANT), UserDto.HEALTH_FACILITY);
-        if (!healthFacility.isVisible()) {
-            healthFacility.clear();
-        }
+		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
+		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
+		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
+		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
+		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
 
-        // laboratory
-        ComboBox laboratory = (ComboBox) getFieldGroup().getField(UserDto.LABORATORY);
-        laboratory.setVisible(isLabUser);
-        setRequired(isLabUser, UserDto.LABORATORY);
-        if (!isLabUser) {
-            laboratory.clear();
-        }
+		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
+		associatedOfficer.setVisible(hasAssociatedOfficer);
+		setRequired(hasAssociatedOfficer && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
+		if (!hasAssociatedOfficer) {
+			associatedOfficer.clear();
+		}
 
-        // point of entry
-        ComboBox pointOfEntry = (ComboBox) getFieldGroup().getField(UserDto.POINT_OF_ENTRY);
-        boolean usePointOfEntry = isPortHealthUser && isInformant;
-        pointOfEntry.setVisible(usePointOfEntry);
-        setRequired(usePointOfEntry, UserDto.POINT_OF_ENTRY);
-        if (!usePointOfEntry) {
-            pointOfEntry.clear();
-        }
+		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
+		community.setVisible(useCommunity);
+		setRequired(useCommunity, UserDto.COMMUNITY);
+		if (!useCommunity) {
+			community.clear();
+		}
 
-        ComboBox region = (ComboBox) getFieldGroup().getField(UserDto.REGION);
-        boolean useRegion = isSupervisor || isInformant || isOfficer || isStateObserver || isDistrictObserver;
-        region.setVisible(useRegion);
-        setRequired(useRegion, UserDto.REGION);
-        if (!useRegion) {
-            region.clear();
-        }
+		final ComboBox healthFacility = (ComboBox) getFieldGroup().getField(UserDto.HEALTH_FACILITY);
+		healthFacility.setVisible(hasOptionalHealthFacility || useHealthFacility);
+		setRequired(useHealthFacility, UserDto.HEALTH_FACILITY);
+		if (!healthFacility.isVisible()) {
+			healthFacility.clear();
+		}
 
-        ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
-        boolean useDistrict = isInformant || isOfficer || isDistrictObserver;
-        district.setVisible(useDistrict);
-        setRequired(useDistrict, UserDto.DISTRICT);
-        if (!useDistrict) {
-            district.clear();
-        }
-    }
+		final ComboBox laboratory = (ComboBox) getFieldGroup().getField(UserDto.LABORATORY);
+		laboratory.setVisible(isLabUser);
+		setRequired(isLabUser, UserDto.LABORATORY);
+		if (!isLabUser) {
+			laboratory.clear();
+		}
+
+		final ComboBox pointOfEntry = (ComboBox) getFieldGroup().getField(UserDto.POINT_OF_ENTRY);
+		pointOfEntry.setVisible(usePointOfEntry);
+		setRequired(usePointOfEntry, UserDto.POINT_OF_ENTRY);
+		if (!usePointOfEntry) {
+			pointOfEntry.clear();
+		}
+
+		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
+		district.setVisible(useDistrict);
+		setRequired(useDistrict, UserDto.DISTRICT);
+		if (!useDistrict) {
+			district.clear();
+		}
+
+		final ComboBox region = (ComboBox) getFieldGroup().getField(UserDto.REGION);
+		region.setVisible(useRegion);
+		setRequired(useRegion, UserDto.REGION);
+		if (!useRegion) {
+			region.clear();
+		}
+	}
 
     private void suggestUserName() {
         TextField fnField = (TextField) getFieldGroup().getField(UserDto.FIRST_NAME);

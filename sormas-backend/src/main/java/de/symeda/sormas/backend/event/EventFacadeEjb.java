@@ -431,6 +431,16 @@ public class EventFacadeEjb implements EventFacade {
 		}
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return eventService.exists(uuid);
+	}
+
+	@Override
+	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
+		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {

@@ -700,6 +700,8 @@ public interface Captions {
 	String EventParticipant_personSex = "EventParticipant.personSex";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String eventSearchEvent = "eventSearchEvent";
+	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
 	String export = "export";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";

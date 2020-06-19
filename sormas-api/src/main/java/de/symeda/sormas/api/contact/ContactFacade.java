@@ -117,4 +117,6 @@ public interface ContactFacade {
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
 	boolean isContactEditAllowed(String contactUuid);
+
+	boolean exists(String uuid);
 }

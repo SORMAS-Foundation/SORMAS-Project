@@ -64,4 +64,8 @@ public interface EventFacade {
 	List<String> getDeletedUuidsSince(Date since);
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
+
+	boolean exists(String uuid);
+
+	String getUuidByCaseUuidOrPersonUuid(String value);
 }
