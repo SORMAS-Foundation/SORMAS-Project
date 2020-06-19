@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,6 +75,7 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -101,6 +103,10 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -166,6 +172,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private EpiDataFacadeEjbLocal epiDataFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -377,7 +385,13 @@ public class ContactFacadeEjb implements ContactFacade {
 						joins.getOccupationFacility().get(Facility.UUID),
 						joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 						joins.getRegion().get(Region.NAME),
-						joins.getDistrict().get(District.NAME)),
+						joins.getDistrict().get(District.NAME),
+						joins.getEpiData().get(EpiData.ID),
+						joins.getEpiData().get(EpiData.TRAVELED),
+						joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
+						joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+						joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
+						joins.getEpiData().get(EpiData.RODENTS)),
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
 
@@ -409,6 +423,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
+			Map<Long, List<EpiDataTravel>> travels = null;
+			List<EpiDataTravel> travelsList = null;
+			CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
+			Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
+			Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
+			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
+			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
+			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
+			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			for (ContactExportDto exportContact : exportContacts) {
@@ -426,6 +451,29 @@ public class ContactFacadeEjb implements ContactFacade {
 					exportContact.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
 					exportContact
 						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+				}
+
+				if (travels != null) {
+					Optional.ofNullable(travels.get(exportContact.getEpiDataId())).ifPresent(caseTravels -> {
+						StringBuilder travelHistoryBuilder = new StringBuilder();
+						caseTravels.forEach(travel -> {
+							travelHistoryBuilder.append(
+								EpiDataTravelHelper.buildTravelString(
+									travel.getTravelType(),
+									travel.getTravelDestination(),
+									travel.getTravelDateFrom(),
+									travel.getTravelDateTo(),
+									userLanguage))
+								.append(", ");
+						});
+						if (travelHistoryBuilder.length() > 0) {
+							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
+						}
+						if (travelHistoryBuilder.length() == 0 && exportContact.getTraveled() != null) {
+							travelHistoryBuilder.append(exportContact.getTraveled());
+						}
+						exportContact.setTravelHistory(travelHistoryBuilder.toString());
+					});
 				}
 
 //				pseudonymizationService.pseudonymizeDto(
@@ -864,6 +912,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
+		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
+
 		return target;
 	}
 
@@ -1033,6 +1083,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 
 		return target;
 	}

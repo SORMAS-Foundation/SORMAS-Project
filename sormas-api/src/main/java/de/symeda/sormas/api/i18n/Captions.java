@@ -344,6 +344,7 @@ public interface Captions {
 	String Contact_diseaseDetails = "Contact.diseaseDetails";
 	String Contact_district = "Contact.district";
 	String Contact_districtUuid = "Contact.districtUuid";
+	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
@@ -691,14 +692,14 @@ public interface Captions {
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
 	String EventParticipant = "EventParticipant";
-	String EventParticipant_caseId = "EventParticipant.caseId";
+	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
+	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
 	String EventParticipant_event = "EventParticipant.event";
 	String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
+	String EventParticipant_name = "EventParticipant.name";
 	String EventParticipant_person = "EventParticipant.person";
-	String EventParticipant_personAge = "EventParticipant.personAge";
-	String EventParticipant_personName = "EventParticipant.personName";
-	String EventParticipant_personSex = "EventParticipant.personSex";
 	String EventParticipant_personUuid = "EventParticipant.personUuid";
+	String EventParticipant_sex = "EventParticipant.sex";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";

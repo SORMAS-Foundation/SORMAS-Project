@@ -54,6 +54,8 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
+import de.symeda.sormas.ui.epidata.ContactEpiDataView;
+import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -70,6 +72,7 @@ public class ContactController {
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
+		navigator.addView(ContactEpiDataView.VIEW_NAME, ContactEpiDataView.class);
 	}
 
 	public void create() {
@@ -455,5 +458,31 @@ public class ContactController {
 		piaIFrame.setHeight("600px");
 
 		VaadinUiUtil.showPopupWindow(piaIFrame, I18nProperties.getString(Strings.headingPIAAccountCreation));
+	}
+
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, ViewMode viewMode) {
+
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), viewMode);
+		epiDataForm.setValue(contact.getEpiData());
+
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
+			epiDataForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			epiDataForm.getFieldGroup());
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+				contactDto.setEpiData(epiDataForm.getValue());
+				FacadeProvider.getContactFacade().saveContact(contactDto);
+				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
+			}
+		});
+
+		return editView;
 	}
 }

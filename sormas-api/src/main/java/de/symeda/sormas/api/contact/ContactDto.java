@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -85,6 +86,7 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String EPI_DATA = "epiData";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -149,6 +151,7 @@ public class ContactDto extends EntityDto {
 	@HideForCountriesExcept
 	private String quarantineHomeSupplyEnsuredComment;
 	private String additionalDetails;
+	private EpiDataDto epiData;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -168,6 +171,8 @@ public class ContactDto extends EntityDto {
 		contact.setReportDateTime(new Date());
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);
+
+		contact.setEpiData(EpiDataDto.build());
 
 		return contact;
 	}
@@ -560,5 +565,13 @@ public class ContactDto extends EntityDto {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiDataDto getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiDataDto epiData) {
+		this.epiData = epiData;
 	}
 }

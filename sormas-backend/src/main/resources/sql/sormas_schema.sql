@@ -4622,4 +4622,23 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+-- 2020-06-18 Remove wrongly assigned surveillance officers from cases #2284
+ALTER TABLE contact ADD COLUMN epidata_id bigint;
+ALTER TABLE contact_history ADD COLUMN epidata_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_epidata_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
+            LOOP
+                INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
+                UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add Epidemiological data to contacts');
+
 -- *** Insert new sql commands BEFORE this line ***
