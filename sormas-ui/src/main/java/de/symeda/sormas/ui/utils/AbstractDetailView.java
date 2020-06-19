@@ -80,7 +80,7 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 	protected abstract String getRootViewName();
 
 	/**
-	 * We be called by {@link #enter(ViewChangeEvent)}, when an object is selected and the view shall show its specific content.
+	 * Will be called by {@link #enter(ViewChangeEvent)}, when an object is selected and the view shall show its specific content.
 	 * 
 	 * @param params
 	 *            The URL parameters String
