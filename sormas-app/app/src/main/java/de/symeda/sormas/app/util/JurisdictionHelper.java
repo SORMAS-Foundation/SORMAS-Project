@@ -182,12 +182,12 @@ public class JurisdictionHelper {
 		}
 
 		Contact contact = sample.getAssociatedContact();
-		if (contact != null){
+		if (contact != null) {
 			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
 		}
 
 		Facility labFacility = sample.getLab();
-		if (labFacility!=null){
+		if (labFacility != null) {
 			jurisdiction.setLabUuid(sample.getLab().getUuid());
 		}
 

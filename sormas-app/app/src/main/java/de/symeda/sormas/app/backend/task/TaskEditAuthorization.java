@@ -8,10 +8,12 @@ import de.symeda.sormas.app.util.JurisdictionHelper;
 
 public class TaskEditAuthorization {
 
-    public static boolean isEventEditAllowed(Task task) {
-        User user = ConfigProvider.getUser();
+	public static boolean isEventEditAllowed(Task task) {
+		User user = ConfigProvider.getUser();
 
-        return TaskJurisdictionHelper
-                .isInJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()), JurisdictionHelper.createUserJurisdiction(user), JurisdictionHelper.createTaskJurisdictionDto(task));
-    }
+		return TaskJurisdictionHelper.isInJurisdiction(
+			UserRole.getJurisdictionLevel(user.getUserRoles()),
+			JurisdictionHelper.createUserJurisdiction(user),
+			JurisdictionHelper.createTaskJurisdictionDto(task));
+	}
 }
