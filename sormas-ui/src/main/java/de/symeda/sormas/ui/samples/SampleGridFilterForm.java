@@ -218,8 +218,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
 
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
-		Date sampleDateFrom = criteria.getSampleReportDateFrom();
-		Date sampleDateTo = criteria.getSampleReportDateTo();
+		Date sampleDateFrom = criteria.getSampleDateFrom();
+		Date sampleDateTo = criteria.getSampleDateTo();
 
 		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			weekAndDateFilter.getWeekFromFilter().setValue(sampleDateFrom == null ? null : DateHelper.getEpiWeek(sampleDateFrom));
