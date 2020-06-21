@@ -470,13 +470,15 @@ while [[ -z "${DB_PASSWORD}" ]]; do
 done
 remember_choice DB_PASSWORD
 
-echo "$(bold "--- Do you want to initialize your PostgreSQL database?")"
-select CHOICE in "Yes" "No"; do
-  case $CHOICE in
-    Yes ) INIT_DB=true; break;;
-    No ) INIT_DB=false; break;;
-  esac
-done
+if [[ -z "$INIT_DB" ]]; then
+  echo "$(bold "--- Do you want to initialize your PostgreSQL database?")"
+  select CHOICE in "Yes" "No"; do
+    case $CHOICE in
+      Yes ) INIT_DB=true; break;;
+      No ) INIT_DB=false; break;;
+    esac
+  done
+fi
 
 if [[ $INIT_DB = true ]]; then
   cat > setup.sql <<-EOF
@@ -498,20 +500,25 @@ EOF
 
   if [[ ${LINUX} = true ]]; then
     # no host is specified as by default the postgres user has only local access
-    if [[ "${DB_HOST}" = "127.0.0.1" || "${DB_HOST}" = "localhost" ]]; then
-      echo "$(bold "--- Connect to database server using TCP instead of Unix Domain Socket?")"
-      select CHOICE in "Yes" "No"; do
-        case "$CHOICE" in
-          Yes ) DB_TCP_CONNECT=true; break;;
-          No ) DB_TCP_CONNECT=false; break;;
-        esac
-      done
-    else
-      DB_TCP_CONNECT=true
+    if [[ -z "${DB_TCP_CONNECT}" ]]; then
+      if [[ "${DB_HOST}" = "127.0.0.1" || "${DB_HOST}" = "localhost" ]]; then
+        echo "$(bold "--- Connect to database server using TCP instead of Unix Domain Socket?")"
+        select CHOICE in "Yes" "No"; do
+          case "$CHOICE" in
+            Yes ) DB_TCP_CONNECT=true; break;;
+            No ) DB_TCP_CONNECT=false; break;;
+          esac
+        done
+      else
+        DB_TCP_CONNECT=true
+      fi
     fi
 
     if [[ $DB_TCP_CONNECT = true ]]; then
-      psql -h "${DB_HOST}" -p "${DB_PORT}" -U postgres < setup.sql
+      while [[ -z "${DB_PG_PW}" ]]; do
+        read -r -p "$(bold "--- Enter the password for the 'postgres' user of your database: ")" DB_PG_PW
+      done
+      env PGPASSWORD="$DB_PG_PW" psql -h "${DB_HOST}" -p "${DB_PORT}" -U postgres < setup.sql
     else
       "${ELEVATED[@]}" '"su postgres -c \"psql -p '"${DB_PORT}"' < setup.sql\""'
     fi
@@ -524,7 +531,7 @@ EOF
     fi
     PSQL="${PSQL_DIR}/bin/psql.exe"
     while [[ -z "${DB_PG_PW}" ]]; do
-      read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
+      read -r -p "$(bold "--- Enter the password for the 'postgres' user of your database: ")" DB_PG_PW
     done
     "${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
   fi
@@ -679,7 +686,7 @@ else
 fi
 echo "---"
 echo "Please make sure to perform the following steps:"
-echo "  - Adjust the sormas.properties file to your system"
+echo "  - Adjust the $DOMAIN_DIR/sormas.properties file to your system"
 if [[ ${DEV_SYSTEM} != true ]]; then
 	echo "  - Execute the sormas-update.sh file to populate the database and deploy the server"
 	echo "  - Configure the apache web server according to the server setup guide"
