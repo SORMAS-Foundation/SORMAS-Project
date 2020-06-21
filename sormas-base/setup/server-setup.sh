@@ -99,7 +99,7 @@ underlined () {
   echo -e '\e[4m'"$1"'\e[24m'
 }
 
-CHOICES_FILE="./server-setup-config.sh"
+CHOICES_FILE="./server-setup.conf"
 
 rm -f setup.log
 exec > >(tee -ia setup.log)
@@ -212,7 +212,7 @@ prompted_defaulted GENERATED_DIR="${INSTALL_DIR}/sormas/generated" \
   "Directory for SORMAS generated files (required during operations)"
 prompted_defaulted CUSTOM_DIR="${INSTALL_DIR}/sormas/custom" \
   "Directory for customizable SORMAS files"
-prompted_defaulted PAYARA_HOME="${INSTALL_DIR}/payara5" \
+prompted_defaulted PAYARA_HOME="${INSTALL_DIR}/payara" \
   "Installation directory for Payara Application Server"
 prompted_defaulted DOMAINS_HOME="${INSTALL_DIR}/domains" \
   "Home directory for Payara domains"
@@ -466,18 +466,18 @@ EOF
   if [[ ${LINUX} = true ]]; then
     # no host is specified as by default the postgres user has only local access
     if [[ "${DB_HOST}" = "127.0.0.1" || "${DB_HOST}" = "localhost" ]]; then
-      echo "$(bold "--- Connect to database server using HTTP?")"
+      echo "$(bold "--- Connect to database server using TCP instead of Unix Domain Socket?")"
       select CHOICE in "Yes" "No"; do
         case "$CHOICE" in
-          Yes ) DB_HTTP_CONNECT=true; break;;
-          No ) DB_HTTP_CONNECT=false; break;;
+          Yes ) DB_TCP_CONNECT=true; break;;
+          No ) DB_TCP_CONNECT=false; break;;
         esac
       done
     else
-      DB_HTTP_CONNECT=true
+      DB_TCP_CONNECT=true
     fi
 
-    if [[ $DB_HTTP_CONNECT = true ]]; then
+    if [[ $DB_TCP_CONNECT = true ]]; then
       psql -h "${DB_HOST}" -p "${DB_PORT}" -U postgres < setup.sql
     else
       "${ELEVATED[@]}" '"su postgres -c \"psql -p '"${DB_PORT}"' < setup.sql\""'
@@ -542,9 +542,28 @@ echo "Configuring domain..."
 
 "${ASADMIN[@]}" create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
-cp sormas.properties "${DOMAIN_DIR}"
-cp start-payara-sormas.sh "${DOMAIN_DIR}"
-cp stop-payara-sormas.sh "${DOMAIN_DIR}"
+# Automatically configure script files
+redefine_vars \
+  temp.path="$TEMP_DIR" \
+  generated.path="$GENERATED_DIR" \
+  custom.path="$CUSTOM_DIR" \
+  email.sender.address="$MAIL_FROM" \
+  devmode="$(if [[ "${DEV_SYSTEM}" = true ]]; then echo true; else echo false; fi)" \
+  < sormas.properties \
+  > "${DOMAIN_DIR}/sormas.properties"
+
+redefine_vars \
+  PAYARA_HOME="'$PAYARA_HOME'" \
+  < start-payara-sormas.sh \
+  > "${DOMAIN_DIR}/start-payara-sormas.sh"
+
+redefine_vars \
+  PAYARA_HOME="'$PAYARA_HOME'" \
+  < stop-payara-sormas.sh \
+  > "${DOMAIN_DIR}/stop-payara-sormas.sh"
+
+chmod a+x "${DOMAIN_DIR}"/{start,stop}-payara-sormas.sh"
+
 cp logback.xml ${DOMAIN_DIR}/config/
 if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
 	# Fixes outdated certificate - don't do this on linux systems!
