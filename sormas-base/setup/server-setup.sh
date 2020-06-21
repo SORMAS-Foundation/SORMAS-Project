@@ -17,7 +17,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
 
-# >>>>> FUNCTIONS
+# >>>>> FUNCTIONS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# Rudimentary parsing routine for `<VAR>=<VALUE>` expressions to retrieve VAR
+# and VALUE independently of each other.
 tokenize_vardef () {
 	local SPLIT_IDX=`expr index "$1" =`
 	local NAME="${1:0:`expr $SPLIT_IDX - 1`}"
@@ -26,6 +29,9 @@ tokenize_vardef () {
 	echo "$NAME" "$VALUE"
 }
 
+# Prefix a variable definition with this function to only apply specified
+# value to the specified variable if it has not been set already, e.g. by
+# environment or as variable override like `<VAR>=<VALUE> <command> ...`.
 defaulted () {
 	local VARDEF_PARTS=(`tokenize_vardef "$1"`)
 	local NAME="${VARDEF_PARTS[0]}"
@@ -36,6 +42,12 @@ defaulted () {
 	fi
 }
 
+# Like defaulted function, but asks the user via command line for the
+# variable's value if it does not already exist. The value of the
+# passed assignment expression will be presented to the user as the default
+# value.
+#
+# Usage: prompted_defaulted <VAR>=<Default Value> [<prompt>]
 prompted_defaulted () {
 	local VARDEF_PARTS=(`tokenize_vardef "$1"`)
 
@@ -57,6 +69,13 @@ prompted_defaulted () {
 	fi
 }
 
+# Override all variable assignments in the stream provided by Stdin
+# with those specified as arguments to this function. Requirement for
+# assignments to be replaced is for those to start directly at the
+# beginning of the line and being an assignment to a variable with a
+# name being part of one of the override expression arguments.
+#
+# Usage: redefine_vars {<VAR>=<VALUE>}
 redefine_vars () {
 	local SED_ARG=""
 	for VARDEF in "$@"; do
@@ -68,6 +87,9 @@ redefine_vars () {
 	sed -e "$SED_ARG"
 }
 
+# Save the variables with given names with their respective values into the
+# choice file, such that they can be reloaded on consequtive script runs.
+# Usage: remember_choice {<VAR>}
 remember_choice() {
   local SED_FILTER=""
   local VARS_APPEND=""
@@ -85,19 +107,24 @@ remember_choice() {
   mv "$CHOICES_TMP" "$CHOICES_FILE"
 }
 
+# Make paths stored in specified variables absolute.
 abspath() {
   for PATHVAR in "$@"; do
     printf -v "$PATHVAR" '%s' "$(realpath -m "${!PATHVAR}")"
   done
 }
 
+# Render given text in bold.
 bold() {
   echo -e '\e[1m'"$1"'\e[22m'
 }
 
+# Render given text as underlined.
 underlined () {
   echo -e '\e[4m'"$1"'\e[24m'
 }
+
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 CHOICES_FILE="./server-setup.conf"
 
@@ -127,6 +154,9 @@ else
   touch "$CHOICES_FILE"
 fi
 
+
+# >>>>> CONFIGURATION PHASE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 # DEVELOPMENT ENVIRONMENT OR PRODUCTION/TEST SERVER?
 if [[ -z ${DEV_SYSTEM} ]]; then
   echo $(bold "--- Are you setting up a local system or a server?")
@@ -151,10 +181,6 @@ else
 	DEMO_SYSTEM=false
 fi
 remember_choice DEMO_SYSTEM
-
-# The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
-#AS_JAVA_NATIVE='C:\zulu-8'
-#AS_JAVA_NATIVE='/opt/zulu-8'
 
 prompted_defaulted PAYARA_VERSION=5.192 \
   "Payara version to use"
@@ -258,7 +284,7 @@ fi
 if [[ -n "${AS_JAVA_NATIVE}" ]]; then
   echo " └ Java JDK: ${AS_JAVA_NATIVE}"
 else
-  echo " └ Java JDK: Autodetect"
+  echo " └ Java JDK: To be configured"
 fi
 echo "$(underlined "Payara config:")"
 echo " ├ Payara: ${PAYARA_VERSION}"
@@ -299,9 +325,13 @@ if [[ -d "${DOMAIN_DIR}" ]]; then
 	exit 1
 fi
 
+
+# >>>>> INSTALLATION PHASE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 echo "Starting server setup..."
 
-# Create needed directories and set user rights
+
+# PREPARATION: Create needed directories and set user rights
 mkdir -p "${PAYARA_HOME}"
 mkdir -p "${DOMAINS_HOME}"
 mkdir -p "${TEMP_DIR}"
@@ -322,7 +352,8 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:postgres:rwx "${CUSTOM_DIR}"
 fi
 
-# Download and unzip payara
+
+# PAYARA: Download and unzip payara
 if [[ -d "${PAYARA_HOME}/glassfish" ]]; then
 	echo "Found Payara (${PAYARA_HOME})"
 else
@@ -356,7 +387,8 @@ else
 	ASENV_PATH="${ASENV_PATH_WINDOWS}"
 fi
 
-# Identify JDK
+
+# JAVA CONFIG: Identify JDK
 if [[ -z "${AS_JAVA_NATIVE}" && -z "${PAYARA_ZIP_FILE}" && -f "${ASENV_PATH}" ]]; then
 	#payara already installed
 	echo "Trying to deduce Java home directory from Payara installation..."
@@ -401,7 +433,7 @@ while [[ -z "$JDK_HOME" ]]; do
     echo "Found Java ${JAVA_VERSION} JDK."
     CHOICES=()
   elif [[ "${JAVA_VERSION}" -gt 8 ]]; then
-    read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK and restarting the script."
+    echo "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK."
     CHOICES=("Continue anyway" "${CHOICES[@]}")
   else
     echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
@@ -429,7 +461,15 @@ if [[ -n "${PAYARA_ZIP_FILE}" ]] && [[ -n "${AS_JAVA}" ]]; then
 	fi
 fi
 
-# Set up the database
+
+# POSTGRESQL: Set up the database
+echo "Starting database setup..."
+
+while [[ -z "${DB_PASSWORD}" ]]; do
+  read -p "$(bold "--- Enter a password for the new database user '${DB_USER}': ")" DB_PASSWORD
+done
+remember_choice DB_PASSWORD
+
 echo "$(bold "--- Do you want to initialize your PostgreSQL database?")"
 select CHOICE in "Yes" "No"; do
   case $CHOICE in
@@ -439,13 +479,6 @@ select CHOICE in "Yes" "No"; do
 done
 
 if [[ $INIT_DB = true ]]; then
-  echo "Starting database setup..."
-
-  while [[ -z "${DB_PASSWORD}" ]]; do
-    read -p "$(bold "--- Enter a password for the new database user '${DB_USER}': ")" DB_PASSWORD
-  done
-  remember_choice DB_PASSWORD
-
   cat > setup.sql <<-EOF
   CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD' CREATEDB;
   CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
@@ -502,7 +535,8 @@ EOF
   read -p "$(bold "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel.")"
 fi # End of ${INIT_DB} = true
 
-# Setting ASADMIN_CALL and creating domain
+
+# PAYARA DOMAIN: Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
 "${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PAYARA_PORT_BASE}" --nopassword "${DOMAIN_NAME}"
 ASADMIN=("${PAYARA_HOME}/bin/asadmin" --port ${PORT_ADMIN})
@@ -542,7 +576,8 @@ echo "Configuring domain..."
 
 "${ASADMIN[@]}" create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
-# Automatically configure script files
+
+# SORMAS: Automatically configure script files
 redefine_vars \
   temp.path="$TEMP_DIR" \
   generated.path="$GENERATED_DIR" \
@@ -562,7 +597,7 @@ redefine_vars \
   < stop-payara-sormas.sh \
   > "${DOMAIN_DIR}/stop-payara-sormas.sh"
 
-chmod a+x "${DOMAIN_DIR}"/{start,stop}-payara-sormas.sh"
+chmod a+x "${DOMAIN_DIR}"/{start,stop}-payara-sormas.sh
 
 cp logback.xml ${DOMAIN_DIR}/config/
 if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
@@ -577,6 +612,8 @@ else
 	cp loginmain.html "${CUSTOM_DIR}"
 fi
 
+
+# SORMAS SERVICE: Register SORMAS as a system service?
 if [[ ${LINUX} = true ]]; then
   if [[ -z "${INSTALL_SERVICE}" ]]; then
     echo "$(bold "Do you want to install the init.d service file?")"
@@ -623,6 +660,9 @@ if [[ ${DEV_SYSTEM} != true ]]; then
 	"${ASADMIN[@]}" set configs.config.server-config.admin-service.jmx-connector.system.address=127.0.0.1
 	"${ASADMIN[@]}" set-hazelcast-configuration --enabled=false
 fi
+
+
+# >>>>> EPILOGUE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # don't stop the domain, because we need it running for the update script
 #read -p "--- Press [Enter] to continue..."
