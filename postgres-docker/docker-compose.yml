@@ -1,0 +1,14 @@
+version: "3.5"
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: postgresql.dockerfile
+    ports:
+      - 5432:5432/tcp
+    environment:
+      POSTGRES_PASSWORD: sormas
+    restart: unless-stopped
+    volumes:
+      - ./psql.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
