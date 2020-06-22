@@ -2114,7 +2114,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
 
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
-			int suffixNumber = Integer.parseInt(suffixString);
+			int suffixNumber;
+			try {
+				suffixNumber = Integer.parseInt(suffixString);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(
+					String.format("Invalid suffix for epid number. epidNumber: '%s', suffixString: '%s'", epidNumber, suffixString),
+					e);
+			}
 			regexPattern = cb.parameter(String.class);
 			regexReplacement = cb.parameter(String.class);
 			regexFlags = cb.parameter(String.class);

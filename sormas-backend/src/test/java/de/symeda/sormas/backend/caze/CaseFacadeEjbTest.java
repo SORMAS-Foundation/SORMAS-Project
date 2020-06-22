@@ -959,10 +959,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testDoesEpidNumberExistLargeNumbers() {
 
-		assertFalse(getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER));
+		/*
+		 * Running into Integer overflow is accepted since epid number follow a certain pattern
+		 * and are not supposed to be bigger than Integer maxvalue.
+		 */
+		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
 	}
 
 	@Test
