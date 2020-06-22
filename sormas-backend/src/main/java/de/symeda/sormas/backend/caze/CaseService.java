@@ -478,6 +478,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
 		}
+		if (caseCriteria.getFollowUpStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
+		}
+		if (caseCriteria.getFollowUpUntilTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
+		}
 		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();
 			if (currentUser != null) {
