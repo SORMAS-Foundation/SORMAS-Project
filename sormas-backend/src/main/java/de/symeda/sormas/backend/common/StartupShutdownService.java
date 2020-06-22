@@ -585,6 +585,12 @@ public class StartupShutdownService {
 		}
 
 		try {
+			importFacade.generateAreaImportTemplateFile();
+		} catch (IOException e) {
+			logger.error("Could not create area import template .csv file.");
+		}
+
+		try {
 			importFacade.generateRegionImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create region import template .csv file.");
