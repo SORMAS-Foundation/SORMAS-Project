@@ -24,12 +24,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
 import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
@@ -61,6 +63,13 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			params);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+				menu.addView(
+					AreasView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", AreasView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
+			}
 			menu.addView(
 				RegionsView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -127,6 +136,9 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		navigator.addView(OutbreaksView.VIEW_NAME, OutbreaksView.class);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+				navigator.addView(AreasView.VIEW_NAME, AreasView.class);
+			}
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
