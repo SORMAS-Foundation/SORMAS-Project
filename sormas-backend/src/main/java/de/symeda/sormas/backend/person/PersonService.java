@@ -232,7 +232,6 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		final Predicate isFromSelectedPersons =
 			cb.in(personRoot.get(Person.ID)).value(selectedPersons.stream().map(p -> p.getId()).collect(Collectors.toList()));
-//		inJurisdictionQuery.where(isFromSelectedPersons);
 		inJurisdictionQuery.where(cb.and(isFromSelectedPersons, isInJurisdiction(cb, inJurisdictionQuery, personRoot)));
 
 		return em.createQuery(inJurisdictionQuery).getResultList();
