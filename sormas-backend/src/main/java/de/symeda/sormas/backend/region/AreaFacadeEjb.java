@@ -116,8 +116,7 @@ public class AreaFacadeEjb implements AreaFacade {
 
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids) {
-		return false;
-//		return service.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
+		return service.isUsedInInfrastructureData(areaUuids, Region.AREA, Region.class);
 	}
 
 	@Override
