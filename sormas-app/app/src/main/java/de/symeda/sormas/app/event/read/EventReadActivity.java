@@ -19,14 +19,21 @@ import java.util.List;
 
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.EventSection;
 import de.symeda.sormas.app.event.edit.EventEditActivity;
@@ -80,6 +87,24 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 		boolean result = super.onCreateOptionsMenu(menu);
 		getEditMenu().setTitle(R.string.action_edit_event);
 		return result;
+	}
+
+	@Override
+	protected void processActionbarMenu() {
+		super.processActionbarMenu();
+
+		final MenuItem editMenu = getEditMenu();
+
+		final ReferenceDto referenceDto = new EventReferenceDto(getRootUuid());
+		final Event selectedEvent = DatabaseHelper.getEventDao().getByReferenceDto(referenceDto);
+
+		if (editMenu != null) {
+			if (EventEditAuthorization.isEventEditAllowed(selectedEvent)) {
+				editMenu.setVisible(true);
+			} else {
+				editMenu.setVisible(false);
+			}
+		}
 	}
 
 	@Override

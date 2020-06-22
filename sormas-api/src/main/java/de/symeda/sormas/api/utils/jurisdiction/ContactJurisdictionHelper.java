@@ -33,10 +33,6 @@ public class ContactJurisdictionHelper {
 			return true;
 		}
 
-		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
-		}
-
 		switch (jurisdictionLevel) {
 		case NONE:
 			return false;
@@ -58,8 +54,12 @@ public class ContactJurisdictionHelper {
 			return false;
 		case POINT_OF_ENTRY:
 			return false;
-		default:
-			return false;
 		}
+
+		if (contactJurisdiction.getCaseJurisdiction() != null) {
+			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
+		}
+
+		return false;
 	}
 }

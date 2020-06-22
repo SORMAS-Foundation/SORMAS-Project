@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,7 @@ public class FieldVisibilityCheckers {
 		return true;
 	}
 
-	private boolean isFieldVisible(Field field) {
+	private boolean isFieldVisible(AccessibleObject field) {
 		for (FieldBasedChecker checker : fieldBasedCheckers) {
 			if (!checker.isVisible(field)) {
 				return false;
@@ -131,6 +132,6 @@ public class FieldVisibilityCheckers {
 
 	public interface FieldBasedChecker extends Checker {
 
-		boolean isVisible(Field field);
+		boolean isVisible(AccessibleObject field);
 	}
 }

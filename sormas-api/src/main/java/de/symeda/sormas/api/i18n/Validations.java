@@ -83,5 +83,16 @@ public interface Validations {
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
+	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
+	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
+	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
+	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
+	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
+	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
+	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
+	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
+	String campaignFormTranslationLanguageCodeRequired = "campaignFormTranslationLanguageCodeRequired";
 	String importAreaNotUnique = "importAreaNotUnique";
 }
