@@ -16,14 +16,6 @@ public class SampleJurisdictionHelper {
 			return true;
 		}
 
-		if (sampleJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getCaseJurisdiction());
-		}
-
-		if (sampleJurisdiction.getContactJurisdiction() != null) {
-			return ContactJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getContactJurisdiction());
-		}
-
 		switch (jurisdictionLevel) {
 		case NONE:
 			return false;
@@ -45,10 +37,16 @@ public class SampleJurisdictionHelper {
 				&& DataHelper.equal(sampleJurisdiction.getOtherLabUuid(), userJurisdiction.getHealthFacilityUuid());
 		case POINT_OF_ENTRY:
 			return false;
-		default:
-			return false;
 		}
 
-	}
+		if (sampleJurisdiction.getCaseJurisdiction() != null) {
+			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getCaseJurisdiction());
+		}
 
+		if (sampleJurisdiction.getContactJurisdiction() != null) {
+			return ContactJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getContactJurisdiction());
+		}
+
+		return false;
+	}
 }
