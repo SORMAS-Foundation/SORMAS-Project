@@ -30,8 +30,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface UserFacade {
 
-	List<UserDto> getAll(UserRole... roles);
-
 	UserDto getByUuid(String uuid);
 
 	UserDto saveUser(UserDto dto);
@@ -43,10 +41,6 @@ public interface UserFacade {
 	List<UserDto> getAllAfter(Date date);
 
 	UserDto getByUserName(String userName);
-
-	UserReferenceDto getByUserNameAsReference(String userName);
-
-	List<UserReferenceDto> getAllAfterAsReference(Date date);
 
 	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
 

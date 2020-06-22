@@ -102,7 +102,7 @@ public class TaskEditFragment extends BaseEditFragment<FragmentTaskEditLayoutBin
 
 		taskTypeList = DataUtils.toItems(TaskType.getTaskTypes(record.getTaskContext()), true);
 		priorityList = DataUtils.getEnumItems(TaskPriority.class, true);
-		assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().queryForAll(), true);
+		assigneeList = DataUtils.toItems(DatabaseHelper.getUserDao().getAllInJurisdiction(), true);
 	}
 
 	@Override

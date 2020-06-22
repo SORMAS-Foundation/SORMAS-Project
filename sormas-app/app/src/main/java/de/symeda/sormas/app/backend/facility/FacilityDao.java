@@ -29,12 +29,16 @@ import android.util.Log;
 
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.AbstractInfrastructureAdoDao;
 import de.symeda.sormas.app.backend.common.InfrastructureAdo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.util.JurisdictionHelper;
 
 public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 
@@ -145,6 +149,18 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			where.and().eq(InfrastructureAdo.ARCHIVED, false);
 			where.and().eq(AbstractDomainObject.SNAPSHOT, false);
 			where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
+
+			User currentUser = ConfigProvider.getUser();
+			UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+
+			if (currentUser.getCommunity() != null) {
+				where.and().eq(Facility.COMMUNITY, currentUser.getCommunity());
+			} else if (currentUser.getDistrict() != null) {
+				where.and().eq(Facility.DISTRICT, currentUser.getDistrict());
+			} else if (currentUser.getRegion() != null) {
+				where.and().eq(Facility.REGION, currentUser.getRegion());
+			}
+
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
 			if (includeOtherLaboratory) {

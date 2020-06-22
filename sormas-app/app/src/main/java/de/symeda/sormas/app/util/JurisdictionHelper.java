@@ -1,10 +1,16 @@
 package de.symeda.sormas.app.util;
 
+import com.j256.ormlite.stmt.Where;
+
+import java.sql.SQLException;
+
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.user.User;
 

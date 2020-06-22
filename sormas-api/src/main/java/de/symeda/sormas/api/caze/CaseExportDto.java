@@ -1016,7 +1016,7 @@ public class CaseExportDto implements Serializable {
 		String separator = ", ";
 
 		for (CaseExportSampleDto sample : otherSamples) {
-			samples.append(sample.stringFormat()).append(separator);
+			samples.append(sample.formatString()).append(separator);
 		}
 
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
@@ -1283,7 +1283,7 @@ public class CaseExportDto implements Serializable {
 			this.result = result;
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append(DateHelper.formatDateForExport(dateTime)).append(" (");

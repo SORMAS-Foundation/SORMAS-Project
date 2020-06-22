@@ -26,6 +26,8 @@ import android.util.Log;
 
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 
@@ -69,6 +71,34 @@ public class UserDao extends AbstractAdoDao<User> {
 			return (List<User>) builder.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getByRegionAndRole");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public List<User> getAllInJurisdiction() {
+		try {
+			QueryBuilder builder = queryBuilder();
+			Where where = builder.where();
+			where.eq(AbstractDomainObject.SNAPSHOT, false);
+
+			User currentUser = ConfigProvider.getUser();
+			UserRole.getJurisdictionLevel(currentUser.getUserRoles());
+
+			if (currentUser.getHealthFacility() != null) {
+				where.and().eq(User.HEALTH_FACILITY + "_id", currentUser.getHealthFacility());
+			} else if (currentUser.getPointOfEntry() != null) {
+				where.and().eq(User.POINT_OF_ENTRY + "_id", currentUser.getPointOfEntry());
+			} else if (currentUser.getCommunity() != null) {
+				where.and().eq(User.COMMUNITY + "_id", currentUser.getCommunity());
+			} else if (currentUser.getDistrict() != null) {
+				where.and().eq(User.DISTRICT + "_id", currentUser.getDistrict());
+			} else if (currentUser.getRegion() != null) {
+				where.and().eq(User.REGION + "_id", currentUser.getRegion());
+			}
+
+			return builder.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getAllInJurisdiction");
 			throw new RuntimeException(e);
 		}
 	}

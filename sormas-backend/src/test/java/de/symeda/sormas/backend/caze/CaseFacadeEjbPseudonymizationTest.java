@@ -198,7 +198,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex1.getPostalCode(), isEmptyString());
 		assertThat(caseIndex1.getAddressGpsCoordinates(), isEmptyString());
 		assertThat(caseIndex1.getBurialInfo().getBurialPlaceDescription(), is(isEmptyString()));
-		assertThat(caseIndex1.getSample1().stringFormat(), is("2020-06-10 (Pending)"));
+		assertThat(caseIndex1.getSample1().formatString(), is("2020-06-10 (Pending)"));
 
 		CaseExportDto caseIndex2 = exportList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
 		assertThat(caseIndex2.getCommunity(), is(rdcf2.community.getCaption()));
@@ -210,7 +210,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex2.getPostalCode(), is("12345"));
 		assertThat(caseIndex2.getAddressGpsCoordinates(), is("26.533, 46.233 +-10m"));
 		assertThat(caseIndex2.getBurialInfo().getBurialPlaceDescription(), is("Burial place desc"));
-		assertThat(caseIndex2.getSample1().stringFormat(), is("2020-06-10 (Facility 2, Pending)"));
+		assertThat(caseIndex2.getSample1().formatString(), is("2020-06-10 (Facility 2, Pending)"));
 	}
 
 	@Test

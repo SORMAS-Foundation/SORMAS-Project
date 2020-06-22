@@ -286,7 +286,7 @@ public class SampleExportDto implements Serializable {
 
 	@Order(11)
 	public String getSampleMaterialString() {
-		return sampleSampleExportMaterial.stringFormat();
+		return sampleSampleExportMaterial.formatString();
 	}
 
 	public SampleExportMaterial getSampleSampleExportMaterial() {
@@ -679,7 +679,7 @@ public class SampleExportDto implements Serializable {
 		String separator = ", ";
 
 		for (SampleExportPathogenTest otherPathogenTest : otherPathogenTests) {
-			sb.append(otherPathogenTest.stringFormat()).append(separator);
+			sb.append(otherPathogenTest.formatString()).append(separator);
 		}
 
 		return sb.length() > 0 ? sb.substring(0, sb.length() - separator.length()) : "";
@@ -753,7 +753,7 @@ public class SampleExportDto implements Serializable {
 			this.sampleMaterialDetails = sampleMaterialDetails;
 		}
 
-		public String stringFormat(){
+		public String formatString() {
 			return SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
 		}
 	}
@@ -866,7 +866,7 @@ public class SampleExportDto implements Serializable {
 			return PathogenTestType.toString(testType, testTypeText);
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(DateHelper.formatDateForExport(dateTime)).append(" (");
 			String type = formatType();

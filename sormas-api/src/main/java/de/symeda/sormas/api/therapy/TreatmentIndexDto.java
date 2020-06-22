@@ -74,7 +74,7 @@ public class TreatmentIndexDto implements Serializable {
 	}
 
 	public String getTreatmentType() {
-		return treatmentIndexType.stringFormat();
+		return treatmentIndexType.formatString();
 	}
 
 	public Date getTreatmentDateTime() {
@@ -98,7 +98,7 @@ public class TreatmentIndexDto implements Serializable {
 	}
 
 	public String getTreatmentRoute() {
-		return treatmentIndexRoute.stringFormat();
+		return treatmentIndexRoute.formatString();
 	}
 
 	public String getExecutingClinician() {
@@ -126,7 +126,7 @@ public class TreatmentIndexDto implements Serializable {
 			this.typeOfDrug = typeOfDrug;
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			return TreatmentType.buildCaption(treatmentType, treatmentDetails, typeOfDrug);
 		}
 	}
@@ -142,7 +142,7 @@ public class TreatmentIndexDto implements Serializable {
 			this.routeDetails = routeDetails;
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			return TreatmentRoute.buildCaption(route, routeDetails);
 		}
 	}

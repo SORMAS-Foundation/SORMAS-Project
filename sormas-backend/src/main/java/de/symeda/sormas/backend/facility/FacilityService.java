@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.facility;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -103,20 +104,33 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	}
 
 	public List<Facility> getAllActiveLaboratories(boolean includeOtherLaboratory) {
+		return getAllActiveLaboratories(includeOtherLaboratory, null);
+	}
+
+	public List<Facility> getAllActiveLaboratoriesInJurisdiction(boolean includeOtherLaboratory) {
+		return getAllActiveLaboratories(includeOtherLaboratory, this::createJurisdictionFilter);
+	}
+
+	private List<Facility> getAllActiveLaboratories(
+		boolean includeOtherLaboratory,
+		BiFunction<CriteriaBuilder, Root<Facility>, Predicate> createExtraFilters) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
+		Predicate filter = cb.and(
+			createBasicFilter(cb, from),
+			cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
+			cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)
 
-		cq.where(
-			cb.and(
-				createUserFilter(cb, cq, from),
-						createBasicFilter(cb, from),
-						cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
-						cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)
+		);
 
-		));
+		if (createExtraFilters != null) {
+			filter = and(cb, filter, createExtraFilters.apply(cb, from));
+		}
+
+		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
@@ -135,9 +149,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
-				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
-		);
+			cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase()));
 		// Additional null check is required because notEqual returns true if one of the
 		// values is null
 		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)), cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
@@ -166,9 +179,8 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-				cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
-				cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase())
-		);
+			cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase()));
 		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
@@ -182,6 +194,11 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
+		// no filter by user needed
+		return null;
+	}
+
+	private Predicate createJurisdictionFilter(CriteriaBuilder cb, From<Facility, Facility> from) {
 		User currentUser = getCurrentUser();
 		Predicate filter = cb.conjunction();
 
@@ -199,8 +216,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return filter;
 	}
 
-	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb,
-										 Root<Facility> from) {
+	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
 		Predicate filter = null;
 		if (facilityCriteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));

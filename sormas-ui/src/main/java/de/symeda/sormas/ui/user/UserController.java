@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -39,9 +36,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -161,22 +156,6 @@ public class UserController {
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);
-	}
-
-	public List<UserReferenceDto> filterByDistrict(List<UserReferenceDto> users, DistrictReferenceDto district) {
-		List<UserDto> userDtos = new ArrayList<>();
-		for (UserReferenceDto userRef : users) {
-			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
-		}
-
-		userDtos.removeIf(user -> user.getDistrict() == null || !user.getDistrict().equals(district));
-
-		List<UserReferenceDto> userRefs = new ArrayList<>();
-		for (UserDto user : userDtos) {
-			userRefs.add(FacadeProvider.getUserFacade().getByUserNameAsReference(user.getUserName()));
-		}
-
-		return userRefs;
 	}
 
 	private void refreshView() {

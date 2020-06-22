@@ -118,7 +118,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser.get(User.UUID)), userService.createUserFilter(cb, assigneeUser));
+		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUser));
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
@@ -249,7 +249,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 
-		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser), userService.createUserFilter(cb, assigneeUser));
+		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser), userService.createJurisdictionFilter(cb, assigneeUser));
 
 		return and(cb, filter, assigneeFilter);
 	}

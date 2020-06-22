@@ -79,7 +79,7 @@ public class PrescriptionIndexDto implements Serializable {
 	}
 
 	public String getPrescriptionType() {
-		return prescriptionIndexType.stringFormat();
+		return prescriptionIndexType.formatString();
 	}
 
 	public PrescriptionIndexType getPrescriptionIndexType() {
@@ -119,7 +119,7 @@ public class PrescriptionIndexDto implements Serializable {
 	}
 
 	public String getPrescriptionRoute() {
-		return prescriptionIndexRoute.stringFormat();
+		return prescriptionIndexRoute.formatString();
 	}
 
 	public PrescriptionIndexRoute getPrescriptionIndexRoute() {
@@ -151,7 +151,7 @@ public class PrescriptionIndexDto implements Serializable {
 			this.typeOfDrug = typeOfDrug;
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			return TreatmentType.buildCaption(prescriptionType, prescriptionDetails, typeOfDrug);
 		}
 	}
@@ -167,7 +167,7 @@ public class PrescriptionIndexDto implements Serializable {
 			this.routeDetails = routeDetails;
 		}
 
-		public String stringFormat() {
+		public String formatString() {
 			return TreatmentRoute.buildCaption(route, routeDetails);
 		}
 	}

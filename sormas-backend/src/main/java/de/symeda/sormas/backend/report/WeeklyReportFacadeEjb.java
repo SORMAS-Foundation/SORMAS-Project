@@ -208,7 +208,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 
-		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
+		Stream<User> officers = userService.getAllByRegionAndUserRolesInJurisdiction(region, UserRole.SURVEILLANCE_OFFICER).stream();
 		officers = weeklyReportService.filterWeeklyReportUsers(userService.getCurrentUser(), officers);
 
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers.sorted(Comparator.comparing(a -> a.getDistrict().getName())).map(officer -> {

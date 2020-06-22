@@ -105,7 +105,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory) {
 
-		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherLaboratory);
+		List<Facility> laboratories = facilityService.getAllActiveLaboratoriesInJurisdiction(includeOtherLaboratory);
 		return laboratories.stream().map(l -> toReferenceDto(l)).collect(Collectors.toList());
 	}
 
