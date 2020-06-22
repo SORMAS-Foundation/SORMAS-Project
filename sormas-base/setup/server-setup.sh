@@ -182,9 +182,6 @@ else
 fi
 remember_choice DEMO_SYSTEM
 
-prompted_defaulted PAYARA_VERSION=5.192 \
-  "Payara version to use"
-
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
 else
@@ -249,8 +246,12 @@ abspath CUSTOM_DIR
 abspath PAYARA_HOME
 abspath DOMAINS_HOME
 
-defaulted DOMAIN_NAME=sormas
-defaulted PAYARA_PORT_BASE=6000
+prompted_defaulted PAYARA_VERSION=5.192 \
+  "Payara version to use"
+prompted_defaulted DOMAIN_NAME=sormas \
+  "Name for the Payara domain created for SORMAS"
+prompted_defaulted PAYARA_PORT_BASE=6000 \
+  "Base port for the SORMAS Payara domain"
 PORT_ADMIN=$(expr $PAYARA_PORT_BASE + 48)
 DOMAIN_DIR="${DOMAINS_HOME}/${DOMAIN_NAME}"
 
@@ -287,8 +288,9 @@ else
   echo " └ Java JDK: To be configured"
 fi
 echo "$(underlined "Payara config:")"
-echo " ├ Payara: ${PAYARA_VERSION}"
+echo " ├ Payara Version: ${PAYARA_VERSION}"
 echo " ├ *nix user: ${PAYARA_USER}"
+echo " ├ SORMAS domain: ${DOMAIN_NAME}"
 echo " └ Base port: ${PAYARA_PORT_BASE}"
 echo "$(underlined "Directory config:")"
 echo " ├ Temp directory: ${TEMP_DIR}"
