@@ -101,4 +101,5 @@ public enum FeatureType {
 		} ;
 		return listOfEnabledDependentFeatures;
 	}
+
 }

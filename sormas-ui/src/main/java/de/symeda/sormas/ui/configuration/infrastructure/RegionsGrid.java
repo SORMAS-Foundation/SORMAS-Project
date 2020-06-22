@@ -24,6 +24,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.RegionCriteria;
 import de.symeda.sormas.api.region.RegionIndexDto;
@@ -55,7 +56,17 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			setCriteria(criteria);
 		}
 
-		setColumns(RegionIndexDto.NAME, RegionIndexDto.EPID_CODE, RegionIndexDto.EXTERNAL_ID, RegionIndexDto.POPULATION, RegionIndexDto.GROWTH_RATE);
+		setColumns(
+			RegionIndexDto.NAME,
+			RegionIndexDto.AREA,
+			RegionIndexDto.EPID_CODE,
+			RegionIndexDto.EXTERNAL_ID,
+			RegionIndexDto.POPULATION,
+			RegionIndexDto.GROWTH_RATE);
+
+		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			removeColumn(RegionIndexDto.AREA);
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> {

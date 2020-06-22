@@ -10,6 +10,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 @Remote
 public interface AreaFacade {
 
+	List<AreaReferenceDto> getAllActiveAsReference();
+
 	AreaDto getAreaByUuid(String uuid);
 
 	List<AreaDto> getIndexList(AreaCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
@@ -23,5 +25,7 @@ public interface AreaFacade {
 	void archive(String areaUuid);
 
 	void deArchive(String areaUuid);
+
+	List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas);
 
 }

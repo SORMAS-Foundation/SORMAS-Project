@@ -4642,6 +4642,9 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
 FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
 ALTER TABLE areas_history OWNER TO sormas_user;
 
+ALTER TABLE region ADD COLUMN area_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERENCES areas(id);
+
 INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add Area as new infrastructure type #1983');
 
 -- *** Insert new sql commands BEFORE this line ***

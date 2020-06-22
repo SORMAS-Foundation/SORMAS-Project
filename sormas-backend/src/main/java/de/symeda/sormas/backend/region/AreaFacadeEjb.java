@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.AreaCriteria;
 import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.AreaFacade;
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -36,6 +37,11 @@ public class AreaFacadeEjb implements AreaFacade {
 
 	@EJB
 	private AreaService service;
+
+	@Override
+	public List<AreaReferenceDto> getAllActiveAsReference() {
+		return service.getAllActive(Area.NAME, true).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
 
 	@Override
 	public AreaDto getAreaByUuid(String uuid) {
@@ -128,6 +134,11 @@ public class AreaFacadeEjb implements AreaFacade {
 		service.ensurePersisted(area);
 	}
 
+	@Override
+	public List<AreaReferenceDto> getByName(String name, boolean includeArchivedAreas) {
+		return service.getByName(name, includeArchivedAreas).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
 	public Area fromDto(@NotNull AreaDto source, Area target) {
 		if (target == null) {
 			target = new Area();
@@ -155,6 +166,14 @@ public class AreaFacadeEjb implements AreaFacade {
 		target.setArchived(source.isArchived());
 
 		return target;
+	}
+
+	public static AreaReferenceDto toReferenceDto(Area entity) {
+		if (entity == null) {
+			return null;
+		}
+		AreaReferenceDto dto = new AreaReferenceDto(entity.getUuid(), entity.toString());
+		return dto;
 	}
 
 	@LocalBean

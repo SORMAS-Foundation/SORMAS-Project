@@ -44,11 +44,13 @@ import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
@@ -56,6 +58,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictDto;
@@ -68,6 +71,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -135,6 +139,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String CASE_LINE_LISTING_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_line_listing_template.csv";
 	private static final String POINT_OF_ENTRY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_point_of_entry_template.csv";
 	private static final String POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_population_data_template.csv";
+	private static final String AREA_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_area_template.csv";
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
@@ -276,6 +281,11 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
+	public void generateAreaImportTemplateFile() throws IOException {
+		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()));
+	}
+
+	@Override
 	public void generateRegionImportTemplateFile() throws IOException {
 		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
 	}
@@ -345,6 +355,14 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
 		Path filePath = exportDirectory.resolve(POPULATION_DATA_IMPORT_TEMPLATE_FILE_NAME);
+		return filePath.toString();
+	}
+
+	@Override
+	public String getAreaImportTemplateFilePath() {
+
+		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
+		Path filePath = exportDirectory.resolve(AREA_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
@@ -419,6 +437,14 @@ public class ImportFacadeEjb implements ImportFacade {
 			// Fields with the @ImportIgnore annotation are ignored
 			if (readMethod.isAnnotationPresent(ImportIgnore.class)) {
 				continue;
+			}
+			// Fields that are depending on a certain feature type to be active may be ignored
+			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
+				List<FeatureType> activeServerFeatures = FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes();
+				if (!activeServerFeatures.isEmpty()
+					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
+					continue;
+				}
 			}
 			// List types are ignored
 			if (Collection.class.isAssignableFrom(field.getType())) {
