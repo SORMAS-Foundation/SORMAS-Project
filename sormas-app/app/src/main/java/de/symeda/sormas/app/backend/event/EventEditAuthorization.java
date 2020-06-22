@@ -1,19 +1,19 @@
-package de.symeda.sormas.app.backend.contact;
+package de.symeda.sormas.app.backend.event;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.JurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 
-public class ContactEditAuthorization {
+public class EventEditAuthorization {
 
-	public static boolean isContactEditAllowed(Contact contact) {
+	public static boolean isEventEditAllowed(Event event) {
 		User user = ConfigProvider.getUser();
 
-		return ContactJurisdictionHelper.isInJurisdiction(
+		return EventJurisdictionHelper.isInJurisdiction(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createContactJurisdictionDto(contact));
+			JurisdictionHelper.createEventJurisdictionDto(event));
 	}
 }
