@@ -20,12 +20,12 @@
     <string name="age_with_birth_date_format">%1$s %2$s (%3$s)</string>
     <string name="age_with_dob_and_prepend_format"><b>%1$s:</b> %2$s %3$s (%4$s)</string>
     <string name="date_range_format">%1$s - %2$s</string>
-    <string name="due_timeago_format">due %1$s</string>
-    <string name="message_unsynchronized_changes_confirmation">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them. Type the word %1$s into the text field below to continue.</string>
+    <string name="due_timeago_format">fällig %1$s</string>
+    <string name="message_unsynchronized_changes_confirmation">Es gibt nicht synchronisierte Änderungen auf Ihrem Gerät.\nWenn Sie fortfahren, werden diese verloren gehen und können nicht wiederhergestellt werden. Geben Sie das Wort %1$s in das Textfeld unten ein, um fortzufahren.</string>
     <string name="number_of_cases_format">%1$s</string>
-    <string name="number_of_visits_long_format">%1$d visits (%2$d missed)</string>
+    <string name="number_of_visits_long_format">%1$d Besuche (%2$d verpasst)</string>
     <string name="person_name_format">%1$s %2$s</string>
-    <string name="report_submitted_date_format">Report submitted %1$s</string>
+    <string name="report_submitted_date_format">Bericht eingereicht %1$s</string>
     <string name="title_detail_format"><b>%1$s:</b> %2$s</string>
     <string name="two_strings_format">%1$s %2$s</string>
     <string name="two_strings_with_brackets_format">%1$s (%2$s)</string>
