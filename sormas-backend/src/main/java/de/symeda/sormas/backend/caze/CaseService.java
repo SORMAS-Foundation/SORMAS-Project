@@ -823,7 +823,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			default:
 			}
 
-
 			// get all cases based on the user's contact association
 			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {
 				Subquery<Long> contactCaseSubquery = cq.subquery(Long.class);
@@ -889,5 +888,42 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return newCaseFilter;
+	}
+
+	public Predicate inInJurisdiction(CriteriaBuilder cb, CaseJoins<Case> joins) {
+
+		final User currentUser = userService.getCurrentUser();
+
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final Predicate jurisdictionPredicate;
+		switch (jurisdictionLevel) {
+		case NATION:
+			jurisdictionPredicate = cb.conjunction();
+			break;
+		case REGION:
+			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
+			break;
+		case DISTRICT:
+			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
+			break;
+		case COMMUNITY:
+			jurisdictionPredicate = cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
+			break;
+		case HEALTH_FACILITY:
+			jurisdictionPredicate = cb.equal(joins.getFacility().get(Facility.ID), currentUser.getHealthFacility().getId());
+			break;
+		case POINT_OF_ENTRY:
+			jurisdictionPredicate = cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+			break;
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+		case NONE:
+		default:
+			jurisdictionPredicate = cb.disjunction();
+		}
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
 	}
 }

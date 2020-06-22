@@ -153,7 +153,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetEventParticipantPersonInOutsideJurisdiction() {
+	public void testGetEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person);
@@ -170,7 +170,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateEventParticipantPersonPersonOutsideJurisdiction() {
+	public void testUpdateEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
 		creator.createEventParticipant(event.toReference(), person);
