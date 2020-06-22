@@ -1,19 +1,19 @@
-package de.symeda.sormas.app.backend.sample;
+package de.symeda.sormas.app.backend.task;
 
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.jurisdiction.SampleJurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.TaskJurisdictionHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.JurisdictionHelper;
 
-public class SampleEditAuthorization {
+public class TaskEditAuthorization {
 
-	public static boolean isSampleEditAllowed(Sample sample) {
+	public static boolean isEventEditAllowed(Task task) {
 		User user = ConfigProvider.getUser();
 
-		return SampleJurisdictionHelper.isInJurisdiction(
+		return TaskJurisdictionHelper.isInJurisdiction(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
-			JurisdictionHelper.createSampleJurisdictionDto(sample));
+			JurisdictionHelper.createTaskJurisdictionDto(task));
 	}
 }

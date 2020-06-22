@@ -149,5 +149,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 		//}
+
+		setSampleEditPermission(container);
 	}
 }

@@ -104,6 +104,15 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		}
 	}
 
+	public void setSampleEditPermission(Component component) {
+
+		Boolean isSampleEditAllowed = FacadeProvider.getSampleFacade().isSampleEditAllowed(getSampleRef().getUuid());
+
+		if (!isSampleEditAllowed) {
+			component.setEnabled(false);
+		}
+	}
+
 	public SampleReferenceDto getSampleRef() {
 		return getReference();
 	}

@@ -4622,4 +4622,26 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+-- 2020-06-18 Add campaign forms #2268
+CREATE TABLE campaignforms(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formid varchar(255),
+	languagecode varchar(255),
+	campaignformelements text,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE campaignforms OWNER TO sormas_user;
+
+CREATE TABLE campaignforms_history (LIKE campaigns);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignforms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignforms_history', true);
+ALTER TABLE campaignforms_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add campaign forms #2268');
+
 -- *** Insert new sql commands BEFORE this line ***

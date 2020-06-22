@@ -22,4 +22,5 @@ public interface CampaignFacade {
 	void deleteCampaign(String uuid);
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
+
 }

@@ -144,6 +144,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private CaseJurisdictionChecker caseJurisdictionChecker;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
 	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
@@ -917,5 +923,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
 
+	}
+
+	public Boolean isSampleEditAllowed(String sampleUuid) {
+
+		Sample sample = sampleService.getByUuid(sampleUuid);
+		return sampleJurisdictionChecker.isInJurisdiction(sample);
 	}
 }

@@ -152,5 +152,6 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 		update();
 		reloadClinicalVisitGrid();
+		setCaseEditPermission(container);
 	}
 }

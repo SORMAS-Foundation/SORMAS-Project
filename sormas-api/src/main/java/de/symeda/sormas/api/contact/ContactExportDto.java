@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -86,6 +87,10 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineTo;
 	@SensitiveData
 	private String quarantineHelpNeeded;
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
 
 	private ContactJurisdictionDto jurisdiction;
 
@@ -95,6 +100,7 @@ public class ContactExportDto implements Serializable {
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
 							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
 							QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String address, String postalCode,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
@@ -127,6 +133,10 @@ public class ContactExportDto implements Serializable {
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
 		this.quarantineHelpNeeded = quarantineHelpNeeded;
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
 		this.addressRegion = addressRegion;
@@ -276,66 +286,90 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(28)
+	@HideForCountriesExcept
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	@Order(29)
+	@HideForCountriesExcept
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	@Order(30)
+	@HideForCountriesExcept
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	@Order(31)
+	@HideForCountriesExcept
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	@Order(32)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(29)
+	@Order(33)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(30)
+	@Order(34)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(31)
+	@Order(35)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(32)
+	@Order(36)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(33)
+	@Order(37)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(34)
+	@Order(38)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(35)
+	@Order(39)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(36)
+	@Order(40)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(37)
+	@Order(41)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(38)
+	@Order(42)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(39)
+	@Order(43)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(40)
+	@Order(44)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}

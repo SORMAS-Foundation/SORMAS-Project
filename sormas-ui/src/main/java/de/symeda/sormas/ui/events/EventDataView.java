@@ -68,5 +68,7 @@ public class EventDataView extends AbstractEventView {
 		TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
+
+		setEventEditPermission(container);
 	}
 }
