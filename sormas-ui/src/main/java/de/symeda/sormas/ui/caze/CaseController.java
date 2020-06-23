@@ -131,6 +131,7 @@ public class CaseController {
 		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
+		navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 	}
 
 	public void create() {

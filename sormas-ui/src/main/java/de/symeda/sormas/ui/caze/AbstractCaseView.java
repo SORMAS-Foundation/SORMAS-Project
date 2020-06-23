@@ -139,7 +139,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
 
-		if (!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE) {
+		boolean showExtraMenuEntries =
+			!hasOutbreak || !caze.getDisease().usesSimpleViewForOutbreaks() || viewConfiguration.getViewMode() != ViewMode.SIMPLE;
+		if (showExtraMenuEntries) {
 			menu.addView(CasePersonView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON), params);
 			if (caze.getDisease() == Disease.CONGENITAL_RUBELLA) {
 				menu.addView(
@@ -168,6 +170,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
+		}
+		menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
+
+		if (showExtraMenuEntries) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
 				&& !caze.isUnreferredPortHealthCase()
 				&& !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.CLINICAL_MANAGEMENT)) {
