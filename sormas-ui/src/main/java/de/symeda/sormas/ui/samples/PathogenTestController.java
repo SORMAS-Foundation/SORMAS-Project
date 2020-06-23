@@ -142,15 +142,31 @@ public class PathogenTestController {
 	private void bulkCreate(
 		Collection<? extends SampleIndexDto> selectedSamples,
 		PathogenTestDto updatedBulkResultData) {
+		
+		Collection<CaseDataDto> confirmCase = new ArrayList<CaseDataDto>();
+		Collection<CaseDataDto> changeDisease = new ArrayList<CaseDataDto>();
 
 		for (SampleIndexDto indexDto : selectedSamples) {
 			
 			updatedBulkResultData.setUuid(DataHelper.createUuid());
 			updatedBulkResultData.setSample(indexDto.toReference());
 			
-			savePathogenTest(updatedBulkResultData, null);
+			savePathogenTest(updatedBulkResultData, null, (action, caze) -> {
+				switch (action) {
+					case CONFIRM_CASE:
+						confirmCase.add(caze);
+						break;
+					case CHANGE_DISEASE:
+						changeDisease.add(caze);
+						break;
+				}
+			});
 		}
+		
+		showConfirmCaseDialog(confirmCase);
+		showCaseCloningWithNewDiseaseDialog(changeDisease, updatedBulkResultData.getTestedDisease());
 	}
+	
 	
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		// get fresh data
