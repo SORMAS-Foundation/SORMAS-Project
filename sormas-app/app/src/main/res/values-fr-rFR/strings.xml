@@ -70,7 +70,7 @@
     <string name="action_new_case">Nouveau Cas</string>
     <string name="action_new_contact">Nouveau Contact</string>
     <string name="action_new_event">Nouvel événement</string>
-    <string name="action_new_sample">Nouveau échantillon</string>
+    <string name="action_new_sample">Nouvel échantillon</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>

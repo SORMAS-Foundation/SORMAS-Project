@@ -186,7 +186,7 @@
     <string name="caption_present_condition">Aktueller Status</string>
     <string name="caption_probable_case">Wahrscheinlicher Fall</string>
     <string name="caption_rapid_case_entry">Schnell-Falleintrag verwenden</string>
-    <string name="caption_report_date">Berichtsdatum: %1$s</string>
+    <string name="caption_report_date">Meldedatum: %1$s</string>
     <string name="caption_reported_case_count">Anzahl der von Ihnen gemeldeten Fälle</string>
     <string name="caption_reported_informant_case_count">Anzahl der von Informant*innen gemeldeten Fälle</string>
     <string name="caption_resulting_case_status">Status des resultierenden Falls</string>
@@ -536,7 +536,7 @@
     <string name="value_prescribing_clinician_unknown">Verschreibende*r Arzt/Ärztin N/A</string>
     <string name="value_prescription_date_unknown">Datum der Rezeptausstellung N/A</string>
     <string name="value_prescription_period_unknown">Verschreibungsdauer N/A</string>
-    <string name="value_report_date_unknown">Berichtsdatum N/A</string>
+    <string name="value_report_date_unknown">Meldedatum N/A</string>
     <string name="value_role_unassigned">Rolle nicht zugewiesen</string>
     <string name="value_sample_date_unknown">Probenentnahme-Datum N/A</string>
     <string name="value_sample_material_unknown">Probenmaterial N/A</string>
