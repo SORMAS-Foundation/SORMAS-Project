@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -42,11 +43,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public static final String DISEASE = "disease";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String LAB = "laboratory";
 	public static final String CASE_CODE_ID_LIKE = "caseCodeIdLike";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private FacilityReferenceDto laboratory;
 	private Boolean shipped;
 	private Boolean received;
@@ -81,6 +84,14 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
 	}
 
 	public FacilityReferenceDto getLaboratory() {
