@@ -39,7 +39,7 @@ public class SampleExportDto implements Serializable {
 	private String uuid;
 	private String labSampleID;
 	private String epidNumber;
-	private SampleExportAssociatedCase samplAssociatedCase;
+	private SampleExportAssociatedCase sampleAssociatedCase;
 	private ContactReferenceDto associatedContact;
 	private String contactRegion;
 	private String contactDistrict;
@@ -119,7 +119,7 @@ public class SampleExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 
 		if (caseUuid != null) {
-			this.samplAssociatedCase = new SampleExportAssociatedCase(
+			this.sampleAssociatedCase = new SampleExportAssociatedCase(
 				caseUuid,
 				casePersonFirstName,
 				casePersonLastName,
@@ -260,8 +260,8 @@ public class SampleExportDto implements Serializable {
 		this.epidNumber = epidNumber;
 	}
 
-	public SampleExportAssociatedCase getSamplAssociatedCase() {
-		return samplAssociatedCase;
+	public SampleExportAssociatedCase getSampleAssociatedCase() {
+		return sampleAssociatedCase;
 	}
 
 	public ContactReferenceDto getAssociatedContact() {
@@ -270,12 +270,12 @@ public class SampleExportDto implements Serializable {
 
 	@Order(4)
 	public String getFirstName() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getFirstName() : associatedContact.getContactName().getFirstName();
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getFirstName() : associatedContact.getContactName().getFirstName();
 	}
 
 	@Order(5)
 	public String getLastName() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getLastName() : associatedContact.getContactName().getLastName();
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getLastName() : associatedContact.getContactName().getLastName();
 	}
 
 	@Order(6)
@@ -542,22 +542,22 @@ public class SampleExportDto implements Serializable {
 
 	@Order(54)
 	public String getCaseRegion() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getRegion() : null;
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getRegion() : null;
 	}
 
 	@Order(55)
 	public String getCaseDistrict() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getDistrict() : null;
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getDistrict() : null;
 	}
 
 	@Order(56)
 	public String getCaseCommunity() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getCommunity() : null;
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getCommunity() : null;
 	}
 
 	@Order(57)
 	public String getCaseFacility() {
-		return samplAssociatedCase != null ? samplAssociatedCase.getFacility() : null;
+		return sampleAssociatedCase != null ? sampleAssociatedCase.getFacility() : null;
 	}
 
 	@Order(60)

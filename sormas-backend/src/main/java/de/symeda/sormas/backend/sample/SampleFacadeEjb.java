@@ -603,9 +603,9 @@ public class SampleFacadeEjb implements SampleFacade {
 				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportMaterial.class, s.getSampleSampleExportMaterial(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, s.getPersonAddress(), isInJurisdiction, null);
 
-				if (exportDto.getSamplAssociatedCase() != null) {
+				if (exportDto.getSampleAssociatedCase() != null) {
 					pseudonymizer
-						.pseudonymizeDto(SampleExportDto.SampleExportAssociatedCase.class, s.getSamplAssociatedCase(), isInJurisdiction, null);
+						.pseudonymizeDto(SampleExportDto.SampleExportAssociatedCase.class, s.getSampleAssociatedCase(), isInJurisdiction, null);
 				}
 
 				if (exportDto.getAssociatedContact() != null) {

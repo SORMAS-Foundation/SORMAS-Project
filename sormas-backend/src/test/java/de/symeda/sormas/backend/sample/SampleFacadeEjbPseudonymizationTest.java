@@ -209,16 +209,16 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<SampleExportDto> exportList = getSampleFacade().getExportList(new SampleCriteria(), 0, 100);
 		SampleExportDto export1 = exportList.stream().filter(t -> t.getUuid().equals(sample1.getUuid())).findFirst().get();
-		assertThat(export1.getSamplAssociatedCase().getFirstName(), is("John"));
-		assertThat(export1.getSamplAssociatedCase().getLastName(), is("Smith"));
+		assertThat(export1.getSampleAssociatedCase().getFirstName(), is("John"));
+		assertThat(export1.getSampleAssociatedCase().getLastName(), is("Smith"));
 		assertThat(export1.getLab(), is("Lab - Test lab details"));
 		assertThat(export1.getPathogenTestLab1(), is("Lab - Test lab details"));
 		assertThat(export1.getPathogenTestType1(), is("Test type text"));
 
 
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertThat(export2.getSamplAssociatedCase().getFirstName(), isEmptyString());
-		assertThat(export2.getSamplAssociatedCase().getLastName(), isEmptyString());
+		assertThat(export2.getSampleAssociatedCase().getFirstName(), isEmptyString());
+		assertThat(export2.getSampleAssociatedCase().getLastName(), isEmptyString());
 		assertThat(export2.getLab(), isEmptyString());
 		assertThat(export2.getPathogenTestLab1(), isEmptyString());
 		assertThat(export2.getPathogenTestType1(), isEmptyString());
