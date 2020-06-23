@@ -56,9 +56,9 @@ public class DateHelperTest {
 		assertDays(DateHelper.getDaysInMonth(2, 2009), 28);
 		assertDays(DateHelper.getDaysInMonth(2, 2010), 28);
 		assertDays(DateHelper.getDaysInMonth(2, 2011), 28);
-		assertDays(DateHelper.getDaysInMonth(2, null), 28);
 
 		// Leap year
+		assertDays(DateHelper.getDaysInMonth(2, null), 29);
 		assertDays(DateHelper.getDaysInMonth(2, 2000), 29);
 		assertDays(DateHelper.getDaysInMonth(2, 2008), 29);
 	}
