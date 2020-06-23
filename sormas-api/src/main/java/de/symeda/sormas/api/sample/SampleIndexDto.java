@@ -79,18 +79,18 @@ public class SampleIndexDto implements Serializable {
 	private PathogenTestResultType pathogenTestResult;
 	private AdditionalTestingStatus additionalTestingStatus;
 
-	private CaseJurisdictionDto associatedCaseJurisdiction;
-	private ContactJurisdictionDto associatedContactJurisdiction;
+	private SampleJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
-						  String labUuid, String labName, String referredSampleUuid,
+						  String labName, String referredSampleUuid,
 						  String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
 						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
+						  String reportingUserUuid, String labUuid,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
@@ -100,29 +100,10 @@ public class SampleIndexDto implements Serializable {
 		this.uuid = uuid;
 		if (associatedCaseUuid != null) {
 			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
-			this.associatedCaseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUuid,
-				caseRegionUuid,
-				caseDistrictUuid,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
 		}
 		if (associatedContactUuid != null) {
 			this.associatedContact =
 				new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
-
-			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
-				? null
-				: new CaseJurisdictionDto(
-					contactCaseReportingUserUuid,
-					contactCaseRegionUuid,
-					contactCaseDistrictUuid,
-					contactCaseCommunityUuid,
-					contactCaseHealthFacilityUuid,
-					contactCasePointOfEntryUuid);
-			this.associatedContactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
@@ -149,6 +130,34 @@ public class SampleIndexDto implements Serializable {
 		this.additionalTestingStatus = Boolean.TRUE.equals(additionalTestPerformed)
 			? AdditionalTestingStatus.PERFORMED
 			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
+
+		CaseJurisdictionDto associatedCaseJurisdiction = null;
+		if (associatedCaseUuid != null) {
+			associatedCaseJurisdiction = new CaseJurisdictionDto(
+				caseReportingUserUuid,
+				caseRegionUuid,
+				caseDistrictUuid,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
+		}
+
+		ContactJurisdictionDto associatedContactJurisdiction = null;
+		if (associatedContactUuid != null) {
+			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
+				? null
+				: new CaseJurisdictionDto(
+					contactCaseReportingUserUuid,
+					contactCaseRegionUuid,
+					contactCaseDistrictUuid,
+					contactCaseCommunityUuid,
+					contactCaseHealthFacilityUuid,
+					contactCasePointOfEntryUuid);
+			associatedContactJurisdiction =
+				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+		}
+
+		jurisdiction = new SampleJurisdictionDto(reportingUserUuid, associatedCaseJurisdiction, associatedContactJurisdiction, labUuid);
 	}
 
 	private DistrictReferenceDto createDistrictReference(
@@ -340,11 +349,7 @@ public class SampleIndexDto implements Serializable {
 		this.additionalTestingStatus = additionalTestingStatus;
 	}
 
-	public CaseJurisdictionDto getAssociatedCaseJurisdiction() {
-		return associatedCaseJurisdiction;
-	}
-
-	public ContactJurisdictionDto getAssociatedContactJurisdiction() {
-		return associatedContactJurisdiction;
+	public SampleJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

@@ -35,6 +35,7 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
+	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;
 	private Join<Sample, Facility> lab;
 	private Join<Sample, Case> caze;
@@ -68,6 +69,14 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
+	}
+
+	public Join<Sample, User> getReportingUser() {
+		return getOrCreate(reportingUser, Sample.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
+	}
+
+	private void setReportingUser(Join<Sample, User> reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Join<Sample, Sample> getReferredSample() {

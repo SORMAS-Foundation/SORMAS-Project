@@ -17,26 +17,19 @@ public class SampleJurisdictionHelper {
 		}
 
 		switch (jurisdictionLevel) {
-		case NONE:
-			return false;
 		case NATION:
 			return true;
-		case REGION:
-			return false;
-		case DISTRICT:
-			return false;
+		case NONE:
 		case COMMUNITY:
-			return false;
+		case DISTRICT:
+		case REGION:
 		case HEALTH_FACILITY:
-			return false;
-		case LABORATORY:
-			return sampleJurisdiction.getLabUuid() != null
-				&& DataHelper.equal(sampleJurisdiction.getLabUuid(), userJurisdiction.getHealthFacilityUuid());
-		case EXTERNAL_LABORATORY:
-			return sampleJurisdiction.getOtherLabUuid() != null
-				&& DataHelper.equal(sampleJurisdiction.getOtherLabUuid(), userJurisdiction.getHealthFacilityUuid());
 		case POINT_OF_ENTRY:
 			return false;
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+			return sampleJurisdiction.getLabUuid() != null
+				&& DataHelper.equal(sampleJurisdiction.getLabUuid(), userJurisdiction.getHealthFacilityUuid());
 		}
 
 		if (sampleJurisdiction.getCaseJurisdiction() != null) {

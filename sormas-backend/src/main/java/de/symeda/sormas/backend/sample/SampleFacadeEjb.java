@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -61,6 +60,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -70,6 +70,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -79,6 +80,7 @@ import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -144,13 +146,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
-	private PseudonymizationService pseudonymizationService;
+	private SampleJurisdictionChecker sampleJurisdictionChecker;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -289,7 +289,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SPECIMEN_CONDITION),
-				joins.getLab().get(Facility.UUID),
 				joins.getLab().get(Facility.NAME),
 				joins.getReferredSample().get(Sample.UUID),
 				caze.get(Case.UUID),
@@ -305,7 +304,9 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				joins.getCaseDistrict().get(Region.NAME),
 				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME)));
+				joins.getContactCaseDistrict().get(Region.NAME),
+				joins.getReportingUser().get(User.UUID),
+				joins.getLab().get(Facility.UUID)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 
@@ -384,14 +385,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			SampleIndexDto.class,
 			samples,
-			s -> sampleJurisdictionChecker.isInJurisdiction(s.getAssociatedCaseJurisdiction(), s.getAssociatedContactJurisdiction()),
+			s -> sampleJurisdictionChecker.isInJurisdiction(s.getJurisdiction()),
 			(s, isInJurisdiction) -> {
-				pseudonymizeAssociatedObjects(
-					s.getAssociatedCase(),
-					s.getAssociatedCaseJurisdiction(),
-					s.getAssociatedContact(),
-					s.getAssociatedContactJurisdiction(),
-					pseudonymizer);
+				pseudonymizeAssociatedObjects(s.getJurisdiction(), s.getAssociatedCase(), s.getAssociatedContact(), pseudonymizer);
 			});
 
 		return samples;
@@ -481,7 +477,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SAMPLE_SOURCE),
-				joins.getLab().get(Facility.UUID),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
@@ -531,7 +526,9 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getContact().get(Contact.REPORT_DATE_TIME),
 				joins.getContact().get(Contact.LAST_CONTACT_DATE),
 				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
-				joins.getContact().get(Contact.CONTACT_STATUS)));
+				joins.getContact().get(Contact.CONTACT_STATUS),
+				joins.getReportingUser().get(User.UUID),
+				joins.getLab().get(Facility.UUID)));
 
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
@@ -601,14 +598,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), null);
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(exportDto.getJurisdiction());
 			pseudonymizer.pseudonymizeDto(SampleExportDto.class, exportDto, isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportMaterial.class, s.getSampleSampleExportMaterial(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, s.getPersonAddress(), isInJurisdiction, null);
 
-				if (exportDto.getSampleExportAssociatedCase() != null) {
+				if (exportDto.getSamplAssociatedCase() != null) {
 					pseudonymizer
-						.pseudonymizeDto(SampleExportDto.SampleExportAssociatedCase.class, s.getSampleExportAssociatedCase(), isInJurisdiction, null);
+						.pseudonymizeDto(SampleExportDto.SampleExportAssociatedCase.class, s.getSamplAssociatedCase(), isInJurisdiction, null);
 				}
 
 				if (exportDto.getAssociatedContact() != null) {
@@ -748,15 +745,15 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(source);
+			SampleJurisdictionDto sampleJurisdiction = JurisdictionHelper.createSampleJurisdictionDto(source);
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(sampleJurisdiction);
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
-				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
 				ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
 
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s, s::setReportingUser);
-				pseudonymizeAssociatedObjects(s.getAssociatedCase(), caseJurisdiction, s.getAssociatedContact(), contactJurisdiction, pseudonymizer);
+				pseudonymizeAssociatedObjects(sampleJurisdiction, s.getAssociatedCase(), s.getAssociatedContact(), pseudonymizer);
 			});
 
 		}
@@ -775,27 +772,29 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void pseudonymizeAssociatedObjects(
+		SampleJurisdictionDto sampleJurisdiction,
 		CaseReferenceDto sampleCase,
-		CaseJurisdictionDto caseJurisdiction,
 		ContactReferenceDto sampleContact,
-		ContactJurisdictionDto contactJurisdiction,
 		Pseudonymizer pseudonymizer) {
 
 		if (sampleCase != null) {
-			pseudonymizer
-				.pseudonymizeDto(CaseReferenceDto.class, sampleCase, sampleJurisdictionChecker.isInJurisdiction(caseJurisdiction, null), null);
+			pseudonymizer.pseudonymizeDto(
+				CaseReferenceDto.class,
+				sampleCase,
+				caseJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getCaseJurisdiction()),
+				null);
 		}
 
 		if (sampleContact != null) {
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getContactName(),
-				sampleJurisdictionChecker.isInJurisdiction(null, contactJurisdiction),
+				contactJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getContactJurisdiction()),
 				null);
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getCaseName(),
-				sampleJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
+				caseJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
 				null);
 		}
 	}

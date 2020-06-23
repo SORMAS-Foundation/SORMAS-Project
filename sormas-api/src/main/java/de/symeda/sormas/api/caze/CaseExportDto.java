@@ -130,6 +130,7 @@ public class CaseExportDto implements Serializable {
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown leftAgainstAdvice;
+	@SensitiveData
 	private String initialDetectionPlace;
 	private PresentCondition presentCondition;
 	private Date deathDate;

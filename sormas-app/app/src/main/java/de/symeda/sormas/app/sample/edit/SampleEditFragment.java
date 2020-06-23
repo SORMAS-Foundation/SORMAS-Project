@@ -79,7 +79,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			activityRootData,
 			null,
 			AppFieldAccessCheckers
-				.withCheckers(SampleEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+				.withCheckers(SampleEditAuthorization.isSampleEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {
