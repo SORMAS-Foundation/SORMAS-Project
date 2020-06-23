@@ -21,10 +21,12 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -32,6 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
 public class CaseVisitsView extends AbstractCaseView {
@@ -58,7 +61,15 @@ public class CaseVisitsView extends AbstractCaseView {
 		topLayout.addStyleName(CssStyles.VSPACE_3);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			// TODO (xca): handle bulkOperations
+			topLayout.setWidth(100, Unit.PERCENTAGE);
+			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+				Captions.bulkActions,
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+					ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+				}));
+			topLayout.addComponent(bulkOperationsDropdown);
+			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
+			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EXPORT)) {
