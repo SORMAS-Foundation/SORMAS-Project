@@ -50,6 +50,7 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Community> contactCommunity;
 	private Join<Contact, Case> contactCase;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
@@ -188,6 +189,14 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	private void setContactDistrict(Join<Contact, District> contactDistrict) {
 		this.contactDistrict = contactDistrict;
+	}
+
+	public Join<Contact, Community> getContactCommunity() {
+		return getOrCreate(contactCommunity, Contact.DISTRICT, JoinType.LEFT, getContact(), this::setContactCommunity);
+	}
+
+	private void setContactCommunity(Join<Contact, Community> contactCommunity) {
+		this.contactCommunity = contactCommunity;
 	}
 
 	public Join<Contact, Case> getContactCase() {
