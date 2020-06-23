@@ -57,6 +57,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -344,6 +345,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getContactCaseDistrict().get(District.UUID)));
 			filter = and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
+		}
+		if (criteria.getCommunity() != null) {
+			Expression<Object> communityExpression = cb.selectCase()
+				.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.UUID))
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.UUID))
+						.otherwise(joins.getContactCaseCommunity().get(Community.UUID)));
+			filter = and(cb, filter, cb.equal(communityExpression, criteria.getCommunity().getUuid()));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter = and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
