@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.caze;
+package de.symeda.sormas.ui;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,44 +8,35 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-@SuppressWarnings("serial")
-public class SearchSpecificCaseLayout extends VerticalLayout {
+public class SearchSpecificLayout extends VerticalLayout {
 
-	public SearchSpecificCaseLayout(Runnable closePopupCallback) {
+	public SearchSpecificLayout(
+		Runnable confirmCallback,
+		Runnable closePopupCallback,
+		TextField searchField,
+		String searchDescription,
+		String confirmCaption) {
 
 		setMargin(true);
 		setSpacing(false);
 		setWidth(100, Unit.PERCENTAGE);
 
-		Label lblCaseSearchDescription = new Label(I18nProperties.getString(Strings.infoSpecificCaseSearch), ContentMode.HTML);
-		lblCaseSearchDescription.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(lblCaseSearchDescription, CssStyles.VSPACE_2);
-		addComponent(lblCaseSearchDescription);
+		Label lblSearchDescription = new Label(searchDescription, ContentMode.HTML);
+		lblSearchDescription.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(lblSearchDescription, CssStyles.VSPACE_2);
+		addComponent(lblSearchDescription);
 
-		TextField searchField = new TextField();
 		ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
 
 			@Override
 			protected void onConfirm() {
-				String foundCaseUuid = FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchField.getValue());
-
-				if (foundCaseUuid != null) {
-					ControllerProvider.getCaseController().navigateToCase(foundCaseUuid);
-					closePopupCallback.run();
-				} else {
-					VaadinUiUtil.showSimplePopupWindow(
-						I18nProperties.getString(Strings.headingNoCaseFound),
-						I18nProperties.getString(Strings.messageNoCaseFound));
-				}
+				confirmCallback.run();
 			}
 
 			@Override
@@ -60,7 +51,7 @@ public class SearchSpecificCaseLayout extends VerticalLayout {
 		CssStyles.style(searchField, CssStyles.VSPACE_2);
 		addComponent(searchField);
 
-		confirmationComponent.getConfirmButton().setCaption(I18nProperties.getCaption(Captions.caseSearchCase));
+		confirmationComponent.getConfirmButton().setCaption(confirmCaption);
 		confirmationComponent.getConfirmButton().setEnabled(false);
 		confirmationComponent.getCancelButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		confirmationComponent.setMargin(true);

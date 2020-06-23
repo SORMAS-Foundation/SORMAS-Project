@@ -29,7 +29,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLocCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.inlineLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
@@ -104,6 +103,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String CASE_DATA_HEADING_LOC = "caseDataHeadingLoc";
 	private static final String MEDICAL_INFORMATION_LOC = "medicalInformationLoc";
 	private static final String PAPER_FORM_DATES_LOC = "paperFormDatesLoc";
 	private static final String SMALLPOX_VACCINATION_SCAR_IMG = "smallpoxVaccinationScarImg";
@@ -117,7 +117,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingCaseData)) +
+			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC) +
 					fluidRow(
@@ -201,6 +201,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (person == null || disease == null) {
 			return;
 		}
+
+		Label caseDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingCaseData));
+		caseDataHeadingLabel.addStyleName(H3);
+		getContent().addComponent(caseDataHeadingLabel, CASE_DATA_HEADING_LOC);
 
 		// Add fields
 		addFields(
@@ -370,9 +374,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
-		addField(CaseDataDto.REPORT_LAT, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LON, TextField.class).setConverter(new StringToAngularLocationConverter());
-		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+		TextField tfReportLat = addField(CaseDataDto.REPORT_LAT, TextField.class);
+		tfReportLat.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfReportLat);
+		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
+		tfReportLon.setConverter(new StringToAngularLocationConverter());
+		removeMaxLengthValidators(tfReportLon);
+		TextField tfReportAccuracy = addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+		removeMaxLengthValidators(tfReportAccuracy);
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);

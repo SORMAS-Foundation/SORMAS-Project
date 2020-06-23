@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.samples;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -59,8 +58,8 @@ public class SampleDataView extends AbstractSampleView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
+
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(
@@ -145,5 +144,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 		//}
+
+		setSampleEditPermission(container);
 	}
 }

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -177,7 +179,7 @@ public class Task extends AbstractDomainObject {
 		this.creatorUser = creatorUser;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getCreatorComment() {
 		return creatorComment;
 	}
@@ -195,7 +197,7 @@ public class Task extends AbstractDomainObject {
 		this.assigneeUser = assigneeUser;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAssigneeReply() {
 		return assigneeReply;
 	}
@@ -245,4 +247,5 @@ public class Task extends AbstractDomainObject {
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
+
 }

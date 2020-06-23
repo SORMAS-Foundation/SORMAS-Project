@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.caze;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -139,6 +140,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testMovingCaseUpdatesTaskAssigneeAndCreatesPreviousHospitalization() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -150,8 +152,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		UserDto caseOfficer =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
+		UserDto caseOfficer = creator
+			.createUser(newRDCF.region.getUuid(), newRDCF.district.getUuid(), newRDCF.facility.getUuid(), "Case", "Officer", UserRole.CASE_OFFICER);
 		TaskDto pendingTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
@@ -170,8 +172,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			new Date(),
 			user.toReference());
-
-		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
 
 		caze.setRegion(new RegionReferenceDto(newRDCF.region.getUuid()));
 		caze.setDistrict(new DistrictReferenceDto(newRDCF.district.getUuid()));
@@ -959,6 +959,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testDoesEpidNumberExistLargeNumbers() {
+
+		/*
+		 * Running into Integer overflow is accepted since epid number follow a certain pattern
+		 * and are not supposed to be bigger than Integer maxvalue.
+		 */
+		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
+	}
+
 	@Test
 	public void testArchiveAllArchivableCases() {
 
@@ -1000,6 +1010,39 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
 		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+	}
+
+	@Test
+	public void testSetResponsibleSurveillanceOfficer() {
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+		RDCFEntities rdcf3 = creator.createRDCFEntities("Region3", "District3", "Community3", "Facility3");
+		creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto survOff2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto survOff3 = creator.createUser(rdcf2, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserDto informant = creator.createUser(rdcf, UserRole.HOSPITAL_INFORMANT);
+		informant.setAssociatedOfficer(survOff3);
+		getUserFacade().saveUser(informant);
+
+		// Reporting user is set as surveillance officer
+		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);
+		assertThat(caze.getSurveillanceOfficer(), is(survOff2));
+
+		// Surveillance officer is removed if the district changes
+		caze.setRegion(new RegionReferenceDto(rdcf3.region.getUuid()));
+		caze.setDistrict(new DistrictReferenceDto(rdcf3.district.getUuid()));
+		caze.setCommunity(new CommunityReferenceDto(rdcf3.community.getUuid()));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf3.facility.getUuid()));
+		caze = getCaseFacade().saveCase(caze);
+		assertNull(caze.getSurveillanceOfficer());
+
+		// Surveillance officer is set to the associated officer of an informant if available
+		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid()));
+		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid()));
+		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid()));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
+		caze = getCaseFacade().saveCase(caze);
+		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
 	}
 
 //	@Test

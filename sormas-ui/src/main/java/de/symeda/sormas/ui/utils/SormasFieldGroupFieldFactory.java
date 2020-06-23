@@ -16,6 +16,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -33,6 +34,10 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
 	private static final long serialVersionUID = 471700572643936674L;
+
+	public static final int TEXT_AREA_MAX_LENGTH = EntityDto.COLUMN_LENGTH_BIG;
+	public static final int TEXT_FIELD_MAX_LENGTH = EntityDto.COLUMN_LENGTH_DEFAULT;
+
 
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final FieldAccessCheckers fieldAccessCheckers;

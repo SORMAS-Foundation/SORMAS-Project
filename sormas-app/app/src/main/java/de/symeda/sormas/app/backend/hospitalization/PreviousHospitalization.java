@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.backend.hospitalization;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -68,13 +71,13 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String healthFacilityDetails;
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown isolated;
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String description;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)

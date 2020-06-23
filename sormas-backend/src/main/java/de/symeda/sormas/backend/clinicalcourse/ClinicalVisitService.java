@@ -79,6 +79,7 @@ public class ClinicalVisitService extends AbstractAdoService<ClinicalVisit> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ClinicalVisit> cq = cb.createQuery(getElementClass());
 		Root<ClinicalVisit> from = cq.from(getElementClass());
+		from.fetch(ClinicalVisit.SYMPTOMS);
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
 
