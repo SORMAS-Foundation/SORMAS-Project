@@ -232,7 +232,10 @@ public class PathogenTestController {
 		}
 	}
 
-	private void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
+	private void showCaseCloningWithNewDiseaseDialog(Collection<CaseDataDto> existingCasesDtos, Disease disease) {
+		
+		if (existingCasesDtos == null || existingCasesDtos.size() == 0)
+			return;
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
@@ -242,16 +245,29 @@ public class PathogenTestController {
 			800,
 			e -> {
 				if (e.booleanValue() == true) {
-					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
-					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-					clonedCase.setClassificationUser(null);
-					clonedCase.setDisease(disease);
-					clonedCase.setEpidNumber(null);
-					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().saveCase(clonedCase);
-					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
+					CaseDataDto firstClonedCase = null;
+					
+					for (CaseDataDto existingCaseDto : existingCasesDtos) {
+						CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
+						clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+						clonedCase.setClassificationUser(null);
+						clonedCase.setDisease(disease);
+						clonedCase.setEpidNumber(null);
+						clonedCase.setReportDate(new Date());
+						FacadeProvider.getCaseFacade().saveCase(clonedCase);
+						
+						if (firstClonedCase == null)
+							firstClonedCase = clonedCase;
+					}
+					
+					if (existingCasesDtos.size() == 1)
+						ControllerProvider.getCaseController().navigateToCase(firstClonedCase.getUuid());
 				}
 			});
+	}
+	
+	private void showCaseCloningWithNewDiseaseDialog(CaseDataDto existingCaseDto, Disease disease) {
+		showCaseCloningWithNewDiseaseDialog(Arrays.asList(existingCaseDto), disease);
 	}
 
 	private void showConfirmCaseDialog(Collection<CaseDataDto> cases) {
