@@ -25,6 +25,7 @@ public class UserJurisdiction {
 	private String communityUuid;
 	private String healthFacilityUuid;
 	private String pointOfEntryUuid;
+	private String labUuid;
 
 	public String getUuid() {
 		return uuid;
@@ -72,5 +73,13 @@ public class UserJurisdiction {
 
 	public void setPointOfEntryUuid(String pointOfEntryUuid) {
 		this.pointOfEntryUuid = pointOfEntryUuid;
+	}
+
+	public String getLabUuid() {
+		return labUuid;
+	}
+
+	public void setLabUuid(String labUuid) {
+		this.labUuid = labUuid;
 	}
 }

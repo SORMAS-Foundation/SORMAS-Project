@@ -55,6 +55,10 @@ public class JurisdictionHelper {
 			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
 		}
 
+		if (user.getLaboratory() != null) {
+			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
+		}
+
 		return jurisdiction;
 	}
 
