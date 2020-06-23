@@ -27,6 +27,8 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -50,22 +52,36 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	private final Disease disease;
 	private final ContactDto contact;
+	private final CaseDataDto caze;
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
-
+	private VisitEditForm(Disease disease, ContactDto contact, CaseDataDto caze, PersonDto person, boolean create) {
 		super(VisitDto.class, VisitDto.I18N_PREFIX);
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
 		this.disease = disease;
 		this.contact = contact;
+		this.caze = caze;
 		this.person = person;
 		if (disease == null) {
 			throw new IllegalArgumentException("disease cannot be null");
 		}
+		if (caze != null && contact != null) {
+			throw new IllegalArgumentException("case and contact cannot be both defined");
+		}
+
 		addFields();
+
+	}
+
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+		this(disease, contact, null, person, create);
+	}
+
+	public VisitEditForm(Disease disease, CaseDataDto caze, PersonDto person, boolean create) {
+		this(disease, null, caze, person, create);
 	}
 
 	@Override
@@ -119,6 +135,37 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 						&& DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
 						throw new InvalidValueException(
 							I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+					}
+				}
+			});
+		}
+
+
+		if (caze != null) {
+			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {
+
+				private static final long serialVersionUID = 6720804629542567720L;
+
+				@Override
+				public void validate(Object value) throws InvalidValueException {
+					Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
+					Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
+					if (visitDateTime.before(startDate)
+							&& DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+						if (caze.getSymptoms().getOnsetDate() != null) {
+							throw new InvalidValueException(
+									I18nProperties.getValidationError(Validations.visitBeforeSymptomsOnSet, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						} else {
+							throw new InvalidValueException(
+									I18nProperties.getValidationError(Validations.visitBeforeCaseReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						}
+					}
+					Date endDate = CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil());
+					if (endDate != null
+							&& visitDateTime.after(endDate)
+							&& DateHelper.getDaysBetween(endDate, visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+						throw new InvalidValueException(
+								I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 					}
 				}
 			});
