@@ -13,13 +13,13 @@ PAYARA_USER="payara"
 
 case "$1" in
 start)
-    su --login payara --command "\"$SORMAS_DOMAIN_DIR/start-payara-sormas.sh\""
+    su --login "$PAYARA_USER" --command "\"$SORMAS_DOMAIN_DIR/start-payara-sormas.sh\""
     ;;
 stop)
-    su --login payara --command "\"$SORMAS_DOMAIN_DIR/stop-payara-sormas.sh\""
+    su --login "$PAYARA_USER" --command "\"$SORMAS_DOMAIN_DIR/stop-payara-sormas.sh\""
     ;;
 restart)
-    su --login payara --command "\"$SORMAS_DOMAIN_DIR/stop-payara-sormas.sh\"; \"$SORMAS_DOMAIN_DIR/start-payara-sormas.sh\""
+    su --login "$PAYARA_USER" --command "\"$SORMAS_DOMAIN_DIR/stop-payara-sormas.sh\"; \"$SORMAS_DOMAIN_DIR/start-payara-sormas.sh\""
     ;;
 *)
     echo "usage: $0 (start|stop|restart|help)"
