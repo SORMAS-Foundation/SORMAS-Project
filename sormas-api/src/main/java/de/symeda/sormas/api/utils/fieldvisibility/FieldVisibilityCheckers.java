@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 
 public class FieldVisibilityCheckers {
 
@@ -103,6 +105,10 @@ public class FieldVisibilityCheckers {
 
 	public static FieldVisibilityCheckers withCountry(String countryLocale) {
 		return withCheckers(new CountryFieldVisibilityChecker(countryLocale));
+	}
+
+	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureType> featureTypes) {
+		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureTypes));
 	}
 
 	public static FieldVisibilityCheckers withCheckers(Checker... checkers) {
