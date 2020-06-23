@@ -17,14 +17,50 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum FacilityType {
 
-	PRIMARY,
-	SECONDARY,
-	TERTIARY,
-	LABORATORY;
+	AFTERSCHOOL_CENTER(false),
+	CHILDRENS_DAY_CARE(false),
+	CHILDRENS_HOME(true),
+	CORRECTIONAL_FACILITY(true),
+	DOCTORS_OFFICE(false),
+	ELDERLY_CARE_FACILITY(true),
+	KINDERGARTEN(false),
+	HOMELESS_SHELTER(true),
+	HOSPITAL(true),
+	LABORATORY(false),
+	MOBILE_NURSING_SERVICE(false),
+	OTHER_COLLECTIVE_ACCOMMODATION(true),
+	OTHER_EDUCATIONAL_FACILITY(false),
+	REFUGEE_HOSTEL(true),
+	SCHOOL(false),
+	TREATMENT_CENTER(true),
+	VACATION_CAMP(true);
+
+	private final boolean permanentResidencePossible;
+
+	FacilityType(boolean permanentResidencePossible) {
+		this.permanentResidencePossible = permanentResidencePossible;
+	}
+
+	public List<FacilityType> getPermanentResidenceFacilityTypes() {
+		List<FacilityType> facilityTypes = new ArrayList<>();
+		for (FacilityType facilityType : values()) {
+			if (facilityType.isPermanentResidencePossible()) {
+				facilityTypes.add(facilityType);
+			}
+		}
+		return facilityTypes;
+	}
+
+	public boolean isPermanentResidencePossible() {
+		return permanentResidencePossible;
+	}
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

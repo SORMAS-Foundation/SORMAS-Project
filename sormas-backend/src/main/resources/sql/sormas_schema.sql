@@ -4631,7 +4631,6 @@ CREATE TABLE campaignforms(
 	formid varchar(255),
 	languagecode varchar(255),
 	campaignformelements text,
-	campaignformtranslations text,
 	sys_period tstzrange not null,
 	primary key(id)
 );
