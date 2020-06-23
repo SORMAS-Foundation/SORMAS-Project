@@ -93,6 +93,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			SampleIndexDto.ASSOCIATED_CONTACT,
 			DISEASE_SHORT,
 			SampleIndexDto.DISTRICT,
+			SampleIndexDto.COMMUNITY,
 			SampleIndexDto.SHIPPED,
 			SampleIndexDto.RECEIVED,
 			SampleIndexDto.SHIPMENT_DATE,
