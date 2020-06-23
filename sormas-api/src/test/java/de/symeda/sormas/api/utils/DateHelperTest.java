@@ -17,16 +17,63 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
 public class DateHelperTest {
+
+	@Test
+	public void testGetDaysInMonth() {
+
+		assertDays(DateHelper.getDaysInMonth(1, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(2, 2010), 28);
+		assertDays(DateHelper.getDaysInMonth(3, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(4, 2010), 30);
+		assertDays(DateHelper.getDaysInMonth(5, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(6, 2010), 30);
+		assertDays(DateHelper.getDaysInMonth(7, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(8, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(9, 2010), 30);
+		assertDays(DateHelper.getDaysInMonth(10, 2010), 31);
+		assertDays(DateHelper.getDaysInMonth(11, 2010), 30);
+		assertDays(DateHelper.getDaysInMonth(12, 2010), 31);
+	}
+
+	@Test
+	public void testGetDaysInMonthLeapYear() {
+
+		// No leap year
+		assertDays(DateHelper.getDaysInMonth(2, 1900), 28);
+		assertDays(DateHelper.getDaysInMonth(2, 2009), 28);
+		assertDays(DateHelper.getDaysInMonth(2, 2010), 28);
+		assertDays(DateHelper.getDaysInMonth(2, 2011), 28);
+		assertDays(DateHelper.getDaysInMonth(2, null), 28);
+
+		// Leap year
+		assertDays(DateHelper.getDaysInMonth(2, 2000), 29);
+		assertDays(DateHelper.getDaysInMonth(2, 2008), 29);
+	}
+
+	/**
+	 * Asserts that all expected days are present in order from 1 to {@code maxDayInMonth}.
+	 */
+	private static void assertDays(List<Integer> days, int maxDayInMonth) {
+
+		Integer[] expectedDays = new Integer[maxDayInMonth];
+		for (int d = 0; d < maxDayInMonth; d++) {
+			expectedDays[d] = d + 1;
+		}
+		assertThat(days, contains(expectedDays));
+	}
 
 	@Test
 	public void testCalculateProperTimePeriodDifferences() {
