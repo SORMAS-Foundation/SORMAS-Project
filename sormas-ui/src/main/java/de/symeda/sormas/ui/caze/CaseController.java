@@ -352,18 +352,18 @@ public class CaseController {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 					} else {
 						// look for potential duplicate
-						selectOrCreate(dto, createForm.getPersonFirstName(), createForm.getPersonLastName(), uuid -> {
+						final PersonDto person = PersonDto.build();
+						person.setFirstName(createForm.getPersonFirstName());
+						person.setLastName(createForm.getPersonLastName());
+						person.setBirthdateDD(createForm.getBirthdateDD());
+						person.setBirthdateMM(createForm.getBirthdateMM());
+						person.setBirthdateYYYY(createForm.getBirthdateYYYY());
+						person.setSex(createForm.getSex());
+						person.setPresentCondition(createForm.getPresentCondition());
+						selectOrCreate(dto, person, uuid -> {
 							if (uuid == null) {
-								PersonDto person = PersonDto.build();
-								person.setFirstName(createForm.getPersonFirstName());
-								person.setLastName(createForm.getPersonLastName());
-								person.setBirthdateDD(createForm.getBirthdateDD());
-								person.setBirthdateMM(createForm.getBirthdateMM());
-								person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-								person.setSex(createForm.getSex());
-								person.setPresentCondition(createForm.getPresentCondition());
-								person = FacadeProvider.getPersonFacade().savePerson(person);
-								dto.setPerson(person.toReference());
+								PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(person);
+								dto.setPerson(savedPerson.toReference());
 								SymptomsDto symptoms = SymptomsDto.build();
 								symptoms.setOnsetDate(createForm.getOnsetDate());
 								dto.setSymptoms(symptoms);
@@ -409,18 +409,18 @@ public class CaseController {
 		}
 	}
 
-	public void selectOrCreate(CaseDataDto caseDto, String personFirstName, String personLastName, Consumer<String> selectedCaseUuidConsumer) {
+	public void selectOrCreate(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
 
 		CaseCriteria caseCriteria = new CaseCriteria().disease(caseDto.getDisease()).region(caseDto.getRegion());
-		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(personFirstName)
-			.lastName(personLastName)
+		CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(person.getFirstName())
+			.lastName(person.getLastName())
 			.caseCriteria(caseCriteria)
 			.reportDate(caseDto.getReportDate());
 
 		List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
 		if (similarCases.size() > 0) {
-			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(similarCases);
+			CasePickOrCreateField pickOrCreateField = new CasePickOrCreateField(caseDto, person, similarCases);
 			pickOrCreateField.setWidth(1280, Unit.PIXELS);
 
 			final CommitDiscardWrapperComponent<CasePickOrCreateField> component = new CommitDiscardWrapperComponent<>(pickOrCreateField);
