@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -252,8 +254,11 @@ public class PathogenTestController {
 			});
 	}
 
-	private void showConfirmCaseDialog(CaseDataDto caze) {
-
+	private void showConfirmCaseDialog(Collection<CaseDataDto> cases) {
+		
+		if (cases == null || cases.size() == 0)
+			return;
+		
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),
 			new Label(I18nProperties.getString(Strings.messageConfirmCaseAfterPathogenTest)),
@@ -262,11 +267,17 @@ public class PathogenTestController {
 			800,
 			e -> {
 				if (e.booleanValue() == true) {
-					caze.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caze);
+					for (CaseDataDto caze : cases) {
+						caze.setCaseClassification(CaseClassification.CONFIRMED);
+						FacadeProvider.getCaseFacade().saveCase(caze);
+					}
 				}
 			});
 
+	}
+	
+	private void showConfirmCaseDialog(CaseDataDto caze) {
+		showConfirmCaseDialog(Arrays.asList(caze));
 	}
 
 	private void showSaveNotification(CaseDataDto existingCaseDto, CaseDataDto newCaseDto) {
