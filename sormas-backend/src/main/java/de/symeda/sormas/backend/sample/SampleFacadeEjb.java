@@ -158,6 +158,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (user == null) {
 			return Collections.emptyList();
 		}
+		System.out.println("Listing all samples");
 
 		return sampleService.getAllActiveUuids(user);
 	}
@@ -247,10 +248,15 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
+		final Join<Case, Community> caseCommunity = joins.getCaseCommunity();
 
 		final Join<Sample, Contact> contact = joins.getContact();
+
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
 		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
+
+		final Join<Contact, Community> contactCommunity = joins.getContactCommunity();
+		final Join<Case, Community> contactCaseCommunity = joins.getContactCaseCommunity();
 
 		Expression<Object> diseaseSelect = cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE));
 		Expression<Object> diseaseDetailsSelect =
@@ -262,6 +268,13 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.selectCase()
 					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.UUID))
 					.otherwise(contactCaseDistrict.get(District.UUID)));
+
+		Expression<Object> communitySelect = cb.selectCase()
+			.when(cb.isNotNull(caseCommunity), caseCommunity.get(Community.UUID))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(contactCommunity), contactCommunity.get(Community.UUID))
+					.otherwise(contactCaseCommunity.get(Community.UUID)));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -292,7 +305,10 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				joins.getCaseDistrict().get(Region.NAME),
 				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME)));
+				joins.getContactCaseDistrict().get(Region.NAME),
+				joins.getCaseCommunity().get(District.NAME),
+				joins.getContactCommunity().get(District.NAME),
+				joins.getContactCaseCommunity().get(District.NAME)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 
@@ -346,6 +362,9 @@ public class SampleFacadeEjb implements SampleFacade {
 					break;
 				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
+					break;
+				case SampleIndexDto.COMMUNITY:
+					expression = communitySelect;
 					break;
 				case SampleIndexDto.LAB:
 					expression = joins.getLab().get(Facility.NAME);
