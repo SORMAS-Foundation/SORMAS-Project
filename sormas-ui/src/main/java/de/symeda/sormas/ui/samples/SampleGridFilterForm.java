@@ -21,6 +21,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDateType;
@@ -58,6 +59,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			SampleCriteria.DISEASE,
 			SampleCriteria.REGION,
 			SampleCriteria.DISTRICT,
+			SampleCriteria.COMMUNITY,
 			SampleCriteria.LAB,
 			SampleCriteria.CASE_CODE_ID_LIKE };
 	}
@@ -105,6 +107,12 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			FieldConfiguration.withCaptionAndPixelSized(
 				SampleCriteria.DISTRICT,
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT),
+				140));
+
+		addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				SampleCriteria.COMMUNITY,
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY),
 				140));
 
 		ComboBox labField = addField(
@@ -202,6 +210,10 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			getField(SampleCriteria.DISTRICT).setValue(null);
 			break;
 		}
+		case SampleCriteria.DISTRICT: {
+			getField(SampleCriteria.COMMUNITY).setValue(null);
+			break;
+		}
 		}
 	}
 
@@ -221,6 +233,20 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 				districtField.setEnabled(true);
 			} else {
 				districtField.setEnabled(false);
+			}
+		}
+
+		ComboBox communityField = (ComboBox) getField(SampleCriteria.COMMUNITY);
+		if (user.getDistrict() != null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			communityField.setEnabled(true);
+		} else {
+			DistrictReferenceDto district = criteria.getDistrict();
+			if (district != null) {
+				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				communityField.setEnabled(true);
+			} else {
+				communityField.setEnabled(false);
 			}
 		}
 
