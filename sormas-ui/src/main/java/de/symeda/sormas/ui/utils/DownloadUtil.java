@@ -709,6 +709,10 @@ public final class DownloadUtil {
 						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					}
 				}
+				catch (Exception e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					throw new RuntimeException(e);
+				}
 			},
 				e -> {
 					// TODO This currently requires the user to click the "Export" button again or reload the page

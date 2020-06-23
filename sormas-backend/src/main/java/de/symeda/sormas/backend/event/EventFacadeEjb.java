@@ -48,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -262,6 +263,50 @@ public class EventFacadeEjb implements EventFacade {
 		} else {
 			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
 		}
+
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
+	}
+
+	@Override
+	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
+		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+
+		cq.multiselect(
+			event.get(Event.UUID),
+			event.get(Event.EVENT_STATUS),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.EVENT_DATE),
+			event.get(Event.EVENT_DESC),
+			region.get(Region.NAME),
+			district.get(District.NAME),
+			community.get(Community.NAME),
+			location.get(Location.CITY),
+			location.get(Location.ADDRESS),
+			event.get(Event.SRC_FIRST_NAME),
+			event.get(Event.SRC_LAST_NAME),
+			event.get(Event.SRC_TEL_NO),
+			event.get(Event.REPORT_DATE_TIME));
+
+		Predicate filter = eventService.createUserFilter(cb, cq, event);
+
+		if (eventCriteria != null) {
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 
 		if (first != null && max != null) {
 			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
