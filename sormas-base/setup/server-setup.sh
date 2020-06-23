@@ -1,7 +1,7 @@
 #!/bin/bash
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2018 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2020 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -316,6 +316,7 @@ remember_choice \
   DOMAINS_HOME \
   DOMAIN_NAME \
   PAYARA_PORT_BASE \
+  PORT_ADMIN \
   DB_HOST \
   DB_PORT \
   DB_NAME \
