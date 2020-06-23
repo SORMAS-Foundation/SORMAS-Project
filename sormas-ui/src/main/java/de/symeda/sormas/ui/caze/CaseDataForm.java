@@ -225,6 +225,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
+		epidField.setMaxLength(24);
 		style(epidField, ERROR_COLOR_PRIMARY);
 
 		// Button to automatically assign a new epid number
@@ -719,7 +720,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
 			getContent().addComponent(epidNumberWarningLabel, EPID_NUMBER_WARNING_LOC);
-
 		} else {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);
