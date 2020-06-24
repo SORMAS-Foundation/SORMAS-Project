@@ -23,9 +23,6 @@ public class SampleJurisdictionHelper {
 			return true;
 		case LABORATORY:
 			return sampleJurisdiction.getLabUuid() != null && DataHelper.equal(sampleJurisdiction.getLabUuid(), userJurisdiction.getLabUuid());
-		case EXTERNAL_LABORATORY:
-			return sampleJurisdiction.getOtherLabUuid() != null
-				&& DataHelper.equal(sampleJurisdiction.getOtherLabUuid(), userJurisdiction.getLabUuid());
 		}
 
 		if (sampleJurisdiction.getCaseJurisdiction() != null) {
