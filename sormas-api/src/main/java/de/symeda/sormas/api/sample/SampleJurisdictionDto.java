@@ -9,7 +9,6 @@ public class SampleJurisdictionDto {
 	private CaseJurisdictionDto caseJurisdiction;
 	private ContactJurisdictionDto contactJurisdiction;
 	private String labUuid;
-	private String otherLabUuid;
 
 	public SampleJurisdictionDto() {
 
@@ -19,13 +18,11 @@ public class SampleJurisdictionDto {
 		String reportingUserUuid,
 		CaseJurisdictionDto caseJurisdiction,
 		ContactJurisdictionDto contactJurisdiction,
-		String labUuid,
-		String otherLabUuid) {
+		String labUuid) {
 		this.reportingUserUuid = reportingUserUuid;
 		this.caseJurisdiction = caseJurisdiction;
 		this.contactJurisdiction = contactJurisdiction;
 		this.labUuid = labUuid;
-		this.otherLabUuid = otherLabUuid;
 	}
 
 	public String getReportingUserUuid() {
@@ -58,13 +55,5 @@ public class SampleJurisdictionDto {
 
 	public void setLabUuid(String labUuid) {
 		this.labUuid = labUuid;
-	}
-
-	public String getOtherLabUuid() {
-		return otherLabUuid;
-	}
-
-	public void setOtherLabUuid(String otherLabUuid) {
-		this.otherLabUuid = otherLabUuid;
 	}
 }
