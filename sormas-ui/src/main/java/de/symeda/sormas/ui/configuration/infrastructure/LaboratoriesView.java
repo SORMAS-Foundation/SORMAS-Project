@@ -31,7 +31,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 
-public class LaboratoriesView extends AbstractFacilitiesView {
+public class LaboratoriesView extends FacilitiesView {
 
 	private static final long serialVersionUID = 7745914668183276666L;
 
@@ -53,7 +53,7 @@ public class LaboratoriesView extends AbstractFacilitiesView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
 			createButton.setCaption(I18nProperties.getCaption(Captions.actionNewEntry));
-			createButton.addClickListener(e -> ControllerProvider.getInfrastructureController().createHealthFacility(true));
+			createButton.addClickListener(e -> ControllerProvider.getInfrastructureController().createFacility(true));
 		}
 	}
 }

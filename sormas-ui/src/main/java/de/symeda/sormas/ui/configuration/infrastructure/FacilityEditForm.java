@@ -24,6 +24,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -38,19 +39,19 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	private static final long serialVersionUID = 1952619382018965255L;
 
-	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME, FacilityDto.REGION)
-		+ fluidRowLocs(FacilityDto.DISTRICT, FacilityDto.COMMUNITY)
+	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME)
+		+ fluidRowLocs(FacilityDto.TYPE)
+		+ fluidRowLocs(FacilityDto.REGION, FacilityDto.DISTRICT)
+		+ fluidRowLocs(FacilityDto.COMMUNITY)
 		+ fluidRowLocs(FacilityDto.CITY)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
-	private boolean laboratory;
 	private boolean create;
 
-	public FacilityEditForm(boolean create, boolean laboratory) {
+	public FacilityEditForm(boolean create) {
 		super(FacilityDto.class, FacilityDto.I18N_PREFIX, false);
 		this.create = create;
-		this.laboratory = laboratory;
 
 		setWidth(540, Unit.PIXELS);
 
@@ -63,6 +64,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 	@Override
 	protected void addFields() {
 		TextField name = addField(FacilityDto.NAME, TextField.class);
+		ComboBox type = addField(FacilityDto.TYPE, ComboBox.class);
 		ComboBox region = addInfrastructureField(FacilityDto.REGION);
 		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
 		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
@@ -78,10 +80,18 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
 		name.setRequired(true);
-		if (!laboratory) {
-			region.setRequired(true);
-			district.setRequired(true);
-		}
+		type.addValueChangeListener(e -> {
+			if (!FacilityType.LABORATORY.equals(type.getValue())) {
+				region.setRequired(true);
+				district.setRequired(true);
+				if (!create) {
+					// Disable editing of region, etc. so case references stay correct
+					region.setEnabled(false);
+					district.setEnabled(false);
+					community.setEnabled(false);
+				}
+			}
+		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -102,16 +112,6 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-
-		if (!create) {
-			if (!laboratory) {
-				// Disable editing of region, etc. so case references stay correct
-				region.setEnabled(false);
-				district.setEnabled(false);
-				community.setEnabled(false);
-			}
-		}
-
 	}
 
 	@Override

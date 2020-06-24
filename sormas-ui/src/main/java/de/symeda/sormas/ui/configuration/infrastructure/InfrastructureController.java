@@ -59,15 +59,14 @@ public class InfrastructureController {
 
 	}
 
-	public void createHealthFacility(boolean laboratory) {
-		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null, laboratory);
-		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	public void createFacility() {
+		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewFacility));
 	}
 
 	public void editHealthFacility(String uuid) {
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(uuid);
-		CommitDiscardWrapperComponent<FacilityEditForm> editComponent =
-			getFacilityEditComponent(facility, facility.getType() == FacilityType.LABORATORY);
+		CommitDiscardWrapperComponent<FacilityEditForm> editComponent = getFacilityEditComponent(facility);
 		String caption = I18nProperties.getString(Strings.edit) + " " + facility.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
@@ -133,15 +132,12 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(component, caption);
 	}
 
-	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
+	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility) {
 
 		boolean isNew = facility == null;
-		FacilityEditForm editForm = new FacilityEditForm(isNew, laboratory);
+		FacilityEditForm editForm = new FacilityEditForm(isNew);
 		if (isNew) {
 			facility = FacilityDto.build();
-			if (laboratory) {
-				facility.setType(FacilityType.LABORATORY);
-			}
 		}
 
 		editForm.setValue(facility);

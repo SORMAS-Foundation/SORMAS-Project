@@ -225,11 +225,11 @@ public class StartupShutdownService {
 		// Health Facility
 		Facility healthFacility;
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
-		facilityCriteria.type(null);
 		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
 			healthFacility = new Facility();
 			healthFacility.setUuid(DataHelper.createUuid());
-			healthFacility.setName(I18nProperties.getCaption(Captions.defaultHealthFacility, "Default Health Facility"));
+			healthFacility.setType(FacilityType.HOSPITAL);
+			healthFacility.setName(I18nProperties.getCaption(Captions.defaultFacility, "Default Health Facility"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
