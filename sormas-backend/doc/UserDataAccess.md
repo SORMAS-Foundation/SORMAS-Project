@@ -94,10 +94,24 @@ In general data access & synchronisation is based on the following rules:
 
 ## New and pending task notification
 * Types: email, sms
-* To: assignee user of each new or pending task
+* To: [assigned user](#task-assignment-to-users) of each new or pending task
 * When: every 10 minutes 
 
 ## Visit changed notification
 * Types: email, sms
 * To: surveillance and contact supervisor of visits contacts region
 * When: visit having contacts becomes symptomatic
+
+# Task generation and user assignment (#task-assignment-to-users)
+
+## Submit weekly reports
+* generated every hour if WEEKLY_REPORT_GENERATION feature enabled for each hospital informant
+
+## Contact follow-up
+* generated every hour if CONTACT_FOLLOW_UP feature enabled 
+* assigned user becomes the contact officer if exists, if not a random officer of the contact district
+
+## Case related tasks
+* assigned user becomes the surveillance officer of the case if exists, if not a random surveillance officer of the district
+
+
