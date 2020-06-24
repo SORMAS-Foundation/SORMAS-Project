@@ -18,8 +18,7 @@ public class SampleJurisdictionDto {
 		String reportingUserUuid,
 		CaseJurisdictionDto caseJurisdiction,
 		ContactJurisdictionDto contactJurisdiction,
-		String labUuid,
-		String otherLabUuid) {
+		String labUuid) {
 		this.reportingUserUuid = reportingUserUuid;
 		this.caseJurisdiction = caseJurisdiction;
 		this.contactJurisdiction = contactJurisdiction;
