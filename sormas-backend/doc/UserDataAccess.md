@@ -1,4 +1,5 @@
-#User data access
+# User data access
+
 ## Basics
 In general data access & synchronisation is based on the following rules:
 
@@ -67,36 +68,36 @@ In general data access & synchronisation is based on the following rules:
 * users can see all weekly report entries associated with weekly reports they can access
 
 
-#User notifications
+# User notifications
 
-##Case changed notification
+## Case changed notification
 * Types: email, sms
 * To: all responsible supervisors within the case region
 * When: case classification changed or disease of unspecified VHF changed
 
-##Case investigation status done notification
+## Case investigation status done notification
 * Types: email, sms
 * To: all responsible supervisors within the case region
 * When: case investigation status gets updated to done
 
-##Pathogen test result notification
+## Pathogen test result notification
 * Types: email, sms
 * To: all responsible supervisors within the region of corresponding case or contact
 * When: 
     * create of pathogen test with test result different from PENDING
     * update of pathogen test result from PENDING to any other value
     
-##Contact follow-up task done notification
+## Contact follow-up task done notification
 * Types: email, sms
 * To: all responsible supervisors within the region of the task
 * When: task of type contact follow-up set to status done
 
-##New and pending task notification
+## New and pending task notification
 * Types: email, sms
 * To: assignee user of each new or pending task
 * When: every 10 minutes 
 
-##Visit changed notification
+## Visit changed notification
 * Types: email, sms
 * To: surveillance and contact supervisor of visits contacts region
 * When: visit having contacts becomes symptomatic
