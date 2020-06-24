@@ -11,8 +11,9 @@ In general data access & synchronisation is based on the following rules:
 * port of entry users: all data associated to their jurisdiction (nation, region or district)
 * all data that is created by the user
 * all data associated to the data created by the user (contacts, tasks, persons, visits)
+* port health users can only see port health cases, no matter the user jurisdiction
 * special case: if an officer has access to a task or contact whose case/event/contact is not available, the association link should be inactive
-* user rights (e.g. allowed to see cases) and mapping of user roles to a jurisdiction level is documented in the [user rights table](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx)
+* user rights (e.g. allow seeing cases) and mapping of user roles to a jurisdiction level is documented in the [user rights table](https://github.com/hzi-braunschweig/SORMAS-Project/tree/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx)
 
 ## Case
 * only users that are permitted to see cases at all
@@ -20,6 +21,7 @@ In general data access & synchronisation is based on the following rules:
 * access by jurisdiction, that is based region/district/community/health facility/point of entry of the case
 * cases that are made public can be accessed by all users permitted to see cases (this feature can be disabled)
 * edit is possible only for cases that are part of the users jurisdiction
+* view of personal data is possible only for cases that are part of the users jurisdiction
 
 ## Contact
 * only users that are permitted to see contacts at all
@@ -27,6 +29,7 @@ In general data access & synchronisation is based on the following rules:
 * users see all contacts of their cases
 * access by jurisdiction, that is using region/district of the contact
 * edit is possible only for contacts that are part of the users jurisdiction
+* view of personal data is possible only for contacts that are part of the users jurisdiction
 
 ## Visits
 * users see all visits of the user's contacts
@@ -56,6 +59,7 @@ In general data access & synchronisation is based on the following rules:
 * all persons of the cases the user can access
 * all persons of the contacts the user can access
 * all persons of the events the user can access
+* view of personal data is possible only for persons that have their corresponding contact, case or event in the users jurisdiction
 
 ## WeeklyReports
 * only users that are permitted to see weekly reports at all
@@ -66,7 +70,6 @@ In general data access & synchronisation is based on the following rules:
 
 ## WeeklyReportEntries
 * users can see all weekly report entries associated with weekly reports they can access
-
 
 # User notifications
 
