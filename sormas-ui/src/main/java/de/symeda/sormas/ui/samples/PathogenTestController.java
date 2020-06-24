@@ -132,6 +132,8 @@ public class PathogenTestController {
 			public void onCommit() {
 				PathogenTestDto updatedBulkResultData = form.getValue();
 				bulkCreate(selectedSamples, updatedBulkResultData);
+				
+				
 
 				popupWindow.close();
 				Notification.show(I18nProperties.getString(Strings.messageTestsCreated), Type.HUMANIZED_MESSAGE);
@@ -145,26 +147,41 @@ public class PathogenTestController {
 		
 		Collection<CaseDataDto> confirmCase = new ArrayList<CaseDataDto>();
 		Collection<CaseDataDto> changeDisease = new ArrayList<CaseDataDto>();
+		Collection<SampleIndexDto> samples = new ArrayList<SampleIndexDto>();
 
-		for (SampleIndexDto indexDto : selectedSamples) {
+		for (SampleIndexDto sample : selectedSamples) {
 			
 			updatedBulkResultData.setUuid(DataHelper.createUuid());
-			updatedBulkResultData.setSample(indexDto.toReference());
+			updatedBulkResultData.setSample(sample.toReference());
 			
 			savePathogenTest(updatedBulkResultData, null, (action, caze) -> {
 				switch (action) {
-					case CONFIRM_CASE:
+					case CONFIRM_CASE_CLASSIFICATION:
 						confirmCase.add(caze);
 						break;
-					case CHANGE_DISEASE:
+					case CLONE_CASE_WITH_NEW_DISEASE:
 						changeDisease.add(caze);
 						break;
 				}
 			});
+			
+			if (!isSampleResultSameAsPathogenTest(sample, updatedBulkResultData)) {
+				samples.add(sample);
+			}
 		}
 		
 		showConfirmCaseDialog(confirmCase);
 		showCaseCloningWithNewDiseaseDialog(changeDisease, updatedBulkResultData.getTestedDisease());
+		ControllerProvider.getSampleController()
+		.showChangePathogenTestResultWindow(null, samples.stream().map(sample -> sample.getUuid()), updatedBulkResultData.getTestResult(), null);
+	}
+	
+	private boolean isSampleResultSameAsPathogenTest (SampleIndexDto sample, PathogenTestDto test) {
+		return test != null
+			&& test.getTestResult() != null
+			&& Boolean.TRUE.equals(test.getTestResultVerified())
+			&& test.getTestedDisease() == sample.getDisease()
+			&& test.getTestResult() != sample.getPathogenTestResult();
 	}
 	
 	
@@ -223,7 +240,7 @@ public class PathogenTestController {
 					&& postSaveCaseDto.getCaseClassification() != CaseClassification.CONFIRMED
 					&& postSaveCaseDto.getCaseClassification() != CaseClassification.NO_CASE) {
 					if (onActionNeeded != null)
-						onActionNeeded.accept(SavePathogenTest_NeededAction.CONFIRM_CASE, postSaveCaseDto);
+						onActionNeeded.accept(SavePathogenTest_NeededAction.CONFIRM_CASE_CLASSIFICATION, postSaveCaseDto);
 					else
 						showConfirmCaseDialog(postSaveCaseDto);
 				}
@@ -234,7 +251,7 @@ public class PathogenTestController {
 					&& dto.getTestResult() == PathogenTestResultType.POSITIVE
 					&& dto.getTestResultVerified().booleanValue() == true) {
 					if (onActionNeeded != null)
-						onActionNeeded.accept(SavePathogenTest_NeededAction.CHANGE_DISEASE, postSaveCaseDto);
+						onActionNeeded.accept(SavePathogenTest_NeededAction.CLONE_CASE_WITH_NEW_DISEASE, postSaveCaseDto);
 					else
 						showCaseCloningWithNewDiseaseDialog(postSaveCaseDto, dto.getTestedDisease());
 				}
@@ -251,12 +268,16 @@ public class PathogenTestController {
 			}
 		} else if (associatedContact != null) {
 			facade.savePathogenTest(dto);
+			
+			if (onSavedPathogenTest != null) {
+				onSavedPathogenTest.accept(dto, () -> { });
+			}
 		}
 	}
 	
 	private enum SavePathogenTest_NeededAction {
-		CONFIRM_CASE,
-		CHANGE_DISEASE,
+		CONFIRM_CASE_CLASSIFICATION,
+		CLONE_CASE_WITH_NEW_DISEASE,
 	}
 
 	private void showCaseCloningWithNewDiseaseDialog(Collection<CaseDataDto> existingCasesDtos, Disease disease) {
