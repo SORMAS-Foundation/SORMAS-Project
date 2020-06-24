@@ -18,8 +18,6 @@
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
