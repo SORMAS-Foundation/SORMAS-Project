@@ -23,6 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDateType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -123,10 +124,16 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
-
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null);
+		EpiWeekAndDateFilterComponent<SampleDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+				applyButton,
+				false,
+				false,
+				null,
+				SampleDateType.class,
+				I18nProperties.getString(Strings.promptSampleDateType),
+				SampleDateType.COLLECTION);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekTo));
@@ -148,7 +155,11 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.reportDateBetween(fromDate, toDate, dateFilterOption);
+				
+				SampleDateType sampleDateType = (SampleDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+				sampleDateType = sampleDateType != null ? sampleDateType : SampleDateType.COLLECTION;
+						
+				criteria.reportDateBetween(fromDate, toDate, sampleDateType, dateFilterOption);
 
 				fireValueChange(true);
 			} else {
@@ -217,9 +228,10 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter;
 		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
 
+		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getSampleDateType());	
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
-		Date sampleDateFrom = criteria.getSampleReportDateFrom();
-		Date sampleDateTo = criteria.getSampleReportDateTo();
+		Date sampleDateFrom = criteria.getSampleDateFrom();
+		Date sampleDateTo = criteria.getSampleDateTo();
 
 		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			weekAndDateFilter.getWeekFromFilter().setValue(sampleDateFrom == null ? null : DateHelper.getEpiWeek(sampleDateFrom));

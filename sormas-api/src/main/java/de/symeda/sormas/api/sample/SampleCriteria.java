@@ -62,8 +62,9 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private EntityRelevanceStatus relevanceStatus;
 	private SampleAssociationType sampleAssociationType;
 
-	private Date sampleReportDateFrom;
-	private Date sampleReportDateTo;
+	private Date sampleDateFrom;
+	private Date sampleDateTo;
+	private SampleDateType sampleDateType;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public RegionReferenceDto getRegion() {
@@ -117,9 +118,10 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
-		this.sampleReportDateFrom = reportDateFrom;
-		this.sampleReportDateTo = reportDateTo;
+	public SampleCriteria reportDateBetween(Date sampleDateFrom, Date sampleDateTo, SampleDateType sampleDateType, DateFilterOption dateFilterOption) {
+		this.sampleDateFrom = sampleDateFrom;
+		this.sampleDateTo = sampleDateTo;
+		this.sampleDateType = sampleDateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
@@ -133,20 +135,20 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
-	public Date getSampleReportDateFrom() {
-		return sampleReportDateFrom;
+	public Date getSampleDateFrom() {
+		return sampleDateFrom;
 	}
 
-	public void setSampleReportDateFrom(Date sampleReportDateFrom) {
-		this.sampleReportDateFrom = sampleReportDateFrom;
+	public void setSampleDateFrom(Date sampleDateFrom) {
+		this.sampleDateFrom = sampleDateFrom;
 	}
 
-	public Date getSampleReportDateTo() {
-		return sampleReportDateTo;
+	public Date getSampleDateTo() {
+		return sampleDateTo;
 	}
 
-	public void setSampleReportDateTo(Date sampleReportDateTo) {
-		this.sampleReportDateTo = sampleReportDateTo;
+	public void setSampleDateTo(Date sampleDateTo) {
+		this.sampleDateTo = sampleDateTo;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {
@@ -238,5 +240,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
+	}
+
+	public SampleDateType getSampleDateType() {
+		return sampleDateType;
+	}
+	
+	public void setSampleDateType(SampleDateType sampleActivity) {
+		this.sampleDateType = sampleActivity;
 	}
 }
