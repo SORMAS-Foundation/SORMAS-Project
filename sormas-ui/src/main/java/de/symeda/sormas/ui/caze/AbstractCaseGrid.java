@@ -120,6 +120,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
@@ -158,6 +160,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.QUARANTINE_TO,
 				CaseIndexDto.CREATION_DATE,
+				CaseIndexDto.FOLLOW_UP_STATUS,
+				CaseIndexDto.FOLLOW_UP_UNTIL,
 				COLUMN_COMPLETENESS))
 			.flatMap(s -> s);
 	}

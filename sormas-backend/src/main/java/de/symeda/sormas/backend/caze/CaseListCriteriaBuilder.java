@@ -136,7 +136,9 @@ public class CaseListCriteriaBuilder {
 			joins.getPerson().get(Person.BIRTHDATE_YYYY),
 			joins.getPerson().get(Person.SEX),
 			root.get(Case.QUARANTINE_TO),
-			root.get(Case.COMPLETENESS));
+			root.get(Case.COMPLETENESS),
+			root.get(Case.FOLLOW_UP_STATUS),
+			root.get(Case.FOLLOW_UP_UNTIL));
 	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins) {
@@ -155,6 +157,8 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDto.OUTCOME:
 		case CaseIndexDto.QUARANTINE_TO:
 		case CaseIndexDto.COMPLETENESS:
+		case CaseIndexDto.FOLLOW_UP_STATUS:
+		case CaseIndexDto.FOLLOW_UP_UNTIL:
 			return Collections.singletonList(caze.get(sortProperty.propertyName));
 		case CaseIndexDto.PERSON_FIRST_NAME:
 			return Collections.singletonList(joins.getPerson().get(Person.FIRST_NAME));
