@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -92,7 +93,37 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					date,
 					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
 					item.getFollowUpUntil());
+			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
+				final VisitResult visitResult = item.getVisitResults()[index];
+				final Date date = dates.get(index);
+				return getVisitResultDescription(
+					visitResult,
+					date,
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
+					item.getFollowUpUntil());
 			});
+		}
+	}
+
+	private String getVisitResultDescription(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+
+		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
+			return "";
+		}
+
+		switch (result) {
+		case NOT_SYMPTOMATIC:
+			return I18nProperties.getEnumCaption(VisitResult.NOT_SYMPTOMATIC);
+		case SYMPTOMATIC:
+			return I18nProperties.getEnumCaption(VisitResult.SYMPTOMATIC);
+		case NOT_PERFORMED:
+			return I18nProperties.getEnumCaption(VisitResult.NOT_PERFORMED);
+		case UNAVAILABLE:
+			return I18nProperties.getEnumCaption(VisitResult.UNAVAILABLE);
+		case UNCOOPERATIVE:
+			return I18nProperties.getEnumCaption(VisitResult.UNCOOPERATIVE);
+		default:
+			return null;
 		}
 	}
 
