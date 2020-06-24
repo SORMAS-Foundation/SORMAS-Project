@@ -70,6 +70,7 @@
                     app:value="@={data.epidNumber}"
                     app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
                     app:softRequired="true"
+                    app:maxLength="24"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField

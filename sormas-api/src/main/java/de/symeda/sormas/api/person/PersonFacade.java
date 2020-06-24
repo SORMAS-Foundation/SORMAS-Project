@@ -27,7 +27,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PersonFacade {
@@ -40,9 +39,9 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
-	PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
+	PersonDto savePerson(PersonDto dto);
 
-	void validate(PersonDto dto) throws ValidationRuntimeException;
+	void validate(PersonDto dto);
 
 	List<String> getAllUuids();
 
@@ -61,4 +60,8 @@ public interface PersonFacade {
 	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
 
 	Boolean isValidPersonUuid(String personUuid);
+
+	String getPIAAccountCreationUrl(PersonDto person);
+
+	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
 }

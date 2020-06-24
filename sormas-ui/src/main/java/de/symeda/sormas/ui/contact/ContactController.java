@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -445,5 +447,13 @@ public class ContactController {
 		});
 
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
+	}
+
+	public void openPIAAccountCreationWindow(PersonDto person) {
+		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(FacadeProvider.getPersonFacade().getPIAAccountCreationUrl(person)));
+		piaIFrame.setWidth("800px");
+		piaIFrame.setHeight("600px");
+
+		VaadinUiUtil.showPopupWindow(piaIFrame, I18nProperties.getString(Strings.headingPIAAccountCreation));
 	}
 }

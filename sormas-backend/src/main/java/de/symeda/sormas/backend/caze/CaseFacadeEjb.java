@@ -443,6 +443,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 
 				joins.getHospitalization().get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY), joins.getHospitalization().get(Hospitalization.ADMISSION_DATE),
 				joins.getHospitalization().get(Hospitalization.DISCHARGE_DATE), joins.getHospitalization().get(Hospitalization.LEFT_AGAINST_ADVICE),
@@ -2110,7 +2114,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
 
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
-			int suffixNumber = Integer.parseInt(suffixString);
+			int suffixNumber;
+			try {
+				suffixNumber = Integer.parseInt(suffixString);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(
+					String.format("Invalid suffix for epid number. epidNumber: '%s', suffixString: '%s'", epidNumber, suffixString),
+					e);
+			}
 			regexPattern = cb.parameter(String.class);
 			regexReplacement = cb.parameter(String.class);
 			regexFlags = cb.parameter(String.class);
@@ -2445,9 +2456,15 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return caseService.exists(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
+
 	}
 
 	public Boolean isCaseEditAllowed(String caseUuid) {

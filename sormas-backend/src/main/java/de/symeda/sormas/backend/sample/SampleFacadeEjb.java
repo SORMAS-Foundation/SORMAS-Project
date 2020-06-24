@@ -150,6 +150,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -181,6 +183,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
 		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return sampleService.exists(uuid);
 	}
 
 	@Override
@@ -924,5 +931,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
 
+	}
+
+	public Boolean isSampleEditAllowed(String sampleUuid) {
+
+		Sample sample = sampleService.getByUuid(sampleUuid);
+		return sampleJurisdictionChecker.isInJurisdiction(sample);
 	}
 }

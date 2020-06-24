@@ -362,6 +362,10 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.QUARANTINE_FROM),
 						contact.get(Contact.QUARANTINE_TO),
 						contact.get(Contact.QUARANTINE_HELP_NEEDED),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 						joins.getPerson().get(Person.PRESENT_CONDITION),
 						joins.getPerson().get(Person.DEATH_DATE),
 						joins.getAddressRegion().get(Region.NAME),
@@ -1225,6 +1229,11 @@ public class ContactFacadeEjb implements ContactFacade {
 //			});
 
 		return contacts;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
 	}
 
 	@LocalBean

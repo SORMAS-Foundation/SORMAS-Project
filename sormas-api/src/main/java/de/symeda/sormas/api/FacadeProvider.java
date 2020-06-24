@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
@@ -257,6 +258,10 @@ public class FacadeProvider {
 
 	public static CampaignFacade getCampaignFacade() {
 		return get().lookupEjbRemote(CampaignFacade.class);
+	}
+
+	public static AreaFacade getAreaFacade() {
+		return get().lookupEjbRemote(AreaFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

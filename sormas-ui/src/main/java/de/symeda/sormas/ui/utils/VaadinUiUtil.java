@@ -91,7 +91,12 @@ public final class VaadinUiUtil {
 
 	public static Window showPopupWindow(Component content) {
 
-		Window window = new Window(null);
+		return showPopupWindow(content, null);
+	}
+
+	public static Window showPopupWindow(Component content, String caption) {
+
+		Window window = new Window(caption);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);

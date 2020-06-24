@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.42.3</version>
+	<version>1.43.0</version>
 
 	<prerequisites>
 		<maven>3.0</maven>
@@ -19,6 +19,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jersey.version>2.29.1</jersey.version>
 		<jackson.version>2.9.8</jackson.version>
+		<swagger.version>2.1.2</swagger.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -119,13 +120,25 @@
 				<scope>provided</scope>
 				<version>8.0</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.security.enterprise</groupId>
+				<artifactId>javax.security.enterprise-api</artifactId>
+				<version>1.0</version>
+				<scope>provided</scope>
+			</dependency>
 
 			<!-- compile dependencies -->
 
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.7</version>
+				<version>3.10</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.6</version>
 			</dependency>
 
 			<dependency>
@@ -321,6 +334,13 @@
 				<artifactId>jsoup</artifactId>
 				<version>1.12.2</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<!-- Swagger -->
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2</artifactId>
+				<version>${swagger.version}</version>
 			</dependency>
 
 		</dependencies>
@@ -532,6 +552,28 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<updateDependencies>true</updateDependencies>
 					</configuration>
+				</plugin>
+
+				<!-- Swagger -->
+				<plugin>
+					<groupId>io.openapitools.swagger</groupId>
+					<artifactId>swagger-maven-plugin</artifactId>
+					<version>2.1.2</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<!-- Currently necessary to get the latest bugfixes in swagger-core -->
+						<dependency>
+							<groupId>io.swagger.core.v3</groupId>
+							<artifactId>swagger-jaxrs2</artifactId>
+							<version>${swagger.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 
 			</plugins>

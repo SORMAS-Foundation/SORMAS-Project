@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
 
-	private static final String CASE_ID = Captions.EventParticipant_caseId;
+	private static final String CASE_ID = Captions.EventParticipant_caseUuid;
 
 	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
