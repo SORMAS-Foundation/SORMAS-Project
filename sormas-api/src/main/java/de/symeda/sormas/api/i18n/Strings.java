@@ -397,6 +397,7 @@ public interface Strings {
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
+	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
