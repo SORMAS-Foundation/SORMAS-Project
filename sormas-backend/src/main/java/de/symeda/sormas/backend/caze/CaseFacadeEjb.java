@@ -1371,15 +1371,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getHealthFacility() != null
 			&& existingCase.getHealthFacility() != null
 			&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
-			for (Task task : newCase.getTasks()) {
-				if (task.getTaskStatus() != TaskStatus.PENDING) {
-					continue;
-				}
-
-				assignOfficerOrSupervisorToTask(newCase, task);
-
-				taskService.ensurePersisted(task);
-			}
+			reassignTasks(newCase);
 		}
 
 		// Create a task to search for other cases for new Plague cases
@@ -1491,8 +1483,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private void setResponsibleSurveillanceOfficer(Case caze) {
-
+	public void setResponsibleSurveillanceOfficer(Case caze) {
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
 			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
@@ -1510,6 +1501,18 @@ public class CaseFacadeEjb implements CaseFacade {
 					caze.setSurveillanceOfficer(null);
 				}
 			}
+		}
+	}
+
+	public void reassignTasks(Case caze) {
+		for (Task task : caze.getTasks()) {
+			if (task.getTaskStatus() != TaskStatus.PENDING) {
+				continue;
+			}
+
+			assignOfficerOrSupervisorToTask(caze, task);
+
+			taskService.ensurePersisted(task);
 		}
 	}
 

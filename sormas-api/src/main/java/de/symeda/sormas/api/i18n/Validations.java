@@ -14,6 +14,17 @@ public interface Validations {
 	String afterDateSoft = "afterDateSoft";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
+	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
+	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
+	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
+	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
+	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
+	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
+	String campaignFormTranslationLanguageCodeRequired = "campaignFormTranslationLanguageCodeRequired";
+	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
+	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
+	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
@@ -22,6 +33,7 @@ public interface Validations {
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
 	String importAreaAlreadyExists = "importAreaAlreadyExists";
+	String importAreaNotUnique = "importAreaNotUnique";
 	String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
@@ -83,16 +95,4 @@ public interface Validations {
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
-	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
-	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
-	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
-	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
-	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
-	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
-	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
-	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
-	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
-	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
-	String campaignFormTranslationLanguageCodeRequired = "campaignFormTranslationLanguageCodeRequired";
-	String importAreaNotUnique = "importAreaNotUnique";
 }
