@@ -179,6 +179,9 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_followUpComment = "CaseData.followUpComment";
+	String CaseData_followUpStatus = "CaseData.followUpStatus";
+	String CaseData_followUpUntil = "CaseData.followUpUntil";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
@@ -195,6 +198,7 @@ public interface Captions {
 	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
+	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
 	String CaseData_person = "CaseData.person";
 	String CaseData_personFirstName = "CaseData.personFirstName";
 	String CaseData_personLastName = "CaseData.personLastName";
@@ -241,6 +245,7 @@ public interface Captions {
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
+	String CaseData_visits = "CaseData.visits";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
@@ -261,6 +266,9 @@ public interface Captions {
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	String CaseExport_labResults = "CaseExport.labResults";
+	String CaseExport_lastCooperativeVisitDate = "CaseExport.lastCooperativeVisitDate";
+	String CaseExport_lastCooperativeVisitSymptomatic = "CaseExport.lastCooperativeVisitSymptomatic";
+	String CaseExport_lastCooperativeVisitSymptoms = "CaseExport.lastCooperativeVisitSymptoms";
 	String CaseExport_lastName = "CaseExport.lastName";
 	String CaseExport_maxSourceCaseClassification = "CaseExport.maxSourceCaseClassification";
 	String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
@@ -1469,6 +1477,7 @@ public interface Captions {
 	String View_cases_sub = "View.cases.sub";
 	String View_cases_symptoms = "View.cases.symptoms";
 	String View_cases_therapy = "View.cases.therapy";
+	String View_cases_visits = "View.cases.visits";
 	String View_configuration_areas = "View.configuration.areas";
 	String View_configuration_areas_short = "View.configuration.areas.short";
 	String View_configuration_communities = "View.configuration.communities";
