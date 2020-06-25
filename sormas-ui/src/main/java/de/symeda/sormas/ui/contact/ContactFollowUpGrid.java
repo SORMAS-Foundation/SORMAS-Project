@@ -110,21 +110,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
 			return "";
 		}
-
-		switch (result) {
-		case NOT_SYMPTOMATIC:
-			return I18nProperties.getEnumCaption(VisitResult.NOT_SYMPTOMATIC);
-		case SYMPTOMATIC:
-			return I18nProperties.getEnumCaption(VisitResult.SYMPTOMATIC);
-		case NOT_PERFORMED:
-			return I18nProperties.getEnumCaption(VisitResult.NOT_PERFORMED);
-		case UNAVAILABLE:
-			return I18nProperties.getEnumCaption(VisitResult.UNAVAILABLE);
-		case UNCOOPERATIVE:
-			return I18nProperties.getEnumCaption(VisitResult.UNCOOPERATIVE);
-		default:
-			return null;
-		}
+		return result.toString();
 	}
 
 	private String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {

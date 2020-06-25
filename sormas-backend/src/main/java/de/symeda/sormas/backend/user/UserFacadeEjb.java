@@ -206,7 +206,11 @@ public class UserFacadeEjb implements UserFacade {
 		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			/*
+			 * No preemptive distinct because this does collide with
+			 * ORDER BY User.location.address (which is not part of the SELECT clause).
+			 */
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {

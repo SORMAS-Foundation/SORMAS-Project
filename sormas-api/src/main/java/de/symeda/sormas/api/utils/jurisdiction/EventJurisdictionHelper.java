@@ -32,7 +32,8 @@ public class EventJurisdictionHelper {
 			return eventJurisdiction.getDistrictUuid() != null
 				&& DataHelper.equal(eventJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
 		case COMMUNITY:
-			return false;
+			return eventJurisdiction.getCommunityUuid() != null
+				&& DataHelper.equal(eventJurisdiction.getCommunityUuid(), userJurisdiction.getCommunityUuid());
 		case HEALTH_FACILITY:
 			return false;
 		case LABORATORY:
