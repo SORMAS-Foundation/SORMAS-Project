@@ -27,9 +27,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 - Make sure to select "Replace all existing copyright comments with this copyright template" and especially "Skip over XML files" (to make sure that headers don't get added to e.g. build files)
 - Whenever you create a new source file: Right click on the file and select "Fix Copyrights"
 
-## Android Studio
+## Android Studio/IntelliJ
 - Open File > Settings > Editor > Copyright > Copyright Profiles
 - Create a new profile and paste the license header from above into the Copyright text area
-- Right click on the "app" project and select "Update Copyright...", select "Custom Scope" and in the dropdown, select "Project Source Files"
-- Click "Ok" and wait until the copyright has been added to all files
+- Head back to the general Copyright settings and select the new copyright profile as the "Default project copyright"
+- (Optional: If the year has changed, right click on all projects containing manual code and select "Update Copyright...", select "Custom Scope" and in the dropdown, select "Project Source Files"; Click "Ok" and wait until the copyright has been added to/changed for all files)
 - Android Studio automatically adds the copyright to newly created files afterwards
