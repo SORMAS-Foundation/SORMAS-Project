@@ -19,6 +19,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -71,7 +73,15 @@ public class CaseListCriteriaBuilder {
 		Root<Case> caze = cq.from(Case.class);
 		CaseJoins<Case> joins = new CaseJoins<>(caze);
 
-		cq.multiselect(selectionProvider.apply(caze, joins));
+		Subquery<Integer> visitCountSq = cq.subquery(Integer.class);
+		Root<Case> visitCountRoot = visitCountSq.from(Case.class);
+		visitCountSq.where(cb.equal(visitCountRoot.get(AbstractDomainObject.ID), caze.get(AbstractDomainObject.ID)));
+		visitCountSq.select(cb.size(visitCountRoot.get(Case.VISITS)));
+
+		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, joins));
+		selectionList.add(visitCountSq);
+		cq.multiselect(selectionList);
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {

@@ -192,6 +192,7 @@ public interface Captions {
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
+	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
 	String CaseData_person = "CaseData.person";

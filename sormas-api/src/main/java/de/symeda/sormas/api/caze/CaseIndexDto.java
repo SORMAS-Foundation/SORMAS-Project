@@ -91,9 +91,28 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private Date quarantineTo;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
+	private Integer visitCount;
 
 	private CaseJurisdictionDto jurisdiction;
 
+	//@formatter:off
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
+			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+			PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
+			String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
+			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
+			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
+		//@formatter:on
+		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
+				diseaseDetails, caseClassification, investigationStatus,
+				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
+				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
+				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
+				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
+				completeness, followUpStatus, followUpUntil, null
+				);
+	}
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
@@ -101,7 +120,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
-						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Integer visitCount) {
 	//@formatter:on
 
 		this.id = id;
@@ -118,6 +137,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.reportDate = reportDate;
 		this.creationDate = creationDate;
 		this.districtName = districtName;
+		this.visitCount = visitCount;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
@@ -348,5 +368,13 @@ public class CaseIndexDto implements Serializable, Cloneable {
 
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
+	}
+
+	public Integer getVisitCount() {
+		return visitCount;
+	}
+
+	public void setVisitCount(Integer visitCount) {
+		this.visitCount = visitCount;
 	}
 }
