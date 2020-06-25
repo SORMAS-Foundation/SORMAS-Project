@@ -114,12 +114,13 @@ public class SampleGridComponent extends VerticalLayout {
 				filterForm.updateResetButtonState();
 				grid.reload();
 				
-				if (grid.getItemCount() == 1) {
+				if (!DataHelper.isNullOrEmpty(criteria.getCaseCodeIdLike()) && grid.getItemCount() == 1) {
 					String sampleUuid = grid.getFirstItem().getUuid();
 					ControllerProvider.getSampleController().navigateToData(sampleUuid);
 				}
 			}
 		});
+		
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 			samplesView.navigateTo(null, true);
