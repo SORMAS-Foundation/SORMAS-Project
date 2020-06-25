@@ -21,18 +21,19 @@ In general data access & synchronisation is based on the following rules:
 * access by jurisdiction, that is based region/district/community/health facility/point of entry of the case
 * cases that are made public can be accessed by all users permitted to see cases (this feature can be disabled)
 * edit is possible only for cases that are part of the users jurisdiction
-* view of personal data is possible only for cases that are part of the users jurisdiction
+* view of personal and sensitive data is possible only for cases that are part of the user's jurisdiction
 
 ## Contact
 * only users that are permitted to see contacts at all
 * whoever created it or is assigned to it is allowed to access it
 * users see all contacts of their cases
-* access by jurisdiction, that is using region/district of the contact
+* access by jurisdiction, that is using region/district of the contact and jurisdiction of the case the contact is assigned to
 * edit is possible only for contacts that are part of the users jurisdiction
-* view of personal data is possible only for contacts that are part of the users jurisdiction
+* view of personal and sensitive data is possible only for contacts that are part of the user's jurisdiction
 
 ## Visits
 * users see all visits of the user's contacts
+* view of sensitive data is possible only for contacts that are part of the user's jurisdiction
 
 ## Event
 * only users that are permitted to see events at all
@@ -41,25 +42,30 @@ In general data access & synchronisation is based on the following rules:
 
 ## EventParticipant
 * users see all participants of all events they can access
+* view of personal and sensitive data is possible only for events that are part of the user's jurisdiction
 
 ## Tasks
 * only users that are permitted to see tasks at all
 * whoever created the task or is assigned to it is allowed to access it
-* all tasks for the user's cases
-* all tasks for the user's contacts
-* all tasks for the user's events
-
+* all tasks for the user's cases except the ones assigned to users in other jurisdiction
+* all tasks for the user's contacts except the ones assigned to users in other jurisdiction
+* all tasks for the user's events except the ones assigned to users in other jurisdiction
+ 
 ## Samples
 * only users that are permitted to see samples at all
 * whoever created the sample or is assigned to it is allowed to access it
 * users see all samples of their cases
 * lab users see all samples of their laboratory
+* access by jurisdiction of the case or contact the sample belongs to
+* edit is possible only for samples of cases and/or contacts in the user's jurisdiction
+* view of sensitive data is possible only for samples that are part of the user's jurisdiction
 
 ## Persons
 * all persons of the cases the user can access
 * all persons of the contacts the user can access
 * all persons of the events the user can access
-* view of personal data is possible only for persons that have their corresponding contact, case or event in the users jurisdiction
+* edit is possible only only for persons that have their corresponding contact, case or event in the users jurisdiction
+* view of personal and sensitive data is possible only for persons that have their corresponding contact, case or event in the users jurisdiction
 
 ## WeeklyReports
 * only users that are permitted to see weekly reports at all
