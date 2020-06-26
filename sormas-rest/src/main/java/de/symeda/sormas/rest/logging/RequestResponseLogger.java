@@ -17,18 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.rest.logging;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,39 +66,32 @@ public class RequestResponseLogger implements Filter {
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-// 		There is an issue, when both criteria are enabled
-//		if (logger.isDebugEnabled()) {
-
 		// request logging
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		logger.debug("requestUri = {}", httpRequest.getRequestURI());
 
 		Map<String, String[]> params = httpRequest.getParameterMap();
 		for (String s : params.keySet()) {
-			// logger.debug(" " + s + " = " + req.getParameter(s));
 			logger.debug("  {} = {}", s, httpRequest.getParameter(s));
 		}
-//		}
 
-//	 	There is an issue, when both criteria are enabled
-//		if (logger.isTraceEnabled()) {
-		// response logging
 		if (response.getCharacterEncoding() == null) {
 			response.setCharacterEncoding("UTF-8");
 		}
 
-		HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
-
-		try {
-			// pass the request along the filter chain
-			chain.doFilter(request, responseCopier);
-			responseCopier.flushBuffer();
-		} finally {
-			byte[] copy = responseCopier.getCopy();
-			logger.trace(new String(copy, response.getCharacterEncoding()));
+		if (logger.isTraceEnabled()) {
+			HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+			LoggingHttpServletResponseWrapper wrapper = new LoggingHttpServletResponseWrapper(httpServletResponse);
+			try {
+				// pass the request along the filter chain
+				chain.doFilter(request, wrapper);
+				httpServletResponse.getOutputStream().write(wrapper.getContentAsBytes());
+			} finally {
+				logger.trace(wrapper.getContent());
+			}
+		} else {
+			chain.doFilter(request, response);
 		}
-//		}
-
 	}
 
 	/**
@@ -99,5 +99,77 @@ public class RequestResponseLogger implements Filter {
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 
+	}
+
+	public class LoggingHttpServletResponseWrapper extends HttpServletResponseWrapper {
+
+		private final LoggingServletOutpuStream loggingServletOutpuStream = new LoggingServletOutpuStream();
+
+		private final HttpServletResponse delegate;
+
+		public LoggingHttpServletResponseWrapper(HttpServletResponse response) {
+			super(response);
+			delegate = response;
+		}
+
+		@Override
+		public ServletOutputStream getOutputStream() {
+			return loggingServletOutpuStream;
+		}
+
+		@Override
+		public PrintWriter getWriter() {
+			return new PrintWriter(loggingServletOutpuStream.baos);
+		}
+
+		public Map<String, String> getHeaders() {
+			Map<String, String> headers = new HashMap<>(0);
+			for (String headerName : getHeaderNames()) {
+				headers.put(headerName, getHeader(headerName));
+			}
+			return headers;
+		}
+
+		public String getContent() {
+			try {
+				return loggingServletOutpuStream.baos.toString(delegate.getCharacterEncoding());
+			} catch (UnsupportedEncodingException e) {
+				return "[UNSUPPORTED ENCODING]";
+			}
+		}
+
+		public byte[] getContentAsBytes() {
+			return loggingServletOutpuStream.baos.toByteArray();
+		}
+
+		private class LoggingServletOutpuStream extends ServletOutputStream {
+
+			private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			@Override
+			public boolean isReady() {
+				return true;
+			}
+
+			@Override
+			public void setWriteListener(WriteListener writeListener) {
+				// not used
+			}
+
+			@Override
+			public void write(int b) {
+				baos.write(b);
+			}
+
+			@Override
+			public void write(byte[] b) throws IOException {
+				baos.write(b);
+			}
+
+			@Override
+			public void write(byte[] b, int off, int len) {
+				baos.write(b, off, len);
+			}
+		}
 	}
 }
