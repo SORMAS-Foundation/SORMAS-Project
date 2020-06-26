@@ -43,6 +43,7 @@ public interface Captions {
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
 	String actionNewEntry = "actionNewEntry";
+	String actionNewForm = "actionNewForm";
 	String actionOkay = "actionOkay";
 	String actionPick = "actionPick";
 	String actionResetFilters = "actionResetFilters";
@@ -1387,7 +1388,10 @@ public interface Captions {
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
-	String View_campaigns = "View.campaigns";
+	String View_campaign_campaigndata = "View.campaign.campaigndata";
+	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
+	String View_campaign_campaigns = "View.campaign.campaigns";
+	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
 	String View_cases = "View.cases";
 	String View_cases_archive = "View.cases.archive";
 	String View_cases_clinicalcourse = "View.cases.clinicalcourse";

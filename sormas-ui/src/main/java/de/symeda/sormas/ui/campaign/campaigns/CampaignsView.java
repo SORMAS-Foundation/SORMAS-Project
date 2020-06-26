@@ -1,4 +1,19 @@
-package de.symeda.sormas.ui.campaign;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.campaign.campaigns;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -8,7 +23,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.i18n.Captions;
@@ -18,15 +32,14 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class CampaignsView extends AbstractView {
+@SuppressWarnings("serial")
+public class CampaignsView extends AbstractCampaignView {
 
-	private static final long serialVersionUID = 4551760940640983434L;
-
-	public static final String VIEW_NAME = "campaigns";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
 	private CampaignCriteria criteria;
 	private VerticalLayout gridLayout;
@@ -121,6 +134,8 @@ public class CampaignsView extends AbstractView {
 			updateFilterComponents();
 		}
 		grid.reload();
+
+		super.enter(event);
 	}
 
 	private void updateFilterComponents() {

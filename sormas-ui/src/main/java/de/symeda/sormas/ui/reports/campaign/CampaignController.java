@@ -1,13 +1,11 @@
 package de.symeda.sormas.ui.reports.campaign;
 
-import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -16,8 +14,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.campaign.CampaignDataForm;
-import de.symeda.sormas.ui.campaign.CampaignsView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
@@ -27,7 +24,7 @@ public class CampaignController {
 
 	public void createOrEdit(String uuid) {
 
-		CommitDiscardWrapperComponent<CampaignDataForm> campaignComponent;
+		CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent;
 		String heading;
 		if (uuid != null) {
 			CampaignDto campaign = getCampaign(uuid);
@@ -107,25 +104,25 @@ public class CampaignController {
 		}
 	}
 
-	public CommitDiscardWrapperComponent<CampaignDataForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
+	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
 
-		CampaignDataForm campaignForm = new CampaignDataForm(campaignDto == null);
+		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto == null);
 
-		final CommitDiscardWrapperComponent<CampaignDataForm> view =
-			new CommitDiscardWrapperComponent<CampaignDataForm>(campaignForm, campaignForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<CampaignEditForm> view =
+			new CommitDiscardWrapperComponent<CampaignEditForm>(campaignEditForm, campaignEditForm.getFieldGroup());
 
 		if (campaignDto == null) {
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
-		campaignForm.setValue(campaignDto);
+		campaignEditForm.setValue(campaignDto);
 
 		view.addCommitListener(new CommitListener() {
 
 			@Override
 			public void onCommit() {
-				if (!campaignForm.getFieldGroup().isModified()) {
-					CampaignDto dto = campaignForm.getValue();
+				if (!campaignEditForm.getFieldGroup().isModified()) {
+					CampaignDto dto = campaignEditForm.getValue();
 					FacadeProvider.getCampaignFacade().saveCampaign(dto);
 					callback.run();
 				}
@@ -133,10 +130,6 @@ public class CampaignController {
 		});
 
 		return view;
-	}
-
-	public void registerViews(Navigator navigator) {
-		navigator.addView(CampaignsView.VIEW_NAME, CampaignsView.class);
 	}
 
 	private CampaignDto getCampaign(String uuid) {

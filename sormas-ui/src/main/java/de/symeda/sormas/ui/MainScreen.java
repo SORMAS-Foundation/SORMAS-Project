@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -29,7 +24,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -38,7 +32,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.campaign.CampaignsView;
+import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
@@ -61,6 +57,11 @@ import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.user.UsersView;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Content of the UI when the user is logged in.
  */
@@ -78,6 +79,7 @@ public class MainScreen extends HorizontalLayout {
 			EventsView.VIEW_NAME,
 			SamplesView.VIEW_NAME,
 			CampaignsView.VIEW_NAME,
+			CampaignDataView.VIEW_NAME,
 			ReportsView.VIEW_NAME,
 			StatisticsView.VIEW_NAME,
 			UsersView.VIEW_NAME,
@@ -166,10 +168,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
-			ControllerProvider.getCampaignController().registerViews(navigator);
+			AbstractCampaignView.registerViews(navigator);
 			menu.addView(
 				CampaignsView.class,
-				CampaignsView.VIEW_NAME,
+				AbstractCampaignView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
