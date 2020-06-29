@@ -527,6 +527,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
 				joins.getContact().get(Contact.CONTACT_STATUS)));
 
+		cq.distinct(true);
+
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 
@@ -547,7 +549,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)), cb.desc(sample.get(Sample.ID)));
 
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
