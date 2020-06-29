@@ -329,8 +329,8 @@ public class PathogenTestController {
 			return;
 		
 		String labelText = cases.size() > 1 ?
-				I18nProperties.getString(Strings.messageConfirmCaseAfterPathogenTest)
-				: String.format(I18nProperties.getString(Strings.messageConfirmCasesAfterPathogenTest), cases.size());
+				String.format(I18nProperties.getString(Strings.messageConfirmCasesAfterPathogenTest), cases.size())
+				: I18nProperties.getString(Strings.messageConfirmCaseAfterPathogenTest);
 		
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),
