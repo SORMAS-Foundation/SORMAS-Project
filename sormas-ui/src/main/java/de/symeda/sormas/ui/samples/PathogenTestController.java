@@ -165,7 +165,7 @@ public class PathogenTestController {
 				}
 			});
 			
-			if (!isSampleResultSameAsPathogenTest(sample, updatedBulkResultData)) {
+			if (isSampleResultDifferentFromPathogenTest(sample, updatedBulkResultData)) {
 				samples.add(sample);
 			}
 		}
@@ -176,7 +176,7 @@ public class PathogenTestController {
 		.showChangePathogenTestResultWindow(null, samples.stream().map(sample -> sample.getUuid()), updatedBulkResultData.getTestResult(), null);
 	}
 	
-	private boolean isSampleResultSameAsPathogenTest (SampleIndexDto sample, PathogenTestDto test) {
+	private boolean isSampleResultDifferentFromPathogenTest (SampleIndexDto sample, PathogenTestDto test) {
 		return test != null
 			&& test.getTestResult() != null
 			&& Boolean.TRUE.equals(test.getTestResultVerified())
