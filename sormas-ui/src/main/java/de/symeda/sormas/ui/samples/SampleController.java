@@ -299,8 +299,12 @@ public class SampleController {
 		layout.setMargin(true);
 
 		ConfirmationComponent confirmationComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
+		
+		String descriptionText = samplesUuids.size() > 1 ?
+			String.format(I18nProperties.getString(Strings.messageChangePathogenTestsResults), samplesUuids.size(), newResult.toString())
+			: String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString());
 
-		Label description = new Label(String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString()));
+		Label description = new Label(descriptionText);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);
 		layout.addComponent(confirmationComponent);
