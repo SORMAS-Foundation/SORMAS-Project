@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.text.Normalizer;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.simmetrics.metrics.StringMetrics;
@@ -39,10 +41,33 @@ public final class PersonHelper {
 	/**
 	 * Calculates the trigram distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
-	 * Used a default of 0.6 for the threshold.
+	 * Used a default of {@link PersonHelper#NAME_SIMILARITY_THRESHOLD} for the threshold.
 	 */
-	public static boolean areNamesSimilar(String firstName, String secondName) {
-		return StringMetrics.qGramsDistance().compare(firstName, secondName) >= NAME_SIMILARITY_THRESHOLD;
+	protected static boolean areFullNamesSimilar(final String firstName, final String secondName) {
+		final String name = normalizeString(firstName);
+		final String otherName = normalizeString(secondName);
+		return StringMetrics.qGramsDistance().compare(name, otherName) >= NAME_SIMILARITY_THRESHOLD;
+	}
+
+	/**
+	 * Calculates the trigram distance between firstName/lastname (also viceversa lastname/firstname) and otherFirstName/otherLastName,
+	 * returns true if the similarity is high enough to consider them a possible match.
+	 */
+	public static boolean areNamesSimilar(final String firstName, final String lastName, final String otherFirstName, final String otherLastName) {
+		final String name = createFullName(firstName, lastName);
+		final String nameInverted = createFullName(lastName, firstName);
+		final String otherName = createFullName(otherFirstName, otherLastName);
+		return areFullNamesSimilar(name, otherName) || areFullNamesSimilar(nameInverted, otherName);
+	}
+
+	private static String createFullName(String firstName, String lastName) {
+		return firstName + StringUtils.SPACE + lastName;
+	}
+
+	public static String normalizeString(String str) {
+		String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD).toLowerCase();
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		return pattern.matcher(nfdNormalizedString).replaceAll("");
 	}
 
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
