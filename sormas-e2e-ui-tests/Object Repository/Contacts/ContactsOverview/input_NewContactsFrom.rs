@@ -3,15 +3,11 @@
    <description></description>
    <name>input_NewContactsFrom</name>
    <tag></tag>
-   <elementGuidId>ed81d30a-0f8b-4917-a5bc-0d5cfeb2ec0d</elementGuidId>
+   <elementGuidId>303aa15a-59d9-4672-b7c0-b326735e3239</elementGuidId>
    <selectorCollection>
       <entry>
          <key>XPATH</key>
          <value>(//input[@type='text'])[15]</value>
-      </entry>
-      <entry>
-         <key>BASIC</key>
-         <value>id(&quot;dateFrom&quot;)/input[@class=&quot;v-textfield v-datefield-textfield&quot;]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>BASIC</selectorMethod>

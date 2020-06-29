@@ -56,7 +56,7 @@ WebUI.click(findTestObject('Surveillance/NewCaseView/div_Save_btn'))
 WebUI.delay(3)
 
 if (WebUI.verifyElementPresent(findTestObject('Surveillance/NewCaseView/Comfirmation/div_check_confimation_lbl'), 5)) {
-    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/chooseExistingCase_radio'))
+    WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_PickanExistingCase'))
 
     WebUI.click(findTestObject('Surveillance/NewCaseView/Comfirmation/div_confirm_btn'))
 
