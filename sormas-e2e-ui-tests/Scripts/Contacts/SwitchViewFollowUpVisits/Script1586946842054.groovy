@@ -15,8 +15,8 @@ WebUI.maximizeWindow()
 
 if (!WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/button_div_Previous'), 1) 
 	|| !WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/button_div_Next'), 1) 
-	|| !WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_From'), 1)
-	|| !WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_To'), 1)) {
+	|| !WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_From_date'), 1)
+	|| !WebUI.verifyElementPresent(findTestObject('Contacts/ContactsOverview/div_To_date'), 1)) {
 	WebUI.closeBrowser()
 	throw new StepFailedException('"Follow up visits" view does not contain expected elements')
 }
@@ -26,8 +26,8 @@ WebUI.delay(1)
 
 if (!WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/button_div_Previous'),2)
 	|| !WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/button_div_Next'), 1)
-	|| !WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_From'), 1)
-	|| !WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_To'), 1)) {
+	|| !WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_From_date'), 1)
+	|| !WebUI.verifyElementNotPresent(findTestObject('Contacts/ContactsOverview/div_To_date'), 1)) {
 	WebUI.closeBrowser()
 	throw new StepFailedException('"Contacts" view does not contain expected elements')
 }
