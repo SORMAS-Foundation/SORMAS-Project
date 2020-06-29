@@ -284,10 +284,16 @@ public class PathogenTestController {
 		
 		if (existingCasesDtos == null || existingCasesDtos.size() == 0)
 			return;
+		
+		String caption = existingCasesDtos.size() > 1 ? Captions.caseCloneCasesWithNewDisease : Captions.caseCloneCaseWithNewDisease;
+		
+		String labelText = existingCasesDtos.size() > 1 ?
+				String.format(I18nProperties.getString(Strings.messageCloneCasesWithNewDisease), existingCasesDtos.size())
+				: I18nProperties.getString(Strings.messageCloneCaseWithNewDisease);
 
 		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
-			new Label(I18nProperties.getString(Strings.messageCloneCaseWithNewDisease)),
+			I18nProperties.getCaption(caption) + " " + I18nProperties.getEnumCaption(disease) + "?",
+			new Label(labelText),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
@@ -323,9 +329,13 @@ public class PathogenTestController {
 		if (cases == null || cases.size() == 0)
 			return;
 		
+		String labelText = cases.size() > 1 ?
+				I18nProperties.getString(Strings.messageConfirmCaseAfterPathogenTest)
+				: String.format(I18nProperties.getString(Strings.messageConfirmCasesAfterPathogenTest), cases.size());
+		
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.caseConfirmCase),
-			new Label(I18nProperties.getString(Strings.messageConfirmCaseAfterPathogenTest)),
+			new Label(labelText),
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,

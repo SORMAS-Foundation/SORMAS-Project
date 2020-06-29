@@ -441,11 +441,13 @@ public interface Strings {
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
+	String messageChangePathogenTestsResults = "messageChangePathogenTestsResults";
 	String messageCheckInputData = "messageCheckInputData";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	String messageCloneCasesWithNewDisease = "messageCloneCasesWithNewDisease";
 	String messageCloneCaseWithNewDisease = "messageCloneCaseWithNewDisease";
 	String messageCommunitiesArchived = "messageCommunitiesArchived";
 	String messageCommunitiesArchivingNotPossible = "messageCommunitiesArchivingNotPossible";
@@ -457,6 +459,7 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	String messageConfirmCasesAfterPathogenTest = "messageConfirmCasesAfterPathogenTest";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
@@ -546,6 +549,8 @@ public interface Strings {
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
+	String messagePathogenTestsSaved = "messagePathogenTestsSaved";
+	String messagePathogenTestsSavedShort = "messagePathogenTestsSavedShort";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";
