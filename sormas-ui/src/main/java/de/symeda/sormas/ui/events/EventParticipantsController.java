@@ -17,17 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
-import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -39,13 +34,15 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 public class EventParticipantsController {
 
@@ -124,7 +121,7 @@ public class EventParticipantsController {
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 					if (doneConsumer != null)
 						doneConsumer.accept(null);
-					refreshView();
+					SormasUI.refreshView();
 				}
 			}
 		});
@@ -133,16 +130,8 @@ public class EventParticipantsController {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
-				refreshView();
+				SormasUI.refreshView();
 			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
-		}
-	}
-
-	private void refreshView() {
-		View currentView = SormasUI.get().getNavigator().getCurrentView();
-		if (currentView instanceof EventParticipantsView) {
-			// force refresh, because view didn't change
-			((EventParticipantsView) currentView).enter(null);
 		}
 	}
 
