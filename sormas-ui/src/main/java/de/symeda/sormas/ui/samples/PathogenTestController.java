@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Label;
@@ -133,8 +134,6 @@ public class PathogenTestController {
 				PathogenTestDto updatedBulkResultData = form.getValue();
 				bulkCreate(selectedSamples, updatedBulkResultData);
 				
-				
-
 				popupWindow.close();
 				Notification.show(I18nProperties.getString(Strings.messageTestsCreated), Type.HUMANIZED_MESSAGE);
 			}
@@ -173,7 +172,7 @@ public class PathogenTestController {
 		showConfirmCaseDialog(confirmCase);
 		showCaseCloningWithNewDiseaseDialog(changeDisease, updatedBulkResultData.getTestedDisease());
 		ControllerProvider.getSampleController()
-		.showChangePathogenTestResultWindow(null, samples.stream().map(sample -> sample.getUuid()), updatedBulkResultData.getTestResult(), null);
+		.showChangePathogenTestResultWindow(null, samples.stream().map(sample -> sample.getUuid()).collect(Collectors.toList()), updatedBulkResultData.getTestResult(), null);
 	}
 	
 	private boolean isSampleResultDifferentFromPathogenTest (SampleIndexDto sample, PathogenTestDto test) {
