@@ -144,9 +144,9 @@ public class PathogenTestController {
 		Collection<? extends SampleIndexDto> selectedSamples,
 		PathogenTestDto updatedBulkResultData) {
 		
-		Collection<CaseDataDto> confirmCase = new ArrayList<CaseDataDto>();
-		Collection<CaseDataDto> changeDisease = new ArrayList<CaseDataDto>();
-		Collection<SampleIndexDto> samples = new ArrayList<SampleIndexDto>();
+		Collection<CaseDataDto> casesToClassify = new ArrayList<CaseDataDto>();
+		Collection<CaseDataDto> casesToClone = new ArrayList<CaseDataDto>();
+		Collection<SampleIndexDto> samplesToUpdate = new ArrayList<SampleIndexDto>();
 
 		for (SampleIndexDto sample : selectedSamples) {
 			
@@ -156,23 +156,27 @@ public class PathogenTestController {
 			savePathogenTest(updatedBulkResultData, null, (action, caze) -> {
 				switch (action) {
 					case CONFIRM_CASE_CLASSIFICATION:
-						confirmCase.add(caze);
+						casesToClassify.add(caze);
 						break;
 					case CLONE_CASE_WITH_NEW_DISEASE:
-						changeDisease.add(caze);
+						casesToClone.add(caze);
 						break;
 				}
 			});
 			
 			if (isSampleResultDifferentFromPathogenTest(sample, updatedBulkResultData)) {
-				samples.add(sample);
+				samplesToUpdate.add(sample);
 			}
 		}
 		
-		showConfirmCaseDialog(confirmCase);
-		showCaseCloningWithNewDiseaseDialog(changeDisease, updatedBulkResultData.getTestedDisease());
-		ControllerProvider.getSampleController()
-		.showChangePathogenTestResultWindow(null, samples.stream().map(sample -> sample.getUuid()).collect(Collectors.toList()), updatedBulkResultData.getTestResult(), null);
+		showConfirmCaseDialog(casesToClassify);
+		showCaseCloningWithNewDiseaseDialog(casesToClone, updatedBulkResultData.getTestedDisease());
+		ControllerProvider.getSampleController().showChangePathogenTestResultWindow(
+			null, 
+			samplesToUpdate.stream().map(sample -> sample.getUuid()).collect(Collectors.toList()), 
+			updatedBulkResultData.getTestResult(), 
+			null
+		);
 	}
 	
 	private boolean isSampleResultDifferentFromPathogenTest (SampleIndexDto sample, PathogenTestDto test) {
@@ -182,7 +186,6 @@ public class PathogenTestController {
 			&& test.getTestedDisease() == sample.getDisease()
 			&& test.getTestResult() != sample.getPathogenTestResult();
 	}
-	
 	
 	public void edit(PathogenTestDto dto, int caseSampleCount, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		// get fresh data
