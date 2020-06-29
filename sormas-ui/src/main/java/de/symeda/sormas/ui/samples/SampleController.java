@@ -321,7 +321,9 @@ public class SampleController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				editComponent.commit();
+				if (editComponent != null)
+					editComponent.commit();
+				
 				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByUuids(samplesUuids);
 				for (SampleDto sample : samples) {
 					sample.setPathogenTestResult(newResult);
@@ -330,7 +332,8 @@ public class SampleController {
 				
 				popupWindow.close();
 				SormasUI.refreshView();
-				callback.run();
+				if (callback != null)
+					callback.run();
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -340,7 +343,8 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				callback.run();
+				if (callback != null)
+					callback.run();
 			}
 		});
 	}
