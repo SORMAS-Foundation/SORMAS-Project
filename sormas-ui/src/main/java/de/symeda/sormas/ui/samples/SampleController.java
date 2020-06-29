@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -286,9 +288,12 @@ public class SampleController {
 
 	public void showChangePathogenTestResultWindow(
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
-		String sampleUuid,
+		List<String> samplesUuids,
 		PathogenTestResultType newResult,
 		Runnable callback) {
+		
+		if (samplesUuids == null || samplesUuids.size() == 0)
+			return;
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
@@ -313,9 +318,12 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				editComponent.commit();
-				SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
-				sample.setPathogenTestResult(newResult);
-				FacadeProvider.getSampleFacade().saveSample(sample);
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByUuids(samplesUuids);
+				for (SampleDto sample : samples) {
+					sample.setPathogenTestResult(newResult);
+					FacadeProvider.getSampleFacade().saveSample(sample);
+				}
+				
 				popupWindow.close();
 				SormasUI.refreshView();
 				callback.run();
@@ -331,6 +339,15 @@ public class SampleController {
 				callback.run();
 			}
 		});
+	}
+	
+	public void showChangePathogenTestResultWindow(
+		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
+		String sampleUuid,
+		PathogenTestResultType newResult,
+		Runnable callback) {
+
+		showChangePathogenTestResultWindow(editComponent, Arrays.asList(sampleUuid), newResult, callback);
 	}
 
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {
