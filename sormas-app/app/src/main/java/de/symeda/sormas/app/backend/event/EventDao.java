@@ -74,6 +74,7 @@ public class EventDao extends AbstractAdoDao<Event> {
 		event.setReportDateTime(new Date());
 		event.setReportingUser(ConfigProvider.getUser());
 		event.getEventLocation().setRegion(ConfigProvider.getUser().getRegion());
+		event.getEventLocation().setDistrict(ConfigProvider.getUser().getDistrict());
 		event.setEventStatus(EventStatus.POSSIBLE);
 
 		return event;
