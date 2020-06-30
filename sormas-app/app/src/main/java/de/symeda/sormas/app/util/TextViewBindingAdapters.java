@@ -1220,7 +1220,7 @@ public class TextViewBindingAdapters {
 		} else if (record.getEvent() != null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(record.getEvent().getEventStatus());
-			sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getEventDate()));
+			sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getStartDate()));
 			if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
 				sb.append(", " + record.getEvent().getEventLocation().getCity());
 			}

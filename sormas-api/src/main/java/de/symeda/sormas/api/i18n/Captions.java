@@ -671,6 +671,7 @@ public interface Captions {
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_eventDate = "Event.eventDate";
+	String Event_startDate = "Event.startDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
@@ -695,6 +696,7 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
+	String eventMultiDay = "multiDay";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";

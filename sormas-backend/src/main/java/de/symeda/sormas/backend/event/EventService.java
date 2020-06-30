@@ -146,7 +146,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.EVENT_STATUS),
 				event.get(Event.DISEASE),
 				event.get(Event.DISEASE_DETAILS),
-				event.get(Event.EVENT_DATE),
+				event.get(Event.START_DATE),
 				event.get(Event.REPORT_LAT),
 				event.get(Event.REPORT_LON),
 				eventLocation.get(Location.LATITUDE),
@@ -386,11 +386,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
 		}
 		if (eventCriteria.getEventDateFrom() != null && eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()));
+			filter = and(cb, filter, cb.between(from.get(Event.START_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()));
 		} else if (eventCriteria.getEventDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom()));
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()));
 		} else if (eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateTo()));
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
 			filter = and(

@@ -58,7 +58,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_eventDate"
-                    app:value="@{data.eventDate}"
+                    app:value="@{data.startDate}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

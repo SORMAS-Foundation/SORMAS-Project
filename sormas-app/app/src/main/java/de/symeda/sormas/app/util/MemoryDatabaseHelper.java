@@ -659,12 +659,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getPossibleEvents(int number) {
+		public static List<Event> getSignals(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.POSSIBLE) {
+				if (item.getEventStatus() == EventStatus.SIGNAL) {
 					eventList.add(item);
 				}
 			}
@@ -677,7 +677,7 @@ public class MemoryDatabaseHelper {
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.CONFIRMED) {
+				if (item.getEventStatus() == EventStatus.EVENT) {
 					eventList.add(item);
 				}
 			}
@@ -685,12 +685,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getNoEvents(int number) {
+		public static List<Event> getDroppedEvents(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.NO_EVENT) {
+				if (item.getEventStatus() == EventStatus.DROPPED) {
 					eventList.add(item);
 				}
 			}
@@ -1624,7 +1624,7 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
 			data1.setEventDesc(getRandomSentence());
-			data1.setEventDate(getRandomDate());
+			data1.setStartDate(getRandomDate());
 			data1.setReportDateTime(getRandomDate());
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setEventLocation(LocationGenerator.getSingle());
@@ -2392,9 +2392,11 @@ abstract class BaseDataGenerator {
 		List<EventStatus> list = new ArrayList<EventStatus>() {
 
 			{
-				add(EventStatus.POSSIBLE);
-				add(EventStatus.CONFIRMED);
-				add(EventStatus.NO_EVENT);
+				add(EventStatus.SIGNAL);
+				add(EventStatus.EVENT);
+				add(EventStatus.SCREENING);
+				add(EventStatus.CLUSTER);
+				add(EventStatus.DROPPED);
 			}
 		};
 

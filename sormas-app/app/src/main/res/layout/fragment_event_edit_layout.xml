@@ -86,7 +86,7 @@
 
                 <de.symeda.sormas.app.component.controls.ControlDateField
                     android:id="@+id/event_eventDate"
-                    app:value="@={data.eventDate}"
+                    app:value="@={data.startDate}"
                     app:softRequired="true"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 

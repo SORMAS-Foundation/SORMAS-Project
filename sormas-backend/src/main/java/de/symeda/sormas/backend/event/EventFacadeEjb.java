@@ -205,7 +205,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.EVENT_DATE),
+			event.get(Event.START_DATE),
 			event.get(Event.EVENT_DESC),
 			location.get(Location.UUID),
 			region.get(Region.NAME),
@@ -283,7 +283,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.EVENT_DATE),
+			event.get(Event.START_DATE),
 			event.get(Event.EVENT_DESC),
 			region.get(Region.NAME),
 			district.get(District.NAME),
@@ -373,16 +373,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setEventId(source.getEventId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
@@ -414,16 +421,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setEventId(source.getEventId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
