@@ -137,8 +137,12 @@ public class SampleIndexDto implements Serializable {
 			caseDistrictUuid,
 			contactDistrictUuid,
 			contactCaseDistrictUuid);
-		this.community =
-			createCommunityReference(caseCommunityName, contactCommunityName, contactCaseCommunityName, caseCommunityUuid, contactCaseCommunityUuid);
+		this.community = createCommunityReference(
+			caseCommunityName, 
+			contactCommunityName, 
+			contactCaseCommunityName, 
+			caseCommunityUuid,
+			contactCaseCommunityUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
