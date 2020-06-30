@@ -301,12 +301,12 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				joins.getCaseDistrict().get(Region.NAME),
-				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME),
-				joins.getCaseCommunity().get(District.NAME),
-				joins.getContactCommunity().get(District.NAME),
-				joins.getContactCaseCommunity().get(District.NAME)));
+				joins.getCaseDistrict().get(District.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCaseDistrict().get(District.NAME),
+				joins.getCaseCommunity().get(Community.NAME),
+				joins.getContactCommunity().get(Community.NAME),
+				joins.getContactCaseCommunity().get(Community.NAME)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 
