@@ -96,7 +96,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveUuids(user);
+		return eventService.getAllActiveUuids();
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveEventsAfter(date, user).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return eventService.getAllActiveEventsAfter(date).stream().map(EventFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -123,26 +123,23 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getDeletedUuidsSince(user, since);
+		return eventService.getDeletedUuidsSince(since);
 	}
 
 	@Override
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getNewEventsForDashboard(eventCriteria, user);
+		return eventService.getNewEventsForDashboard(eventCriteria);
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getEventCountByDisease(eventCriteria, user);
+		return eventService.getEventCountByDisease(eventCriteria);
 	}
 
 	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getEventCountByStatus(eventCriteria, user);
+		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	@Override
@@ -360,7 +357,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getArchivedUuidsSince(user, since);
+		return eventService.getArchivedUuidsSince(since);
 	}
 
 	public Event fromDto(@NotNull EventDto source) {

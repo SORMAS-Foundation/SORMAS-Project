@@ -78,7 +78,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, User user) {
+	public List<Event> getAllActiveEventsAfter(Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -87,6 +87,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -104,7 +105,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getAllActiveUuids(User user) {
+	public List<String> getAllActiveUuids() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -112,6 +113,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -123,7 +125,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, User user) {
+	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
@@ -164,7 +166,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return result;
 	}
 
-	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, User user) {
+	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -182,12 +184,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, Long> events = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 	}
 
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, User user) {
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -205,12 +205,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<EventStatus, Long> events = results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
-	public List<String> getArchivedUuidsSince(User user, Date since) {
+	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -239,7 +237,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
