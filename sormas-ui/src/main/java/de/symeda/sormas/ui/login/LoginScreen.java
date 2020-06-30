@@ -17,15 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
@@ -44,7 +36,6 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,6 +43,16 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.UserRightsException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * UI content when the user is not logged in yet.
@@ -125,9 +126,19 @@ public class LoginScreen extends CssLayout {
 		final HorizontalLayout titleLayout = new HorizontalLayout();
 		titleLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 		titleLayout.setSpacing(false);
-		Label title = new Label("SORMAS");
+		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
 		CssStyles.style(title, CssStyles.H1, CssStyles.VSPACE_NONE, CssStyles.VSPACE_TOP_NONE, CssStyles.HSPACE_LEFT_3);
-		Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+
+		Image image;
+		if (FacadeProvider.getConfigFacade().isCustomBranding()
+			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
+			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
+			image = new Image(null, new FileResource(logoPath.toFile()));
+			image.setWidth(50, Unit.PIXELS);
+		} else {
+			image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+		}
+
 		titleLayout.addComponent(image);
 		titleLayout.addComponent(title);
 		loginFormLayout.addComponent(titleLayout);
@@ -229,26 +240,42 @@ public class LoginScreen extends CssLayout {
 		innerLayout.setSizeUndefined();
 		innerLayout.setSpacing(false);
 
-		Image img = new Image(null, new ThemeResource("img/sormas-logo-big-text.png"));
-		img.setWidth(320, Unit.PIXELS);
-		innerLayout.addComponent(img);
-		innerLayout.setComponentAlignment(img, Alignment.TOP_CENTER);
+		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
 
-		Label fullNameText = new Label("Surveillance,<br>Outbreak Response Management<br>and Analysis System<br>", ContentMode.HTML);
-		fullNameText.setWidth(320, Unit.PIXELS);
-		CssStyles.style(fullNameText, CssStyles.H2, CssStyles.LABEL_PRIMARY, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
-		innerLayout.addComponent(fullNameText);
-		innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
+		if (FacadeProvider.getConfigFacade().isCustomBranding()) {
+			Path sidebarHeaderPath = customHtmlDirectory.resolve("loginsidebar-header.html");
+			Label customSidebarHeaderLabel = new Label();
+			customSidebarHeaderLabel.setContentMode(ContentMode.HTML);
+			try {
+				byte[] encoded = Files.readAllBytes(sidebarHeaderPath);
+				customSidebarHeaderLabel.setValue(new String(encoded, StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				customSidebarHeaderLabel.setValue("");
+			}
 
-		Label missionText = new Label(
-			"• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention) + "<br>• "
-				+ I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection) + "<br>• "
-				+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse),
-			ContentMode.HTML);
-		missionText.setWidth(320, Unit.PIXELS);
-		CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
-		innerLayout.addComponent(missionText);
-		innerLayout.setComponentAlignment(missionText, Alignment.TOP_CENTER);
+			innerLayout.addComponent(customSidebarHeaderLabel);
+		} else {
+			Image img = new Image(null, new ThemeResource("img/sormas-logo-big-text.png"));
+			img.setWidth(320, Unit.PIXELS);
+			innerLayout.addComponent(img);
+			innerLayout.setComponentAlignment(img, Alignment.TOP_CENTER);
+
+			Label fullNameText = new Label("Surveillance,<br>Outbreak Response Management<br>and Analysis System<br>", ContentMode.HTML);
+			fullNameText.setWidth(320, Unit.PIXELS);
+			CssStyles.style(fullNameText, CssStyles.H2, CssStyles.LABEL_PRIMARY, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+			innerLayout.addComponent(fullNameText);
+			innerLayout.setComponentAlignment(fullNameText, Alignment.TOP_CENTER);
+
+			Label missionText = new Label(
+				"• " + I18nProperties.getCaption(Captions.LoginSidebar_diseasePrevention) + "<br>• "
+					+ I18nProperties.getCaption(Captions.LoginSidebar_diseaseDetection) + "<br>• "
+					+ I18nProperties.getCaption(Captions.LoginSidebar_outbreakResponse),
+				ContentMode.HTML);
+			missionText.setWidth(320, Unit.PIXELS);
+			CssStyles.style(missionText, CssStyles.H2, CssStyles.VSPACE_TOP_NONE, CssStyles.ALIGN_CENTER);
+			innerLayout.addComponent(missionText);
+			innerLayout.setComponentAlignment(missionText, Alignment.TOP_CENTER);
+		}
 
 		loginSidebarLayout.addComponent(innerLayout);
 
@@ -261,6 +288,13 @@ public class LoginScreen extends CssLayout {
 		poweredByLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		poweredByLayout.setSizeUndefined();
 		poweredByLayout.setSpacing(false);
+
+		if (FacadeProvider.getConfigFacade().isCustomBranding()) {
+			Image imgSormas = new Image(null, new ThemeResource("img/sormas-logo-horizontal.png"));
+			imgSormas.setWidth(LOGO_WIDTH, Unit.PIXELS);
+			CssStyles.style(imgSormas, CssStyles.VSPACE_2);
+			poweredByLayout.addComponent(imgSormas);
+		}
 
 		Image imgHzi = new Image(null, new ThemeResource("img/hzi-logo.png"));
 		imgHzi.setWidth(LOGO_WIDTH, Unit.PIXELS);
@@ -276,20 +310,19 @@ public class LoginScreen extends CssLayout {
 
 		loginSidebarLayout.addComponent(poweredByLayout);
 
-		Label customHtmlLabel = new Label();
-		customHtmlLabel.setContentMode(ContentMode.HTML);
+		Label customSidebarLabel = new Label();
+		customSidebarLabel.setContentMode(ContentMode.HTML);
 
-		Path customHtmlDirectory = Paths.get(FacadeProvider.getConfigFacade().getCustomFilesPath());
-		Path filePath = customHtmlDirectory.resolve("loginsidebar.html");
+		Path sidebarPath = customHtmlDirectory.resolve("loginsidebar.html");
 
 		try {
-			byte[] encoded = Files.readAllBytes(filePath);
-			customHtmlLabel.setValue(new String(encoded, UTF_8));
+			byte[] encoded = Files.readAllBytes(sidebarPath);
+			customSidebarLabel.setValue(new String(encoded, StandardCharsets.UTF_8));
 		} catch (IOException e) {
-			customHtmlLabel.setValue("");
+			customSidebarLabel.setValue("");
 		}
 
-		loginSidebarLayout.addComponent(customHtmlLabel);
+		loginSidebarLayout.addComponent(customSidebarLabel);
 		return loginSidebarLayout;
 	}
 
