@@ -106,7 +106,7 @@ public class SampleIndexDto implements Serializable {
 				caseReportingUserUuid,
 				caseRegionUuid,
 				caseDistrictUuid,
-				contactCaseCommunityUuid,
+				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
 		}
