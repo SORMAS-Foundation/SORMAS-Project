@@ -158,7 +158,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (user == null) {
 			return Collections.emptyList();
 		}
-		System.out.println("Listing all samples");
 
 		return sampleService.getAllActiveUuids(user);
 	}
