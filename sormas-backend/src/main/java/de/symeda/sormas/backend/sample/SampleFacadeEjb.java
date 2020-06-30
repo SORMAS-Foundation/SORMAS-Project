@@ -250,11 +250,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Join<Case, Community> caseCommunity = joins.getCaseCommunity();
 
 		final Join<Sample, Contact> contact = joins.getContact();
-
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
-		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
-
 		final Join<Contact, Community> contactCommunity = joins.getContactCommunity();
+
+		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
 		final Join<Case, Community> contactCaseCommunity = joins.getContactCaseCommunity();
 
 		Expression<Object> diseaseSelect = cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE));
