@@ -1,6 +1,7 @@
 import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase
 import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject
-
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import com.hzi.Helper
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.model.FailureHandling as FailureHandling
@@ -42,8 +43,13 @@ WebUI.click(findTestObject('Object Repository/Samples/NewTestResult/div_Save'))
 WebUI.delay(1)
 
 String dateToCheck = WebUI.getText(findTestObject('Samples/SampleInformation/last_testResultDateTime'))
+DateFormat f1 = new SimpleDateFormat('MM/dd/yyyy h:mm a')
+Date d = f1.parse(dateToCheck)
+DateFormat f2 = new SimpleDateFormat('MM/dd/yyyy HH:mm')
+String displayedDate = f2.format(d)
+println(displayedDate)
 String expectedDateTime = resultDate + ' ' +resultTime
-if (!dateToCheck.equals(expectedDateTime)) {
+if (!displayedDate.equals(expectedDateTime)) {
 	WebUI.closeBrowser()
  	throw new StepFailedException('Expected to find in the first testresult the another date-time string. expected: ' + expectedDateTime + ' found: ' + dateToCheck)
 }

@@ -3,17 +3,7 @@
    <description></description>
    <name>input_NewContactsTo</name>
    <tag></tag>
-   <elementGuidId>2368b585-a409-4b0f-82ba-7caae0ee8178</elementGuidId>
-   <selectorCollection>
-      <entry>
-         <key>XPATH</key>
-         <value>(//input[@type='text'])[16]</value>
-      </entry>
-      <entry>
-         <key>BASIC</key>
-         <value>id(&quot;dateTo&quot;)/input[@class=&quot;v-textfield v-datefield-textfield&quot;]</value>
-      </entry>
-   </selectorCollection>
+   <elementGuidId>77dafa65-f3d8-498b-a866-4a9210ee2b05</elementGuidId>
    <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
