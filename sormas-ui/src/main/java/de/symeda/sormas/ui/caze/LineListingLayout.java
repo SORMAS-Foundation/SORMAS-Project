@@ -267,7 +267,7 @@ public class LineListingLayout extends VerticalLayout {
 			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
 			newPerson.setSex(caseLineDto.getSex());
 
-			ControllerProvider.getCaseController().selectOrCreate(newCase, newPerson, uuid -> {
+			ControllerProvider.getCaseController().selectOrCreateCase(newCase, newPerson, uuid -> {
 				if (uuid == null) {
 
 					FacadeProvider.getPersonFacade().savePerson(newPerson);

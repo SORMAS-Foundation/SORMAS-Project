@@ -706,4 +706,6 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
+	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
+	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 }
