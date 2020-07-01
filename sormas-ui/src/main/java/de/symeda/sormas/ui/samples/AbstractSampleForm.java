@@ -71,7 +71,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
-                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
+                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, SampleDto.FOR_RETEST) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
@@ -118,6 +118,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
+		addField(SampleDto.FOR_RETEST, OptionGroup.class).setRequired(true);
 		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class);

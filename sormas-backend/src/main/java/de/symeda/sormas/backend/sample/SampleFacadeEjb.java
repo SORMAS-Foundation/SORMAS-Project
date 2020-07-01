@@ -726,6 +726,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -831,6 +832,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
