@@ -17,6 +17,8 @@ package de.symeda.sormas.app.event.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
@@ -42,6 +44,17 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 	@Override
 	public void onLayoutBinding(FragmentEventReadLayoutBinding contentBinding) {
 		contentBinding.setData(record);
+		contentBinding.setMultiDayEvent(record.getEndDate() != null);
+	}
+
+	@Override
+	protected void onAfterLayoutBinding(FragmentEventReadLayoutBinding contentBinding) {
+		super.onAfterLayoutBinding(contentBinding);
+
+		String startDateCaption = I18nProperties
+				.getCaption(Boolean.TRUE.equals(contentBinding.getMultiDayEvent()) ? Captions.Event_startDate : Captions.Event_eventDate);
+		contentBinding.eventStartDate.setCaption(startDateCaption);
+
 	}
 
 	@Override

@@ -55,18 +55,25 @@ public class Event extends CoreAdo {
 
 	public static final String TABLE_NAME = "events";
 
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
+	public static final String NOSOCOMIAL = "nosocomial";
 	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_MEDIA_WEBSITE = "srcMediaWebsite";
+	public static final String SRC_MEDIA_NAME = "srcMediaName";
+	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";

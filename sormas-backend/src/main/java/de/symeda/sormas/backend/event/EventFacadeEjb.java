@@ -280,19 +280,27 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.multiselect(
 			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.NOSOCOMIAL),
 			region.get(Region.NAME),
 			district.get(District.NAME),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
+			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_EMAIL),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
+			event.get(Event.SRC_MEDIA_DETAILS),
 			event.get(Event.REPORT_DATE_TIME));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
