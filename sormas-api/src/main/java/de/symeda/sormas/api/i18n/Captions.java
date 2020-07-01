@@ -131,6 +131,7 @@ public interface Captions {
 	String caseCasesList = "caseCasesList";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
+	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
 	String CaseData = "CaseData";

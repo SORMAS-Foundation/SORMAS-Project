@@ -56,8 +56,6 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			setSelectionMode(SelectionMode.NONE);
 		}
 
-//		addEditColumn(e -> ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid()));
-
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
 				return entry.getCaseUuid();
@@ -70,7 +68,6 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
 
 		setColumns(
-//			EDIT_BTN_ID,
 			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
 			EventParticipantIndexDto.NAME,

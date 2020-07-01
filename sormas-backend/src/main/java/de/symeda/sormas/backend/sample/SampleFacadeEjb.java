@@ -926,8 +926,12 @@ public class SampleFacadeEjb implements SampleFacade {
 							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
 					} else if (newSample.getAssociatedContact() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOT_CONTACT),
+							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
 							DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
+					} else if (newSample.getAssociatedEventParticipant() != null) {
+						messageContent = String.format(
+							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
+							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
 					}
 					messagingService.sendMessage(
 						recipient,
