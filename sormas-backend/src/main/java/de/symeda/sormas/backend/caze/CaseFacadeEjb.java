@@ -440,7 +440,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				// quarantine
-				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
@@ -1772,6 +1772,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
@@ -1910,6 +1911,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());

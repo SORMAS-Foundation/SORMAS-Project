@@ -4669,4 +4669,14 @@ ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERE
 
 INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
 
+-- 2020-06-30 Add "Other" and a text field to QuarantineType #2219
+ALTER TABLE cases ADD COLUMN quarantinetypedetails varchar(512);
+ALTER TABLE contact ADD COLUMN quarantinetypedetails varchar(512);
+
+ALTER TABLE cases_history ADD COLUMN quarantinetypedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN quarantinetypedetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add "Other" and a text field to QuarantineType #2219');
+
+
 -- *** Insert new sql commands BEFORE this line ***
