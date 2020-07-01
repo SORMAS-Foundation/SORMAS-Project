@@ -4622,4 +4622,10 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+--	2020-07-01	Mark samples that are for retest
+ALTER TABLE samples ADD COLUMN forretest varchar(512);
+ALTER TABLE samples_history ADD COLUMN forretest varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Mark samples that are for retest');
+
 -- *** Insert new sql commands BEFORE this line ***

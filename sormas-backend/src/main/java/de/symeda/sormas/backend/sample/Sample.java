@@ -51,6 +51,7 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
@@ -102,6 +103,7 @@ public class Sample extends CoreAdo {
 	private Contact associatedContact;
 	private String labSampleID;
 	private String fieldSampleID;
+	private YesNoUnknown forRetest;
 	private Date sampleDateTime;
 
 	private Date reportDateTime;
@@ -176,6 +178,15 @@ public class Sample extends CoreAdo {
 
 	public void setFieldSampleID(String fieldSampleID) {
 		this.fieldSampleID = fieldSampleID;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getForRetest() {
+		return forRetest;
+	}
+	
+	public void setForRetest(YesNoUnknown forRetest) {
+		this.forRetest = forRetest;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
