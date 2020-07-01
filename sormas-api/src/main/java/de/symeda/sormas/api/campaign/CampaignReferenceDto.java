@@ -21,9 +21,8 @@
 package de.symeda.sormas.api.campaign;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public class CampaignReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
+public class CampaignReferenceDto extends ReferenceDto {
 
 	public CampaignReferenceDto() {
 	}
@@ -35,24 +34,5 @@ public class CampaignReferenceDto extends ReferenceDto implements StatisticsGrou
 	public CampaignReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
-	}
-
-	@Override
-	public int keyCompareTo(StatisticsGroupingKey o) {
-
-		if (o == null) {
-			throw new NullPointerException("Can't compare to null.");
-		}
-
-		if (this.equals(o)) {
-			return 0;
-		}
-
-		int captionComparison = this.getCaption().compareTo(((CampaignReferenceDto) o).getCaption());
-		if (captionComparison != 0) {
-			return captionComparison;
-		} else {
-			return this.getUuid().compareTo(((CampaignReferenceDto) o).getUuid());
-		}
 	}
 }

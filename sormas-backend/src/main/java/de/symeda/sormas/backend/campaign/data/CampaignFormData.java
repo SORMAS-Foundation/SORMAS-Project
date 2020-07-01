@@ -58,7 +58,7 @@ public class CampaignFormData extends CoreAdo {
 		this.formData = formData;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn(nullable = false)
 	public Campaign getCampaign() {
 		return campaign;
@@ -68,7 +68,7 @@ public class CampaignFormData extends CoreAdo {
 		this.campaign = campaign;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	@JoinColumn(nullable = false)
 	public CampaignForm getCampaignForm() {
 		return campaignForm;
@@ -78,7 +78,7 @@ public class CampaignFormData extends CoreAdo {
 		this.campaignForm = campaignForm;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Region getRegion() {
 		return region;
 	}
@@ -87,7 +87,7 @@ public class CampaignFormData extends CoreAdo {
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public District getDistrict() {
 		return district;
 	}
@@ -96,7 +96,7 @@ public class CampaignFormData extends CoreAdo {
 		this.district = district;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne()
 	public Community getCommunity() {
 		return community;
 	}
