@@ -39,11 +39,15 @@ public class ContactJurisdictionHelper {
 		case NATION:
 			return true;
 		case REGION:
-			return contactJurisdiction.getRegionUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			if (contactJurisdiction.getRegionUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			}
+			break;
 		case DISTRICT:
-			return contactJurisdiction.getDistrictUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			if (contactJurisdiction.getDistrictUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			}
+			break;
 		case COMMUNITY:
 			return false;
 		case HEALTH_FACILITY:
