@@ -120,6 +120,7 @@ public interface Strings {
 	String entityDistricts = "entityDistricts";
 	String entityEvent = "entityEvent";
 	String entityEvents = "entityEvents";
+	String entityEventParticipant = "entityEventParticipant";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
@@ -150,6 +151,7 @@ public interface Strings {
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
 	String forContact = "forContact";
+	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";

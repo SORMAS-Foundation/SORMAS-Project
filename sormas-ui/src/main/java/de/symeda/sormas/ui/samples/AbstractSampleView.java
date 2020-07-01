@@ -24,6 +24,7 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -35,6 +36,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 
 @SuppressWarnings("serial")
@@ -73,6 +75,16 @@ public abstract class AbstractSampleView extends AbstractDetailView<SampleRefere
 		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
+
+		EventParticipantReferenceDto eventParticipantRef = sampleByUuid.getAssociatedEventParticipant();
+		if (eventParticipantRef != null && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			menu.addView(
+				EventParticipantDataView.VIEW_NAME,
+				I18nProperties.getString(Strings.entityEventParticipant),
+				eventParticipantRef.getUuid(),
+				true);
+		}
+
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
 		infoLabel.setValue(getReference().getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(getReference().getUuid()));

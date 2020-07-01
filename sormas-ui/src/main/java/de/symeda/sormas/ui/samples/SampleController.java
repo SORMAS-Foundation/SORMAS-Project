@@ -42,6 +42,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -88,6 +90,10 @@ public class SampleController {
 
 	public void create(ContactReferenceDto contactRef, Runnable callback) {
 		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	public void create(EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef));
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
@@ -274,10 +280,15 @@ public class SampleController {
 				popupWindow.close();
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
 				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 				if (associatedCase != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto);
 				} else if (associatedContact != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto);
+				} else if (associatedEventParticipant != null) {
+					final EventParticipantDto eventParticipantDto =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto);
 				}
 			}
 		});

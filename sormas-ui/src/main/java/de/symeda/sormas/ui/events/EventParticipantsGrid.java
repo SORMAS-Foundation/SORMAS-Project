@@ -56,7 +56,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			setSelectionMode(SelectionMode.NONE);
 		}
 
-		addEditColumn(e -> ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid()));
+//		addEditColumn(e -> ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid()));
 
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
@@ -70,7 +70,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
 
 		setColumns(
-			EDIT_BTN_ID,
+//			EDIT_BTN_ID,
+			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
 			EventParticipantIndexDto.NAME,
 			EventParticipantIndexDto.SEX,
@@ -78,6 +79,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
 			CASE_ID);
 
+		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
@@ -93,6 +95,10 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
 					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 				}
+			} else if ((e.getColumn() != null && EventParticipantIndexDto.UUID.equals(e.getColumn().getId()))
+				|| e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getEventParticipantController().navigateToData(e.getItem().getUuid());
+
 			}
 		});
 	}

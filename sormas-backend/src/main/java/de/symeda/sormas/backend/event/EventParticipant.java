@@ -17,15 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.Sample;
 
 @Entity
 @Audited
@@ -44,6 +49,7 @@ public class EventParticipant extends AbstractDomainObject {
 	private Person person;
 	private String involvementDescription;
 	private Case resultingCase;
+	private Set<Sample> samples;
 
 	@ManyToOne(cascade = {})
 	public Event getEvent() {
@@ -87,4 +93,14 @@ public class EventParticipant extends AbstractDomainObject {
 	public void setResultingCase(Case resultingCase) {
 		this.resultingCase = resultingCase;
 	}
+
+	@OneToMany(mappedBy = Sample.ASSOCIATED_EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
+	}
+
 }
