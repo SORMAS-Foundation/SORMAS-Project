@@ -135,6 +135,12 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                    android:id="@+id/sample_forRetest"
+                    app:value="@={data.forRetest}"
+                    app:required="true"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/sample_sampleSource"
                     app:value="@={data.sampleSource}"
