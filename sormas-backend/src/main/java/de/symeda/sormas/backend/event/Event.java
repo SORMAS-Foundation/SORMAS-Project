@@ -78,7 +78,7 @@ public class Event extends CoreAdo {
 
 	private EventStatus eventStatus;
 	private List<EventParticipant> eventPersons;
-	private String eventId;
+	private String externalId;
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private Date startDate;
@@ -127,12 +127,12 @@ public class Event extends CoreAdo {
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getEventId() {
-		return eventId;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	@Column(length = COLUMN_LENGTH_BIG, nullable = false)

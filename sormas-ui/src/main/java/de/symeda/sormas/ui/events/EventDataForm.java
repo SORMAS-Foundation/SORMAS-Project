@@ -74,7 +74,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(8, EventDto.EVENT_STATUS) +
 			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.MULTI_DAY_EVENT, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.EVENT_ID, "") +
+			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
 			fluidRowLocs(EventDto.EVENT_DESC) +
 			fluidRowLocs(EventDto.NOSOCOMIAL, "") +
 
@@ -131,11 +131,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.UUID, TextField.class);
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		addFields(EventDto.EVENT_ID);
+		addFields(EventDto.EXTERNAL_ID);
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		multiDayCheckbox.addStyleName(FORCE_CAPTION_CHECKBOX);
-		addField(EventDto.END_DATE, DateField.class);
+		DateField endDate = addField(EventDto.END_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
 		descriptionField.setRows(2);
@@ -147,7 +147,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
-		addField(EventDto.SRC_TYPE);
+
+		ComboBox srcType = addField(EventDto.SRC_TYPE);
+
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
 		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
@@ -223,8 +225,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		FieldHelper.addSoftRequiredStyle(
 			startDate,
+			endDate,
 			typeOfPlace,
 			surveillanceOfficerField,
+			srcType,
 			srcFirstName,
 			srcLastName,
 			srcTelNo,

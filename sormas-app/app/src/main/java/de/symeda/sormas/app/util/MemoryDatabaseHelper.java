@@ -39,6 +39,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -1629,6 +1630,7 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setEventLocation(LocationGenerator.getSingle());
 			data1.setTypeOfPlace(getRandomTypeOfPlace());
+			data1.setSrcType(EventSourceType.HOTLINE_PERSON);
 			data1.setSrcFirstName(getRandomName());
 			data1.setSrcLastName(getRandomName());
 			data1.setSrcTelNo(getRandomPhoneNumber());

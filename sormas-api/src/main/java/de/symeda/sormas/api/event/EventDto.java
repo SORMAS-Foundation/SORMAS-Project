@@ -35,7 +35,7 @@ public class EventDto extends EntityDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
-	public static final String EVENT_ID = "eventId";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String NOSOCOMIAL = "nosocomial";
 	public static final String START_DATE = "startDate";
@@ -62,7 +62,7 @@ public class EventDto extends EntityDto {
 
 	@Required
 	private EventStatus eventStatus;
-	private String eventId;
+	private String externalId;
 	@Required
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
@@ -109,12 +109,12 @@ public class EventDto extends EntityDto {
 		this.eventStatus = eventStatus;
 	}
 
-	public String getEventId() {
-		return eventId;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public String getEventDesc() {

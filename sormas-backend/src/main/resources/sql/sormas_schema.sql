@@ -4676,12 +4676,12 @@ UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT';
 
 ALTER TABLE events RENAME COLUMN eventdate TO startdate;
 ALTER TABLE events ADD COLUMN enddate timestamp;
-ALTER TABLE events ADD COLUMN eventid varchar(512);
+ALTER TABLE events ADD COLUMN externalId varchar(512);
 ALTER TABLE events ADD COLUMN nosocomial varchar(255);
 ALTER TABLE events ADD COLUMN srcType varchar(255);
 ALTER TABLE events ADD COLUMN srcMediaWebsite varchar(512);
 ALTER TABLE events ADD COLUMN srcMediaName varchar(512);
 ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
 
-INSERT INTO schema_version (version_number, comment) VALUES (218, 'Rename event statuses #2391');
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Extend event details #2391');
 -- *** Insert new sql commands BEFORE this line ***

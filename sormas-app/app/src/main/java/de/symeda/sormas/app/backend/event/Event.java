@@ -73,7 +73,7 @@ public class Event extends AbstractDomainObject {
 	private EventStatus eventStatus;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	private String eventId;
+	private String externalId;
 
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String eventDesc;
@@ -150,12 +150,12 @@ public class Event extends AbstractDomainObject {
 		this.eventStatus = eventStatus;
 	}
 
-	public String getEventId() {
-		return eventId;
+	public String getExternalId() {
+		return externalId;
 	}
 
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
 	}
 
 	public String getEventDesc() {
