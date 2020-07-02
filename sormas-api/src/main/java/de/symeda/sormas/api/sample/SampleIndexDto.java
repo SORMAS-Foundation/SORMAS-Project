@@ -43,6 +43,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -63,6 +64,7 @@ public class SampleIndexDto implements Serializable {
 	private ContactReferenceDto associatedContact;
 	private String epidNumber;
 	private String labSampleID;
+	private String fieldSampleID;
 	private Disease disease;
 	private String diseaseDetails;
 	private DistrictReferenceDto district;
@@ -84,7 +86,7 @@ public class SampleIndexDto implements Serializable {
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	//@formatter:off
-	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
+	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, String fieldSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 						  String labUuid, String labName, String referredSampleUuid,
@@ -128,6 +130,7 @@ public class SampleIndexDto implements Serializable {
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
+		this.fieldSampleID = fieldSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.district = createDistrictReference(
@@ -250,6 +253,14 @@ public class SampleIndexDto implements Serializable {
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
+	}
+	
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
+	
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
 	}
 
 	public DistrictReferenceDto getDistrict() {
