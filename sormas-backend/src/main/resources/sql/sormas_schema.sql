@@ -4699,6 +4699,6 @@ ALTER TABLE samples
 ALTER TABLE samples_history
     ADD COLUMN associatedeventparticipant_id bigint;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (219, 'Add samples to event participants #2395');
+INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add samples to event participants #2395');
+
 -- *** Insert new sql commands BEFORE this line ***
