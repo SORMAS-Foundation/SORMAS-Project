@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
+
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -722,20 +724,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return resultList;
-	}
-
-	private VisitResult getVisitResult(VisitStatus status, boolean symptomatic) {
-
-		if (VisitStatus.UNCOOPERATIVE.equals(status)) {
-			return VisitResult.UNCOOPERATIVE;
-		}
-		if (VisitStatus.UNAVAILABLE.equals(status)) {
-			return VisitResult.UNAVAILABLE;
-		}
-		if (symptomatic) {
-			return VisitResult.SYMPTOMATIC;
-		}
-		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
 	@Override

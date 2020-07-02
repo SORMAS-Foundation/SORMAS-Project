@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -2688,21 +2689,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return resultList;
-	}
-
-	// TODO (xca): refactor
-	private VisitResult getVisitResult(VisitStatus status, boolean symptomatic) {
-
-		if (VisitStatus.UNCOOPERATIVE.equals(status)) {
-			return VisitResult.UNCOOPERATIVE;
-		}
-		if (VisitStatus.UNAVAILABLE.equals(status)) {
-			return VisitResult.UNAVAILABLE;
-		}
-		if (symptomatic) {
-			return VisitResult.SYMPTOMATIC;
-		}
-		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
 	@LocalBean

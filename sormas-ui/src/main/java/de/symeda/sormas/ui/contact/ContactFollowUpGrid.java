@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +25,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -100,36 +102,6 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
 					item.getFollowUpUntil());
 			});
-		}
-	}
-
-	private String getVisitResultDescription(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
-
-		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
-			return "";
-		}
-		return result.toString();
-	}
-
-	private String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
-
-		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
-			return "";
-		}
-
-		switch (result) {
-		case NOT_SYMPTOMATIC:
-			return CssStyles.GRID_CELL_NOT_SYMPTOMATIC;
-		case SYMPTOMATIC:
-			return CssStyles.GRID_CELL_SYMPTOMATIC;
-		case NOT_PERFORMED:
-			return CssStyles.GRID_CELL_NOT_PERFORMED;
-		case UNAVAILABLE:
-			return CssStyles.GRID_CELL_UNAVAILABLE;
-		case UNCOOPERATIVE:
-			return CssStyles.GRID_CELL_UNCOOPERATIVE;
-		default:
-			return null;
 		}
 	}
 
