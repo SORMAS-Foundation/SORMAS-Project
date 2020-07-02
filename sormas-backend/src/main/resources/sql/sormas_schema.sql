@@ -4669,6 +4669,28 @@ ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERE
 
 INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
 
+CREATE TABLE campaignformdata(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formData text,
+	campaign_id bigint NOT NULL,
+	campaignform_id bigint NOT NULL,
+	region_id bigint NOT NULL,
+	district_id bigint NOT NULL,
+	community_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+ALTER TABLE campaignformdata OWNER TO sormas_user;
+CREATE TABLE campaignformdata_history (LIKE campaignformdata);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformdata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+ALTER TABLE campaignformdata_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add campaignformdata #1992');
+                                                                                                                       
 -- 2020-06-30 Add "Other" and a text field to QuarantineType #2219
 ALTER TABLE cases ADD COLUMN quarantinetypedetails varchar(512);
 ALTER TABLE contact ADD COLUMN quarantinetypedetails varchar(512);
@@ -4676,7 +4698,6 @@ ALTER TABLE contact ADD COLUMN quarantinetypedetails varchar(512);
 ALTER TABLE cases_history ADD COLUMN quarantinetypedetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN quarantinetypedetails varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add "Other" and a text field to QuarantineType #2219');
-
-
+INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add "Other" and a text field to QuarantineType #2219');
+                                                                                                                        
 -- *** Insert new sql commands BEFORE this line ***
