@@ -94,9 +94,37 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 		setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
 
 		// Initialize ControlSpinnerFields
-		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList);
+		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestType currentTestType = (PathogenTestType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == currentTestType
+					&& PathogenTestResultType.POSITIVE == contentBinding.pathogenTestTestResult.getValue())
+					|| PathogenTestType.CQ_VALUE_DETECTION == currentTestType) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
+			}
+		});
+
 		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
-		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList);
+		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestResultType currentPathogenTestResult = (PathogenTestResultType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == contentBinding.pathogenTestTestType.getValue()
+					&& PathogenTestResultType.POSITIVE == currentPathogenTestResult)
+					|| PathogenTestType.CQ_VALUE_DETECTION == contentBinding.pathogenTestTestType.getValue()) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
+			}
+		});
+
 		contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
 
 			@Override

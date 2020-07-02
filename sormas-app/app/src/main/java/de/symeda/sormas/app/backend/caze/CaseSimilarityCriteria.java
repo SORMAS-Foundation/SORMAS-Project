@@ -21,8 +21,7 @@ import java.util.Date;
 public class CaseSimilarityCriteria implements Serializable {
 
 	private CaseCriteria caseCriteria;
-	private String firstName;
-	private String lastName;
+	private String personUuid;
 	private Date reportDate;
 
 	public CaseCriteria getCaseCriteria() {
@@ -34,21 +33,12 @@ public class CaseSimilarityCriteria implements Serializable {
 		return this;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getPersonUuid() {
+		return personUuid;
 	}
 
-	public CaseSimilarityCriteria setFirstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public CaseSimilarityCriteria setLastName(String lastName) {
-		this.lastName = lastName;
+	public CaseSimilarityCriteria setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
 		return this;
 	}
 

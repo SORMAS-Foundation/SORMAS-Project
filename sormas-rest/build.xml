@@ -7,4 +7,21 @@
 	<property name="maven.artifactId" value="sormas-rest" />
 	<property name="file.suffix" value="war" />
 
+	<target name="3-collect" description="Kopiert das Artefakt nach deploy/apps.">
+
+		<property name="copy.path" value="../deploy/apps" />
+		<antcall inheritAll="true" target="--copy-artifact" />
+		<antcall inheritall="true" target="--copy-openapi-spec" />
+	</target>
+
+	<target name="--copy-openapi-spec" description="Copies the OpenAPI/Swagger specification for the SORMAS REST API to deploy/openapi.">
+		<copy todir="../deploy/openapi" preservelastmodified="true" verbose="true">
+			<fileset dir="./target">
+				<include name="swagger.json" />
+				<include name="swagger.yaml" />
+			</fileset>
+			<mapper type="glob" from="swagger.*" to="sormas-rest.*" />
+		</copy>
+	</target>
+
 </project>

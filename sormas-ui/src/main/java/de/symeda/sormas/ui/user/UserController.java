@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
@@ -26,6 +30,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -61,11 +66,14 @@ public class UserController {
 	}
 
 	public void edit(UserDto user) {
-		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid());
-		Window window = VaadinUiUtil.showModalPopupWindow(userComponent, I18nProperties.getString(Strings.headingEditUser));
+		Window window = VaadinUiUtil.createPopupWindow();
+		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid(), window::close);
+		window.setCaption(I18nProperties.getString(Strings.headingEditUser));
+		window.setContent(userComponent);
 		// user form is too big for typical screens
 		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
 		window.setHeight(90, Unit.PERCENTAGE);
+		UI.getCurrent().addWindow(window);
 	}
 
 	public void overview() {
@@ -88,7 +96,7 @@ public class UserController {
 		page.setUriFragment("!" + UsersView.VIEW_NAME + "/" + fragmentParameter, false);
 	}
 
-	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
+	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid, Runnable closeWindowCallback) {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
@@ -101,20 +109,44 @@ public class UserController {
 		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);
 		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!userEditForm.getFieldGroup().isModified()) {
-					UserDto dto = userEditForm.getValue();
-					FacadeProvider.getUserFacade().saveUser(dto);
-					I18nProperties.setUserLanguage(dto.getLanguage());
-					refreshView();
+		editView.addDiscardListener(closeWindowCallback::run);
+		editView.addCommitListener(() -> {
+			if (!userEditForm.getFieldGroup().isModified()) {
+				UserDto user = userEditForm.getValue();
+				UserDto existingUser = FacadeProvider.getUserFacade().getByUuid(user.getUuid());
+				// If user roles have changed, the user might no longer have a district assigned and therefore
+				// needs to be removed as surveillance/contact officer from existing cases/contacts
+				if (existingUser.getDistrict() != null && user.getDistrict() == null) {
+					openRemoveUserAsOfficerPrompt(result -> {
+						if (result) {
+							saveUser(user);
+							FacadeProvider.getUserFacade().removeUserAsSurveillanceAndContactOfficer(user.getUuid());
+							closeWindowCallback.run();
+						}
+					});
+				} else {
+					saveUser(user);
+					closeWindowCallback.run();
 				}
 			}
 		});
 
 		return editView;
+	}
+
+	private void openRemoveUserAsOfficerPrompt(Consumer<Boolean> callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingSaveUser),
+			new Label(I18nProperties.getString(Strings.confirmationRemoveUserAsOfficer)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			callback);
+	}
+
+	private void saveUser(UserDto user) {
+		FacadeProvider.getUserFacade().saveUser(user);
+		refreshView();
 	}
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserCreateComponent() {

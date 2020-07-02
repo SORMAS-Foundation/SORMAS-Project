@@ -81,7 +81,7 @@ public class PersonSelectionGrid extends Grid {
 			.stream()
 			.filter(
 				dto -> PersonHelper
-					.areNamesSimilar(criteria.getFirstName() + " " + criteria.getLastName(), dto.getFirstName() + " " + dto.getLastName()))
+					.areNamesSimilar(criteria.getFirstName(), criteria.getLastName(), dto.getFirstName(), dto.getLastName()))
 			.map(dto -> dto.getUuid())
 			.collect(Collectors.toList());
 		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getIndexDtosByUuids(similarPersonUuids);

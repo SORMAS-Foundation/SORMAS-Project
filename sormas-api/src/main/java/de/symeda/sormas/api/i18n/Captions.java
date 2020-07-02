@@ -158,6 +158,7 @@ public interface Captions {
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
+	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
@@ -1371,6 +1372,7 @@ public interface Captions {
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
+	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";

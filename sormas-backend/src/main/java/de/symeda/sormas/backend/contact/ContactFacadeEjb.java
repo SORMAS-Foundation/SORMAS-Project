@@ -385,13 +385,15 @@ public class ContactFacadeEjb implements ContactFacade {
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
 
+		cq.distinct(true);
+
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 

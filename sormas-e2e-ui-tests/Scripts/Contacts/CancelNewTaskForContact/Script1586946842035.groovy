@@ -21,7 +21,7 @@ WebUI.callTestCase(findTestCase('Contacts/partials/switchToContacts'), [:], Fail
 
 'userName\n'
 WebUI.setText(findTestObject('Contacts/ContactsOverview/input_New contact_nameUuidCaseLike'), 
-    findTestData(GlobalVariable.gContactTestDataName).getValue(2, 1))
+    findTestData(GlobalVariable.gContactTestDataName).getValue(2, 7))
 
 WebUI.delay(1)
 
@@ -37,7 +37,7 @@ WebUI.maximizeWindow()
 // This is necessary for JENKINS or there will be no "oldTaskNumber" and the test fails
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
 WebUI.delay(1)
-WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_kontaktliste_link'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_Contacts list'))
 WebUI.delay(1)
 
 TableContent tableContent = Table.getVisibleTableContent()

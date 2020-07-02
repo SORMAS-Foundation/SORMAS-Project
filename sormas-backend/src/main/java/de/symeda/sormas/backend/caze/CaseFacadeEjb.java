@@ -17,50 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -228,6 +184,48 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "CaseFacade")
@@ -986,11 +984,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		selectIndexDtoFields(cq, root);
 
 		Predicate userFilter = caseService.createUserFilter(cb, cq, root);
-		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
-		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(
-			cb.function("similarity", double.class, cb.parameter(String.class, "name"), nameSimilarityExpr),
-			FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
+		Predicate personSimilarityFilter = criteria.getPersonUuid() != null ? cb.equal(person.get(Person.UUID), criteria.getPersonUuid()) : null;
 		Predicate diseaseFilter = caseCriteria.getDisease() != null ? cb.equal(root.get(Case.DISEASE), caseCriteria.getDisease()) : null;
 		Predicate regionFilter = caseCriteria.getRegion() != null ? cb.equal(region.get(Region.UUID), caseCriteria.getRegion().getUuid()) : null;
 		Predicate reportDateFilter = criteria.getReportDate() != null
@@ -1002,14 +996,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		Predicate filter = caseService.createDefaultFilter(cb, root);
 		filter = AbstractAdoService.and(cb, filter, userFilter);
-		filter = AbstractAdoService.and(cb, filter, nameSimilarityFilter);
+		filter = AbstractAdoService.and(cb, filter, personSimilarityFilter);
 		filter = AbstractAdoService.and(cb, filter, diseaseFilter);
 		filter = AbstractAdoService.and(cb, filter, regionFilter);
 		filter = AbstractAdoService.and(cb, filter, reportDateFilter);
 
 		cq.where(filter);
 
-		return em.createQuery(cq).setParameter("name", criteria.getFirstName() + " " + criteria.getLastName()).getResultList();
+		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
@@ -1374,15 +1368,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getHealthFacility() != null
 			&& existingCase.getHealthFacility() != null
 			&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
-			for (Task task : newCase.getTasks()) {
-				if (task.getTaskStatus() != TaskStatus.PENDING) {
-					continue;
-				}
-
-				assignOfficerOrSupervisorToTask(newCase, task);
-
-				taskService.ensurePersisted(task);
-			}
+			reassignTasks(newCase);
 		}
 
 		// Create a task to search for other cases for new Plague cases
@@ -1494,8 +1480,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private void setResponsibleSurveillanceOfficer(Case caze) {
-
+	public void setResponsibleSurveillanceOfficer(Case caze) {
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
 			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
@@ -1513,6 +1498,18 @@ public class CaseFacadeEjb implements CaseFacade {
 					caze.setSurveillanceOfficer(null);
 				}
 			}
+		}
+	}
+
+	public void reassignTasks(Case caze) {
+		for (Task task : caze.getTasks()) {
+			if (task.getTaskStatus() != TaskStatus.PENDING) {
+				continue;
+			}
+
+			assignOfficerOrSupervisorToTask(caze, task);
+
+			taskService.ensurePersisted(task);
 		}
 	}
 

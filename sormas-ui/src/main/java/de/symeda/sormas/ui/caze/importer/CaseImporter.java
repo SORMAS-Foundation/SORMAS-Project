@@ -17,25 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze.importer;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -50,6 +35,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -63,16 +49,28 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.DataImporter;
-import de.symeda.sormas.ui.importer.ImportCellData;
 import de.symeda.sormas.ui.importer.ImportErrorException;
 import de.symeda.sormas.ui.importer.ImportLineResult;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 import de.symeda.sormas.ui.importer.ImporterPersonHelper;
+import de.symeda.sormas.ui.person.PersonSelectionField;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Data importer that is used to import cases and associated samples.
@@ -217,14 +215,14 @@ public class CaseImporter extends DataImporter {
 			pathogenTests.remove(pathogenTests.size() - 1);
 		}
 
-		CaseDataDto newCase = newCaseTmp;
 		PersonDto newPerson = newPersonTmp;
+		CaseDataDto newCase = newCaseTmp;
 
 		// If the row does not have any import errors, call the backend validation of all associated entities
 		if (!caseHasImportError) {
 			try {
 				FacadeProvider.getPersonFacade().validate(newPerson);
-				FacadeProvider.getCaseFacade().validate(newCase);
+				FacadeProvider.getCaseFacade().validate(newCaseTmp);
 				for (SampleDto sample : samples) {
 					FacadeProvider.getSampleFacade().validate(sample);
 				}
@@ -244,82 +242,100 @@ public class CaseImporter extends DataImporter {
 				CaseImportConsumer consumer = new CaseImportConsumer();
 				ImportSimilarityResultOption resultOption = null;
 
-				CaseImportLock LOCK = new CaseImportLock();
+				CaseImportLock personSelectLock = new CaseImportLock();
 				// We need to pause the current thread to prevent the import from continuing until the user has acted
-				synchronized (LOCK) {
-					// Retrieve all similar cases from the database
-					CaseCriteria caseCriteria = new CaseCriteria().disease(newCase.getDisease()).region(newCase.getRegion());
-					CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().firstName(newPerson.getFirstName())
-						.lastName(newPerson.getLastName())
-						.caseCriteria(caseCriteria)
-						.reportDate(newCase.getReportDate());
-					List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
+				synchronized (personSelectLock) {
+					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
+					// to allow the importer to resume
+					handlePersonSimilarity(newPerson, result -> consumer.onImportResult(result, personSelectLock));
 
-					if (similarCases.size() > 0) {
-						// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
-						// to allow the importer to resume
-						handleSimilarity(new CaseImportSimilarityInput(newCase, newPerson, similarCases), new Consumer<CaseImportSimilarityResult>() {
-
-							@Override
-							public void accept(CaseImportSimilarityResult result) {
-								consumer.onImportResult(result, LOCK);
-							}
-						});
-
-						try {
-							if (!LOCK.wasNotified) {
-								LOCK.wait();
-							}
-						} catch (InterruptedException e) {
-							logger.error("InterruptedException when trying to perform LOCK.wait() in case import: " + e.getMessage());
-							throw e;
+					try {
+						if (!personSelectLock.wasNotified) {
+							personSelectLock.wait();
 						}
+					} catch (InterruptedException e) {
+						logger.error("InterruptedException when trying to perform LOCK.wait() in case import: " + e.getMessage());
+						throw e;
+					}
 
-						if (consumer.result != null) {
-							resultOption = consumer.result.getResultOption();
-						}
+					if (consumer.result != null) {
+						resultOption = consumer.result.getResultOption();
+					}
 
-						// If the user chose to override an existing case with the imported case, insert the new data into the existing case and associate the imported samples with it
-						if (resultOption != null
-							&& resultOption != ImportSimilarityResultOption.SKIP
-							&& resultOption != ImportSimilarityResultOption.CANCEL
-							&& resultOption != ImportSimilarityResultOption.PICK) {
-							if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
-								final CaseDataDto matchingCaseTmp =
-									FacadeProvider.getCaseFacade().getCaseDataByUuid(consumer.result.getMatchingCase().getUuid());
-								final PersonDto matchingCasePersonTmp =
-									FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
-								caseHasImportError =
-									insertRowIntoData(values, entityClasses, entityPropertyPaths, true, new Function<ImportCellData, Exception>() {
+					// If the user picked an existing person, override the case person with it
+					if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
+						newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(consumer.result.getMatchingPerson().getUuid());
+					}
+				}
 
-										@Override
-										public Exception apply(ImportCellData cellData) {
-											try {
-												if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))
-													|| DataHelper
-														.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
-													return null;
-												}
+				if (ImportSimilarityResultOption.SKIP.equals(resultOption)) {
+					return ImportLineResult.SKIPPED;
+				} else {
+					final CaseImportLock caseSelectLock = new CaseImportLock();
+					synchronized (caseSelectLock) {
+						// Retrieve all similar cases from the database
+						CaseCriteria caseCriteria = new CaseCriteria().disease(newCase.getDisease()).region(newCase.getRegion());
+						CaseSimilarityCriteria criteria = new CaseSimilarityCriteria().personUuid(newPerson.getUuid())
+							.caseCriteria(caseCriteria)
+							.reportDate(newCase.getReportDate());
+						List<CaseIndexDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(criteria);
 
-												insertColumnEntryIntoData(
-													matchingCaseTmp,
-													matchingCasePersonTmp,
-													cellData.getValue(),
-													cellData.getEntityPropertyPath());
+						if (similarCases.size() > 0) {
+							// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
+							// to allow the importer to resume
+							handleCaseSimilarity(
+								new CaseImportSimilarityInput(newCase, newPerson, similarCases),
+								result -> consumer.onImportResult(result, caseSelectLock));
 
-												for (SampleDto sample : samples) {
-													sample.setAssociatedCase(new CaseReferenceDto(matchingCaseTmp.getUuid()));
-												}
-											} catch (ImportErrorException | InvalidColumnException e) {
-												return e;
+							try {
+								if (!caseSelectLock.wasNotified) {
+									caseSelectLock.wait();
+								}
+							} catch (InterruptedException e) {
+								logger.error("InterruptedException when trying to perform LOCK.wait() in case import: " + e.getMessage());
+								throw e;
+							}
+
+							if (consumer.result != null) {
+								resultOption = consumer.result.getResultOption();
+							}
+
+							// If the user chose to override an existing case with the imported case, insert the new data into the existing case and associate the imported samples with it
+							if (resultOption != null
+								&& resultOption != ImportSimilarityResultOption.SKIP
+								&& resultOption != ImportSimilarityResultOption.CANCEL
+								&& resultOption != ImportSimilarityResultOption.PICK) {
+								if (resultOption == ImportSimilarityResultOption.OVERRIDE && consumer.result.getMatchingCase() != null) {
+									final CaseDataDto matchingCaseTmp =
+										FacadeProvider.getCaseFacade().getCaseDataByUuid(consumer.result.getMatchingCase().getUuid());
+									final PersonDto matchingCasePersonTmp =
+										FacadeProvider.getPersonFacade().getPersonByUuid(matchingCaseTmp.getPerson().getUuid());
+									caseHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, cellData -> {
+										try {
+											if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))
+												|| DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
+												return null;
 											}
 
-											return null;
+											insertColumnEntryIntoData(
+												matchingCaseTmp,
+												matchingCasePersonTmp,
+												cellData.getValue(),
+												cellData.getEntityPropertyPath());
+
+											for (SampleDto sample : samples) {
+												sample.setAssociatedCase(new CaseReferenceDto(matchingCaseTmp.getUuid()));
+											}
+										} catch (ImportErrorException | InvalidColumnException e) {
+											return e;
 										}
+
+										return null;
 									});
 
-								newCase = matchingCaseTmp;
-								newPerson = matchingCasePersonTmp;
+									newCase = matchingCaseTmp;
+									newPerson = matchingCasePersonTmp;
+								}
 							}
 						}
 					}
@@ -338,19 +354,19 @@ public class CaseImporter extends DataImporter {
 				// or an existing case was overridden, save the case, person, samples and pathogen tests to the database
 				if (caseHasImportError) {
 					return ImportLineResult.ERROR;
-				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.SKIP) {
+				} else if (resultOption == ImportSimilarityResultOption.SKIP) {
 					consumer.result = null;
 					return ImportLineResult.SKIPPED;
-				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.PICK) {
+				} else if (resultOption == ImportSimilarityResultOption.PICK) {
 					consumer.result = null;
 					return ImportLineResult.DUPLICATE;
-				} else if (resultOption != null && resultOption == ImportSimilarityResultOption.CANCEL) {
+				} else if (resultOption == ImportSimilarityResultOption.CANCEL) {
 					cancelImport();
 					return ImportLineResult.SKIPPED;
 				} else {
 					PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson);
 					newCase.setPerson(savedPerson.toReference());
-					// Workarround: Reset the change date to avoid OutdatedEntityExceptions
+					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					// Should be changed when doing #2265
 					newCase.setChangeDate(new Date());
 					FacadeProvider.getCaseFacade().saveCase(newCase);
@@ -553,62 +569,89 @@ public class CaseImporter extends DataImporter {
 	}
 
 	/**
-	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate cases.
+	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate persons.
 	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
 	 */
-	protected void handleSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
-		currentUI.accessSynchronously(new Runnable() {
+	protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
+		currentUI.accessSynchronously(() -> {
+			PersonSelectionField personSelect =
+				new PersonSelectionField(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCaseImport));
+			personSelect.setWidth(1024, Unit.PIXELS);
 
-			@Override
-			public void run() {
-				CasePickOrImportField pickOrImportField = new CasePickOrImportField(input.getCaze(), input.getPerson(), input.getSimilarCases());
-				pickOrImportField.setWidth(1024, Unit.PIXELS);
-
-				final CommitDiscardWrapperComponent<CasePickOrImportField> component = new CommitDiscardWrapperComponent<>(pickOrImportField);
-
-				component.addCommitListener(new CommitListener() {
-
-					@Override
-					public void onCommit() {
-						CaseIndexDto pickedCase = pickOrImportField.getValue();
-						if (pickedCase != null) {
-							if (pickOrImportField.isOverrideCase()) {
-								resultConsumer.accept(new CaseImportSimilarityResult(pickedCase, ImportSimilarityResultOption.OVERRIDE));
-							} else {
-								resultConsumer.accept(new CaseImportSimilarityResult(pickedCase, ImportSimilarityResultOption.PICK));
-							}
-						} else {
-							// TODO May be wrong here!
-							resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CREATE));
-						}
+			if (personSelect.hasMatches()) {
+				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
+				component.addCommitListener(() -> {
+					PersonIndexDto person = personSelect.getValue();
+					if (person == null) {
+						resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+					} else {
+						resultConsumer.accept(new CaseImportSimilarityResult(person, null, ImportSimilarityResultOption.PICK));
 					}
 				});
 
-				DiscardListener discardListener = new DiscardListener() {
+				component
+					.addDiscardListener(() -> resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP)));
 
-					@Override
-					public void onDiscard() {
-						resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.CANCEL));
-					}
-				};
-				component.addDiscardListener(discardListener);
-				component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
-				component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-				component.getCommitButton().setEnabled(false);
-
-				Button skipButton = ButtonHelper.createButton(Captions.actionSkip, e -> {
-					component.removeDiscardListener(discardListener);
-					component.discard();
-					resultConsumer.accept(new CaseImportSimilarityResult(null, ImportSimilarityResultOption.SKIP));
-				});
-				component.getButtonsPanel().addComponentAsFirst(skipButton);
-
-				pickOrImportField.setSelectionChangeCallback((commitAllowed) -> {
+				personSelect.setSelectionChangeCallback((commitAllowed) -> {
 					component.getCommitButton().setEnabled(commitAllowed);
 				});
 
-				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateCase));
+				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+
+				personSelect.selectBestMatch();
+			} else {
+				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 			}
+		});
+	}
+
+	/**
+	 * Presents a popup window to the user that allows them to deal with detected potentially duplicate cases.
+	 * By passing the desired result to the resultConsumer, the importer decided how to proceed with the import process.
+	 */
+	protected void handleCaseSimilarity(CaseImportSimilarityInput input, Consumer<CaseImportSimilarityResult> resultConsumer) {
+		currentUI.accessSynchronously(() -> {
+			CasePickOrImportField pickOrImportField = new CasePickOrImportField(input.getCaze(), input.getPerson(), input.getSimilarCases());
+			pickOrImportField.setWidth(1024, Unit.PIXELS);
+
+			final CommitDiscardWrapperComponent<CasePickOrImportField> component = new CommitDiscardWrapperComponent<>(pickOrImportField);
+
+			component.addCommitListener(new CommitListener() {
+
+				@Override
+				public void onCommit() {
+					CaseIndexDto pickedCase = pickOrImportField.getValue();
+					if (pickedCase != null) {
+						if (pickOrImportField.isOverrideCase()) {
+							resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.OVERRIDE));
+						} else {
+							resultConsumer.accept(new CaseImportSimilarityResult(null, pickedCase, ImportSimilarityResultOption.PICK));
+						}
+					} else {
+						resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
+					}
+				}
+			});
+
+			DiscardListener discardListener =
+				() -> resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CANCEL));
+			component.addDiscardListener(discardListener);
+			component.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+			component.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+			component.getCommitButton().setEnabled(false);
+
+			Button skipButton = ButtonHelper.createButton(Captions.actionSkip, e -> {
+				component.removeDiscardListener(discardListener);
+				component.discard();
+				resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP));
+			});
+			component.getButtonsPanel().addComponentAsFirst(skipButton);
+
+			pickOrImportField.setSelectionChangeCallback((commitAllowed) -> {
+				component.getCommitButton().setEnabled(commitAllowed);
+			});
+
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateCase));
 		});
 	}
 
