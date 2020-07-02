@@ -20,7 +20,34 @@ public abstract class FormDialog extends AbstractDialog {
 		int headingResourceId,
 		int subHeadingResourceId,
 		AppFieldAccessCheckers fieldAccessCheckers) {
-		super(activity, rootLayoutId, contentLayoutResourceId, buttonPanelLayoutResourceId, headingResourceId, subHeadingResourceId);
+		this(
+			activity,
+			rootLayoutId,
+			contentLayoutResourceId,
+			buttonPanelLayoutResourceId,
+			headingResourceId,
+			subHeadingResourceId,
+			false,
+			fieldAccessCheckers);
+	}
+
+	public FormDialog(
+		FragmentActivity activity,
+		int rootLayoutId,
+		int contentLayoutResourceId,
+		int buttonPanelLayoutResourceId,
+		int headingResourceId,
+		int subHeadingResourceId,
+		boolean closeOnPositiveButtonClick,
+		AppFieldAccessCheckers fieldAccessCheckers) {
+		super(
+			activity,
+			rootLayoutId,
+			contentLayoutResourceId,
+			buttonPanelLayoutResourceId,
+			headingResourceId,
+			subHeadingResourceId,
+			closeOnPositiveButtonClick);
 
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}

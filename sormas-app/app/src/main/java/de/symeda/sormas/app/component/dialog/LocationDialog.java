@@ -51,14 +51,20 @@ public class LocationDialog extends FormDialog {
 		this(activity, location, true, fieldAccessCheckers);
 	}
 
-	public LocationDialog(final FragmentActivity activity, Location location, boolean closeOnPositiveButtonClick, AppFieldAccessCheckers fieldAccessCheckers) {
+	public LocationDialog(
+		final FragmentActivity activity,
+		Location location,
+		boolean closeOnPositiveButtonClick,
+		AppFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
 			R.layout.dialog_location_layout,
 			R.layout.dialog_root_two_button_panel_layout,
 			R.string.heading_location,
-			-1, closeOnPositiveButtonClick);
+			-1,
+			closeOnPositiveButtonClick,
+			fieldAccessCheckers);
 
 		this.data = location;
 	}
