@@ -83,7 +83,7 @@ public class SampleIndexDto implements Serializable {
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	//@formatter:off
-	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
+	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, String fieldSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 						  String labUuid, String labName, String referredSampleUuid,
@@ -126,6 +126,7 @@ public class SampleIndexDto implements Serializable {
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
+		this.fieldSampleID = fieldSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.district = createDistrictReference(

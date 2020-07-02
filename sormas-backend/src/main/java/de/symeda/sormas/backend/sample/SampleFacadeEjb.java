@@ -268,6 +268,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.FIELD_SAMPLE_ID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SHIPPED),
 				sample.get(Sample.SHIPMENT_DATE),
@@ -316,6 +317,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
 				case SampleIndexDto.LAB_SAMPLE_ID:
+				case SampleIndexDto.FIELD_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:
