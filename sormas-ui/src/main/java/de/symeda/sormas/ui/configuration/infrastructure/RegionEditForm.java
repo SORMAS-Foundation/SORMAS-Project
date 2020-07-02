@@ -24,9 +24,9 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.RegionDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
@@ -49,7 +49,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 			RegionDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes()),
-			new FieldAccessCheckers());
+			new UiFieldAccessCheckers(true));
 		this.create = create;
 
 		setWidth(540, Unit.PIXELS);

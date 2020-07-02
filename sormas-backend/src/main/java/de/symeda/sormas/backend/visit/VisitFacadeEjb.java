@@ -300,14 +300,16 @@ public class VisitFacadeEjb implements VisitFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
-		Map<Long, List<VisitContactJurisdiction>> jurisdictions =
-			getVisitContactJurisdictions(indexList.stream().map(VisitIndexDto::getId).collect(Collectors.toList()));
+		if (indexList.size() > 0) {
+			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+				getVisitContactJurisdictions(indexList.stream().map(VisitIndexDto::getId).collect(Collectors.toList()));
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(VisitIndexDto.class, indexList, v -> {
-			List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(v.getId());
-			return visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-		}, null);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			pseudonymizer.pseudonymizeDtoCollection(VisitIndexDto.class, indexList, v -> {
+				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(v.getId());
+				return visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+			}, null);
+		}
 
 		return indexList;
 	}
@@ -381,23 +383,25 @@ public class VisitFacadeEjb implements VisitFacade {
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
-			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
-				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
+			if (resultList.size() > 0) {
+				Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+					getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-			for (VisitExportDto exportDto : resultList) {
-				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
-				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+				Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+				for (VisitExportDto exportDto : resultList) {
+					List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
+					boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
 
-				pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
-					if (v.getSymptoms() != null) {
-						pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
+						if (v.getSymptoms() != null) {
+							pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
+						}
+					});
+
+					if (symptoms != null) {
+						Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
+							.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 					}
-				});
-
-				if (symptoms != null) {
-					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
-						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 				}
 			}
 		}

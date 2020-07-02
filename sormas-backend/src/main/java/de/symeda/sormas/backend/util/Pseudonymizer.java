@@ -16,13 +16,13 @@
 package de.symeda.sormas.backend.util;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -50,7 +50,7 @@ public class Pseudonymizer {
 		Function<DTO, Boolean> jurisdictionValidator,
 		CustomPseudonymization<DTO> customPseudonymization) {
 
-		List<Field> declaredFields = getDeclaredFields(type);
+		List<Field> declaredFields = getPseudonymizableFields(type);
 
 		dtos.forEach(dto -> {
 			Boolean isInJurisdiction = jurisdictionValidator.apply(dto);
@@ -63,13 +63,13 @@ public class Pseudonymizer {
 	}
 
 	public <DTO> void pseudonymizeDto(Class<DTO> type, DTO dto, boolean isInJurisdiction, Consumer<DTO> customPseudonymization) {
-		List<Field> declaredFields = getDeclaredFields(type);
+		List<Field> declaredFields = getPseudonymizableFields(type);
 
 		pseudonymizeDto(dto, declaredFields, isInJurisdiction, customPseudonymization);
 	}
 
 	public <DTO extends PseudonymizableDto> void restorePseudonymizedValues(Class<DTO> type, DTO dto, DTO originalDto, boolean isInJurisdiction) {
-		List<Field> declaredFields = getDeclaredFields(type);
+		List<Field> declaredFields = getPseudonymizableFields(type);
 
 		declaredFields.forEach(field -> {
 			if (fieldAccessCheckers.isConfiguredForCheck(field)) {
@@ -154,12 +154,13 @@ public class Pseudonymizer {
 		}
 	}
 
-	private List<Field> getDeclaredFields(Class<?> type) {
+	private List<Field> getPseudonymizableFields(Class<?> type) {
 
-		ArrayList<Field> declaredFields = new ArrayList<>(Arrays.asList(type.getDeclaredFields()));
+		List<Field> declaredFields =
+			Arrays.stream(type.getDeclaredFields()).filter(fieldAccessCheckers::isConfiguredForCheck).collect(Collectors.toList());
 
 		if (type.getSuperclass() != null) {
-			declaredFields.addAll(getDeclaredFields(type.getSuperclass()));
+			declaredFields.addAll(getPseudonymizableFields(type.getSuperclass()));
 		}
 
 		return declaredFields;
