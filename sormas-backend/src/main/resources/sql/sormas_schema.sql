@@ -4714,5 +4714,8 @@ ALTER TABLE events ADD COLUMN srcMediaWebsite varchar(512);
 ALTER TABLE events ADD COLUMN srcMediaName varchar(512);
 ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
 
+UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
+
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Extend event details #2391');
+
 -- *** Insert new sql commands BEFORE this line ***
