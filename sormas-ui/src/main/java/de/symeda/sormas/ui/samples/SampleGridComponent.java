@@ -24,6 +24,7 @@ import java.util.List;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -186,41 +187,8 @@ public class SampleGridComponent extends VerticalLayout {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
-			// Bulk operation dropdown
-			{
-				List<MenuBarHelper.MenuBarItem> menuItems = new ArrayList<MenuBarHelper.MenuBarItem>();
-				
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
-					menuItems.add(
-						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.bulkEnterTestResult),
-							VaadinIcons.ELLIPSIS_H,
-							selectedItem -> createBulkTestResult())
-					);				
-				}
-				
-				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					menuItems.add(
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-	
-								public void run() {
-									samplesView.navigateTo(criteria);
-								}
-							});
-						})
-					);
-				}
-				
-				if (menuItems.size() > 0) {
-					shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-	
-					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuItems.toArray(new MenuBarHelper.MenuBarItem[0]));
-					
-					bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
-	
-					actionButtonsLayout.addComponent(bulkOperationsDropdown);
-				}
+			if (addBulkOperationsDropdown(actionButtonsLayout)) {
+				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
 			}
 
 			sampleTypeFilter = new ComboBox();
@@ -309,6 +277,42 @@ public class SampleGridComponent extends VerticalLayout {
 		}
 
 		samplesView.navigateTo(criteria);
+	}
+	
+	private boolean addBulkOperationsDropdown (AbstractOrderedLayout actionButtonsLayout) {
+		List<MenuBarHelper.MenuBarItem> menuItems = new ArrayList<MenuBarHelper.MenuBarItem>();
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			menuItems.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.bulkEnterTestResult),
+					VaadinIcons.ELLIPSIS_H,
+					selectedItem -> createBulkTestResult())
+			);				
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			menuItems.add(
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+
+						public void run() {
+							samplesView.navigateTo(criteria);
+						}
+					});
+				})
+			);
+		}
+		
+		if (menuItems.size() > 0) {
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuItems.toArray(new MenuBarHelper.MenuBarItem[0]));
+			
+			bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
+
+			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+		}
+		
+		return menuItems.size() > 0;
 	}
 
 	private void createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
