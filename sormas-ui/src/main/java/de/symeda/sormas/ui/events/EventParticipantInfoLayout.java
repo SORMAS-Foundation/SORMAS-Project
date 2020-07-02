@@ -14,9 +14,8 @@
  */
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.ui.AbstractLayout;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.event.EventDto;
@@ -25,10 +24,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
-public class EventParticipantInfoLayout extends HorizontalLayout {
+public class EventParticipantInfoLayout extends AbstractInfoLayout {
 
 	private final EventParticipantDto eventParticipantDto;
 	private final EventDto eventDto;
@@ -39,7 +39,7 @@ public class EventParticipantInfoLayout extends HorizontalLayout {
 
 		setSpacing(true);
 		setMargin(false);
-		setWidth(100, Unit.PERCENTAGE);
+		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		updateEventParticipantInfo();
 	}
 
@@ -83,14 +83,5 @@ public class EventParticipantInfoLayout extends HorizontalLayout {
 		secondColumn.addComponent(ageSexRow);
 
 		this.addComponent(secondColumn);
-	}
-
-	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
-
-		String contentString = content != null ? content.toString() : "";
-		Label label = new Label(contentString);
-		label.setCaption(caption);
-		layout.addComponent(label);
-		return label;
 	}
 }
