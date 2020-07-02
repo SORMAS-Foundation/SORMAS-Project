@@ -109,6 +109,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
                     fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
@@ -202,7 +203,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
+		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		setVisible(
+			false,
+			ContactDto.QUARANTINE_FROM,
+			ContactDto.QUARANTINE_TO,
+			ContactDto.QUARANTINE_HELP_NEEDED,
+			ContactDto.QUARANTINE_TYPE_DETAILS);
 
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
@@ -227,6 +235,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
 			Arrays.asList(YesNoUnknown.NO),
 			true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_TYPE_DETAILS, ContactDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
 		if (isGermanServer()) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),

@@ -17,13 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.vaadin.event.MouseEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -37,7 +35,7 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -48,6 +46,12 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Responsive navigation menu presenting a list of available views to the user.
@@ -76,17 +80,19 @@ public class Menu extends CssLayout {
 		top.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
-		Label title = new Label("SORMAS");
+		Label title = new Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
 		title.setSizeUndefined();
-		Image image = new Image(null, new ThemeResource("img/sormas-logo.png"));
-		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
-		image.addClickListener(new MouseEvents.ClickListener() {
 
-			@Override
-			public void click(MouseEvents.ClickEvent event) {
-				SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
-			}
-		});
+		Image image;
+		if (FacadeProvider.getConfigFacade().isCustomBranding()
+			&& StringUtils.isNotBlank(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath())) {
+			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
+			image = new Image(null, new FileResource(logoPath.toFile()));
+		} else {
+			image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+		}
+		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
+		image.addClickListener((MouseEvents.ClickListener) event -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		top.addComponent(image);
 		top.addComponent(title);
 		menuPart.addComponent(top);

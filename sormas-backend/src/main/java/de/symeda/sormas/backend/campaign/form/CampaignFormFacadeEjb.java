@@ -23,6 +23,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -236,6 +237,14 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		}
 
 		return true;
+	}
+
+	public static CampaignFormReferenceDto toReferenceDto(CampaignForm entity) {
+		if (entity == null) {
+			return null;
+		}
+		CampaignFormReferenceDto dto = new CampaignFormReferenceDto(entity.getUuid(), entity.toString());
+		return dto;
 	}
 
 	@LocalBean
