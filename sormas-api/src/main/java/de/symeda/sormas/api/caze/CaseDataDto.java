@@ -119,6 +119,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -303,6 +304,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
@@ -867,6 +869,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	public Date getQuarantineFrom() {

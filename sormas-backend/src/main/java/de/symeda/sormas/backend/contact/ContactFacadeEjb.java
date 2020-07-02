@@ -359,6 +359,7 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.FOLLOW_UP_STATUS),
 						contact.get(Contact.FOLLOW_UP_UNTIL),
 						contact.get(Contact.QUARANTINE),
+						contact.get(Contact.QUARANTINE_TYPE_DETAILS),
 						contact.get(Contact.QUARANTINE_FROM),
 						contact.get(Contact.QUARANTINE_TO),
 						contact.get(Contact.QUARANTINE_HELP_NEEDED),
@@ -850,6 +851,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -1020,6 +1022,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 

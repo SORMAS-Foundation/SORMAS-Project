@@ -256,6 +256,8 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -783,6 +785,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	public Date getQuarantineFrom() {

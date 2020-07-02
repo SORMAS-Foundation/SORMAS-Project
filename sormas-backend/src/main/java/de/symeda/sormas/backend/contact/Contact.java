@@ -96,6 +96,7 @@ public class Contact extends CoreAdo {
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
@@ -153,6 +154,7 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
@@ -498,6 +500,15 @@ public class Contact extends CoreAdo {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getquarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
