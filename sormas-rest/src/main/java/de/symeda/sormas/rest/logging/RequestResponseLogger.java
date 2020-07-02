@@ -103,7 +103,7 @@ public class RequestResponseLogger implements Filter {
 
 	public class LoggingHttpServletResponseWrapper extends HttpServletResponseWrapper {
 
-		private final LoggingServletOutpuStream loggingServletOutpuStream = new LoggingServletOutpuStream();
+		private final LoggingServletOutputStream loggingServletOutputStream = new LoggingServletOutputStream();
 
 		private final HttpServletResponse delegate;
 
@@ -114,12 +114,12 @@ public class RequestResponseLogger implements Filter {
 
 		@Override
 		public ServletOutputStream getOutputStream() {
-			return loggingServletOutpuStream;
+			return loggingServletOutputStream;
 		}
 
 		@Override
 		public PrintWriter getWriter() {
-			return new PrintWriter(loggingServletOutpuStream.baos);
+			return new PrintWriter(loggingServletOutputStream.baos);
 		}
 
 		public Map<String, String> getHeaders() {
@@ -132,17 +132,17 @@ public class RequestResponseLogger implements Filter {
 
 		public String getContent() {
 			try {
-				return loggingServletOutpuStream.baos.toString(delegate.getCharacterEncoding());
+				return loggingServletOutputStream.baos.toString(delegate.getCharacterEncoding());
 			} catch (UnsupportedEncodingException e) {
 				return "[UNSUPPORTED ENCODING]";
 			}
 		}
 
 		public byte[] getContentAsBytes() {
-			return loggingServletOutpuStream.baos.toByteArray();
+			return loggingServletOutputStream.baos.toByteArray();
 		}
 
-		private class LoggingServletOutpuStream extends ServletOutputStream {
+		private class LoggingServletOutputStream extends ServletOutputStream {
 
 			private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
