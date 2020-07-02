@@ -4645,72 +4645,51 @@ ALTER TABLE campaignforms_history OWNER TO sormas_user;
 INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add campaign forms #2268');
 
 -- 2020-06-19 Add Area as new infrastructure type #1983
-CREATE TABLE areas
-(
-    id           bigint      not null,
-    uuid         varchar(36) not null unique,
-    changedate   timestamp   not null,
-    creationdate timestamp   not null,
-    name         varchar(512),
-    externalid   varchar(512),
-    archived     boolean DEFAULT false,
-    sys_period   tstzrange   not null,
-    primary key (id)
+CREATE TABLE areas(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	externalid varchar(512),
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
 );
 
-ALTER TABLE areas
-    OWNER TO sormas_user;
+ALTER TABLE areas OWNER TO sormas_user;
 
-CREATE TABLE areas_history
-(
-    LIKE areas
-);
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE
-    ON areas
-    FOR EACH ROW
-EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
-ALTER TABLE areas_history
-    OWNER TO sormas_user;
+CREATE TABLE areas_history (LIKE areas);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+ALTER TABLE areas_history OWNER TO sormas_user;
 
-ALTER TABLE region
-    ADD COLUMN area_id bigint;
-ALTER TABLE region
-    ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERENCES areas (id);
+ALTER TABLE region ADD COLUMN area_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERENCES areas(id);
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (217, 'Add Area as new infrastructure type #1983');
+INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
 
 CREATE TABLE campaignformdata(
-                                 id              bigint      not null,
-                                 uuid            varchar(36) not null unique,
-                                 changedate      timestamp   not null,
-                                 creationdate    timestamp   not null,
-                                 formData        text,
-                                 campaign_id     bigint      NOT NULL,
-                                 campaignform_id bigint      NOT NULL,
-                                 region_id       bigint      NOT NULL,
-                                 district_id     bigint      NOT NULL,
-                                 community_id    bigint,
-                                 sys_period      tstzrange   not null,
-                                 primary key (id)
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formData text,
+	campaign_id bigint NOT NULL,
+	campaignform_id bigint NOT NULL,
+	region_id bigint NOT NULL,
+	district_id bigint NOT NULL,
+	community_id bigint,
+	sys_period tstzrange not null,
+	primary key(id)
 );
-ALTER TABLE campaignformdata
-    OWNER TO sormas_user;
-CREATE TABLE campaignformdata_history
-(
-    LIKE campaignformdata
-);
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE OR DELETE
-    ON campaignformdata
-    FOR EACH ROW
-EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
-ALTER TABLE campaignformdata_history
-    OWNER TO sormas_user;
+ALTER TABLE campaignformdata OWNER TO sormas_user;
+CREATE TABLE campaignformdata_history (LIKE campaignformdata);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformdata
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+ALTER TABLE campaignformdata_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment)
-VALUES (218, 'Add campaignformdata #1992');
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add campaignformdata #1992');
 
 -- 2020-06-29 Add samples to event participants #2395
 ALTER TABLE samples
