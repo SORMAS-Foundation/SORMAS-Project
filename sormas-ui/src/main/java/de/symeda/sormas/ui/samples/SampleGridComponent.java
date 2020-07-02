@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -177,27 +179,40 @@ public class SampleGridComponent extends VerticalLayout {
 			}
 
 			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.bulkEnterTestResult),
-						VaadinIcons.ELLIPSIS_H,
-						mi -> createBulkTestResult()),
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-							public void run() {
-								samplesView.navigateTo(criteria);
-							}
-						});
-					}));
-
-				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
-
-				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+			{
+				List<MenuBarHelper.MenuBarItem> menuItems = new ArrayList<MenuBarHelper.MenuBarItem>();
+				
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+					menuItems.add(
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkEnterTestResult),
+							VaadinIcons.ELLIPSIS_H,
+							selectedItem -> createBulkTestResult())
+					);				
+				}
+				
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					menuItems.add(
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+							ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+	
+								public void run() {
+									samplesView.navigateTo(criteria);
+								}
+							});
+						})
+					);
+				}
+				
+				if (menuItems.size() > 0) {
+					shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
+	
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuItems.toArray(new MenuBarHelper.MenuBarItem[0]));
+					
+					bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
+	
+					actionButtonsLayout.addComponent(bulkOperationsDropdown);
+				}
 			}
 
 			sampleTypeFilter = new ComboBox();
