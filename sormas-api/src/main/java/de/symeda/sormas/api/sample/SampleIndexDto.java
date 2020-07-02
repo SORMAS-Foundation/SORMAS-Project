@@ -43,6 +43,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -63,6 +64,7 @@ public class SampleIndexDto implements Serializable {
 	private ContactReferenceDto associatedContact;
 	private String epidNumber;
 	private String labSampleID;
+	private String fieldSampleID;
 	private Disease disease;
 	private String diseaseDetails;
 	private DistrictReferenceDto district;
@@ -250,6 +252,14 @@ public class SampleIndexDto implements Serializable {
 
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
+	}
+	
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
+	
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
 	}
 
 	public DistrictReferenceDto getDistrict() {
