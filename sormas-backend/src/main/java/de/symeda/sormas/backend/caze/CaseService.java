@@ -670,7 +670,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(contact);
 		}
 
-		caze.getSamples().stream().filter(sample -> sample.getAssociatedContact() == null).forEach(sample -> sampleService.delete(sample));
+		caze.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));
@@ -822,7 +825,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				break;
 			default:
 			}
-
 
 			// get all cases based on the user's contact association
 			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {

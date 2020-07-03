@@ -4700,7 +4700,18 @@ ALTER TABLE contact_history ADD COLUMN quarantinetypedetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add "Other" and a text field to QuarantineType #2219');
 
--- 2020-06-29 Rename event statuses #2391
+-- 2020-06-29 Add samples to event participants #2395
+ALTER TABLE samples
+    ADD COLUMN associatedeventparticipant_id bigint;
+ALTER TABLE samples
+    ADD CONSTRAINT fk_samples_associatedeventparticipant_id FOREIGN KEY (associatedeventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE samples_history
+    ADD COLUMN associatedeventparticipant_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
+
+
+-- 2020-06-29 Extend event details #2391
 UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE';
 UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED';
 UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT';
@@ -4716,6 +4727,6 @@ ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
 
 UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
 
-INSERT INTO schema_version (version_number, comment) VALUES (220, 'Extend event details #2391');
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Extend event details #2391');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -91,6 +91,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			SampleIndexDto.EPID_NUMBER,
 			SampleIndexDto.ASSOCIATED_CASE,
 			SampleIndexDto.ASSOCIATED_CONTACT,
+			SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT,
 			DISEASE_SHORT,
 			SampleIndexDto.DISTRICT,
 			SampleIndexDto.SHIPPED,
@@ -126,10 +127,17 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+		}
+		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
+			removeColumn(SampleIndexDto.EPID_NUMBER);
+			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
 		}
 
 		for (Column<?, ?> column : getColumns()) {
