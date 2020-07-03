@@ -1385,9 +1385,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 208:
 				currentVersion = 208;
 
-				getDao(Event.class).executeRaw("UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE'");
-				getDao(Event.class).executeRaw("UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED'");
-				getDao(Event.class).executeRaw("UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT'");
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='SIGNAL' where eventStatus='POSSIBLE'");
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='EVENT' where eventStatus='CONFIRMED'");
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='DROPPED' where eventStatus='NO_EVENT'");
 
 				Cursor dbCursor = db.query(Event.TABLE_NAME, null, null, null, null, null, null);
 				String[] columnNames = dbCursor.getColumnNames();
