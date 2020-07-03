@@ -139,7 +139,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			eventParticipantDto.getEvent().getUuid(),
 			true);
 
-		infoLabel.setValue(getReference().getCaption());
+		infoLabel.setValue(I18nProperties.getCaption(Captions.EventParticipant));
 		infoLabelSub.setValue(eventParticipantDto.getPerson().toString());
 	}
 }

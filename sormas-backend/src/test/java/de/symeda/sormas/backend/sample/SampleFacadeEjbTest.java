@@ -188,6 +188,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		final SampleIndexDto sample14 = sampleList1.get(3);
 		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
 		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
+		Assert.assertEquals(rdcf.district, sample14.getDistrict());
 
 		assertEquals(
 			2,

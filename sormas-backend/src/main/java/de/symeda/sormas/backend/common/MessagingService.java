@@ -60,9 +60,11 @@ public class MessagingService {
 	public static final String CONTENT_LAB_RESULT_ARRIVED = "notificationLabResultArrived";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_CONTACT = "notificationLabResultArrivedContact";
 	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT = "notificationLabResultArrivedEventParticipant";
+	public static final String CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE = "notificationLabResultArrivedEventParticipantNoDisease";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED = "notificationLabResultSpecified";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED_CONTACT = "notificationLabResultSpecifiedContact";
 	public static final String CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT = "notificationLabResultSpecifiedEventParticipant";
+	public static final String CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE = "notificationLabResultSpecifiedEventParticipantNoDisease";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED = "notificationLabSampleShipped";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT = "notificationLabSampleShippedShort";
 	public static final String CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT = "notificationLabSampleShippedShortForContact";

@@ -352,6 +352,16 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					.stream()
 					.filter(user -> !messageRecipients.contains(user))
 					.collect(Collectors.toList()));
+			if (disease == null) {
+				sendMessageOnPathogenTestChanged(
+					existingPathogenTest,
+					newPathogenTest,
+					null,
+					messageRecipients,
+					MessagingService.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE,
+					MessagingService.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE,
+					DataHelper.getShortUuid(eventParticipant.getUuid()));
+			}
 		}
 
 		if (disease != null) {

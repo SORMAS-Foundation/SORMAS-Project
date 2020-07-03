@@ -320,6 +320,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getContactCaseDistrict().get(Region.NAME)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
+		selections.add(districtSelect);
+		selections.add(joins.getEventDistrict().get(District.NAME));
 
 		cq.multiselect(selections);
 

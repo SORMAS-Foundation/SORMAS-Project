@@ -95,8 +95,8 @@ public class SampleIndexDto implements Serializable {
 						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
-						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
-	) {
+						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
+						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String districtUuid, String districtName) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -140,9 +140,11 @@ public class SampleIndexDto implements Serializable {
 			caseDistrictName,
 			contactDistrictName,
 			contactCaseDistrictName,
+			districtName,
 			caseDistrictUuid,
 			contactDistrictUuid,
-			contactCaseDistrictUuid);
+			contactCaseDistrictUuid,
+			districtUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -163,9 +165,11 @@ public class SampleIndexDto implements Serializable {
 		String caseDistrictName,
 		String contactDistrictName,
 		String contactCaseDistrictName,
+		String eventDistrictName,
 		String caseDistrictUuid,
 		String contactDistrictUuid,
-		String contactCaseDistrictUuid) {
+		String contactCaseDistrictUuid,
+		String eventDistrictUuid) {
 
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
@@ -174,6 +178,8 @@ public class SampleIndexDto implements Serializable {
 			ref = new DistrictReferenceDto(contactDistrictUuid, contactDistrictName);
 		} else if (contactCaseDistrictUuid != null) {
 			ref = new DistrictReferenceDto(contactCaseDistrictUuid, contactCaseDistrictName);
+		} else if (eventDistrictUuid != null) {
+			ref = new DistrictReferenceDto(eventDistrictUuid, eventDistrictName);
 		}
 
 		return ref;

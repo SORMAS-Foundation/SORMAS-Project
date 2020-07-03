@@ -54,7 +54,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PathogenTestController {
 
-	private PathogenTestFacade facade = FacadeProvider.getPathogenTestFacade();
+	private final PathogenTestFacade facade = FacadeProvider.getPathogenTestFacade();
 
 	public PathogenTestController() {
 	}
@@ -162,16 +162,16 @@ public class PathogenTestController {
 			final EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
 
-			Runnable eventParticipantCOnvertToCaseCallback = () -> {
+			Runnable eventParticipantConvertToCaseCallback = () -> {
 				if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified().booleanValue() == true) {
 					showConvertEventParticipantToCaseDialog(eventParticipant);
 				}
 			};
 
 			if (onSavedPathogenTest != null) {
-				onSavedPathogenTest.accept(dto, () -> eventParticipantCOnvertToCaseCallback.run());
+				onSavedPathogenTest.accept(dto, () -> eventParticipantConvertToCaseCallback.run());
 			} else {
-				eventParticipantCOnvertToCaseCallback.run();
+				eventParticipantConvertToCaseCallback.run();
 			}
 		}
 	}
