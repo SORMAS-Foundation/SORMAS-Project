@@ -1032,7 +1032,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			taskService.delete(task);
 		}
 
-		contact.getSamples().stream().filter(sample -> sample.getAssociatedCase() == null).forEach(sample -> sampleService.delete(sample));
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(contact);
 	}

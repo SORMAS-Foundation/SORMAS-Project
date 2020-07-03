@@ -43,6 +43,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -537,6 +538,25 @@ public class TestDataCreator {
 		FacilityReferenceDto lab) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedEventParticipant);
 		sample.setSampleDateTime(sampleDateTime);
 		sample.setReportDateTime(reportDateTime);
 		sample.setSampleMaterial(sampleMaterial);

@@ -4690,7 +4690,7 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_histor
 ALTER TABLE campaignformdata_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add campaignformdata #1992');
-                                                                                                                       
+
 -- 2020-06-30 Add "Other" and a text field to QuarantineType #2219
 ALTER TABLE cases ADD COLUMN quarantinetypedetails varchar(512);
 ALTER TABLE contact ADD COLUMN quarantinetypedetails varchar(512);
@@ -4699,5 +4699,15 @@ ALTER TABLE cases_history ADD COLUMN quarantinetypedetails varchar(512);
 ALTER TABLE contact_history ADD COLUMN quarantinetypedetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add "Other" and a text field to QuarantineType #2219');
-                                                                                                                        
+
+-- 2020-06-29 Add samples to event participants #2395
+ALTER TABLE samples
+    ADD COLUMN associatedeventparticipant_id bigint;
+ALTER TABLE samples
+    ADD CONSTRAINT fk_samples_associatedeventparticipant_id FOREIGN KEY (associatedeventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE samples_history
+    ADD COLUMN associatedeventparticipant_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
+
 -- *** Insert new sql commands BEFORE this line ***

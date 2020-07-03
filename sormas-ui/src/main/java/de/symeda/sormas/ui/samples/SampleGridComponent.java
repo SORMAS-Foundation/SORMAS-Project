@@ -200,6 +200,8 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
+			sampleTypeFilter
+				.setItemCaption(SampleAssociationType.EVENT_PARTICIPANT, I18nProperties.getEnumCaption(SampleAssociationType.EVENT_PARTICIPANT));
 			sampleTypeFilter.addValueChangeListener(e -> {
 				criteria.sampleAssociationType(((SampleAssociationType) e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);

@@ -52,6 +52,7 @@ import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
@@ -159,6 +160,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
+			navigator.addView(EventParticipantDataView.VIEW_NAME, EventParticipantDataView.class);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {

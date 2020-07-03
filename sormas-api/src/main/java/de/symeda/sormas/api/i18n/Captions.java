@@ -131,6 +131,7 @@ public interface Captions {
 	String caseCasesList = "caseCasesList";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
+	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
 	String CaseData = "CaseData";
@@ -1113,6 +1114,7 @@ public interface Captions {
 	String sampleNewSample = "sampleNewSample";
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
+	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";
