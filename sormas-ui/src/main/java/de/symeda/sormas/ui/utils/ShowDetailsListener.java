@@ -71,8 +71,9 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	@Override
 	public void itemClick(ItemClick<T> event) {
 
-		if ((event.getColumn() != null && (detailsColumnId.equals(event.getColumn().getId()))
-			|| (showOnDoubleClick && event.getMouseEventDetails().isDoubleClick()))) {
+		if (event.getItem() != null
+			&& ((event.getColumn() != null && (detailsColumnId.equals(event.getColumn().getId()))
+				|| (showOnDoubleClick && event.getMouseEventDetails().isDoubleClick())))) {
 			handleItemClick(event);
 		}
 	}
@@ -82,7 +83,7 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	 * This method can be overridden to alter or extend the behavior.
 	 * 
 	 * @param event
-	 *            source event.
+	 *            source event (only called when {@link ItemClick#getItem()} {@code != null}).
 	 */
 	protected void handleItemClick(ItemClick<T> event) {
 
