@@ -40,7 +40,6 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.Complication;

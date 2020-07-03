@@ -19,7 +19,6 @@ package de.symeda.sormas.api.therapy;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SensitiveData;

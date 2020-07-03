@@ -14,6 +14,8 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.GpsCoordinatesPseudonymizer;
 
 public class VisitExportDto implements Serializable {
 
@@ -38,8 +40,10 @@ public class VisitExportDto implements Serializable {
 	private SymptomsDto symptoms;
 
 	@SensitiveData
+	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
+	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
 	private Double reportLon;
 
 	private String personUuid;

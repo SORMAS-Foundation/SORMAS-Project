@@ -22,14 +22,6 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
-import io.swagger.v3.core.converter.AnnotatedType;
-import io.swagger.v3.core.converter.ModelConverter;
-import io.swagger.v3.core.converter.ModelConverterContext;
-import io.swagger.v3.jaxrs2.ext.AbstractOpenAPIExtension;
-import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -39,6 +31,13 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.core.converter.ModelConverter;
+import io.swagger.v3.core.converter.ModelConverterContext;
+import io.swagger.v3.jaxrs2.ext.AbstractOpenAPIExtension;
+import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * Provides Swagger documentation support for SORMAS' custom annotations.

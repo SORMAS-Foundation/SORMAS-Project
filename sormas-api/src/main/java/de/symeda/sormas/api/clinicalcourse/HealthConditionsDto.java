@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.clinicalcourse;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountries;

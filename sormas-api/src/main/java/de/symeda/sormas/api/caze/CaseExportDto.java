@@ -55,6 +55,8 @@ import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 /**
  * A DTO class that contains the properties that are exported during a detailed case export. These
@@ -138,13 +140,19 @@ public class CaseExportDto implements Serializable {
 	private String addressRegion;
 	private String addressDistrict;
 	@PersonalData
+	@SensitiveData
 	private String city;
 	@PersonalData
+	@SensitiveData
 	private String address;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
 	@PersonalData
+	@SensitiveData
 	private String addressGpsCoordinates;
+	@SensitiveData
 	private String phone;
 	private String occupationType;
 	private String educationType;

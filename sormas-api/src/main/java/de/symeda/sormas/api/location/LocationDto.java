@@ -24,6 +24,9 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.GpsCoordinatesPseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class LocationDto extends PseudonymizableDto {
 
@@ -62,15 +65,16 @@ public class LocationDto extends PseudonymizableDto {
 	private AreaType areaType;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
 	private Double latitude;
 	@PersonalData
 	@SensitiveData
+	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
 	private Double longitude;
-	@PersonalData
-	@SensitiveData
 	private Float latLonAccuracy;
-	@PersonalData
-	@SensitiveData
+	@PersonalData()
+	@SensitiveData()
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
 
 	public String getAddress() {
