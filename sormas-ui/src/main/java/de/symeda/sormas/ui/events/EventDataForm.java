@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION_CHECKBOX;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
@@ -71,8 +70,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private static final String HTML_LAYOUT =
 			loc(EVENT_DATA_HEADING_LOC) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
-			fluidRowLocs(8, EventDto.EVENT_STATUS) +
-			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.MULTI_DAY_EVENT, 4, EventDto.END_DATE) +
+			fluidRowLocs(EventDto.EVENT_STATUS) +
+			fluidRowLocs(EventDto.MULTI_DAY_EVENT) +
+			fluidRowLocs(4, EventDto.START_DATE, 4, EventDto.END_DATE) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
 			fluidRowLocs(EventDto.EXTERNAL_ID, "") +
 			fluidRowLocs(EventDto.EVENT_DESC) +
@@ -134,7 +134,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addFields(EventDto.EXTERNAL_ID);
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
-		multiDayCheckbox.addStyleName(FORCE_CAPTION_CHECKBOX);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
@@ -191,7 +190,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			multiDayCheckbox,
 			startDate,
 			false,
-			I18nProperties.getCaption(Captions.Event_eventDate),
+			I18nProperties.getCaption(Captions.singleDayEventDate),
 			I18nProperties.getCaption(Captions.Event_startDate));
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

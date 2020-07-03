@@ -20,6 +20,7 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -30,6 +31,7 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.EpiDataBurialDialog;
 import de.symeda.sormas.app.component.Item;
@@ -134,8 +136,9 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		// Initialize ControlDateFields
 		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
-		String startDateCaption = I18nProperties
-			.getCaption(Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue()) ? Captions.Event_startDate : Captions.Event_eventDate);
+		String startDateCaption = Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue())
+			? I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE)
+			: I18nProperties.getCaption(Captions.singleDayEventDate);
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
 		contentBinding.eventEndDate.initializeDateField(getFragmentManager());

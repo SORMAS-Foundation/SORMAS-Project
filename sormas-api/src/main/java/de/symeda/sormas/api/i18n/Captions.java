@@ -670,7 +670,6 @@ public interface Captions {
 	String Event = "Event";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
-	String Event_eventDate = "Event.eventDate";
 	String Event_startDate = "Event.startDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
@@ -690,6 +689,7 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String singleDayEventDate = "singleDayEventDate";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";

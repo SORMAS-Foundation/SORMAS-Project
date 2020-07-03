@@ -29,7 +29,9 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
@@ -45,6 +47,7 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
+	public static final String EVENT_DATE = Captions.singleDayEventDate;
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
@@ -71,11 +74,30 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		diseaseShortColumn.setSortProperty(EventIndexDto.DISEASE);
 
 		Column<EventIndexDto, String> informationSourceColumn = addColumn(
-			event -> (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " "
-				+ (event.getSrcLastName() != null ? event.getSrcLastName() : "")
-				+ (event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : ""));
+			event -> event.getSrcType() == EventSourceType.HOTLINE_PERSON
+				? buildSourcePersonText(event)
+				: event.getSrcType() == EventSourceType.MEDIA_NEWS ? buildSourceMediaText(event) : "");
 		informationSourceColumn.setId(INFORMATION_SOURCE);
 		informationSourceColumn.setSortable(false);
+
+		Language userLanguage = I18nProperties.getUserLanguage();
+
+		Column<EventIndexDto, String> eventDateColumn = addColumn(event -> {
+			Date startDate = event.getStartDate();
+			Date endDate = event.getEndDate();
+
+			if (startDate == null) {
+				return "";
+			} else if (endDate == null) {
+				return DateHelper.formatLocalDate(startDate, userLanguage);
+			} else {
+				return String
+					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
+			}
+		});
+		eventDateColumn.setId(EVENT_DATE);
+		eventDateColumn.setSortProperty(EventDto.START_DATE);
+		eventDateColumn.setSortable(true);
 
 		Column<EventIndexDto, String> pendingTasksColumn = addColumn(
 			entry -> String.format(
@@ -87,17 +109,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		setColumns(
 			EventIndexDto.UUID,
 			EventIndexDto.EVENT_STATUS,
-			EventIndexDto.EVENT_DATE,
+			EVENT_DATE,
 			DISEASE_SHORT,
 			EventIndexDto.EVENT_DESC,
 			EventIndexDto.EVENT_LOCATION,
+			EventIndexDto.SRC_TYPE,
 			INFORMATION_SOURCE,
 			EventIndexDto.REPORT_DATE_TIME,
 			NUMBER_OF_PENDING_TASKS);
-		Language userLanguage = I18nProperties.getUserLanguage();
+
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.EVENT_DATE))
-			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
@@ -110,6 +131,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				ControllerProvider.getEventController().navigateToData(e.getItem().getUuid());
 			}
 		});
+	}
+
+	private String buildSourcePersonText(EventIndexDto event) {
+		return (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " " + (event.getSrcLastName() != null ? event.getSrcLastName() : "")
+			+ (event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : "");
+	}
+
+	private String buildSourceMediaText(EventIndexDto event) {
+		return (event.getSrcMediaWebsite() != null ? event.getSrcMediaWebsite() : "") + " "
+			+ (event.getSrcMediaName() != null ? "(" + event.getSrcMediaName() + ")" : "");
 	}
 
 	public void reload() {

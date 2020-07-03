@@ -206,6 +206,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			event.get(Event.EVENT_DESC),
 			location.get(Location.UUID),
 			region.get(Region.NAME),
@@ -213,9 +214,12 @@ public class EventFacadeEjb implements EventFacade {
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
+			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.REPORT_DATE_TIME));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
@@ -236,7 +240,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
-				case EventIndexDto.EVENT_DATE:
+				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVENT_DESC:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:

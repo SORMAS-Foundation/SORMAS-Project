@@ -386,11 +386,30 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
 		}
 		if (eventCriteria.getEventDateFrom() != null && eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Event.START_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(
+					cb.between(from.get(Event.START_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()),
+					cb.and(
+						cb.isNotNull(from.get(Event.END_DATE)),
+						cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom()))));
 		} else if (eventCriteria.getEventDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom())),
+				cb.and(
+					cb.isNotNull(from.get(Event.END_DATE)),
+					cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom())));
 		} else if (eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()))),
+				cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo()));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
 			filter = and(
@@ -408,6 +427,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					filter = and(cb, filter, likeFilters);
 				}
 			}
+		}
+		if (eventCriteria.getSrcType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
 		}
 
 		return filter;
