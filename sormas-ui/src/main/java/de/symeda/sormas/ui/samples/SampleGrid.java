@@ -66,7 +66,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getSampleController().navigateToData(e.getItem().getUuid()));
+		addEditColumn(e -> ControllerProvider.getSampleController().navigateToData(e.getUuid()));
 
 		Column<SampleIndexDto, String> diseaseShortColumn =
 			addColumn(sample -> DiseaseHelper.toString(sample.getDisease(), sample.getDiseaseDetails()));

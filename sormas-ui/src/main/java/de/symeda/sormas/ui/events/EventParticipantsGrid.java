@@ -31,6 +31,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -83,21 +84,18 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(e -> {
-			if (e.getColumn() != null && CASE_ID.equals(e.getColumn().getId())) {
-				if (e.getItem().getCaseUuid() != null) {
-					ControllerProvider.getCaseController().navigateToCase(e.getItem().getCaseUuid());
-				} else {
-					EventParticipantDto eventParticipant =
-						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
-					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
-				}
-			} else if ((e.getColumn() != null && EventParticipantIndexDto.UUID.equals(e.getColumn().getId()))
-				|| e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getEventParticipantController().navigateToData(e.getItem().getUuid());
-
+		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
+			if (e.getCaseUuid() != null) {
+				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
+			} else {
+				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
+				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}
-		});
+		}));
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				EventParticipantIndexDto.UUID,
+				e -> ControllerProvider.getEventParticipantController().navigateToData(e.getUuid())));
 	}
 
 	public void reload() {
