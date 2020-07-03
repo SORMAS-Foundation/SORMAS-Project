@@ -82,6 +82,7 @@ public class ContactExportDto implements Serializable {
 	private String district;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
@@ -97,7 +98,7 @@ public class ContactExportDto implements Serializable {
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
 							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
-							QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
 							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String address, String postalCode,
@@ -128,6 +129,7 @@ public class ContactExportDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.quarantine = quarantine;
+		this.quarantineTypeDetails = quarantineTypeDetails;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
 		this.quarantineHelpNeeded = quarantineHelpNeeded;
@@ -269,105 +271,110 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(25)
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	@Order(26)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
 
-	@Order(26)
+	@Order(27)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Order(27)
+	@Order(28)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(28)
+	@Order(29)
 	@HideForCountriesExcept
 	public boolean isQuarantineOrderedVerbally() {
 		return quarantineOrderedVerbally;
 	}
 
-	@Order(29)
+	@Order(30)
 	@HideForCountriesExcept
 	public boolean isQuarantineOrderedOfficialDocument() {
 		return quarantineOrderedOfficialDocument;
 	}
 
-	@Order(30)
+	@Order(31)
 	@HideForCountriesExcept
 	public Date getQuarantineOrderedVerballyDate() {
 		return quarantineOrderedVerballyDate;
 	}
 
-	@Order(31)
+	@Order(32)
 	@HideForCountriesExcept
 	public Date getQuarantineOrderedOfficialDocumentDate() {
 		return quarantineOrderedOfficialDocumentDate;
 	}
 
-	@Order(32)
+	@Order(33)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(33)
+	@Order(34)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(34)
+	@Order(35)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(35)
+	@Order(36)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(36)
+	@Order(37)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(37)
+	@Order(38)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(38)
+	@Order(39)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(39)
+	@Order(40)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(40)
+	@Order(41)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(41)
+	@Order(42)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(42)
+	@Order(43)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(43)
+	@Order(44)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(44)
+	@Order(45)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
