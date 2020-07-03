@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -105,11 +106,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && EventIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getEventController().navigateToData(e.getItem().getUuid());
-			}
-		});
+		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
 	}
 
 	public void reload() {

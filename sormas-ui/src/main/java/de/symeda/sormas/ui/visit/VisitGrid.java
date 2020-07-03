@@ -54,7 +54,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 			setSelectionMode(SelectionMode.NONE);
 		}
 
-		addEditColumn(e -> ControllerProvider.getVisitController().editVisit(e.getItem().getUuid(), getCriteria().getContact(), r -> reload()));
+		addEditColumn(e -> ControllerProvider.getVisitController().editVisit(e.getUuid(), getCriteria().getContact(), r -> reload()));
 
 		setColumns(
 			EDIT_BTN_ID,
