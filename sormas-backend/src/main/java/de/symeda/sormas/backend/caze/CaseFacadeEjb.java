@@ -2255,7 +2255,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> from = cq.from(Case.class);
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		cq.select(cb.least(symptoms.get(Symptoms.ONSET_DATE)));
+		Path<Timestamp> expression = symptoms.get(Symptoms.ONSET_DATE);
+		cq.select(cb.least(expression));
 		cq.where(cb.greaterThan(symptoms.get(Symptoms.ONSET_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
