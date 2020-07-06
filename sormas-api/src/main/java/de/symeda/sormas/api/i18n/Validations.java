@@ -14,6 +14,17 @@ public interface Validations {
 	String afterDateSoft = "afterDateSoft";
 	String beforeDate = "beforeDate";
 	String beforeDateSoft = "beforeDateSoft";
+	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
+	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
+	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
+	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
+	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
+	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
+	String campaignFormTranslationLanguageCodeRequired = "campaignFormTranslationLanguageCodeRequired";
+	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
+	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
+	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
@@ -21,6 +32,8 @@ public interface Validations {
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
+	String importAreaAlreadyExists = "importAreaAlreadyExists";
+	String importAreaNotUnique = "importAreaNotUnique";
 	String importCasesPropertyTypeNotAllowed = "importCasesPropertyTypeNotAllowed";
 	String importCasesUnexpectedError = "importCasesUnexpectedError";
 	String importCommunityAlreadyExists = "importCommunityAlreadyExists";
@@ -65,7 +78,7 @@ public interface Validations {
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";
 	String textTooLong = "textTooLong";
 	String userNameNotUnique = "userNameNotUnique";
-	String validCaseOrContact = "validCaseOrContact";
+	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";

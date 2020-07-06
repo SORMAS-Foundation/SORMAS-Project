@@ -53,6 +53,8 @@ public interface EventFacade {
 
 	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max);
+
 	boolean isArchived(String caseUuid);
 
 	boolean isDeleted(String eventUuid);
@@ -64,6 +66,10 @@ public interface EventFacade {
 	List<String> getDeletedUuidsSince(Date since);
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
+
+	Boolean isEventEditAllowed(String eventUuid);
+
+	boolean exists(String uuid);
 
 	String getUuidByCaseUuidOrPersonUuid(String value);
 }

@@ -31,6 +31,7 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -81,6 +82,7 @@ public class ContactExportDto implements Serializable {
 	private String district;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
@@ -91,6 +93,11 @@ public class ContactExportDto implements Serializable {
 	private YesNoUnknown directContactConfirmedCase;
 	private YesNoUnknown directContactProbableCase;
 	private YesNoUnknown contactWithRodent;
+  
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
 
 	private ContactJurisdictionDto jurisdiction;
 
@@ -99,7 +106,8 @@ public class ContactExportDto implements Serializable {
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
 							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
-							QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String address, String postalCode,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
@@ -130,9 +138,14 @@ public class ContactExportDto implements Serializable {
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.quarantine = quarantine;
+		this.quarantineTypeDetails = quarantineTypeDetails;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
 		this.quarantineHelpNeeded = quarantineHelpNeeded;
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
 		this.addressRegion = addressRegion;
@@ -277,86 +290,115 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(25)
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	@Order(26)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
 
-	@Order(26)
+	@Order(27)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Order(27)
+	@Order(28)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(28)
+	@Order(29)
+	@HideForCountriesExcept
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	@Order(30)
+	@HideForCountriesExcept
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	@Order(31)
+	@HideForCountriesExcept
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	@Order(32)
+	@HideForCountriesExcept
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	@Order(33)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(29)
+	@Order(34)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(30)
+	@Order(35)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(31)
+	@Order(36)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(32)
+	@Order(37)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(33)
+	@Order(38)
 	public String getAddress() {
 		return address;
 	}
 
-	@Order(34)
+	@Order(39)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(35)
+	@Order(40)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(36)
+	@Order(41)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(37)
+	@Order(42)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(38)
+	@Order(43)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(39)
+	@Order(44)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(40)
+	@Order(45)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(41)
+	@Order(46)
 	public YesNoUnknown getTraveled() {
 		return traveled;
 	}
@@ -365,7 +407,7 @@ public class ContactExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(42)
+	@Order(47)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
@@ -374,7 +416,7 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(43)
+	@Order(48)
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
 	}
@@ -383,7 +425,7 @@ public class ContactExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(44)
+	@Order(49)
 	public YesNoUnknown getDirectContactConfirmedCase() {
 		return directContactConfirmedCase;
 	}
@@ -392,7 +434,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactConfirmedCase = directContactConfirmedCase;
 	}
 
-	@Order(45)
+	@Order(50)
 	public YesNoUnknown getDirectContactProbableCase() {
 		return directContactProbableCase;
 	}
@@ -401,7 +443,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactProbableCase = directContactProbableCase;
 	}
 
-	@Order(46)
+	@Order(51)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
 	}

@@ -32,9 +32,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -44,7 +44,7 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	@EJB
 	private EventService eventService;
 	@EJB
-	private CaseService caseService;
+	private SampleService sampleService;
 
 	public EventParticipantService() {
 		super(EventParticipant.class);
@@ -136,6 +136,10 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<EventParticipant, EventParticipant> eventParticipantPath) {
+		return createUserFilterForJoin(cb, cq, eventParticipantPath);
+	}
+
+	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
 		// can see the participants of all accessible events
 		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT));
 
@@ -157,5 +161,16 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList;
+	}
+
+	@Override
+	public void delete(EventParticipant eventParticipant) {
+
+		eventParticipant.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedContact() == null)
+			.forEach(sample -> sampleService.delete(sample));
+
+		super.delete(eventParticipant);
 	}
 }

@@ -66,7 +66,6 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -146,12 +145,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
-					fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
-					fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
-					fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
+					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
+					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
+					fluidRowLocs(6, CaseDataDto.QUARANTINE, 3, CaseDataDto.QUARANTINE_FROM, 3, CaseDataDto.QUARANTINE_TO) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_TYPE_DETAILS) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_HELP_NEEDED) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "")
@@ -225,6 +225,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		TextField epidField = addField(CaseDataDto.EPID_NUMBER, TextField.class);
 		epidField.setInvalidCommitted(true);
+		epidField.setMaxLength(24);
 		style(epidField, ERROR_COLOR_PRIMARY);
 
 		// Button to automatically assign a new epid number
@@ -262,57 +263,66 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isGermanServer()) {
-			quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
+			quarantineOrderedVerbally = addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 			CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
-			addField(ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
-			quarantineOrderedOfficialDocument = addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
+			addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
+			quarantineOrderedOfficialDocument = addField(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
 			CssStyles.style(quarantineOrderedOfficialDocument, CssStyles.FORCE_CAPTION);
-			addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
+			addField(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
 			setVisible(
 				false,
-				ContactDto.QUARANTINE_ORDERED_VERBALLY,
-				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
-				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
-				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
+				CaseDataDto.QUARANTINE_ORDERED_VERBALLY,
+				CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
 		}
-		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
+		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		TextField quarantineTypeDetails = addField(CaseDataDto.QUARANTINE_TYPE_DETAILS, TextField.class);
+		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		setVisible(
+			false,
+			CaseDataDto.QUARANTINE_FROM,
+			CaseDataDto.QUARANTINE_TO,
+			CaseDataDto.QUARANTINE_HELP_NEEDED,
+			CaseDataDto.QUARANTINE_TYPE_DETAILS);
 
-		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
-		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
-		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
-		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
+		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
+		addField(CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
+		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
+		addField(CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT,
-			ContactDto.QUARANTINE_HOME_POSSIBLE,
+			CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT,
+			CaseDataDto.QUARANTINE_HOME_POSSIBLE,
 			Arrays.asList(YesNoUnknown.NO),
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
-			ContactDto.QUARANTINE_HOME_POSSIBLE,
+			CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED,
+			CaseDataDto.QUARANTINE_HOME_POSSIBLE,
 			Arrays.asList(YesNoUnknown.YES),
 			true);
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT,
-			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
+			CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT,
+			CaseDataDto.QUARANTINE_HOME_SUPPLY_ENSURED,
 			Arrays.asList(YesNoUnknown.NO),
 			true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), CaseDataDto.QUARANTINE_TYPE_DETAILS, CaseDataDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
 		if (isGermanServer()) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
-				ContactDto.QUARANTINE_ORDERED_VERBALLY,
+				CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+				CaseDataDto.QUARANTINE_ORDERED_VERBALLY,
 				Arrays.asList(Boolean.TRUE),
 				true);
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
-				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE,
-				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE,
+				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 				Arrays.asList(Boolean.TRUE),
 				true);
 		}
@@ -679,9 +689,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (isGermanServer()) {
-			setVisible(visible, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
+			setVisible(visible, CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
-		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		setVisible(visible, CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED);
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
@@ -719,7 +729,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
 			getContent().addComponent(epidNumberWarningLabel, EPID_NUMBER_WARNING_LOC);
-
 		} else {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);

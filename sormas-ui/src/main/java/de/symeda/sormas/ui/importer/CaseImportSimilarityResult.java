@@ -18,15 +18,22 @@
 package de.symeda.sormas.ui.importer;
 
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.person.PersonIndexDto;
 
 public class CaseImportSimilarityResult {
 
+	private final PersonIndexDto matchingPerson;
 	private final CaseIndexDto matchingCase;
 	private final ImportSimilarityResultOption resultOption;
 
-	public CaseImportSimilarityResult(CaseIndexDto matchingCase, ImportSimilarityResultOption resultOption) {
+	public CaseImportSimilarityResult(PersonIndexDto matchingPerson, CaseIndexDto matchingCase, ImportSimilarityResultOption resultOption) {
+		this.matchingPerson = matchingPerson;
 		this.matchingCase = matchingCase;
 		this.resultOption = resultOption;
+	}
+
+	public PersonIndexDto getMatchingPerson() {
+		return matchingPerson;
 	}
 
 	public CaseIndexDto getMatchingCase() {

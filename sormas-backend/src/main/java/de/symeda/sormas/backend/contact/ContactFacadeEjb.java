@@ -367,9 +367,14 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.FOLLOW_UP_STATUS),
 						contact.get(Contact.FOLLOW_UP_UNTIL),
 						contact.get(Contact.QUARANTINE),
+						contact.get(Contact.QUARANTINE_TYPE_DETAILS),
 						contact.get(Contact.QUARANTINE_FROM),
 						contact.get(Contact.QUARANTINE_TO),
 						contact.get(Contact.QUARANTINE_HELP_NEEDED),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 						joins.getPerson().get(Person.PRESENT_CONDITION),
 						joins.getPerson().get(Person.DEATH_DATE),
 						joins.getAddressRegion().get(Region.NAME),
@@ -395,13 +400,15 @@ public class ContactFacadeEjb implements ContactFacade {
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
 
+		cq.distinct(true);
+
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
@@ -892,6 +899,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -1064,6 +1072,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -1277,6 +1286,11 @@ public class ContactFacadeEjb implements ContactFacade {
 //			});
 
 		return contacts;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
 	}
 
 	@LocalBean

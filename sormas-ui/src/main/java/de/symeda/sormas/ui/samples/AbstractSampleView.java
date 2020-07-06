@@ -17,12 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -34,22 +36,31 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.contact.ContactDataView;
-import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
+import de.symeda.sormas.ui.utils.AbstractDetailView;
 
 @SuppressWarnings("serial")
-public class AbstractSampleView extends AbstractSubNavigationView {
+public abstract class AbstractSampleView extends AbstractDetailView<SampleReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = SamplesView.VIEW_NAME;
-
-	private SampleReferenceDto sampleRef;
 
 	protected AbstractSampleView(String viewName) {
 		super(viewName);
 	}
 
 	@Override
+	public void enter(ViewChangeEvent event) {
+
+		super.enter(event);
+		initOrRedirect(event);
+	}
+
+	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
-		sampleRef = FacadeProvider.getSampleFacade().getReferenceByUuid(params);
+
+		if (!findReferenceByParams(params)) {
+			return;
+		}
 
 		menu.removeAllViews();
 		menu.addView(SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.sampleSamplesList));
@@ -64,21 +75,57 @@ public class AbstractSampleView extends AbstractSubNavigationView {
 		if (contactRef != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getString(Strings.entityContact), contactRef.getUuid(), true);
 		}
+
+		EventParticipantReferenceDto eventParticipantRef = sampleByUuid.getAssociatedEventParticipant();
+		if (eventParticipantRef != null && UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			menu.addView(
+				EventParticipantDataView.VIEW_NAME,
+				I18nProperties.getString(Strings.entityEventParticipant),
+				eventParticipantRef.getUuid(),
+				true);
+		}
+
 		menu.addView(SampleDataView.VIEW_NAME, I18nProperties.getCaption(SampleDto.I18N_PREFIX), params);
-		infoLabel.setValue(sampleRef.getCaption());
-		infoLabelSub.setValue(DataHelper.getShortUuid(sampleRef.getUuid()));
+		infoLabel.setValue(getReference().getCaption());
+		infoLabelSub.setValue(DataHelper.getShortUuid(getReference().getUuid()));
+	}
+
+	@Override
+	protected SampleReferenceDto getReferenceByUuid(String uuid) {
+
+		final SampleReferenceDto reference;
+		if (FacadeProvider.getSampleFacade().exists(uuid)) {
+			reference = FacadeProvider.getSampleFacade().getReferenceByUuid(uuid);
+		} else {
+			reference = null;
+		}
+		return reference;
+	}
+
+	@Override
+	protected String getRootViewName() {
+		return ROOT_VIEW_NAME;
 	}
 
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
 
-		if (FacadeProvider.getSampleFacade().isDeleted(sampleRef.getUuid())) {
+		if (FacadeProvider.getSampleFacade().isDeleted(getReference().getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
 
+	public void setSampleEditPermission(Component component) {
+
+		Boolean isSampleEditAllowed = FacadeProvider.getSampleFacade().isSampleEditAllowed(getSampleRef().getUuid());
+
+		if (!isSampleEditAllowed) {
+			component.setEnabled(false);
+		}
+	}
+
 	public SampleReferenceDto getSampleRef() {
-		return sampleRef;
+		return getReference();
 	}
 }

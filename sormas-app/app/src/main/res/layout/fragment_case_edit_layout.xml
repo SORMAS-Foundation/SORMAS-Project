@@ -70,6 +70,7 @@
                     app:value="@={data.epidNumber}"
                     app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
                     app:softRequired="true"
+                    app:maxLength="24"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -325,6 +326,13 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_quarantine"
                     app:value="@={data.quarantine}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/caseData_quarantineTypeDetails"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.OTHER}"
+                    app:value="@={data.quarantineTypeDetails}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <LinearLayout

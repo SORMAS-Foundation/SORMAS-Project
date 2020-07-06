@@ -39,6 +39,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.api.region.AreaDto;
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictIndexDto;
@@ -68,6 +69,18 @@ public class InfrastructureController {
 		CommitDiscardWrapperComponent<FacilityEditForm> editComponent =
 			getFacilityEditComponent(facility, facility.getType() == FacilityType.LABORATORY);
 		String caption = I18nProperties.getString(Strings.edit) + " " + facility.getName();
+		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
+	}
+
+	public void createArea() {
+		CommitDiscardWrapperComponent<AreaEditForm> createComponent = getAreaEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	}
+
+	public void editArea(String uuid) {
+		AreaDto area = FacadeProvider.getAreaFacade().getAreaByUuid(uuid);
+		CommitDiscardWrapperComponent<AreaEditForm> editComponent = getAreaEditComponent(area);
+		String caption = I18nProperties.getString(Strings.edit) + " " + area.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
 
@@ -165,6 +178,33 @@ public class InfrastructureController {
 		return editView;
 	}
 
+	private CommitDiscardWrapperComponent<AreaEditForm> getAreaEditComponent(AreaDto area) {
+		boolean isNew = area == null;
+		AreaEditForm editForm = new AreaEditForm(isNew);
+		if (isNew) {
+			area = AreaDto.build();
+		}
+
+		editForm.setValue(area);
+
+		final CommitDiscardWrapperComponent<AreaEditForm> editComponent = new CommitDiscardWrapperComponent<>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
+			editForm.getFieldGroup());
+
+		editComponent.addCommitListener(() -> {
+			FacadeProvider.getAreaFacade().saveArea(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
+		});
+
+		if (!isNew) {
+			extendEditComponentWithArchiveButton(editComponent, area.isArchived(), area.getUuid(), InfrastructureType.AREA, null);
+		}
+
+		return editComponent;
+	}
+
 	private CommitDiscardWrapperComponent<RegionEditForm> getRegionEditComponent(RegionDto region) {
 
 		boolean isNew = region == null;
@@ -180,14 +220,10 @@ public class InfrastructureController {
 			UserProvider.getCurrent().hasUserRight(isNew ? UserRight.INFRASTRUCTURE_CREATE : UserRight.INFRASTRUCTURE_EDIT),
 			editForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
-				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
-				SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
-			}
+		editView.addCommitListener(() -> {
+			FacadeProvider.getRegionFacade().saveRegion(editForm.getValue());
+			Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+			SormasUI.get().getNavigator().navigateTo(RegionsView.VIEW_NAME);
 		});
 
 		if (!isNew) {
@@ -298,8 +334,10 @@ public class InfrastructureController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
 			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				if (!isArchived) {
-					if (InfrastructureType.REGION.equals(infrastructureType)
-						&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
+					if (InfrastructureType.AREA.equals(infrastructureType)
+						&& FacadeProvider.getAreaFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
+						|| InfrastructureType.REGION.equals(infrastructureType)
+							&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
 						|| InfrastructureType.DISTRICT.equals(infrastructureType)
 							&& FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))
 						|| InfrastructureType.COMMUNITY.equals(infrastructureType)
@@ -334,6 +372,10 @@ public class InfrastructureController {
 
 		final String contentText;
 		switch (infrastructureType) {
+		case AREA:
+			contentText =
+				I18nProperties.getString(bulkArchiving ? Strings.messageAreasArchivingNotPossible : Strings.messageAreaArchivingNotPossible);
+			break;
 		case REGION:
 			contentText =
 				I18nProperties.getString(bulkArchiving ? Strings.messageRegionsArchivingNotPossible : Strings.messageRegionArchivingNotPossible);
@@ -392,6 +434,10 @@ public class InfrastructureController {
 		Label contentLabel = new Label();
 		final String notificationMessage;
 		switch (infrastructureType) {
+		case AREA:
+			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveArea : Strings.confirmationDearchiveArea));
+			notificationMessage = I18nProperties.getString(archive ? Strings.messageAreaArchived : Strings.messageAreaDearchived);
+			break;
 		case REGION:
 			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveRegion : Strings.confirmationDearchiveRegion));
 			notificationMessage = I18nProperties.getString(archive ? Strings.messageRegionArchived : Strings.messageRegionDearchived);
@@ -433,6 +479,14 @@ public class InfrastructureController {
 			e -> {
 				if (e.booleanValue()) {
 					switch (infrastructureType) {
+					case AREA:
+						if (archive) {
+							FacadeProvider.getAreaFacade().archive(entityUuid);
+						} else {
+							FacadeProvider.getAreaFacade().deArchive(entityUuid);
+						}
+						SormasUI.get().getNavigator().navigateTo(AreasView.VIEW_NAME);
+						break;
 					case REGION:
 						if (archive) {
 							FacadeProvider.getRegionFacade().archive(entityUuid);
@@ -506,8 +560,9 @@ public class InfrastructureController {
 
 		// Check if archiving/dearchiving is allowed concerning the hierarchy
 		Set<String> selectedRowsUuids = selectedRows.stream().map(row -> ((HasUuid) row).getUuid()).collect(Collectors.toSet());
-		if (InfrastructureType.REGION.equals(infrastructureType)
-			&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
+		if (InfrastructureType.AREA.equals(infrastructureType) && FacadeProvider.getAreaFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
+			|| InfrastructureType.REGION.equals(infrastructureType)
+				&& FacadeProvider.getRegionFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.DISTRICT.equals(infrastructureType)
 				&& FacadeProvider.getDistrictFacade().isUsedInOtherInfrastructureData(selectedRowsUuids)
 			|| InfrastructureType.COMMUNITY.equals(infrastructureType)
@@ -530,6 +585,12 @@ public class InfrastructureController {
 		final String confirmationMessage;
 		final String notificationMessage;
 		switch (infrastructureType) {
+		case AREA:
+			confirmationMessage =
+				archive ? I18nProperties.getString(Strings.confirmationArchiveAreas) : I18nProperties.getString(Strings.confirmationDearchiveAreas);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageAreasArchived) : I18nProperties.getString(Strings.messageAreasDearchived);
+			break;
 		case REGION:
 			confirmationMessage = archive
 				? I18nProperties.getString(Strings.confirmationArchiveRegions)
@@ -591,6 +652,15 @@ public class InfrastructureController {
 				if (e.booleanValue()) {
 
 					switch (infrastructureType) {
+					case AREA:
+						for (AreaDto selectedRow : (Collection<AreaDto>) selectedRows) {
+							if (archive) {
+								FacadeProvider.getAreaFacade().archive(selectedRow.getUuid());
+							} else {
+								FacadeProvider.getAreaFacade().deArchive(selectedRow.getUuid());
+							}
+						}
+						break;
 					case REGION:
 						for (RegionIndexDto selectedRow : (Collection<RegionIndexDto>) selectedRows) {
 							if (archive) {

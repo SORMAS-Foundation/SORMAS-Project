@@ -94,6 +94,10 @@ public interface Captions {
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
+	String Area_externalId = "Area.externalId";
+	String areaActiveAreas = "areaActiveAreas";
+	String areaAllAreas = "areaAllAreas";
+	String areaArchivedAreas = "areaArchivedAreas";
 	String bulkActions = "bulkActions";
 	String bulkCancelFollowUp = "bulkCancelFollowUp";
 	String bulkCaseClassification = "bulkCaseClassification";
@@ -127,6 +131,7 @@ public interface Captions {
 	String caseCasesList = "caseCasesList";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
+	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
 	String CaseData = "CaseData";
@@ -154,6 +159,7 @@ public interface Captions {
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
+	String CaseData_healthFacilityName = "CaseData.healthFacilityName";
 	String CaseData_hospitalization = "CaseData.hospitalization";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
@@ -1109,6 +1115,7 @@ public interface Captions {
 	String sampleNewSample = "sampleNewSample";
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
+	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";
@@ -1368,6 +1375,7 @@ public interface Captions {
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
+	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
 	String User_healthFacility = "User.healthFacility";
 	String User_laboratory = "User.laboratory";
@@ -1397,6 +1405,8 @@ public interface Captions {
 	String View_cases_sub = "View.cases.sub";
 	String View_cases_symptoms = "View.cases.symptoms";
 	String View_cases_therapy = "View.cases.therapy";
+	String View_configuration_areas = "View.configuration.areas";
+	String View_configuration_areas_short = "View.configuration.areas.short";
 	String View_configuration_communities = "View.configuration.communities";
 	String View_configuration_communities_short = "View.configuration.communities.short";
 	String View_configuration_devMode = "View.configuration.devMode";

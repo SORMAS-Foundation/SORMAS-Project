@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -14,6 +13,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -69,8 +70,8 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 		From<FeatureConfiguration, FeatureConfiguration> from) {
 
 		Predicate filter = null;
-		if (criteria.getFeatureType() != null) {
-			filter = and(cb, filter, cb.equal(from.get(FeatureConfiguration.FEATURE_TYPE), criteria.getFeatureType()));
+		if (ArrayUtils.isNotEmpty(criteria.getFeatureTypes())) {
+			filter = and(cb, filter, from.get(FeatureConfiguration.FEATURE_TYPE).in(criteria.getFeatureTypes()));
 		}
 		if (criteria.getRegion() != null) {
 			filter =
@@ -133,15 +134,13 @@ public class FeatureConfigurationService extends AbstractAdoService<FeatureConfi
 			if (savedConfiguration != null) {
 				if (featureType.isDependent() && featureType.dependencyTriggered()) {
 					savedConfiguration.setEnabled(false);
-				} else {
-					savedConfiguration.setEnabled(featureType.isEnabledDefault());
+					ensurePersisted(savedConfiguration);
 				}
-				ensurePersisted(savedConfiguration);
 			} else {
 				FeatureConfiguration configuration;
-				if (featureType.isDependent() && featureType.dependencyTriggered()){
+				if (featureType.isDependent() && featureType.dependencyTriggered()) {
 					configuration = FeatureConfiguration.build(featureType, false);
-				}else {
+				} else {
 					configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
 				}
 				ensurePersisted(configuration);

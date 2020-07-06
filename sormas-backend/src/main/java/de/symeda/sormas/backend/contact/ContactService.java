@@ -57,6 +57,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -824,7 +825,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -836,11 +839,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
 		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
 
-		// users have access to all contacts in their region/district
-		if (currentUser.getDistrict() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
-		} else if (currentUser.getRegion() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+		switch (jurisdictionLevel) {
+			case REGION:
+				final Region region = currentUser.getRegion();
+				if (region != null) {
+					filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+				}
+				break;
+			case DISTRICT:
+				final District district = currentUser.getDistrict();
+				if (district != null) {
+					filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+				}
+				break;
+			default:
 		}
 
 		return filter;
@@ -1020,15 +1032,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			taskService.delete(task);
 		}
 
-		contact.getSamples().stream().filter(sample -> sample.getAssociatedCase() == null).forEach(sample -> sampleService.delete(sample));
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(contact);
 	}
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link CoreAdo#deleted} or associated with cases that are
-	 * {@link Case#archived}.
+	 * {@link CoreAdo#isDeleted()} or associated with cases that are
+	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
 
@@ -1039,7 +1054,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link CoreAdo#deleted} contacts from the queries.
+	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));

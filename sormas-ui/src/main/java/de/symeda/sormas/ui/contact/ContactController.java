@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -29,7 +26,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -60,6 +56,9 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 public class ContactController {
 
@@ -166,8 +165,7 @@ public class ContactController {
 						if (selectedPerson != null) {
 							dto.setPerson(selectedPerson);
 
-							// set the contact person's address to the one of the case when it is currently
-							// empty and
+							// set the contact person's address to the one of the case when it is currently empty and
 							// the relationship with the case has been set to living in the same household
 							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());

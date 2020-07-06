@@ -1,8 +1,19 @@
 package de.symeda.sormas.app.util;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.event.EventJurisdictionDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionDto;
+import de.symeda.sormas.api.task.TaskJurisdictionDto;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
 
 public class JurisdictionHelper {
@@ -57,5 +68,129 @@ public class JurisdictionHelper {
 		}
 
 		return dto;
+	}
+
+	public static ContactJurisdictionDto createContactJurisdictionDto(Contact contact) {
+		if (contact == null) {
+			return null;
+		}
+		ContactJurisdictionDto dto = new ContactJurisdictionDto();
+
+		if (contact.getReportingUser() != null) {
+			dto.setReportingUserUuid(contact.getReportingUser().getUuid());
+		}
+		if (contact.getRegion() != null) {
+			dto.setRegionUuid(contact.getRegion().getUuid());
+		}
+		if (contact.getDistrict() != null) {
+			dto.setDistrictUuid(contact.getDistrict().getUuid());
+		}
+
+		if (contact.getCaseUuid() != null) {
+			Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
+			JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
+		}
+
+		return dto;
+	}
+
+	public static EventJurisdictionDto createEventJurisdictionDto(Event event) {
+		if (event == null) {
+			return null;
+		}
+
+		Location eventLocation = event.getEventLocation();
+		if (eventLocation == null) {
+			return null;
+		}
+
+		EventJurisdictionDto eventJurisdiction = new EventJurisdictionDto();
+
+		if (event.getReportingUser() != null) {
+			eventJurisdiction.setReportingUserUuid(event.getReportingUser().getUuid());
+		}
+
+		if (event.getSurveillanceOfficer() != null) {
+			eventJurisdiction.setSurveillanceOfficerUuid(event.getSurveillanceOfficer().getUuid());
+		}
+
+		if (eventLocation.getRegion() != null) {
+			eventJurisdiction.setRegionUuid(eventLocation.getRegion().getUuid());
+		}
+
+		if (eventLocation.getDistrict() != null) {
+			eventJurisdiction.setDistrictUuid(eventLocation.getDistrict().getUuid());
+		}
+
+		if (eventLocation.getCommunity() != null) {
+			eventJurisdiction.setCommunityUuid(eventLocation.getCommunity().getUuid());
+
+		}
+
+		return eventJurisdiction;
+	}
+
+	public static TaskJurisdictionDto createTaskJurisdictionDto(Task task) {
+
+		if (task == null) {
+			return null;
+		}
+
+		TaskJurisdictionDto jurisdiction = new TaskJurisdictionDto();
+
+		if (task.getCreatorUser() != null) {
+			jurisdiction.setCreatorUserUuid(task.getCreatorUser().getUuid());
+		}
+
+		if (task.getAssigneeUser() != null) {
+			jurisdiction.setAssigneeUserUuid(task.getAssigneeUser().getUuid());
+		}
+
+		Case caze = task.getCaze();
+		if (caze != null) {
+			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+		}
+
+		Contact contact = task.getContact();
+		if (contact != null) {
+			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+		}
+
+		Event event = task.getEvent();
+		if (event != null) {
+			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(event));
+		}
+
+		return jurisdiction;
+	}
+
+	public static SampleJurisdictionDto createSampleJurisdictionDto(Sample sample) {
+
+		if (sample == null) {
+			return null;
+		}
+
+		SampleJurisdictionDto jurisdiction = new SampleJurisdictionDto();
+
+		if (sample.getReportingUser() != null) {
+			jurisdiction.setReportingUserUuid(sample.getReportingUser().getUuid());
+		}
+
+		Case caze = sample.getAssociatedCase();
+		if (caze != null) {
+			jurisdiction.setCaseJurisdiction(createCaseJurisdictionDto(caze));
+		}
+
+		Contact contact = sample.getAssociatedContact();
+		if (contact != null) {
+			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+		}
+
+		Facility labFacility = sample.getLab();
+		if (labFacility != null) {
+			jurisdiction.setLabUuid(sample.getLab().getUuid());
+		}
+
+		return jurisdiction;
 	}
 }

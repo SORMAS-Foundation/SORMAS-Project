@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.events;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -43,7 +42,8 @@ public class EventParticipantsView extends AbstractEventView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/eventparticipants";
+	public static final String EVENTPARTICIPANTS = "eventparticipants";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
 	private EventParticipantCriteria criteria;
 
@@ -61,6 +61,7 @@ public class EventParticipantsView extends AbstractEventView {
 	}
 
 	public HorizontalLayout createTopBar() {
+
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
@@ -100,11 +101,7 @@ public class EventParticipantsView extends AbstractEventView {
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-
-		if (event != null) {
-			super.enter(event);
-		}
+	protected void initView(String params) {
 
 		criteria.event(getEventRef());
 

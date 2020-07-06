@@ -31,6 +31,9 @@ import org.junit.Before;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.campaign.CampaignFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -68,6 +71,9 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
+import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
+import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb.CampaignFormFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
@@ -357,6 +363,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
+	public CampaignFormFacade getCampaignFormFacade() {
+		return getBean(CampaignFormFacadeEjbLocal.class);
+	}
+
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -367,5 +377,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
 
 		return survOff;
+	}
+
+	public CampaignFormDataFacade getCampaignFormDataFacade() {
+		return getBean(CampaignFormDataFacadeEjbLocal.class);
+	}
+
+	public CampaignFacade getCampaignFacade() {
+		return getBean(CampaignFacadeEjbLocal.class);
 	}
 }

@@ -45,6 +45,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -77,7 +78,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, User user) {
+	public List<Event> getAllActiveEventsAfter(Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -86,6 +87,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -103,7 +105,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getAllActiveUuids(User user) {
+	public List<String> getAllActiveUuids() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -111,6 +113,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -122,7 +125,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, User user) {
+	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
@@ -163,7 +166,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return result;
 	}
 
-	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, User user) {
+	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -181,12 +184,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, Long> events = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 	}
 
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, User user) {
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -204,12 +205,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<EventStatus, Long> events = results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
-	public List<String> getArchivedUuidsSince(User user, Date since) {
+	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -238,7 +237,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -271,53 +270,36 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
 
-		// National users can access all events in the system
-		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(
-			UserRole.NATIONAL_USER,
-			UserRole.NATIONAL_CLINICIAN,
-			UserRole.NATIONAL_OBSERVER,
-			UserRole.POE_NATIONAL_USER,
-			UserRole.REST_USER)) {
+		final User currentUser = getCurrentUser();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
-		// whoever created the event or is assigned to it is allowed to access it
-		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
-		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
-
 		Predicate filter = null;
-		// allow event access based on user role
-		if (currentUser.hasAnyUserRole(
-			UserRole.SURVEILLANCE_SUPERVISOR,
-			UserRole.CONTACT_SUPERVISOR,
-			UserRole.CASE_SUPERVISOR,
-			UserRole.POE_SUPERVISOR,
-			UserRole.EVENT_OFFICER,
-			UserRole.STATE_OBSERVER) && currentUser.getRegion() != null) {
-			// supervisors see all events of their region
-			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
-		}
-		if (currentUser.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER, UserRole.CONTACT_OFFICER, UserRole.CASE_OFFICER, UserRole.DISTRICT_OBSERVER)
-			&& currentUser.getDistrict() != null) {
-			// officers see all events of their district
-			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
-		}
-		if (currentUser
-			.hasAnyUserRole(UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT, UserRole.POE_INFORMANT, UserRole.EXTERNAL_LAB_USER)) {
-			//NOOP
-			// informants don't see events
+
+		switch (jurisdictionLevel) {
+		case REGION:
+			if (currentUser.getRegion() != null) {
+				filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+			}
+			break;
+		case DISTRICT:
+			if (currentUser.getDistrict() != null) {
+				filter =
+					or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.DISTRICT), currentUser.getDistrict()));
+			}
+			break;
+		default:
 		}
 
-		//		// events assigned with task
-		//		Join<Event, Task> tasksJoin = from.join(Event.TASKS, JoinType.LEFT);
-		//		filter = cb.or(filter, cb.equal(tasksJoin.get(Task.ASSIGNEE_USER), user));
-
-		// only show cases of a specific disease if a limited disease is set
 		if (filter != null && currentUser.getLimitedDisease() != null) {
 			filter = cb
 				.and(filter, cb.or(cb.equal(eventPath.get(Event.DISEASE), currentUser.getLimitedDisease()), cb.isNull(eventPath.get(Event.DISEASE))));
 		}
+
+		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
+		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
 
 		if (filter != null) {
 			filter = cb.or(filter, filterResponsible);

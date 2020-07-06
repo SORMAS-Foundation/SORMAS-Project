@@ -22,16 +22,22 @@ import android.view.View;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.location.Location;
+import de.symeda.sormas.app.caze.edit.EpiDataBurialDialog;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
+import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
 
@@ -59,12 +65,18 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
 		final Location location = record.getEventLocation();
 		final Location locationClone = (Location) location.clone();
-		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, null);
+		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false,null);
 		locationDialog.show();
-
+		locationDialog.setRegionAndDistrictRequired(true);
 		locationDialog.setPositiveCallback(() -> {
-			contentBinding.eventEventLocation.setValue(locationClone);
-			record.setEventLocation(locationClone);
+			try {
+				FragmentValidator.validate(getContext(), locationDialog.getContentBinding());
+				contentBinding.eventEventLocation.setValue(locationClone);
+				record.setEventLocation(locationClone);
+				locationDialog.dismiss();
+			} catch (ValidationException e) {
+				NotificationHelper.showDialogNotification(locationDialog, ERROR, e.getMessage());
+			}
 		});
 	}
 
