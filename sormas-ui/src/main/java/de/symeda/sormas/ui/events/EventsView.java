@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -105,7 +106,7 @@ public class EventsView extends AbstractView {
 
 		addComponent(gridLayout);
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT) && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 			StreamResource streamResource =

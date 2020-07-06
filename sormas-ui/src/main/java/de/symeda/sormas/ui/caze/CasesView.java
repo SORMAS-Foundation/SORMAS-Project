@@ -59,6 +59,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -177,7 +178,7 @@ public class CasesView extends AbstractView {
 			addImportButton(importLayout, Captions.importDetailed, Strings.headingImportCases, CaseImportLayout::new);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_EXPORT) && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);

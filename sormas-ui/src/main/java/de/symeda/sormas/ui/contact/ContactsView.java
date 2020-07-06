@@ -54,6 +54,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -193,7 +194,7 @@ public class ContactsView extends AbstractView {
 			moreLayout.addComponent(importButton);
 		}
 
-		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT)) {
+		if (viewConfiguration.getViewType().isContactOverview() && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EXPORT) && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			VerticalLayout exportLayout = new VerticalLayout();
 			{
 				exportLayout.setSpacing(true);
