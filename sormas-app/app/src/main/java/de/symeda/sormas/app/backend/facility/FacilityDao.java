@@ -26,7 +26,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
-
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -137,7 +136,7 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 		}
 	}
 
-	public List<Facility> getActiveLaboratories(boolean includeOtherLaboratory) {
+	public List<Facility> getActiveLaboratories(boolean includeOtherFacility) {
 		try {
 			QueryBuilder builder = queryBuilder();
 			Where where = builder.where();
@@ -147,7 +146,7 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
-			if (includeOtherLaboratory) {
+			if (includeOtherFacility) {
 				facilities.add(queryUuid(FacilityDto.OTHER_LABORATORY_UUID));
 			}
 

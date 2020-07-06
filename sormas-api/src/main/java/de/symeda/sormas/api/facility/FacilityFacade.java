@@ -36,11 +36,18 @@ public interface FacilityFacade {
 
 	long count(FacilityCriteria criteria);
 
-	List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto community, boolean includeStaticFacilities);
+	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
+		CommunityReferenceDto community,
+		FacilityType type,
+		boolean includeStaticFacility);
 
-	List<FacilityReferenceDto> getActiveHealthFacilitiesByDistrict(DistrictReferenceDto district, boolean includeStaticFacilities);
+	List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(DistrictReferenceDto district, FacilityType type, boolean includeStaticFacility);
 
-	List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory);
+	List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto community, boolean includeStaticFacility);
+
+	List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto district, boolean includeStaticFacility);
+
+	List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherFacility);
 
 	List<FacilityDto> getAllByRegionAfter(String regionUuid, Date date);
 
@@ -58,10 +65,11 @@ public interface FacilityFacade {
 
 	void saveFacility(FacilityDto value) throws ValidationRuntimeException;
 
-	List<FacilityReferenceDto> getByName(
+	List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,
 		CommunityReferenceDto communityRef,
+		FacilityType type,
 		boolean includeArchivedEntities);
 
 	List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities);

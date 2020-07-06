@@ -62,7 +62,7 @@ public final class StatisticsHelper {
 		Function<Integer, RegionReferenceDto> regionProvider,
 		Function<Integer, DistrictReferenceDto> districtProvider,
 		Function<Integer, CommunityReferenceDto> communityProvider,
-		Function<Integer, FacilityReferenceDto> healthFacilityProvider) {
+		Function<Integer, FacilityReferenceDto> facilityProvider) {
 
 		if (isNullOrUnknown(attributeValue)) {
 			return null;
@@ -100,7 +100,7 @@ public final class StatisticsHelper {
 			case COMMUNITY:
 				return communityProvider.apply(((Number) attributeValue).intValue());
 			case HEALTH_FACILITY:
-				return healthFacilityProvider.apply(((Number) attributeValue).intValue());
+				return facilityProvider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
 			}

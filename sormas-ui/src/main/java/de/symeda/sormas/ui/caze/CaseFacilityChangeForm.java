@@ -29,6 +29,9 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -43,16 +46,21 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
+	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
+	private static final String TYPE_LOC = "typeLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
 			//XXX #1620 are the divs needed?
 			divs(
-					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-					fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
+					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
+					fluidRowLocs(TYPE_GROUP_LOC, TYPE_LOC, CaseDataDto.HEALTH_FACILITY) +
 					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			);
 	//@formatter:on
+
+	private ComboBox typeGroup;
+	private ComboBox type;
 
 	public CaseFacilityChangeForm() {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
@@ -65,9 +73,21 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
+		typeGroup = new ComboBox();
+		typeGroup.setId("typeGroup");
+		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		typeGroup.setWidth(100, Unit.PERCENTAGE);
+		typeGroup.addItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay());
+		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
+		type = new ComboBox();
+		type.setId("type");
+		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		type.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(type, TYPE_LOC);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		ComboBox officer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		facilityDetails.setVisible(false);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -75,17 +95,17 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			if (community.getValue() == null) {
-				FieldHelper.removeItems(facility);
-			}
+			FieldHelper.removeItems(facility);
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(
-				facility,
-				districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+			if (districtDto != null && type.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true));
+			}
 
 			List<UserReferenceDto> assignableSurveillanceOfficers =
 				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
@@ -99,13 +119,42 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(
-				facility,
-				communityDto != null
-					? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
-					: district.getValue() != null
-						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
-						: null);
+			if (type.getValue() != null) {
+				FieldHelper.updateItems(
+					facility,
+					communityDto != null
+						? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) type.getValue(), true)
+						: district.getValue() != null
+							? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(),
+									(FacilityType) type.getValue(),
+									true)
+							: null);
+			}
+		});
+		typeGroup.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true));
+		});
+		type.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
+			if (type.getValue() != null && district.getValue() != null) {
+				if (community.getValue() != null) {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(
+								(CommunityReferenceDto) community.getValue(),
+								(FacilityType) type.getValue(),
+								true));
+				} else {
+					FieldHelper.updateItems(
+						facility,
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) district.getValue(), (FacilityType) type.getValue(), true));
+				}
+			}
 		});
 		facility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
@@ -134,7 +183,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
-		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
+		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, TYPE_GROUP_LOC, TYPE_LOC, CaseDataDto.HEALTH_FACILITY);
 		officer.setNullSelectionAllowed(true);
 	}
 

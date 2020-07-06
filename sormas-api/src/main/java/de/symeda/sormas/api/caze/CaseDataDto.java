@@ -35,6 +35,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -134,6 +135,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -323,6 +325,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
+	private FacilityType facilityType;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -990,5 +993,13 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

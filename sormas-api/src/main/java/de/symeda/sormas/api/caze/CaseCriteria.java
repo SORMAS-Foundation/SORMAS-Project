@@ -23,6 +23,8 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -52,6 +54,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
 	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
+	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -85,6 +89,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
+	private FacilityTypeGroup facilityTypeGroup;
+	private FacilityType facilityType;
 
 	@Override
 	public CaseCriteria clone() {
@@ -402,5 +408,21 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+
+	public FacilityTypeGroup getFacilityTypeGroup() {
+		return facilityTypeGroup;
+	}
+
+	public void setFacilityTypeGroup(FacilityTypeGroup typeGroup) {
+		this.facilityTypeGroup = typeGroup;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType type) {
+		this.facilityType = type;
 	}
 }

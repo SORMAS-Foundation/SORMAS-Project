@@ -19,12 +19,15 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -39,15 +42,17 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	private static final long serialVersionUID = 1952619382018965255L;
 
+	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
+
 	private static final String HTML_LAYOUT = fluidRowLocs(FacilityDto.NAME)
-		+ fluidRowLocs(FacilityDto.TYPE)
+		+ fluidRowLocs(TYPE_GROUP_LOC, FacilityDto.TYPE)
 		+ fluidRowLocs(FacilityDto.REGION, FacilityDto.DISTRICT)
-		+ fluidRowLocs(FacilityDto.COMMUNITY)
-		+ fluidRowLocs(FacilityDto.CITY)
+		+ fluidRowLocs(FacilityDto.COMMUNITY, FacilityDto.CITY)
 		+ fluidRowLocs(FacilityDto.LATITUDE, FacilityDto.LONGITUDE)
 		+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private boolean create;
+	private ComboBox typeGroup;
 
 	public FacilityEditForm(boolean create) {
 		super(FacilityDto.class, FacilityDto.I18N_PREFIX, false);
@@ -63,8 +68,15 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 
 	@Override
 	protected void addFields() {
-		TextField name = addField(FacilityDto.NAME, TextField.class);
-		ComboBox type = addField(FacilityDto.TYPE, ComboBox.class);
+		addField(FacilityDto.NAME, TextField.class);
+		typeGroup = new ComboBox();
+		typeGroup.setId("typeGroup");
+		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		typeGroup.addItems(FacilityTypeGroup.values());
+		typeGroup.setWidth(100, Unit.PERCENTAGE);
+		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
+		ComboBox type = addField(FacilityDto.TYPE);
+		type.removeAllItems();
 		ComboBox region = addInfrastructureField(FacilityDto.REGION);
 		ComboBox district = addInfrastructureField(FacilityDto.DISTRICT);
 		ComboBox community = addInfrastructureField(FacilityDto.COMMUNITY);
@@ -79,17 +91,21 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		removeMaxLengthValidators(longitude);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
-		name.setRequired(true);
+		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT);
+
+		typeGroup.addValueChangeListener(e -> {
+			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), false));
+		});
+
 		type.addValueChangeListener(e -> {
-			if (!FacilityType.LABORATORY.equals(type.getValue())) {
-				region.setRequired(true);
-				district.setRequired(true);
-				if (!create) {
-					// Disable editing of region, etc. so case references stay correct
-					region.setEnabled(false);
-					district.setEnabled(false);
-					community.setEnabled(false);
-				}
+			boolean notLab = !FacilityType.LABORATORY.equals(type.getValue());
+			region.setRequired(notLab);
+			district.setRequired(notLab);
+			if (!create) {
+				// Disable editing of region, etc. so case references stay correct
+				region.setEnabled(false);
+				district.setEnabled(false);
+				community.setEnabled(false);
 			}
 		});
 
@@ -112,6 +128,14 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+	}
+
+	@Override
+	public void setValue(FacilityDto facilityDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+		if (facilityDto.getType() != null) {
+			typeGroup.setValue(facilityDto.getType().getFacilityTypeGroup());
+		}
+		super.setValue(facilityDto);
 	}
 
 	@Override

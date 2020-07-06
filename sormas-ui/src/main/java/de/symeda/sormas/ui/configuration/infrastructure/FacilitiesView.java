@@ -37,6 +37,8 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -60,7 +62,7 @@ import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public abstract class FacilitiesView extends AbstractConfigurationView {
+public class FacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
 
@@ -71,6 +73,8 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 
 	// Filter
 	private TextField searchField;
+	private ComboBox typeGroupFilter;
+	private ComboBox typeFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -86,7 +90,7 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
 
-	protected FacilitiesView() {
+	public FacilitiesView() {
 
 		super(VIEW_NAME);
 
@@ -139,7 +143,7 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 				"create",
 				I18nProperties.getCaption(Captions.actionNewEntry),
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createFacility(true),
+				e -> ControllerProvider.getInfrastructureController().createFacility(),
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
@@ -203,6 +207,27 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 		});
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
+
+		typeGroupFilter = new ComboBox();
+		typeGroupFilter.setId("typeGroup");
+		typeGroupFilter.setWidth(220, Unit.PIXELS);
+		typeGroupFilter.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		typeGroupFilter.addItems(FacilityTypeGroup.values());
+		typeGroupFilter.addValueChangeListener(e -> {
+			criteria.typeGroup((FacilityTypeGroup) e.getProperty().getValue());
+			FieldHelper.updateItems(typeFilter, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroupFilter.getValue(), false));
+		});
+		filterLayout.addComponent(typeGroupFilter);
+
+		typeFilter = new ComboBox();
+		typeFilter.setId(FacilityDto.TYPE);
+		typeFilter.setWidth(220, Unit.PIXELS);
+		typeFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		typeFilter.addValueChangeListener(e -> {
+			criteria.type((FacilityType) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(typeFilter);
 
 		regionFilter = new ComboBox();
 		regionFilter.setId(FacilityDto.REGION);
@@ -282,7 +307,6 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.FACILITY,
-									criteria.getType(),
 									new Runnable() {
 
 										public void run() {
@@ -296,7 +320,6 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.FACILITY,
-									criteria.getType(),
 									new Runnable() {
 
 										public void run() {
@@ -340,6 +363,8 @@ public abstract class FacilitiesView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameCityLike());
+		typeGroupFilter.setValue(criteria.getTypeGroup());
+		typeFilter.setValue(criteria.getType());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		communityFilter.setValue(criteria.getCommunity());

@@ -4631,6 +4631,7 @@ CREATE TABLE campaignforms(
 	formid varchar(255),
 	languagecode varchar(255),
 	campaignformelements text,
+	campaignformtranslations text,
 	sys_period tstzrange not null,
 	primary key(id)
 );
@@ -4759,4 +4760,14 @@ ALTER TABLE campaignformdata_history ADD COLUMN archived boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add archived column to campaign form data #2268');
 
+-- 2020-06-23 Import and use new facility types #1637
+UPDATE samples SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
+UPDATE pathogentest SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
+DELETE FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO';
+UPDATE facility SET type = 'HOSPITAL' WHERE type = null AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
+ALTER TABLE cases ADD COLUMN facilitytype varchar(255);
+ALTER TABLE cases_history ADD COLUMN facilitytype varchar(255);
+UPDATE cases SET facilitytype = 'HOSPITAL' WHERE healthfacility_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY');
+
+INSERT INTO schema_version (version_number, comment) VALUES (225, 'Import and use new facility types #1637');
 -- *** Insert new sql commands BEFORE this line ***

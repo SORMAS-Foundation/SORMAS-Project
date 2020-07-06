@@ -37,6 +37,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityDto;
@@ -397,6 +398,7 @@ public class TestDataCreator {
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
+		facility.setType(FacilityType.HOSPITAL);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

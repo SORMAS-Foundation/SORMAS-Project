@@ -57,6 +57,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 
 		setColumns(
 			FacilityDto.NAME,
+			FacilityDto.TYPE,
 			FacilityDto.REGION,
 			FacilityDto.DISTRICT,
 			FacilityDto.COMMUNITY,
@@ -66,7 +67,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 			FacilityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editHealthFacility(e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

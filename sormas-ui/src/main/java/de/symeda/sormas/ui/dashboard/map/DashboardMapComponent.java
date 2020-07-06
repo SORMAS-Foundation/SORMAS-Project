@@ -684,7 +684,7 @@ public class DashboardMapComponent extends VerticalLayout {
 		if (showCases) {
 			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
 				|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
-				Label facilitiesKeyLabel = new Label(I18nProperties.getCaption(Captions.dashboardHealthFacilities));
+				Label facilitiesKeyLabel = new Label(I18nProperties.getCaption(Captions.dashboardFacilities));
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendLayout.addComponent(facilitiesKeyLabel);
 

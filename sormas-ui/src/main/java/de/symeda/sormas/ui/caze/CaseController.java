@@ -502,7 +502,7 @@ public class CaseController {
 			CaseDataDto oldCase = findCase(caseUuid);
 			CaseDataDto cazeDto = caseEditForm.getValue();
 			if (cazeDto.getHealthFacility() != null && !cazeDto.getHealthFacility().getUuid().equals(oldCase.getHealthFacility().getUuid())) {
-				saveCaseWithHealthFacilityChangedPrompt(cazeDto, oldCase);
+				saveCaseWithFacilityChangedPrompt(cazeDto, oldCase);
 			} else {
 				saveCase(cazeDto);
 			}
@@ -570,17 +570,17 @@ public class CaseController {
 				boolean investigationStatusChange = form.getInvestigationStatusCheckBox().getValue();
 				boolean outcomeChange = form.getOutcomeCheckBox().getValue();
 				boolean surveillanceOfficerChange = district != null && form.getSurveillanceOfficerCheckBox().getValue();
-				boolean healthFacilityChange = form.getHealthFacilityCheckbox().getValue();
+				boolean facilityChange = form.getHealthFacilityCheckbox().getValue();
 
-				if (healthFacilityChange) {
+				if (facilityChange) {
 					VaadinUiUtil.showChooseOptionPopup(
 						I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-						new Label(I18nProperties.getString(Strings.messageHealthFacilityMulitChanged)),
+						new Label(I18nProperties.getString(Strings.messageFacilityMulitChanged)),
 						I18nProperties.getCaption(Captions.caseTransferCases),
 						I18nProperties.getCaption(Captions.caseEditData),
 						500,
 						e -> {
-							bulkEditWithHealthFacilities(
+							bulkEditWithFacilities(
 								selectedCases,
 								updatedBulkEditData,
 								diseaseChange,
@@ -647,7 +647,7 @@ public class CaseController {
 		}
 	}
 
-	private void bulkEditWithHealthFacilities(
+	private void bulkEditWithFacilities(
 		Collection<? extends CaseIndexDto> selectedCases,
 		CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -890,11 +890,11 @@ public class CaseController {
 		return view;
 	}
 
-	public void saveCaseWithHealthFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
+	public void saveCaseWithFacilityChangedPrompt(CaseDataDto caze, CaseDataDto oldCase) {
 
 		VaadinUiUtil.showChooseOptionPopup(
 			I18nProperties.getCaption(Captions.caseInfrastructureDataChanged),
-			new Label(I18nProperties.getString(Strings.messageHealthFacilityChanged)),
+			new Label(I18nProperties.getString(Strings.messageFacilityChanged)),
 			I18nProperties.getCaption(Captions.caseTransferCase),
 			I18nProperties.getCaption(Captions.caseEditData),
 			500,

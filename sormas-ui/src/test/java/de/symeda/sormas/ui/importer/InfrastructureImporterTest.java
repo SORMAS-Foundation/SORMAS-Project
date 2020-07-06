@@ -59,7 +59,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		importer.runImport();
-		getFacilityFacade().getByName("Facility with ü", district, community, false).get(0);
+		getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false).get(0);
 	}
 
 	@Test

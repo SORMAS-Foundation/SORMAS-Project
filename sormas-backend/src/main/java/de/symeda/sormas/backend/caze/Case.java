@@ -54,6 +54,7 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -150,6 +151,7 @@ public class Case extends CoreAdo {
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String SAMPLES = "samples";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private Person person;
 	private String description;
@@ -251,6 +253,7 @@ public class Case extends CoreAdo {
 
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
+	private FacilityType facilityType;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
@@ -1046,5 +1049,14 @@ public class Case extends CoreAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

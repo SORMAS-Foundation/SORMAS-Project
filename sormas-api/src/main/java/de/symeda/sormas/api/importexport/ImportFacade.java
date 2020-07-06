@@ -67,7 +67,7 @@ public interface ImportFacade {
 
 	String getCommunityImportTemplateFilePath();
 
-	String getFacilityLaboratoryImportTemplateFilePath();
+	String getFacilityImportTemplateFilePath();
 
 	String getCaseContactImportTemplateFilePath();
 

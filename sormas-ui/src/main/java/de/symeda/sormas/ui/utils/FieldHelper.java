@@ -397,7 +397,7 @@ public final class FieldHelper {
 		});
 	}
 
-	public static void setEnabled(boolean enabled, Field ... fields){
+	public static void setEnabled(boolean enabled, Field... fields) {
 		Arrays.asList(fields).forEach(field -> field.setEnabled(enabled));
 	}
 
@@ -455,9 +455,13 @@ public final class FieldHelper {
 	public static void updateEnumData(AbstractSelect select, Iterable<? extends Enum> enumData) {
 
 		select.removeAllItems();
-		for (Object r : enumData) {
-			Item newItem = select.addItem(r);
-			newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+		select.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
+		select.setItemCaptionPropertyId((SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID));
+		if (enumData != null) {
+			for (Object r : enumData) {
+				Item newItem = select.addItem(r);
+				newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+			}
 		}
 	}
 

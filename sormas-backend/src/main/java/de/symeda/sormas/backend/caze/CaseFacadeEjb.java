@@ -96,6 +96,7 @@ import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -1199,6 +1200,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 
+		if (dto.getHealthFacility() != null
+			&& FacilityDto.OTHER_FACILITY_UUID.equals(dto.getHealthFacility().getUuid())
+			&& dto.getFacilityType() == null) {
+			throw new IllegalArgumentException("The facility type of cases assigned to the other facility must not be null.");
+		}
+
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 
@@ -1499,8 +1506,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
-			List<User> informants =
-				caze.getHealthFacility() != null ? userService.getInformantsOfFacility(caze.getHealthFacility()) : new ArrayList<>();
+			List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+				? userService.getInformantsOfFacility(caze.getHealthFacility())
+				: new ArrayList<>();
 			Random rand = new Random();
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
@@ -1804,6 +1812,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}
@@ -1943,6 +1952,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}
