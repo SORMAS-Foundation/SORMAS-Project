@@ -888,8 +888,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			newCaseFilter = cb.between(caze.get(Case.CREATION_DATE), fromDate, toDate);
 		} else if (newCaseDateType == NewCaseDateType.INVESTIGATION) {
 			newCaseFilter = cb.between(caze.get(Case.INVESTIGATED_DATE), fromDate, toDate);
-		} else if (newCaseDateType == NewCaseDateType.LAST_TEST_RESULT) {
-			newCaseFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
+		//} else if (newCaseDateType == NewCaseDateType.LAST_TEST_RESULT) {
+		//	newCaseFilter = cb.between(caze.get(Case.REPORT_DATE), fromDate, toDate);
 		} else {
 			newCaseFilter = reportDateFilter;
 		}
