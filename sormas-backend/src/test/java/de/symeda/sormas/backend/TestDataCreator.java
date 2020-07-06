@@ -35,6 +35,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -334,6 +335,7 @@ public class TestDataCreator {
 		contact.setPerson(contactPerson);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
+		contact.setEpiData(EpiDataDto.build());
 
 		contact = beanTest.getContactFacade().saveContact(contact);
 
@@ -813,9 +815,8 @@ public class TestDataCreator {
 	}
 
 	/**
-	 * @deprecated Use RDCF instead
 	 * @author MartinWahnschaffe
-	 *
+	 * @deprecated Use RDCF instead
 	 */
 	@Deprecated
 	public static class RDCFEntities {

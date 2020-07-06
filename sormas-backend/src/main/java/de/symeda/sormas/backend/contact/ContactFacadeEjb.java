@@ -467,7 +467,7 @@ public class ContactFacadeEjb implements ContactFacade {
 								.append(", ");
 						});
 						if (travelHistoryBuilder.length() > 0) {
-							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
+							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
 						}
 						if (travelHistoryBuilder.length() == 0 && exportContact.getTraveled() != null) {
 							travelHistoryBuilder.append(exportContact.getTraveled());
