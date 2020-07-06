@@ -215,6 +215,15 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
+	protected <T extends Field<?>> T addCustomField(FieldConfiguration fieldConfiguration, Class<?> dataType, Class<T> fieldType) {
+		T field = addCustomField(fieldConfiguration.getPropertyId(), dataType, fieldType);
+
+		field.setCaption(fieldConfiguration.getCaption());
+		field.setStyleName(fieldConfiguration.getStyle());
+
+		return field;
+	}
+
 	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })

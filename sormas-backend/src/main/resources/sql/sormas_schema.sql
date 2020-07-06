@@ -4710,6 +4710,24 @@ ALTER TABLE samples_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
 
+-- 2020-06-29 Extend event details #2391
+UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE';
+UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED';
+UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT';
+
+ALTER TABLE events RENAME COLUMN eventdate TO startdate;
+ALTER TABLE events ADD COLUMN enddate timestamp;
+ALTER TABLE events ADD COLUMN externalId varchar(512);
+ALTER TABLE events ADD COLUMN nosocomial varchar(255);
+ALTER TABLE events ADD COLUMN srcType varchar(255);
+ALTER TABLE events ADD COLUMN srcMediaWebsite varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaName varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
+
+UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
+
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Extend event details #2391');
+
 -- 2020-06-18 Remove wrongly assigned surveillance officers from cases #2284
 ALTER TABLE contact ADD COLUMN epidata_id bigint;
 ALTER TABLE contact_history ADD COLUMN epidata_id bigint;
@@ -4727,6 +4745,6 @@ DO $$
     END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add Epidemiological data to contacts');                                                                                                                        
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -59,7 +59,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",
@@ -92,7 +92,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
 		EventDto event = creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",
@@ -125,7 +125,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",
@@ -139,7 +139,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district);
 
 		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.eventStatus(EventStatus.POSSIBLE);
+		eventCriteria.eventStatus(EventStatus.SIGNAL);
 		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 
 		// List should have one entry
@@ -153,7 +153,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 
 		creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",
@@ -180,7 +180,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",
@@ -234,7 +234,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		// One archived event
 		EventDto event1 = creator.createEvent(
-			EventStatus.CONFIRMED,
+			EventStatus.EVENT,
 			"",
 			"",
 			"",
@@ -251,7 +251,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		// One other event
 		EventDto event2 = creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"",
 			"",
 			"",

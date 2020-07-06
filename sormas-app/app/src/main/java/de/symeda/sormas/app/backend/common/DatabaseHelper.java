@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -24,7 +25,9 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import de.symeda.sormas.app.backend.caze.Case;
@@ -125,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 209;
+	public static final int DATABASE_VERSION = 210;
 
 	private static DatabaseHelper instance = null;
 
@@ -1382,6 +1385,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 208:
 				currentVersion = 208;
 				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
+			case 209:
+				currentVersion = 209;
+
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='SIGNAL' where eventStatus='POSSIBLE'");
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='EVENT' where eventStatus='CONFIRMED'");
+				getDao(Event.class).executeRaw("UPDATE events set eventStatus='DROPPED' where eventStatus='NO_EVENT'");
+
+				Cursor dbCursor = db.query(Event.TABLE_NAME, null, null, null, null, null, null);
+				String[] columnNames = dbCursor.getColumnNames();
+				dbCursor.close();
+
+				String queryColumns = TextUtils.join(",", columnNames);
+
+				getDao(Event.class).executeRaw("ALTER TABLE events RENAME TO tmp_events;");
+				TableUtils.createTable(connectionSource, Event.class);
+
+				db.execSQL("INSERT INTO events (" + queryColumns.replace("eventDate", "startDate") + ") SELECT " + queryColumns + " FROM tmp_events");
+				db.execSQL("DROP TABLE tmp_events;");
+
+				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
 
 				// ATTENTION: break should only be done after last version
 				break;

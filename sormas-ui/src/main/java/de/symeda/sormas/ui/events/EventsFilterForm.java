@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Date;
@@ -18,6 +19,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,7 +45,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
-	private static final String MORE_FILTERS_HTML_LAYOUT = loc(WEEK_AND_DATE_FILTER);
+	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(EventDto.SRC_TYPE) + loc(WEEK_AND_DATE_FILTER);
 
 	@Override
 	protected String[] getMainFilterLocators() {
@@ -72,6 +74,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
+		addField(moreFiltersContainer, FieldConfiguration.pixelSized(EventDto.SRC_TYPE, 140));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
