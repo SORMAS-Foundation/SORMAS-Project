@@ -167,7 +167,7 @@ g = visNetwork(nodesS, edgesS, main = list(text = "{heading}", style = mainStyle
                #footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle),
                background = "white", annot = T, width = "100%") %>%
   visEdges(arrows = "to", color = "black", smooth = list(type = "continuous")) %>%
-  visOptions(selectedBy = "{Classification}", highlightNearest = TRUE, nodesIdSelection = FALSE)
+  visOptions(selectedBy = list(variable = "Classification", main="{selectByClassification}", sort = FALSE, values = caseClass), highlightNearest = TRUE, nodesIdSelection = FALSE)
 for (i in 1:length(caseClass)) {
   g = visGroups(graph = g, groupname = caseClass[i], size = 10, shape = "icon", icon = avertarIcon(caseClassColor[i]))
 }
