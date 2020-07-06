@@ -84,6 +84,7 @@ public class Case extends CoreAdo {
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
