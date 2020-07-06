@@ -4710,7 +4710,6 @@ ALTER TABLE samples_history
 
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
 
-
 -- 2020-06-29 Extend event details #2391
 UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE';
 UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED';
@@ -4728,5 +4727,24 @@ ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
 UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
 
 INSERT INTO schema_version (version_number, comment) VALUES (221, 'Extend event details #2391');
+
+-- 2020-06-18 Remove wrongly assigned surveillance officers from cases #2284
+ALTER TABLE contact ADD COLUMN epidata_id bigint;
+ALTER TABLE contact_history ADD COLUMN epidata_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_epidata_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
+            LOOP
+                INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
+                UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
 
 -- *** Insert new sql commands BEFORE this line ***
