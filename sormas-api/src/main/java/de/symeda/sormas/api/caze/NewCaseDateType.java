@@ -30,8 +30,8 @@ public enum NewCaseDateType {
 	REPORT,
 	CLASSIFICATION,
 	CREATION,
-	INVESTIGATION,
-	LAST_TEST_RESULT;
+	INVESTIGATION;
+	//LAST_TEST_RESULT;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
