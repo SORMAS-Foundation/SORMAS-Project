@@ -58,6 +58,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.caze.HospitalWardType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -118,6 +120,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
+					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
 					inlineLocs(CaseDataDto.CASE_CLASSIFICATION, CLASSIFICATION_RULES_LOC) +
 					fluidRow(
 							fluidColumnLoc(3, 0, CaseDataDto.CLASSIFICATION_DATE),
@@ -240,7 +243,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		epidNumberWarningLabel.addStyleName(VSPACE_3);
 		addField(CaseDataDto.EXTERNAL_ID, TextField.class);
 
-		addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
@@ -263,6 +265,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isGermanServer()) {
+			addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
+			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
+			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);
 			quarantineOrderedVerbally = addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 			CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
 			addField(CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
@@ -271,10 +277,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
 			setVisible(
 				false,
-				CaseDataDto.QUARANTINE_ORDERED_VERBALLY,
-				CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
-				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
-				CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
+				ContactDto.QUARANTINE_ORDERED_VERBALLY,
+				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
+		} else {
+			final OptionGroup caseClassificationGroup = addField(CaseDataDto.CASE_CLASSIFICATION, OptionGroup.class);
+			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
 		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -741,8 +751,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		private static final long serialVersionUID = -5339850320902885768L;
 
-		private AbstractSelect diseaseField;
-		private Disease currentDisease;
+		private final AbstractSelect diseaseField;
+		private final Disease currentDisease;
 
 		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;

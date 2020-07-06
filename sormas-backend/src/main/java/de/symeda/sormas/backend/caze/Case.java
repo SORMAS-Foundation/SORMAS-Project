@@ -83,6 +83,9 @@ public class Case extends CoreAdo {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
+	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
+	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
@@ -164,6 +167,10 @@ public class Case extends CoreAdo {
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
+
+	private YesNoUnknown clinicalConfirmation;
+	private boolean epidemiologicalConfirmation;
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
@@ -355,6 +362,33 @@ public class Case extends CoreAdo {
 
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getClinicalConfirmation() {
+		return clinicalConfirmation;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	@Column
+	public boolean isEpidemiologicalConfirmation() {
+		return epidemiologicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(boolean epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() {
+		return laboratoryDiagnosticConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 	}
 
 	@ManyToOne(cascade = {})
@@ -914,7 +948,7 @@ public class Case extends CoreAdo {
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getquarantineTypeDetails() {
+	public String getQuarantineTypeDetails() {
 		return quarantineTypeDetails;
 	}
 

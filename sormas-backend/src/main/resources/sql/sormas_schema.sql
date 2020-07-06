@@ -4703,11 +4703,22 @@ INSERT INTO schema_version (version_number, comment) VALUES (219, 'Add "Other" a
 -- 2020-06-29 Add samples to event participants #2395
 ALTER TABLE samples
     ADD COLUMN associatedeventparticipant_id bigint;
-ALTER TABLE samples
-    ADD CONSTRAINT fk_samples_associatedeventparticipant_id FOREIGN KEY (associatedeventparticipant_id) REFERENCES eventparticipant (id);
-ALTER TABLE samples_history
-    ADD COLUMN associatedeventparticipant_id bigint;
+ALTER TABLE samples ADD CONSTRAINT fk_samples_associatedeventparticipant_id FOREIGN KEY (associatedeventparticipant_id) REFERENCES eventparticipant (id);
+ALTER TABLE samples_history ADD COLUMN associatedeventparticipant_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
+
+-- 2020-06-29 Add samples to event participants #2395
+ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation boolean;
+ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation boolean;
+ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+
+UPDATE cases SET epidemiologicalconfirmation = false;
+UPDATE cases_history SET epidemiologicalconfirmation = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add case classification for Germany #2230');
 
 -- *** Insert new sql commands BEFORE this line ***

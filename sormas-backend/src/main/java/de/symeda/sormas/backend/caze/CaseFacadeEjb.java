@@ -1726,6 +1726,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setClassificationUser(userService.getByReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
+		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
+		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setHospitalization(hospitalizationFacade.fromDto(source.getHospitalization()));
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
@@ -1861,6 +1864,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setClassificationUser(UserFacadeEjb.toReferenceDto(source.getClassificationUser()));
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
+		target.setClinicalConfirmation(source.getClinicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.isEpidemiologicalConfirmation());
+		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
 		target.setHospitalization(HospitalizationFacadeEjb.toDto(source.getHospitalization()));
@@ -1928,7 +1934,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
-		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
