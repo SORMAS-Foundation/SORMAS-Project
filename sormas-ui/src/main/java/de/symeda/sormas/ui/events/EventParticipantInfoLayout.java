@@ -20,6 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -56,8 +57,13 @@ public class EventParticipantInfoLayout extends AbstractInfoLayout {
 		addDescLabel(firstColumn, eventDto.getDisease(), I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE));
 		addDescLabel(
 			firstColumn,
-			DateFormatHelper.formatDate(eventDto.getEventDate()),
-			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.EVENT_DATE));
+			eventDto.getStartDate() == null
+				? ""
+				: eventDto.getEndDate() == null
+					? DateFormatHelper.formatDate(eventDto.getStartDate())
+					: String
+						.format("%s - %s", DateFormatHelper.formatDate(eventDto.getStartDate()), DateFormatHelper.formatDate(eventDto.getEndDate())),
+			I18nProperties.getCaption(Captions.singleDayEventDate));
 
 		this.addComponent(firstColumn);
 
