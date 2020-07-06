@@ -27,7 +27,11 @@ public enum NewCaseDateType {
 
 	MOST_RELEVANT,
 	ONSET,
-	REPORT;
+	REPORT,
+	CLASSIFICATION,
+	CREATION,
+	INVESTIGATION,
+	LAST_TEST_RESULT;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
