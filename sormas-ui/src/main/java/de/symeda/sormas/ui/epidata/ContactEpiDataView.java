@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
-import com.vaadin.navigator.ViewChangeListener;
-
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.contact.AbstractContactView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -33,10 +31,7 @@ public class ContactEpiDataView extends AbstractContactView {
 	}
 
 	@Override
-	public void enter(ViewChangeListener.ViewChangeEvent event) {
-
-		super.enter(event);
-
+	protected void initView(String params) {
 		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
 			ControllerProvider.getContactController().getEpiDataComponent(getContactRef().getUuid(), null);
 		setSubComponent(epidDataForm);
