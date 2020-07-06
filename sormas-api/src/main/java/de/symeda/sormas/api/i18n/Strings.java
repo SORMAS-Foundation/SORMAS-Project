@@ -120,6 +120,7 @@ public interface Strings {
 	String entityDistricts = "entityDistricts";
 	String entityEvent = "entityEvent";
 	String entityEvents = "entityEvents";
+	String entityEventParticipant = "entityEventParticipant";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
@@ -150,6 +151,7 @@ public interface Strings {
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
 	String forContact = "forContact";
+	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";
@@ -407,6 +409,8 @@ public interface Strings {
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
+	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
+	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 	String infoSelectOrCreatePersonForContact = "infoSelectOrCreatePersonForContact";
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
@@ -479,6 +483,7 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
@@ -706,6 +711,6 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
-	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
-	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
+	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
+	String messageCampaignFormSaved = "messageCampaignFormSaved";
 }

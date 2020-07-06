@@ -69,9 +69,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> {
-				ControllerProvider.getInfrastructureController().editRegion(e.getItem().getUuid());
-			});
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

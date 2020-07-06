@@ -1,16 +1,14 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
 import de.symeda.sormas.api.campaign.form.CampaignFormDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.junit.Assert.fail;
 
 public class CampaignFormFacadeEjbTest extends AbstractBeanTest {
 
@@ -34,6 +32,16 @@ public class CampaignFormFacadeEjbTest extends AbstractBeanTest {
 			getCampaignFormFacade().validateAndClean(campaignForm);
 			fail("Malformed campaign form was saved!");
 		} catch (ValidationRuntimeException ignored) {
+		}
+
+		// ID must be unique
+		schema = "[{\"id\": \"element\", \"type\": \"string\"}, {\"id\": \"element\", \"type\": \"string\"}]";
+		campaignForm = getCampaignFormFacade().buildCampaignFormFromJson("testForm", null, schema, null);
+
+		try {
+			getCampaignFormFacade().validateAndClean(campaignForm);
+			fail("Malformed campaign form was saved!");
+		} catch (ValidationRuntimeException | IllegalStateException ignored) {
 		}
 
 		// Type must be supported

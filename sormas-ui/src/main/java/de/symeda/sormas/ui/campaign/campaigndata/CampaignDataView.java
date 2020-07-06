@@ -15,15 +15,18 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import org.vaadin.hene.popupbutton.PopupButton;
-
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import org.vaadin.hene.popupbutton.PopupButton;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
@@ -38,12 +41,24 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormLayout.setSpacing(true);
 			newFormLayout.setMargin(true);
 			newFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-			newFormLayout.setWidth(250, Unit.PIXELS);
+			newFormLayout.setWidth(350, Unit.PIXELS);
 
-			PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS, newFormLayout);
+			PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
+			newFormButton.setId("new-form");
+
+			for (CampaignFormReferenceDto campaignForm : FacadeProvider.getCampaignFormFacade().getAllCampaignFormsAsReferences()) {
+				Button campaignFormButton = ButtonHelper
+					.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(campaignForm));
+				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				newFormLayout.addComponent(campaignFormButton);
+			}
 
 			addHeaderComponent(newFormButton);
 		}
+
+		HorizontalLayout placeholder = new HorizontalLayout();
+		placeholder.setSizeFull();
+		addComponent(placeholder);
 	}
 
 }

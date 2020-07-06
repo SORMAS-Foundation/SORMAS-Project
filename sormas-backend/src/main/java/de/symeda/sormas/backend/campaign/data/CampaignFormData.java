@@ -20,42 +20,90 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormValue;
+import de.symeda.sormas.backend.campaign.Campaign;
+import de.symeda.sormas.backend.campaign.form.CampaignForm;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.campaign.form.CampaignForm;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
+import javax.persistence.Transient;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity(name = "campaignFormData")
 @Audited
-public class CampaignFormData extends CoreAdo {
+public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignFormData";
 
 	public static final String ARCHIVED = "archived";
 
-	private String formData;
+	private static final long serialVersionUID = -8021065433714419288L;
 
+	private List<CampaignFormValue> formValuesList;
+	private String formValues;
 	private Campaign campaign;
 	private CampaignForm campaignForm;
 	private Region region;
 	private District district;
 	private Community community;
+	private boolean archived;
 
 	@Lob
-	public String getFormData() {
-		return formData;
+	@Type(type = "org.hibernate.type.TextType")
+	public String getFormValues() {
+		return formValues;
 	}
 
-	public void setFormData(String formData) {
-		this.formData = formData;
+	public void setFormValues(String formValues) {
+		this.formValues = formValues;
+	}
+
+	@Transient
+	public List<CampaignFormValue> getFormValuesList() {
+		if (formValuesList == null) {
+			if (StringUtils.isBlank(formValues)) {
+				formValuesList = new ArrayList<>();
+			} else {
+				try {
+					ObjectMapper mapper = new ObjectMapper();
+					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormValue[].class));
+				} catch (IOException e) {
+					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormValue> - ID: " + getId());
+				}
+			}
+		}
+		return formValuesList;
+	}
+
+	public void setFormValuesList(List<CampaignFormValue> formValuesList) {
+		this.formValuesList = formValuesList;
+
+		if (this.formValuesList == null) {
+			formValues = null;
+		}
+
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			formValues = mapper.writeValueAsString(formValuesList);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Content of formValuesList could not be parsed to JSON String - ID: " + getId());
+		}
 	}
 
 	@ManyToOne()
@@ -103,5 +151,18 @@ public class CampaignFormData extends CoreAdo {
 
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+
+	@Column
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
+
+	public CampaignFormDataReferenceDto toReference() {
+		return new CampaignFormDataReferenceDto(getUuid());
 	}
 }

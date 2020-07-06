@@ -15,49 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.rest.logging;
+package de.symeda.sormas.ui.epidata;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.caze.AbstractCaseView;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+@SuppressWarnings("serial")
+public class CaseEpiDataView extends AbstractCaseView {
 
-/**
- * see https://patrickgrimard.io/2010/07/28/tutorial-implementing-a-servlet-filter-for-jsonp-callback-with-springs-delegatingfilterproxy/
- * 
- * @author Jan Falkenstern
- *
- */
-public class ServletOutputStreamCopier extends ServletOutputStream {
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 
-	private OutputStream outputStream;
-	private ByteArrayOutputStream copy;
-
-	public ServletOutputStreamCopier(OutputStream outputStream) {
-		this.outputStream = outputStream;
-		this.copy = new ByteArrayOutputStream(1024);
+	public CaseEpiDataView() {
+		super(VIEW_NAME, true);
 	}
 
 	@Override
-	public void write(int b) throws IOException {
-		outputStream.write(b);
-		copy.write(b);
-	}
+	protected void initView(String params) {
 
-	public byte[] getCopy() {
-		return copy.toByteArray();
-	}
-
-	@Override
-	public boolean isReady() {
-
-		return false;
-	}
-
-	@Override
-	public void setWriteListener(WriteListener writeListener) {
-
+		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
+			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
+		setSubComponent(epidDataForm);
+		setCaseEditPermission(epidDataForm);
 	}
 }

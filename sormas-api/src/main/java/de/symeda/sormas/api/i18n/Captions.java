@@ -123,6 +123,8 @@ public interface Captions {
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAllCampaigns = "campaignAllCampaigns";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
+	String campaignCampaignData = "campaignCampaignData";
+	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignNewCampaign = "campaignNewCampaign";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
@@ -132,6 +134,7 @@ public interface Captions {
 	String caseCasesList = "caseCasesList";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";
 	String caseConfirmCase = "caseConfirmCase";
+	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String caseContacts = "caseContacts";
 	String caseCreateCase = "caseCreateCase";
 	String CaseData = "CaseData";
@@ -350,6 +353,7 @@ public interface Captions {
 	String Contact_diseaseDetails = "Contact.diseaseDetails";
 	String Contact_district = "Contact.district";
 	String Contact_districtUuid = "Contact.districtUuid";
+	String Contact_epiData = "Contact.epiData";
 	String Contact_externalID = "Contact.externalID";
 	String Contact_firstName = "Contact.firstName";
 	String Contact_followUpComment = "Contact.followUpComment";
@@ -671,7 +675,7 @@ public interface Captions {
 	String Event = "Event";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
-	String Event_eventDate = "Event.eventDate";
+	String Event_startDate = "Event.startDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
@@ -690,12 +694,14 @@ public interface Captions {
 	String Event_typeOfPlace = "Event.typeOfPlace";
 	String Event_typeOfPlaceText = "Event.typeOfPlaceText";
 	String Event_uuid = "Event.uuid";
+	String singleDayEventDate = "singleDayEventDate";
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
+	String eventMultiDay = "multiDay";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -1114,6 +1120,7 @@ public interface Captions {
 	String sampleNewSample = "sampleNewSample";
 	String sampleNoSamplesForCase = "sampleNoSamplesForCase";
 	String sampleNoSamplesForContact = "sampleNoSamplesForContact";
+	String sampleNoSamplesForEventParticipant = "sampleNoSamplesForEventParticipant";
 	String sampleNotShipped = "sampleNotShipped";
 	String sampleNotShippedLong = "sampleNotShippedLong";
 	String samplePending = "samplePending";
@@ -1389,6 +1396,8 @@ public interface Captions {
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
+	String View_campaign_campaigndata_form = "View.campaign.campaigndata.form";
+	String View_campaign_campaigndata_form_short = "View.campaign.campaigndata.form.short";
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";

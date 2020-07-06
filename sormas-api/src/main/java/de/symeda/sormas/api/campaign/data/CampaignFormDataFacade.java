@@ -20,16 +20,13 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import java.util.List;
-
 import javax.ejb.Remote;
-
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import java.util.List;
 
 @Remote
 public interface CampaignFormDataFacade {
 
-	CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto dto) throws ValidationRuntimeException;
+	CampaignFormDataDto saveCampaignFormData(CampaignFormDataDto dto);
 
 	List<CampaignFormDataDto> getByUuids(List<String> uuids);
 
@@ -37,7 +34,9 @@ public interface CampaignFormDataFacade {
 
 	void deleteCampaignFormData(String campaignFormDataUuid);
 
-	boolean isDeleted(String campaignFormDataUuid);
-
 	boolean isArchived(String campaignFormDataUuid);
+
+	boolean exists(String uuid);
+
+	CampaignFormDataReferenceDto getReferenceByUuid(String uuid);
 }

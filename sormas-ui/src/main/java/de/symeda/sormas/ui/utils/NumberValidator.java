@@ -15,27 +15,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.epidata;
+package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import com.vaadin.v7.data.validator.AbstractValidator;
+import org.apache.commons.lang3.StringUtils;
 
 @SuppressWarnings("serial")
-public class EpiDataView extends AbstractCaseView {
+public class NumberValidator extends AbstractValidator<String> {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
-
-	public EpiDataView() {
-		super(VIEW_NAME, true);
+	public NumberValidator(String errorMessage) {
+		super(errorMessage);
 	}
 
 	@Override
-	protected void initView(String params) {
+	protected boolean isValidValue(String number) {
+		if (StringUtils.isBlank(number)) {
+			return true;
+		}
 
-		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), getViewMode());
-		setSubComponent(epidDataForm);
-		setCaseEditPermission(epidDataForm);
+		try {
+			Integer.valueOf(number);
+		} catch (NumberFormatException ie) {
+			try {
+				Long.valueOf(number);
+			} catch (NumberFormatException le) {
+				try {
+					Float.valueOf(number);
+				} catch (NumberFormatException fe) {
+					try {
+						Double.valueOf(number);
+					} catch (NumberFormatException de) {
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public Class<String> getType() {
+		return String.class;
 	}
 }

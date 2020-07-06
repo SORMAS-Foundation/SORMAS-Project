@@ -17,15 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -41,8 +32,10 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -88,6 +81,15 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class TestDataCreator {
 
@@ -340,6 +342,7 @@ public class TestDataCreator {
 		contact.setPerson(contactPerson);
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
+		contact.setEpiData(EpiDataDto.build());
 
 		contact = beanTest.getContactFacade().saveContact(contact);
 
@@ -410,7 +413,7 @@ public class TestDataCreator {
 	public EventDto createEvent(UserReferenceDto reportingUser) {
 
 		return createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"FirstName",
 			"LastName",
@@ -445,7 +448,7 @@ public class TestDataCreator {
 		event.setSrcLastName(srcLastName);
 		event.setSrcTelNo(srcTelNo);
 		event.setTypeOfPlace(typeOfPlace);
-		event.setEventDate(eventDate);
+		event.setStartDate(eventDate);
 		event.setReportDateTime(reportDateTime);
 		event.setReportingUser(reportingUser);
 		event.setSurveillanceOfficer(surveillanceOfficer);
@@ -537,6 +540,25 @@ public class TestDataCreator {
 		FacilityReferenceDto lab) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedContact);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedEventParticipant);
 		sample.setSampleDateTime(sampleDateTime);
 		sample.setReportDateTime(reportDateTime);
 		sample.setSampleMaterial(sampleMaterial);
@@ -692,7 +714,7 @@ public class TestDataCreator {
 		CampaignFormDataDto campaignFormData =
 			CampaignFormDataDto.build(campaignReferenceDto, campaignFormReferenceDto, rdcf.region, rdcf.district, rdcf.community);
 
-		campaignFormData.setFormData(formData);
+//		campaignFormData.setFormValues(formData);
 		return campaignFormData;
 	}
 
@@ -882,9 +904,8 @@ public class TestDataCreator {
 	}
 
 	/**
-	 * @deprecated Use RDCF instead
 	 * @author MartinWahnschaffe
-	 *
+	 * @deprecated Use RDCF instead
 	 */
 	@Deprecated
 	public static class RDCFEntities {

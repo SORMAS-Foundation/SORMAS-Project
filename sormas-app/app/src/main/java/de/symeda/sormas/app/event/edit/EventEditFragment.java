@@ -20,13 +20,18 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.EpiDataBurialDialog;
 import de.symeda.sormas.app.component.Item;
@@ -37,6 +42,7 @@ import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
+import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {
@@ -47,9 +53,15 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 	private List<Item> diseaseList;
 	private List<Item> typeOfPlaceList;
+	private List<Item> srcTypeList;
+	private boolean isMultiDayEvent;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
-		return newInstance(EventEditFragment.class, null, activityRootData);
+		EventEditFragment fragment = newInstance(EventEditFragment.class, null, activityRootData);
+
+		fragment.isMultiDayEvent = activityRootData.getEndDate() != null;
+
+		return fragment;
 	}
 
 	private void setUpControlListeners(final FragmentEventEditLayoutBinding contentBinding) {
@@ -65,7 +77,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private void openAddressPopup(final FragmentEventEditLayoutBinding contentBinding) {
 		final Location location = record.getEventLocation();
 		final Location locationClone = (Location) location.clone();
-		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false,null);
+		final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, false, null);
 		locationDialog.show();
 		locationDialog.setRegionAndDistrictRequired(true);
 		locationDialog.setPositiveCallback(() -> {
@@ -102,6 +114,7 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 			diseaseList.add(DataUtils.toItem(record.getDisease()));
 		}
 		typeOfPlaceList = DataUtils.getEnumItems(TypeOfPlace.class, true);
+		srcTypeList = DataUtils.getEnumItems(EventSourceType.class, true);
 	}
 
 	@Override
@@ -110,6 +123,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 
 		contentBinding.setData(record);
 		contentBinding.setEventStatusClass(EventStatus.class);
+		contentBinding.setIsMultiDayEvent(isMultiDayEvent);
+
 	}
 
 	@Override
@@ -117,9 +132,16 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		// Initialize ControlSpinnerFields
 		contentBinding.eventDisease.initializeSpinner(diseaseList);
 		contentBinding.eventTypeOfPlace.initializeSpinner(typeOfPlaceList);
+		contentBinding.eventSrcType.initializeSpinner(srcTypeList);
 
 		// Initialize ControlDateFields
-		contentBinding.eventEventDate.initializeDateField(getFragmentManager());
+		contentBinding.eventStartDate.initializeDateField(getFragmentManager());
+		String startDateCaption = Boolean.TRUE.equals(contentBinding.eventMultiDayEvent.getValue())
+			? I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE)
+			: I18nProperties.getCaption(Captions.singleDayEventDate);
+		contentBinding.eventStartDate.setCaption(startDateCaption);
+
+		contentBinding.eventEndDate.initializeDateField(getFragmentManager());
 	}
 
 	@Override

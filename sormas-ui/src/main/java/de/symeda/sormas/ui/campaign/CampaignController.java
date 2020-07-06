@@ -1,4 +1,19 @@
-package de.symeda.sormas.ui.reports.campaign;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.campaign;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -8,21 +23,26 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import static com.vaadin.v7.data.Validator.InvalidValueException;
 
 public class CampaignController {
 
-	public void createOrEdit(String uuid) {
+	public void createOrEditCampaign(String uuid) {
 
 		CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent;
 		String heading;
@@ -61,6 +81,16 @@ public class CampaignController {
 			heading = I18nProperties.getString(Strings.headingCreateNewCampaign);
 		}
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
+	}
+
+	public void createCampaignDataForm(CampaignFormReferenceDto campaignForm) {
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, () -> {
+			Notification
+				.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
+			SormasUI.refreshView();
+		});
+		VaadinUiUtil
+			.showModalPopupWindow(component, String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 	}
 
 	private void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {
@@ -117,19 +147,46 @@ public class CampaignController {
 		}
 		campaignEditForm.setValue(campaignDto);
 
-		view.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!campaignEditForm.getFieldGroup().isModified()) {
-					CampaignDto dto = campaignEditForm.getValue();
-					FacadeProvider.getCampaignFacade().saveCampaign(dto);
-					callback.run();
-				}
+		view.addCommitListener(() -> {
+			if (!campaignEditForm.getFieldGroup().isModified()) {
+				CampaignDto dto = campaignEditForm.getValue();
+				FacadeProvider.getCampaignFacade().saveCampaign(dto);
+				callback.run();
 			}
 		});
 
 		return view;
+	}
+
+	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
+		CampaignFormDataDto campaignFormData,
+		CampaignFormReferenceDto campaignForm,
+		Runnable callback) {
+		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
+
+		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+
+		if (campaignFormData == null) {
+			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
+		}
+		form.setValue(campaignFormData);
+
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				try {
+					form.validate();
+				} catch (InvalidValueException e) {
+					Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
+					return;
+				}
+
+				CampaignFormDataDto formData = form.getValue();
+				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
+				callback.run();
+			}
+		});
+
+		return component;
 	}
 
 	private CampaignDto getCampaign(String uuid) {
