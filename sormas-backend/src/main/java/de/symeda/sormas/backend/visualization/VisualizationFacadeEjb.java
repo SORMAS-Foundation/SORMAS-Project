@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,6 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
@@ -243,9 +246,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				EnvParam.CONTACT_IDS.put(env, contactIdStr);
 				EnvParam.OUTFILE.put(env, outputFile.toString());
 
-//				File outFile = tempDir.resolve("console.log").toFile();
-//				pb.redirectOutput(outFile );
-//				pb.redirectError(outFile);
+				File outFile = tempDir.resolve("console.log").toFile();
+				pb.redirectErrorStream(true);
+				pb.redirectOutput(outFile);
 
 				Process pr = pb.start();
 				int exitCode = pr.waitFor();
@@ -254,8 +257,13 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					String html = new String(Files.readAllBytes(outputFile));
 					return extractJson(html, language);
 				} else {
-					LoggerFactory.getLogger(VisualizationFacadeEjb.class)
-						.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
+					logger.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					if (logger.isDebugEnabled() && outFile.length() > 0) {
+						try (Stream<String> lines = Files.lines(outFile.toPath(), Charset.defaultCharset())) {
+							logger.debug(lines.collect(Collectors.joining("\n  ", "Console output of R script:\n  ", "")));
+						}
+					}
 					return null;
 				}
 
@@ -263,6 +271,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				throw new UncheckedIOException(e);
 
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				throw new RuntimeException(e);
 			}
 
@@ -270,7 +279,8 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 			try {
 				FileUtils.deleteDirectory(tempDir.toFile());
 			} catch (IOException e) {
-				throw new UncheckedIOException(e);
+				Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
+				logger.warn(e.getMessage(), e);
 			}
 		}
 	}
