@@ -220,6 +220,10 @@ public final class LayoutUtil {
 		return LayoutUtil.fluidRow(fluidColumnLoc(spanA, 0, locA));
 	}
 
+	public static String fluidRowLocs(int spanA, String locA) {
+		return LayoutUtil.fluidRow(fluidColumnLoc(spanA, 0, locA));
+	}
+
 	public static String fluidRowLocs(int spanA, String locA, int spanB, String locB) {
 		return LayoutUtil.fluidRow(fluidColumnLoc(spanA, 0, locA), fluidColumnLoc(spanB, 0, locB));
 	}
