@@ -18,6 +18,7 @@ In general data access & synchronisation is based on the following rules:
 ## Case
 * only users that are permitted to see cases at all
 * whoever created the case or is assigned to it is allowed to access it
+* all cases accessible for National users
 * access by jurisdiction, that is based region/district/community/health facility/point of entry of the case
 * cases that are made public can be accessed by all users permitted to see cases (this feature can be disabled)
 * edit is possible only for cases that are part of the users jurisdiction
@@ -26,6 +27,7 @@ In general data access & synchronisation is based on the following rules:
 ## Contact
 * only users that are permitted to see contacts at all
 * whoever created it or is assigned to it is allowed to access it
+* all contacts accessible for National users
 * users see all contacts of their cases
 * access by jurisdiction, that is using region/district of the contact and jurisdiction of the case the contact is assigned to
 * edit is possible only for contacts that are part of the users jurisdiction
@@ -38,6 +40,7 @@ In general data access & synchronisation is based on the following rules:
 ## Event
 * only users that are permitted to see events at all
 * whoever created the event or is assigned to it is allowed to access it
+* all events accessible for National users
 * access by region/district of the event
 
 ## EventParticipant
@@ -47,12 +50,14 @@ In general data access & synchronisation is based on the following rules:
 ## Tasks
 * only users that are permitted to see tasks at all
 * whoever created the task or is assigned to it is allowed to access it
+* all tasks accessible for National users
 * all tasks for the user's cases except the ones assigned to users in other jurisdiction
 * all tasks for the user's contacts except the ones assigned to users in other jurisdiction
 * all tasks for the user's events except the ones assigned to users in other jurisdiction
  
 ## Samples
 * only users that are permitted to see samples at all
+* all samples accessible for National Users
 * whoever created the sample or is assigned to it is allowed to access it
 * users see all samples of their cases
 * lab users see all samples of their laboratory
