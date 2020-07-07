@@ -2,7 +2,7 @@
 
 # Installing a SORMAS Server for development
 
-*If you have already installed your development server, you can find your system-specific server reference [here](dev/SERVER_SPECS.md).*
+*If you have already installed your development server, you can find your system-specific server reference in file [dev/config/SERVER_SPECS.md](dev/config/SERVER_SPECS.md).*
 
 ## Content
 * [The SORMAS development server setup](#the-sormas-development-server-setup)
@@ -68,7 +68,7 @@ There are still some things you need to do yourself after installation:
 
 ## Using the development server
 ### At the beginning of your coding session
-1. Source the `dev/env.sh` file to ensure that you have all potentially needed environment variables initialized
+1. Source the `dev/config/env.sh` file to ensure that you have all potentially needed environment variables initialized
 2. If using the PostgreSQL docker container, start the container by executing `docker-compose up` in `dev/postgres-docker` directory
 3. Start your Payara server by executing the `start-payara-sormas.sh` script in your SORMAS domain directory (`${SORMAS_DOMAIN_DIR}`)
 
@@ -83,4 +83,3 @@ Use these Ant targets in `sormas-base` for your development process
 ### After your coding session
 1. Stop the Payara server by executing the `stop-payara-sormas.sh` script in your SORMAS domain directory
 2. If using the PostgreSQL docker container, stop the container by executing `docker-compose stop`
-    - **IMPORTANT**: Do __NOT__ use `docker-compose down` since that would destroy your initialized database container!

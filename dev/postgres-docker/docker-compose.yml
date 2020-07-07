@@ -1,14 +1,15 @@
 version: "3.5"
 services:
   postgres:
-    build:
-      context: .
-      dockerfile: postgresql.dockerfile
+    image: "hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION}"
     ports:
-      - 5432:5432/tcp
+      - ${DB_PORT}:5432/tcp
     environment:
-      POSTGRES_PASSWORD: sormas
-    restart: unless-stopped
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SORMAS_POSTGRES_USER: ${SORMAS_POSTGRES_USER}
+      SORMAS_POSTGRES_PASSWORD: ${SORMAS_POSTGRES_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_NAME_AUDIT: ${DB_NAME}
     volumes:
-      - ./psql.conf:/etc/postgresql/postgresql.conf
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+      - /var/lib/postgresql/data
+    restart: unless-stopped
