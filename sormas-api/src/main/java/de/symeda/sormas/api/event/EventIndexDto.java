@@ -33,9 +33,11 @@ public class EventIndexDto implements Serializable {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String EVENT_DATE = "eventDate";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String EVENT_LOCATION = "eventLocation";
+	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -45,12 +47,16 @@ public class EventIndexDto implements Serializable {
 	private EventStatus eventStatus;
 	private Disease disease;
 	private String diseaseDetails;
-	private Date eventDate;
+	private Date startDate;
+	private Date endDate;
 	private String eventDesc;
 	private LocationReferenceDto eventLocation;
+	private EventSourceType srcType;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
+	private String srcMediaWebsite;
+	private String srcMediaName;
 	private Date reportDateTime;
 
 	public EventIndexDto(
@@ -58,7 +64,8 @@ public class EventIndexDto implements Serializable {
 		EventStatus eventStatus,
 		Disease disease,
 		String diseaseDetails,
-		Date eventDate,
+		Date startDate,
+		Date endDate,
 		String eventDesc,
 		String locationUuid,
 		String regionName,
@@ -66,21 +73,28 @@ public class EventIndexDto implements Serializable {
 		String communityName,
 		String city,
 		String address,
+		EventSourceType srcType,
 		String srcFirstName,
 		String srcLastName,
 		String srcTelNo,
+		String srcMediaWebsite,
+		String srcMediaName,
 		Date reportDateTime) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.eventDate = eventDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.eventDesc = eventDesc;
 		this.eventLocation = new LocationReferenceDto(locationUuid, regionName, districtName, communityName, city, address);
+		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
+		this.srcMediaWebsite = srcMediaWebsite;
+		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
 	}
 
@@ -116,12 +130,20 @@ public class EventIndexDto implements Serializable {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public Date getEventDate() {
-		return eventDate;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public String getEventDesc() {
@@ -138,6 +160,14 @@ public class EventIndexDto implements Serializable {
 
 	public void setEventLocation(LocationReferenceDto eventLocation) {
 		this.eventLocation = eventLocation;
+	}
+
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 
 	public String getSrcFirstName() {
@@ -164,6 +194,22 @@ public class EventIndexDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
+	public String getSrcMediaWebsite() {
+		return srcMediaWebsite;
+	}
+
+	public void setSrcMediaWebsite(String srcMediaWebsite) {
+		this.srcMediaWebsite = srcMediaWebsite;
+	}
+
+	public String getSrcMediaName() {
+		return srcMediaName;
+	}
+
+	public void setSrcMediaName(String srcMediaName) {
+		this.srcMediaName = srcMediaName;
+	}
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
@@ -173,6 +219,6 @@ public class EventIndexDto implements Serializable {
 	}
 
 	public EventReferenceDto toReference() {
-		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
 	}
 }

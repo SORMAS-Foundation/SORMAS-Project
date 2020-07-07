@@ -15,23 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.event;
+package de.symeda.sormas.ui.epidata;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.contact.AbstractContactView;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
-public enum EventStatus {
+@SuppressWarnings("serial")
+public class ContactEpiDataView extends AbstractContactView {
 
-	SIGNAL,
-	EVENT,
-	SCREENING,
-	CLUSTER,
-	DROPPED;
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
+	public ContactEpiDataView() {
+		super(VIEW_NAME);
 	}
 
-	public String toShortString() {
-		return I18nProperties.getEnumCaptionShort(this);
+	@Override
+	protected void initView(String params) {
+		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
+			ControllerProvider.getContactController().getEpiDataComponent(getContactRef().getUuid(), null);
+		setSubComponent(epidDataForm);
+		setContactEditPermission(epidDataForm);
 	}
 }

@@ -11,6 +11,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetailedDto> {
@@ -67,14 +68,11 @@ public class ContactGridDetailed extends AbstractContactGrid<ContactIndexDetaile
 			.setRenderer(entry -> entry != null ? entry.getUuid() : null, new UuidRenderer());
 		getColumn(ContactIndexDetailedDto.REPORTING_USER).setWidth(150);
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactIndexDetailedDto.CAZE.equals(e.getColumn().getId()))) {
-				CaseReferenceDto caze = e.getItem().getCaze();
-
-				if (caze != null && caze.getUuid() != null) {
-					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
-				}
+		addItemClickListener(new ShowDetailsListener<>(ContactIndexDetailedDto.CAZE, false, e -> {
+			CaseReferenceDto caze = e.getCaze();
+			if (caze != null && caze.getUuid() != null) {
+				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 			}
-		});
+		}));
 	}
 }

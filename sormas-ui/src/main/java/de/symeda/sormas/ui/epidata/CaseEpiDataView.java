@@ -22,11 +22,11 @@ import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 @SuppressWarnings("serial")
-public class EpiDataView extends AbstractCaseView {
+public class CaseEpiDataView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
 
-	public EpiDataView() {
+	public CaseEpiDataView() {
 		super(VIEW_NAME, true);
 	}
 

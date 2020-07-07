@@ -86,6 +86,14 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
+	private long epiDataId;
+	private YesNoUnknown traveled;
+	private String travelHistory;
+	private YesNoUnknown burialAttended;
+	private YesNoUnknown directContactConfirmedCase;
+	private YesNoUnknown directContactProbableCase;
+	private YesNoUnknown contactWithRodent;
+  
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
 	private Date quarantineOrderedVerballyDate;
@@ -105,6 +113,7 @@ public class ContactExportDto implements Serializable {
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
 							String region, String district,
+							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 							String reportingUserUuid, String regionUuid, String districtUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
@@ -151,6 +160,12 @@ public class ContactExportDto implements Serializable {
 			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
+		this.epiDataId = epiDataId;
+		this.traveled = traveled;
+		this.burialAttended = burialAttended;
+		this.directContactConfirmedCase = directContactConfirmedCase;
+		this.directContactProbableCase = directContactProbableCase;
+		this.contactWithRodent = contactWithRodent;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -178,6 +193,10 @@ public class ContactExportDto implements Serializable {
 
 	public Disease getInternalDisease() {
 		return internalDisease;
+	}
+
+	public long getEpiDataId() {
+		return epiDataId;
 	}
 
 	@Order(0)
@@ -379,6 +398,60 @@ public class ContactExportDto implements Serializable {
 		return lastCooperativeVisitSymptoms;
 	}
 
+	@Order(46)
+	public YesNoUnknown getTraveled() {
+		return traveled;
+	}
+
+	public void setTraveled(YesNoUnknown traveled) {
+		this.traveled = traveled;
+	}
+
+	@Order(47)
+	public String getTravelHistory() {
+		return travelHistory;
+	}
+
+	public void setTravelHistory(String travelHistory) {
+		this.travelHistory = travelHistory;
+	}
+
+	@Order(48)
+	public YesNoUnknown getBurialAttended() {
+		return burialAttended;
+	}
+
+	public void setBurialAttended(YesNoUnknown burialAttended) {
+		this.burialAttended = burialAttended;
+	}
+
+	@Order(49)
+	public YesNoUnknown getDirectContactConfirmedCase() {
+		return directContactConfirmedCase;
+	}
+
+	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
+		this.directContactConfirmedCase = directContactConfirmedCase;
+	}
+
+	@Order(50)
+	public YesNoUnknown getDirectContactProbableCase() {
+		return directContactProbableCase;
+	}
+
+	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
+		this.directContactProbableCase = directContactProbableCase;
+	}
+
+	@Order(51)
+	public YesNoUnknown getContactWithRodent() {
+		return contactWithRodent;
+	}
+
+	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
+		this.contactWithRodent = contactWithRodent;
+	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -485,6 +558,10 @@ public class ContactExportDto implements Serializable {
 
 	public void setDistrict(String district) {
 		this.district = district;
+	}
+
+	public void setEpiDataId(long epiDataId) {
+		this.epiDataId = epiDataId;
 	}
 
 	public String getReportingUserUuid() {

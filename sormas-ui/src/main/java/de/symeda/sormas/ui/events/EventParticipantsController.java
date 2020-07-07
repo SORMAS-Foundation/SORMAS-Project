@@ -17,16 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -46,6 +42,9 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 public class EventParticipantsController {
 
@@ -145,7 +144,7 @@ public class EventParticipantsController {
 				() -> {
 					for (Object selectedRow : selectedRows) {
 						FacadeProvider.getEventParticipantFacade()
-							.deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantDto) selectedRow).getUuid()));
+							.deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantIndexDto) selectedRow).getUuid()));
 					}
 					callback.run();
 					new Notification(

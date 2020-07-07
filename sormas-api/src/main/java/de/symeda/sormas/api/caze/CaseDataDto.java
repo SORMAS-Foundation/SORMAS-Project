@@ -354,6 +354,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		cazeData.setEpiData(contact.getEpiData());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();

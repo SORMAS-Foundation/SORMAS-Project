@@ -25,6 +25,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -63,11 +64,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactFollowUpDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
-			}
-		});
+		addItemClickListener(
+			new ShowDetailsListener<>(ContactFollowUpDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
 	}
 
 	public void setVisitColumns(Date referenceDate, int interval, ContactCriteria criteria) {

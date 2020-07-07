@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.components.grid.ItemClickListener;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
@@ -46,10 +44,11 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ReferenceDtoHtmlProvider;
 import de.symeda.sormas.ui.utils.ShortStringRenderer;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
-public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implements ItemClickListener<TaskIndexDto> {
+public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 
 	@SuppressWarnings("unchecked")
 	public TaskGrid(TaskCriteria criteria) {
@@ -67,7 +66,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			setCriteria(criteria);
 		}
 
-		addEditColumn(e -> ControllerProvider.getTaskController().edit(e.getItem(), this::reload));
+		addEditColumn(e -> ControllerProvider.getTaskController().edit(e, this::reload));
 
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
@@ -152,7 +151,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			column.setCaption(I18nProperties.getPrefixCaption(TaskIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(this);
+		addItemClickListener(new ShowDetailsListener<>(TaskIndexDto.CONTEXT_REFERENCE, false, e -> navigateToData(e)));
 	}
 
 	public void reload() {
@@ -163,29 +162,22 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 		getDataProvider().refreshAll();
 	}
 
-	@Override
-	public void itemClick(Grid.ItemClick<TaskIndexDto> event) {
-		if (event.getColumn() == null) {
-			return;
-		}
+	private void navigateToData(TaskIndexDto task) {
 
-		TaskIndexDto task = event.getItem();
-		if (TaskIndexDto.CONTEXT_REFERENCE.equals(event.getColumn().getId())) {
-			switch (task.getTaskContext()) {
-			case CASE:
-				ControllerProvider.getCaseController().navigateToCase(task.getCaze().getUuid());
-				return;
-			case CONTACT:
-				ControllerProvider.getContactController().navigateToData(task.getContact().getUuid());
-				return;
-			case EVENT:
-				ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
-				return;
-			case GENERAL:
-				return;
-			default:
-				throw new IndexOutOfBoundsException(task.getTaskContext().toString());
-			}
+		switch (task.getTaskContext()) {
+		case CASE:
+			ControllerProvider.getCaseController().navigateToCase(task.getCaze().getUuid());
+			return;
+		case CONTACT:
+			ControllerProvider.getContactController().navigateToData(task.getContact().getUuid());
+			return;
+		case EVENT:
+			ControllerProvider.getEventController().navigateToData(task.getEvent().getUuid());
+			return;
+		case GENERAL:
+			return;
+		default:
+			throw new IndexOutOfBoundsException(task.getTaskContext().toString());
 		}
 	}
 

@@ -4708,6 +4708,43 @@ ALTER TABLE samples_history ADD COLUMN associatedeventparticipant_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
 
+-- 2020-06-29 Extend event details #2391
+UPDATE events set eventstatus='SIGNAL' where eventstatus='POSSIBLE';
+UPDATE events set eventstatus='EVENT' where eventstatus='CONFIRMED';
+UPDATE events set eventstatus='DROPPED' where eventstatus='NO_EVENT';
+
+ALTER TABLE events RENAME COLUMN eventdate TO startdate;
+ALTER TABLE events ADD COLUMN enddate timestamp;
+ALTER TABLE events ADD COLUMN externalId varchar(512);
+ALTER TABLE events ADD COLUMN nosocomial varchar(255);
+ALTER TABLE events ADD COLUMN srcType varchar(255);
+ALTER TABLE events ADD COLUMN srcMediaWebsite varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaName varchar(512);
+ALTER TABLE events ADD COLUMN srcMediaDetails varchar(4096);
+
+UPDATE events set srcType='HOTLINE_PERSON' where LENGTH(CONCAT(srcfirstname, srclastname, srctelno, srcemail)) > 0;
+
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Extend event details #2391');
+
+-- 2020-06-18 Remove wrongly assigned surveillance officers from cases #2284
+ALTER TABLE contact ADD COLUMN epidata_id bigint;
+ALTER TABLE contact_history ADD COLUMN epidata_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_epidata_id FOREIGN KEY (epidata_id) REFERENCES epidata(id);
+
+DO $$
+    DECLARE rec RECORD;
+        DECLARE new_epidata_id INTEGER;
+    BEGIN
+        FOR rec IN SELECT id FROM public.contact WHERE epidata_id IS NULL
+            LOOP
+                INSERT INTO epidata(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_epidata_id;
+                UPDATE contact SET epidata_id = new_epidata_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
+
 -- 2020-07-03 Add case classification for Germany #2230
 ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
 ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation boolean;
@@ -4719,6 +4756,6 @@ ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(25
 UPDATE cases SET epidemiologicalconfirmation = false;
 UPDATE cases_history SET epidemiologicalconfirmation = false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add case classification for Germany #2230');
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add case classification for Germany #2230');
 
 -- *** Insert new sql commands BEFORE this line ***
