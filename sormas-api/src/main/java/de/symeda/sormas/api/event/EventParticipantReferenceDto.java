@@ -25,6 +25,9 @@ public class EventParticipantReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
+	private String firstName;
+	private String lastName;
+
 	public EventParticipantReferenceDto() {
 
 	}
@@ -35,6 +38,8 @@ public class EventParticipantReferenceDto extends ReferenceDto {
 
 	public EventParticipantReferenceDto(String uuid, String firstName, String lastName) {
 		super(uuid);
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.setCaption(buildCaption(uuid, firstName, lastName));
 	}
 
@@ -53,5 +58,13 @@ public class EventParticipantReferenceDto extends ReferenceDto {
 		}
 
 		return shortUuid;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
 	}
 }
