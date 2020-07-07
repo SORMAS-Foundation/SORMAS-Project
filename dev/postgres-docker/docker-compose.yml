@@ -2,6 +2,7 @@ version: "3.5"
 services:
   postgres:
     image: "hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION}"
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
     ports:
       - ${DB_PORT}:5432/tcp
     environment:
@@ -11,5 +12,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_NAME_AUDIT: ${DB_NAME}
     volumes:
-      - /var/lib/postgresql/data
+      - sormas-db-data:/var/lib/postgresql/data
     restart: unless-stopped
+
+volumes:
+    sormas-db-data:

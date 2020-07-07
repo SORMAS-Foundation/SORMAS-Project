@@ -204,7 +204,7 @@ if [[ "$USE_POSTGRESQL_DOCKER" = true ]]; then
     DB_PORT="$DB_PORT" \
     POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
     SORMAS_POSTGRES_USER="$DB_USER" \
-    SORMAS_POSTGRES_PASSWORD="$PASSWORD" \
+    SORMAS_POSTGRES_PASSWORD="$DB_PASSWORD" \
     DB_NAME="$DB_NAME" \
     DB_NAME_AUDIT="$DB_NAME_AUDIT" \
     < "$POSTGRES_DOCKER_ENVFILE" \
@@ -212,7 +212,7 @@ if [[ "$USE_POSTGRESQL_DOCKER" = true ]]; then
   mv "$POSTGRES_DOCKER_ENVFILE.tmp" "$POSTGRES_DOCKER_ENVFILE"
 
   echo "Starting PostgreSQL docker container"
-  "${ELEVATED[@]}" "docker-compose up -d"
+  env -i "${ELEVATED[@]}" "docker-compose up -d"
   DOCKER_RESULT=$?
 
   popd > /dev/null
@@ -224,7 +224,10 @@ if [[ "$USE_POSTGRESQL_DOCKER" = true ]]; then
     # postgres-docker/docker-compose.yml file
     SETUP_PARAMS=( \
       "${SETUP_PARAMS[@]}" \
-      INIT_DB=false \
+      USE_SUDO="$USE_SUDO" \
+      INIT_DB=true \
+      DB_TCP_CONNECT=true \
+      DB_PG_PW="$POSTGRES_PASSWORD"
       DB_HOST=localhost \
       DB_PORT="$DB_PORT" \
       DB_USER="$DB_USER" \
@@ -413,8 +416,9 @@ echo "You can find a reference with important information about your development
 echo "  $SYSSPECS_FILE"
 echo
 success "You are good to go. Happy coding! :)"
+echo "Note: You may want to adjust $(highlight sormas.properites) file in $SORMAS_DOMAIN_DIR"
 echo
-echo "Tips:"
+highlight "Tips:"
 echo "Open http://localhost:$(expr $PAYARA_PORT_BASE + 48) to verify Payara is running."
 echo
 echo "Source the '$(basename "$ENVSHELL_FILE")' script created in dev/config directory of" \
