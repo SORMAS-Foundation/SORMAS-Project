@@ -173,6 +173,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					+ loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	//@formatter:on
 
+	private final String caseUuid;
 	private final PersonDto person;
 	private final Disease disease;
 	private Field<?> quarantine;
@@ -181,7 +182,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 
-	public CaseDataForm(PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
+	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 
 		super(
 			CaseDataDto.class,
@@ -192,12 +193,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			FieldAccessCheckers.withPersonalData(r -> UserProvider.getCurrent().hasUserRight(r), isInJurisdiction));
 
+		this.caseUuid = caseUuid;
 		this.person = person;
 		this.disease = disease;
 
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -265,7 +268,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isGermanServer()) {
-			addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			final ComboBox caseClassificationCombo = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			caseClassificationCombo.addValidator(new CaseClassificationValidator(caseUuid, Validations.caseClassificationInvalid));
+
 			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION, ComboBox.class);

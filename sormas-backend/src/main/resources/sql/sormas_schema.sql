@@ -4708,7 +4708,7 @@ ALTER TABLE samples_history ADD COLUMN associatedeventparticipant_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add samples to event participants #2395');
 
--- 2020-06-29 Add samples to event participants #2395
+-- 2020-07-03 Add case classification for Germany #2230
 ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
 ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation boolean;
 ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);

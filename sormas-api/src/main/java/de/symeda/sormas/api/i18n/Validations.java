@@ -59,6 +59,7 @@ public interface Validations {
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String caseClassificationInvalid = "caseClassificationInvalid";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityDetails = "noFacilityDetails";

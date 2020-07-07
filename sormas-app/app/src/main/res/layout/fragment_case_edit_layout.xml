@@ -66,27 +66,44 @@
                 <requestFocus/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_epidNumber"
-                    app:value="@={data.epidNumber}"
-                    app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
-                    app:softRequired="true"
-                    app:maxLength="24"
-                    style="@style/ControlSingleColumnStyle" />
+                        android:id="@+id/caseData_epidNumber"
+                        app:value="@={data.epidNumber}"
+                        app:userEditRight="@{UserRight.CASE_CHANGE_EPID_NUMBER}"
+                        app:softRequired="true"
+                        app:maxLength="24"
+                        style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
-                    android:id="@+id/caseData_externalID"
-                    app:value="@={data.externalID}"
-                    style="@style/ControlSingleColumnStyle" />
+                        android:id="@+id/caseData_externalID"
+                        app:value="@={data.externalID}"
+                        style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/caseData_clinicalConfirmation"
+                        app:enumClass="@{yesNoUnknownClass}"
+                        app:value="@={data.clinicalConfirmation}"
+                        style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                        android:id="@+id/caseData_epidemiologicalConfirmation"
+                        app:value="@={data.epidemiologicalConfirmation}"
+                        style="@style/ControlSingleColumnStyle"/>
+
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
+                        android:id="@+id/caseData_laboratoryDiagnosticConfirmation"
+                        app:enumClass="@{yesNoUnknownClass}"
+                        app:value="@={data.laboratoryDiagnosticConfirmation}"
+                        style="@style/ControlSingleColumnStyle"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/caseData_caseClassification"
-                    app:required="true"
-                    app:value="@={data.caseClassification}"
-                    app:userEditRight="@{UserRight.CASE_CLASSIFY}"
-                    style="@style/ControlSingleColumnStyle" />
+                        android:id="@+id/caseData_caseClassification"
+                        app:required="true"
+                        app:value="@={data.caseClassification}"
+                        app:userEditRight="@{UserRight.CASE_CLASSIFY}"
+                        style="@style/ControlSingleColumnStyle"/>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                        android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 

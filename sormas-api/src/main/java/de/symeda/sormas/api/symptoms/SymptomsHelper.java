@@ -270,4 +270,35 @@ public final class SymptomsHelper {
 			throw new RuntimeException("Exception when trying to update symptoms: " + e.getMessage(), e.getCause());
 		}
 	}
+
+	public static Boolean atLeastOnSymptomTrue(SymptomState... symptomsStates) {
+		for (SymptomState symptomsState : symptomsStates) {
+			if (symptomsState == SymptomState.YES) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Boolean allSymptomsUnknownOrNull(SymptomsDto dto) {
+
+		if (dto == null) {
+			return true;
+		}
+
+		try {
+			for (Method method : SymptomsDto.class.getDeclaredMethods()) {
+				if (method.getReturnType() == SymptomState.class) {
+					Object symptomState = method.invoke(dto);
+					if (symptomState == SymptomState.YES || symptomState == SymptomState.NO) {
+						return false;
+					}
+				}
+			}
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
+		return true;
+	}
 }
