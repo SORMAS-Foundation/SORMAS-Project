@@ -119,8 +119,8 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown clinicalConfirmation;
-	@DatabaseField
-	private boolean epidemiologicalConfirmation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown epidemiologicalConfirmation;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
@@ -682,11 +682,11 @@ public class Case extends PseudonymizableAdo {
 		this.clinicalConfirmation = clinicalConfirmation;
 	}
 
-	public boolean isEpidemiologicalConfirmation() {
+	public YesNoUnknown getEpidemiologicalConfirmation() {
 		return epidemiologicalConfirmation;
 	}
 
-	public void setEpidemiologicalConfirmation(boolean epidemiologicalConfirmation) {
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
 		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
 	}
 

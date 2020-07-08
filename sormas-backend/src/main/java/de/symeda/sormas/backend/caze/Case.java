@@ -169,7 +169,7 @@ public class Case extends CoreAdo {
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
-	private boolean epidemiologicalConfirmation;
+	private YesNoUnknown epidemiologicalConfirmation;
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	private InvestigationStatus investigationStatus;
@@ -373,12 +373,12 @@ public class Case extends CoreAdo {
 		this.clinicalConfirmation = clinicalConfirmation;
 	}
 
-	@Column
-	public boolean isEpidemiologicalConfirmation() {
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEpidemiologicalConfirmation() {
 		return epidemiologicalConfirmation;
 	}
 
-	public void setEpidemiologicalConfirmation(boolean epidemiologicalConfirmation) {
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
 		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
 	}
 

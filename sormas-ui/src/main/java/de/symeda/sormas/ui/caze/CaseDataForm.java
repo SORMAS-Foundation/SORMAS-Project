@@ -269,7 +269,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		if (isGermanServer()) {
 			final ComboBox caseClassificationCombo = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
-			caseClassificationCombo.addValidator(new CaseClassificationValidator(caseUuid, Validations.caseClassificationInvalid));
+			caseClassificationCombo
+				.addValidator(new CaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
 			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);

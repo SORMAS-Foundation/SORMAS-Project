@@ -225,6 +225,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
+		if (!ConfigProvider.isGermanServer()) {
+			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_NO_SYMPTOMS.toString(), CaseClassification.CONFIRMED_NO_SYMPTOMS));
+			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+		}
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
 		plagueTypeList = DataUtils.getEnumItems(PlagueType.class, true);

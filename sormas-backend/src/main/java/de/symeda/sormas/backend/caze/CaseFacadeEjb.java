@@ -1865,7 +1865,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setClassificationDate(source.getClassificationDate());
 		target.setClassificationComment(source.getClassificationComment());
 		target.setClinicalConfirmation(source.getClinicalConfirmation());
-		target.setEpidemiologicalConfirmation(source.isEpidemiologicalConfirmation());
+		target.setEpidemiologicalConfirmation(source.getEpidemiologicalConfirmation());
 		target.setLaboratoryDiagnosticConfirmation(source.getLaboratoryDiagnosticConfirmation());
 		target.setInvestigationStatus(source.getInvestigationStatus());
 		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));

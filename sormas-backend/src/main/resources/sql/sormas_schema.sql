@@ -4747,14 +4747,11 @@ INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiol
 
 -- 2020-07-03 Add case classification for Germany #2230
 ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
-ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation boolean;
+ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);
 ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
 ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
-ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation boolean;
+ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation varchar(255);
 ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
-
-UPDATE cases SET epidemiologicalconfirmation = false;
-UPDATE cases_history SET epidemiologicalconfirmation = false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add case classification for Germany #2230');
 

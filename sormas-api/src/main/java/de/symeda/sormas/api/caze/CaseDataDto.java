@@ -182,7 +182,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
-	private Boolean epidemiologicalConfirmation;
+	private YesNoUnknown epidemiologicalConfirmation;
 	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	@Outbreaks
@@ -461,11 +461,11 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.clinicalConfirmation = clinicalConfirmation;
 	}
 
-	public Boolean getEpidemiologicalConfirmation() {
+	public YesNoUnknown getEpidemiologicalConfirmation() {
 		return epidemiologicalConfirmation;
 	}
 
-	public void setEpidemiologicalConfirmation(Boolean epidemiologicalConfirmation) {
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
 		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
 	}
 
