@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.common;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -272,7 +273,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public double getNameSimilarityThreshold() {
-		return getDouble(NAME_SIMILARITY_THRESHOLD, 0.4D);
+		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
 
 	@Override
