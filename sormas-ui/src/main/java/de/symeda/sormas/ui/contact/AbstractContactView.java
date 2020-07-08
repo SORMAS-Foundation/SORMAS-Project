@@ -38,7 +38,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -84,8 +83,8 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		}
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
-		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 		menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
+		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
 		infoLabel.setValue(getReference().getCaption());
 		infoLabelSub.setValue(
