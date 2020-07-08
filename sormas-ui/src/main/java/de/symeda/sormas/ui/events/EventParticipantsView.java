@@ -42,10 +42,9 @@ public class EventParticipantsView extends AbstractEventView {
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String EVENTPARTICIPANTS = "eventparticipants";
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/eventparticipants";
 
-	private EventParticipantCriteria criteria;
+	private final EventParticipantCriteria criteria;
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
