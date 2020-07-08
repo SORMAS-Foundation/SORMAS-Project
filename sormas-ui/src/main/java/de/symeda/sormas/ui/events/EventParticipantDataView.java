@@ -15,13 +15,12 @@
 
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.events.EventParticipantsView.EVENTPARTICIPANTS;
-
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,7 +43,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 	private static final long serialVersionUID = -1L;
 
-	public static final String VIEW_NAME = EVENTPARTICIPANTS + "/data";
+	public static final String VIEW_NAME = EventParticipantsView.VIEW_NAME + "/data";
 
 	public static final String EDIT_LOC = "edit";
 	public static final String SAMPLES_LOC = "samples";
@@ -101,6 +100,15 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+			editComponent.addDeleteListener(() -> {
+				EventParticipantEditForm eventParticipantEditForm = (EventParticipantEditForm) editComponent.getWrappedComponent();
+				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantEditForm.getValue().toReference());
+				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityEventParticipant));
+		}
+
 		layout.addComponent(editComponent, EDIT_LOC);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
@@ -139,6 +147,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			eventParticipantDto.getEvent().getUuid(),
 			true);
 
+		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
 		infoLabel.setValue(I18nProperties.getCaption(Captions.EventParticipant));
 		infoLabelSub.setValue(eventParticipantDto.getPerson().toString());
 	}
