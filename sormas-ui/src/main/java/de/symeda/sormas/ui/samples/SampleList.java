@@ -68,7 +68,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 				I18nProperties.getCaption(
 					sampleCriteria.getCaze() != null
 						? Captions.sampleNoSamplesForCase
-						: sampleCriteria.getContact() != null ? Captions.sampleNoSamplesForContact : Captions.sampleNoSamplesForContact));
+						: sampleCriteria.getContact() != null ? Captions.sampleNoSamplesForContact : Captions.sampleNoSamplesForEventParticipant));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}

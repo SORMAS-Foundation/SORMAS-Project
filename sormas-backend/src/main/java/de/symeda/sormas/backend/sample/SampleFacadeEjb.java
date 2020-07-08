@@ -371,6 +371,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = joins.getContactPerson().get(Person.FIRST_NAME);
 					break;
+				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
+					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
+					break;
 				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
 					break;
