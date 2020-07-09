@@ -12,10 +12,10 @@
 	</prerequisites>
 
 	<properties>
-		<slf4j.version>1.7.21</slf4j.version>
+		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.8.3</vaadin.version>
+		<vaadin.version>8.11.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jersey.version>2.29.1</jersey.version>
 		<jackson.version>2.9.8</jackson.version>
@@ -65,21 +65,21 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>5.4.3.Final</version>
+				<version>5.4.18.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>6.0.16.Final</version>
+				<version>6.1.5.Final</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.199</version>
+				<version>1.4.200</version>
 				<scope>test</scope>
 				<!-- In-memory-database for bean-test -->
 				<!-- better compatibility to PostgreSQL than HSQLDB -->
@@ -217,7 +217,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.6</version>
+				<version>42.2.14</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -332,7 +332,7 @@
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
-				<version>1.12.2</version>
+				<version>1.13.1</version>
 				<scope>provided</scope>
 			</dependency>
 
