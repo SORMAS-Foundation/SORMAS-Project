@@ -175,8 +175,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					labDetails.clear();
 				}
 			});
+			
 			setRequired(true, PathogenTestDto.LAB);
 		}
+		
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT);
 	}
 
