@@ -74,6 +74,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
@@ -101,6 +102,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private TaskService taskService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private EpiDataService epiDataService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -155,27 +158,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
 
 		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
-
-		Join<Contact, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-				dateFilter,
-				greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-				dateFilter,
-				greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-
-		return dateFilter;
+		return cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -872,19 +855,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
 
 		switch (jurisdictionLevel) {
-			case REGION:
-				final Region region = currentUser.getRegion();
-				if (region != null) {
-					filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
-				}
-				break;
-			case DISTRICT:
-				final District district = currentUser.getDistrict();
-				if (district != null) {
-					filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
-				}
-				break;
-			default:
+		case REGION:
+			final Region region = currentUser.getRegion();
+			if (region != null) {
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+			}
+			break;
+		case DISTRICT:
+			final District district = currentUser.getDistrict();
+			if (district != null) {
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+			}
+			break;
+		default:
 		}
 
 		return filter;
