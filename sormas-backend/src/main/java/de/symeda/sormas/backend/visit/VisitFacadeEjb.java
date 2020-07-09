@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.visit;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -41,6 +42,7 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
@@ -87,6 +89,7 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +110,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	private VisitService visitService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private CaseService caseService;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -149,6 +154,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
 		return toDto(contact.getVisits().stream().max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime())).orElse(null));
+	}
+
+	@Override
+	public VisitDto getLastVisitByCase(CaseReferenceDto caseRef) {
+		Case caze = caseService.getByReferenceDto(caseRef);
+		return toDto(caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null));
 	}
 
 	@Override
@@ -240,8 +251,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
-		if (visitCriteria == null || visitCriteria.getContact() == null) {
-			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
+		if (visitCriteria == null || visitCriteria.isEmpty()) {
+			return new ArrayList<>(); // Retrieving an index list independent of a contact/case is not possible
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -296,8 +307,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public long count(VisitCriteria visitCriteria) {
 
-		if (visitCriteria == null || visitCriteria.getContact() == null) {
-			return 0L; // Retrieving a list count independent of a contact is not possible
+		if (visitCriteria == null || visitCriteria.isEmpty()) {
+			return 0L; // Retrieving a list count independent of a contact/case is not possible
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -442,6 +453,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void onVisitChanged(VisitDto existingVisit, Visit newVisit) {
 		updateContactVisitAssociations(existingVisit, newVisit);
+		updateCaseVisitAssociations(existingVisit, newVisit);
 
 		// Send an email to all responsible supervisors when the contact has become
 		// symptomatic
@@ -499,6 +511,10 @@ public class VisitFacadeEjb implements VisitFacade {
 				contactService.updateFollowUpUntilAndStatus(contact);
 			}
 		}
+
+		if (newVisit.getCaze() != null) {
+			caseService.updateFollowUpUntilAndStatus(newVisit.getCaze());
+		}
 	}
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
@@ -512,6 +528,20 @@ public class VisitFacadeEjb implements VisitFacade {
 		visit.setContacts(contacts);
 		for (Contact contact : contacts) {
 			contact.getVisits().add(visit);
+		}
+	}
+
+	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
+
+		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+			// No need to update the associations
+			return;
+		}
+
+		Case caze = caseService.getRelevantCase(visit.getPerson(), visit.getDisease(), visit.getVisitDateTime());
+		visit.setCaze(caze);
+		if (caze != null) {
+			caze.getVisits().add(visit);
 		}
 	}
 

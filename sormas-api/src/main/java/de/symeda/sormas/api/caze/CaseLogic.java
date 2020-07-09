@@ -27,6 +27,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public final class CaseLogic {
+	public static final int ALLOWED_CASE_DATE_OFFSET = 30;
 
 	private CaseLogic() {
 		// Hide Utility Class Constructor
@@ -49,6 +50,10 @@ public final class CaseLogic {
 		} else {
 			return reportDate;
 		}
+	}
+
+	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
+		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate: reportDate;
 	}
 
 	public static boolean isEpidNumberPrefix(String s) {

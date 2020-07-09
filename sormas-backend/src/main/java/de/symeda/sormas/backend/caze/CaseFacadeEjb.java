@@ -221,6 +221,8 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -242,6 +244,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private VisitService visitService;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
@@ -1221,10 +1225,38 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
+			updateCaseVisitAssociations(existingCaseDto, caze);
+			caseService.updateFollowUpUntilAndStatus(caze);
+
 			onCaseChanged(existingCaseDto, caze);
 		}
 
 		return convertToDto(caze);
+	}
+
+	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
+
+		if (existingCase != null
+				&& existingCase.getReportDate() == caze.getReportDate()
+				&& existingCase.getFollowUpUntil() == caze.getFollowUpUntil()
+				&& existingCase.getDisease() == caze.getDisease()) {
+			return;
+		}
+
+		if (existingCase != null) {
+			for (Visit visit : caze.getVisits()) {
+				visit.setCaze(null);
+			}
+		}
+
+		for (Visit visit : visitService.getAllRelevantVisits(
+				caze.getPerson(),
+				caze.getDisease(),
+				CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()))) {
+			caze.getVisits().add(visit); // Necessary for further logic during the case save process
+			visit.setCaze(caze);
+		}
 	}
 
 	@Override
@@ -1808,6 +1840,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 
 		return target;
 	}
@@ -1950,6 +1986,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 
 		return target;
 	}
