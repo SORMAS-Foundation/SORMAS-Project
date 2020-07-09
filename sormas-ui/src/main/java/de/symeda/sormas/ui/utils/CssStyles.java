@@ -79,6 +79,8 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
+	public static final String FIELD_WRAPPER = "fieldwrapper";
+	public static final String FIELD_EXTRA_INFO = "fieldextrainfo";
 
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
@@ -108,6 +110,7 @@ public final class CssStyles {
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
+	public static final String LABEL_ITALIC = "italic";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
@@ -241,6 +244,9 @@ public final class CssStyles {
 	public static final String LOGINSIDEBAR = "login-sidebar";
 	public static final String LOGIN_HEADLINELABEL = "headline-label";
 	public static final String LOGIN_LOGOCONTAINER = "logo-container";
+
+	// MISC
+	public static final String RESIZABLE = "resizable";
 
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>

@@ -78,8 +78,24 @@
   .v-widget.v-select,
   .v-widget.v-datefield,
   .v-widget.v-filterselect,
+  .v-widget.fieldwrapper,
   .v-widget.v-select-optiongroup {
-  	margin-bottom: 16px;
+    margin-bottom: 16px;
+  }
+  .fieldwrapper .v-widget {
+    margin-bottom: 0;
+  }
+  .fieldwrapper > * {
+    margin-bottom: 4px;
+  }
+  .fieldwrapper > *:last-child {
+    margin-bottom: 0;
+  }
+  .fieldextrainfo {
+    font-size: 0.9em;
+  }
+  .v-textarea.resizable {
+    resize: vertical;
   }
 
   .badge {
