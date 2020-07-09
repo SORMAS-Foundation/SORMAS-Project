@@ -34,6 +34,7 @@ import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.contact.ContactSection;
 import de.symeda.sormas.app.contact.edit.ContactEditActivity;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataReadFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 
 public class ContactReadActivity extends BaseReadActivity<Contact> {
@@ -77,7 +78,10 @@ public class ContactReadActivity extends BaseReadActivity<Contact> {
 		case TASKS:
 			fragment = ContactReadTaskListFragment.newInstance(activityRootData);
 			break;
-		default:
+		case EPIDEMIOLOGICAL_DATA:
+			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
+			break;
+			default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
 		return fragment;

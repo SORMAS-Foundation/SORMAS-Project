@@ -23,6 +23,8 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
@@ -36,6 +38,8 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
+
+	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -121,6 +125,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
 	}
 
 	@Override
@@ -212,6 +218,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		if (source.getEpiData() != null) {
+			EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(source.getEpiData().getId());
+			target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
+		} else {
+			target.setEpiData(null);
+		}
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {
