@@ -31,9 +31,7 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.event.EventDao;
 import de.symeda.sormas.app.backend.location.Location;
-import de.symeda.sormas.app.caze.edit.EpiDataBurialDialog;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
@@ -42,7 +40,6 @@ import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
 
 public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutBinding, Event, Event> {

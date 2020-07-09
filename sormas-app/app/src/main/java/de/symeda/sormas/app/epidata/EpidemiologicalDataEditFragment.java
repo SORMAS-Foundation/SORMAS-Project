@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.caze.edit;
+package de.symeda.sormas.app.epidata;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,23 +37,29 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.FragmentCaseEditEpidLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentEditEpidLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<FragmentCaseEditEpidLayoutBinding, EpiData, Case> {
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
 
-	public static final String TAG = CaseEditEpidemiologicalDataFragment.class.getSimpleName();
+public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, AbstractDomainObject> {
+
+	public static final String TAG = EpidemiologicalDataEditFragment.class.getSimpleName();
 
 	private EpiData record;
 	private Disease disease;
@@ -67,18 +73,18 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
 	// Static methods
 
-	public static CaseEditEpidemiologicalDataFragment newInstance(Case activityRootData) {
+	public static EpidemiologicalDataEditFragment newInstance(AbstractDomainObject activityRootData) {
 		return newInstanceWithFieldCheckers(
-			CaseEditEpidemiologicalDataFragment.class,
+			EpidemiologicalDataEditFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
 			null);
 	}
 
 	// Instance methods
 
-	private void setUpControlListeners(final FragmentCaseEditEpidLayoutBinding contentBinding) {
+	private void setUpControlListeners(final FragmentEditEpidLayoutBinding contentBinding) {
 		onGatheringItemClickListener = (v, item) -> {
 			final EpiDataGathering gathering = (EpiDataGathering) item;
 			final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
@@ -284,16 +290,15 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 
 	@Override
 	protected void prepareFragmentData() {
-		Case caze = getActivityRootData();
-		disease = caze.getDisease();
-		record = caze.getEpiData();
-
+		final AbstractDomainObject abstractDomainObject = getActivityRootData();
+		disease = getDiseaseOfCaseOrContact(abstractDomainObject);
+		record = getEpiDataOfCaseOrContact(abstractDomainObject);
 		drinkingWaterSourceList = DataUtils.getEnumItems(WaterSource.class, true);
 		animalConditionList = DataUtils.getEnumItems(AnimalCondition.class, true);
 	}
 
 	@Override
-	public void onLayoutBinding(final FragmentCaseEditEpidLayoutBinding contentBinding) {
+	public void onLayoutBinding(final FragmentEditEpidLayoutBinding contentBinding) {
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
@@ -334,18 +339,14 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 			}
 		});
 
-		contentBinding.epiDataTraveled.addValueChangedListener(new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				YesNoUnknown value = (YesNoUnknown) field.getValue();
-				contentBinding.travelsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
-				if (value != YesNoUnknown.YES) {
-					clearTravels();
-				}
-
-				verifyTravelStatus();
+		contentBinding.epiDataTraveled.addValueChangedListener(field -> {
+			YesNoUnknown value = (YesNoUnknown) field.getValue();
+			contentBinding.travelsLayout.setVisibility(value == YesNoUnknown.YES ? View.VISIBLE : View.GONE);
+			if (value != YesNoUnknown.YES) {
+				clearTravels();
 			}
+
+			verifyTravelStatus();
 		});
 
 		// iterate through all epi data animal fields and add listener
@@ -386,7 +387,7 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 	}
 
 	@Override
-	public void onAfterLayoutBinding(FragmentCaseEditEpidLayoutBinding contentBinding) {
+	public void onAfterLayoutBinding(FragmentEditEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 
 		// Initialize ControlSpinnerFields
@@ -402,17 +403,17 @@ public class CaseEditEpidemiologicalDataFragment extends BaseEditFragment<Fragme
 		verifyGatheringStatus();
 		verifyTravelStatus();
 
-		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease()) > 0) {
+		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getDiseaseOfCaseOrContact(getActivityRootData())) > 0) {
 			contentBinding.epiDataTraveled.setCaption(
 				String.format(
 					I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
-					DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease())));
+					DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease)));
 		}
 	}
 
 	@Override
 	public int getEditLayout() {
-		return R.layout.fragment_case_edit_epid_layout;
+		return R.layout.fragment_edit_epid_layout;
 	}
 
 	@Override

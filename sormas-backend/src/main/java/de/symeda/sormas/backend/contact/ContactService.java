@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
@@ -41,6 +42,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -144,6 +149,33 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
+
+		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
+
+		Join<Contact, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
+
+		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
+
+		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(
+				dateFilter,
+				greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+
+		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
+		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
+		dateFilter = cb.or(
+				dateFilter,
+				greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
+
+
+		return dateFilter;
 	}
 
 	public List<String> getAllActiveUuids(User user) {

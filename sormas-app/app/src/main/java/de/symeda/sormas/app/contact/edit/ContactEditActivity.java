@@ -42,6 +42,8 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataReadFragment;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.task.edit.TaskNewActivity;
 import de.symeda.sormas.app.util.Bundler;
@@ -97,6 +99,9 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 			break;
 		case TASKS:
 			fragment = ContactEditTaskListFragment.newInstance(activityRootData);
+			break;
+		case EPIDEMIOLOGICAL_DATA:
+			fragment = EpidemiologicalDataEditFragment.newInstance(activityRootData);
 			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));

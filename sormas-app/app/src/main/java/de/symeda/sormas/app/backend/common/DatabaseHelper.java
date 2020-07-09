@@ -1405,7 +1405,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				db.execSQL("DROP TABLE tmp_events;");
 
 				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
-
+				case 210:
+					currentVersion = 210;
+					getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN edpidata_id bigint REFERENCES contacts (id);");
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
