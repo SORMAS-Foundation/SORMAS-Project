@@ -5,7 +5,7 @@
 
 ## Content
 * [Prerequisites](#prerequisites)
-  * [Java 8](#java-8)
+  * [Java 11](#java-11)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
 * [Web Server Setup](#web-server-setup)
@@ -21,18 +21,16 @@
 
 ## Prerequisites
 
-### Java 8
+### Java 11
 
-**Please note:** Because of a bug in the current Payara version, deployment will fail with a Java version above 8u202!
-
-* Download and install the Java 8u202 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+* Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
 		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
 		sudo apt-get update
-		sudo apt-get install zulu-8
-  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 8 **JDK** for 32 or 64 bit client systems (depending on your system).
+		sudo apt-get install zulu-11
+  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
 ### Postgres Database
