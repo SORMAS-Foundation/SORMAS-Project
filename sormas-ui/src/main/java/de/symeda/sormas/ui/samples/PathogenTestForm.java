@@ -157,18 +157,6 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		lab.addValueChangeListener(event -> {
-			if (event.getProperty().getValue() != null
-				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-				labDetails.setVisible(true);
-				labDetails.setRequired(true);
-			} else {
-				labDetails.setVisible(false);
-				labDetails.setRequired(false);
-				labDetails.clear();
-			}
-		});
-
 		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
 			setRequired(true, PathogenTestDto.LAB);
 		}
