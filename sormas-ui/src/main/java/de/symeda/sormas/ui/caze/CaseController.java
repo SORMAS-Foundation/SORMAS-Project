@@ -516,6 +516,7 @@ public class CaseController {
 			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
+			caze.getSymptoms(),
 			viewMode,
 			isInJurisdiction);
 		caseEditForm.setValue(caze);
