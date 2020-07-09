@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-
 import de.symeda.sormas.api.Disease;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public final class CssStyles {
 
@@ -242,6 +241,7 @@ public final class CssStyles {
 	public static final String LOGINSCREEN = "login-screen";
 	public static final String LOGINSCREEN_BACK = "login-screen-back";
 	public static final String LOGINSIDEBAR = "login-sidebar";
+	public static final String LOGINSIDEBAR_CUSTOM_HEADER = "login-sidebar-custom-header";
 	public static final String LOGIN_HEADLINELABEL = "headline-label";
 	public static final String LOGIN_LOGOCONTAINER = "logo-container";
 
