@@ -344,61 +344,63 @@ public class ContactFacadeEjb implements ContactFacade {
 		ContactJoins joins = new ContactJoins(contact);
 
 		cq.multiselect(
-			Stream
-				.concat(
-					Stream.of(
-						contact.get(Contact.ID),
-						joins.getPerson().get(Person.ID),
-						contact.get(Contact.UUID),
-						joins.getCaze().get(Case.UUID),
-						joins.getCaze().get(Case.CASE_CLASSIFICATION),
-						contact.get(Contact.DISEASE),
-						contact.get(Contact.DISEASE_DETAILS),
-						contact.get(Contact.CONTACT_CLASSIFICATION),
-						contact.get(Contact.LAST_CONTACT_DATE),
-						joins.getPerson().get(Person.FIRST_NAME),
-						joins.getPerson().get(Person.LAST_NAME),
-						joins.getPerson().get(Person.SEX),
-						joins.getPerson().get(Person.APPROXIMATE_AGE),
-						joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-						contact.get(Contact.REPORT_DATE_TIME),
-						contact.get(Contact.CONTACT_PROXIMITY),
-						contact.get(Contact.CONTACT_STATUS),
-						contact.get(Contact.FOLLOW_UP_STATUS),
-						contact.get(Contact.FOLLOW_UP_UNTIL),
-						contact.get(Contact.QUARANTINE),
-						contact.get(Contact.QUARANTINE_TYPE_DETAILS),
-						contact.get(Contact.QUARANTINE_FROM),
-						contact.get(Contact.QUARANTINE_TO),
-						contact.get(Contact.QUARANTINE_HELP_NEEDED),
-						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
-						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
-						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
-						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
-						joins.getPerson().get(Person.PRESENT_CONDITION),
-						joins.getPerson().get(Person.DEATH_DATE),
-						joins.getAddressRegion().get(Region.NAME),
-						joins.getAddressDistrict().get(District.NAME),
-						joins.getAddress().get(Location.CITY),
-						joins.getAddress().get(Location.ADDRESS),
-						joins.getAddress().get(Location.POSTAL_CODE),
-						joins.getPerson().get(Person.PHONE),
-						joins.getPerson().get(Person.PHONE_OWNER),
-						joins.getPerson().get(Person.OCCUPATION_TYPE),
-						joins.getPerson().get(Person.OCCUPATION_DETAILS),
-						joins.getOccupationFacility().get(Facility.NAME),
-						joins.getOccupationFacility().get(Facility.UUID),
-						joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
-						joins.getRegion().get(Region.NAME),
-						joins.getDistrict().get(District.NAME),
-						joins.getEpiData().get(EpiData.ID),
-						joins.getEpiData().get(EpiData.TRAVELED),
-						joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
-						joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
-						joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
-						joins.getEpiData().get(EpiData.RODENTS)),
-					listCriteriaBuilder.getJurisdictionSelections(joins))
-				.collect(Collectors.toList()));
+			Stream.concat(
+				Stream.of(
+					contact.get(Contact.ID),
+					joins.getPerson().get(Person.ID),
+					contact.get(Contact.UUID),
+					joins.getCaze().get(Case.UUID),
+					joins.getCaze().get(Case.CASE_CLASSIFICATION),
+					contact.get(Contact.DISEASE),
+					contact.get(Contact.DISEASE_DETAILS),
+					contact.get(Contact.CONTACT_CLASSIFICATION),
+					contact.get(Contact.LAST_CONTACT_DATE),
+					joins.getPerson().get(Person.FIRST_NAME),
+					joins.getPerson().get(Person.LAST_NAME),
+					joins.getPerson().get(Person.SEX),
+					joins.getPerson().get(Person.APPROXIMATE_AGE),
+					joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+					contact.get(Contact.REPORT_DATE_TIME),
+					contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE),
+					contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE_DETAILS),
+					contact.get(Contact.TRACING_APP),
+					contact.get(Contact.TRACING_APP_DETAILS),
+					contact.get(Contact.CONTACT_PROXIMITY),
+					contact.get(Contact.CONTACT_STATUS),
+					contact.get(Contact.FOLLOW_UP_STATUS),
+					contact.get(Contact.FOLLOW_UP_UNTIL),
+					contact.get(Contact.QUARANTINE),
+					contact.get(Contact.QUARANTINE_TYPE_DETAILS),
+					contact.get(Contact.QUARANTINE_FROM),
+					contact.get(Contact.QUARANTINE_TO),
+					contact.get(Contact.QUARANTINE_HELP_NEEDED),
+					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+					joins.getPerson().get(Person.PRESENT_CONDITION),
+					joins.getPerson().get(Person.DEATH_DATE),
+					joins.getAddressRegion().get(Region.NAME),
+					joins.getAddressDistrict().get(District.NAME),
+					joins.getAddress().get(Location.CITY),
+					joins.getAddress().get(Location.ADDRESS),
+					joins.getAddress().get(Location.POSTAL_CODE),
+					joins.getPerson().get(Person.PHONE),
+					joins.getPerson().get(Person.PHONE_OWNER),
+					joins.getPerson().get(Person.OCCUPATION_TYPE),
+					joins.getPerson().get(Person.OCCUPATION_DETAILS),
+					joins.getOccupationFacility().get(Facility.NAME),
+					joins.getOccupationFacility().get(Facility.UUID),
+					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
+					joins.getRegion().get(Region.NAME),
+					joins.getDistrict().get(District.NAME),
+					joins.getEpiData().get(EpiData.ID),
+					joins.getEpiData().get(EpiData.TRAVELED),
+					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
+					joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+					joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
+					joins.getEpiData().get(EpiData.RODENTS)),
+				listCriteriaBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
 		cq.distinct(true);
 
@@ -871,7 +873,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		// use only date, not time
 		target.setLastContactDate(
 			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
-
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -1045,6 +1050,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setReportDateTime(source.getReportDateTime());
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());

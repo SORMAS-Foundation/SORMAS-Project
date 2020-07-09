@@ -128,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 210;
+	public static final int DATABASE_VERSION = 211;
 
 	private static DatabaseHelper instance = null;
 
@@ -1384,7 +1384,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineTypeDetails varchar(512);");
 			case 208:
 				currentVersion = 208;
-				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
+				getDao(Sample.class)
+					.executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
 			case 209:
 				currentVersion = 209;
 
@@ -1404,7 +1405,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				db.execSQL("INSERT INTO events (" + queryColumns.replace("eventDate", "startDate") + ") SELECT " + queryColumns + " FROM tmp_events");
 				db.execSQL("DROP TABLE tmp_events;");
 
-				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+				getDao(Event.class).executeRaw(
+					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+			case 210:
+				currentVersion = 210;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSource varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSourceDetails varchar(512);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingApp varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingAppDetails varchar(512);");
 
 				// ATTENTION: break should only be done after last version
 				break;

@@ -32,12 +32,14 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -61,6 +63,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -99,6 +105,14 @@ public class Contact extends AbstractDomainObject {
 	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
+	@Enumerated(EnumType.STRING)
+	private ContactIdentificationSource contactIdentificationSource;
+	@DatabaseField
+	private String contactIdentificationSourceDetails;
+	@Enumerated(EnumType.STRING)
+	private TracingApp tracingApp;
+	@DatabaseField
+	private String tracingAppDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactProximity contactProximity;
 	@Enumerated(EnumType.STRING)
@@ -209,6 +223,38 @@ public class Contact extends AbstractDomainObject {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public ContactProximity getContactProximity() {

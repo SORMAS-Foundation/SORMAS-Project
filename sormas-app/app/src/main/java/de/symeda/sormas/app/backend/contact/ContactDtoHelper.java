@@ -77,6 +77,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -166,6 +170,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setReportDateTime(source.getReportDateTime());
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());

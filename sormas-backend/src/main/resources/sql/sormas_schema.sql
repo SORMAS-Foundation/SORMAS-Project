@@ -4747,4 +4747,16 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
 
+
+-- 2020-07-02 Add source of identification as contact to contacts #2070
+ALTER TABLE contact ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact ADD COLUMN tracingappdetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add source of identification as contact to contacts #2070');
 -- *** Insert new sql commands BEFORE this line ***
