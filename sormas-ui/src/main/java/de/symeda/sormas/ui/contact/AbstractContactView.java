@@ -38,7 +38,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
