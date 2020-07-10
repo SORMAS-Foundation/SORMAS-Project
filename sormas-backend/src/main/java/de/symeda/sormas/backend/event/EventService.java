@@ -49,6 +49,8 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.action.Action;
+import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -73,6 +75,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private ActionService actionService;
 
 	public EventService() {
 		super(Event.class);
@@ -334,6 +338,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())));
 		for (Task task : tasks) {
 			taskService.delete(task);
+		}
+
+		// Delete all event actions associated with this event
+		List<Action> actions = actionService.getAllByEvent(event);
+		for (Action action : actions) {
+			actionService.delete(action);
 		}
 
 		// Mark the event as deleted

@@ -8,6 +8,7 @@
         
 		<mapping-file>META-INF/listener.xml</mapping-file>
 
+		<class>de.symeda.sormas.backend.action.Action</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
