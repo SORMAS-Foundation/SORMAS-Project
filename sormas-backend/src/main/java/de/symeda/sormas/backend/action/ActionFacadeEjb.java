@@ -29,8 +29,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.action.ActionStatEntry;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
@@ -176,6 +178,16 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<ActionDto> getByUuids(List<String> uuids) {
 		return actionService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ActionDto> getList(ActionCriteria actionCriteria, Integer first, Integer max) {
+		return actionService.getActionList(actionCriteria, first, max).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria) {
+		return actionService.statsByEvent(actionCriteria);
 	}
 
 	@LocalBean

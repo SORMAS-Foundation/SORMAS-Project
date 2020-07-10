@@ -17,27 +17,39 @@
  *******************************************************************************/
 package de.symeda.sormas.api.action;
 
-import java.util.Date;
-import java.util.List;
+import java.io.Serializable;
 
-import javax.ejb.Remote;
+/**
+ * Stats of actions for an entity : how many actions by status.
+ */
+public class ActionStatEntry implements Serializable {
 
-@Remote
-public interface ActionFacade {
+	private static final long serialVersionUID = -4077086895569016018L;
 
-	ActionDto saveAction(ActionDto dto);
+	private ActionStatus actionStatus;
+	private Long count;
 
-	ActionDto getByUuid(String uuid);
+	public ActionStatEntry(Long count, ActionStatus actionStatus) {
+		this.actionStatus = actionStatus;
+		this.count = count;
+	}
 
-	void deleteAction(ActionDto ActionDto);
+	public ActionStatEntry() {
+	}
 
-	List<ActionDto> getAllActionsAfter(Date date);
+	public ActionStatus getActionStatus() {
+		return actionStatus;
+	}
 
-	List<ActionDto> getByUuids(List<String> uuids);
+	public void setActionStatus(ActionStatus actionStatus) {
+		this.actionStatus = actionStatus;
+	}
 
-	List<String> getAllUuids();
+	public Long getCount() {
+		return count;
+	}
 
-	List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria);
-
-	List<ActionDto> getList(ActionCriteria criteria, Integer first, Integer max);
+	public void setCount(Long count) {
+		this.count = count;
+	}
 }
