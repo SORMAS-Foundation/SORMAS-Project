@@ -37,7 +37,7 @@ import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.databinding.DialogPickOrCreateLayoutBinding;
+import de.symeda.sormas.app.databinding.DialogCasePickOrCreateLayoutBinding;
 import de.symeda.sormas.app.util.Consumer;
 import de.symeda.sormas.app.util.ViewHelper;
 
@@ -45,7 +45,7 @@ public class CasePickOrCreateDialog extends AbstractDialog {
 
 	public static final String TAG = CasePickOrCreateDialog.class.getSimpleName();
 
-	private DialogPickOrCreateLayoutBinding contentBinding;
+	private DialogCasePickOrCreateLayoutBinding contentBinding;
 
 	private CaseSimilarityCriteria criteria;
 	private List<Case> similarCases;
@@ -77,7 +77,7 @@ public class CasePickOrCreateDialog extends AbstractDialog {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
-			R.layout.dialog_pick_or_create_layout,
+			R.layout.dialog_case_pick_or_create_layout,
 			R.layout.dialog_root_two_button_panel_layout,
 			R.string.heading_pick_or_create_case,
 			-1);
@@ -162,7 +162,7 @@ public class CasePickOrCreateDialog extends AbstractDialog {
 
 	@Override
 	protected void setContentBinding(Context context, ViewDataBinding binding, String layoutName) {
-		this.contentBinding = (DialogPickOrCreateLayoutBinding) binding;
+		this.contentBinding = (DialogCasePickOrCreateLayoutBinding) binding;
 
 		// Needs to be done here because callback needs to be initialized before being bound to the layout
 		setupControlListeners();

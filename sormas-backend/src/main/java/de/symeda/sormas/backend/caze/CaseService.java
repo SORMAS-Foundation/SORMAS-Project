@@ -73,10 +73,7 @@ import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.backend.epidata.EpiDataGathering;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -717,7 +714,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
 
-		dateFilter= cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, casePath.join(Contact.EPI_DATA, JoinType.LEFT), date));
+		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, casePath.join(Contact.EPI_DATA, JoinType.LEFT), date));
 
 		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
 		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
