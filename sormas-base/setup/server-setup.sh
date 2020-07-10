@@ -80,6 +80,7 @@ DOMAIN_NAME=sormas
 PORT_BASE=6000
 PORT_ADMIN=6048
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
+DOMAIN_XMX=4096m
 
 # DB
 DB_HOST=localhost
@@ -307,7 +308,7 @@ echo "Configuring domain..."
 # General domain settings
 ${ASADMIN} delete-jvm-options -Xms2g
 ${ASADMIN} delete-jvm-options -Xmx2g
-${ASADMIN} create-jvm-options -Xmx4096m
+${ASADMIN} create-jvm-options -Xmx${DOMAIN_XMX}
 ${ASADMIN} set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
 ${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
 
