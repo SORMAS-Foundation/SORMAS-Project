@@ -108,6 +108,7 @@ public interface Strings {
 	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
 	String DiseaseNetworkDiagram_legend = "DiseaseNetworkDiagram.legend";
 	String DiseaseNetworkDiagram_lowRisk = "DiseaseNetworkDiagram.lowRisk";
+	String DiseaseNetworkDiagram_selectByClassification = "DiseaseNetworkDiagram.selectByClassification";
 	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
@@ -125,8 +126,8 @@ public interface Strings {
 	String entityDistrict = "entityDistrict";
 	String entityDistricts = "entityDistricts";
 	String entityEvent = "entityEvent";
-	String entityEvents = "entityEvents";
 	String entityEventParticipant = "entityEventParticipant";
+	String entityEvents = "entityEvents";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
@@ -196,6 +197,7 @@ public interface Strings {
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
+	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
@@ -457,6 +459,7 @@ public interface Strings {
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
 	String messageCampaignDeleted = "messageCampaignDeleted";
+	String messageCampaignFormSaved = "messageCampaignFormSaved";
 	String messageCampaignSaved = "messageCampaignSaved";
 	String messageCaseArchived = "messageCaseArchived";
 	String messageCaseCreated = "messageCaseCreated";
@@ -489,7 +492,6 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
-	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
@@ -497,6 +499,7 @@ public interface Strings {
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
+	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
@@ -633,13 +636,18 @@ public interface Strings {
 	String notificationDiseaseChangedSubject = "notificationDiseaseChangedSubject";
 	String notificationLabResultArrived = "notificationLabResultArrived";
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
+	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";
+	String notificationLabResultArrivedEventParticipantNoDisease = "notificationLabResultArrivedEventParticipantNoDisease";
 	String notificationLabResultArrivedSubject = "notificationLabResultArrivedSubject";
 	String notificationLabResultSpecified = "notificationLabResultSpecified";
 	String notificationLabResultSpecifiedContact = "notificationLabResultSpecifiedContact";
+	String notificationLabResultSpecifiedEventParticipant = "notificationLabResultSpecifiedEventParticipant";
+	String notificationLabResultSpecifiedEventParticipantNoDisease = "notificationLabResultSpecifiedEventParticipantNoDisease";
 	String notificationLabResultSpecifiedSubject = "notificationLabResultSpecifiedSubject";
 	String notificationLabSampleShipped = "notificationLabSampleShipped";
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";
+	String notificationLabSampleShippedShortForEventParticipant = "notificationLabSampleShippedShortForEventParticipant";
 	String notificationLabSampleShippedSubject = "notificationLabSampleShippedSubject";
 	String notificationTaskDueGeneral = "notificationTaskDueGeneral";
 	String notificationTaskDueSpecific = "notificationTaskDueSpecific";
@@ -717,6 +725,4 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
-	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
-	String messageCampaignFormSaved = "messageCampaignFormSaved";
 }
