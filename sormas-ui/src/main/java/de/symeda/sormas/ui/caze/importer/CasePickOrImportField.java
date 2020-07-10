@@ -26,15 +26,10 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 @SuppressWarnings("serial")
 public class CasePickOrImportField extends CasePickOrCreateField {
 
-	private CaseDataDto importedCase;
-	private PersonDto importedPerson;
 	private CheckBox overrideCheckBox;
 
-	public CasePickOrImportField(CaseDataDto importedCase, PersonDto importedPerson, List<CaseIndexDto> similarCases) {
-
-		super(similarCases);
-		this.importedCase = importedCase;
-		this.importedPerson = importedPerson;
+	public CasePickOrImportField(CaseDataDto newCase, PersonDto importedPerson, List<CaseIndexDto> similarCases) {
+		super(newCase, importedPerson, similarCases);
 	}
 
 	@Override
@@ -59,9 +54,9 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 		CssStyles
 			.style(caseInfoContainer, CssStyles.BACKGROUND_ROUNDED_CORNERS, CssStyles.BACKGROUND_SUB_CRITERIA, CssStyles.VSPACE_3, "v-scrollable");
 
-		Label importedCaseLabel = new Label(I18nProperties.getString(Strings.headingImportedCaseInfo));
-		CssStyles.style(importedCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
-		caseInfoContainer.addComponent(importedCaseLabel);
+		Label newCaseLabel = new Label(I18nProperties.getString(Strings.headingImportedCaseInfo));
+		CssStyles.style(newCaseLabel, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4);
+		caseInfoContainer.addComponent(newCaseLabel);
 
 		HorizontalLayout caseInfoLayout = new HorizontalLayout();
 		caseInfoLayout.setSpacing(true);
@@ -69,25 +64,25 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 		{
 			Label diseaseField = new Label();
 			diseaseField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE));
-			diseaseField.setValue(DiseaseHelper.toString(importedCase.getDisease(), importedCase.getDiseaseDetails()));
+			diseaseField.setValue(DiseaseHelper.toString(newCase.getDisease(), newCase.getDiseaseDetails()));
 			diseaseField.setWidthUndefined();
 			caseInfoLayout.addComponent(diseaseField);
 
 			Label reportDateField = new Label();
 			reportDateField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REPORT_DATE));
-			reportDateField.setValue(DateFormatHelper.formatDate(importedCase.getReportDate()));
+			reportDateField.setValue(DateFormatHelper.formatDate(newCase.getReportDate()));
 			reportDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(reportDateField);
 
 			Label regionField = new Label();
 			regionField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionField.setValue(importedCase.getRegion().toString());
+			regionField.setValue(newCase.getRegion().toString());
 			regionField.setWidthUndefined();
 			caseInfoLayout.addComponent(regionField);
 
 			Label districtField = new Label();
 			districtField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
-			districtField.setValue(importedCase.getDistrict().toString());
+			districtField.setValue(newCase.getDistrict().toString());
 			districtField.setWidthUndefined();
 			caseInfoLayout.addComponent(districtField);
 
@@ -96,20 +91,20 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			facilityField.setValue(
 				FacilityHelper.buildFacilityString(
 					null,
-					importedCase.getHealthFacility() != null ? importedCase.getHealthFacility().toString() : "",
-					importedCase.getHealthFacilityDetails()));
+					newCase.getHealthFacility() != null ? newCase.getHealthFacility().toString() : "",
+					newCase.getHealthFacilityDetails()));
 			facilityField.setWidthUndefined();
 			caseInfoLayout.addComponent(facilityField);
 
 			Label firstNameField = new Label();
 			firstNameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-			firstNameField.setValue(importedPerson.getFirstName());
+			firstNameField.setValue(newPerson.getFirstName());
 			firstNameField.setWidthUndefined();
 			caseInfoLayout.addComponent(firstNameField);
 
 			Label lastNameField = new Label();
 			lastNameField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-			lastNameField.setValue(importedPerson.getLastName());
+			lastNameField.setValue(newPerson.getLastName());
 			lastNameField.setWidthUndefined();
 			caseInfoLayout.addComponent(lastNameField);
 
@@ -117,18 +112,18 @@ public class CasePickOrImportField extends CasePickOrCreateField {
 			ageAndBirthDateField.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 			ageAndBirthDateField.setValue(
 				PersonHelper.getAgeAndBirthdateString(
-					importedPerson.getApproximateAge(),
-					importedPerson.getApproximateAgeType(),
-					importedPerson.getBirthdateDD(),
-					importedPerson.getBirthdateMM(),
-					importedPerson.getBirthdateYYYY(),
+					newPerson.getApproximateAge(),
+					newPerson.getApproximateAgeType(),
+					newPerson.getBirthdateDD(),
+					newPerson.getBirthdateMM(),
+					newPerson.getBirthdateYYYY(),
 					I18nProperties.getUserLanguage()));
 			ageAndBirthDateField.setWidthUndefined();
 			caseInfoLayout.addComponent(ageAndBirthDateField);
 
 			Label sexField = new Label();
 			sexField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-			sexField.setValue(importedPerson.getSex() != null ? importedPerson.getSex().toString() : "");
+			sexField.setValue(newPerson.getSex() != null ? newPerson.getSex().toString() : "");
 			sexField.setWidthUndefined();
 			caseInfoLayout.addComponent(sexField);
 		}

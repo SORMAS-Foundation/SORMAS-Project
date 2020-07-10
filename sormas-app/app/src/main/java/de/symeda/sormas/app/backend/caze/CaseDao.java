@@ -570,26 +570,19 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	public List<Case> getSimilarCases(CaseSimilarityCriteria criteria) {
 		try {
 			QueryBuilder<Case, Long> queryBuilder = queryBuilder();
+			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 			where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
 			where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 			where.and()
 				.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
 
 			queryBuilder.setWhere(where);
-			List<Case> potentiallySimilarCases = queryBuilder.orderBy(Case.CREATION_DATE, false).query();
-			List<Case> similarCases = new ArrayList<>();
+			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 
-			for (Case caze : potentiallySimilarCases) {
-				if (PersonHelper.areNamesSimilar(
-					caze.getPerson().getFirstName() + " " + caze.getPerson().getLastName(),
-					criteria.getFirstName() + " " + criteria.getLastName())) {
-					similarCases.add(caze);
-				}
-			}
-
-			return similarCases;
+			return queryBuilder.orderBy(Case.CREATION_DATE, false).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getSimilarCases on Case");
 			throw new RuntimeException(e);

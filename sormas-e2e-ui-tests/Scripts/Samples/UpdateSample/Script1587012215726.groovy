@@ -57,7 +57,7 @@ WebUI.click(findTestObject('Object Repository/Samples/SampleInformation/typeOfSa
 
 WebUI.setText(findTestObject('Object Repository/Samples/SampleInformation/input_TypeOfSample'), futureTypeOfSample)
 
-WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), Keys.chord(Keys.TAB))
+WebUI.sendKeys(findTestObject('Samples/SampleInformation/input_TypeOfSample'), Keys.chord(Keys.ENTER))
 
 // the sendKeys-Tab adds some strange characters to the comment field - this cleans it up
 WebUI.click(findTestObject('Samples/SampleInformation/textarea_Comment_comment'))

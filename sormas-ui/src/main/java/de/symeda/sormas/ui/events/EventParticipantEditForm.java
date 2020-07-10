@@ -52,6 +52,7 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 		}
 
 		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), null, true);
+		pef.setWidth(100, Unit.PERCENTAGE);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);

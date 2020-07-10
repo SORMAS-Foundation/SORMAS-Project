@@ -1,19 +1,5 @@
 package de.symeda.sormas.ui.contact.importer;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.junit.Test;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -37,6 +23,19 @@ import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
 
 public class ContactImporterTest extends AbstractBeanTest {
 
@@ -76,9 +75,8 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 				List<PersonIndexDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
-					if (PersonHelper.areNamesSimilar(
-						newPerson.getFirstName() + " " + newPerson.getLastName(),
-						person.getFirstName() + " " + person.getLastName())) {
+					if (PersonHelper
+						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
 						PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
 						entries.add(indexDto);
 					}

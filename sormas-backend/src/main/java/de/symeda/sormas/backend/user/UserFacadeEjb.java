@@ -51,7 +51,10 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -91,6 +94,8 @@ public class UserFacadeEjb implements UserFacade {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private CaseService caseService;
 	@EJB
@@ -371,6 +376,34 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> caseQuery = cb.createQuery(Case.class);
+		Root<Case> caseRoot = caseQuery.from(Case.class);
+		Join<Case, User> surveillanceOfficerJoin = caseRoot.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+
+		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(User.UUID), userUuid));
+		List<Case> cases = em.createQuery(caseQuery).getResultList();
+		cases.forEach(c -> {
+			c.setSurveillanceOfficer(null);
+			caseFacade.setResponsibleSurveillanceOfficer(c);
+			caseService.ensurePersisted(c);
+			caseFacade.reassignTasks(c);
+		});
+
+		CriteriaQuery<Contact> contactQuery = cb.createQuery(Contact.class);
+		Root<Contact> contactRoot = contactQuery.from(Contact.class);
+		Join<Contact, User> contactOfficerJoin = contactRoot.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
+
+		contactQuery.where(cb.equal(contactOfficerJoin.get(User.UUID), userUuid));
+		List<Contact> contacts = em.createQuery(contactQuery).getResultList();
+		contacts.forEach(c -> {
+			c.setContactOfficer(null);
+			contactService.ensurePersisted(c);
+		});
 	}
 
 	@LocalBean

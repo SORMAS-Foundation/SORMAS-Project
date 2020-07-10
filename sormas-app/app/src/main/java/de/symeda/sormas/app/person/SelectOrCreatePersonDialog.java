@@ -123,7 +123,7 @@ public class SelectOrCreatePersonDialog extends AbstractDialog {
 			.stream()
 			.filter(
 				name -> PersonHelper
-					.areNamesSimilar(person.getFirstName() + " " + person.getLastName(), name.getFirstName() + " " + name.getLastName()))
+					.areNamesSimilar(person.getFirstName(), person.getLastName(), name.getFirstName(), name.getLastName(), null))
 			.map(PersonNameDto::getUuid)
 			.collect(Collectors.toList());
 

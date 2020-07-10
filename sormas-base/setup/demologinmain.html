@@ -1,75 +1,17 @@
-<div class="headline-container" style="margin-bottom: 50px">
-	<h1 align="center" style="color: #FFF">Welcome to the SORMAS play server!</h1>
-	<h2 align="center" style="color: #CCCCCC">This server only contains dummy data. No data of real cases is included.</h2>
-	<h2 align="center" style="color: #CCCCCC">Click on any default user login button to access the SORMAS play version.</h2>
+<div class="headline-container" style="margin-bottom: 50px; text-align: center;">
+	<h1 style="color: #FFF">Welcome to the SORMAS play server!</h1>
+	<h2 style="color: #CCC">This server only contains dummy data. No data of real cases is included.</h2>
+	<h2 style="color: #CCC">Click on any default user login button to access the SORMAS play version.</h2>
 </div>
-<div class="content-container" style="text-align: center">
-	<div style="display: inline-block;background-color:rgba(255,255,255,0.5);padding:32px;border-radius:4px;">
+<div class="content-container" style="text-align: center;">
+	<div style="display: inline-block; background-color: rgba(255,255,255,0.5); padding: 32px; border-radius: 4px;">
 		<table>
 			<tr>
-				<td style="padding-right: 40px; width: 200px; height: 377px;">
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'SurvSup'; document.getElementById('password').value = 'SurvSup'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsSurveillanceSupervisor" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as Surveillance Supervisor</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'CaseSup'; document.getElementById('password').value = 'CaseSup'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsCaseSupervisor" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as Clinician</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'ContSup'; document.getElementById('password').value = 'ContSup'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsContactSupervisor" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as Contact Supervisor</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'PoeSup'; document.getElementById('password').value = 'PoeSup'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsPOESupervisor" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as POE Supervisor</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'LabOff'; document.getElementById('password').value = 'LabOff'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsLabUser" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as Lab Officer</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'EveOff'; document.getElementById('password').value = 'EveOff'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsEventOfficer" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as Event Officer</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'NatUser'; document.getElementById('password').value = 'NatUser'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsNationalUser" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as National User</span>
-							</span>
-						</div>
-					</div>
-					<br>
-					<div style="width:100%" class="v-slot" onclick="document.getElementById('username').value = 'NatClin'; document.getElementById('password').value = 'NatClin'; document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();">
-						<div id="logInAsNationalClinician" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
-							<span class="v-button-wrap">
-								<span class="v-button-caption" style="color: #FFF;">Log in as National Clinician</span>
-							</span>
-						</div>
+				<td id="demoUsers" style="padding-right: 40px; width: 200px; height: 377px;">
+					<div onclick="doLogin(this)" style="width:100%" class="v-button v-widget primary v-button-primary vspace-3" tabindex="0" role="button">
+						<span class="v-button-wrap">
+							<span class="v-button-caption" style="color: #FFF;"></span>
+						</span>
 					</div>
 				</td>
 				<td style="height: 377; width: 312px;">
@@ -79,7 +21,41 @@
 		</table>
 	</div>
 </div>
+<script type="text/javascript" id="demoUsersScript" >
+	var demoUsersEl = document.getElementById('demoUsers');
+	var template = demoUsersEl.firstElementChild;
+	demoUsersEl.removeChild(template);
+	
+	var demoUsers = [
+		{id: "logInAsSurveillanceSupervisor", name: "Surveillance Supervisor", user: "SurvSup", pass: "SurvSup"},
+		{id: "logInAsCaseSupervisor", name: "Clinician", user: "CaseSup", pass: "CaseSup"},
+		{id: "logInAsContactSupervisor", name: "Contact Supervisor", user: "ContSup", pass: "ContSup"},
+		{id: "logInAsPOESupervisor", name: "POE Supervisor", user: "PoeSup", pass: "PoeSup"},
+		{id: "logInAsLabUser", name: "Lab Officer", user: "LabOff", pass: "LabOff"},
+		{id: "logInAsEventOfficer", name: "Event Officer", user: "EveOff", pass: "EveOff"},
+		{id: "logInAsNationalUser", name: "National User", user: "NatUser", pass: "NatUser"},
+		{id: "logInAsNationalClinician", name: "National Clinician", user: "NatClin", pass: "NatClin"}
+	];
+	
+	window.doLogin = function (el) {
+		document.getElementById('username').value = el.user; 
+		document.getElementById('password').value = el.pass; 
+		document.getElementById('loginForm').getElementsByClassName('v-button')[0].click();
+	}
+	
+	demoUsers.forEach(function (el) {
+		var div = template.cloneNode(true);
+		div.user = el.user;
+		div.pass = el.pass;
+		div.id = el.id;
+		div.firstElementChild.firstElementChild.textContent = 'Log in as ' + el.name;
+		demoUsersEl.appendChild(div);
+	});
+	
+	var thisScript = document.getElementById('demoUsersScript');
+	thisScript.parentElement.removeChild(thisScript);
+</script>
 <div class="footer" style="margin-top: 50px">
-	<h3 align="center" style="color: #CCCCCC">See <a href="//www.sormas.org" style="color: #FFF">www.sormas.org</a> for more information</h3>
-	<h3 align="center" style="color: #CCCCCC">Contact SORMAS team: sormas@helmholtz-hzi.de</h3>
+	<h3 align="center" style="color: #CCC">See <a href="//www.sormas.org" style="color: #FFF">www.sormas.org</a> for more information</h3>
+	<h3 align="center" style="color: #CCC">Contact SORMAS team: sormas@helmholtz-hzi.de</h3>
 </div>

@@ -3,11 +3,11 @@ library(visNetwork)
 library(dplyr)
 
 envDefaults = c(
-	"DB_USER" = "sormas_user", "DB_PASS" = "sormas_db",
-	"DB_HOST" = "127.0.0.1", "DB_PORT" = "5432", "DB_NAME" = "sormas_db", 
-	"CONTACT_IDS" = "",
-	"OUTFILE" = "sormas_contact.html",
-	"HIERARCHICAL" = "FALSE"
+  "DB_USER" = "sormas_user", "DB_PASS" = "sormas_db",
+  "DB_HOST" = "127.0.0.1", "DB_PORT" = "5432", "DB_NAME" = "sormas_db",
+  "CONTACT_IDS" = "",
+  "OUTFILE" = "sormas_contact.html",
+  "HIERARCHICAL" = "FALSE"
 )
 sysEnv = Sys.getenv(names(envDefaults), NA);
 sysEnv = subset(sysEnv, sysEnv == sysEnv)
@@ -24,40 +24,40 @@ OUTFILE = env["OUTFILE"]
 CONTACT_IDS = env["CONTACT_IDS"]
 HIERARCHICAL = env["HIERARCHICAL"]
 
-caseClass = paste("Classification", c(
-	"HEALTHY",
-	"NOT_CLASSIFIED",
-	"SUSPECT",
-	"PROBABLE",
-	"CONFIRMED"), sep=("."))
-	
+caseClass = paste0("{", "Classification.", c(
+  "HEALTHY",
+  "NOT_CLASSIFIED",
+  "SUSPECT",
+  "PROBABLE",
+  "CONFIRMED"), "}")
+
 # see CountElementStyle.POSITIVE and styles.css count-element
 caseClassColor = c(
-	"#32CD32", # positive
-	"#808080", # minor
-	"#c8aa00", # relevant
-	"#be6900", # important
-	"#c80000") # critical
+  "#32CD32", # positive
+  "#808080", # minor
+  "#c8aa00", # relevant
+  "#be6900", # important
+  "#c80000") # critical
 
-hierarchical= "T" == substr(HIERARCHICAL, 1, 1)
-defaultFont="font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
-mainStyle = paste(defaultFont, "color: #6591C4", ";font-weight: 600", "font-size: 1.6em", "text-align:center;", sep="; ")
-submainStyle = paste(defaultFont, "text-align:center;", sep="; ")
+hierarchical = "T" == substr(HIERARCHICAL, 1, 1)
+defaultFont = "font-family:'Open Sans', sans-serif, 'Source Sans Pro'"
+mainStyle = paste(defaultFont, "color: #6591C4", ";font-weight: 600", "font-size: 1.6em", "text-align:center;", sep = "; ")
+submainStyle = paste(defaultFont, "text-align:center;", sep = "; ")
 footerStyle = defaultFont
 
 #connection to db
-con = dbConnect(PostgreSQL(), user=DB_USER, dbname=DB_NAME, password = DB_PASS, host=DB_HOST, port=DB_PORT)  # connect to load db
+con = dbConnect(PostgreSQL(), user = DB_USER, dbname = DB_NAME, password = DB_PASS, host = DB_HOST, port = DB_PORT)  # connect to load db
 
 #query contact table and ratin only contacts parsed from Sys.getenv
 if (CONTACT_IDS == "") {
-	#for testing: get all valid contacts
-	idContString = as.character(dbGetQuery(con, "select ct.id
+  #for testing: get all valid contacts
+  idContString = as.character(dbGetQuery(con, "select ct.id
 from public.contact ct
 	join public.cases cs on (ct.caze_id = cs.id)
 where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
 	and cs.caseclassification != 'NO_CASE' and cs.deleted = FALSE")$id)
 } else {
-	idContString = CONTACT_IDS
+  idContString = CONTACT_IDS
 }
 #guards against syntax exception due to empty id list
 if (idContString == "") idContString = "NULL"
@@ -69,7 +69,7 @@ from public.contact ct
 	join public.cases cs on ct.caze_id = cs.id
 where ct.id in (%s)"
 
-edgeTable = dbGetQuery( con, sprintf(sql_edge, idContString) )
+edgeTable = dbGetQuery(con, sprintf(sql_edge, idContString))
 
 #query all relevant persons with oldest relevant case
 sql_node = "with clean_ct as (
@@ -102,26 +102,26 @@ select distinct on (person_id)
 from node
 order by person_id, uuid is null, reportdate, uuid"
 
-nodeTable = dbGetQuery( con, sprintf(sql_node, idContString) )
+nodeTable = dbGetQuery(con, sprintf(sql_node, idContString))
 
 dbDisconnect(con)
 
-elist = data.frame(from=edgeTable$case_pid, to=edgeTable$contact_pid, contactproximity=edgeTable$contactproximity)
+elist = data.frame(from = edgeTable$case_pid, to = edgeTable$contact_pid, contactproximity = edgeTable$contactproximity)
 
 
-nlist = data.frame(id=nodeTable$person_id, uuid=nodeTable$uuid, label=nodeTable$short_uuid, Classification=factor(nodeTable$caseclassification, levels=caseClass), stringsAsFactors=FALSE)
+nlist = data.frame(id = nodeTable$person_id, uuid = nodeTable$uuid, label = nodeTable$short_uuid, Classification = factor(paste0("{", nodeTable$caseclassification, "}"), levels = caseClass), stringsAsFactors = FALSE)
 # "healthy"
 nlist$Classification[is.na(nlist$Classification)] <- caseClass[1]
 
 ## defining contact categories based on proximity
 highRiskProximity = paste("ContactProximity", c(
-		"FACE_TO_FACE_LONG",
-		"TOUCHED_FLUID",
-		"MEDICAL_UNSAFE",
-		"CLOTHES_OR_OTHER",
-		"PHYSICAL_CONTACT"), sep=("."))
+  "FACE_TO_FACE_LONG",
+  "TOUCHED_FLUID",
+  "MEDICAL_UNSAFE",
+  "CLOTHES_OR_OTHER",
+  "PHYSICAL_CONTACT"), sep = ("."))
 elist$label = NA
-elist$label[elist$contactproximity %in% highRiskProximity] = "1" 
+elist$label[elist$contactproximity %in% highRiskProximity] = "1"
 elist$label[!(elist$contactproximity %in% highRiskProximity)] = "2"
 #drop contactproximity
 elist$contactproximity <- NULL
@@ -150,39 +150,41 @@ nodesS$group = nodesS$Classification
 
 # defining legend
 addNodesS <- data.frame(
-		label = c("Legend", caseClass, "1 = High risk", "2 = Low risk"), 
-		shape = "icon",
-    	icon.code = c("f0c0", rep("f007", times = length(caseClass)), "f178", "f178"),
-		icon.size = c(0.1, rep(25, times = length(caseClass)), 25, 25), 
-		icon.color = c("#0d0c0c", caseClassColor, "#0d0c0c", "#0d0c0c"))
-				
+  label = c("{legend}", caseClass, "1 = {highRisk}", "2 = {lowRisk}"),
+  shape = "icon",
+  icon.code = c("f0c0", rep("f007", times = length(caseClass)), "f178", "f178"),
+  icon.size = c(0.1, rep(25, times = length(caseClass)), 25, 25),
+  icon.color = c("#0d0c0c", caseClassColor, "#0d0c0c", "#0d0c0c"))
+
 #plotting
-avertarIcon <- function(color, code = c( "f007")) {
-	list( face ='FontAwesome', code = code, color=color)
+
+avertarIcon <- function(color, code = c("f007")) {
+  list(face = 'FontAwesome', code = code, color = color)
 }
-g = visNetwork(nodesS, edgesS,  main = list(text = "Disease network diagram", style = mainStyle),
-              submain = list(text = "The arrows indicate the direction of transmission", style = submainStyle), 
-              #footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle), 
-              background = "white", annot = T, width = "100%" ) %>%
-  visEdges(arrows = "to", color = "black", smooth = list(type="continuous")) %>%
-  visOptions(selectedBy = "Classification", highlightNearest = TRUE, nodesIdSelection = FALSE)
+
+g = visNetwork(nodesS, edgesS, main = list(text = "{heading}", style = mainStyle),
+               submain = list(text = "{subheading}", style = submainStyle),
+               #footer = list(text = "Double click on the icon to open the associated case or contact data", style = footerStyle),
+               background = "white", annot = T, width = "100%") %>%
+  visEdges(arrows = "to", color = "black", smooth = list(type = "continuous")) %>%
+  visOptions(selectedBy = list(variable = "Classification", main="{selectByClassification}", sort = FALSE, values = caseClass), highlightNearest = TRUE, nodesIdSelection = FALSE)
 for (i in 1:length(caseClass)) {
-	  g = visGroups(graph = g, groupname = caseClass[i], size = 10, shape = "icon", icon = avertarIcon(caseClassColor[i]))
+  g = visGroups(graph = g, groupname = caseClass[i], size = 10, shape = "icon", icon = avertarIcon(caseClassColor[i]))
 }
-g = g %>% 
+g = g %>%
   addFontAwesome() %>%
   visLegend(addNodes = addNodesS, useGroups = F, position = "left", width = 0.2, ncol = 1, stepX = 100, stepY = 50)
-  
-  if (hierarchical) {
-    g = g %>% 
-    visHierarchicalLayout() %>%
-    visPhysics(hierarchicalRepulsion = list(damping=0.26))
-  } else {
-    g = g %>% 
-  	visPhysics(solver = "barnesHut", barnesHut = list(damping=0.26, avoidOverlap=0.2))
-  }	
 
-  g = g %>% 
+if (hierarchical) {
+  g = g %>%
+    visHierarchicalLayout() %>%
+    visPhysics(hierarchicalRepulsion = list(damping = 0.26))
+} else {
+  g = g %>%
+    visPhysics(solver = "barnesHut", barnesHut = list(damping = 0.26, avoidOverlap = 0.2))
+}
+
+g = g %>%
   visInteraction(dragNodes = T, dragView = T, zoomView = T)
 
 visNetwork::visSave(g, OUTFILE, selfcontained = FALSE)

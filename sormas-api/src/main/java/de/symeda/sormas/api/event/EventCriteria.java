@@ -36,9 +36,9 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public static final String EVENT_DATE_FROM = "eventDateFrom";
 	public static final String EVENT_DATE_TO = "eventDateTo";
-	public static String REPORTING_USER_ROLE = "reportingUserRole";
-	public static String SURVEILLANCE_OFFICER = "surveillanceOfficer";
-	public static String FREE_TEXT = "freeText";
+	public static final String REPORTING_USER_ROLE = "reportingUserRole";
+	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String FREE_TEXT = "freeText";
 
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -54,6 +54,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private UserReferenceDto surveillanceOfficer;
 	private String freeText;
+	private EventSourceType srcType;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -211,5 +212,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getFreeText() {
 		return freeText;
+	}
+
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 }

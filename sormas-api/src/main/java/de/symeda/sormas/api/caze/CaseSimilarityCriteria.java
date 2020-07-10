@@ -1,17 +1,16 @@
 package de.symeda.sormas.api.caze;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+
+import java.util.Date;
 
 public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 
 	private static final long serialVersionUID = -941515738028452495L;
 
 	private CaseCriteria caseCriteria;
-	private String firstName;
-	private String lastName;
+	private String personUuid;
 	private Date reportDate;
 
 	@Override
@@ -25,22 +24,12 @@ public class CaseSimilarityCriteria extends BaseCriteria implements Cloneable {
 	}
 
 	@IgnoreForUrl
-	public String getFirstName() {
-		return firstName;
+	public String getPersonUuid() {
+		return personUuid;
 	}
 
-	public CaseSimilarityCriteria firstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public String getLastName() {
-		return lastName;
-	}
-
-	public CaseSimilarityCriteria lastName(String lastName) {
-		this.lastName = lastName;
+	public CaseSimilarityCriteria personUuid(String personUuid) {
+		this.personUuid = personUuid;
 		return this;
 	}
 

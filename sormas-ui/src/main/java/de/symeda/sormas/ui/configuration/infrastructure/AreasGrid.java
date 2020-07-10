@@ -39,9 +39,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 		setColumns(AreaDto.NAME, AreaDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> {
-				ControllerProvider.getInfrastructureController().editArea(e.getItem().getUuid());
-			});
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {
