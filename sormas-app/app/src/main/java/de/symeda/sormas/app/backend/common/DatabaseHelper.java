@@ -1410,6 +1410,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 210;
 				getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN epiData_id bigint REFERENCES epidata (id);");
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+
 
 				// ATTENTION: break should only be done after last version
 
