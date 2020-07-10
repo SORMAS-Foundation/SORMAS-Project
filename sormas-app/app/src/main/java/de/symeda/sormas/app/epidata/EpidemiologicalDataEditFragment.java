@@ -403,11 +403,12 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		verifyGatheringStatus();
 		verifyTravelStatus();
 
-		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getDiseaseOfCaseOrContact(getActivityRootData())) > 0) {
+		Disease diseaseOfCaseOrContact = getDiseaseOfCaseOrContact(getActivityRootData());
+		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(diseaseOfCaseOrContact) > 0) {
 			contentBinding.epiDataTraveled.setCaption(
 				String.format(
 					I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
-					DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease)));
+					DiseaseConfigurationCache.getInstance().getFollowUpDuration(diseaseOfCaseOrContact)));
 		}
 	}
 
