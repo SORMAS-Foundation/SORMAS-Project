@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.caze.read;
+package de.symeda.sormas.app.epidata;
+
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +27,7 @@ import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,7 +36,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -41,12 +45,12 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
-import de.symeda.sormas.app.databinding.FragmentCaseReadEpidLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentReadEpidLayoutBinding;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
-public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<FragmentCaseReadEpidLayoutBinding, EpiData, Case> {
+public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentReadEpidLayoutBinding, EpiData, AbstractDomainObject> {
 
-	public static final String TAG = CaseReadEpidemiologicalDataFragment.class.getSimpleName();
+	public static final String TAG = EpidemiologicalDataReadFragment.class.getSimpleName();
 
 	private EpiData record;
 
@@ -56,12 +60,12 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 	// Static methods
 
-	public static CaseReadEpidemiologicalDataFragment newInstance(Case activityRootData) {
+	public static EpidemiologicalDataReadFragment newInstance(AbstractDomainObject activityRootData) {
 		return newInstanceWithFieldCheckers(
-			CaseReadEpidemiologicalDataFragment.class,
+			EpidemiologicalDataReadFragment.class,
 			null,
 			activityRootData,
-			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
 			null);
 	}
 
@@ -72,7 +76,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 			@Override
 			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_case_epid_burial_read_layout, item);
+				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_burial_read_layout, item);
 				infoDialog.show();
 			}
 		};
@@ -81,7 +85,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 			@Override
 			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_case_epid_gathering_read_layout, item);
+				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_gathering_read_layout, item);
 				infoDialog.show();
 			}
 		};
@@ -90,7 +94,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 			@Override
 			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_case_epid_travel_read_layout, item);
+				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_travel_read_layout, item);
 				infoDialog.show();
 			}
 		};
@@ -100,12 +104,11 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
-		Case caze = getActivityRootData();
-		record = caze.getEpiData();
+		record = getEpiDataOfCaseOrContact(getActivityRootData());
 	}
 
 	@Override
-	public void onLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+	public void onLayoutBinding(FragmentReadEpidLayoutBinding contentBinding) {
 		setUpControlListeners();
 
 		ObservableArrayList<EpiDataBurial> burials = new ObservableArrayList<>();
@@ -136,7 +139,7 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 		List<String> environmentalExposureProperties = Arrays.asList(EpiData.ENVIRONMENTAL_EXPOSURE_PROPERTIES);
 		int environmentalExposureHeadingVisibiliy = View.GONE;
 		for (String property : environmentalExposureProperties) {
-			if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, getActivityRootData().getDisease())) {
+			if (Diseases.DiseasesConfiguration.isDefinedOrMissing(EpiDataDto.class, property, getDiseaseOfCaseOrContact(getActivityRootData()))) {
 				environmentalExposureHeadingVisibiliy = View.VISIBLE;
 				break;
 			}
@@ -162,14 +165,15 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 	}
 
 	@Override
-	public void onAfterLayoutBinding(FragmentCaseReadEpidLayoutBinding contentBinding) {
+	public void onAfterLayoutBinding(FragmentReadEpidLayoutBinding contentBinding) {
 		setFieldVisibilitiesAndAccesses(EpiDataDto.class, contentBinding.mainContent);
 
-		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease()) > 0) {
+		final Disease disease = getDiseaseOfCaseOrContact(getActivityRootData());
+		if (DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease) > 0) {
 			contentBinding.epiDataTraveled.setCaption(
 				String.format(
 					I18nProperties.getCaption(Captions.epiDataTraveledIncubationPeriod),
-					DiseaseConfigurationCache.getInstance().getFollowUpDuration(getActivityRootData().getDisease())));
+					DiseaseConfigurationCache.getInstance().getFollowUpDuration(disease)));
 		}
 	}
 
@@ -185,6 +189,6 @@ public class CaseReadEpidemiologicalDataFragment extends BaseReadFragment<Fragme
 
 	@Override
 	public int getReadLayout() {
-		return R.layout.fragment_case_read_epid_layout;
+		return R.layout.fragment_read_epid_layout;
 	}
 }

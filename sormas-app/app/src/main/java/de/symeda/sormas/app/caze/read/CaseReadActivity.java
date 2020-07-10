@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataReadFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 import de.symeda.sormas.app.util.Bundler;
@@ -130,7 +131,7 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			fragment = SymptomsReadFragment.newInstance(activityRootData);
 			break;
 		case EPIDEMIOLOGICAL_DATA:
-			fragment = CaseReadEpidemiologicalDataFragment.newInstance(activityRootData);
+			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
 			break;
 		case CONTACTS:
 			fragment = CaseReadContactListFragment.newInstance(activityRootData);
