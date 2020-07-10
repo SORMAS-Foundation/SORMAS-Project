@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -1384,7 +1383,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineTypeDetails varchar(512);");
 			case 208:
 				currentVersion = 208;
-				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
+				getDao(Sample.class)
+					.executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
 			case 209:
 				currentVersion = 209;
 
@@ -1404,12 +1404,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				db.execSQL("INSERT INTO events (" + queryColumns.replace("eventDate", "startDate") + ") SELECT " + queryColumns + " FROM tmp_events");
 				db.execSQL("DROP TABLE tmp_events;");
 
-				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
-				case 210:
-					currentVersion = 210;
-					getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN epiData_id bigint REFERENCES epidata (id);");
+				getDao(Event.class).executeRaw(
+					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+			case 210:
+				currentVersion = 210;
+				getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN epiData_id bigint REFERENCES epidata (id);");
+				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				// ATTENTION: break should only be done after last version
 				break;
+
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}
