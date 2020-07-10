@@ -267,4 +267,19 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+		if (epiDataDate != null && epiDataDate.after(date)) {
+			date = epiDataDate;
+		}
+
+		return date;
+	}
 }

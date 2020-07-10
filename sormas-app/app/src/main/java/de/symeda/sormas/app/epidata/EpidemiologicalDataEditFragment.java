@@ -88,7 +88,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		onGatheringItemClickListener = (v, item) -> {
 			final EpiDataGathering gathering = (EpiDataGathering) item;
 			final EpiDataGathering gatheringClone = (EpiDataGathering) gathering.clone();
-			final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(CaseEditActivity.getActiveActivity(), gatheringClone);
+			final EpiDataGatheringDialog dialog = new EpiDataGatheringDialog(getActivity(), gatheringClone);
 
 			dialog.setPositiveCallback(() -> {
 				record.getGatherings().set(record.getGatherings().indexOf(gathering), gatheringClone);
@@ -103,7 +103,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		onTravelItemClickListener = (v, item) -> {
 			final EpiDataTravel travel = (EpiDataTravel) item;
 			final EpiDataTravel travelClone = (EpiDataTravel) travel.clone();
-			final EpiDataTravelDialog dialog = new EpiDataTravelDialog(CaseEditActivity.getActiveActivity(), travelClone);
+			final EpiDataTravelDialog dialog = new EpiDataTravelDialog(getActivity(), travelClone);
 
 			dialog.setPositiveCallback(() -> {
 				record.getTravels().set(record.getTravels().indexOf(travel), travelClone);
@@ -118,7 +118,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		onBurialItemClickListener = (v, item) -> {
 			final EpiDataBurial burial = (EpiDataBurial) item;
 			final EpiDataBurial burialClone = (EpiDataBurial) burial.clone();
-			final EpiDataBurialDialog dialog = new EpiDataBurialDialog(CaseEditActivity.getActiveActivity(), burialClone);
+			final EpiDataBurialDialog dialog = new EpiDataBurialDialog(getActivity(), burialClone);
 
 			dialog.setPositiveCallback(() -> {
 				record.getBurials().set(record.getBurials().indexOf(burial), burialClone);

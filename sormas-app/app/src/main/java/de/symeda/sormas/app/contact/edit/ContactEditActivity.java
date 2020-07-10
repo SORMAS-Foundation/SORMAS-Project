@@ -65,7 +65,7 @@ public class ContactEditActivity extends BaseEditActivity<Contact> {
 
 	@Override
 	protected Contact queryRootEntity(String recordUuid) {
-		return DatabaseHelper.getContactDao().queryUuid(recordUuid);
+		return DatabaseHelper.getContactDao().queryUuidWithEmbedded(recordUuid);
 	}
 
 	@Override
