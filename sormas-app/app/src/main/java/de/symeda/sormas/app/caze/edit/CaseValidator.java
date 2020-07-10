@@ -21,10 +21,14 @@ import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseClassificationValidator;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;

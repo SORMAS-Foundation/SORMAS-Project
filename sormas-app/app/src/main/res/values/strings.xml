@@ -524,6 +524,7 @@
     <string name="validation_error_required">A value is required for this field. Please make sure to type in or select a value before continuing.</string>
     <string name="validation_soft_add_list_entry">Please add an entry to the list if there is any data available to you.</string>
     <string name="validation_soft_case_classification">This case should be classified as soon as the required information is available.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
     <string name="validation_symptoms_fever">Temperature is in fever range. Fever should be set to \'Yes\'.</string>

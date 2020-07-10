@@ -27,6 +27,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseClassificationValidator;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -50,6 +51,7 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
@@ -227,7 +229,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
 		if (!ConfigProvider.isGermanServer()) {
 			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_NO_SYMPTOMS.toString(), CaseClassification.CONFIRMED_NO_SYMPTOMS));
-			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
+			caseClassificationList
+				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 		}
 		caseOutcomeList = DataUtils.getEnumItems(CaseOutcome.class, true);
 		vaccinationInfoSourceList = DataUtils.getEnumItems(VaccinationInfoSource.class, true);
@@ -259,6 +262,14 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 						getContentBinding().caseDataCaseClassification.enableWarningState(R.string.validation_soft_case_classification);
 					} else {
 						getContentBinding().caseDataCaseClassification.disableWarningState();
+					}
+					if (ConfigProvider.isGermanServer()) {
+						final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+						if (CaseClassificationValidator.isValidCaseClassification(caseClassification, caseDtoHelper.adoToDto(record))) {
+							getContentBinding().caseDataCaseClassification.disableErrorState();
+						} else {
+							getContentBinding().caseDataCaseClassification.enableErrorState(R.string.validation_case_classification);
+						}
 					}
 				}
 			});

@@ -15,20 +15,10 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import com.vaadin.v7.data.validator.AbstractValidator;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.symptoms.SymptomsHelper;
 
 public class CaseClassificationValidator extends AbstractValidator<CaseClassification> {
 
@@ -41,68 +31,8 @@ public class CaseClassificationValidator extends AbstractValidator<CaseClassific
 
 	@Override
 	protected boolean isValidValue(CaseClassification caseClassification) {
-
-		switch (caseClassification) {
-
-		case NOT_CLASSIFIED:
-		case NO_CASE:
-		case PROBABLE:
-			return true;
-		case SUSPECT: {
-			final CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-			return hasCoronavirusSymptom(caseDataDto);
-		}
-		case CONFIRMED: {
-			final CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-			return positiveLabResult(caseDataDto) && hasCoronavirusSymptom(caseDataDto);
-		}
-		case CONFIRMED_NO_SYMPTOMS: {
-			final CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return positiveLabResult(caseDataDto)
-				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
-				&& (SymptomsHelper.allSymptomsFalse(symptoms)
-					|| SymptomsHelper.atLeastOnSymptomTrue(
-						symptoms.getFever(),
-						symptoms.getGeneralSignsOfDisease(),
-						symptoms.getDiarrhea(),
-						symptoms.getLossOfSmell(),
-						symptoms.getLossOfTaste(),
-						symptoms.getFastHeartRate(),
-						symptoms.getRapidBreathing(),
-						symptoms.getOxygenSaturationLower94(),
-						symptoms.getVomiting(),
-						symptoms.getChillsSweats()));
-		}
-		case CONFIRMED_UNKNOWN_SYMPTOMS:
-			final CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return positiveLabResult(caseDataDto)
-				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
-				&& SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
-		}
-		return false;
-	}
-
-	private boolean positiveLabResult(CaseDataDto caseDataDto) {
-		final List<SampleDto> samplesOfCase = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()));
-		final Optional<SampleDto> positiveTestSampleOptional =
-			samplesOfCase.stream().filter(sampleDto -> sampleDto.getPathogenTestResult() == PathogenTestResultType.POSITIVE).findAny();
-		return positiveTestSampleOptional.isPresent();
-	}
-
-	private boolean hasCoronavirusSymptom(CaseDataDto caseDataDto) {
-		final SymptomsDto symptoms = caseDataDto.getSymptoms();
-		return caseDataDto.getDisease() == Disease.CORONAVIRUS
-			&& symptoms.getSymptomatic()
-			&& SymptomsHelper.atLeastOnSymptomTrue(
-				symptoms.getPneumoniaClinicalOrRadiologic(),
-				symptoms.getDifficultyBreathing(),
-				symptoms.getSoreThroat(),
-				symptoms.getCough(),
-				symptoms.getRunnyNose(),
-				symptoms.getRespiratoryDiseaseVentilation(),
-				symptoms.getAcuteRespiratoryDistressSyndrome());
+		return de.symeda.sormas.api.caze.CaseClassificationValidator
+			.isValidCaseClassification(caseClassification, FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid));
 	}
 
 	@Override
