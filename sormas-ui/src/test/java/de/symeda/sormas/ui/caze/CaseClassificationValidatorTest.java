@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.junit.Assert;
@@ -25,8 +24,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -37,27 +40,114 @@ public class CaseClassificationValidatorTest extends AbstractBeanTest {
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
 	@Test
-    public void testCaseClassificationValidator() throws IOException, InvalidColumnException, InterruptedException {
+	public void testCaseClassificationValidator() {
 
-        TestDataCreator creator = new TestDataCreator();
+		final TestDataCreator creator = new TestDataCreator();
+		final TestDataCreator.RDCF rdcf = creator.createRDCF("region", "district", "community", "facility");
+		final UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		final PersonDto cazePerson = creator.createPerson("Case", "Person");
+		final CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
-        TestDataCreator.RDCF rdcf = creator.createRDCF("region", "district", "community", "facility");
+		final SymptomsDto symptoms = SymptomsDto.build();
+		caze.setSymptoms(symptoms);
 
-        UserDto user = creator
-                .createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-        PersonDto cazePerson = creator.createPerson("Case", "Person");
-        CaseDataDto caze = creator.createCase(
-                user.toReference(),
-                cazePerson.toReference(),
-                Disease.EVD,
-                CaseClassification.PROBABLE,
-                InvestigationStatus.PENDING,
-                new Date(),
-                rdcf);
+		final CaseClassificationValidator validator = new CaseClassificationValidator(caze.getUuid(), INVALID_CASE_CLASSIFICATION);
 
-        final CaseClassificationValidator caseClassificationValidator = new CaseClassificationValidator(caze.getUuid(), INVALID_CASE_CLASSIFICATION);
-        Assert.assertTrue(caseClassificationValidator.isValidValue(CaseClassification.PROBABLE));
+		// assert classifications when no symptoms & no lab result
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		invalid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		invalid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		invalid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
 
-        fail on purpose this test needs to be extended for other cases
-    }
+		// assert classifications when no symptoms & non-positive lab result
+		final SampleDto sample =
+			creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility.toReference());
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		invalid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		invalid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		invalid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+
+		// assert classifications when no symptoms & positive lab result
+		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
+		getSampleFacade().saveSample(sample);
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		invalid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		invalid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		valid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+
+		// assert classifications when no symptoms & positive lab result
+		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
+		getSampleFacade().saveSample(sample);
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		invalid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		invalid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		valid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+
+		// assert classifications when other symptoms & positive lab result
+		caze.getSymptoms().setFever(SymptomState.YES);
+		CaseDataDto savedCase1 = getCaseFacade().saveCase(caze);
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		invalid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		valid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		invalid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+
+		// assert classifications when other & covid symptoms & positive lab result
+		savedCase1.getSymptoms().setPneumoniaClinicalOrRadiologic(SymptomState.YES);
+		CaseDataDto savedCase2 = getCaseFacade().saveCase(savedCase1);
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		valid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		valid(CaseClassification.CONFIRMED, validator);
+		valid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		invalid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+
+		// assert classifications when other & covid symptoms & negative lab result
+		sample.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		getSampleFacade().saveSample(sample);
+
+		valid(CaseClassification.NOT_CLASSIFIED, validator);
+		valid(CaseClassification.SUSPECT, validator);
+		valid(CaseClassification.PROBABLE, validator);
+		invalid(CaseClassification.CONFIRMED, validator);
+		invalid(CaseClassification.CONFIRMED_NO_SYMPTOMS, validator);
+		invalid(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS, validator);
+		valid(CaseClassification.NO_CASE, validator);
+	}
+
+	private void invalid(CaseClassification caseClassification, CaseClassificationValidator validator) {
+		Assert.assertFalse(validator.isValidValue(caseClassification));
+	}
+
+	private void valid(CaseClassification caseClassification, CaseClassificationValidator validator) {
+		Assert.assertTrue(validator.isValidValue(caseClassification));
+	}
 }

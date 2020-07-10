@@ -282,6 +282,10 @@ public final class SymptomsHelper {
 
 	public static Boolean allSymptomsUnknownOrNull(SymptomsDto dto) {
 
+		return allSymptomsFullfillCondition(dto);
+	}
+
+	private static Boolean allSymptomsFullfillCondition(SymptomsDto dto) {
 		if (dto == null) {
 			return true;
 		}
@@ -291,6 +295,28 @@ public final class SymptomsHelper {
 				if (method.getReturnType() == SymptomState.class) {
 					Object symptomState = method.invoke(dto);
 					if (symptomState == SymptomState.YES || symptomState == SymptomState.NO) {
+						return false;
+					}
+				}
+			}
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
+		return true;
+	}
+
+	public static Boolean allSymptomsFalse(SymptomsDto dto) {
+
+		if (dto == null) {
+			return true;
+		}
+
+		try {
+			for (Method method : SymptomsDto.class.getDeclaredMethods()) {
+				if (method.getReturnType() == SymptomState.class) {
+					Object symptomState = method.invoke(dto);
+					if (symptomState == SymptomState.YES || symptomState == SymptomState.UNKNOWN || symptomState == null) {
 						return false;
 					}
 				}

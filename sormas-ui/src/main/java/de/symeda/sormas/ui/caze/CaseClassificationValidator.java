@@ -61,18 +61,18 @@ public class CaseClassificationValidator extends AbstractValidator<CaseClassific
 			final SymptomsDto symptoms = caseDataDto.getSymptoms();
 			return positiveLabResult(caseDataDto)
 				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
-				&& !symptoms.getSymptomatic()
-				&& SymptomsHelper.atLeastOnSymptomTrue(
-					symptoms.getFever(),
-					symptoms.getGeneralSignsOfDisease(),
-					symptoms.getDiarrhea(),
-					symptoms.getLossOfSmell(),
-					symptoms.getLossOfTaste(),
-					symptoms.getFastHeartRate(),
-					symptoms.getRapidBreathing(),
-					symptoms.getOxygenSaturationLower94(),
-					symptoms.getVomiting(),
-					symptoms.getChillsSweats());
+				&& (SymptomsHelper.allSymptomsFalse(symptoms)
+					|| SymptomsHelper.atLeastOnSymptomTrue(
+						symptoms.getFever(),
+						symptoms.getGeneralSignsOfDisease(),
+						symptoms.getDiarrhea(),
+						symptoms.getLossOfSmell(),
+						symptoms.getLossOfTaste(),
+						symptoms.getFastHeartRate(),
+						symptoms.getRapidBreathing(),
+						symptoms.getOxygenSaturationLower94(),
+						symptoms.getVomiting(),
+						symptoms.getChillsSweats()));
 		}
 		case CONFIRMED_UNKNOWN_SYMPTOMS:
 			final CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
