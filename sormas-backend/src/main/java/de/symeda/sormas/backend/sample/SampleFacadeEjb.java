@@ -371,6 +371,11 @@ public class SampleFacadeEjb implements SampleFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = joins.getContactPerson().get(Person.FIRST_NAME);
 					break;
+				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
+					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
+					break;
 				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
 					break;
@@ -481,6 +486,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.ID),
 				sample.get(Sample.UUID),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.REPORT_DATE_TIME),
 				joins.getCaze().get(Case.EPID_NUMBER),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
@@ -492,6 +498,8 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaze().get(Case.DISEASE_DETAILS),
 				joins.getContact().get(Contact.DISEASE),
 				joins.getContact().get(Contact.DISEASE_DETAILS),
+				joins.getEvent().get(Event.DISEASE),
+				joins.getEvent().get(Event.DISEASE_DETAILS),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),

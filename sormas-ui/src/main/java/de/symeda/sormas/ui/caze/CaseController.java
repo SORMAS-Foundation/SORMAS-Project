@@ -364,7 +364,7 @@ public class CaseController {
 							if (selectedPerson != null) {
 								dto.setPerson(selectedPerson);
 
-								selectOrCreateCase(dto, duplicatePerson, uuid -> {
+								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 									if (uuid == null) {
 										SymptomsDto newSymptoms = SymptomsDto.build();
 										newSymptoms.setOnsetDate(createForm.getOnsetDate());

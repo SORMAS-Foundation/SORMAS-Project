@@ -1,5 +1,3 @@
-package de.symeda.sormas.ui.utils;
-
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -17,45 +15,12 @@ package de.symeda.sormas.ui.utils;
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
+package de.symeda.sormas.ui.utils;
 
-import com.vaadin.v7.data.validator.AbstractValidator;
-import org.apache.commons.lang3.StringUtils;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 
-public class NumberValidator extends AbstractValidator<String> {
+public interface FieldWrapper<T extends Component> {
 
-	public NumberValidator(String errorMessage) {
-		super(errorMessage);
-	}
-
-	@Override
-	protected boolean isValidValue(String number) {
-		if (StringUtils.isBlank(number)) {
-			return true;
-		}
-
-		try {
-			Integer.valueOf(number);
-		} catch (NumberFormatException ie) {
-			try {
-				Long.valueOf(number);
-			} catch (NumberFormatException le) {
-				try {
-					Float.valueOf(number);
-				} catch (NumberFormatException fe) {
-					try {
-						Double.valueOf(number);
-					} catch (NumberFormatException de) {
-						return false;
-					}
-				}
-			}
-		}
-
-		return true;
-	}
-
-	@Override
-	public Class<String> getType() {
-		return String.class;
-	}
+	ComponentContainer wrap(T component);
 }

@@ -4670,7 +4670,6 @@ ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERE
 
 INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
 
--- 2020-07-01 TODO ADD COMMENT
 CREATE TABLE campaignformdata(
 	id bigint not null,
 	uuid varchar(36) not null unique,

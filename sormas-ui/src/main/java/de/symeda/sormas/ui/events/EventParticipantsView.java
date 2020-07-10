@@ -45,7 +45,7 @@ public class EventParticipantsView extends AbstractEventView {
 	public static final String EVENTPARTICIPANTS = "eventparticipants";
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/" + EVENTPARTICIPANTS;
 
-	private EventParticipantCriteria criteria;
+	private final EventParticipantCriteria criteria;
 
 	private EventParticipantsGrid grid;
 	private Button addButton;

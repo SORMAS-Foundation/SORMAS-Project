@@ -225,6 +225,26 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings({
+			"rawtypes",
+			"hiding" })
+	protected <T extends Field> T addField(String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
+		return addField(getContent(), propertyId, fieldType, fieldWrapper);
+	}
+
+	@SuppressWarnings({
+			"rawtypes",
+			"hiding" })
+	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
+		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		formatField(field, propertyId);
+		field.setId(propertyId);
+		// Add validators before wrapping field, so the wrapper can access validators
+		addDefaultAdditionalValidators(field);
+		layout.addComponent(fieldWrapper.wrap(field), propertyId);
+		return field;
+	}
+
+	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })
 	protected <T extends Field> T addCustomField(String fieldId, Class<?> dataType, Class<T> fieldType) {
