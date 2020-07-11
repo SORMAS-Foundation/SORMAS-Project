@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Eventi Confermati</string>
     <string name="caption_contact_information">Informazioni di contatto</string>
     <string name="caption_contact_tasks">Attivita di contatto</string>
+    <string name="caption_contact_epidemiological_data">Dati epidemiologici</string>
     <string name="caption_contact_visits">Informazioni addizionali</string>
     <string name="caption_converted_to_case">Convertito in caso</string>
     <string name="caption_date_of_birth">Data di nascita (anno/mese /giorno)</string>
