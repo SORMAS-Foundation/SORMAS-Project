@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Vahvistetut tapahtumat</string>
     <string name="caption_contact_information">Yhteystiedot</string>
     <string name="caption_contact_tasks">Kontaktitehtävät</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Seurantatiedot</string>
     <string name="caption_converted_to_case">Sairastunut seurannassa</string>
     <string name="caption_date_of_birth">Syntymäpäivä (vuosi / kuukausi / päivä)</string>
