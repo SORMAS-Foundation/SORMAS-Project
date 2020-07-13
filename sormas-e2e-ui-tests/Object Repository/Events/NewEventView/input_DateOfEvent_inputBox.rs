@@ -7,27 +7,31 @@
    <selectorCollection>
       <entry>
          <key>XPATH</key>
-         <value>//input[@id='gwt-uid-58']</value>
+         <value>//*[@id=&quot;startDate&quot;]/input</value>
+      </entry>
+      <entry>
+         <key>BASIC</key>
+         <value>//input[@class = 'v-textfield v-datefield-textfield v-textfield-focus']</value>
       </entry>
    </selectorCollection>
    <selectorMethod>XPATH</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>
       <value>input</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>type</name>
       <type>Main</type>
       <value>text</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>class</name>
       <type>Main</type>
@@ -48,7 +52,7 @@
       <value>gwt-uid-10</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>id</name>
       <type>Main</type>
