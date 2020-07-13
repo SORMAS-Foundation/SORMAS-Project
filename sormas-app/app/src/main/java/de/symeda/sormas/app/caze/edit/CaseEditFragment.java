@@ -27,7 +27,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseClassificationValidator;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -51,7 +50,6 @@ import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
@@ -253,25 +251,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 		// Case classification warning state
 		if (ConfigProvider.hasUserRight(UserRight.CASE_CLASSIFY)) {
-			contentBinding.caseDataCaseClassification.addValueChangedListener(new ValueChangeListener() {
+			contentBinding.caseDataCaseClassification.addValueChangedListener(field -> {
 
-				@Override
-				public void onChange(ControlPropertyField field) {
-					CaseClassification caseClassification = (CaseClassification) field.getValue();
-					if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
-						getContentBinding().caseDataCaseClassification.enableWarningState(R.string.validation_soft_case_classification);
-					} else {
-						getContentBinding().caseDataCaseClassification.disableWarningState();
-					}
-					if (ConfigProvider.isGermanServer()) {
-						final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
-						if (CaseClassificationValidator.isValidCaseClassification(caseClassification, caseDtoHelper.adoToDto(record))) {
-							getContentBinding().caseDataCaseClassification.disableErrorState();
-						} else {
-							getContentBinding().caseDataCaseClassification.enableErrorState(R.string.validation_case_classification);
-						}
-					}
+				final CaseClassification caseClassification = (CaseClassification) field.getValue();
+				if (caseClassification == CaseClassification.NOT_CLASSIFIED) {
+					getContentBinding().caseDataCaseClassification.enableWarningState(R.string.validation_soft_case_classification);
+				} else {
+					getContentBinding().caseDataCaseClassification.disableWarningState();
 				}
+
+				CaseValidator.initializeCaseClassificationValidation(record, caseClassification, getContentBinding());
 			});
 		}
 

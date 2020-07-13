@@ -15,11 +15,9 @@
 
 package de.symeda.sormas.api.caze;
 
-import java.util.Collections;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
@@ -27,7 +25,7 @@ import de.symeda.sormas.api.symptoms.SymptomsHelper;
 
 public class CaseClassificationValidator {
 
-	public static boolean isValidCaseClassification(CaseClassification caseClassification, CaseDataDto caseDataDto) {
+	public static boolean isValidCaseClassification(CaseClassification caseClassification, CaseDataDto caseDataDto, List<SampleDto> samplesOfCase) {
 		switch (caseClassification) {
 
 		case NOT_CLASSIFIED:
@@ -39,11 +37,11 @@ public class CaseClassificationValidator {
 			return hasCoronavirusSymptom(caseDataDto);
 		}
 		case CONFIRMED: {
-			return positiveLabResult(caseDataDto) && hasCoronavirusSymptom(caseDataDto);
+			return positiveLabResult(samplesOfCase) && hasCoronavirusSymptom(caseDataDto);
 		}
 		case CONFIRMED_NO_SYMPTOMS: {
 			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return positiveLabResult(caseDataDto)
+			return positiveLabResult(samplesOfCase)
 				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
 				&& (SymptomsHelper.allSymptomsFalse(symptoms)
 					|| SymptomsHelper.atLeastOnSymptomTrue(
@@ -60,15 +58,14 @@ public class CaseClassificationValidator {
 		}
 		case CONFIRMED_UNKNOWN_SYMPTOMS:
 			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return positiveLabResult(caseDataDto)
+			return positiveLabResult(samplesOfCase)
 				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
 				&& SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
 		}
 		return false;
 	}
 
-	private static boolean positiveLabResult(CaseDataDto caseDataDto) {
-		final List<SampleDto> samplesOfCase = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseDataDto.getUuid()));
+	private static boolean positiveLabResult(List<SampleDto> samplesOfCase) {
 		for (SampleDto sampleDto : samplesOfCase) {
 			if (sampleDto.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
 				return true;

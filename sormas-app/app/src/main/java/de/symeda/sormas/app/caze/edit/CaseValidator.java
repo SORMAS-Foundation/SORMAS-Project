@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTimeComparator;
 
@@ -23,22 +25,56 @@ import android.view.View;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseClassificationValidator;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditPortHealthInfoLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 final class CaseValidator {
+
+	static void initializeCaseClassificationValidation(
+		Case caze,
+		CaseClassification caseClassification,
+		FragmentCaseEditLayoutBinding contentBinding) {
+		if (ConfigProvider.isGermanServer()) {
+			final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+			final CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
+			final SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
+			final List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
+			final List<SampleDto> sampleDtos = new ArrayList<>();
+			for (Sample sample : samples) {
+				sampleDtos.add(sampleDtoHelper.adoToDto(sample));
+			}
+			final boolean validCaseClassification =
+				CaseClassificationValidator.isValidCaseClassification(caseClassification, caseDataDto, sampleDtos);
+
+			if (validCaseClassification) {
+				contentBinding.caseDataCaseClassification.disableErrorState();
+			} else {
+				contentBinding.caseDataCaseClassification.enableErrorState(R.string.validation_case_classification);
+			}
+
+			contentBinding.caseDataCaseClassification.setValidationCallback(() -> {
+				if (validCaseClassification) {
+					return false;
+				}
+				return true;
+			});
+		}
+	}
 
 	static void initializePortHealthInfoValidation(final FragmentCaseEditPortHealthInfoLayoutBinding contentBinding, final Case caze) {
 		if (contentBinding.portHealthInfoDepartureDateTime.getVisibility() == View.GONE

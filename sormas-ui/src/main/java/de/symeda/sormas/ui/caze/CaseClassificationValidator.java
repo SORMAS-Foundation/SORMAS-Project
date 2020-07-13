@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.caze;
 
+import java.util.Collections;
+
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,8 +33,11 @@ public class CaseClassificationValidator extends AbstractValidator<CaseClassific
 
 	@Override
 	protected boolean isValidValue(CaseClassification caseClassification) {
-		return de.symeda.sormas.api.caze.CaseClassificationValidator
-			.isValidCaseClassification(caseClassification, FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid));
+		return de.symeda.sormas.api.caze.CaseClassificationValidator.isValidCaseClassification(
+			caseClassification,
+			FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid),
+			FacadeProvider.getSampleFacade()
+				.getByCaseUuids(Collections.singletonList(FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid).getUuid())));
 	}
 
 	@Override

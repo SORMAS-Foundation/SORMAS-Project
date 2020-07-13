@@ -84,8 +84,9 @@
                         app:value="@={data.clinicalConfirmation}"
                         style="@style/ControlSingleColumnStyle"/>
 
-                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                <de.symeda.sormas.app.component.controls.ControlSwitchField
                         android:id="@+id/caseData_epidemiologicalConfirmation"
+                        app:enumClass="@{yesNoUnknownClass}"
                         app:value="@={data.epidemiologicalConfirmation}"
                         style="@style/ControlSingleColumnStyle"/>
 
