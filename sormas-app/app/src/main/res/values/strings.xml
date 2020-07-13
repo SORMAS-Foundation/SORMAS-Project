@@ -144,6 +144,7 @@
     <string name="caption_confirmed_events">Confirmed Events</string>
     <string name="caption_contact_information">Contact Information</string>
     <string name="caption_contact_tasks">Contact Tasks</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>

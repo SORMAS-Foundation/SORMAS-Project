@@ -4631,6 +4631,7 @@ CREATE TABLE campaignforms(
 	formid varchar(255),
 	languagecode varchar(255),
 	campaignformelements text,
+	campaignformtranslations text,
 	sys_period tstzrange not null,
 	primary key(id)
 );
@@ -4745,6 +4746,18 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
 
+-- 2020-07-02 Rename formData field #2268
+ALTER TABLE campaignformdata RENAME formData TO formvalues;
+ALTER TABLE campaignformdata_history RENAME formData to formvalues;
+
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Rename formData field #2268');
+
+-- 2020-07-10 Add archived column to campaign form data #2268
+ALTER TABLE campaignformdata ADD COLUMN archived boolean NOT NULL DEFAULT false;
+ALTER TABLE campaignformdata_history ADD COLUMN archived boolean;
+
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add archived column to campaign form data #2268');
+
 -- 2020-07-03 Add case classification for Germany #2230
 ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
 ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);
@@ -4753,6 +4766,6 @@ ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
 ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation varchar(255);
 ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add case classification for Germany #2230');
+INSERT INTO schema_version (version_number, comment) VALUES (225, 'Add case classification for Germany #2230');
 
 -- *** Insert new sql commands BEFORE this line ***

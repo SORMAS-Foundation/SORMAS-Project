@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
@@ -38,11 +43,6 @@ import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
 
 public enum UserRight {
 
@@ -986,26 +986,25 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			POE_INFORMANT),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(),
-  CAMPAIGN_VIEW(
-      ADMIN,
-      NATIONAL_USER,
-      SURVEILLANCE_SUPERVISOR,
-      SURVEILLANCE_OFFICER,
-      CASE_SUPERVISOR,
-      CASE_OFFICER,
+	CAMPAIGN_VIEW(
+      		ADMIN,
+      		NATIONAL_USER,
+      		SURVEILLANCE_SUPERVISOR,
+     		SURVEILLANCE_OFFICER,
+      		CASE_SUPERVISOR,
+      		CASE_OFFICER, 
 			CONTACT_SUPERVISOR,
-      CONTACT_OFFICER,
-      EVENT_OFFICER,
+      		CONTACT_OFFICER,
+      		EVENT_OFFICER, 
 			POE_SUPERVISOR),
 	CAMPAIGN_EDIT(
-      ADMIN,
-      NATIONAL_USER),
+			ADMIN,
+			NATIONAL_USER),
 	CAMPAIGN_ARCHIVE(
-      ADMIN,
-      NATIONAL_USER),
+			ADMIN,
+			NATIONAL_USER),
 	CAMPAIGN_DELETE(
-      ADMIN),
-
+			ADMIN),
 	CAMPAIGN_FORM_DATA_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -1032,7 +1031,6 @@ public enum UserRight {
 	CAMPAIGN_FORM_DATA_DELETE(
 			ADMIN
 	);
-
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;

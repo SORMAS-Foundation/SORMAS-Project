@@ -1,15 +1,16 @@
 package de.symeda.sormas.api.campaign;
 
-import java.util.List;
+import de.symeda.sormas.api.utils.SortProperty;
 
 import javax.ejb.Remote;
-
-import de.symeda.sormas.api.utils.SortProperty;
+import java.util.List;
 
 @Remote
 public interface CampaignFacade {
 
 	List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	List<CampaignReferenceDto> getAllCampaignsAsReference();
 
 	long count(CampaignCriteria campaignCriteria);
 

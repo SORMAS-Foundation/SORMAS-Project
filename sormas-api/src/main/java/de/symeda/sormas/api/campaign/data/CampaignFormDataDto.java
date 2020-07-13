@@ -26,11 +26,22 @@ import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
+
+import java.util.List;
 
 public class CampaignFormDataDto extends EntityDto {
 
-	private String formData;
+	private static final long serialVersionUID = -8087195060395038093L;
 
+	public static final String I18N_PREFIX = "campaignformdata";
+
+	public static final String CAMPAIGN = "campaign";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
+
+	private List<CampaignFormValue> formValues;
 	private CampaignReferenceDto campaign;
 	private CampaignFormReferenceDto campaignForm;
 	private RegionReferenceDto region;
@@ -44,6 +55,7 @@ public class CampaignFormDataDto extends EntityDto {
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 		CampaignFormDataDto campaignFormData = new CampaignFormDataDto();
+		campaignFormData.setUuid(DataHelper.createUuid());
 		campaignFormData.setCampaign(campaign);
 		campaignFormData.setCampaignForm(campaignForm);
 		campaignFormData.setRegion(region);
@@ -52,12 +64,12 @@ public class CampaignFormDataDto extends EntityDto {
 		return campaignFormData;
 	}
 
-	public String getFormData() {
-		return formData;
+	public List<CampaignFormValue> getFormValues() {
+		return formValues;
 	}
 
-	public void setFormData(String formData) {
-		this.formData = formData;
+	public void setFormValues(List<CampaignFormValue> formValues) {
+		this.formValues = formValues;
 	}
 
 	public CampaignFormReferenceDto getCampaignForm() {

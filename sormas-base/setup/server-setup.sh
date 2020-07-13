@@ -49,10 +49,10 @@ else
 fi
 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
-#AS_JAVA_NATIVE='C:\zulu-8'
-#AS_JAVA_NATIVE='/opt/zulu-8'
+#AS_JAVA_NATIVE='C:\zulu-11'
+#AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.192
+PAYARA_VERSION=5.2020.2
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -80,6 +80,7 @@ DOMAIN_NAME=sormas
 PORT_BASE=6000
 PORT_ADMIN=6048
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
+DOMAIN_XMX=4096m
 
 # DB
 DB_HOST=localhost
@@ -88,6 +89,7 @@ DB_NAME=sormas_db
 DB_NAME_AUDIT=sormas_audit_db
 # Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
+DB_JDBC_MAXPOOLSIZE=128
 
 # ------ Config END ------
 
@@ -205,22 +207,22 @@ JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/^.\+ //;s/^1\.//;s/[^0-9].*//')
 if [[ ! "${JAVA_VERSION}" =~ ^[0-9]+$ ]]; then
 	if [[ -z "${PAYARA_ZIP_FILE}" ]]; then
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
+			echo "ERROR: No Java JDK found. Please install a Java 11 JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
 		else
 			echo "ERROR: No Java JDK found in the path specified in ${ASENV_PATH}. Please adjust the value of the AS_JAVA entry."
 		fi
 	else
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
+			echo "ERROR: No Java JDK found. Please install a Java 11 JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
 		else
 			echo "ERROR: No Java JDK found in the path specified in this script. Please adjust the value of the AS_JAVA_NATIVE variable."
 		fi
 	fi
 	exit 1
-elif [[ "${JAVA_VERSION}" -eq 8 ]]; then
+elif [[ "${JAVA_VERSION}" -eq 11 ]]; then
 	echo "Found Java ${JAVA_VERSION} JDK."
-elif [[ "${JAVA_VERSION}" -gt 8 ]]; then
-	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
+elif [[ "${JAVA_VERSION}" -gt 11 ]]; then
+	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 11 SDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
 else
 	echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
 	exit 1
@@ -283,7 +285,7 @@ read -p "Database setup completed. Please check the output for any error. Press 
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
-"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword "${DOMAIN_NAME}"
+"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword --template ${PAYARA_HOME}/glassfish/common/templates/gf/production-domain.jar "${DOMAIN_NAME}"
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 if [[ ${LINUX} = true ]]; then
@@ -305,15 +307,18 @@ done
 echo "Configuring domain..."
 
 # General domain settings
-${ASADMIN} delete-jvm-options -Xmx512m
-${ASADMIN} create-jvm-options -Xmx4096m
+${ASADMIN} delete-jvm-options -Xms2g
+${ASADMIN} delete-jvm-options -Xmx2g
+${ASADMIN} create-jvm-options -Xmx${DOMAIN_XMX}
+${ASADMIN} set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
+${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
 
 # JDBC pool
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
 
 # Pool for audit log
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession

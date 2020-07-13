@@ -72,8 +72,8 @@ public class ShowDetailsListener<T> implements ItemClickListener<T> {
 	public void itemClick(ItemClick<T> event) {
 
 		if (event.getItem() != null
-			&& ((event.getColumn() != null && (detailsColumnId.equals(event.getColumn().getId()))
-				|| (showOnDoubleClick && event.getMouseEventDetails().isDoubleClick())))) {
+			&& ((event.getColumn() != null && detailsColumnId.equals(event.getColumn().getId()))
+				|| (showOnDoubleClick && event.getMouseEventDetails().isDoubleClick()))) {
 			handleItemClick(event);
 		}
 	}

@@ -4,8 +4,8 @@ public enum CampaignFormElementType {
 
 	LABEL,
 	SECTION,
-	INTEGER,
-	STRING,
+	NUMBER,
+	TEXT,
 	YES_NO("YES", "NO");
 
 	private final String[] allowedValues;
@@ -20,6 +20,10 @@ public enum CampaignFormElementType {
 
 	public String toString() {
 		return name().toLowerCase().replaceAll("_", "-");
+	}
+
+	public static CampaignFormElementType fromString(String stringValue) {
+		return valueOf(stringValue.toUpperCase().replaceAll("-", "_"));
 	}
 
 }

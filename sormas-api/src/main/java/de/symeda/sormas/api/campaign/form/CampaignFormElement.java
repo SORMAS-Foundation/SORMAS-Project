@@ -9,8 +9,8 @@ public class CampaignFormElement implements Serializable {
 	public static final String[] VALID_TYPES = {
 		CampaignFormElementType.LABEL.toString(),
 		CampaignFormElementType.SECTION.toString(),
-		CampaignFormElementType.INTEGER.toString(),
-		CampaignFormElementType.STRING.toString(),
+		CampaignFormElementType.NUMBER.toString(),
+		CampaignFormElementType.TEXT.toString(),
 		CampaignFormElementType.YES_NO.toString() };
 
 	public static final String[] VALID_STYLES = {

@@ -17,15 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -90,6 +81,15 @@ import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class TestDataCreator {
 
@@ -714,7 +714,7 @@ public class TestDataCreator {
 		CampaignFormDataDto campaignFormData =
 			CampaignFormDataDto.build(campaignReferenceDto, campaignFormReferenceDto, rdcf.region, rdcf.district, rdcf.community);
 
-		campaignFormData.setFormData(formData);
+//		campaignFormData.setFormValues(formData);
 		return campaignFormData;
 	}
 

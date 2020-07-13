@@ -20,22 +20,9 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
@@ -52,6 +39,19 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
@@ -92,7 +92,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		DtoHelper.validateDto(source, target);
 
-		target.setFormData(source.getFormData());
+		target.setFormValuesList(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
 		target.setCampaignForm(campaignFormService.getByReferenceDto(source.getCampaignForm()));
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
@@ -110,7 +110,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CampaignFormDataDto target = new CampaignFormDataDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setFormData(source.getFormData());
+		target.setFormValues(source.getFormValuesList());
 		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampaign()));
 		target.setCampaignForm(CampaignFormFacadeEjb.toReferenceDto(source.getCampaignForm()));
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -143,28 +143,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		campaignFormDataService.delete(campaignFormData);
 	}
 
-	@Override
-	public boolean isDeleted(String campaignFormDataUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<CampaignFormData> from = cq.from(CampaignFormData.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(CampaignFormData.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), campaignFormDataUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-
-		return count > 0;
-	}
-
 	private CampaignFormDataDto convertToDto(CampaignFormData source) {
 		CampaignFormDataDto dto = toDto(source);
 		return dto;
-	}
-
-	@LocalBean
-	@Stateless
-	public static class CampaignFormDataFacadeEjbLocal extends CampaignFormDataFacadeEjb {
 	}
 
 	@Override
@@ -183,5 +164,28 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		long count = em.createQuery(cq).getSingleResult();
 
 		return count > 0;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return campaignFormDataService.exists(uuid);
+	}
+
+	@Override
+	public CampaignFormDataReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(campaignFormDataService.getByUuid(uuid));
+	}
+
+	private CampaignFormDataReferenceDto toReferenceDto(CampaignFormData source) {
+		if (source == null) {
+			return null;
+		}
+
+		return source.toReference();
+	}
+
+	@LocalBean
+	@Stateless
+	public static class CampaignFormDataFacadeEjbLocal extends CampaignFormDataFacadeEjb {
 	}
 }

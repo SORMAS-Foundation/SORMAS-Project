@@ -41,6 +41,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -178,6 +179,9 @@ public class Contact extends AbstractDomainObject {
 	private String quarantineHomeSupplyEnsuredComment;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EpiData epiData;
 
 	public Person getPerson() {
 		return person;
@@ -585,5 +589,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiData getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 }
