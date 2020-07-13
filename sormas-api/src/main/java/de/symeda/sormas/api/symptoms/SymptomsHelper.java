@@ -281,11 +281,6 @@ public final class SymptomsHelper {
 	}
 
 	public static Boolean allSymptomsUnknownOrNull(SymptomsDto dto) {
-
-		return allSymptomsFullfillCondition(dto);
-	}
-
-	private static Boolean allSymptomsFullfillCondition(SymptomsDto dto) {
 		if (dto == null) {
 			return true;
 		}
