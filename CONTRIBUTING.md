@@ -107,3 +107,5 @@ There are a couple of things you can do to fix these problems:
 * Re-deploy the server artifacts
 
 If the problem occurred right after you've pulled new code from GitHub, your safest bet is probably to start with the Maven update. For most other problems, a simple re-deployment or, if necessary, server restart should suffice.
+
+When you have problems like this - `An internal error occurred during: "Polling news feeds".  javax/xml/bind/JAXBContext` - then disable setting `Window --> Preferences --> General --> News --> "Enable automatic news polling"` (may happen when running Eclipse with JDK 11).
