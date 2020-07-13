@@ -49,9 +49,6 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 	private Case record;
 
 	public static CaseReadFragment newInstance(Case activityRootData) {
-		if (activityRootData == null){
-			return null;
-		}
 		return newInstanceWithFieldCheckers(
 			CaseReadFragment.class,
 			null,
