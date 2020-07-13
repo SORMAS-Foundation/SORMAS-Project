@@ -853,8 +853,8 @@ public class CaseController {
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String caseUuid, ViewMode viewMode) {
 
 		CaseDataDto caze = findCase(caseUuid);
-
 		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), viewMode);
+
 		EpiDataDto dto = caze.getEpiData();
 		setDefaultValues(dto);
 		epiDataForm.setValue(dto);
