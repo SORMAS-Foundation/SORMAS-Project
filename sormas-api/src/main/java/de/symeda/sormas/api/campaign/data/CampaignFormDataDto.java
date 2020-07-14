@@ -34,9 +34,10 @@ public class CampaignFormDataDto extends EntityDto {
 
 	private static final long serialVersionUID = -8087195060395038093L;
 
-	public static final String I18N_PREFIX = "campaignformdata";
+	public static final String I18N_PREFIX = "CampaignFormData";
 
 	public static final String CAMPAIGN = "campaign";
+	public static final String CAMPAIGN_FORM = "campaignForm";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";

@@ -51,6 +51,11 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignFormData";
 
+	public static final String CAMPAIGN = "campaign";
+	public static final String CAMPAIGN_FORM = "campaignForm";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String ARCHIVED = "archived";
 
 	private static final long serialVersionUID = -8021065433714419288L;

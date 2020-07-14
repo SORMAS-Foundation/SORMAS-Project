@@ -20,8 +20,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
@@ -47,8 +47,7 @@ public abstract class AbstractCampaignView extends AbstractSubNavigationView {
 		menu.addView(
 			CampaignDataView.VIEW_NAME,
 			I18nProperties.getPrefixCaption("View", CampaignDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-			null,
-			false);
+			params);
 	}
 
 	public static void registerViews(Navigator navigator) {

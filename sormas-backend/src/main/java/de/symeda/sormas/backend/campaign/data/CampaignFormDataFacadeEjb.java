@@ -20,20 +20,27 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
+import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
@@ -47,9 +54,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,6 +187,80 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@Override
 	public CampaignFormDataReferenceDto getReferenceByUuid(String uuid) {
 		return toReferenceDto(campaignFormDataService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<CampaignFormDataIndexDto> getIndexList(
+		CampaignFormDataCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
+		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
+		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
+		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
+		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
+		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
+
+		cq.multiselect(
+			campaignJoin.get(Campaign.NAME),
+			regionJoin.get(Region.NAME),
+			districtJoin.get(District.NAME),
+			communityJoin.get(Community.NAME));
+
+		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case CampaignFormDataIndexDto.CAMPAIGN:
+					expression = campaignJoin.get(Campaign.NAME);
+					break;
+				case CampaignFormDataIndexDto.REGION:
+					expression = regionJoin.get(Region.NAME);
+					break;
+				case CampaignFormDataIndexDto.DISTRICT:
+					expression = districtJoin.get(District.NAME);
+					break;
+				case CampaignFormDataIndexDto.COMMUNITY:
+					expression = communityJoin.get(Community.NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
+		}
+
+		if (first != null && max != null) {
+			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			return em.createQuery(cq).getResultList();
+		}
+	}
+
+	@Override
+	public long count(CampaignFormDataCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
+
+		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	private CampaignFormDataReferenceDto toReferenceDto(CampaignFormData source) {

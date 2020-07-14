@@ -20,21 +20,42 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import org.vaadin.hene.popupbutton.PopupButton;
+
+import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 @SuppressWarnings("serial")
 public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
+	private CampaignFormDataCriteria criteria;
+	private CampaignFormDataGrid grid;
+	private VerticalLayout mainLayout;
+	private CampaignFormDataFilterForm filterForm;
+
 	public CampaignDataView() {
 		super(VIEW_NAME);
+
+		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
+		grid = new CampaignFormDataGrid(criteria);
+
+		mainLayout = new VerticalLayout();
+		mainLayout.addComponent(createFilterBar());
+		mainLayout.addComponent(grid);
+		mainLayout.setMargin(true);
+		mainLayout.setSpacing(false);
+		mainLayout.setSizeFull();
+		mainLayout.setExpandRatio(grid, 1);
+		mainLayout.setStyleName("crud-main-layout");
 
 		VerticalLayout newFormLayout = new VerticalLayout();
 		{
@@ -56,9 +77,41 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(newFormButton);
 		}
 
-		HorizontalLayout placeholder = new HorizontalLayout();
-		placeholder.setSizeFull();
-		addComponent(placeholder);
+		addComponent(mainLayout);
+	}
+
+	public HorizontalLayout createFilterBar() {
+		HorizontalLayout filterLayout = new HorizontalLayout();
+		filterLayout.setSpacing(false);
+		filterLayout.setMargin(false);
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
+
+		filterForm = new CampaignFormDataFilterForm();
+		filterForm.addValueChangeListener(e -> {
+			if (!navigateTo(criteria, false)) {
+				filterForm.updateResetButtonState();
+				grid.reload();
+			}
+		});
+
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
+			navigateTo(null, true);
+		});
+
+		filterLayout.addComponent(filterForm);
+		return filterLayout;
+	}
+
+	@Override
+	public void enter(ViewChangeEvent event) {
+		String params = event.getParameters().trim();
+		if (params.startsWith("?")) {
+			params = params.substring(1);
+			criteria.fromUrlParams(params);
+		}
+		filterForm.setValue(criteria);
+		grid.reload();
 	}
 
 }
