@@ -16,28 +16,43 @@
 package de.symeda.sormas.api.campaign.data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public static final String I18N_PREFIX = "CampaignFormData";
 
+	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String FORM_DATE = "formDate";
 
 	private static final long serialVersionUID = -6672198324526771162L;
 
+	private String uuid;
 	private String campaign;
 	private String region;
 	private String district;
 	private String community;
+	private Date formDate;
 
-	public CampaignFormDataIndexDto(String campaign, String region, String district, String community) {
+	public CampaignFormDataIndexDto(String uuid, String campaign, String region, String district, String community, Date formDate) {
+		this.uuid = uuid;
 		this.campaign = campaign;
 		this.region = region;
 		this.district = district;
 		this.community = community;
+		this.formDate = formDate;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getCampaign() {
@@ -70,5 +85,13 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setCommunity(String community) {
 		this.community = community;
+	}
+
+	public Date getFormDate() {
+		return formDate;
+	}
+
+	public void setFormDate(Date formDate) {
+		this.formDate = formDate;
 	}
 }

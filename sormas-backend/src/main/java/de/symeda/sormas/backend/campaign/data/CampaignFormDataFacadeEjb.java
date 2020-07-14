@@ -108,6 +108,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setFormValuesList(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
 		target.setCampaignForm(campaignFormService.getByReferenceDto(source.getCampaignForm()));
+		target.setFormDate(source.getFormDate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
@@ -126,6 +127,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setFormValues(source.getFormValuesList());
 		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampaign()));
 		target.setCampaignForm(CampaignFormFacadeEjb.toReferenceDto(source.getCampaignForm()));
+		target.setFormDate(source.getFormDate());
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
@@ -204,10 +206,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
 
 		cq.multiselect(
+			root.get(CampaignFormData.UUID),
 			campaignJoin.get(Campaign.NAME),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
-			communityJoin.get(Community.NAME));
+			communityJoin.get(Community.NAME),
+			root.get(CampaignFormData.FORM_DATE));
 
 		Predicate filter = campaignFormDataService.createCriteriaFilter(criteria, cb, root);
 		if (filter != null) {
@@ -219,6 +223,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case CampaignFormDataIndexDto.UUID:
+				case CampaignFormDataIndexDto.FORM_DATE:
+					expression = root.get(sortProperty.propertyName);
+					break;
 				case CampaignFormDataIndexDto.CAMPAIGN:
 					expression = campaignJoin.get(Campaign.NAME);
 					break;

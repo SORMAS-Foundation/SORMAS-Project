@@ -39,10 +39,13 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "campaignFormData")
@@ -53,6 +56,7 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM = "campaignForm";
+	public static final String FORM_DATE = "formDate";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -64,6 +68,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private String formValues;
 	private Campaign campaign;
 	private CampaignForm campaignForm;
+	private Date formDate;
 	private Region region;
 	private District district;
 	private Community community;
@@ -129,6 +134,15 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public void setCampaignForm(CampaignForm campaignForm) {
 		this.campaignForm = campaignForm;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getFormDate() {
+		return formDate;
+	}
+
+	public void setFormDate(Date formDate) {
+		this.formDate = formDate;
 	}
 
 	@ManyToOne()

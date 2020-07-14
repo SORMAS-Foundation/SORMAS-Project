@@ -34,7 +34,9 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataEditForm;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -88,7 +90,7 @@ public class CampaignController {
 	public void createCampaignDataForm(CampaignFormReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, () -> {
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, false, false, () -> {
 			window.close();
 			SormasUI.refreshView();
 			Notification
@@ -115,7 +117,7 @@ public class CampaignController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue() == true) {
+					if (e) {
 						FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, true);
 						SormasUI.refreshView();
 					}
@@ -133,7 +135,7 @@ public class CampaignController {
 				I18nProperties.getString(Strings.no),
 				640,
 				e -> {
-					if (e.booleanValue()) {
+					if (e) {
 						FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, false);
 						SormasUI.refreshView();
 					}
@@ -168,6 +170,8 @@ public class CampaignController {
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
 		CampaignFormReferenceDto campaignForm,
+		boolean revertFormOnDiscard,
+		boolean showDeleteButton,
 		Runnable commitCallback,
 		Runnable discardCallback) {
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
@@ -178,6 +182,7 @@ public class CampaignController {
 			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
 		}
 		form.setValue(campaignFormData);
+		final String campaignFormDataUuid = campaignFormData.getUuid();
 
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -190,18 +195,41 @@ public class CampaignController {
 
 				CampaignFormDataDto formData = form.getValue();
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
-				commitCallback.run();
+				if (commitCallback != null) {
+					commitCallback.run();
+				}
 			}
 		});
 
-		component.addDiscardListener(() -> {
-			discardCallback.run();
-		});
+		if (revertFormOnDiscard) {
+			component.addDiscardListener(form::resetFormValues);
+		}
+
+		if (discardCallback != null) {
+			component.addDiscardListener(discardCallback::run);
+		}
+
+		if (showDeleteButton) {
+			component.addDeleteListener(() -> {
+				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
+				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaignDataForm));
+		}
 
 		return component;
 	}
 
 	private CampaignDto getCampaign(String uuid) {
 		return FacadeProvider.getCampaignFacade().getByUuid(uuid);
+	}
+
+	public void navigateToFormDataView(String uuid) {
+		String navigationState = CampaignFormDataView.VIEW_NAME + "/" + uuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToCampaignData(String campaignUuid) {
+		String navigationState = CampaignDataView.VIEW_NAME + "/?" + CampaignFormDataDto.CAMPAIGN + "=" + campaignUuid;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 }

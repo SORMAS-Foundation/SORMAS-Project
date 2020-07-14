@@ -17,13 +17,17 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
@@ -38,6 +42,7 @@ public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto,
 		setCriteria(criteria);
 
 		addEditColumn(e -> {
+			ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
 		});
 
 		setColumns(
@@ -45,7 +50,11 @@ public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto,
 			CampaignFormDataIndexDto.CAMPAIGN,
 			CampaignFormDataIndexDto.REGION,
 			CampaignFormDataIndexDto.DISTRICT,
-			CampaignFormDataIndexDto.COMMUNITY);
+			CampaignFormDataIndexDto.COMMUNITY,
+			CampaignFormDataIndexDto.FORM_DATE);
+
+		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));

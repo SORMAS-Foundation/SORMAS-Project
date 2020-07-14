@@ -1416,8 +1416,8 @@ public interface Captions {
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
-	String View_campaign_campaigndata_form = "View.campaign.campaigndata.form";
-	String View_campaign_campaigndata_form_short = "View.campaign.campaigndata.form.short";
+	String View_campaign_campaigndata_dataform = "View.campaign.campaigndata.dataform";
+	String View_campaign_campaigndata_dataform_short = "View.campaign.campaigndata.dataform.short";
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";

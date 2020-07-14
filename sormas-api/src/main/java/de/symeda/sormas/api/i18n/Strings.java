@@ -725,4 +725,5 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
+	String entityCampaignDataForm = "entityCampaignDataForm";
 }

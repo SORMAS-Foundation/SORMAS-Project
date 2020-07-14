@@ -28,6 +28,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
+import java.util.Date;
 import java.util.List;
 
 public class CampaignFormDataDto extends EntityDto {
@@ -38,6 +39,7 @@ public class CampaignFormDataDto extends EntityDto {
 
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM = "campaignForm";
+	public static final String FORM_DATE = "formDate";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -45,6 +47,7 @@ public class CampaignFormDataDto extends EntityDto {
 	private List<CampaignFormValue> formValues;
 	private CampaignReferenceDto campaign;
 	private CampaignFormReferenceDto campaignForm;
+	private Date formDate;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -62,6 +65,7 @@ public class CampaignFormDataDto extends EntityDto {
 		campaignFormData.setRegion(region);
 		campaignFormData.setDistrict(district);
 		campaignFormData.setCommunity(community);
+		campaignFormData.setFormDate(new Date());
 		return campaignFormData;
 	}
 
@@ -87,6 +91,14 @@ public class CampaignFormDataDto extends EntityDto {
 
 	public void setCampaign(CampaignReferenceDto campaign) {
 		this.campaign = campaign;
+	}
+
+	public Date getFormDate() {
+		return formDate;
+	}
+
+	public void setFormDate(Date formDate) {
+		this.formDate = formDate;
 	}
 
 	public RegionReferenceDto getRegion() {

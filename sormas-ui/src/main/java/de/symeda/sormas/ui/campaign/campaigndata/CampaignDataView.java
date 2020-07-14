@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
@@ -37,9 +36,8 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
-	private CampaignFormDataCriteria criteria;
-	private CampaignFormDataGrid grid;
-	private VerticalLayout mainLayout;
+	private final CampaignFormDataCriteria criteria;
+	private final CampaignFormDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 
 	public CampaignDataView() {
@@ -48,7 +46,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
 		grid = new CampaignFormDataGrid(criteria);
 
-		mainLayout = new VerticalLayout();
+		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.addComponent(createFilterBar());
 		mainLayout.addComponent(grid);
 		mainLayout.setMargin(true);
@@ -80,12 +78,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	public HorizontalLayout createFilterBar() {
-		HorizontalLayout filterLayout = new HorizontalLayout();
-		filterLayout.setSpacing(false);
-		filterLayout.setMargin(false);
-		filterLayout.setWidth(100, Unit.PERCENTAGE);
-
+	public CampaignFormDataFilterForm createFilterBar() {
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria, false)) {
@@ -99,8 +92,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 
-		filterLayout.addComponent(filterForm);
-		return filterLayout;
+		return filterForm;
 	}
 
 	@Override
@@ -112,6 +104,8 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 		filterForm.setValue(criteria);
 		grid.reload();
+
+		super.enter(event);
 	}
 
 }

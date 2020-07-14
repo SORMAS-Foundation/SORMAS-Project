@@ -4760,4 +4760,10 @@ ALTER TABLE campaignformdata_history ADD COLUMN archived boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add archived column to campaign form data #2268');
 
+-- 2020-07-15 Add form date to campaign form data #1997
+ALTER TABLE campaignformdata ADD COLUMN formdate timestamp;
+ALTER TABLE campaignformdata_history ADD COLUMN formdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (225, 'Add form date to campaign form data #1997');
+
 -- *** Insert new sql commands BEFORE this line ***
