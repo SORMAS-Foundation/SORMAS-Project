@@ -24,7 +24,7 @@ import org.joda.time.DateTimeComparator;
 import android.view.View;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseClassificationValidator;
+import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -45,7 +45,7 @@ import de.symeda.sormas.app.util.ResultCallback;
 
 final class CaseValidator {
 
-	static void initializeCaseClassificationValidation(
+	static void initializeGermanCaseClassificationValidation(
 		Case caze,
 		CaseClassification caseClassification,
 		FragmentCaseEditLayoutBinding contentBinding) {
@@ -59,7 +59,7 @@ final class CaseValidator {
 				sampleDtos.add(sampleDtoHelper.adoToDto(sample));
 			}
 			final boolean validCaseClassification =
-				CaseClassificationValidator.isValidCaseClassification(caseClassification, caseDataDto, sampleDtos);
+				GermanCaseClassificationValidator.isValidGermanCaseClassification(caseClassification, caseDataDto, sampleDtos);
 
 			if (validCaseClassification) {
 				contentBinding.caseDataCaseClassification.disableErrorState();

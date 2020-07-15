@@ -268,9 +268,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
 		if (isGermanServer()) {
-			final ComboBox caseClassificationCombo = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
-			caseClassificationCombo
-				.addValidator(new CaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
+			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			cbCaseClassification
+				.addValidator(new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
 			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);

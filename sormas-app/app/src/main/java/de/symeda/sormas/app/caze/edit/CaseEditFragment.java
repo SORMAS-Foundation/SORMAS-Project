@@ -260,7 +260,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					getContentBinding().caseDataCaseClassification.disableWarningState();
 				}
 
-				CaseValidator.initializeCaseClassificationValidation(record, caseClassification, getContentBinding());
+				CaseValidator.initializeGermanCaseClassificationValidation(record, caseClassification, getContentBinding());
 			});
 		}
 

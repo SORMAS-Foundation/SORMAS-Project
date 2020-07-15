@@ -22,18 +22,18 @@ import com.vaadin.v7.data.validator.AbstractValidator;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 
-public class CaseClassificationValidator extends AbstractValidator<CaseClassification> {
+public class GermanCaseClassificationValidator extends AbstractValidator<CaseClassification> {
 
 	private final String caseUuid;
 
-	public CaseClassificationValidator(String caseUuid, String errorMessage) {
+	public GermanCaseClassificationValidator(String caseUuid, String errorMessage) {
 		super(errorMessage);
 		this.caseUuid = caseUuid;
 	}
 
 	@Override
 	protected boolean isValidValue(CaseClassification caseClassification) {
-		return de.symeda.sormas.api.caze.CaseClassificationValidator.isValidCaseClassification(
+		return de.symeda.sormas.api.caze.GermanCaseClassificationValidator.isValidGermanCaseClassification(
 			caseClassification,
 			FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid),
 			FacadeProvider.getSampleFacade()

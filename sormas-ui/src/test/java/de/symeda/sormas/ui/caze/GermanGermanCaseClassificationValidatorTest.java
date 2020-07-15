@@ -35,7 +35,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 
-public class CaseClassificationValidatorTest extends AbstractBeanTest {
+public class GermanGermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
@@ -59,7 +59,7 @@ public class CaseClassificationValidatorTest extends AbstractBeanTest {
 		final SymptomsDto symptoms = SymptomsDto.build();
 		caze.setSymptoms(symptoms);
 
-		final CaseClassificationValidator validator = new CaseClassificationValidator(caze.getUuid(), INVALID_CASE_CLASSIFICATION);
+		final GermanCaseClassificationValidator validator = new GermanCaseClassificationValidator(caze.getUuid(), INVALID_CASE_CLASSIFICATION);
 
 		// assert classifications when no symptoms & no lab result
 		valid(CaseClassification.NOT_CLASSIFIED, validator);
@@ -143,11 +143,11 @@ public class CaseClassificationValidatorTest extends AbstractBeanTest {
 		valid(CaseClassification.NO_CASE, validator);
 	}
 
-	private void invalid(CaseClassification caseClassification, CaseClassificationValidator validator) {
+	private void invalid(CaseClassification caseClassification, GermanCaseClassificationValidator validator) {
 		Assert.assertFalse(validator.isValidValue(caseClassification));
 	}
 
-	private void valid(CaseClassification caseClassification, CaseClassificationValidator validator) {
+	private void valid(CaseClassification caseClassification, GermanCaseClassificationValidator validator) {
 		Assert.assertTrue(validator.isValidValue(caseClassification));
 	}
 }
