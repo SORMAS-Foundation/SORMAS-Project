@@ -35,7 +35,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 
-public class GermanGermanCaseClassificationValidatorTest extends AbstractBeanTest {
+public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
