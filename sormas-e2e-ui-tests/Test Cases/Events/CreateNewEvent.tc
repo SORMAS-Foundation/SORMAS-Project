@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCaseEntity>
-   <description></description>
+   <description>Creating a new event with 'Hotline/Person' as Source Type</description>
    <name>CreateNewEvent</name>
    <tag></tag>
    <comment></comment>
