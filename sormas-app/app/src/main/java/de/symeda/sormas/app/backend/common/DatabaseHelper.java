@@ -128,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 212;
+	public static final int DATABASE_VERSION = 213;
 
 	private static DatabaseHelper instance = null;
 
@@ -1415,10 +1415,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+			case 211:
+				// Re-synchronize all contacts and epi data to prevent missing embedded entities
+				currentVersion = 211;
+				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
 				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
-			case 211:
-					currentVersion = 211;
+			case 212:
+					currentVersion = 212;
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);");
 					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);");

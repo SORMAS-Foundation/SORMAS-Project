@@ -344,10 +344,39 @@ public class CaseController {
 			if (!createForm.getFieldGroup().isModified()) {
 				final CaseDataDto dto = createForm.getValue();
 
-				if (convertedContact != null || convertedEventParticipant != null) {
-					saveConvertedCase(dto, convertedContact, convertedEventParticipant);
+				if (convertedContact != null) {
+					saveCase(dto);
+					// retrieve the contact just in case it has been changed during case saving
+					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
+					// automatically change the contact status to "converted"
+					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// set resulting case on contact and save it
+					updatedContact.setResultingCase(dto.toReference());
+					FacadeProvider.getContactFacade().saveContact(updatedContact);
+					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+				} else if (convertedEventParticipant != null) {
+					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
+						if (uuid == null) {
+							SymptomsDto newSymptoms = SymptomsDto.build();
+							newSymptoms.setOnsetDate(createForm.getOnsetDate());
+							dto.setSymptoms(newSymptoms);
+							saveCase(dto);
+							// retrieve the event participant just in case it has been changed during case saving
+							EventParticipantDto updatedEventParticipant =
+								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
+							// set resulting case on event participant and save it
+							updatedEventParticipant.setResultingCase(dto.toReference());
+							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+							FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
+							navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+						} else {
+							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
+							navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+						}
+					});
 				} else {
 					// look for potential duplicate
 					final PersonDto duplicatePerson = PersonDto.build();
@@ -382,32 +411,6 @@ public class CaseController {
 		});
 
 		return editView;
-	}
-
-	private void saveConvertedCase(CaseDataDto resultCase, ContactDto convertedContact, EventParticipantDto convertedEventParticipant) {
-
-		saveCase(resultCase);
-
-		if (convertedEventParticipant != null) {
-			// retrieve the event participant just in case it has been changed during case
-			// saving
-			EventParticipantDto updatedEventParticipant =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
-			// set resulting case on event participant and save it
-			updatedEventParticipant.setResultingCase(resultCase.toReference());
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
-			FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), resultCase.toReference());
-		}
-		if (convertedContact != null) {
-			// retrieve the contact just in case it has been changed during case saving
-			ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
-			// automatically change the contact status to "converted"
-			updatedContact.setContactStatus(ContactStatus.CONVERTED);
-			// set resulting case on contact and save it
-			updatedContact.setResultingCase(resultCase.toReference());
-			FacadeProvider.getContactFacade().saveContact(updatedContact);
-			FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), resultCase.toReference());
-		}
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {

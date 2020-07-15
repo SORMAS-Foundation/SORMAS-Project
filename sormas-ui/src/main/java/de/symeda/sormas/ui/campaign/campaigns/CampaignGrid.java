@@ -1,6 +1,6 @@
 /*
- * SORMAS - Surveillance Outbreak Response Management & Analysis System
- * Copyright 2016-2020 Helmholtz-Zentrum for Infektionsforschung GmbH (HZI)
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright ® 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,10 +15,14 @@
 
 package de.symeda.sormas.ui.campaign.campaigns;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
@@ -32,9 +36,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteria> {
 

@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.ui.GridLayout;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.FacadeProvider;
@@ -40,6 +41,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		+ loc(CAMPAIGN_FORM_LOC);
 
 	private static final long serialVersionUID = -8974009722689546941L;
+
+	private CampaignFormBuilder campaignFormBuilder;
 
 	public CampaignFormDataEditForm(boolean create) {
 		super(CampaignFormDataDto.class, CampaignFormDataDto.I18N_PREFIX);
@@ -77,10 +80,34 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	}
 
 	@Override
+	public CampaignFormDataDto getValue() {
+		CampaignFormDataDto value = super.getValue();
+
+		if (campaignFormBuilder == null) {
+			throw new RuntimeException("Campaign form builder has not been initialized");
+		}
+
+		value.setFormValues(campaignFormBuilder.getFormValues());
+
+		return value;
+	}
+
+	@Override
 	public void setValue(CampaignFormDataDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
 		buildCampaignForm(newFieldValue);
+	}
+
+	@Override
+	public void validate() throws Validator.InvalidValueException {
+		super.validate();
+
+		if (campaignFormBuilder == null) {
+			throw new RuntimeException("Campaign form builder has not been initialized");
+		}
+
+		campaignFormBuilder.validateFields();
 	}
 
 	private void buildCampaignForm(CampaignFormDataDto campaignFormData) {
@@ -89,8 +116,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		CssStyles.style(campaignFormLayout, CssStyles.VSPACE_3);
 
 		CampaignFormDto campaignForm = FacadeProvider.getCampaignFormFacade().getCampaignFormByUuid(campaignFormData.getCampaignForm().getUuid());
-		CampaignFormBuilder campaignFormBuilder =
-			new CampaignFormBuilder(campaignForm.getCampaignFormElements(), campaignFormData.getFormValues(), campaignFormLayout);
+		campaignFormBuilder = new CampaignFormBuilder(
+			campaignForm.getCampaignFormElements(),
+			campaignFormData.getFormValues(),
+			campaignFormLayout,
+			campaignForm.getCampaignFormTranslations());
 
 		campaignFormBuilder.buildForm();
 

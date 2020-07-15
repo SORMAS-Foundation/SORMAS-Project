@@ -20,6 +20,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -84,13 +86,18 @@ public class CampaignController {
 	}
 
 	public void createCampaignDataForm(CampaignFormReferenceDto campaignForm) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, () -> {
+			window.close();
+			SormasUI.refreshView();
 			Notification
 				.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-			SormasUI.refreshView();
-		});
-		VaadinUiUtil
-			.showModalPopupWindow(component, String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
+		}, window::close);
+
+		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
+		window.setContent(component);
+		UI.getCurrent().addWindow(window);
 	}
 
 	private void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {
@@ -161,7 +168,8 @@ public class CampaignController {
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
 		CampaignFormReferenceDto campaignForm,
-		Runnable callback) {
+		Runnable commitCallback,
+		Runnable discardCallback) {
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
@@ -182,8 +190,12 @@ public class CampaignController {
 
 				CampaignFormDataDto formData = form.getValue();
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
-				callback.run();
+				commitCallback.run();
 			}
+		});
+
+		component.addDiscardListener(() -> {
+			discardCallback.run();
 		});
 
 		return component;

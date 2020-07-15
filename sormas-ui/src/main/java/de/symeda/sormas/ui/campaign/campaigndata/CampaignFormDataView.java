@@ -37,7 +37,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
-			ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignForm(), null);
+			ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignForm(), null, null);
 		component.setMargin(false);
 		component.setWidth(100, Unit.PERCENTAGE);
 		component.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

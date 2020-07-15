@@ -20,6 +20,7 @@ import com.vaadin.server.Page.Styles;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
@@ -29,6 +30,8 @@ import de.symeda.sormas.api.campaign.data.CampaignFormValue;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslation;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
@@ -41,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -51,9 +55,15 @@ public class CampaignFormBuilder {
 	private final List<CampaignFormElement> formElements;
 	private final Map<String, Object> formValuesMap;
 	private final GridLayout campaignFormLayout;
+	private final Locale userLocale;
+	private Map<String, String> userTranslations = null;
 	Map<String, Field<?>> fields;
 
-	public CampaignFormBuilder(List<CampaignFormElement> formElements, List<CampaignFormValue> formValues, GridLayout campaignFormLayout) {
+	public CampaignFormBuilder(
+		List<CampaignFormElement> formElements,
+		List<CampaignFormValue> formValues,
+		GridLayout campaignFormLayout,
+		List<CampaignFormTranslations> translations) {
 		this.formElements = formElements;
 		if (formValues != null) {
 			this.formValuesMap = formValues.stream().collect(Collectors.toMap(CampaignFormValue::getId, CampaignFormValue::getValue));
@@ -62,6 +72,17 @@ public class CampaignFormBuilder {
 		}
 		this.campaignFormLayout = campaignFormLayout;
 		this.fields = new HashMap<>();
+
+		this.userLocale = I18nProperties.getUserLanguage().getLocale();
+		if (userLocale != null) {
+			translations.stream()
+				.filter(t -> t.getLanguageCode().equals(userLocale.toString()))
+				.findFirst()
+				.ifPresent(
+					filteredTranslations -> userTranslations = filteredTranslations.getTranslations()
+						.stream()
+						.collect(Collectors.toMap(CampaignFormTranslation::getElementId, CampaignFormTranslation::getCaption)));
+		}
 	}
 
 	public void buildForm() {
@@ -101,7 +122,7 @@ public class CampaignFormBuilder {
 					currentCol = -1;
 				}
 
-				Label field = new Label(formElement.getCaption());
+				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
 				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles);
 
@@ -131,7 +152,7 @@ public class CampaignFormBuilder {
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles);
 				setFieldValue(field, type, value);
 				field.setId(formElement.getId());
-				field.setCaption(formElement.getCaption());
+				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setSizeFull();
 
 				currentLayout.addComponent(
@@ -295,6 +316,24 @@ public class CampaignFormBuilder {
 		} else {
 			return dependingOnValuesList.stream().anyMatch(v -> v.toString().equalsIgnoreCase(dependingOnField.getValue().toString()));
 		}
+	}
+
+	private String get18nCaption(String elementId, String defaultCaption) {
+		if (userTranslations != null && userTranslations.containsKey(elementId)) {
+			return userTranslations.get(elementId);
+		}
+
+		return defaultCaption;
+	}
+
+	public List<CampaignFormValue> getFormValues() {
+		return fields.keySet().stream().map(id -> new CampaignFormValue(id, fields.get(id).getValue())).collect(Collectors.toList());
+	}
+
+	public void validateFields() throws Validator.InvalidValueException {
+		fields.forEach((key, value) -> {
+			value.validate();
+		});
 	}
 
 }
