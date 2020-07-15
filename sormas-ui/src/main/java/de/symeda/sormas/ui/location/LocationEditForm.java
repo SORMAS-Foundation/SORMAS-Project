@@ -132,7 +132,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setReadOnly(true, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
 		region.addValueChangeListener(e -> {

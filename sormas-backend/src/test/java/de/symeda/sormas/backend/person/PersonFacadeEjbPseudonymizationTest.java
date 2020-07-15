@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.person;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -28,7 +30,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.person.PresentCondition;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -217,8 +219,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setPostalCode("12345");
 		address.setAreaType(AreaType.URBAN);
 		address.setDetails("Test address details");
-		address.setLongitude(46.233);
-		address.setLatitude(26.533);
+		address.setLongitude(46.432);
+		address.setLatitude(23.234);
 		address.setLatLonAccuracy(10F);
 
 		return creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, p -> {
@@ -276,7 +278,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		newAddress.setDetails("");
 		newAddress.setLongitude(null);
 		newAddress.setLatitude(null);
-		newAddress.setLatLonAccuracy(null);
+		newAddress.setLatLonAccuracy(8F);
 
 		person.setAddress(newAddress);
 
@@ -298,8 +300,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getPostalCode(), is("12345"));
 		assertThat(person.getAddress().getAreaType(), is(AreaType.URBAN));
 		assertThat(person.getAddress().getDetails(), is("Test address details"));
-		assertThat(person.getAddress().getLongitude(), is(46.233));
-		assertThat(person.getAddress().getLatitude(), is(26.533));
+		assertThat(person.getAddress().getLongitude(), is(46.432));
+		assertThat(person.getAddress().getLatitude(), is(23.234));
 		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
 
 		// sensitive data
@@ -320,12 +322,14 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getCommunity(), is(nullValue()));
 		assertThat(person.getAddress().getCity(), isEmptyString());
 		assertThat(person.getAddress().getAddress(), isEmptyString());
-		assertThat(person.getAddress().getPostalCode(), isEmptyString());
+		assertThat(person.getAddress().getPostalCode(), is("123"));
 		assertThat(person.getAddress().getAreaType(), is(nullValue()));
 		assertThat(person.getAddress().getDetails(), isEmptyString());
-		assertThat(person.getAddress().getLongitude(), is(nullValue()));
-		assertThat(person.getAddress().getLatitude(), is(nullValue()));
-		assertThat(person.getAddress().getLatLonAccuracy(), is(nullValue()));
+		assertThat(person.getAddress().getLongitude().toString(), startsWith("46."));
+		assertThat(person.getAddress().getLongitude(), is(not(46.432)));
+		assertThat(person.getAddress().getLatitude().toString(), startsWith("23."));
+		assertThat(person.getAddress().getLatitude(), is(not(23.234)));
+		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
 
 		// sensitive data
 		assertThat(person.getPhone(), isEmptyString());
@@ -369,8 +373,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getAddress().getPostalCode(), is("12345"));
 		assertThat(savedPerson.getAddress().getAreaType(), is(AreaType.URBAN));
 		assertThat(savedPerson.getAddress().getDetails(), is("Test address details"));
-		assertThat(savedPerson.getAddress().getLongitude(), is(46.233));
-		assertThat(savedPerson.getAddress().getLatitude(), is(26.533));
-		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(10F));
+		assertThat(savedPerson.getAddress().getLongitude(), is(46.432));
+		assertThat(savedPerson.getAddress().getLatitude(), is(23.234));
+		assertThat(savedPerson.getAddress().getLatLonAccuracy(), is(8F));
 	}
 }

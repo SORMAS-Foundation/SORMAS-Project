@@ -6,9 +6,12 @@ import static android.view.View.VISIBLE;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
 public class FieldVisibilityAndAccessHelper {
 
@@ -26,6 +29,12 @@ public class FieldVisibilityAndAccessHelper {
 				child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
 				if (child.isEnabled() && !isFieldAccessible(dtoClass, propertyId, accessCheckers)) {
 					child.setEnabled(false);
+					if (child instanceof ControlPropertyEditField) {
+						((ControlPropertyEditField)child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
+					}
+					else if(child instanceof ControlTextReadField){
+						((ControlTextReadField) child).setInaccessibleValue(I18nProperties.getCaption(Captions.inaccessibleValue));
+					}
 				}
 			} else if (child instanceof ViewGroup) {
 				setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) child, visibilityCheckers, accessCheckers);

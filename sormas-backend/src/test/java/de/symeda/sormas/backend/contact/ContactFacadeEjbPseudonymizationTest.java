@@ -20,7 +20,9 @@ package de.symeda.sormas.backend.contact;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -109,8 +111,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 =
-			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 = createContact(user1, caze, rdcf2);
 
 		List<ContactDto> contacts = getContactFacade().getByUuids(Arrays.asList(contact1.getUuid(), contact2.getUuid()));
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), false);
@@ -125,8 +126,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// contact of case on other jurisdiction --> should be pseudonymized
 		CaseDataDto caze2 = createCase(user1, rdcf1);
 		ContactDto contact3 = createContact(user2, caze2, rdcf2);
-		ContactDto contact2 =
-			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze2, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 = createContact(user1, caze2, rdcf2);
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
@@ -165,7 +165,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 = creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 =
+			creator.createContact(user1.toReference(), null, createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
 
 		List<ContactIndexDetailedDto> indexList = getContactFacade().getIndexDetailedList(new ContactCriteria(), null, null, Collections.emptyList());
 
@@ -206,7 +207,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getLastName(), isEmptyString());
 		assertThat(index2.getCity(), isEmptyString());
 		assertThat(index2.getAddress(), isEmptyString());
-		assertThat(index2.getPostalCode(), isEmptyString());
+		assertThat(index2.getPostalCode(), is("123"));
 	}
 
 	@Test
@@ -238,8 +239,15 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact1 = createContact(user2, caze, rdcf2);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		ContactDto contact2 =
-			creator.createContact(user1.toReference(), user1.toReference(), createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		ContactDto contact2 = creator.createContact(
+			user1.toReference(),
+			user1.toReference(),
+			createPerson().toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 
 		List<ContactFollowUpDto> matchingContacts =
 			getContactFacade().getContactFollowUpList(new ContactCriteria(), new Date(), 10, 0, 100, Collections.emptyList());
@@ -264,14 +272,22 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user1, rdcf1);
 		ContactDto contact = createContact(user1, caze, rdcf1);
 		// contact of case on other jurisdiction --> should be pseudonymized
-		creator.createContact(user1.toReference(), null, createPerson().toReference(), getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()), new Date(), new Date(), Disease.CORONAVIRUS, rdcf2);
+		creator.createContact(
+			user1.toReference(),
+			null,
+			createPerson().toReference(),
+			getCaseFacade().getCaseDataByUuid(contact.getCaze().getUuid()),
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf2);
 
 		contact.setReportingUser(null);
 		contact.setContactOfficer(null);
 		contact.setResultingCaseUser(null);
 		contact.setReportLat(null);
 		contact.setReportLon(null);
-		contact.setReportLatLonAccuracy(null);
+		contact.setReportLatLonAccuracy(20F);
 
 		getContactFacade().saveContact(contact);
 
@@ -281,9 +297,10 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedContact.getContactOfficer().getUuid(), is(user1.getUuid()));
 		assertThat(updatedContact.getResultingCaseUser(), is(nullValue()));
 
-		assertThat(updatedContact.getReportLat(), is(43.4354));
-		assertThat(updatedContact.getReportLon(), is(23.4354));
-		assertThat(updatedContact.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedContact.getReportLat(), is(46.432));
+		assertThat(updatedContact.getReportLon(), is(23.234));
+
+		assertThat(updatedContact.getReportLatLonAccuracy(), is(20F));
 	}
 
 	@Test
@@ -297,7 +314,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setResultingCaseUser(null);
 		contact.setReportLat(null);
 		contact.setReportLon(null);
-		contact.setReportLatLonAccuracy(null);
+		contact.setReportLatLonAccuracy(20F);
 
 		getContactFacade().saveContact(contact);
 
@@ -307,9 +324,10 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedContact.getContactOfficer().getUuid(), is(user2.getUuid()));
 		assertThat(updatedContact.getResultingCaseUser(), is(nullValue()));
 
-		assertThat(updatedContact.getReportLat(), is(43.4354));
-		assertThat(updatedContact.getReportLon(), is(23.4354));
-		assertThat(updatedContact.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedContact.getReportLat(), is(46.432));
+		assertThat(updatedContact.getReportLon(), is(23.234));
+
+		assertThat(updatedContact.getReportLatLonAccuracy(), is(20F));
 	}
 
 	private void assertNotPseudonymized(ContactDto contact, boolean caseInJurisdiction) {
@@ -323,8 +341,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getReportingUser().getUuid(), is(user2.getUuid()));
 		assertThat(contact.getContactOfficer().getUuid(), is(user2.getUuid()));
 		assertThat(contact.getResultingCaseUser(), is(nullValue()));
-		assertThat(contact.getReportLat(), is(43.4354));
-		assertThat(contact.getReportLon(), is(23.4354));
+
+		assertThat(contact.getReportLat(), is(46.432));
+		assertThat(contact.getReportLon(), is(23.234));
 		assertThat(contact.getReportLatLonAccuracy(), is(10F));
 	}
 
@@ -340,20 +359,30 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(contact.getReportingUser(), is(nullValue()));
 		assertThat(contact.getContactOfficer(), is(nullValue()));
 		assertThat(contact.getResultingCaseUser(), is(nullValue()));
-		assertThat(contact.getReportLat(), is(nullValue()));
-		assertThat(contact.getReportLon(), is(nullValue()));
-		assertThat(contact.getReportLatLonAccuracy(), is(nullValue()));
+		assertThat(contact.getReportLat().toString(), startsWith("46."));
+		assertThat(contact.getReportLat(), is(not(46.432)));
+		assertThat(contact.getReportLon().toString(), startsWith("23."));
+		assertThat(contact.getReportLon(), is(not(23.234)));
+		assertThat(contact.getReportLatLonAccuracy(), is(10F));
 	}
 
 	private ContactDto createContact(UserDto reportingUser, CaseDataDto caze, TestDataCreator.RDCF rdcf) {
-		return creator
-			.createContact(reportingUser.toReference(), reportingUser.toReference(), createPerson().toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
-					c.setResultingCaseUser(reportingUser.toReference());
+		return creator.createContact(
+			reportingUser.toReference(),
+			reportingUser.toReference(),
+			createPerson().toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			rdcf,
+			c -> {
+				c.setResultingCaseUser(reportingUser.toReference());
 
-					c.setReportLat(43.4354);
-					c.setReportLon(23.4354);
-					c.setReportLatLonAccuracy(10F);
-				});
+				c.setReportLat(46.432);
+				c.setReportLon(23.234);
+				c.setReportLatLonAccuracy(10F);
+			});
 	}
 
 	private CaseDataDto createCase(UserDto reportingUser, TestDataCreator.RDCF rdcf) {

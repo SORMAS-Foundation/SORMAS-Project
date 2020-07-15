@@ -32,6 +32,7 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
@@ -39,6 +40,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -229,7 +231,7 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
-		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		T field = createField(propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		getContent().addComponent(field, propertyId);
@@ -272,6 +274,15 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		for (String propertyId : fieldOrPropertyIds) {
 			if (readOnly || isEditableAllowed(propertyId)) {
 				getField(propertyId).setReadOnly(readOnly);
+			}
+		}
+	}
+
+	protected void setEnabled(boolean enabled, String... fieldOrPropertyIds) {
+
+		for (String propertyId : fieldOrPropertyIds) {
+			if (enabled || isEditableAllowed(propertyId)) {
+				getField(propertyId).setEnabled(enabled);
 			}
 		}
 	}
@@ -444,8 +455,18 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 			if (fieldAccessCheckers.isAccessible(getType(), propertyId.toString())) {
 				editableAllowedFields.add(field);
 			} else {
-				field.setReadOnly(true);
+				field.setEnabled(false);
 				field.setRequired(false);
+				field.addStyleName(CssStyles.INACCESSIBLE_FIELD);
+
+				if (field instanceof AbstractTextField) {
+					((AbstractTextField) field).setInputPrompt(I18nProperties.getCaption(Captions.inaccessibleValue));
+				}
+
+				if (field instanceof SormasComboBox) {
+					SormasComboBox combo = (SormasComboBox) field;
+					combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
+				}
 			}
 		}
 	}

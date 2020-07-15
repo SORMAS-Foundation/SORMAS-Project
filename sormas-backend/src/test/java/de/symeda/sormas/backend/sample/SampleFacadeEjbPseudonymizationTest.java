@@ -20,8 +20,10 @@ package de.symeda.sormas.backend.sample;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
@@ -299,16 +301,16 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		sample.setReportLat(null);
 		sample.setReportLon(null);
-		sample.setReportLatLonAccuracy(null);
+		sample.setReportLatLonAccuracy(20F);
 		sample.setLab(null);
 
 		getSampleFacade().saveSample(sample);
 
 		Sample updatedSample = getSampleService().getByUuid(sample.getUuid());
 
-		assertThat(updatedSample.getReportLat(), is(43.4321));
-		assertThat(updatedSample.getReportLon(), is(23.4321));
-		assertThat(updatedSample.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedSample.getReportLat(), is(46.432));
+		assertThat(updatedSample.getReportLon(), is(23.234));
+		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
 		assertThat(updatedSample.getLab().getName(), is("Lab"));
 	}
 
@@ -320,16 +322,16 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		sample.setPseudonymized(true);
 		sample.setReportLat(null);
 		sample.setReportLon(null);
-		sample.setReportLatLonAccuracy(null);
+		sample.setReportLatLonAccuracy(20F);
 		sample.setLab(null);
 
 		getSampleFacade().saveSample(sample);
 
 		Sample updatedSample = getSampleService().getByUuid(sample.getUuid());
 
-		assertThat(updatedSample.getReportLat(), is(43.4321));
-		assertThat(updatedSample.getReportLon(), is(23.4321));
-		assertThat(updatedSample.getReportLatLonAccuracy(), is(10F));
+		assertThat(updatedSample.getReportLat(), is(46.432));
+		assertThat(updatedSample.getReportLon(), is(23.234));
+		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
 		assertThat(updatedSample.getLab().getName(), is("Lab"));
 	}
 
@@ -339,8 +341,8 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		getFacilityService().persist(lab);
 
 		return creator.createSample(caze.toReference(), reportingUser.toReference(), lab, s -> {
-			s.setReportLat(43.4321);
-			s.setReportLon(23.4321);
+			s.setReportLat(46.432);
+			s.setReportLon(23.234);
 			s.setReportLatLonAccuracy(10f);
 			s.setLabDetails("Test lab details");
 			s.setShipmentDetails("Test shipment details");
@@ -361,8 +363,8 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		//sensitive data
 		assertThat(sample.getReportingUser().getUuid(), is(user2.getUuid()));
-		assertThat(sample.getReportLat(), is(43.4321));
-		assertThat(sample.getReportLon(), is(23.4321));
+		assertThat(sample.getReportLat(), is(46.432));
+		assertThat(sample.getReportLon(), is(23.234));
 		assertThat(sample.getReportLatLonAccuracy(), is(10f));
 		assertThat(sample.getLab(), is(notNullValue()));
 		assertThat(sample.getLabDetails(), is("Test lab details"));
@@ -376,9 +378,11 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		//sensitive data
 		assertThat(sample.getReportingUser(), is(nullValue()));
-		assertThat(sample.getReportLat(), is(nullValue()));
-		assertThat(sample.getReportLon(), is(nullValue()));
-		assertThat(sample.getReportLatLonAccuracy(), is(nullValue()));
+		assertThat(sample.getReportLat().toString(), startsWith("46."));
+		assertThat(sample.getReportLat(), is(not(46.432)));
+		assertThat(sample.getReportLon().toString(), startsWith("23."));
+		assertThat(sample.getReportLon(), is(not(23.234)));
+		assertThat(sample.getReportLatLonAccuracy(), is(10F));
 		assertThat(sample.getLab(), is(nullValue()));
 		assertThat(sample.getLabDetails(), isEmptyString());
 		assertThat(sample.getShipmentDetails(), isEmptyString());

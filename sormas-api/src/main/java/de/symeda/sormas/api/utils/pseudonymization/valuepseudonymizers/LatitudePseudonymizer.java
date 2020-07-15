@@ -17,10 +17,23 @@ package de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers;
 
 import de.symeda.sormas.api.utils.pseudonymization.ValuePseudonymizer;
 
-public class GpsCoordinatesPseudonymizer extends ValuePseudonymizer<Double> {
+public class LatitudePseudonymizer extends ValuePseudonymizer<Double> {
+
+	public static double RANDOMIZATION_DISTANCE_RAD = 5000 / 111300D; //5000 meters / about 111300 meters in one degree
 
 	@Override
 	protected Double pseudonymizeValue(Double value) {
-		return value;
+		return randomizeLatitude(value, RANDOMIZATION_DISTANCE_RAD);
+	}
+
+	private Double randomizeLatitude(double latitude, double distanceRad) {
+		double v = Math.random();
+		double u = Math.random();
+
+		double t = 2 * Math.PI * v;
+		double w = distanceRad * Math.sqrt(u);
+		double y = w * Math.sin(t);
+
+		return latitude + y;
 	}
 }

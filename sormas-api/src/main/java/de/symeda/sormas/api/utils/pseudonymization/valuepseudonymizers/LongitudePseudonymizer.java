@@ -17,10 +17,21 @@ package de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers;
 
 import de.symeda.sormas.api.utils.pseudonymization.ValuePseudonymizer;
 
-public class DefaultValuePseudonymizer<T> extends ValuePseudonymizer<T> {
+public class LongitudePseudonymizer extends ValuePseudonymizer<Double> {
 
 	@Override
-	public T pseudonymizeValue(T value) {
-		return value instanceof String ? (T) "" : null;
+	protected Double pseudonymizeValue(Double value) {
+		return randomizeLatitude(value, LatitudePseudonymizer.RANDOMIZATION_DISTANCE_RAD);
+	}
+
+	private Double randomizeLatitude(double centerLon, double distanceRad) {
+		double u = Math.random();
+		double v = Math.random();
+
+		double w = distanceRad * Math.sqrt(u);
+		double t = 2 * Math.PI * v;
+		double x = w * Math.cos(t);
+
+		return x + centerLon;
 	}
 }

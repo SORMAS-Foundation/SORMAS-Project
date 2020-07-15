@@ -223,6 +223,10 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		return internalValue;
 	}
 
+	public void setInaccessibleValue(String defaultValue) {
+		setFieldValue(defaultValue);
+	}
+
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);

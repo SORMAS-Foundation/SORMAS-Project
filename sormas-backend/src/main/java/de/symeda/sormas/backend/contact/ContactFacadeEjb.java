@@ -756,7 +756,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos,
 			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
 			(c, isInJurisdiction) -> {
-				pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c, c::setReportingUser);
+				pseudonymizer.pseudonymizeUser(userService.getByUuid(c.getReportingUser().getUuid()), currentUser, c::setReportingUser);
 				if (c.getCaze() != null) {
 					pseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
@@ -971,7 +971,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto, dto::setReportingUser);
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
 
 				if (c.getCaze() != null) {
 					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());

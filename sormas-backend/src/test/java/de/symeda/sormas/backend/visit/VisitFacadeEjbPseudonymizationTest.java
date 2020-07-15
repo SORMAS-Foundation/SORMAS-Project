@@ -18,11 +18,26 @@
 
 package de.symeda.sormas.backend.visit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -34,22 +49,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -119,16 +119,18 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export1.getLastName(), isEmptyString());
 
 		//sensitive data
-		assertThat(export1.getReportLat(), is(nullValue()));
-		assertThat(export1.getReportLon(), is(nullValue()));
+		assertThat(export1.getReportLat().toString(), startsWith("46."));
+		assertThat(export1.getReportLat(), is(not(46.432)));
+		assertThat(export1.getReportLon().toString(), startsWith("23."));
+		assertThat(export1.getReportLon(), is(not(23.234)));
 
 		VisitExportDto export2 = exportList.stream().filter(v -> v.getUuid().equals(visit2.getUuid())).findFirst().get();
 		assertThat(export2.getFirstName(), is("John"));
 		assertThat(export2.getLastName(), is("Smith"));
 
 		//sensitive data
-		assertThat(export2.getReportLat(), is(43.532));
-		assertThat(export2.getReportLon(), is(23.4332));
+		assertThat(export2.getReportLat(), is(46.432));
+		assertThat(export2.getReportLon(), is(23.234));
 	}
 
 	@Test
@@ -137,7 +139,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		visit.setReportLat(null);
 		visit.setReportLon(null);
-		visit.setReportLatLonAccuracy(null);
+		visit.setReportLatLonAccuracy(20F);
 		visit.getSymptoms().setPatientIllLocation(null);
 		visit.getSymptoms().setOtherHemorrhagicSymptomsText(null);
 
@@ -145,9 +147,9 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Visit updated = getVisitService().getByUuid(visit.getUuid());
 
-		assertThat(updated.getReportLat(), is(43.532));
-		assertThat(updated.getReportLon(), is(23.4332));
-		assertThat(updated.getReportLatLonAccuracy(), is(10f));
+		assertThat(updated.getReportLat(), is(46.432));
+		assertThat(updated.getReportLon(), is(23.234));
+		assertThat(updated.getReportLatLonAccuracy(), is(20f));
 
 		Symptoms symptoms = getSymptomsService().getByUuid(visit.getSymptoms().getUuid());
 		assertThat(symptoms.getPatientIllLocation(), is("Test ill location"));
@@ -161,22 +163,22 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		visit.setPseudonymized(true);
 		visit.setReportLat(null);
 		visit.setReportLon(null);
-		visit.setReportLatLonAccuracy(null);
+		visit.setReportLatLonAccuracy(20F);
 
 		getVisitFacade().saveVisit(visit);
 
 		Visit updated = getVisitService().getByUuid(visit.getUuid());
 
-		assertThat(updated.getReportLat(), is(43.532));
-		assertThat(updated.getReportLon(), is(23.4332));
-		assertThat(updated.getReportLatLonAccuracy(), is(10f));
+		assertThat(updated.getReportLat(), is(46.432));
+		assertThat(updated.getReportLon(), is(23.234));
+		assertThat(updated.getReportLatLonAccuracy(), is(20f));
 	}
 
 	private VisitDto createVisit(UserDto visitUser, ContactDto contact, PersonDto person) {
 		VisitDto visitDto = creator.createVisit(Disease.CORONAVIRUS, person.toReference(), new Date(), VisitStatus.COOPERATIVE, (v) -> {
 			v.setVisitUser(visitUser.toReference());
-			v.setReportLat(43.532);
-			v.setReportLon(23.4332);
+			v.setReportLat(46.432);
+			v.setReportLon(23.234);
 			v.setReportLatLonAccuracy(10f);
 
 			v.getSymptoms().setPatientIllLocation("Test ill location");
@@ -202,8 +204,8 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// sensitive data
 		assertThat(visit.getVisitUser(), is(user2));
 		assertThat(visit.getVisitRemarks(), is("Test remarks"));
-		assertThat(visit.getReportLat(), is(43.532));
-		assertThat(visit.getReportLon(), is(23.4332));
+		assertThat(visit.getReportLat(), is(46.432));
+		assertThat(visit.getReportLon(), is(23.234));
 		assertThat(visit.getReportLatLonAccuracy(), is(10F));
 	}
 
@@ -215,8 +217,11 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// sensitive data
 		assertThat(visit.getVisitUser(), is(nullValue()));
 		assertThat(visit.getVisitRemarks(), isEmptyString());
-		assertThat(visit.getReportLat(), is(nullValue()));
-		assertThat(visit.getReportLon(), is(nullValue()));
-		assertThat(visit.getReportLatLonAccuracy(), is(nullValue()));
+		assertThat(visit.getReportLat().toString(), startsWith("46."));
+		assertThat(visit.getReportLat(), is(not(46.432)));
+		assertThat(visit.getReportLon().toString(), startsWith("23."));
+		assertThat(visit.getReportLon(), is(not(23.234)));
+
+		assertThat(visit.getReportLatLonAccuracy(), is(10F));
 	}
 }

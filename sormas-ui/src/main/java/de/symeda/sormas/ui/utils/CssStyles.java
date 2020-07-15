@@ -247,6 +247,8 @@ public final class CssStyles {
 	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
 
+	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
+
 	@Deprecated
 	public static final String CALLOUT = "callout";
 

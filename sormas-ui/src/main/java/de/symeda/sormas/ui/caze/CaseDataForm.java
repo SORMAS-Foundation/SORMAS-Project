@@ -455,14 +455,16 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.OUTCOME,
 			CaseDataDto.OUTCOME_DATE);
 		setReadOnly(
-			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER) || !isEditableAllowed(CaseDataDto.COMMUNITY),
-			CaseDataDto.REGION,
-			CaseDataDto.DISTRICT);
-		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_TRANSFER),
+			CaseDataDto.REGION,
+			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
 			CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.HEALTH_FACILITY_DETAILS);
+
+		if (!isEditableAllowed(CaseDataDto.COMMUNITY)) {
+			setEnabled(false, CaseDataDto.REGION, CaseDataDto.DISTRICT);
+		}
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility

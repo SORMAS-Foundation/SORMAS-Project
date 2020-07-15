@@ -84,6 +84,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) OptionGroup.class;
 
 			return createBooleanField(fieldType);
+		} else if (ComboBox.class.isAssignableFrom(fieldType) || SormasComboBox.class.isAssignableFrom(fieldType)) {
+			SormasComboBox combo = new SormasComboBox();
+			combo.setImmediate(true);
+
+			return (T) combo;
 		} else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);
@@ -122,7 +127,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				return (T) new ComboBox();
 			}
 		}
-
 		return super.createField(type, fieldType);
 	}
 

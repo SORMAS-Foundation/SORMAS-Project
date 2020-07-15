@@ -207,12 +207,16 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		"rawtypes",
 		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType) {
-		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		T field = createField(propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
 		addDefaultAdditionalValidators(field);
 		return field;
+	}
+
+	protected <T extends Field> T createField(String propertyId, Class<T> fieldType) {
+		return getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 	}
 
 	@SuppressWarnings({
@@ -243,7 +247,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	 *            -1 for no restriction at all
 	 */
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
-		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
+		T field = createField(propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		getContent().addComponent(field, propertyId);

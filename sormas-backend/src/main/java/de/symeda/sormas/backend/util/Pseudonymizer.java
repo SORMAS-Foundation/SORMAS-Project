@@ -29,15 +29,11 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		super(rightCheck);
 	}
 
-	public <DTO> void pseudonymizeUser(User dtoUser, User currentUser, DTO dto, Consumer<UserReferenceDto> setPseudonymizedValue) {
+	public void pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
 		if (!sensitiveDataFieldAccessChecker.hasRight(isInJurisdiction)) {
 			setPseudonymizedValue.accept(null);
-
-			if (PseudonymizableDto.class.isAssignableFrom(dto.getClass())) {
-				((PseudonymizableDto) dto).setPseudonymized(true);
-			}
 		}
 	}
 

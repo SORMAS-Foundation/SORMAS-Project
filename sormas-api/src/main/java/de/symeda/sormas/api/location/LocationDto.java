@@ -25,7 +25,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.GpsCoordinatesPseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class LocationDto extends PseudonymizableDto {
@@ -65,11 +66,11 @@ public class LocationDto extends PseudonymizableDto {
 	private AreaType areaType;
 	@PersonalData
 	@SensitiveData
-	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double latitude;
 	@PersonalData
 	@SensitiveData
-	@Pseudonymizer(GpsCoordinatesPseudonymizer.class)
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double longitude;
 	private Float latLonAccuracy;
 	@PersonalData()
