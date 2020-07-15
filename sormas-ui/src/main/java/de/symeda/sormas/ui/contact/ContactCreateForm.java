@@ -77,6 +77,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
+					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
 					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
 					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
@@ -126,6 +127,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
 
@@ -357,6 +360,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	public String getPersonLastName() {
 		return (String) getField(PersonDto.LAST_NAME).getValue();
+	}
+
+	public String getNationalHealthId() {
+		return (String) getField(PersonDto.NATIONAL_HEALTH_ID).getValue();
+	}
+
+	public String getPassportNumber() {
+		return (String) getField(PersonDto.PASSPORT_NUMBER).getValue();
 	}
 
 	public Integer getBirthdateDD() {

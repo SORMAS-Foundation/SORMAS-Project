@@ -382,6 +382,8 @@ public class CaseController {
 					final PersonDto duplicatePerson = PersonDto.build();
 					duplicatePerson.setFirstName(createForm.getPersonFirstName());
 					duplicatePerson.setLastName(createForm.getPersonLastName());
+					duplicatePerson.setNationalHealthId(createForm.getNationalHealthId());
+					duplicatePerson.setPassportNumber(createForm.getPassportNumber());
 					duplicatePerson.setBirthdateDD(createForm.getBirthdateDD());
 					duplicatePerson.setBirthdateMM(createForm.getBirthdateMM());
 					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());

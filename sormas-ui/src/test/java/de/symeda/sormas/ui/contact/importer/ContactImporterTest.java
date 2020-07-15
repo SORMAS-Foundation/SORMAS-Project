@@ -13,6 +13,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -31,6 +32,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
@@ -73,12 +75,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 			@Override
 			protected void handleSimilarity(PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
 
-				List<PersonIndexDto> entries = new ArrayList<>();
+				List<SimilarPersonDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
 					if (PersonHelper
 						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
-						PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
-						entries.add(indexDto);
+						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
 					}
 				}
 				resultConsumer.accept(new ContactImportSimilarityResult(entries.get(0), null, ImportSimilarityResultOption.PICK));

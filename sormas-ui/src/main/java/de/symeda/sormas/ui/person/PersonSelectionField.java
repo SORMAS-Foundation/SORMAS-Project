@@ -31,13 +31,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
-public class PersonSelectionField extends CustomField<PersonIndexDto> {
+public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	public static final String CREATE_PERSON = "createPerson";
 	public static final String SELECT_PERSON = "selectPerson";
@@ -119,6 +119,16 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		lblCity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
 		personDetailsLayout.addComponent(lblCity);
 
+		Label lblNationalHealthId = new Label(referencePerson.getNationalHealthId());
+		lblNationalHealthId.setWidthUndefined();
+		lblNationalHealthId.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NATIONAL_HEALTH_ID));
+		personDetailsLayout.addComponent(lblNationalHealthId);
+
+		Label lblPassportNumber = new Label(referencePerson.getPassportNumber());
+		lblPassportNumber.setWidthUndefined();
+		lblPassportNumber.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PASSPORT_NUMBER));
+		personDetailsLayout.addComponent(lblPassportNumber);
+
 		mainLayout.addComponent(personDetailsLayout);
 	}
 
@@ -148,7 +158,9 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 			.sex(referencePerson.getSex())
 			.birthdateDD(referencePerson.getBirthdateDD())
 			.birthdateMM(referencePerson.getBirthdateMM())
-			.birthdateYYYY(referencePerson.getBirthdateYYYY());
+			.birthdateYYYY(referencePerson.getBirthdateYYYY())
+			.passportNumber(referencePerson.getPassportNumber())
+			.nationalHealthId(referencePerson.getNationalHealthId());
 		personGrid = new PersonSelectionGrid(criteria);
 
 		personGrid.addSelectionListener(e -> {
@@ -206,16 +218,16 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 
 	public void selectBestMatch() {
 		if (personGrid.getContainerDataSource().size() == 1) {
-			setValue((PersonIndexDto) personGrid.getContainerDataSource().firstItemId());
+			setValue((SimilarPersonDto) personGrid.getContainerDataSource().firstItemId());
 		} else {
 			setValue(null);
 		}
 	}
 
 	@Override
-	public PersonIndexDto getValue() {
+	public SimilarPersonDto getValue() {
 		if (personGrid != null) {
-			PersonIndexDto value = (PersonIndexDto) personGrid.getSelectedRow();
+			SimilarPersonDto value = (SimilarPersonDto) personGrid.getSelectedRow();
 			return value;
 		}
 
@@ -223,7 +235,7 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 	}
 
 	@Override
-	protected void doSetValue(PersonIndexDto newValue) {
+	protected void doSetValue(SimilarPersonDto newValue) {
 		rbSelectPerson.setValue(SELECT_PERSON);
 
 		if (newValue != null) {
