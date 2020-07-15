@@ -15,45 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.action;
+package de.symeda.sormas.ui.events;
 
-import java.io.Serializable;
+import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.FieldConfiguration;
 
-import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.utils.IgnoreForUrl;
+/**
+ * Form for filtering actions related to an event.
+ */
+public class EventActionFilterForm extends AbstractFilterForm<ActionCriteria> {
 
-public class ActionCriteria extends BaseCriteria implements Serializable {
+	private static final long serialVersionUID = -8661345403078183132L;
 
-	private static final long serialVersionUID = -9174165215694877624L;
-
-	private ActionStatus actionStatus;
-	private EventReferenceDto event;
-
-	public ActionStatus getActionStatus() {
-		return actionStatus;
+	protected EventActionFilterForm() {
+		super(ActionCriteria.class, ActionDto.I18N_PREFIX);
 	}
 
-	public void setActionStatus(ActionStatus actionStatus) {
-		this.actionStatus = actionStatus;
+	@Override
+	protected String[] getMainFilterLocators() {
+		return new String[] {
+			ActionDto.ACTION_STATUS };
 	}
 
-	public ActionCriteria actionStatus(ActionStatus actionStatus) {
-		setActionStatus(actionStatus);
-		return this;
-	}
-
-	public ActionCriteria event(EventReferenceDto event) {
-		this.event = event;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public EventReferenceDto getEvent() {
-		return event;
-	}
-
-	public boolean hasContextCriteria() {
-		return getEvent() != null;
+	@Override
+	protected void addFields() {
+		addField(FieldConfiguration.pixelSized(ActionDto.ACTION_STATUS, 200));
 	}
 }
