@@ -17,6 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -82,15 +91,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 public class TestDataCreator {
 
 	private final AbstractBeanTest beanTest;
@@ -141,7 +141,7 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
-		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null);
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null, null, null);
 	}
 
 	public PersonDto createPerson(
@@ -151,7 +151,21 @@ public class TestDataCreator {
 		Integer birthdateYYYY,
 		Integer birthdateMM,
 		Integer birthdateDD,
-		LocationDto address) {
+		String passportNr,
+		String nationalHealthId) {
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null, passportNr, nationalHealthId);
+	}
+
+	private PersonDto createPerson(
+		String firstName,
+		String lastName,
+		Sex sex,
+		Integer birthdateYYYY,
+		Integer birthdateMM,
+		Integer birthdateDD,
+		LocationDto address,
+		String passportNr,
+		String nationalHealthId) {
 
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
@@ -160,6 +174,8 @@ public class TestDataCreator {
 		person.setBirthdateYYYY(birthdateYYYY);
 		person.setBirthdateMM(birthdateMM);
 		person.setBirthdateDD(birthdateDD);
+		person.setPassportNumber(passportNr);
+		person.setNationalHealthId(nationalHealthId);
 
 		if (address != null) {
 			person.setAddress(address);
