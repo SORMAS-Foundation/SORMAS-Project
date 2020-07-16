@@ -438,6 +438,7 @@ public interface Captions {
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
+	String convertContactToCase = "convertContactToCase";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
