@@ -346,6 +346,8 @@ public interface Captions {
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
+	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
+	String Contact_contactIdentificationSourceDetails = "Contact.contactIdentificationSourceDetails";
 	String Contact_contactOfficer = "Contact.contactOfficer";
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	String Contact_contactProximity = "Contact.contactProximity";
@@ -391,6 +393,8 @@ public interface Captions {
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	String Contact_tracingApp = "Contact.tracingApp";
+	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
 	String Contact_visits = "Contact.visits";
 	String contactActiveContacts = "contactActiveContacts";

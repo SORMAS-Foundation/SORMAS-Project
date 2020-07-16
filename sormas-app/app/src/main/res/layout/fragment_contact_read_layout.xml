@@ -29,6 +29,8 @@
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
+        <import type="de.symeda.sormas.api.contact.ContactIdentificationSource" />
+        <import type="de.symeda.sormas.api.contact.TracingApp" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -288,6 +290,46 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/contact_reportDateTime"
                         app:value="@{data.reportDateTime}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_contactIdentificationSource"
+                        app:value="@{data.contactIdentificationSource}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_contactIdentificationSourceDetails"
+                        app:dependencyParentField="@{contactContactIdentificationSource}"
+                        app:dependencyParentValue="@{ContactIdentificationSource.OTHER}"
+                        app:value="@{data.contactIdentificationSourceDetails}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_tracingApp"
+                        app:value="@{data.tracingApp}"
+                        app:dependencyParentField="@{contactContactIdentificationSource}"
+                        app:dependencyParentValue="@{ContactIdentificationSource.TRACING_APP}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/contact_tracingAppDetails"
+                        app:dependencyParentField="@{contactTracingApp}"
+                        app:dependencyParentValue="@{TracingApp.OTHER}"
+                        app:value="@{data.tracingAppDetails}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
