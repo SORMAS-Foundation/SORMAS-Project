@@ -346,6 +346,18 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		migratesAttributes(contact, cazeData, lastVisit);
+		return cazeData;
+	}
+
+	public static CaseDataDto buildFromUnrelatedContact(ContactDto contact, VisitDto lastVisit, Disease disease) {
+
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), disease);
+		migratesAttributes(contact, cazeData, lastVisit);
+		return cazeData;
+	}
+
+	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData, VisitDto lastVisit) {
 		cazeData.setEpiData(contact.getEpiData());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
@@ -368,7 +380,6 @@ public class CaseDataDto extends PseudonymizableDto {
 			}
 		}
 		cazeData.setSymptoms(newSymptoms);
-		return cazeData;
 	}
 
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
