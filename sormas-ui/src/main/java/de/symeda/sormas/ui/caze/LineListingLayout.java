@@ -1,12 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.icons.VaadinIcons;
@@ -16,13 +9,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -41,13 +31,19 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class LineListingLayout extends VerticalLayout {
 
@@ -65,7 +61,8 @@ public class LineListingLayout extends VerticalLayout {
 	private Button cancelButton;
 	private Button saveButton;
 
-	private Window window;
+	private final Window window;
+	private Consumer<List<CaseLineDto>> saveCallback;
 
 	public LineListingLayout(Window window) {
 
@@ -183,7 +180,7 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> save(), ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getCaseLineDtos()), ValoTheme.BUTTON_PRIMARY);
 
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
@@ -228,59 +225,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	private void closeWindow() {
+	public void closeWindow() {
 		window.close();
-	}
-
-	private void save() {
-		try {
-			validate();
-		} catch (ValidationRuntimeException e) {
-			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
-			return;
-		}
-
-		for (CaseLineDto caseLineDto : getCaseLineDtos()) {
-
-			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
-
-			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
-			newCase.setRegion(caseLineDto.getRegion());
-			newCase.setDistrict(caseLineDto.getDistrict());
-			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
-			newCase.setEpidNumber(caseLineDto.getEpidNumber());
-			newCase.setCommunity((CommunityReferenceDto) caseLineDto.getCommunity());
-			newCase.setHealthFacility((FacilityReferenceDto) caseLineDto.getFacility());
-			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
-
-			if (caseLineDto.getDateOfOnset() != null) {
-				newCase.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
-			}
-
-			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
-
-			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(caseLineDto.getFirstName());
-			newPerson.setLastName(caseLineDto.getLastName());
-			newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
-			newPerson.setSex(caseLineDto.getSex());
-
-			ControllerProvider.getCaseController().selectOrCreateCase(newCase, newPerson, uuid -> {
-				if (uuid == null) {
-
-					FacadeProvider.getPersonFacade().savePerson(newPerson);
-
-					newCase.setPerson(newPerson.toReference());
-
-					FacadeProvider.getCaseFacade().saveCase(newCase);
-					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-				}
-			});
-		}
-		closeWindow();
-		ControllerProvider.getCaseController().navigateToIndex();
 	}
 
 	private void updateCommunitiesAndFacilities(DistrictReferenceDto districtDto) {
@@ -330,6 +276,10 @@ public class LineListingLayout extends VerticalLayout {
 
 	public List<CaseLineDto> getCaseLineDtos() {
 		return caseLines.stream().map(caseLine -> caseLine.getBean()).collect(Collectors.toList());
+	}
+
+	public void setSaveCallback(Consumer<List<CaseLineDto>> saveCallback) {
+		this.saveCallback = saveCallback;
 	}
 
 	class CaseLineLayout extends HorizontalLayout {
