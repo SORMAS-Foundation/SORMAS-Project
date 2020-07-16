@@ -25,6 +25,7 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -39,6 +40,7 @@ public class SampleIndexDto implements Serializable {
 	public static final String UUID = "uuid";
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String ASSOCIATED_CONTACT = "associatedContact";
+	public static final String ASSOCIATED_EVENT_PARTICIPANT = "associatedEventParticipant";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -60,6 +62,7 @@ public class SampleIndexDto implements Serializable {
 	private String uuid;
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
+	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;
 	private Disease disease;
@@ -88,13 +91,14 @@ public class SampleIndexDto implements Serializable {
 						  String labName, String referredSampleUuid,
 						  String associatedCaseUuid, String associatedCaseFirstName, String associatedCaseLastName,
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
+						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
 						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
 						  String reportingUserUuid, String labUuid,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
-						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
-	) {
+						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
+						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String districtUuid, String districtName) {
 	//@formatter:on
 
 		this.uuid = uuid;
@@ -105,6 +109,12 @@ public class SampleIndexDto implements Serializable {
 			this.associatedContact =
 				new ContactReferenceDto(associatedContactUuid, associatedContactFirstName, associatedContactLastName, null, null);
 		}
+		if (associatedEventParticipantUuid != null) {
+			this.associatedEventParticipant = new EventParticipantReferenceDto(
+				associatedEventParticipantUuid,
+				associatedEventParticipantFirstName,
+				associatedEventParticipantLastName);
+		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
 		this.disease = disease;
@@ -113,9 +123,11 @@ public class SampleIndexDto implements Serializable {
 			caseDistrictName,
 			contactDistrictName,
 			contactCaseDistrictName,
+			districtName,
 			caseDistrictUuid,
 			contactDistrictUuid,
-			contactCaseDistrictUuid);
+			contactCaseDistrictUuid,
+			districtUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -164,9 +176,11 @@ public class SampleIndexDto implements Serializable {
 		String caseDistrictName,
 		String contactDistrictName,
 		String contactCaseDistrictName,
+		String eventDistrictName,
 		String caseDistrictUuid,
 		String contactDistrictUuid,
-		String contactCaseDistrictUuid) {
+		String contactCaseDistrictUuid,
+		String eventDistrictUuid) {
 
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
@@ -175,6 +189,8 @@ public class SampleIndexDto implements Serializable {
 			ref = new DistrictReferenceDto(contactDistrictUuid, contactDistrictName);
 		} else if (contactCaseDistrictUuid != null) {
 			ref = new DistrictReferenceDto(contactCaseDistrictUuid, contactCaseDistrictName);
+		} else if (eventDistrictUuid != null) {
+			ref = new DistrictReferenceDto(eventDistrictUuid, eventDistrictName);
 		}
 
 		return ref;
@@ -202,6 +218,14 @@ public class SampleIndexDto implements Serializable {
 
 	public void setAssociatedContact(ContactReferenceDto associatedContact) {
 		this.associatedContact = associatedContact;
+	}
+
+	public EventParticipantReferenceDto getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
+	public void setAssociatedEventParticipant(EventParticipantReferenceDto associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
 	public Disease getDisease() {
@@ -322,7 +346,8 @@ public class SampleIndexDto implements Serializable {
 			uuid,
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {

@@ -23,6 +23,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -70,6 +71,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
@@ -89,6 +91,7 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String EPI_DATA = "epiData";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -139,6 +142,7 @@ public class ContactDto extends PseudonymizableDto {
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
@@ -170,6 +174,7 @@ public class ContactDto extends PseudonymizableDto {
 	private String quarantineHomeSupplyEnsuredComment;
 	@SensitiveData
 	private String additionalDetails;
+	private EpiDataDto epiData;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -189,6 +194,8 @@ public class ContactDto extends PseudonymizableDto {
 		contact.setReportDateTime(new Date());
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);
+
+		contact.setEpiData(EpiDataDto.build());
 
 		return contact;
 	}
@@ -447,6 +454,14 @@ public class ContactDto extends PseudonymizableDto {
 		this.quarantine = quarantine;
 	}
 
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
@@ -581,5 +596,13 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiDataDto getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiDataDto epiData) {
+		this.epiData = epiData;
 	}
 }

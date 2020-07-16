@@ -1,4 +1,19 @@
-package de.symeda.sormas.ui.campaign;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright ® 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.campaign.campaigns;
 
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -18,6 +33,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -43,7 +59,11 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CampaignIndexDto.UUID, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		addEditColumn(e -> {
+			ControllerProvider.getCampaignController().createOrEditCampaign(e.getUuid());
+		});
+
+		setColumns(EDIT_BTN_ID, CampaignIndexDto.UUID, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, String>) getColumn(CampaignIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
@@ -52,14 +72,11 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && CampaignIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getCampaignController().createOrEdit(e.getItem().getUuid());
-			}
-		});
+		addItemClickListener(
+			new ShowDetailsListener<>(CampaignIndexDto.UUID, e -> ControllerProvider.getCampaignController().navigateToCampaignData(e.getUuid())));
 	}
 
 	public void setLazyDataProvider() {

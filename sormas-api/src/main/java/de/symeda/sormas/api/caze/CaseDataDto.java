@@ -123,6 +123,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -326,6 +327,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	@SensitiveData
@@ -370,6 +372,19 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
 		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		migratesAttributes(contact, cazeData, lastVisit);
+		return cazeData;
+	}
+
+	public static CaseDataDto buildFromUnrelatedContact(ContactDto contact, VisitDto lastVisit, Disease disease) {
+
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), disease);
+		migratesAttributes(contact, cazeData, lastVisit);
+		return cazeData;
+	}
+
+	private static void migratesAttributes(ContactDto contact, CaseDataDto cazeData, VisitDto lastVisit) {
+		cazeData.setEpiData(contact.getEpiData());
 		SymptomsDto newSymptoms = cazeData.getSymptoms();
 		if (lastVisit != null) {
 			SymptomsDto oldSymptoms = lastVisit.getSymptoms();
@@ -391,7 +406,6 @@ public class CaseDataDto extends PseudonymizableDto {
 			}
 		}
 		cazeData.setSymptoms(newSymptoms);
-		return cazeData;
 	}
 
 	public static CaseDataDto buildFromEventParticipant(EventParticipantDto eventParticipant, Disease eventDisease) {
@@ -893,6 +907,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	public Date getQuarantineFrom() {

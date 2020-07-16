@@ -26,6 +26,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
@@ -38,16 +39,24 @@ public class EventDto extends PseudonymizableDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EXTERNAL_ID = "externalId";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String EVENT_DATE = "eventDate";
+	public static final String NOSOCOMIAL = "nosocomial";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
+	public static final String MULTI_DAY_EVENT = "multiDayEvent";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String TYPE_OF_PLACE = "typeOfPlace";
+	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_MEDIA_WEBSITE = "srcMediaWebsite";
+	public static final String SRC_MEDIA_NAME = "srcMediaName";
+	public static final String SRC_MEDIA_DETAILS = "srcMediaDetails";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
@@ -57,16 +66,20 @@ public class EventDto extends PseudonymizableDto {
 
 	@Required
 	private EventStatus eventStatus;
+	private String externalId;
 	@Required
 	@SensitiveData
 	private String eventDesc;
-	private Date eventDate;
+	private YesNoUnknown nosocomial;
+	private Date startDate;
+	private Date endDate;
 	@Required
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
+	private EventSourceType srcType;
 	@SensitiveData
 	private String srcFirstName;
 	@SensitiveData
@@ -75,6 +88,9 @@ public class EventDto extends PseudonymizableDto {
 	private String srcTelNo;
 	@SensitiveData
 	private String srcEmail;
+	private String srcMediaWebsite;
+	private String srcMediaName;
+	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
 	@SensitiveData
@@ -92,7 +108,7 @@ public class EventDto extends PseudonymizableDto {
 		EventDto event = new EventDto();
 		event.setUuid(DataHelper.createUuid());
 
-		event.setEventStatus(EventStatus.POSSIBLE);
+		event.setEventStatus(EventStatus.SIGNAL);
 		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
 
@@ -107,6 +123,14 @@ public class EventDto extends PseudonymizableDto {
 		this.eventStatus = eventStatus;
 	}
 
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -115,12 +139,36 @@ public class EventDto extends PseudonymizableDto {
 		this.eventDesc = eventDesc;
 	}
 
-	public Date getEventDate() {
-		return eventDate;
+	public YesNoUnknown getNosocomial() {
+		return nosocomial;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public void setNosocomial(YesNoUnknown nosocomial) {
+		this.nosocomial = nosocomial;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public boolean isMultiDayEvent() {
+		return endDate != null;
+	}
+
+	public void setMultiDayEvent(boolean ignored) {
+		// do nothing
 	}
 
 	public Date getReportDateTime() {
@@ -145,6 +193,14 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
 		this.typeOfPlace = typeOfPlace;
+	}
+
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 
 	public String getSrcFirstName() {
@@ -177,6 +233,30 @@ public class EventDto extends PseudonymizableDto {
 
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	public String getSrcMediaWebsite() {
+		return srcMediaWebsite;
+	}
+
+	public void setSrcMediaWebsite(String srcMediaWebsite) {
+		this.srcMediaWebsite = srcMediaWebsite;
+	}
+
+	public String getSrcMediaName() {
+		return srcMediaName;
+	}
+
+	public void setSrcMediaName(String srcMediaName) {
+		this.srcMediaName = srcMediaName;
+	}
+
+	public String getSrcMediaDetails() {
+		return srcMediaDetails;
+	}
+
+	public void setSrcMediaDetails(String srcMediaDetails) {
+		this.srcMediaDetails = srcMediaDetails;
 	}
 
 	public LocationDto getEventLocation() {

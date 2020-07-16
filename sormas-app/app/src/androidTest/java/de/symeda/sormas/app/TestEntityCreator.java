@@ -154,7 +154,7 @@ public class TestEntityCreator {
 
 		Event event = DatabaseHelper.getEventDao().build();
 		event.setEventDesc(eventDesc);
-		event.setEventDate(eventDate);
+		event.setStartDate(eventDate);
 		event.setTypeOfPlace(typeOfPlace);
 		event.setSrcFirstName(srcFirstName);
 		event.setSrcLastName(srcLastName);

@@ -261,7 +261,7 @@ public class TestDataCreator {
 		event.setSrcLastName(srcLastName);
 		event.setSrcTelNo(srcTelNo);
 		event.setTypeOfPlace(typeOfPlace);
-		event.setEventDate(eventDate);
+		event.setStartDate(eventDate);
 		event.setReportDateTime(reportDateTime);
 		event.setReportingUser(reportingUser);
 		event.setSurveillanceOfficer(surveillanceOfficer);

@@ -115,6 +115,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			contact.setDistrict(user.getDistrict());
 		}
 
+		// Epi Data
+		contact.setEpiData(DatabaseHelper.getEpiDataDao().build());
+
 		return contact;
 	}
 
@@ -263,5 +266,20 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+		if (epiDataDate != null && epiDataDate.after(date)) {
+			date = epiDataDate;
+		}
+
+		return date;
 	}
 }

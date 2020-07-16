@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.campaign.form;
 
-import java.io.IOException;
-
 import javax.ejb.Remote;
+import java.io.IOException;
+import java.util.List;
 
 @Remote
 public interface CampaignFormFacade {
@@ -18,5 +18,9 @@ public interface CampaignFormFacade {
 
 	CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
 		throws IOException;
+
+	List<CampaignFormReferenceDto> getAllCampaignFormsAsReferences();
+
+	CampaignFormDto getCampaignFormByUuid(String campaignFormUuid);
 
 }

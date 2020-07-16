@@ -1,24 +1,22 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity(name = "campaignforms")
 @Audited
@@ -54,6 +52,7 @@ public class CampaignForm extends AbstractDomainObject {
 	}
 
 	@Lob
+	@Type(type = "org.hibernate.type.TextType")
 	public String getCampaignFormElements() {
 		return campaignFormElements;
 	}
@@ -96,6 +95,7 @@ public class CampaignForm extends AbstractDomainObject {
 	}
 
 	@Lob
+	@Type(type = "org.hibernate.type.TextType")
 	public String getCampaignFormTranslations() {
 		return campaignFormTranslations;
 	}
@@ -137,4 +137,10 @@ public class CampaignForm extends AbstractDomainObject {
 			throw new RuntimeException("Content of campaignFormTranslationsList could not be parsed to JSON String - ID: " + getId());
 		}
 	}
+
+	@Override
+	public String toString() {
+		return formId;
+	}
+
 }

@@ -15,28 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.epidata;
+package de.symeda.sormas.ui.utils;
 
-import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 
-@SuppressWarnings("serial")
-public class EpiDataView extends AbstractCaseView {
+public interface FieldWrapper<T extends Component> {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/epidata";
-
-	public EpiDataView() {
-		super(VIEW_NAME, true);
-	}
-
-	@Override
-	protected void initView(String params) {
-
-
-		CommitDiscardWrapperComponent<EpiDataForm> epidDataForm =
-			ControllerProvider.getCaseController().getEpiDataComponent(getCaseRef().getUuid(), isCaseEditAllowed());
-		setSubComponent(epidDataForm);
-		setCaseEditPermission(epidDataForm);
-	}
+	ComponentContainer wrap(T component);
 }

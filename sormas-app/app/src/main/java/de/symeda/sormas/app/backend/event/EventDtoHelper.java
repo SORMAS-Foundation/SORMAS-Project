@@ -67,8 +67,11 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromDto(Event target, EventDto source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
 		target.setSurveillanceOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getSurveillanceOfficer()));
@@ -76,10 +79,16 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setEventLocation(locationHelper.fillOrCreateFromDto(target.getEventLocation(), source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
+
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
@@ -92,8 +101,12 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 	public void fillInnerFromAdo(EventDto target, Event source) {
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+
 		target.setReportDateTime(source.getReportDateTime());
 
 		if (source.getReportingUser() != null) {
@@ -111,10 +124,16 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		}
 
 		target.setTypeOfPlace(source.getTypeOfPlace());
+
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
+
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 

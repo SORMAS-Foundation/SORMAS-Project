@@ -1,36 +1,44 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.validation.constraints.NotNull;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.symeda.sormas.api.campaign.form.CampaignFormDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.util.DtoHelper;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFormFacade")
 public class CampaignFormFacadeEjb implements CampaignFormFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private CampaignFormService service;
@@ -97,6 +105,20 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	}
 
 	@Override
+	public List<CampaignFormReferenceDto> getAllCampaignFormsAsReferences() {
+		return service.getAll()
+			.stream()
+			.map(CampaignFormFacadeEjb::toReferenceDto)
+			.sorted(Comparator.comparing(ReferenceDto::toString))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public CampaignFormDto getCampaignFormByUuid(String campaignFormUuid) {
+		return toDto(service.getByUuid(campaignFormUuid));
+	}
+
+	@Override
 	public void validateAndClean(CampaignFormDto campaignFormDto) throws ValidationRuntimeException {
 		if (CollectionUtils.isEmpty(campaignFormDto.getCampaignFormElements())) {
 			return;
@@ -114,6 +136,13 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementTypeRequired, e.getId()));
 				}
 			});
+
+		// Throw an exception when the schema definition contains the same ID more than once
+		campaignFormDto.getCampaignFormElements().forEach(e -> {
+			if (Collections.frequency(campaignFormDto.getCampaignFormElements(), e) > 1) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementDuplicateId, e.getId()));
+			}
+		});
 
 		// Throw an error if any translation does not have a language code or contains an element without an ID or caption
 		if (CollectionUtils.isNotEmpty(campaignFormDto.getCampaignFormTranslations())) {
@@ -223,7 +252,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	}
 
 	private boolean isValueValidForType(String type, String value) {
-		if (type.equals(CampaignFormElementType.INTEGER.toString())) {
+		if (type.equals(CampaignFormElementType.NUMBER.toString())) {
 			try {
 				Integer.parseInt(value);
 			} catch (NumberFormatException e) {
@@ -236,6 +265,14 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		}
 
 		return true;
+	}
+
+	public static CampaignFormReferenceDto toReferenceDto(CampaignForm entity) {
+		if (entity == null) {
+			return null;
+		}
+
+		return new CampaignFormReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	@LocalBean

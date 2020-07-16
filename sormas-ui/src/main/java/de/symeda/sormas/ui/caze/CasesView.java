@@ -380,7 +380,7 @@ public class CasesView extends AbstractView {
 			lineListingButton = ButtonHelper.createIconButton(
 				Captions.caseLineListing,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getCaseController().lineListing(),
+				e -> ControllerProvider.getCaseController().openLineListingWindow(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(lineListingButton);

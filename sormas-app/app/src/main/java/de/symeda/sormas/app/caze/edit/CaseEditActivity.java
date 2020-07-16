@@ -51,6 +51,7 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
@@ -158,7 +159,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			fragment = SymptomsEditFragment.newInstance(activityRootData);
 			break;
 		case EPIDEMIOLOGICAL_DATA:
-			fragment = CaseEditEpidemiologicalDataFragment.newInstance(activityRootData);
+			fragment = EpidemiologicalDataEditFragment.newInstance(activityRootData);
 			break;
 		case CONTACTS:
 			fragment = CaseEditContactListFragment.newInstance(activityRootData);

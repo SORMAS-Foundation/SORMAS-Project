@@ -30,7 +30,7 @@ echo "# If anything goes wrong, please consult the server setup guide or get in 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
 #AS_JAVA_NATIVE='C:\zulu-8'
 #AS_JAVA_NATIVE='/opt/zulu-8'
-AS_JAVA_NATIVE=/usr/lib/jvm/zulu-8-amd64/
+#AS_JAVA_NATIVE=/usr/lib/jvm/zulu-8-amd64/
 
 PAYARA_VERSION=5.192
 
@@ -275,6 +275,7 @@ if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
 	cp ../setup/cacerts.jks.bin "${DOMAIN_DIR}/config/cacerts.jks"
 fi
 cp ../setup/loginsidebar.html "${CUSTOM_DIR}"
+cp ../setup/loginsidebar-header.html "${CUSTOM_DIR}"
 cp ../setup/logindetails.html "${CUSTOM_DIR}"
 cp ../setup/loginmain.html "${CUSTOM_DIR}"
 

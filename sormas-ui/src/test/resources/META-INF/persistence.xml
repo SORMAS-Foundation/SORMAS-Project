@@ -52,6 +52,7 @@
 		<class>de.symeda.sormas.backend.campaign.Campaign</class>
 		<class>de.symeda.sormas.backend.campaign.form.CampaignForm</class>
 		<class>de.symeda.sormas.backend.region.Area</class>
+		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

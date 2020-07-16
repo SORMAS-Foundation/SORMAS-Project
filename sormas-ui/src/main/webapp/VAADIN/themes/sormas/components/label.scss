@@ -146,6 +146,10 @@
 		font-weight: bold;
 	}
 
+	&.v-label-italic, .italic {
+		font-style: italic;
+	}
+
 	&.v-label-uppercase, .uppercase {
 		text-transform: uppercase;
 	}

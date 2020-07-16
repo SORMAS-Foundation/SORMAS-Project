@@ -1,12 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Date;
-import java.util.stream.Stream;
-
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -18,7 +11,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -45,6 +37,13 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
@@ -243,6 +242,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
+	@Override
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		ComboBox districtField = (ComboBox) getField(CaseDataDto.DISTRICT);

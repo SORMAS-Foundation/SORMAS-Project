@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.region.GeoLatLon;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface ConfigFacade {
@@ -61,6 +61,14 @@ public interface ConfigFacade {
 	void validateAppUrls();
 
 	boolean isDevMode();
+
+	boolean isCustomBranding();
+
+	String getCustomBrandingName();
+
+	String getCustomBrandingLogoPath();
+
+	String getSormasInstanceName();
 
 	double getNameSimilarityThreshold();
 

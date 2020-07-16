@@ -54,6 +54,7 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private UserReferenceDto surveillanceOfficer;
 	private String freeText;
+	private EventSourceType srcType;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -211,5 +212,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getFreeText() {
 		return freeText;
+	}
+
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 }

@@ -17,9 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,11 +27,12 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
-public class ContactInfoLayout extends HorizontalLayout {
+public class ContactInfoLayout extends AbstractInfoLayout {
 
 	private final ContactDto contactDto;
 
@@ -105,14 +104,5 @@ public class ContactInfoLayout extends HorizontalLayout {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
 		}
 		this.addComponent(secondColumn);
-	}
-
-	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
-
-		String contentString = content != null ? content.toString() : "";
-		Label label = new Label(contentString);
-		label.setCaption(caption);
-		layout.addComponent(label);
-		return label;
 	}
 }

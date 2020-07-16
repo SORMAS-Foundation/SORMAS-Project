@@ -216,7 +216,8 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.EVENT_DATE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			event.get(Event.EVENT_DESC),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
@@ -226,9 +227,12 @@ public class EventFacadeEjb implements EventFacade {
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
+			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
 			event.get(Event.REPORT_DATE_TIME),
 			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
 			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
@@ -251,7 +255,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
-				case EventIndexDto.EVENT_DATE:
+				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVENT_DESC:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
@@ -307,11 +311,14 @@ public class EventFacadeEjb implements EventFacade {
 
 		cq.multiselect(
 			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.EVENT_DATE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			event.get(Event.EVENT_DESC),
+			event.get(Event.NOSOCOMIAL),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -320,9 +327,14 @@ public class EventFacadeEjb implements EventFacade {
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
+			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_EMAIL),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
+			event.get(Event.SRC_MEDIA_DETAILS),
 			event.get(Event.REPORT_DATE_TIME),
 			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
 			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
@@ -413,16 +425,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
@@ -482,16 +501,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));

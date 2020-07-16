@@ -22,4 +22,8 @@ public enum CampaignFormElementStyle {
 		return name().toLowerCase().replaceAll("_", "-");
 	}
 
+	public static CampaignFormElementStyle fromString(String stringValue) {
+		return valueOf(stringValue.toUpperCase().replaceAll("-", "_"));
+	}
+
 }

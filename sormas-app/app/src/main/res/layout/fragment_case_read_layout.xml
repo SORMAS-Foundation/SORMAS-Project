@@ -312,6 +312,13 @@
                     app:value="@{data.quarantine}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_quarantineTypeDetails"
+                    app:dependencyParentField="@{caseDataQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.OTHER}"
+                    app:value="@{data.quarantineTypeDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

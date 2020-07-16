@@ -24,6 +24,7 @@ import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -70,6 +71,7 @@ public class SampleDto extends PseudonymizableDto {
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
+	private EventParticipantReferenceDto associatedEventParticipant;
 	private String labSampleID;
 	private String fieldSampleID;
 	@Required
@@ -137,6 +139,15 @@ public class SampleDto extends PseudonymizableDto {
 
 	public void setAssociatedContact(ContactReferenceDto associatedContact) {
 		this.associatedContact = associatedContact;
+	}
+
+	@ImportIgnore
+	public EventParticipantReferenceDto getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
+	public void setAssociatedEventParticipant(EventParticipantReferenceDto associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
 	public String getLabSampleID() {
@@ -369,6 +380,13 @@ public class SampleDto extends PseudonymizableDto {
 		return sampleDto;
 	}
 
+	public static SampleDto build(UserReferenceDto userRef, EventParticipantReferenceDto eventParticipantRef) {
+
+		final SampleDto sampleDto = getSampleDto(userRef);
+		sampleDto.setAssociatedEventParticipant(eventParticipantRef);
+		return sampleDto;
+	}
+
 	public static SampleDto build(UserReferenceDto userRef, ContactReferenceDto contactRef) {
 
 		final SampleDto sampleDto = getSampleDto(userRef);
@@ -392,11 +410,14 @@ public class SampleDto extends PseudonymizableDto {
 
 		final SampleDto sample;
 		final CaseReferenceDto associatedCase = referredSample.getAssociatedCase();
+		final ContactReferenceDto associatedContact = referredSample.getAssociatedContact();
+		final EventParticipantReferenceDto associatedEventParticipant = referredSample.getAssociatedEventParticipant();
 		if (associatedCase != null) {
 			sample = build(userRef, associatedCase);
-		} else {
-			final ContactReferenceDto associatedContact = referredSample.getAssociatedContact();
+		} else if (associatedContact != null) {
 			sample = build(userRef, associatedContact);
+		} else {
+			sample = build(userRef, associatedEventParticipant);
 		}
 		sample.setSampleDateTime(referredSample.getSampleDateTime());
 		sample.setSampleMaterial(referredSample.getSampleMaterial());

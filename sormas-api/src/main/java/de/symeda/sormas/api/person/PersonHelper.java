@@ -17,18 +17,17 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import java.text.Normalizer;
-import java.util.Date;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.simmetrics.metrics.StringMetrics;
-
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.simmetrics.metrics.StringMetrics;
+
+import java.text.Normalizer;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 public final class PersonHelper {
 
@@ -36,28 +35,34 @@ public final class PersonHelper {
 		// Hide Utility Class Constructor
 	}
 
-	public static final double NAME_SIMILARITY_THRESHOLD = 0.5D;
+	public static final double DEFAULT_NAME_SIMILARITY_THRESHOLD = 0.6D;
 
 	/**
 	 * Calculates the trigram distance between both names and returns true
 	 * if the similarity is high enough to consider them a possible match.
-	 * Used a default of {@link PersonHelper#NAME_SIMILARITY_THRESHOLD} for the threshold.
+	 * Uses a default of {@link PersonHelper#DEFAULT_NAME_SIMILARITY_THRESHOLD} for the threshold.
 	 */
-	protected static boolean areFullNamesSimilar(final String firstName, final String secondName) {
+	protected static boolean areFullNamesSimilar(final String firstName, final String secondName, Double similarityThreshold) {
 		final String name = normalizeString(firstName);
 		final String otherName = normalizeString(secondName);
-		return StringMetrics.qGramsDistance().compare(name, otherName) >= NAME_SIMILARITY_THRESHOLD;
+		return StringMetrics.qGramsDistance().compare(name, otherName)
+			>= (similarityThreshold != null ? similarityThreshold : DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
 
 	/**
 	 * Calculates the trigram distance between firstName/lastname (also viceversa lastname/firstname) and otherFirstName/otherLastName,
 	 * returns true if the similarity is high enough to consider them a possible match.
 	 */
-	public static boolean areNamesSimilar(final String firstName, final String lastName, final String otherFirstName, final String otherLastName) {
+	public static boolean areNamesSimilar(
+		final String firstName,
+		final String lastName,
+		final String otherFirstName,
+		final String otherLastName,
+		Double similarityThreshold) {
 		final String name = createFullName(firstName, lastName);
 		final String nameInverted = createFullName(lastName, firstName);
 		final String otherName = createFullName(otherFirstName, otherLastName);
-		return areFullNamesSimilar(name, otherName) || areFullNamesSimilar(nameInverted, otherName);
+		return areFullNamesSimilar(name, otherName, similarityThreshold) || areFullNamesSimilar(nameInverted, otherName, similarityThreshold);
 	}
 
 	private static String createFullName(String firstName, String lastName) {

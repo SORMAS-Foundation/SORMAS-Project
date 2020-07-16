@@ -27,7 +27,7 @@ import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
-import de.symeda.sormas.ui.reports.campaign.CampaignController;
+import de.symeda.sormas.ui.campaign.CampaignController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
 import de.symeda.sormas.ui.samples.PathogenTestController;
 import de.symeda.sormas.ui.samples.SampleController;

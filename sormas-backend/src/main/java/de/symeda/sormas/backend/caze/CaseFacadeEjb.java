@@ -101,6 +101,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -169,6 +170,8 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataTravel;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -268,6 +271,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private TaskService taskService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@EJB
 	private SampleService sampleService;
 	@EJB
@@ -459,7 +464,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				// quarantine
-				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
@@ -579,7 +584,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				prevHospsCq.orderBy(cb.asc(prevHospsRoot.get(PreviousHospitalization.ADMISSION_DATE)));
 				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				firstPreviousHospitalizations = prevHospsList.stream()
-					.collect(Collectors.toMap(p -> ((PreviousHospitalization) p).getHospitalization().getId(), Function.identity(), (id1, id2) -> {
+					.collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> {
 						return id1;
 					}));
 			}
@@ -607,7 +612,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				travelsCq.where(epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())));
 				travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
 				travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+				travels = travelsList.stream().collect(Collectors.groupingBy(t -> t.getEpiData().getId()));
 			}
 
 			Map<Long, List<Sample>> samples = null;
@@ -1224,12 +1229,22 @@ public class CaseFacadeEjb implements CaseFacade {
 		return convertToDto(caze, new Pseudonymizer(userService::hasRight));
 	}
 
+	@Override
 	public void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef) {
 
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = caseService.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+		}
+	}
+
+	@Override
+	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+		if (sourceEventParticipant != null) {
+			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
+			final Case caze = caseService.getByUuid(cazeRef.getUuid());
+			eventParticipant.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
 		}
 	}
 
@@ -1777,6 +1792,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
@@ -2026,6 +2042,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setExternalID(source.getExternalID());
 		target.setSharedToCountry(source.isSharedToCountry());
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
@@ -2352,7 +2369,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		Root<Case> from = cq.from(Case.class);
 		Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
 
-		cq.select(cb.least((Path<Timestamp>) symptoms.<Timestamp> get(Symptoms.ONSET_DATE)));
+		Path<Timestamp> expression = symptoms.get(Symptoms.ONSET_DATE);
+		cq.select(cb.least(expression));
 		cq.where(cb.greaterThan(symptoms.get(Symptoms.ONSET_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
@@ -2364,7 +2382,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		CriteriaQuery<Timestamp> cq = cb.createQuery(Timestamp.class);
 		Root<Case> from = cq.from(Case.class);
 
-		cq.select(cb.least(from.<Timestamp> get(Case.REPORT_DATE)));
+		final Path<Timestamp> reportDate = from.get(Case.REPORT_DATE);
+		cq.select(cb.least(reportDate));
 		cq.where(cb.greaterThan(from.get(Case.REPORT_DATE), DateHelper.getDateZero(2000, 1, 1)));
 		return em.createQuery(cq).getSingleResult();
 	}
