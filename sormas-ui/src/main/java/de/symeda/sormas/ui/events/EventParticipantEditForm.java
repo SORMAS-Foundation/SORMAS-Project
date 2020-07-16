@@ -24,8 +24,11 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.person.PersonEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EventParticipantEditForm extends AbstractEditForm<EventParticipantDto> {
 
@@ -35,9 +38,21 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 
 	private final EventDto event;
 
-	public EventParticipantEditForm(EventDto event) {
-		super(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX);
+	private final boolean inJurisdiction;
+
+	public EventParticipantEditForm(EventDto event, boolean inJurisdiction) {
+		super(
+			EventParticipantDto.class,
+			EventParticipantDto.I18N_PREFIX,
+			false,
+			new FieldVisibilityCheckers(),
+			UiFieldAccessCheckers.withCheckers(
+				inJurisdiction,
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.event = event;
+		this.inJurisdiction = inJurisdiction;
+
 		if (event == null) {
 			throw new IllegalArgumentException("Event cannot be null");
 		}
@@ -51,15 +66,15 @@ public class EventParticipantEditForm extends AbstractEditForm<EventParticipantD
 			return;
 		}
 
-		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), null, true);
+		PersonEditForm pef = new PersonEditForm(event.getDisease(), event.getDiseaseDetails(), null, inJurisdiction);
 		pef.setImmediate(true);
 		getFieldGroup().bind(pef, EventParticipantDto.PERSON);
 		getContent().addComponent(pef, EventParticipantDto.PERSON);
 
 		addField(EventParticipantDto.INVOLVEMENT_DESCRIPTION, TextField.class);
-		//		addField(EventParticipantDto.PERSON, PersonEditForm.class).setCaption(null);
-
 		setRequired(true, EventParticipantDto.INVOLVEMENT_DESCRIPTION);
+
+		initializeAccessAndAllowedAccesses();
 	}
 
 	public String getPersonFirstName() {

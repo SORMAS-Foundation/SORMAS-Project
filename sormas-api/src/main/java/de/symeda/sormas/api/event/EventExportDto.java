@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class EventExportDto implements Serializable {
 
@@ -30,16 +31,25 @@ public class EventExportDto implements Serializable {
 	private Disease disease;
 	private String diseaseDetails;
 	private Date eventDate;
+	@SensitiveData
 	private String eventDesc;
 	private String region;
 	private String district;
+	@SensitiveData
 	private String community;
+	@SensitiveData
 	private String city;
+	@SensitiveData
 	private String address;
+	@SensitiveData
 	private String srcFirstName;
+	@SensitiveData
 	private String srcLastName;
+	@SensitiveData
 	private String srcTelNo;
 	private Date reportDateTime;
+
+	private EventJurisdictionDto jurisdiction;
 
 	public EventExportDto(
 		String uuid,
@@ -48,15 +58,20 @@ public class EventExportDto implements Serializable {
 		String diseaseDetails,
 		Date eventDate,
 		String eventDesc,
+		String regionUuid,
 		String region,
+		String districtUuid,
 		String district,
+		String communityUuid,
 		String community,
 		String city,
 		String address,
 		String srcFirstName,
 		String srcLastName,
 		String srcTelNo,
-		Date reportDateTime) {
+		Date reportDateTime,
+		String reportingUserUid,
+		String surveillanceOfficerUuid) {
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
@@ -72,6 +87,8 @@ public class EventExportDto implements Serializable {
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
 		this.reportDateTime = reportDateTime;
+
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -207,5 +224,9 @@ public class EventExportDto implements Serializable {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	public EventJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

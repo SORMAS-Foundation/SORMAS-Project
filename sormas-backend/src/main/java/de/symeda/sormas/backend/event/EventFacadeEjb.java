@@ -53,6 +53,7 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -70,6 +71,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -107,12 +109,14 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveEventsAfter(date).stream().map(EventFacadeEjb::toDto).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventDto> getByUuids(List<String> uuids) {
-		return eventService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -144,7 +148,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	@Override
 	public EventDto getEventByUuid(String uuid) {
-		return toDto(eventService.getByUuid(uuid));
+		return convertToDto(eventService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -155,9 +159,16 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public EventDto saveEvent(EventDto dto) {
 
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
+		EventDto existingDto = toDto(existingEvent);
+
+		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+
 		Event event = fromDto(dto);
 		eventService.ensurePersisted(event);
-		return toDto(event);
+
+		return convertToDto(event, pseudonymizer);
 	}
 
 	@Override
@@ -207,16 +218,20 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DATE),
 			event.get(Event.EVENT_DESC),
-			location.get(Location.UUID),
+			region.get(Region.UUID),
 			region.get(Region.NAME),
+			district.get(District.UUID),
 			district.get(District.NAME),
+			community.get(Community.UUID),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
-			event.get(Event.REPORT_DATE_TIME));
+			event.get(Event.REPORT_DATE_TIME),
+			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -261,11 +276,23 @@ public class EventFacadeEjb implements EventFacade {
 			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
 		}
 
+		List<EventIndexDto> indexList;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			indexList = em.createQuery(cq).getResultList();
 		}
+
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventIndexDto.class,
+			indexList,
+			e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()),
+			(e, inJurisdiction) -> {
+				pseudonymizer.pseudonymizeDto(EventIndexDto.EventIndexLocation.class, e.getEventIndexLocation(), inJurisdiction, null);
+			});
+
+		return indexList;
 	}
 
 	@Override
@@ -285,15 +312,20 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.EVENT_DATE),
 			event.get(Event.EVENT_DESC),
+			region.get(Region.UUID),
 			region.get(Region.NAME),
+			district.get(District.UUID),
 			district.get(District.NAME),
+			community.get(Community.UUID),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
 			location.get(Location.ADDRESS),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
-			event.get(Event.REPORT_DATE_TIME));
+			event.get(Event.REPORT_DATE_TIME),
+			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
 
@@ -305,11 +337,19 @@ public class EventFacadeEjb implements EventFacade {
 		cq.where(filter);
 		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 
+		List<EventExportDto> exportList;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
 		} else {
-			return em.createQuery(cq).getResultList();
+			exportList = em.createQuery(cq).getResultList();
 		}
+
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer
+			.pseudonymizeDtoCollection(EventExportDto.class, exportList, e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()), null);
+
+		return exportList;
 	}
 
 	@Override
@@ -393,6 +433,34 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
+	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(event);
+
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
+				pseudonymizer.pseudonymizeDto(LocationDto.class, dto.getEventLocation(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(existingEvent);
+			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(LocationDto.class, dto.getEventLocation(), existingDto.getEventLocation(), inJurisdiction);
+			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
 	}
 
 	public static EventReferenceDto toReferenceDto(Event entity) {

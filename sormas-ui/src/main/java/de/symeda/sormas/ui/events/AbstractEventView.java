@@ -89,11 +89,15 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 
 	public void setEventEditPermission(Component component) {
 
-		Boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid());
+		Boolean isEventEditAllowed = isEventEditAllowed();
 
 		if (!isEventEditAllowed) {
 			component.setEnabled(false);
 		}
+	}
+
+	protected Boolean isEventEditAllowed() {
+		return FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid());
 	}
 
 	public EventReferenceDto getEventRef() {

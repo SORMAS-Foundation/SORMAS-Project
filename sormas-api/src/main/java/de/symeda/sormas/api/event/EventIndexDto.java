@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class EventIndexDto implements Serializable {
 
@@ -35,7 +36,7 @@ public class EventIndexDto implements Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EVENT_DATE = "eventDate";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String EVENT_LOCATION = "eventLocation";
+	public static final String EVENT_LOCATION = "eventLocationString";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -46,12 +47,17 @@ public class EventIndexDto implements Serializable {
 	private Disease disease;
 	private String diseaseDetails;
 	private Date eventDate;
+	@SensitiveData
 	private String eventDesc;
-	private LocationReferenceDto eventLocation;
+	private EventIndexLocation eventIndexLocation;
+	@SensitiveData
 	private String srcFirstName;
+	@SensitiveData
 	private String srcLastName;
+	@SensitiveData
 	private String srcTelNo;
 	private Date reportDateTime;
+	private EventJurisdictionDto jurisdiction;
 
 	public EventIndexDto(
 		String uuid,
@@ -60,16 +66,20 @@ public class EventIndexDto implements Serializable {
 		String diseaseDetails,
 		Date eventDate,
 		String eventDesc,
-		String locationUuid,
+		String regionUuid,
 		String regionName,
+		String districtUuid,
 		String districtName,
+		String communityUuid,
 		String communityName,
 		String city,
 		String address,
 		String srcFirstName,
 		String srcLastName,
 		String srcTelNo,
-		Date reportDateTime) {
+		Date reportDateTime,
+		String reportingUserUuid,
+		String surveillanceOfficerUuid) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -77,11 +87,12 @@ public class EventIndexDto implements Serializable {
 		this.diseaseDetails = diseaseDetails;
 		this.eventDate = eventDate;
 		this.eventDesc = eventDesc;
-		this.eventLocation = new LocationReferenceDto(locationUuid, regionName, districtName, communityName, city, address);
+		this.eventIndexLocation = new EventIndexLocation(regionName, districtName, communityName, city, address);
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
 		this.reportDateTime = reportDateTime;
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	public String getUuid() {
@@ -132,12 +143,12 @@ public class EventIndexDto implements Serializable {
 		this.eventDesc = eventDesc;
 	}
 
-	public LocationReferenceDto getEventLocation() {
-		return eventLocation;
+	public EventIndexLocation getEventIndexLocation() {
+		return eventIndexLocation;
 	}
 
-	public void setEventLocation(LocationReferenceDto eventLocation) {
-		this.eventLocation = eventLocation;
+	public String getEventLocationString() {
+		return eventIndexLocation.formatString();
 	}
 
 	public String getSrcFirstName() {
@@ -174,5 +185,33 @@ public class EventIndexDto implements Serializable {
 
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+	}
+
+	public EventJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
+
+	public static class EventIndexLocation implements Serializable {
+
+		private String regionName;
+		private String districtName;
+		@SensitiveData
+		private String communityName;
+		@SensitiveData
+		private String city;
+		@SensitiveData
+		private String address;
+
+		public EventIndexLocation(String regionName, String districtName, String communityName, String city, String address) {
+			this.regionName = regionName;
+			this.districtName = districtName;
+			this.communityName = communityName;
+			this.city = city;
+			this.address = address;
+		}
+
+		public String formatString() {
+			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, address);
+		}
 	}
 }

@@ -102,13 +102,18 @@ public class TestDataCreator {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName,
-							  String lastName, UserRole... roles) {
+	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
 		return createUser(regionUuid, districtUuid, null, facilityUuid, firstName, lastName, roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String communityUuid, String facilityUuid,
-							  String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRole... roles) {
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
@@ -188,7 +193,15 @@ public class TestDataCreator {
 	}
 
 	public CaseDataDto createCase(UserReferenceDto user, RDCF rdcf, Consumer<CaseDataDto> setCustomFields) {
-		return createCase(user, createPerson().toReference(), Disease.EVD, CaseClassification.SUSPECT, InvestigationStatus.PENDING, new Date(), rdcf, setCustomFields);
+		return createCase(
+			user,
+			createPerson().toReference(),
+			Disease.EVD,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			setCustomFields);
 	}
 
 	public CaseDataDto createCase(UserReferenceDto user, PersonReferenceDto person, RDCF rdcf) {
@@ -273,7 +286,7 @@ public class TestDataCreator {
 
 		ClinicalVisitDto clinicalVisit = ClinicalVisitDto.build(caze.getClinicalCourse().toReference(), caze.getDisease());
 
-		if(extraConfig != null){
+		if (extraConfig != null) {
 			extraConfig.accept(clinicalVisit);
 		}
 
@@ -290,7 +303,7 @@ public class TestDataCreator {
 		PrescriptionDto prescription = PrescriptionDto.buildPrescription(caze.getTherapy().toReference());
 		prescription.setPrescriptionType(TreatmentType.BLOOD_TRANSFUSION);
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(prescription);
 		}
 
@@ -308,7 +321,7 @@ public class TestDataCreator {
 		TreatmentDto treatment = TreatmentDto.build(caze.getTherapy().toReference());
 		treatment.setTreatmentType(TreatmentType.BLOOD_TRANSFUSION);
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(treatment);
 		}
 
@@ -320,7 +333,6 @@ public class TestDataCreator {
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}
-
 
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson, Disease disease) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, disease, null);
@@ -346,14 +358,28 @@ public class TestDataCreator {
 		return createContact(reportingUser, contactOfficer, contactPerson, caze, reportDateTime, lastContactDate, disease, null);
 	}
 
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-									PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf) {
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		UserReferenceDto contactOfficer,
+		PersonReferenceDto contactPerson,
+		CaseDataDto caze,
+		Date reportDateTime,
+		Date lastContactDate,
+		Disease disease,
+		RDCF rdcf) {
 		return createContact(reportingUser, contactOfficer, contactPerson, caze, reportDateTime, lastContactDate, disease, rdcf, null);
 	}
 
-	public ContactDto createContact(UserReferenceDto reportingUser, UserReferenceDto contactOfficer,
-			PersonReferenceDto contactPerson, CaseDataDto caze, Date reportDateTime, Date lastContactDate, Disease disease, RDCF rdcf,
-									Consumer<ContactDto> customConfig) {
+	public ContactDto createContact(
+		UserReferenceDto reportingUser,
+		UserReferenceDto contactOfficer,
+		PersonReferenceDto contactPerson,
+		CaseDataDto caze,
+		Date reportDateTime,
+		Date lastContactDate,
+		Disease disease,
+		RDCF rdcf,
+		Consumer<ContactDto> customConfig) {
 		ContactDto contact;
 
 		if (caze != null) {
@@ -372,7 +398,7 @@ public class TestDataCreator {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(contact);
 		}
 
@@ -436,12 +462,17 @@ public class TestDataCreator {
 		return createVisit(disease, person, visitDateTime, visitStatus, null);
 	}
 
-	public VisitDto createVisit(Disease disease, PersonReferenceDto person, Date visitDateTime, VisitStatus visitStatus, Consumer<VisitDto> customConfig) {
+	public VisitDto createVisit(
+		Disease disease,
+		PersonReferenceDto person,
+		Date visitDateTime,
+		VisitStatus visitStatus,
+		Consumer<VisitDto> customConfig) {
 		VisitDto visit = VisitDto.build(person, disease);
 		visit.setVisitDateTime(visitDateTime);
 		visit.setVisitStatus(visitStatus);
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(visit);
 		}
 
@@ -481,21 +512,33 @@ public class TestDataCreator {
 		Disease disease,
 		DistrictReferenceDto district) {
 
+		return createEvent(eventStatus, eventDesc, reportingUser, (event) -> {
+			event.setSrcFirstName(srcFirstName);
+			event.setSrcLastName(srcLastName);
+			event.setSrcTelNo(srcTelNo);
+			event.setTypeOfPlace(typeOfPlace);
+			event.setEventDate(eventDate);
+			event.setReportDateTime(reportDateTime);
+			event.setReportingUser(reportingUser);
+			event.setSurveillanceOfficer(surveillanceOfficer);
+			event.setDisease(disease);
+			event.getEventLocation().setDistrict(district);
+		});
+	}
+
+	public EventDto createEvent(EventStatus eventStatus, String eventDesc, UserReferenceDto reportingUser, Consumer<EventDto> customSettings) {
+
 		EventDto event = EventDto.build();
 		event.setEventStatus(eventStatus);
 		event.setEventDesc(eventDesc);
-		event.setSrcFirstName(srcFirstName);
-		event.setSrcLastName(srcLastName);
-		event.setSrcTelNo(srcTelNo);
-		event.setTypeOfPlace(typeOfPlace);
-		event.setEventDate(eventDate);
-		event.setReportDateTime(reportDateTime);
 		event.setReportingUser(reportingUser);
-		event.setSurveillanceOfficer(surveillanceOfficer);
-		event.setDisease(disease);
-		event.getEventLocation().setDistrict(district);
+
+		if (customSettings != null) {
+			customSettings.accept(event);
+		}
 
 		event = beanTest.getEventFacade().saveEvent(event);
+
 		return event;
 	}
 
@@ -536,13 +579,23 @@ public class TestDataCreator {
 	}
 
 	public SampleDto createSample(
-		CaseReferenceDto associatedCase,Date sampleDateTime, Date reportDateTime,
-								  UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab) {
+		CaseReferenceDto associatedCase,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		Facility lab) {
 		return createSample(associatedCase, sampleDateTime, reportDateTime, reportingUser, sampleMaterial, lab, null);
 	}
 
-	public SampleDto createSample(CaseReferenceDto associatedCase, Date sampleDateTime, Date reportDateTime,
-			UserReferenceDto reportingUser, SampleMaterial sampleMaterial, Facility lab, Consumer<SampleDto> customConfig) {
+	public SampleDto createSample(
+		CaseReferenceDto associatedCase,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		Facility lab,
+		Consumer<SampleDto> customConfig) {
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(sampleDateTime);
 		sample.setReportDateTime(reportDateTime);
@@ -550,7 +603,7 @@ public class TestDataCreator {
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(beanTest.getFacilityFacade().getFacilityReferenceByUuid(lab.getUuid()));
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(sample);
 		}
 
@@ -560,12 +613,12 @@ public class TestDataCreator {
 	}
 
 	public SampleDto createSample(
-			CaseReferenceDto associatedCase,
-			Date sampleDateTime,
-			Date reportDateTime,
-			UserReferenceDto reportingUser,
-			SampleMaterial sampleMaterial,
-			FacilityReferenceDto lab) {
+		CaseReferenceDto associatedCase,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedCase);
 		sample.setSampleDateTime(sampleDateTime);
@@ -618,29 +671,29 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
-			SampleReferenceDto sample,
-			PathogenTestType testType,
-			Disease testedDisease,
-			Date testDateTime,
-			Facility lab,
-			UserReferenceDto labUser,
-			PathogenTestResultType testResult,
-			String testResultText,
-			boolean verified) {
+		SampleReferenceDto sample,
+		PathogenTestType testType,
+		Disease testedDisease,
+		Date testDateTime,
+		Facility lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		String testResultText,
+		boolean verified) {
 		return createPathogenTest(sample, testType, testedDisease, testDateTime, lab, labUser, testResult, testResultText, verified, null);
 	}
 
 	public PathogenTestDto createPathogenTest(
-			SampleReferenceDto sample,
-			PathogenTestType testType,
-			Disease testedDisease,
-			Date testDateTime,
-			Facility lab,
-			UserReferenceDto labUser,
-			PathogenTestResultType testResult,
-			String testResultText,
-			boolean verified,
-			Consumer<PathogenTestDto> extraConfig) {
+		SampleReferenceDto sample,
+		PathogenTestType testType,
+		Disease testedDisease,
+		Date testDateTime,
+		Facility lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		String testResultText,
+		boolean verified,
+		Consumer<PathogenTestDto> extraConfig) {
 
 		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestedDisease(testedDisease);
@@ -651,7 +704,7 @@ public class TestDataCreator {
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
 
-		if(extraConfig != null){
+		if (extraConfig != null) {
 			extraConfig.accept(sampleTest);
 		}
 
@@ -660,16 +713,16 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
-			SampleReferenceDto sample,
-			PathogenTestType testType,
-			Disease testedDisease,
-			Date testDateTime,
-			FacilityReferenceDto lab,
-			UserReferenceDto labUser,
-			PathogenTestResultType testResult,
-			String testResultText,
-			boolean verified,
-			Consumer<PathogenTestDto> extraConfig) {
+		SampleReferenceDto sample,
+		PathogenTestType testType,
+		Disease testedDisease,
+		Date testDateTime,
+		FacilityReferenceDto lab,
+		UserReferenceDto labUser,
+		PathogenTestResultType testResult,
+		String testResultText,
+		boolean verified,
+		Consumer<PathogenTestDto> extraConfig) {
 
 		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestedDisease(testedDisease);
@@ -680,7 +733,7 @@ public class TestDataCreator {
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
 
-		if(extraConfig != null){
+		if (extraConfig != null) {
 			extraConfig.accept(sampleTest);
 		}
 

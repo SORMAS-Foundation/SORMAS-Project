@@ -58,7 +58,8 @@ public class EventDataView extends AbstractEventView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		CommitDiscardWrapperComponent<?> editComponent = ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid());
+		CommitDiscardWrapperComponent<?> editComponent =
+			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), isEventEditAllowed());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

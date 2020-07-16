@@ -20,14 +20,17 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class EventDto extends EntityDto {
+public class EventDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 
@@ -55,6 +58,7 @@ public class EventDto extends EntityDto {
 	@Required
 	private EventStatus eventStatus;
 	@Required
+	@SensitiveData
 	private String eventDesc;
 	private Date eventDate;
 	@Required
@@ -63,9 +67,13 @@ public class EventDto extends EntityDto {
 	private UserReferenceDto reportingUser;
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
+	@SensitiveData
 	private String srcFirstName;
+	@SensitiveData
 	private String srcLastName;
+	@SensitiveData
 	private String srcTelNo;
+	@SensitiveData
 	private String srcEmail;
 	private Disease disease;
 	private String diseaseDetails;
@@ -73,10 +81,11 @@ public class EventDto extends EntityDto {
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
-	@SensitiveData
 	private Float reportLatLonAccuracy;
 
 	public static EventDto build() {
