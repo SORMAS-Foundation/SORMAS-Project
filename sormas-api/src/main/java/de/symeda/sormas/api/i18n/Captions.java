@@ -437,8 +437,8 @@ public interface Captions {
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
-	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String convertContactToCase = "convertContactToCase";
+	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
 	String dashboardApplyCustomFilter = "dashboardApplyCustomFilter";
