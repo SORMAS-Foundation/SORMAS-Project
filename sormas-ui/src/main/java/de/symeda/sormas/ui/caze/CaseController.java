@@ -132,17 +132,22 @@ public class CaseController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, null, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromContact(ContactDto contact) {
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null);
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+	}
+
+	public void createFromUnrelatedContact(ContactDto contact, Disease disease) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, disease);
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -277,9 +282,11 @@ public class CaseController {
 
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(
 		ContactDto convertedContact,
-		EventParticipantDto convertedEventParticipant) {
+		EventParticipantDto convertedEventParticipant,
+		Disease unrelatedDisease) {
 
 		assert (convertedContact == null || convertedEventParticipant == null);
+		assert (unrelatedDisease == null || convertedEventParticipant == null);
 
 		CaseCreateForm createForm = new CaseCreateForm();
 
@@ -294,7 +301,11 @@ public class CaseController {
 				symptoms = null;
 			}
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
-			caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+			if (unrelatedDisease == null) {
+				caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+			} else {
+				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, lastVisit, unrelatedDisease);
+			}
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
 			symptoms = null;
