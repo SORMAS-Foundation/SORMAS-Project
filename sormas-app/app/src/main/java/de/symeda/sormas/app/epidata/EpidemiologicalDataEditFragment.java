@@ -58,6 +58,7 @@ import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.isEditAllowed;
 
 public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, AbstractDomainObject> {
 
@@ -81,8 +82,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			AppFieldAccessCheckers
-				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			AppFieldAccessCheckers.withCheckers(isEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods

@@ -1441,7 +1441,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 			case 213:
-				currentVersion = 207;
+				currentVersion = 213;
 				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pseudonymized boolean;");
 				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN pseudonymized boolean;");
 				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN pseudonymized boolean;");
@@ -1457,9 +1457,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Treatment.class).executeRaw("ALTER TABLE treatment ADD COLUMN pseudonymized boolean;");
 				getDao(Prescription.class).executeRaw("ALTER TABLE prescription ADD COLUMN pseudonymized boolean;");
 				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN pseudonymized boolean;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN pseudonymized boolean;");
+				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN pseudonymized boolean;");
 
 			case 214:
-				currentVersion = 208;
+				currentVersion = 214;
 
 				db.execSQL("ALTER TABLE visits RENAME TO visits_old;");
 				TableUtils.createTable(connectionSource, Visit.class);

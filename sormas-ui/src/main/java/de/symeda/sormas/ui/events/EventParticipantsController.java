@@ -93,9 +93,8 @@ public class EventParticipantsController {
 	public void createEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-		EventParticipantEditForm editForm = new EventParticipantEditForm(
-			FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()),
-			FacadeProvider.getEventFacade().isEventEditAllowed(eventParticipant.getEvent().getUuid()));
+		EventParticipantEditForm editForm =
+			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), true);
 		editForm.setValue(eventParticipant);
 
 		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(editForm, doneConsumer);
@@ -141,8 +140,9 @@ public class EventParticipantsController {
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		final boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(eventParticipant.getEvent().getUuid());
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(event);
+		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, isEventEditAllowed);
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 

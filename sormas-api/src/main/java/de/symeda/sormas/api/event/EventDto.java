@@ -88,8 +88,11 @@ public class EventDto extends PseudonymizableDto {
 	private String srcTelNo;
 	@SensitiveData
 	private String srcEmail;
+	@SensitiveData
 	private String srcMediaWebsite;
+	@SensitiveData
 	private String srcMediaName;
+	@SensitiveData
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;

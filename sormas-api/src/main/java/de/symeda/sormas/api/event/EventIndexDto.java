@@ -60,7 +60,9 @@ public class EventIndexDto implements Serializable {
 	private String srcLastName;
 	@SensitiveData
 	private String srcTelNo;
+	@SensitiveData
 	private String srcMediaWebsite;
+	@SensitiveData
 	private String srcMediaName;
 	private Date reportDateTime;
 	private EventJurisdictionDto jurisdiction;

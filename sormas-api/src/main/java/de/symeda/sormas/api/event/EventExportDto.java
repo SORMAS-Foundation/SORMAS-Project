@@ -20,8 +20,8 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EventExportDto implements Serializable {
 
@@ -52,9 +52,13 @@ public class EventExportDto implements Serializable {
 	private String srcLastName;
 	@SensitiveData
 	private String srcTelNo;
+	@SensitiveData
 	private String srcEmail;
+	@SensitiveData
 	private String srcMediaWebsite;
+	@SensitiveData
 	private String srcMediaName;
+	@SensitiveData
 	private String srcMediaDetails;
 	private Date reportDateTime;
 
