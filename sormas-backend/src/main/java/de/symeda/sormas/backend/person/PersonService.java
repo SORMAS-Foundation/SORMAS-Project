@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -224,6 +225,10 @@ public class PersonService extends AbstractAdoService<Person> {
 	}
 
 	public List<Long> getInJurisdictionIDs(final List<Person> selectedPersons) {
+		if (selectedPersons.size() == 0) {
+			return Collections.emptyList();
+		}
+
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Long> inJurisdictionQuery = cb.createQuery(Long.class);
 		final Root<Person> personRoot = inJurisdictionQuery.from(Person.class);
