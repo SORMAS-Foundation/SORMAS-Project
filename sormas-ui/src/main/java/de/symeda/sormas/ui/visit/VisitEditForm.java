@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Supplier;
 
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.OptionGroup;
@@ -45,7 +46,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4265377973842591202L;
 
 	private static final String HTML_LAYOUT =
 		fluidRowLocs(VisitDto.VISIT_STATUS) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
@@ -112,68 +113,55 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
 
 		if (contact != null) {
-			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {
-
-				private static final long serialVersionUID = -7857409200401637094L;
-
-				@Override
-				public void validate(Object value) throws InvalidValueException {
-					Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-					Date contactReferenceDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
-					if (visitDateTime.before(contactReferenceDate)
-						&& DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-						if (contact.getLastContactDate() != null) {
-							throw new InvalidValueException(
-								I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-						} else {
-							throw new InvalidValueException(
-								I18nProperties.getValidationError(Validations.visitBeforeContactReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-						}
-					}
-					if (contact.getFollowUpUntil() != null
-						&& visitDateTime.after(contact.getFollowUpUntil())
-						&& DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-						throw new InvalidValueException(
-							I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-					}
-				}
-			});
+			addDateValidation(
+					() -> ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()),
+					() -> contact.getLastContactDate(),
+					() -> contact.getFollowUpUntil(),
+					Validations.visitBeforeLastContactDate,
+					Validations.visitBeforeContactReport,
+					Validations.visitAfterFollowUp);
 		}
 
-
 		if (caze != null) {
-			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {
-
-				private static final long serialVersionUID = 6720804629542567720L;
-
-				@Override
-				public void validate(Object value) throws InvalidValueException {
-					Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-					Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
-					if (visitDateTime.before(startDate)
-							&& DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-						if (caze.getSymptoms().getOnsetDate() != null) {
-							throw new InvalidValueException(
-									I18nProperties.getValidationError(Validations.visitBeforeSymptomsOnSet, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-						} else {
-							throw new InvalidValueException(
-									I18nProperties.getValidationError(Validations.visitBeforeCaseReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-						}
-					}
-					Date endDate = CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil());
-					if (endDate != null
-							&& visitDateTime.after(endDate)
-							&& DateHelper.getDaysBetween(endDate, visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-						throw new InvalidValueException(
-								I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-					}
-				}
-			});
+			addDateValidation(
+				() -> CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+				() -> caze.getSymptoms().getOnsetDate(),
+				() -> CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()),
+				Validations.visitBeforeSymptomsOnSet,
+				Validations.visitBeforeCaseReport,
+				Validations.visitAfterFollowUp);
 		}
 
 		symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
 
 		FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE), Arrays.asList(VisitDto.SYMPTOMS), true);
+	}
+
+	private void addDateValidation(
+		Supplier<Date> startDateSupplier,
+		Supplier<Date> firstStartDatePart,
+		Supplier<Date> endDateSupplier,
+		String errorMessageDateTooEarly,
+		String errorMessageDateTooEarlyFirstPart,
+		String errorMessageDateTooLate) {
+
+		getField(VisitDto.VISIT_DATE_TIME).addValidator((Validator) value -> {
+			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
+			Date startDate = startDateSupplier.get();
+			if (visitDateTime.before(startDate) && DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+				if (firstStartDatePart.get() != null) {
+					throw new Validator.InvalidValueException(
+						I18nProperties.getValidationError(errorMessageDateTooEarlyFirstPart, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+				} else {
+					throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooEarly, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+				}
+			}
+			Date endDate = endDateSupplier.get();
+			if (endDate != null && visitDateTime.after(endDate) && DateHelper.getDaysBetween(endDate, visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+				throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooLate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+			}
+		});
+
 	}
 
 	@Override
