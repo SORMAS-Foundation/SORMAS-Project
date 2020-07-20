@@ -299,10 +299,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
-	private boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
-	}
-
 	private HorizontalLayout buildWeekAndDateFilter() {
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 

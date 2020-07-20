@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -127,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 213;
+	public static final int DATABASE_VERSION = 214;
 
 	private static DatabaseHelper instance = null;
 
@@ -1440,6 +1441,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+
+				getDao(Event.class).executeRaw("UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+			case 213:
+					currentVersion = 213;
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicalConfirmation varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN epidemiologicalConfirmation varchar(255);");
+					getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN laboratoryDiagnosticConfirmation varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;

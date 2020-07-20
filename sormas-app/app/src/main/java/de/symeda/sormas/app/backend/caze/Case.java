@@ -118,6 +118,13 @@ public class Case extends PseudonymizableAdo {
 	private String classificationComment;
 
 	@Enumerated(EnumType.STRING)
+	private YesNoUnknown clinicalConfirmation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown epidemiologicalConfirmation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
+
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private InvestigationStatus investigationStatus;
 
@@ -665,6 +672,30 @@ public class Case extends PseudonymizableAdo {
 
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
+	}
+
+	public YesNoUnknown getClinicalConfirmation() {
+		return clinicalConfirmation;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	public YesNoUnknown getEpidemiologicalConfirmation() {
+		return epidemiologicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() {
+		return laboratoryDiagnosticConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 	}
 
 	@Override
