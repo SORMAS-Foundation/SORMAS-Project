@@ -140,4 +140,6 @@ public interface CaseFacade {
 	Boolean isCaseEditAllowed(String caseUuid);
 
 	boolean exists(String uuid);
+
+	boolean hasPositiveLabResult(String caseUuid);
 }

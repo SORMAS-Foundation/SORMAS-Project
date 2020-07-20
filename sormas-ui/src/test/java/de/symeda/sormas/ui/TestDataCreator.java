@@ -306,14 +306,14 @@ public class TestDataCreator {
 	}
 
 	public PathogenTestDto createPathogenTest(
-		SampleReferenceDto sample,
-		PathogenTestType testType,
-		Date testDateTime,
-		FacilityReferenceDto lab,
-		UserReferenceDto labUser,
-		PathogenTestResultType testResult,
-		String testResultText,
-		boolean verified) {
+			SampleReferenceDto sample,
+			PathogenTestType testType,
+			Date testDateTime,
+			FacilityReferenceDto lab,
+			UserReferenceDto labUser,
+			PathogenTestResultType testResult,
+			String testResultText,
+			boolean verified, Disease disease) {
 
 		PathogenTestDto sampleTest = PathogenTestDto.build(sample, labUser);
 		sampleTest.setTestType(testType);
@@ -322,6 +322,7 @@ public class TestDataCreator {
 		sampleTest.setTestResult(testResult);
 		sampleTest.setTestResultText(testResultText);
 		sampleTest.setTestResultVerified(verified);
+		sampleTest.setTestedDisease(disease);
 
 		sampleTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(sampleTest);
 

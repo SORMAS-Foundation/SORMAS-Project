@@ -109,6 +109,7 @@ import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -566,8 +567,8 @@ public class CaseFacadeEjb implements CaseFacade {
 					.where(hospitalizationIdsExpr.in(resultList.stream().map(CaseExportDto::getHospitalizationId).collect(Collectors.toList())));
 				prevHospsCq.orderBy(cb.asc(prevHospsRoot.get(PreviousHospitalization.ADMISSION_DATE)));
 				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				firstPreviousHospitalizations = prevHospsList.stream()
-					.collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> {
+				firstPreviousHospitalizations =
+					prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> {
 						return id1;
 					}));
 			}
@@ -2483,6 +2484,25 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return caseService.exists(uuid);
+	}
+
+	@Override
+	public boolean hasPositiveLabResult(String caseUuid) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		final CriteriaQuery<Sample> query = cb.createQuery(Sample.class);
+		final Root<Sample> sampleRoot = query.from(Sample.class);
+
+		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
+
+		query.select(sampleRoot);
+		final Predicate casePredicate = cb.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
+		final Predicate testPositivityPredicate = cb.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
+		query.where(cb.and(casePredicate, testPositivityPredicate));
+
+		final TypedQuery<Sample> typedQuery = em.createQuery(query);
+
+		return typedQuery.getResultList().size() > 0;
 	}
 
 	@LocalBean

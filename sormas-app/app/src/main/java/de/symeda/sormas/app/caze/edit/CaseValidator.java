@@ -15,28 +15,23 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
 import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.sample.Sample;
-import de.symeda.sormas.app.backend.sample.SampleDtoHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
@@ -52,14 +47,9 @@ final class CaseValidator {
 		if (ConfigProvider.isGermanServer()) {
 			final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 			final CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
-			final SampleDtoHelper sampleDtoHelper = new SampleDtoHelper();
-			final List<Sample> samples = DatabaseHelper.getSampleDao().queryByCase(caze);
-			final List<SampleDto> sampleDtos = new ArrayList<>();
-			for (Sample sample : samples) {
-				sampleDtos.add(sampleDtoHelper.adoToDto(sample));
-			}
+			final boolean hasPositiveTestResult = DatabaseHelper.getSampleDao().hasPositiveTestResult(caze);
 			final boolean validCaseClassification =
-				GermanCaseClassificationValidator.isValidGermanCaseClassification(caseClassification, caseDataDto, sampleDtos);
+				GermanCaseClassificationValidator.isValidGermanCaseClassification(caseClassification, caseDataDto, hasPositiveTestResult);
 
 			if (validCaseClassification) {
 				contentBinding.caseDataCaseClassification.disableErrorState();

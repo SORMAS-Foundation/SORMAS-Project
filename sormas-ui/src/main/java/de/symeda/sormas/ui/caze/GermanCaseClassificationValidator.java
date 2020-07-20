@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.util.Collections;
-
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -36,8 +34,7 @@ public class GermanCaseClassificationValidator extends AbstractValidator<CaseCla
 		return de.symeda.sormas.api.caze.GermanCaseClassificationValidator.isValidGermanCaseClassification(
 			caseClassification,
 			FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid),
-			FacadeProvider.getSampleFacade()
-				.getByCaseUuids(Collections.singletonList(FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid).getUuid())));
+			FacadeProvider.getCaseFacade().hasPositiveLabResult(caseUuid));
 	}
 
 	@Override

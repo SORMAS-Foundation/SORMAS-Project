@@ -15,17 +15,16 @@
 
 package de.symeda.sormas.api.caze;
 
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 
 public class GermanCaseClassificationValidator {
 
-	public static boolean isValidGermanCaseClassification(CaseClassification caseClassification, CaseDataDto caseDataDto, List<SampleDto> samplesOfCase) {
+	public static boolean isValidGermanCaseClassification(
+		CaseClassification caseClassification,
+		CaseDataDto caseDataDto,
+		Boolean hasPositiveLabResult) {
 		switch (caseClassification) {
 
 		case NOT_CLASSIFIED:
@@ -37,11 +36,11 @@ public class GermanCaseClassificationValidator {
 			return hasCoronavirusSymptom(caseDataDto);
 		}
 		case CONFIRMED: {
-			return hasPositiveLabResult(samplesOfCase) && hasCoronavirusSymptom(caseDataDto);
+			return hasPositiveLabResult && hasCoronavirusSymptom(caseDataDto);
 		}
 		case CONFIRMED_NO_SYMPTOMS: {
 			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return hasPositiveLabResult(samplesOfCase)
+			return hasPositiveLabResult
 				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
 				&& (SymptomsHelper.allSymptomsFalse(symptoms)
 					|| SymptomsHelper.atLeastOnSymptomTrue(
@@ -58,18 +57,7 @@ public class GermanCaseClassificationValidator {
 		}
 		case CONFIRMED_UNKNOWN_SYMPTOMS:
 			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return hasPositiveLabResult(samplesOfCase)
-				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
-				&& SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
-		}
-		return false;
-	}
-
-	private static boolean hasPositiveLabResult(List<SampleDto> samplesOfCase) {
-		for (SampleDto sampleDto : samplesOfCase) {
-			if (sampleDto.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-				return true;
-			}
+			return hasPositiveLabResult && caseDataDto.getDisease() == Disease.CORONAVIRUS && SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
 		}
 		return false;
 	}
