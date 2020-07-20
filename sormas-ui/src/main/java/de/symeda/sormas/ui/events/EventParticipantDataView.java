@@ -123,7 +123,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
 				sampleLocLayout.addComponent(
 					new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
+						VaadinIcons.INFO_CIRCLE.getHtml() + " "
+							+ I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
 						ContentMode.HTML));
 			}
 

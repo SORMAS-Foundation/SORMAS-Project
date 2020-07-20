@@ -116,6 +116,7 @@ public interface Strings {
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityBurial = "entityBurial";
 	String entityCampaign = "entityCampaign";
+	String entityCampaignDataForm = "entityCampaignDataForm";
 	String entityCampaigns = "entityCampaigns";
 	String entityCase = "entityCase";
 	String entityCases = "entityCases";
@@ -374,6 +375,7 @@ public interface Strings {
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
+	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomCaseExport = "infoCustomCaseExport";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -500,8 +502,8 @@ public interface Strings {
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
-	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
+	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
@@ -729,5 +731,4 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
-	String entityCampaignDataForm = "entityCampaignDataForm";
 }

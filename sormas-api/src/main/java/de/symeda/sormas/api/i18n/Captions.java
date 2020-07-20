@@ -881,6 +881,7 @@ public interface Captions {
 	String menu = "menu";
 	String moreActions = "moreActions";
 	String name = "name";
+	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
@@ -888,6 +889,7 @@ public interface Captions {
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
 	String outbreakNormal = "outbreakNormal";
 	String outbreakOutbreak = "outbreakOutbreak";
+	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
