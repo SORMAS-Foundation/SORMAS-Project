@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,10 +52,12 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +75,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -96,6 +100,7 @@ import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -134,6 +139,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
@@ -2583,6 +2589,120 @@ public class CaseFacadeEjb implements CaseFacade {
 		final TypedQuery<Sample> typedQuery = em.createQuery(query);
 
 		return typedQuery.getResultList().size() > 0;
+	}
+
+	@Override
+	public List<CaseFollowUpDto> getCaseFollowUpList(CaseCriteria caseCriteria, Date referenceDate, int interval, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		Date end = DateHelper.getEndOfDay(referenceDate);
+		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		CaseJoins joins = new CaseJoins(caze);
+
+		final Stream<Selection<?>> select = Stream.of(
+			caze.get(Case.UUID),
+			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			caze.get(Case.REPORT_DATE),
+			caze.join(Case.SYMPTOMS).get(Symptoms.ONSET_DATE),
+			caze.get(Case.FOLLOW_UP_UNTIL),
+			caze.get(Case.DISEASE));
+		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+					case FollowUpDto.UUID:
+					case FollowUpDto.REPORT_DATE:
+					case FollowUpDto.FOLLOW_UP_UNTIL:
+						expression = caze.get(sortProperty.propertyName);
+						break;
+					case FollowUpDto.PERSON:
+						expression = joins.getPerson().get(Person.FIRST_NAME);
+						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+						expression = joins.getPerson().get(Person.LAST_NAME);
+						break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(caze.get(Case.CHANGE_DATE)));
+		}
+
+		List<CaseFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
+		if (!resultList.isEmpty()) {
+
+			List<String> caseUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
+
+			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
+			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+			Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+			visitsCq.where(
+					AbstractAdoService.and(
+							cb,
+							caze.get(AbstractDomainObject.UUID).in(caseUuids),
+							cb.isNotEmpty(visitsCqRoot.get(Case.VISITS)),
+							cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end)));
+			visitsCq.multiselect(
+					visitsCqRoot.get(Case.UUID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+
+			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
+			Map<String, CaseFollowUpDto> resultMap =
+					resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
+			resultMap.values().stream().forEach(contactFollowUpDto -> {
+				contactFollowUpDto.initVisitSize(interval + 1);
+
+//				pseudonymizationService.pseudonymizeDto(
+//					PersonReferenceDto.class,
+//					contactFollowUpDto.getPerson(),
+//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
+//					null);
+			});
+			visits.stream().forEach(v -> {
+				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
+				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
+			});
+		}
+
+		return resultList;
+	}
+
+	// TODO (xca): refactor
+	private VisitResult getVisitResult(VisitStatus status, boolean symptomatic) {
+
+		if (VisitStatus.UNCOOPERATIVE.equals(status)) {
+			return VisitResult.UNCOOPERATIVE;
+		}
+		if (VisitStatus.UNAVAILABLE.equals(status)) {
+			return VisitResult.UNAVAILABLE;
+		}
+		if (symptomatic) {
+			return VisitResult.SYMPTOMATIC;
+		}
+		return VisitResult.NOT_SYMPTOMATIC;
 	}
 
 	@LocalBean

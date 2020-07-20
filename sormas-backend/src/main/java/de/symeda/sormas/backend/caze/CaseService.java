@@ -481,8 +481,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
 		}
-		if (caseCriteria.getFollowUpUntilTo() != null) {
+		if (caseCriteria.getFollowUpUntilFrom() != null && caseCriteria.getFollowUpUntilTo() != null) {
+			filter = and(
+					cb,
+					filter,
+					cb.between(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom(), caseCriteria.getFollowUpUntilTo()));
+		} else if (caseCriteria.getFollowUpUntilFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom()));
+		} else if (caseCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
+		}
+		if (caseCriteria.getReportDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();

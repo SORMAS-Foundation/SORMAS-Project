@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -24,10 +25,12 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -227,6 +230,17 @@ public class CaseListCriteriaBuilder {
 		default:
 			return getIndexOrders(sortProperty, caze, joins);
 		}
+	}
+
+	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins joins) {
+
+		return Stream.of(
+				joins.getReportingUser().get(User.UUID),
+				joins.getRegion().get(Region.UUID),
+				joins.getDistrict().get(District.UUID),
+				joins.getCommunity().get(Community.UUID),
+				joins.getFacility().get(Facility.UUID),
+				joins.getPointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	private interface OrderExpressionProvider {

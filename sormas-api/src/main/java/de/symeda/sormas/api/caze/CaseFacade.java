@@ -27,6 +27,8 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -142,4 +144,12 @@ public interface CaseFacade {
 	boolean exists(String uuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
+
+	List<CaseFollowUpDto> getCaseFollowUpList(
+			CaseCriteria caseCriteria,
+			Date referenceDate,
+			int interval,
+			Integer first,
+			Integer max,
+			List<SortProperty> sortProperties);
 }

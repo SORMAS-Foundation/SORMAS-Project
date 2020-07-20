@@ -295,6 +295,7 @@ public interface Captions {
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -314,12 +315,14 @@ public interface Captions {
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
 	String caseLineListing = "caseLineListing";
 	String caseMergeDuplicates = "caseMergeDuplicates";
+	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
 	String casePickCase = "casePickCase";
+	String casePlusDays = "casePlusDays";
 	String CasePreviousHospitalization = "CasePreviousHospitalization";
 	String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
