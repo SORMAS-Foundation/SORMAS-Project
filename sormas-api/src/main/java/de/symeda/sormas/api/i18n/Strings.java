@@ -498,10 +498,12 @@ public interface Strings {
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
+	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";
@@ -725,4 +727,5 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
+	String entityCampaignDataForm = "entityCampaignDataForm";
 }

@@ -15,11 +15,18 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+
+import static com.vaadin.ui.Notification.Type.*;
 
 public class CampaignFormDataView extends AbstractCampaignDataView {
 
@@ -33,16 +40,28 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 	@Override
 	protected void initView(String params) {
-		setHeightUndefined();
+		VerticalLayout container = new VerticalLayout();
+		container.setWidth(100, Unit.PERCENTAGE);
+		container.setMargin(true);
+		setSubComponent(container);
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
-		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
-			ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignForm(), null, null);
+		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = ControllerProvider.getCampaignController()
+			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignForm(), true, true, () -> {
+				Notification.show(
+					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignForm().toString()),
+					TRAY_NOTIFICATION);
+			}, null);
 		component.setMargin(false);
-		component.setWidth(100, Unit.PERCENTAGE);
 		component.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		component.addStyleName(CssStyles.MAIN_COMPONENT);
+		component.setHeightUndefined();
+		component.addStyleName(CssStyles.ROOT_COMPONENT);
+		component.setWidth(100, Unit.PERCENTAGE);
 
-		addComponent(component);
+		container.addComponent(component);
+
+		hideInfoLabel();
+
+		getViewTitleLabel().setValue(campaignFormData.getCampaignForm().toString());
 	}
 }

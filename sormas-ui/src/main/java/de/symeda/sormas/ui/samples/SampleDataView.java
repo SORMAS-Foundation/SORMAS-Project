@@ -140,6 +140,8 @@ public class SampleDataView extends AbstractSampleView {
 				if (pathogenTestDto.getTestResult() != componentSample.getPathogenTestResult()) {
 					ControllerProvider.getSampleController()
 						.showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
+				} else {
+					callback.run();
 				}
 			} else {
 				callback.run();

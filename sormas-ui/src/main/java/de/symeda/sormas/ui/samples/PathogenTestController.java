@@ -34,7 +34,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -157,7 +160,33 @@ public class PathogenTestController {
 			}
 		} else if (associatedContact != null) {
 			facade.savePathogenTest(dto);
-		} else if (associatedEventParticipant != null) {
+			final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+			Runnable contactConvertToCaseCallback = () -> {
+				if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult())
+					&& dto.getTestResultVerified().booleanValue() == true
+					&& ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())
+					&& !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
+					if (contact.getDisease() != null && contact.getDisease().equals(dto.getTestedDisease())) {
+						showConvertContactToCaseDialog(contact);
+						if (ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
+							contact.setContactClassification(ContactClassification.CONFIRMED);
+						}
+					} else if (contact.getDisease() != null) {
+						showCreateContactCaseDialog(contact, dto.getTestedDisease());
+					}
+
+				}
+
+			};
+
+			if (onSavedPathogenTest != null) {
+				onSavedPathogenTest.accept(dto, () -> contactConvertToCaseCallback.run());
+			} else {
+				contactConvertToCaseCallback.run();
+			}
+		} else if (associatedEventParticipant != null)
+
+		{
 			facade.savePathogenTest(dto);
 			final EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
@@ -186,6 +215,34 @@ public class PathogenTestController {
 			e -> {
 				if (e.booleanValue() == true) {
 					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+				}
+			});
+	}
+
+	public void showConvertContactToCaseDialog(ContactDto contact) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.convertContactToCase),
+			new Label(I18nProperties.getString(Strings.messageConvertContactToCase)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			e -> {
+				if (e.booleanValue() == true) {
+					ControllerProvider.getCaseController().createFromContact(contact);
+				}
+			});
+	}
+
+	public void showCreateContactCaseDialog(ContactDto contact, Disease disease) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.contactCreateContactCase),
+			new Label(I18nProperties.getString(Strings.messageCreateContactCase)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			e -> {
+				if (e.booleanValue() == true) {
+					ControllerProvider.getCaseController().createFromUnrelatedContact(contact, disease);
 				}
 			});
 	}

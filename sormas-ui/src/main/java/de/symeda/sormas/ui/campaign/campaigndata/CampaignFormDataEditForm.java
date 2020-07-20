@@ -19,6 +19,7 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormDto;
@@ -36,7 +37,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 	public static final String CAMPAIGN_FORM_LOC = "campaignFormLoc";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.CAMPAIGN, "", "")
+	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, "")
 		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)
 		+ loc(CAMPAIGN_FORM_LOC);
 
@@ -60,7 +61,16 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
-		setRequired(true, CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY);
+
+		addField(CampaignFormDataDto.FORM_DATE, DateField.class);
+
+		setRequired(
+			true,
+			CampaignFormDataDto.CAMPAIGN,
+			CampaignFormDataDto.FORM_DATE,
+			CampaignFormDataDto.REGION,
+			CampaignFormDataDto.DISTRICT,
+			CampaignFormDataDto.COMMUNITY);
 
 		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
 		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
@@ -108,6 +118,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		}
 
 		campaignFormBuilder.validateFields();
+	}
+
+	public void resetFormValues() {
+		campaignFormBuilder.resetFormValues();
 	}
 
 	private void buildCampaignForm(CampaignFormDataDto campaignFormData) {

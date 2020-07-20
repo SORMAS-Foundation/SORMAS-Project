@@ -20,6 +20,8 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import de.symeda.sormas.api.utils.SortProperty;
+
 import javax.ejb.Remote;
 import java.util.List;
 
@@ -39,4 +41,8 @@ public interface CampaignFormDataFacade {
 	boolean exists(String uuid);
 
 	CampaignFormDataReferenceDto getReferenceByUuid(String uuid);
+
+	List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	long count(CampaignFormDataCriteria criteria);
 }

@@ -91,6 +91,45 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
+
+
+		final String passportNr = "passportNr";
+		final String otherPassportNr = "otherPassportNr";
+		final String healthId = "healthId";
+		final String otherHealthId = "otherHealthId";
+		PersonDto person8 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, passportNr, healthId);
+		PersonDto person9 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1, null, otherHealthId);
+		PersonDto person10 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1970, 1, 1, passportNr, null);
+		PersonDto person11 = creator.createPerson("John", "Doe", Sex.MALE, 1970, 1, 1, otherPassportNr, null);
+		creator.createCase(user.toReference(), person8.toReference(), rdcf);
+		creator.createCase(user.toReference(), person9.toReference(), rdcf);
+		creator.createCase(user.toReference(), person10.toReference(), rdcf);
+		creator.createCase(user.toReference(), person11.toReference(), rdcf);
+
+		criteria.sex(Sex.MALE).birthdateYYYY(1980);
+		criteria.passportNumber(passportNr);
+		matchingUuids =
+				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		assertThat(matchingUuids, hasSize(6));
+		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid(), person9.getUuid(), person10.getUuid()));
+
+		criteria.nationalHealthId(healthId).passportNumber(null);
+		matchingUuids =
+				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		assertThat(matchingUuids, hasSize(4));
+		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid()));
+
+		criteria.nationalHealthId(otherHealthId);
+		matchingUuids =
+				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		assertThat(matchingUuids, hasSize(4));
+		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid()));
+
+		criteria.passportNumber(otherPassportNr);
+		matchingUuids =
+				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		assertThat(matchingUuids, hasSize(5));
+		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
 	}
 
 	@Test

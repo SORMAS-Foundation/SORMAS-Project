@@ -66,7 +66,8 @@ public class CampaignFormBuilder {
 		List<CampaignFormTranslations> translations) {
 		this.formElements = formElements;
 		if (formValues != null) {
-			this.formValuesMap = formValues.stream().collect(Collectors.toMap(CampaignFormValue::getId, CampaignFormValue::getValue));
+			this.formValuesMap = new HashMap<>();
+			formValues.forEach(formValue -> formValuesMap.put(formValue.getId(), formValue.getValue()));
 		} else {
 			this.formValuesMap = new HashMap<>();
 		}
@@ -274,7 +275,7 @@ public class CampaignFormBuilder {
 			((TextField) field).setValue(value == null ? null : (String) value);
 			break;
 		case NUMBER:
-			((TextField) field).setValue(value == null ? null : ((Integer) value).toString());
+			((TextField) field).setValue(value == null ? null : value.toString());
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
@@ -333,6 +334,13 @@ public class CampaignFormBuilder {
 	public void validateFields() throws Validator.InvalidValueException {
 		fields.forEach((key, value) -> {
 			value.validate();
+		});
+	}
+
+	public void resetFormValues() {
+		fields.keySet().forEach(key -> {
+			Field<?> field = fields.get(key);
+			((Field<Object>) field).setValue(formValuesMap.get(key));
 		});
 	}
 
