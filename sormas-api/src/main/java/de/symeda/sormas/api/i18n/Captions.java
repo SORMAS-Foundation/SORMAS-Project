@@ -224,6 +224,8 @@ public interface Captions {
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
+	String caseEvents = "caseEvents";
+	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
 	String CaseExport_address = "CaseExport.address";
 	String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
@@ -720,6 +722,9 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
+	String linkEventToCase = "linkEventToCase";
+	String eventNoEventLinkedToCase = "Event.noEventLinkedToCase";
+	String eventMultiDay = "multiDay";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -732,6 +737,7 @@ public interface Captions {
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
+	String eventSelect = "eventSelect";
 	String export = "export";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
