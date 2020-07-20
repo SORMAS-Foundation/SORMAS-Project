@@ -20,6 +20,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -45,21 +46,21 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
 		setColumns(
-			ContactFollowUpDto.UUID,
-			ContactFollowUpDto.PERSON,
+			FollowUpDto.UUID,
+			FollowUpDto.PERSON,
 			ContactFollowUpDto.CONTACT_OFFICER,
 			ContactFollowUpDto.LAST_CONTACT_DATE,
-			ContactFollowUpDto.REPORT_DATE_TIME,
-			ContactFollowUpDto.FOLLOW_UP_UNTIL);
+			FollowUpDto.REPORT_DATE,
+			FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.REPORT_DATE_TIME))
+		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.FOLLOW_UP_UNTIL))
+		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
@@ -91,7 +92,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 				return getVisitResultCssStyle(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
 					item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
@@ -99,7 +100,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 				return getVisitResultDescription(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
 					item.getFollowUpUntil());
 			});
 		}

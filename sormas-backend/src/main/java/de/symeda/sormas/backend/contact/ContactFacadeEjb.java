@@ -53,6 +53,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.followup.FollowUpDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -655,13 +656,13 @@ public class ContactFacadeEjb implements ContactFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case ContactFollowUpDto.UUID:
+				case FollowUpDto.UUID:
 				case ContactFollowUpDto.LAST_CONTACT_DATE:
-				case ContactFollowUpDto.REPORT_DATE_TIME:
-				case ContactFollowUpDto.FOLLOW_UP_UNTIL:
+				case FollowUpDto.REPORT_DATE:
+				case FollowUpDto.FOLLOW_UP_UNTIL:
 					expression = contact.get(sortProperty.propertyName);
 					break;
-				case ContactFollowUpDto.PERSON:
+				case FollowUpDto.PERSON:
 					expression = joins.getPerson().get(Person.FIRST_NAME);
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = joins.getPerson().get(Person.LAST_NAME);

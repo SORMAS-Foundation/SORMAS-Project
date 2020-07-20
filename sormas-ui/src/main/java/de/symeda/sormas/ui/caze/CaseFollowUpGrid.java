@@ -37,6 +37,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseLogic;
+import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -61,10 +62,10 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
 		setColumns(
-				CaseFollowUpDto.UUID,
-				CaseFollowUpDto.PERSON,
-				CaseFollowUpDto.REPORT_DATE,
-				CaseFollowUpDto.FOLLOW_UP_UNTIL);
+				FollowUpDto.UUID,
+				FollowUpDto.PERSON,
+				FollowUpDto.REPORT_DATE,
+				FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
@@ -75,7 +76,7 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CaseFollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(FollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 
 		addItemClickListener(e -> {
