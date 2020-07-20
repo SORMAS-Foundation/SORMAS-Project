@@ -28,13 +28,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class EventListEntry extends HorizontalLayout {
 
@@ -73,13 +74,22 @@ public class EventListEntry extends HorizontalLayout {
 			topLeftLayout.addComponent(eventDescriptionLabel);
 
 			Label materialLabel = new Label(DataHelper.toStringNullable(event.getEventLocation().getCaption()));
-			CssStyles.style(materialLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
+			CssStyles.style(materialLabel);
 			topLeftLayout.addComponent(materialLabel);
 
-			Label dateTimeLabel = new Label(
-				I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.START_DATE) + ": "
-					+ DateFormatHelper.formatDate(event.getStartDate()));
-			topLeftLayout.addComponent(dateTimeLabel);
+			Language userLanguage = I18nProperties.getUserLanguage();
+			String eventDate = null;
+			if (event.getEndDate() == null) {
+				eventDate = DateHelper.formatLocalDate(event.getStartDate(), userLanguage);
+			} else {
+				eventDate = String.format(
+					"%s - %s",
+					DateHelper.formatLocalDate(event.getStartDate(), userLanguage),
+					DateHelper.formatLocalDate(event.getEndDate(), userLanguage));
+			}
+			Label eventDateLabel = new Label(I18nProperties.getCaption(Captions.singleDayEventDate) + ": " + eventDate);
+
+			topLeftLayout.addComponent(eventDateLabel);
 		}
 		topLayout.addComponent(topLeftLayout);
 	}

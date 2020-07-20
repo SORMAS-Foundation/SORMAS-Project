@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -52,7 +54,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 	private void buildGrid() {
 		setSizeFull();
 		setSelectionMode(SelectionMode.SINGLE);
-		setHeight(300, Unit.PIXELS);
+		setHeightMode(HeightMode.ROW);
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
@@ -89,6 +91,11 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 			query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(com.vaadin.ui.Grid.SelectionMode.NONE);
+
+		EventSelectionGrid tempGrid = this;
+		dataProvider.addDataProviderListener((DataProviderListener<EventIndexDto>) dataChangeEvent -> {
+			tempGrid.setHeightByRows(Math.min(tempGrid.getItemCount(), 5));
+		});
 	}
 
 	public void setCriteria(EventCriteria criteria) {
@@ -99,5 +106,4 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 	public ConfigurableFilterDataProvider<EventIndexDto, Void, EventCriteria> getFilteredDataProvider() {
 		return (ConfigurableFilterDataProvider<EventIndexDto, Void, EventCriteria>) super.getDataProvider();
 	}
-
 }

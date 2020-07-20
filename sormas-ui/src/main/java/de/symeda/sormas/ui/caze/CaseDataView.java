@@ -108,18 +108,20 @@ public class CaseDataView extends AbstractCaseView {
 			sampleLocLayout.setSpacing(false);
 
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
-			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
+			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
 			sampleLocLayout.addComponent(sampleList);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				sampleLocLayout.addComponent(
-					new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
-						ContentMode.HTML));
+
+				Label infoSample = new Label(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
+					ContentMode.HTML);
+				infoSample.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
+
+				sampleLocLayout.addComponent(infoSample);
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
-
 		}
 
 		VerticalLayout eventLayout = new VerticalLayout();

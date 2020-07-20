@@ -55,7 +55,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public static final String CREATE_EVENT = "createEvent";
 
 	private CaseDataDto caseReference;
-	private String infoText = Strings.infoPickOrCreateEventForCase;
 	private VerticalLayout mainLayout;
 	private EventSelectionGrid eventGrid;
 
@@ -77,7 +76,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	}
 
 	private void addInfoComponent() {
-		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(infoText)));
+		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoPickOrCreateEventForCase)));
 	}
 
 	private void addSelectEventRadioGroup() {
@@ -146,9 +145,15 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 		addInfoComponent();
 
-		mainLayout.addComponent(createFilterBar());
-		mainLayout.addComponent(buildWeekAndDateFilter());
+		VerticalLayout filterLayout = new VerticalLayout();
+		filterLayout.setSpacing(false);
+		filterLayout.setMargin(false);
+		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
+		filterLayout.addComponent(createFilterBar());
+		filterLayout.addComponent(buildWeekAndDateFilter());
+
+		mainLayout.addComponent(filterLayout);
 		addSelectEventRadioGroup();
 		mainLayout.addComponent(eventGrid);
 		addCreateEventRadioGroup();
