@@ -155,6 +155,8 @@ public class ContactController {
 				final PersonDto person = PersonDto.build();
 				person.setFirstName(createForm.getPersonFirstName());
 				person.setLastName(createForm.getPersonLastName());
+				person.setNationalHealthId(createForm.getNationalHealthId());
+				person.setPassportNumber(createForm.getPassportNumber());
 				person.setBirthdateYYYY(createForm.getBirthdateYYYY());
 				person.setBirthdateMM(createForm.getBirthdateMM());
 				person.setBirthdateDD(createForm.getBirthdateDD());
