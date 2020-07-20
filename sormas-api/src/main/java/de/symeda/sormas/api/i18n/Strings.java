@@ -320,6 +320,7 @@ public interface Strings {
 	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
+	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
@@ -407,6 +408,7 @@ public interface Strings {
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
+	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
