@@ -334,6 +334,12 @@ public final class StatisticsHelper {
 			case AGE_INTERVAL_CHILDREN_MEDIUM:
 			case AGE_INTERVAL_BASIC:
 				return StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
+			case REPORTING_USER_ROLE:
+				ArrayList<StatisticsGroupingKey> userRoleList = new ArrayList<>();
+				for (UserRole ur : UserRole.values()) {
+					userRoleList.add(ur);
+				}
+				return userRoleList;
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}
