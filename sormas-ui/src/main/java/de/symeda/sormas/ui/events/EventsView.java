@@ -386,7 +386,7 @@ public class EventsView extends AbstractView {
 		applyingCriteria = false;
 	}
 
-	public void updateStatusButtons() {
+	private void updateStatusButtons() {
 
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
@@ -400,9 +400,5 @@ public class EventsView extends AbstractView {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-	}
-
-	public EventCriteria getCriteria() {
-		return criteria;
 	}
 }
