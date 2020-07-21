@@ -77,6 +77,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -448,7 +449,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			for (ContactExportDto exportContact : exportContacts) {
 				boolean inJurisdiction = contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction());
 
@@ -554,7 +555,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			Map<Long, VisitSummaryExportDto> visitSummaryMap =
 				visitSummaries.stream().collect(Collectors.toMap(VisitSummaryExportDto::getContactId, Function.identity()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 			visitSummaryDetails.stream().forEach(v -> {
 				pseudonymizer
 					.pseudonymizeDto(Symptoms.class, v.getSymptoms(), contactJurisdictionChecker.isInJurisdiction(v.getJurisdiction()), null);
@@ -719,15 +720,13 @@ public class ContactFacadeEjb implements ContactFacade {
 			Map<String, ContactFollowUpDto> resultMap =
 				resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
 				boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction());
-				pseudonymizer.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, f -> {
-					pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, f.getPerson(), isInJurisdiction, null);
-				});
+				pseudonymizer.pseudonymizeDto(ContactFollowUpDto.class, contactFollowUpDto, isInJurisdiction, null);
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
@@ -765,7 +764,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			ContactIndexDto.class,
 			dtos,
@@ -799,7 +798,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		User currentUser = userService.getCurrentUser();
 		pseudonymizer.pseudonymizeDtoCollection(
 			ContactIndexDetailedDto.class,

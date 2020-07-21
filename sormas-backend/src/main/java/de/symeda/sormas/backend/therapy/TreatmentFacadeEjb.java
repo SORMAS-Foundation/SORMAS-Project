@@ -20,6 +20,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentExportDto;
@@ -94,7 +96,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentIndexDto.class,
 			indexList,
@@ -199,7 +201,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentExportDto.class,
 			exportList,

@@ -47,8 +47,8 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataTravelsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(fieldAccessCheckers);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	@Override

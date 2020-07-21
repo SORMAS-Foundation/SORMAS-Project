@@ -49,6 +49,7 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 	protected void initColumns() {
 
 		super.initColumns();
+
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.CITY).setWidth(150);

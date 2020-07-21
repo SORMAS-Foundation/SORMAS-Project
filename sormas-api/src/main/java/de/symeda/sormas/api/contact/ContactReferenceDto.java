@@ -25,13 +25,16 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
+	@EmbeddedPersonalData
 	private PersonName contactName;
+	@EmbeddedPersonalData
 	private PersonName caseName;
 
 	public ContactReferenceDto() {

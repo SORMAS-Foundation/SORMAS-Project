@@ -22,9 +22,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventIndexDto implements Serializable {
+public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
 
@@ -37,7 +39,7 @@ public class EventIndexDto implements Serializable {
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String EVENT_LOCATION = "eventLocationString";
+	public static final String EVENT_LOCATION = "eventLocation";
 	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
@@ -52,7 +54,8 @@ public class EventIndexDto implements Serializable {
 	private Date endDate;
 	@SensitiveData
 	private String eventDesc;
-	private EventIndexLocation eventIndexLocation;
+	@EmbeddedSensitiveData
+	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
 	@SensitiveData
 	private String srcFirstName;
@@ -100,7 +103,7 @@ public class EventIndexDto implements Serializable {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.eventDesc = eventDesc;
-		this.eventIndexLocation = new EventIndexLocation(regionName, districtName, communityName, city, address);
+		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, address);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
@@ -167,12 +170,8 @@ public class EventIndexDto implements Serializable {
 		this.eventDesc = eventDesc;
 	}
 
-	public EventIndexLocation getEventIndexLocation() {
-		return eventIndexLocation;
-	}
-
-	public String getEventLocationString() {
-		return eventIndexLocation.formatString();
+	public EventIndexLocation getEventLocation() {
+		return eventLocation;
 	}
 
 	public EventSourceType getSrcType() {
@@ -258,7 +257,8 @@ public class EventIndexDto implements Serializable {
 			this.address = address;
 		}
 
-		public String formatString() {
+		@Override
+		public String toString() {
 			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, address);
 		}
 	}

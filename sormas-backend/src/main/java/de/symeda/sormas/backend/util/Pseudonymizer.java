@@ -29,6 +29,10 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		super(rightCheck);
 	}
 
+	public Pseudonymizer(RightCheck rightCheck, String stringValuePlaceholder) {
+		super(rightCheck, stringValuePlaceholder);
+	}
+
 	public void pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 

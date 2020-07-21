@@ -61,6 +61,27 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
+	public boolean isEmbedded(Class<?> parentType, String fieldName) {
+		Field declaredField = getDeclaredField(parentType, fieldName);
+
+		if (declaredField == null) {
+			return false;
+		}
+
+		return isEmbedded(declaredField);
+	}
+
+	public boolean isEmbedded(Field field) {
+
+		for (FieldAccessChecker checker : checkers) {
+			if (checker.isEmbedded(field)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public boolean hasRights(boolean inJurisdiction) {
 
 		for (FieldAccessChecker checker : checkers) {
@@ -80,8 +101,14 @@ public class FieldAccessCheckers {
 	private Field getDeclaredField(Class<?> parentType, String propertyId) {
 
 		try {
-			return parentType.getDeclaredField(propertyId);
+			Field declaredField = parentType.getDeclaredField(propertyId);
+
+			return declaredField;
 		} catch (NoSuchFieldException e) {
+			if (parentType.getSuperclass() != null) {
+				return getDeclaredField(parentType.getSuperclass(), propertyId);
+			}
+
 			return null;
 		}
 	}

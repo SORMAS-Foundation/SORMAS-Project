@@ -50,9 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
+import de.symeda.sormas.api.visit.VisitContactJurisdiction;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -304,11 +304,17 @@ public class VisitFacadeEjb implements VisitFacade {
 			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
 				getVisitContactJurisdictions(indexList.stream().map(VisitIndexDto::getId).collect(Collectors.toList()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-			pseudonymizer.pseudonymizeDtoCollection(VisitIndexDto.class, indexList, v -> {
-				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(v.getId());
-				return visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-			}, null);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+			indexList.forEach(visitIndex -> {
+				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(visitIndex.getId());
+				VisitContactJurisdiction matchingContactJurisdiction =
+					visitContactJurisdictions.stream().filter(c -> contactJurisdictionChecker.isInJurisdiction(c)).findFirst().orElse(null);
+				boolean inJurisdiction = matchingContactJurisdiction != null;
+				visitIndex.setJurisdiction(matchingContactJurisdiction != null ? matchingContactJurisdiction : visitContactJurisdictions.get(0));
+
+				pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, inJurisdiction, null);
+			});
 		}
 
 		return indexList;
@@ -604,42 +610,5 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
 
-	}
-
-	static class VisitContactJurisdiction extends ContactJurisdictionDto {
-
-		private long visitId;
-
-		public VisitContactJurisdiction(
-			long visitId,
-			String reportingUserUuid,
-			String regionUuid,
-			String districtUuid,
-			String caseReportingUserUuid,
-			String caseRegionUui,
-			String caseDistrictUud,
-			String caseCommunityUuid,
-			String caseHealthFacilityUuid,
-			String casePointOfEntryUuid) {
-
-			super(
-				reportingUserUuid,
-				regionUuid,
-				districtUuid,
-				caseReportingUserUuid != null
-					? new CaseJurisdictionDto(
-						caseReportingUserUuid,
-						caseRegionUui,
-						caseDistrictUud,
-						caseCommunityUuid,
-						caseHealthFacilityUuid,
-						casePointOfEntryUuid)
-					: null);
-			this.visitId = visitId;
-		}
-
-		public long getVisitId() {
-			return visitId;
-		}
 	}
 }

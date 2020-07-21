@@ -22,8 +22,11 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridButtonRenderer;
 import de.symeda.sormas.ui.utils.PeriodDtoConverter;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -78,11 +81,10 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
-		if(isInJurisdiction) {
+		if (isInJurisdiction) {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
-		}
-		else {
+		} else {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHidden(true);
 		}
 
@@ -92,6 +94,11 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(
 				I18nProperties.getPrefixCaption(PrescriptionIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+
+			setCellStyleGenerator(
+				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+					PrescriptionIndexDto.class,
+					UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker())));
 		}
 
 		addItemClickListener(e -> {

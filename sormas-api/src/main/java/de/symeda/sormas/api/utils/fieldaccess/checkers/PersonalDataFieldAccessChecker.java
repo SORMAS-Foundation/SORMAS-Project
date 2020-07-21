@@ -18,12 +18,13 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 
 public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker {
 
 	private PersonalDataFieldAccessChecker(final boolean hasRightInJurisdiction, final boolean harRightOutsideJurisdiction) {
-		super(PersonalData.class, new RightBasedFieldAccessChecker.RightCheck() {
+		super(PersonalData.class, EmbeddedPersonalData.class, new RightBasedFieldAccessChecker.RightCheck() {
 
 			@Override
 			public boolean check(boolean inJurisdiction) {

@@ -29,9 +29,11 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class SampleIndexDto implements Serializable {
+public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = -6298614717044087479L;
 
@@ -60,8 +62,11 @@ public class SampleIndexDto implements Serializable {
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
 
 	private String uuid;
+	@EmbeddedPersonalData
 	private CaseReferenceDto associatedCase;
+	@EmbeddedPersonalData
 	private ContactReferenceDto associatedContact;
+	@EmbeddedPersonalData
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;

@@ -50,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -405,14 +406,9 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			SampleIndexDto.class,
-			samples,
-			s -> sampleJurisdictionChecker.isInJurisdiction(s.getJurisdiction()),
-			(s, isInJurisdiction) -> {
-				pseudonymizeAssociatedObjects(s.getJurisdiction(), s.getAssociatedCase(), s.getAssociatedContact(), pseudonymizer);
-			});
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer
+			.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> sampleJurisdictionChecker.isInJurisdiction(s.getJurisdiction()), null);
 
 		return samples;
 	}
@@ -593,7 +589,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)), cb.desc(sample.get(Sample.ID)));
 
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
 			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));

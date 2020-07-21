@@ -46,11 +46,10 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 	private static final String DISTRICT = Captions.district;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public PreviousHospitalizationsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(fieldAccessCheckers);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	@Override

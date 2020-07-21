@@ -52,8 +52,8 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataBurialsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(fieldAccessCheckers);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	@Override

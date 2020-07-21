@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.symptoms.TemperatureSource;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class VisitIndexDto implements Serializable {
+public class VisitIndexDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = -2707325548819626469L;
 
@@ -33,6 +35,8 @@ public class VisitIndexDto implements Serializable {
 	private Boolean symptomatic;
 	private Float temperature;
 	private TemperatureSource temperatureSource;
+
+	private ContactJurisdictionDto contactJurisdiction;
 
 	public VisitIndexDto(
 			Long id,
@@ -122,5 +126,14 @@ public class VisitIndexDto implements Serializable {
 
 	public void setTemperatureSource(TemperatureSource temperatureSource) {
 		this.temperatureSource = temperatureSource;
+	}
+
+	public void setJurisdiction(ContactJurisdictionDto contactJurisdiction) {
+		this.contactJurisdiction = contactJurisdiction;
+	}
+
+	@Override
+	public ContactJurisdictionDto getJurisdiction() {
+		return contactJurisdiction;
 	}
 }

@@ -53,6 +53,8 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -287,14 +289,9 @@ public class EventFacadeEjb implements EventFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventIndexDto.class,
-			indexList,
-			e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()),
-			(e, inJurisdiction) -> {
-				pseudonymizer.pseudonymizeDto(EventIndexDto.EventIndexLocation.class, e.getEventIndexLocation(), inJurisdiction, null);
-			});
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer
+			.pseudonymizeDtoCollection(EventIndexDto.class, indexList, e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()), null);
 
 		return indexList;
 	}
@@ -357,7 +354,7 @@ public class EventFacadeEjb implements EventFacade {
 			exportList = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer
 			.pseudonymizeDtoCollection(EventExportDto.class, exportList, e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()), null);
 

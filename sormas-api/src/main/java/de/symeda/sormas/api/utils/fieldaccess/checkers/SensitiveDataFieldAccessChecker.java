@@ -16,12 +16,13 @@
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
 public class SensitiveDataFieldAccessChecker extends RightBasedFieldAccessChecker {
 
 	private SensitiveDataFieldAccessChecker(final boolean hasRightInJurisdiction, final boolean harRightOutsideJurisdiction) {
-		super(SensitiveData.class, new RightBasedFieldAccessChecker.RightCheck() {
+		super(SensitiveData.class, EmbeddedSensitiveData.class, new RightBasedFieldAccessChecker.RightCheck() {
 
 			@Override
 			public boolean check(boolean inJurisdiction) {

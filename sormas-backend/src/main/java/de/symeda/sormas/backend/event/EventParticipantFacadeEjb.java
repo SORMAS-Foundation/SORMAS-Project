@@ -44,6 +44,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
@@ -258,11 +259,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
-			p -> eventJurisdictionChecker.isInJurisdiction(p.getEventJurisdiction()),
+			p -> eventJurisdictionChecker.isInJurisdiction(p.getJurisdiction()),
 			null);
 
 		return indexList;

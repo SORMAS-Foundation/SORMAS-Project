@@ -32,6 +32,14 @@ public class UiFieldAccessCheckers {
 		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction);
 	}
 
+	public boolean isEmbedded(Class<?> parentType, String fieldName) {
+		return fieldAccessCheckers.isEmbedded(parentType, fieldName);
+	}
+
+	public boolean hasRight() {
+		return fieldAccessCheckers.hasRights(isInJurisdiction);
+	}
+
 	public UiFieldAccessCheckers add(FieldAccessChecker accessChecker) {
 		fieldAccessCheckers.add(accessChecker);
 

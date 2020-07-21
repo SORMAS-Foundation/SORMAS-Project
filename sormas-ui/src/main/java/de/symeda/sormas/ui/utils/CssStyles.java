@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.Disease;
-
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import de.symeda.sormas.api.Disease;
 
 public final class CssStyles {
 
@@ -265,6 +266,7 @@ public final class CssStyles {
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
 
 	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
+	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
 
 	@Deprecated
 	public static final String CALLOUT = "callout";

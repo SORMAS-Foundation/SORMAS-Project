@@ -19,8 +19,14 @@ import de.symeda.sormas.api.utils.pseudonymization.ValuePseudonymizer;
 
 public class DefaultValuePseudonymizer<T> extends ValuePseudonymizer<T> {
 
+	private String stringValuePlaceholder = "";
+
+	public DefaultValuePseudonymizer(String stringValuePlaceholder) {
+		this.stringValuePlaceholder = stringValuePlaceholder;
+	}
+
 	@Override
 	public T pseudonymizeValue(T value) {
-		return value instanceof String ? (T) "" : null;
+		return value instanceof String ? (T) stringValuePlaceholder : null;
 	}
 }

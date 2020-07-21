@@ -19,6 +19,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -65,6 +68,11 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 			column.setHeaderCaption(
 				I18nProperties.getPrefixCaption(ClinicalVisitIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
+
+		setCellStyleGenerator(
+			FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+				ClinicalVisitIndexDto.class,
+				UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker())));
 
 		addItemClickListener(e -> {
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {

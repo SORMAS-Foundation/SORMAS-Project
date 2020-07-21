@@ -8,10 +8,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 import de.symeda.sormas.api.visit.VisitResult;
 
-public class ContactFollowUpDto implements Serializable {
+public class ContactFollowUpDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = -1257025719012862417L;
 
@@ -25,6 +27,7 @@ public class ContactFollowUpDto implements Serializable {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 
 	private String uuid;
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@SensitiveData
 	private UserReferenceDto contactOfficer;

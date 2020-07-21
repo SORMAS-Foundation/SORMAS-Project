@@ -50,8 +50,8 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataGatheringsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(fieldAccessCheckers);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	@Override
