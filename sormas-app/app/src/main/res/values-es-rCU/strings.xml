@@ -505,6 +505,7 @@
     <string name="validation_error_required">Se requiere un valor para este campo. Por favor, asegúrese de escribir o seleccionar un valor antes de seguir.</string>
     <string name="validation_soft_add_list_entry">Por favor, añada una entrada a la lista si dispone de algún dato.</string>
     <string name="validation_soft_case_classification">Este caso debe ser clasificado tan pronto como esté disponible la información requerida.</string>
+    <string name="validation_case_classification">La clasificación del caso no se corresponde con los resultados de laboratorio y los síntomas del caso.</string>
     <string name="validation_soft_case_epid_number">El número EPID no coincide con el patrón requerido. Puede guardar el caso e ingresar el número correcto más tarde.</string>
     <string name="validation_soft_case_epid_number_empty">Se debe proporcionar un número EPID. Puede guardar el caso e ingresar el número correcto más tarde.</string>
     <string name="validation_symptoms_fever">La temperatura está en el rango de la fiebre. Se debe especificar Fiebre como \"Sí\".</string>
