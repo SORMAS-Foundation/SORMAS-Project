@@ -28,6 +28,8 @@ public enum CaseClassification
 	SUSPECT,
 	PROBABLE,
 	CONFIRMED,
+	CONFIRMED_NO_SYMPTOMS,
+	CONFIRMED_UNKNOWN_SYMPTOMS,
 	NO_CASE;
 
 	public String getName() {

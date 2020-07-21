@@ -37,6 +37,8 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.sample.PathogenTestFacade;
+import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -48,6 +50,8 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public class AbstractBeanTest extends BaseBeanTest {
@@ -119,5 +123,13 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public DiseaseConfigurationService getDiseaseConfigurationService() {
 		return getBean(DiseaseConfigurationService.class);
+	}
+
+	public PathogenTestFacade getPathogenTestFacade() {
+		return getBean(PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal.class);
+	}
+
+	public SampleFacade getSampleFacade() {
+		return getBean(SampleFacadeEjb.SampleFacadeEjbLocal.class);
 	}
 }

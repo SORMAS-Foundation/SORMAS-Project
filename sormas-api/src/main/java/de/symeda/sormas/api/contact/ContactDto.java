@@ -44,6 +44,10 @@ public class ContactDto extends EntityDto {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
@@ -107,6 +111,14 @@ public class ContactDto extends EntityDto {
 	private DistrictReferenceDto district;
 	@Required
 	private Date lastContactDate;
+	@HideForCountriesExcept
+	private ContactIdentificationSource contactIdentificationSource;
+	@HideForCountriesExcept
+	private String contactIdentificationSourceDetails;
+	@HideForCountriesExcept
+	private TracingApp tracingApp;
+	@HideForCountriesExcept
+	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
@@ -227,6 +239,38 @@ public class ContactDto extends EntityDto {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public ContactProximity getContactProximity() {

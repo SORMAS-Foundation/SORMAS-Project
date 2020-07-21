@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -54,12 +55,12 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	@SuppressWarnings("unchecked")
-	public EventGrid(EventCriteria criteria) {
+	public <V extends View> EventGrid(EventCriteria criteria, Class<V> viewClass) {
 
 		super(EventIndexDto.class);
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -83,23 +84,6 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 
 		Language userLanguage = I18nProperties.getUserLanguage();
 
-		Column<EventIndexDto, String> eventDateColumn = addColumn(event -> {
-			Date startDate = event.getStartDate();
-			Date endDate = event.getEndDate();
-
-			if (startDate == null) {
-				return "";
-			} else if (endDate == null) {
-				return DateHelper.formatLocalDate(startDate, userLanguage);
-			} else {
-				return String
-					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
-			}
-		});
-		eventDateColumn.setId(EVENT_DATE);
-		eventDateColumn.setSortProperty(EventDto.START_DATE);
-		eventDateColumn.setSortable(true);
-
 		Column<EventIndexDto, String> pendingTasksColumn = addColumn(
 			entry -> String.format(
 				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -110,7 +94,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		setColumns(
 			EventIndexDto.UUID,
 			EventIndexDto.EVENT_STATUS,
-			EVENT_DATE,
+			createEventDateColumn(this, userLanguage),
 			DISEASE_SHORT,
 			EventIndexDto.EVENT_DESC,
 			EventIndexDto.EVENT_LOCATION,
@@ -128,6 +112,27 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
+	}
+
+	public static String createEventDateColumn(FilteredGrid<EventIndexDto, EventCriteria> grid, Language userLanguage) {
+		Column<EventIndexDto, String> eventDateColumn = grid.addColumn(event -> {
+			Date startDate = event.getStartDate();
+			Date endDate = event.getEndDate();
+
+			if (startDate == null) {
+				return "";
+			} else if (endDate == null) {
+				return DateHelper.formatLocalDate(startDate, userLanguage);
+			} else {
+				return String
+					.format("%s - %s", DateHelper.formatLocalDate(startDate, userLanguage), DateHelper.formatLocalDate(endDate, userLanguage));
+			}
+		});
+		eventDateColumn.setId(EVENT_DATE);
+		eventDateColumn.setSortProperty(EventDto.START_DATE);
+		eventDateColumn.setSortable(true);
+
+		return EVENT_DATE;
 	}
 
 	private String buildSourcePersonText(EventIndexDto event) {

@@ -224,6 +224,8 @@ public interface Captions {
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
+	String caseEvents = "caseEvents";
+	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
 	String CaseExport_address = "CaseExport.address";
 	String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
@@ -346,6 +348,8 @@ public interface Captions {
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
+	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
+	String Contact_contactIdentificationSourceDetails = "Contact.contactIdentificationSourceDetails";
 	String Contact_contactOfficer = "Contact.contactOfficer";
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	String Contact_contactProximity = "Contact.contactProximity";
@@ -391,6 +395,8 @@ public interface Captions {
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	String Contact_tracingApp = "Contact.tracingApp";
+	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
 	String Contact_visits = "Contact.visits";
 	String contactActiveContacts = "contactActiveContacts";
@@ -720,6 +726,9 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
+	String linkEventToCase = "linkEventToCase";
+	String eventNoEventLinkedToCase = "Event.noEventLinkedToCase";
+	String eventMultiDay = "multiDay";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -732,6 +741,7 @@ public interface Captions {
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
+	String eventSelect = "eventSelect";
 	String export = "export";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
