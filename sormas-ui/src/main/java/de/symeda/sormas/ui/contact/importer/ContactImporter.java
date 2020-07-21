@@ -356,7 +356,12 @@ public class ContactImporter extends DataImporter {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImporterPersonHelper.getPersonDistrictAndCommunity(pd.getName(), person);
 						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
-							.getByNameAndType(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), null, false);
+							.getByNameAndType(
+								entry,
+								infrastructureData.getElement0(),
+								infrastructureData.getElement1(),
+								caze.getFacilityType(),
+								false);
 						if (facility.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(

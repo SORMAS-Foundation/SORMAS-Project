@@ -104,6 +104,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
 		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
 		caseDataDto.setReportingUser(user.toReference());
 		final CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);

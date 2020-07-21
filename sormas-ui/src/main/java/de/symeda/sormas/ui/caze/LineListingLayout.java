@@ -283,10 +283,7 @@ public class LineListingLayout extends VerticalLayout {
 			newCase.setCommunity(caseLineDto.getCommunity());
 			newCase.setHealthFacility(caseLineDto.getFacility());
 			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
-			FacilityReferenceDto facilityRef = caseLineDto.getFacility();
-			if (facilityRef != null && FacilityDto.OTHER_FACILITY_UUID.equals(facilityRef.getUuid())) {
-				newCase.setFacilityType(type.getValue());
-			}
+			newCase.setFacilityType(type.getValue());
 
 			if (caseLineDto.getDateOfOnset() != null) {
 				newCase.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));

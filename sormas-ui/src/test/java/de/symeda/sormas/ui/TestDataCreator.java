@@ -152,7 +152,9 @@ public class TestDataCreator {
 		caze.setRegion(FacadeProvider.getRegionFacade().getRegionReferenceByUuid(rdcf.region.getUuid()));
 		caze.setDistrict(FacadeProvider.getDistrictFacade().getDistrictReferenceByUuid(rdcf.district.getUuid()));
 		caze.setCommunity(FacadeProvider.getCommunityFacade().getCommunityReferenceByUuid(rdcf.community.getUuid()));
-		caze.setHealthFacility(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(rdcf.facility.getUuid()));
+		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(rdcf.facility.getUuid());
+		caze.setFacilityType(facility.getType());
+		caze.setHealthFacility(facility.toReference());
 
 		caze = FacadeProvider.getCaseFacade().saveCase(caze);
 

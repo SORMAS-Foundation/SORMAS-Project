@@ -178,6 +178,7 @@ public class Case extends CoreAdo {
 	private Region region;
 	private District district;
 	private Community community;
+	private FacilityType facilityType;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 
@@ -253,7 +254,6 @@ public class Case extends CoreAdo {
 
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
-	private FacilityType facilityType;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;

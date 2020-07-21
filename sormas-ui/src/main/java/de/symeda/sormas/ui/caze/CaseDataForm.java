@@ -419,12 +419,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);
-			FacilityReferenceDto facilityRef = (FacilityReferenceDto) facility.getValue();
-			if (facilityRef != null && FacilityDto.OTHER_FACILITY_UUID.equals(facilityRef.getUuid())) {
-				this.getValue().setFacilityType((FacilityType) type.getValue());
-			} else {
-				this.getValue().setFacilityType(null);
-			}
+			this.getValue().setFacilityType((FacilityType) type.getValue());
 		});
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
@@ -850,14 +845,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	public void setValue(CaseDataDto caze) throws ReadOnlyException, Converter.ConversionException {
 		if (caze.getHealthFacility() != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacility().getUuid());
-			if (facility.getType() != null) {
-				typeGroup.setValue(facility.getType().getFacilityTypeGroup());
-				type.setValue(facility.getType());
-			} else {
-				typeGroup.setValue(caze.getFacilityType().getFacilityTypeGroup());
-				type.setValue(caze.getFacilityType());
-			}
+			typeGroup.setValue(caze.getFacilityType().getFacilityTypeGroup());
+			type.setValue(caze.getFacilityType());
 		}
 		super.setValue(caze);
 	}

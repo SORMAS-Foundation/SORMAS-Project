@@ -4767,7 +4767,7 @@ DELETE FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO';
 UPDATE facility SET type = 'HOSPITAL' WHERE type = null AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
 ALTER TABLE cases ADD COLUMN facilitytype varchar(255);
 ALTER TABLE cases_history ADD COLUMN facilitytype varchar(255);
-UPDATE cases SET facilitytype = 'HOSPITAL' WHERE healthfacility_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY');
+UPDATE cases SET facilitytype = 'HOSPITAL' WHERE healthfacility_id != (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY');
 
 INSERT INTO schema_version (version_number, comment) VALUES (225, 'Import and use new facility types #1637');
 -- *** Insert new sql commands BEFORE this line ***

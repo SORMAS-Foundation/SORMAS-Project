@@ -290,12 +290,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);
-			FacilityReferenceDto facilityRef = (FacilityReferenceDto) facility.getValue();
-			if (facilityRef != null && FacilityDto.OTHER_FACILITY_UUID.equals(facilityRef.getUuid())) {
-				this.getValue().setFacilityType((FacilityType) type.getValue());
-			} else {
-				this.getValue().setFacilityType(null);
-			}
+			this.getValue().setFacilityType((FacilityType) type.getValue());
 		});
 
 		cbPointOfEntry.addValueChangeListener(e -> {

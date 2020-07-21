@@ -199,6 +199,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	private CommunityReferenceDto community;
+	private FacilityType facilityType;
 	@Outbreaks
 	@Required
 	@PersonalData
@@ -325,7 +326,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
-	private FacilityType facilityType;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();

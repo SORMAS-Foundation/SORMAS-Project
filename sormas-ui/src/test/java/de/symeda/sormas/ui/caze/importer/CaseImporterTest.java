@@ -1,5 +1,19 @@
 package de.symeda.sormas.ui.caze.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
@@ -12,19 +26,6 @@ import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {

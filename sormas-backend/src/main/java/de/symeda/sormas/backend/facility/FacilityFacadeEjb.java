@@ -484,9 +484,15 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 
+		if (dto.getType() == null
+			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
+			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacilityType));
+		}
+
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		if (facility == null && !getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), null, true).isEmpty()) {
+		if (facility == null && !getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true).isEmpty()) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
 		}
 

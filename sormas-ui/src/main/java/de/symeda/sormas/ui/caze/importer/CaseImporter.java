@@ -17,10 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze.importer;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -59,18 +73,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.StringUtils;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Data importer that is used to import cases and associated samples.
@@ -445,7 +447,12 @@ public class CaseImporter extends DataImporter {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImporterPersonHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
 						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
-							.getByNameAndType(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), null, false);
+							.getByNameAndType(
+								entry,
+								infrastructureData.getElement0(),
+								infrastructureData.getElement1(),
+								caze.getFacilityType(),
+								false);
 						if (facility.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(

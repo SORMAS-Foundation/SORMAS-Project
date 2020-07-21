@@ -227,6 +227,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.REGION);
 		columnNames.add(CaseDataDto.DISTRICT);
 		columnNames.add(CaseDataDto.COMMUNITY);
+		columnNames.add(CaseDataDto.FACILITY_TYPE);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
 		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
