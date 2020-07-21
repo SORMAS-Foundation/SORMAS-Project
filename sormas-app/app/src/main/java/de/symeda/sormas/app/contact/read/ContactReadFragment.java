@@ -74,6 +74,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 			contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
 			contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
 			contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 		}
 	}
 
