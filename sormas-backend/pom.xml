@@ -121,7 +121,7 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 	</build>

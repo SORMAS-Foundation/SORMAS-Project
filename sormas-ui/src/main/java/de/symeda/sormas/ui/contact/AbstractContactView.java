@@ -48,13 +48,14 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 
-		if (FacadeProvider.getConfigFacade().getPIAUrl() != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
+		if (FacadeProvider.getConfigFacade().getSymptomJournalUrl() != null
+			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 			btnCreatePIAAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openPIAAccountCreationWindow(contactPerson);
+				ControllerProvider.getContactController().openSymptomJournalWindow(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
