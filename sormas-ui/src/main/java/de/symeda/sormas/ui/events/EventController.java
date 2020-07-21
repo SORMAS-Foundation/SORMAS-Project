@@ -168,6 +168,7 @@ public class EventController {
 		EventDataForm eventCreateForm = new EventDataForm(true);
 		if (caseRef != null) {
 			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
+			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		} else {
 			eventCreateForm.setValue(createNewEvent(null));
 		}
