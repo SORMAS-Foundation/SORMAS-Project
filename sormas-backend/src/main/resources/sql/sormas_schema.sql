@@ -4776,7 +4776,6 @@ ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(25
 
 INSERT INTO schema_version (version_number, comment) VALUES (226, 'Add case classification for Germany #2230');
 
-
 -- 2020-07-16 Add source of identification as contact to contacts #2070
 ALTER TABLE contact ADD COLUMN contactidentificationsource varchar(255);
 ALTER TABLE contact ADD COLUMN contactidentificationsourcedetails varchar(512);
