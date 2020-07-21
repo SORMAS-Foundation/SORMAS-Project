@@ -63,6 +63,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String REFERRED_TO_UUID = "referredToUuid";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 

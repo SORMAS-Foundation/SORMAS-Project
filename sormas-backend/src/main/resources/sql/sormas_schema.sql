@@ -4766,4 +4766,14 @@ ALTER TABLE campaignformdata_history ADD COLUMN formdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (225, 'Add form date to campaign form data #1997');
 
+-- 2020-07-03 Add case classification for Germany #2230
+ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (226, 'Add case classification for Germany #2230');
+
 -- *** Insert new sql commands BEFORE this line ***
