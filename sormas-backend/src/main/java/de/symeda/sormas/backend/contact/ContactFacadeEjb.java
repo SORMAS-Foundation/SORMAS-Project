@@ -1030,7 +1030,6 @@ public class ContactFacadeEjb implements ContactFacade {
 					pseudonymizer.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
 				}
 
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(EpiDataDto.class, dto.getEpiData(), isInJurisdiction, null);
 			});
 		}

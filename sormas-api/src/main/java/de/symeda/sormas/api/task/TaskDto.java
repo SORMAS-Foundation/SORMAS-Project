@@ -26,6 +26,8 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Required;
 
 public class TaskDto extends EntityDto {
@@ -55,8 +57,14 @@ public class TaskDto extends EntityDto {
 
 	@Required
 	private TaskContext taskContext;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private CaseReferenceDto caze;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private EventReferenceDto event;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private ContactReferenceDto contact;
 
 	@Required

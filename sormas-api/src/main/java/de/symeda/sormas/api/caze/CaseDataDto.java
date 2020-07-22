@@ -46,6 +46,7 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -159,6 +160,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private RabiesType rabiesType;
 	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
 	private String epidNumber;

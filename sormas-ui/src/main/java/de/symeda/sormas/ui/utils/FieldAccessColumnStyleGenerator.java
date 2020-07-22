@@ -42,10 +42,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		UserDto currentUser = UserProvider.getCurrent().getUser();
 
 		return new FieldAccessColumnStyleGenerator<>((t) -> {
-			boolean inJurisdiction = jurisdictionChecker.isInJurisdiction(
-				UserRole.getJurisdictionLevel(currentUser.getUserRoles()),
-				createUserJurisdiction(currentUser),
-				t.getJurisdiction());
+			boolean inJurisdiction = callJurisdictionChecker(jurisdictionChecker, currentUser, t.getJurisdiction());
 
 			return fieldAccessCheckers.isEmbedded(beanType, columnId)
 				? fieldAccessCheckers.hasRights(inJurisdiction)
@@ -55,7 +52,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 
 	private Function<T, Boolean> accessCheck;
 
-	private FieldAccessColumnStyleGenerator(Function<T, Boolean> accessCheck) {
+	public FieldAccessColumnStyleGenerator(Function<T, Boolean> accessCheck) {
 		this.accessCheck = accessCheck;
 	}
 
@@ -66,6 +63,11 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 		}
 
 		return "";
+	}
+
+	public static <J> boolean callJurisdictionChecker(JurisdictionChecker<J> jurisdictionChecker, UserDto currentUser, J jurisdictionDto) {
+		return jurisdictionChecker
+			.isInJurisdiction(UserRole.getJurisdictionLevel(currentUser.getUserRoles()), createUserJurisdiction(currentUser), jurisdictionDto);
 	}
 
 	private static UserJurisdiction createUserJurisdiction(UserDto user) {

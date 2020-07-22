@@ -28,6 +28,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -220,6 +222,8 @@ public class PersonDto extends PseudonymizableDto {
 	private String phone;
 	@SensitiveData
 	private String phoneOwner;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private LocationDto address;
 	@SensitiveData
 	private String emailAddress;

@@ -267,6 +267,7 @@ public final class CssStyles {
 
 	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
 	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
+	public static final String INACCESSIBLE_LABEL = "inaccessible-label";
 
 	@Deprecated
 	public static final String CALLOUT = "callout";

@@ -29,6 +29,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -147,6 +148,7 @@ public class ContactDto extends PseudonymizableDto {
 	private Date quarantineTo;
 
 	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 
 	@SensitiveData

@@ -43,7 +43,9 @@ import de.symeda.sormas.ui.contact.ContactInfoLayout;
 import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -89,46 +91,62 @@ public class SampleDataView extends AbstractSampleView {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(getSampleRef().getUuid());
 
 		Disease disease = null;
-		boolean isInJurisdiction = true;
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
 		if (associatedCase != null) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
 
 			disease = caseDto.getDisease();
 
-			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
+				caseDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
-
-			isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+			boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(contactDto);
+			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(
+				contactDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 
-			isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 		}
 		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			final EventParticipantDto eventParticipantDto =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
 			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
+			boolean isInJurisdiction = FacadeProvider.getEventFacade().isEventEditAllowed(eventDto.getUuid());
 
 			disease = eventDto.getDisease();
 
-			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(eventParticipantDto, eventDto);
+			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
+				eventParticipantDto,
+				eventDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
+
 			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
-			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isInJurisdiction);
+			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

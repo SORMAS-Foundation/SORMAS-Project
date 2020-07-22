@@ -47,8 +47,6 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -327,10 +325,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		if (source != null) {
 			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(source.getEvent());
 
-			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, p -> {
-				pseudonymizer.pseudonymizeDto(PersonDto.class, p.getPerson(), inJurisdiction, null);
-				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getPerson().getAddress(), inJurisdiction, null);
-			});
+			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 		}
 	}
 

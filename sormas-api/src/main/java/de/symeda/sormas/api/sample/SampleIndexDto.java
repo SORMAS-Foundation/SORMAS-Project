@@ -30,6 +30,7 @@ import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
@@ -63,10 +64,13 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 
 	private String uuid;
 	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private CaseReferenceDto associatedCase;
 	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private ContactReferenceDto associatedContact;
 	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;
