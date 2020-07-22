@@ -224,7 +224,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				contentBinding.contactTracingApp.setVisibility(VISIBLE);
 			} else {
 				contentBinding.contactTracingApp.setVisibility(GONE);
-				contentBinding.getData().setTracingApp(null);	// temporary workaround. Shall become contentBinding.contactTracingApp.setValue(null); once that works.
+				contentBinding.contactTracingApp.setValue(null);
 				contentBinding.contactTracingAppDetails.setVisibility(GONE);
 				contentBinding.contactTracingAppDetails.setValue("");
 			}
