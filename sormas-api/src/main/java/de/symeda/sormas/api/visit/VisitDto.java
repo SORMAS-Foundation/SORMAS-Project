@@ -32,7 +32,6 @@ public class VisitDto extends EntityDto {
 	private static final long serialVersionUID = -441664767075414789L;
 
 	public static final String I18N_PREFIX = "Visit";
-	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
 
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";

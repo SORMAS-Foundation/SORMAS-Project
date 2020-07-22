@@ -32,6 +32,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -148,17 +149,17 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		getField(VisitDto.VISIT_DATE_TIME).addValidator((Validator) value -> {
 			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
 			Date startDate = startDateSupplier.get();
-			if (visitDateTime.before(startDate) && DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+			if (visitDateTime.before(startDate) && DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
 				if (firstStartDatePart.get() != null) {
 					throw new Validator.InvalidValueException(
-						I18nProperties.getValidationError(errorMessageDateTooEarlyFirstPart, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						I18nProperties.getValidationError(errorMessageDateTooEarlyFirstPart, FollowUpLogic.ALLOWED_DATE_OFFSET));
 				} else {
-					throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooEarly, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+					throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooEarly, FollowUpLogic.ALLOWED_DATE_OFFSET));
 				}
 			}
 			Date endDate = endDateSupplier.get();
-			if (endDate != null && visitDateTime.after(endDate) && DateHelper.getDaysBetween(endDate, visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-				throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooLate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+			if (endDate != null && visitDateTime.after(endDate) && DateHelper.getDaysBetween(endDate, visitDateTime) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
+				throw new Validator.InvalidValueException(I18nProperties.getValidationError(errorMessageDateTooLate, FollowUpLogic.ALLOWED_DATE_OFFSET));
 			}
 		});
 

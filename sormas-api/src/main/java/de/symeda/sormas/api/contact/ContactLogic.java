@@ -21,8 +21,6 @@ import java.util.Date;
 
 public final class ContactLogic {
 
-	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
-
 	private ContactLogic() {
 		// Hide Utility Class Constructor
 	}

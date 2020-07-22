@@ -41,6 +41,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
@@ -208,18 +209,8 @@ public class VisitService extends AbstractAdoService<Visit> {
 		filter = and(
 			cb,
 			filter,
-			or(
-				cb,
-				and(
-					cb,
-					cb.greaterThanOrEqualTo(
-						from.get(Visit.VISIT_DATE_TIME),
-						DateHelper.subtractDays(startDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET)),
-					cb.lessThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(endDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET))),
-				and(
-					cb,
-					cb.greaterThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(startDate, CaseLogic.ALLOWED_CASE_DATE_OFFSET)),
-					cb.lessThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(endDate, CaseLogic.ALLOWED_CASE_DATE_OFFSET)))));
+			cb.greaterThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.subtractDays(startDate, FollowUpLogic.ALLOWED_DATE_OFFSET)),
+			cb.lessThanOrEqualTo(from.get(Visit.VISIT_DATE_TIME), DateHelper.addDays(endDate, FollowUpLogic.ALLOWED_DATE_OFFSET)));
 
 		return filter;
 	}

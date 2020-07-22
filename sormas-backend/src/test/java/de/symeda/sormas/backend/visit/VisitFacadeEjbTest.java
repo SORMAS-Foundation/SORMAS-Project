@@ -22,8 +22,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
@@ -209,7 +209,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
 
 		// Changing the visit date time to a value beyond the threshold should remove the contact association
-		visit.setVisitDateTime(DateHelper.addDays(contact.getFollowUpUntil(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+		visit.setVisitDateTime(DateHelper.addDays(contact.getFollowUpUntil(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 		getVisitFacade().saveVisit(visit);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), empty());
@@ -229,7 +229,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createVisit(
 			contact.getDisease(),
 			person.toReference(),
-			DateHelper.subtractDays(contact.getReportDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+			DateHelper.subtractDays(contact.getReportDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(2));
 

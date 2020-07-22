@@ -27,7 +27,6 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public final class CaseLogic {
-	public static final int ALLOWED_CASE_DATE_OFFSET = 30;
 
 	private CaseLogic() {
 		// Hide Utility Class Constructor

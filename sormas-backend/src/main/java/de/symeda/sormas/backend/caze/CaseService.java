@@ -56,6 +56,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -946,7 +947,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				filter,
 				cb.lessThanOrEqualTo(
 						from.get(Case.REPORT_DATE),
-						DateHelper.addDays(referenceDateEnd, CaseLogic.ALLOWED_CASE_DATE_OFFSET)));
+						DateHelper.addDays(referenceDateEnd, FollowUpLogic.ALLOWED_DATE_OFFSET)));
 
 		filter = and(
 			cb,
@@ -964,13 +965,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 							cb.isNull(symptoms.get(Symptoms.ONSET_DATE)),
 							cb.greaterThanOrEqualTo(
 								from.get(Case.REPORT_DATE),
-								DateHelper.subtractDays(referenceDateStart, CaseLogic.ALLOWED_CASE_DATE_OFFSET))),
+								DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))),
 						cb.greaterThanOrEqualTo(
 								symptoms.get(Symptoms.ONSET_DATE),
-								DateHelper.subtractDays(referenceDateStart, CaseLogic.ALLOWED_CASE_DATE_OFFSET)))),
+								DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET)))),
 				cb.greaterThanOrEqualTo(
 						from.get(Case.FOLLOW_UP_UNTIL),
-						DateHelper.subtractDays(referenceDateStart, CaseLogic.ALLOWED_CASE_DATE_OFFSET))));
+						DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))));
 
 		return filter;
 	}

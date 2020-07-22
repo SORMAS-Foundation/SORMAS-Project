@@ -23,6 +23,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 
 public final class FollowUpLogic {
 
+	public static final int ALLOWED_DATE_OFFSET = 30;
+
 	private FollowUpLogic() {
 		// Hide Utility Class Constructor
 	}
