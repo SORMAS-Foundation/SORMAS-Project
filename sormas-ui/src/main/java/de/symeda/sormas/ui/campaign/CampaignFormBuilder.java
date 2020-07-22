@@ -15,8 +15,18 @@
 
 package de.symeda.sormas.ui.campaign;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -26,6 +36,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.campaign.data.CampaignFormValue;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
@@ -39,16 +50,6 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.vaadin.server.Sizeable.Unit;
 
 public class CampaignFormBuilder {
 
@@ -108,6 +109,7 @@ public class CampaignFormBuilder {
 			if (type == CampaignFormElementType.SECTION) {
 				sectionCount++;
 				GridLayout sectionLayout = new GridLayout(12, 1);
+				sectionLayout.setMargin(new MarginInfo(true, true));
 				CssStyles.style(
 					sectionLayout,
 					CssStyles.GRID_LAYOUT_SECTION,
