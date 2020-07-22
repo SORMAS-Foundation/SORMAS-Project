@@ -103,7 +103,7 @@ public class EventsView extends AbstractView {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = new EventGrid(criteria);
+		grid = new EventGrid(criteria, getClass());
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -197,7 +197,7 @@ public class EventsView extends AbstractView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.eventNewEvent,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create(),
+				e -> ControllerProvider.getEventController().create(null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

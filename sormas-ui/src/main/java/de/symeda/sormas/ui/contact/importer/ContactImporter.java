@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -236,7 +237,7 @@ public class ContactImporter extends DataImporter {
 			if (personSelect.hasMatches()) {
 				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
 				component.addCommitListener(() -> {
-					PersonIndexDto person = personSelect.getValue();
+					SimilarPersonDto person = personSelect.getValue();
 					if (person == null) {
 						resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 					} else {

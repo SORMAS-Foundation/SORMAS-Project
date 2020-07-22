@@ -57,6 +57,7 @@ import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -152,13 +153,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids) {
+	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
 
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toIndexDto(c)).collect(Collectors.toList());
+			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
 		}
 	}
 
@@ -559,6 +560,24 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
 			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
 			entity.getAddress().getCity());
+		return dto;
+	}
+
+	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
+
+		SimilarPersonDto dto = new SimilarPersonDto(
+			entity.getUuid(),
+			entity.getFirstName(),
+			entity.getLastName(),
+			entity.getNickname(),
+			entity.getApproximateAge(),
+			entity.getSex(),
+			entity.getPresentCondition(),
+			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
+			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
+			entity.getAddress().getCity(),
+			entity.getNationalHealthId(),
+			entity.getPassportNumber());
 		return dto;
 	}
 

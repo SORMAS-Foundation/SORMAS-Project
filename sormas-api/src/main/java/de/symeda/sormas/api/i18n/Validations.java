@@ -16,6 +16,7 @@ public interface Validations {
 	String beforeDateSoft = "beforeDateSoft";
 	String campaignFormDependingOnNotFound = "campaignFormDependingOnNotFound";
 	String campaignFormDependingOnValuesMissing = "campaignFormDependingOnValuesMissing";
+	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
@@ -29,6 +30,7 @@ public interface Validations {
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
 	String emptyOverwrittenFollowUpUntilDate = "emptyOverwrittenFollowUpUntilDate";
+	String errorsInForm = "errorsInForm";
 	String exportNoNameSpecified = "exportNoNameSpecified";
 	String futureDate = "futureDate";
 	String futureDateStrict = "futureDateStrict";
@@ -59,6 +61,7 @@ public interface Validations {
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String caseClassificationInvalid = "caseClassificationInvalid";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityDetails = "noFacilityDetails";
@@ -95,6 +98,4 @@ public interface Validations {
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
-	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
-	String errorsInForm = "errorsInForm";
 }

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -127,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 211;
+	public static final int DATABASE_VERSION = 215;
 
 	private static DatabaseHelper instance = null;
 
@@ -1414,12 +1415,49 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+			case 211:
+				// Re-synchronize all contacts and epi data to prevent missing embedded entities
+				currentVersion = 211;
+				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+			case 212:
+				// Re-synchronize all contacts and epi data to prevent missing embedded entities
+				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Therapy.class).executeRaw("UPDATE therapy SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(ClinicalCourse.class).executeRaw("UPDATE clinicalCourse SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(HealthConditions.class).executeRaw("UPDATE healthConditions SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Event.class).executeRaw(
+					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+			case 213:
+				currentVersion = 213;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicalConfirmation varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN epidemiologicalConfirmation varchar(255);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN laboratoryDiagnosticConfirmation varchar(255);");
 
+			case 214:
+				currentVersion = 214;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSource varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSourceDetails varchar(512);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingApp varchar(255);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingAppDetails varchar(512);");
 
 				// ATTENTION: break should only be done after last version
-
 				break;
-
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}

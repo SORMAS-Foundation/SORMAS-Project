@@ -46,21 +46,36 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/main_content"
-                style="@style/LayoutSingleContentSpaceBelowStyle">
-
-                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:id="@+id/main_content"
+                    style="@style/LayoutSingleContentSpaceBelowStyle">
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_clinicalConfirmation"
+                        style="@style/ControlSingleColumnStyle"
+                        app:value="@{data.clinicalConfirmation}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_epidemiologicalConfirmation"
+                        style="@style/ControlSingleColumnStyle"
+                        app:value="@{data.epidemiologicalConfirmation}"/>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_laboratoryDiagnosticConfirmation"
+                        style="@style/ControlSingleColumnStyle"
+                        app:value="@{data.laboratoryDiagnosticConfirmation}"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_investigationStatus"
-                        app:value="@{data.investigationStatus}"
-                        style="@style/ControlFirstOfTwoColumnsStyle" />
+                            android:id="@+id/caseData_investigationStatus"
+                            app:value="@{data.investigationStatus}"
+                            style="@style/ControlFirstOfTwoColumnsStyle"/>
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_caseClassification"
