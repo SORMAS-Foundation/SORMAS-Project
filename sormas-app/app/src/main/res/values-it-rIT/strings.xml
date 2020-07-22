@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Eventi Confermati</string>
     <string name="caption_contact_information">Informazioni di contatto</string>
     <string name="caption_contact_tasks">Attivita di contatto</string>
+    <string name="caption_contact_epidemiological_data">Dati epidemiologici</string>
     <string name="caption_contact_visits">Informazioni addizionali</string>
     <string name="caption_converted_to_case">Convertito in caso</string>
     <string name="caption_date_of_birth">Data di nascita (anno/mese /giorno)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Un valore è richiesto per questo campo. Assicurati di digitare o selezionare un valore prima di continuare.</string>
     <string name="validation_soft_add_list_entry">Si prega di aggiungere una voce alla lista se ci sono dati a vostra disposizione.</string>
     <string name="validation_soft_case_classification">Questo caso dovrebbe essere classificato non appena sono disponibili le informazioni richieste.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">Il numero EPID non corrisponde al modello richiesto. Puoi ancora salvare il caso e inserire il numero corretto più tardi.</string>
     <string name="validation_soft_case_epid_number_empty">Deve essere fornito un numero EPID. È possibile salvare il caso e inserire il numero corretto più tardi.</string>
     <string name="validation_symptoms_fever">La temperatura è nell\'íntervallo della febbre. La febbre deve essere impostata su \'Sì\'.</string>

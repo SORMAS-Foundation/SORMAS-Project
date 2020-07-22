@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Vahvistetut tapahtumat</string>
     <string name="caption_contact_information">Yhteystiedot</string>
     <string name="caption_contact_tasks">Kontaktitehtävät</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Seurantatiedot</string>
     <string name="caption_converted_to_case">Sairastunut seurannassa</string>
     <string name="caption_date_of_birth">Syntymäpäivä (vuosi / kuukausi / päivä)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Tämän kentän arvo tarvitaan. Varmista, että syötät tai valitset arvon ennen jatkamista.</string>
     <string name="validation_soft_add_list_entry">Lisää merkintä listaan jos sinulla on jotain tietoja käytettävissä.</string>
     <string name="validation_soft_case_classification">Tämä potilas tulisi luokitella heti kun tarvittavat tiedot ovat käytettävissä.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">EPID-numero ei ole tarvittavaa muotoa. Voit kuitenkin tallentaa potilaan ja antaa oikean numeron myöhemmin.</string>
     <string name="validation_soft_case_epid_number_empty">EPID-numero tarvitaan. Voit kuitenkin tallentaa potilaan ja antaa oikean numeron myöhemmin.</string>
     <string name="validation_symptoms_fever">Lämpö on kuumeen puolella. Kuume tulee asettaa arvoon \'Kyllä\'.</string>

@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Confirmed Events</string>
     <string name="caption_contact_information">Contact Information</string>
     <string name="caption_contact_tasks">Contact Tasks</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">A value is required for this field. Please make sure to type in or select a value before continuing.</string>
     <string name="validation_soft_add_list_entry">Please add an entry to the list if there is any data available to you.</string>
     <string name="validation_soft_case_classification">This case should be classified as soon as the required information is available.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">The EPID number does not match the required pattern. You may still save the case and enter the correct number later.</string>
     <string name="validation_soft_case_epid_number_empty">An EPID number has to be provided. You may still save the case and enter the correct number later.</string>
     <string name="validation_symptoms_fever">Temperature is in fever range. Fever should be set to \'Yes\'.</string>
