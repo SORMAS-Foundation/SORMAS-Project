@@ -35,11 +35,11 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 
-	public static final String EVENT_DATE_FROM = "eventDateFrom";
-	public static final String EVENT_DATE_TO = "eventDateTo";
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String FREE_TEXT = "freeText";
+	public static final String DISTRICT = "district";
+	public static final String REGION = "region";
 
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -58,6 +58,8 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private EventSourceType srcType;
 	private CaseReferenceDto caze;
 	private Boolean userFilterIncluded = true;
+	private TypeOfPlace typeOfPlace;
+
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -66,6 +68,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria eventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
 		return this;
+	}
+
+	public void setEventStatus(EventStatus eventStatus) {
+		this.eventStatus = eventStatus;
 	}
 
 	public Disease getDisease() {
@@ -131,6 +137,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	public void setRegion(RegionReferenceDto region) {
+		this.region = region;
+	}
+
 	public RegionReferenceDto getRegion() {
 		return this.region;
 	}
@@ -138,6 +148,10 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
+	}
+
+	public void setDistrict(DistrictReferenceDto district) {
+		this.district = district;
 	}
 
 	public DistrictReferenceDto getDistrict() {
@@ -240,5 +254,13 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public void setSrcType(EventSourceType srcType) {
 		this.srcType = srcType;
+	}
+
+	public TypeOfPlace getTypeOfPlace() {
+		return typeOfPlace;
+	}
+
+	public void setTypeOfPlace(TypeOfPlace typeOfPlace) {
+		this.typeOfPlace = typeOfPlace;
 	}
 }
