@@ -44,7 +44,6 @@ import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -78,6 +77,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -133,6 +133,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
@@ -440,7 +442,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			// Fields that are depending on a certain feature type to be active may be ignored
 			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
-				List<FeatureType> activeServerFeatures = FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes();
+				List<FeatureType> activeServerFeatures = featureConfigurationFacade.getActiveServerFeatureTypes();
 				if (!activeServerFeatures.isEmpty()
 					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
 					continue;
