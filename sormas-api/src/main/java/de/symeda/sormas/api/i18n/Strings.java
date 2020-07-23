@@ -723,7 +723,7 @@ public interface Strings {
 	String step = "step";
 	String toCase = "toCase";
 	String total = "total";
-	String unknown = "unknown";
+	String notSpecified = "notSpecified";
 	String until = "until";
 	String week = "week";
 	String weekShort = "weekShort";

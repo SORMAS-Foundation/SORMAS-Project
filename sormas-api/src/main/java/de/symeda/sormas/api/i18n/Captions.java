@@ -1410,7 +1410,7 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
-	String unknown = "unknown";
+	String notSpecified = "notSpecified";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

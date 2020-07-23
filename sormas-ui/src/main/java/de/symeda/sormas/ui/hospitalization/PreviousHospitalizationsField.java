@@ -59,7 +59,7 @@ public class PreviousHospitalizationsField extends AbstractTableField<PreviousHo
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				PreviousHospitalizationDto prevHospitalization = (PreviousHospitalizationDto) itemId;
 				if (prevHospitalization.getAdmissionDate() == null && prevHospitalization.getDischargeDate() == null) {
-					return I18nProperties.getString(Strings.unknown);
+					return I18nProperties.getString(Strings.notSpecified);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(
