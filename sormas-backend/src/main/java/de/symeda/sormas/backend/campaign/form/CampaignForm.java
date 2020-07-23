@@ -84,6 +84,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 		if (this.campaignFormElementsList == null) {
 			campaignFormElements = null;
+			return;
 		}
 
 		try {
@@ -128,6 +129,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 		if (this.campaignFormTranslationsList == null) {
 			campaignFormTranslations = null;
+			return;
 		}
 
 		try {

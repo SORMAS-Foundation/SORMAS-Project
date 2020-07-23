@@ -106,6 +106,7 @@ public class CampaignFormData extends AbstractDomainObject {
 
 		if (this.formValuesList == null) {
 			formValues = null;
+			return;
 		}
 
 		try {
