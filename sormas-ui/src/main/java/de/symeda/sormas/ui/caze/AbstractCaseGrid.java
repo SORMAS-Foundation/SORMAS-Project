@@ -36,6 +36,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -61,10 +62,13 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	public static final String NUMBER_OF_VISITS = Captions.CaseData_numberOfVisits;
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
 
+	private final boolean caseFollowUpEnabled;
+
 	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
 
 		super(beanType);
 		setSizeFull();
+		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
@@ -141,8 +145,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
-				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
+		if (caseFollowUpEnabled) {
+			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
+					.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
@@ -180,11 +186,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.POINT_OF_ENTRY_NAME,
 				CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.QUARANTINE_TO,
-				CaseIndexDto.CREATION_DATE,
+				CaseIndexDto.CREATION_DATE),
+		caseFollowUpEnabled ? Stream.of(
 				CaseIndexDto.FOLLOW_UP_STATUS,
 				CaseIndexDto.FOLLOW_UP_UNTIL,
-				NUMBER_OF_VISITS,
-				COLUMN_COMPLETENESS))
+				NUMBER_OF_VISITS) : Stream.<String>empty(),
+				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(s -> s);
 	}
 
@@ -204,10 +211,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
 		}
 
-		if (getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
-			this.getColumn(NUMBER_OF_VISITS).setHidden(true);
-		} else {
-			this.getColumn(NUMBER_OF_VISITS).setHidden(false);
+		if (caseFollowUpEnabled) {
+			if (getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
+				this.getColumn(NUMBER_OF_VISITS).setHidden(true);
+			} else {
+				this.getColumn(NUMBER_OF_VISITS).setHidden(false);
+			}
 		}
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {

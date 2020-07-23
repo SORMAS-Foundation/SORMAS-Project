@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -54,10 +55,14 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -104,6 +109,9 @@ public class CasesView extends AbstractView {
 	 */
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
+	private final boolean caseFollowUpEnabled;
+	private final ExportConfigurationDto detailedExportConfiguration;
+
 	private CaseCriteria criteria;
 	private CasesViewConfiguration viewConfiguration;
 
@@ -136,6 +144,8 @@ public class CasesView extends AbstractView {
 
 		super(VIEW_NAME);
 
+		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
 			viewConfiguration.setViewType(CasesViewType.DEFAULT);
@@ -181,9 +191,11 @@ public class CasesView extends AbstractView {
 		casesViewSwitcher.addItem(CasesViewType.DETAILED);
 		casesViewSwitcher.setItemCaption(CasesViewType.DETAILED, I18nProperties.getCaption(Captions.caseDetailedView));
 
-		casesViewSwitcher.addItem(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW);
-		casesViewSwitcher
-				.setItemCaption(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW, I18nProperties.getCaption(Captions.caseFollowupVisitsView));
+		if (caseFollowUpEnabled) {
+			casesViewSwitcher.addItem(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW);
+			casesViewSwitcher
+					.setItemCaption(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW, I18nProperties.getCaption(Captions.caseFollowupVisitsView));
+		}
 
 		casesViewSwitcher.setValue(viewConfiguration.getViewType());
 		casesViewSwitcher.addValueChangeListener(e -> {
@@ -199,6 +211,19 @@ public class CasesView extends AbstractView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto res = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
+
+		res.setExportType(ExportType.CASE);
+
+		res.setProperties(
+			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS))
+				.stream()
+				.map(p -> p.getElement0())
+				.collect(Collectors.toSet()));
+		return res;
 	}
 
 	private void addCommonCasesOverviewToolbar() {
@@ -256,7 +281,13 @@ public class CasesView extends AbstractView {
 					CaseExportDto.class,
 					CaseExportType.CASE_SURVEILLANCE,
 					(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-						.getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
+						.getExportList(
+							grid.getCriteria(),
+							CaseExportType.CASE_SURVEILLANCE,
+							start,
+							max,
+							detailedExportConfiguration,
+							I18nProperties.getUserLanguage()),
 					(propertyId, type) -> {
 						String caption = I18nProperties.findPrefixCaption(
 							propertyId,
@@ -273,7 +304,7 @@ public class CasesView extends AbstractView {
 						return caption;
 					},
 					createFileNameWithCurrentDate("sormas_cases_", ".csv"),
-					null);
+					detailedExportConfiguration);
 				addExportButton(
 					exportStreamResource,
 					exportPopupButton,

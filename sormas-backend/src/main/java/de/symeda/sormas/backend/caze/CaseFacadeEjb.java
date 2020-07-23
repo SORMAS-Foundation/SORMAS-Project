@@ -514,38 +514,44 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
 
-			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
-			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
-			Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
-			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+			if (exportConfiguration == null
+				|| exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_VISITS)
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
+				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
+				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+				Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-			visitsCq.where(
+				visitsCq.where(
 					CaseService.and(cb, caseRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
-			visitsCq.multiselect(
+				visitsCq.multiselect(
 					visitsCqRoot.get(AbstractDomainObject.ID),
 					visitsJoin.get(Visit.VISIT_DATE_TIME),
 					visitsJoin.get(Visit.VISIT_STATUS),
 					visitSymptomsJoin);
 
-			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
+				List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
-			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
-			// doesn't seem to be possible and using a native query is not an option because of user filters
-			for (CaseExportDto exportCase : resultList) {
-				List<VisitSummaryExportDetails> visits =
+				// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
+				// doesn't seem to be possible and using a native query is not an option because of user filters
+				for (CaseExportDto exportCase : resultList) {
+					List<VisitSummaryExportDetails> visits =
 						visitSummaries.stream().filter(v -> v.getContactId() == exportCase.getId()).collect(Collectors.toList());
 
-				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
+					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
 						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
 						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
 						.orElse(null);
 
-				exportCase.setNumberOfVisits(visits.size());
-				if (lastCooperativeVisit != null) {
-					exportCase.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-					exportCase.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
-					exportCase
-							.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+					exportCase.setNumberOfVisits(visits.size());
+					if (lastCooperativeVisit != null) {
+						exportCase.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+						exportCase.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
+						exportCase.setLastCooperativeVisitSymptomatic(
+							lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+					}
 				}
 			}
 

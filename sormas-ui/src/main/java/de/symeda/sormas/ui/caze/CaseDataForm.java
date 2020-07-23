@@ -126,7 +126,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 
 	//@formatter:off
-	private static final String HTML_LAYOUT =
+	private static final String HEAD_HTML_LAYOUT =
 			loc(CASE_DATA_HEADING_LOC) +
 					fluidRowLocs(4, CaseDataDto.UUID, 3, CaseDataDto.REPORT_DATE, 5, CaseDataDto.REPORTING_USER) +
 					fluidRowLocs(4, CaseDataDto.CLINICAL_CONFIRMATION, 4, CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, 4, CaseDataDto.LABORATORY_DIAGNOSTIC_CONFIRMATION) +
@@ -178,17 +178,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE,
-							CaseDataDto.NATIONAL_LEVEL_DATE) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+							CaseDataDto.NATIONAL_LEVEL_DATE);
+
+	private static final String FOLLOWUP_LAYOUT =
+			fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 					fluidRowLocs(4, CaseDataDto.FOLLOW_UP_UNTIL, 8, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
-					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT)
-					+ loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
+					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
+
+	private static final String TAIL_HTML_LAYOUT =
+					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
 	//@formatter:on
 
 	private final String caseUuid;
 	private final PersonDto person;
 	private final Disease disease;
 	private final SymptomsDto symptoms;
+	private final boolean caseFollowUpEnabled;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
@@ -210,6 +215,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		this.person = person;
 		this.disease = disease;
 		this.symptoms = symptoms;
+		this.caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		addFields();
 	}
@@ -424,10 +430,34 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
 		TextField tfReportAccuracy = addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
-		addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
-		addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
-		DateField dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
-		addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
+		DateField dfFollowUpUntil = null;
+		if (caseFollowUpEnabled) {
+			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
+			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
+			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
+
+			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
+
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					CaseDataDto.FOLLOW_UP_STATUS,
+					Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
+					Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+			FieldHelper.setReadOnlyWhen(
+					getFieldGroup(),
+					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+					Arrays.asList(Boolean.FALSE),
+					false,
+					true);
+			FieldHelper.setRequiredWhen(
+					getFieldGroup(),
+					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+					Arrays.asList(Boolean.TRUE));
+		}
+		final DateField finalFollowUpUntil = dfFollowUpUntil;
 
 		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
@@ -485,8 +515,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.CLASSIFICATION_DATE,
 			CaseDataDto.POINT_OF_ENTRY,
 			CaseDataDto.POINT_OF_ENTRY_DETAILS,
-			CaseDataDto.CASE_ORIGIN,
-			CaseDataDto.FOLLOW_UP_STATUS);
+			CaseDataDto.CASE_ORIGIN);
+
 		setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_CHANGE_DISEASE), CaseDataDto.DISEASE);
 		setReadOnly(
 			!UserProvider.getCurrent().hasUserRight(UserRight.CASE_INVESTIGATE),
@@ -506,24 +536,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.COMMUNITY,
 			CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.HEALTH_FACILITY_DETAILS);
-
-		FieldHelper.setRequiredWhen(
-				getFieldGroup(),
-				CaseDataDto.FOLLOW_UP_STATUS,
-				Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
-				Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
-		FieldHelper.setReadOnlyWhen(
-				getFieldGroup(),
-				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-				Arrays.asList(Boolean.FALSE),
-				false,
-				true);
-		FieldHelper.setRequiredWhen(
-				getFieldGroup(),
-				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-				Arrays.asList(Boolean.TRUE));
 
 		// Set conditional visibilities - ALWAYS call isVisibleAllowed before
 		// dynamically setting the visibility
@@ -728,21 +740,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
 			}
 
-			// Add follow-up until validator
-			Date minimumFollowUpUntilDate = DateHelper.addDays(
-					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
-			dfFollowUpUntil.addValidator(
-					new DateRangeValidator(
-							I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-							minimumFollowUpUntilDate,
-							null,
-							Resolution.DAY));
+			if (caseFollowUpEnabled) {
+				// Add follow-up until validator
+				Date minimumFollowUpUntilDate = DateHelper.addDays(
+						CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
+						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
+				finalFollowUpUntil.addValidator(
+						new DateRangeValidator(
+								I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+								minimumFollowUpUntilDate,
+								null,
+								Resolution.DAY));
+			}
 		});
 	}
 
 	@SuppressWarnings("unchecked")
 	private void updateFollowUpStatusComponents() {
+		if (!caseFollowUpEnabled) {
+			return;
+		}
 
 		getContent().removeComponent(CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 		getContent().removeComponent(LOST_FOLLOW_UP_BTN_LOC);
@@ -837,7 +854,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		return HEAD_HTML_LAYOUT + (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "") + TAIL_HTML_LAYOUT;
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
