@@ -244,11 +244,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 			if (source.getContact() != null) {
 				ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getContact());
-				pseudonymizer.pseudonymizeDto(
-					ContactReferenceDto.class,
-					target.getContact(),
-					contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
-					null);
+				pseudonymizeContactReference(pseudonymizer, target.getContact(), contactJurisdiction);
 			}
 
 			if (source.getEvent() != null) {
@@ -466,11 +462,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				}
 
 				if (t.getContact() != null) {
-					pseudonymizer.pseudonymizeDto(
-						ContactReferenceDto.class,
-						t.getContact(),
-						contactJurisdictionChecker.isInJurisdiction(t.getJurisdiction().getContactJurisdiction()),
-						null);
+					pseudonymizeContactReference(pseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
 				}
 
 				if (t.getEvent() != null) {
@@ -483,6 +475,23 @@ public class TaskFacadeEjb implements TaskFacade {
 			});
 
 		return tasks;
+	}
+
+	private void pseudonymizeContactReference(
+		Pseudonymizer pseudonymizer,
+		ContactReferenceDto contactReference,
+		ContactJurisdictionDto contactJurisdiction) {
+		pseudonymizer.pseudonymizeDto(
+			ContactReferenceDto.PersonName.class,
+			contactReference.getContactName(),
+			contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
+			null);
+
+		pseudonymizer.pseudonymizeDto(
+			ContactReferenceDto.PersonName.class,
+			contactReference.getCaseName(),
+			caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()),
+			null);
 	}
 
 	@Override

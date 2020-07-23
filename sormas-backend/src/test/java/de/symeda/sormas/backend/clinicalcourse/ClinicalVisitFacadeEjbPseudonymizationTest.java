@@ -15,9 +15,20 @@
 
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitExportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitIndexDto;
@@ -29,20 +40,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import info.novatec.beantest.transactions.Transactional;
-import org.hibernate.Hibernate;
-import org.joda.time.DateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Calendar;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -114,8 +111,8 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		List<ClinicalVisitIndexDto> indexList = getClinicalVisitFacade().getIndexList(null);
 
 		ClinicalVisitIndexDto export1 = indexList.stream().filter(v -> v.getUuid().equals(visit1.getUuid())).findFirst().get();
-		assertThat(export1.getVisitingPerson(), isEmptyString());
-		assertThat(export1.getVisitRemarks(), isEmptyString());
+		assertThat(export1.getVisitingPerson(), is("Confidential"));
+		assertThat(export1.getVisitRemarks(), is("Confidential"));
 
 		ClinicalVisitIndexDto export2 = indexList.stream().filter(v -> v.getUuid().equals(visit2.getUuid())).findFirst().get();
 		assertThat(export2.getVisitingPerson(), is("John Smith"));
@@ -135,9 +132,9 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		List<ClinicalVisitExportDto> exportList = getClinicalVisitFacade().getExportList(new CaseCriteria(), 0, 100);
 
 		ClinicalVisitExportDto export1 = exportList.stream().filter(v -> v.getCaseUuid().equals(case1.getUuid())).findFirst().get();
-		assertThat(export1.getCaseName(), isEmptyString());
-		assertThat(export1.getVisitingPerson(), isEmptyString());
-		assertThat(export1.getVisitRemarks(), isEmptyString());
+		assertThat(export1.getCaseName(), is("Confidential"));
+		assertThat(export1.getVisitingPerson(), is("Confidential"));
+		assertThat(export1.getVisitRemarks(), is("Confidential"));
 
 		ClinicalVisitExportDto export2 = exportList.stream().filter(v -> v.getCaseUuid().equals(case2.getUuid())).findFirst().get();
 		assertThat(export2.getCaseName(), is("John SMITH"));

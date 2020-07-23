@@ -25,8 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +32,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.therapy.PrescriptionExportDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.user.UserDto;
@@ -109,9 +107,9 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export1.getTreatmentRoute(), is("Test route details"));
 
 		TreatmentIndexDto export2 = treatments.stream().filter(p -> p.getUuid().equals(treatment2.getUuid())).findFirst().get();
-		assertThat(export2.getExecutingClinician(), isEmptyString());
-		assertThat(export2.getTreatmentType(), is("Blood transfusion"));
-		assertThat(export2.getTreatmentRoute(), is("Other"));
+		assertThat(export2.getExecutingClinician(), is("Confidential"));
+		assertThat(export2.getTreatmentType(), is("Blood transfusion - Confidential"));
+		assertThat(export2.getTreatmentRoute(), is("Confidential"));
 	}
 
 	@Test
@@ -132,11 +130,11 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export1.getAdditionalNotes(), is("Test additional notes"));
 
 		TreatmentExportDto export2 = exportList.stream().filter(p -> p.getCaseUuid().equals(case2.getUuid())).findFirst().get();
-		assertThat(export2.getCaseName(), isEmptyString());
-		assertThat(export2.getExecutingClinician(), isEmptyString());
-		assertThat(export2.getTreatmentDetails(), isEmptyString());
-		assertThat(export2.getRouteDetails(), isEmptyString());
-		assertThat(export2.getAdditionalNotes(), isEmptyString());
+		assertThat(export2.getCaseName(), is("Confidential"));
+		assertThat(export2.getExecutingClinician(), is("Confidential"));
+		assertThat(export2.getTreatmentDetails(), is("Confidential"));
+		assertThat(export2.getRouteDetails(), is("Confidential"));
+		assertThat(export2.getAdditionalNotes(), is("Confidential"));
 	}
 
 	@Test

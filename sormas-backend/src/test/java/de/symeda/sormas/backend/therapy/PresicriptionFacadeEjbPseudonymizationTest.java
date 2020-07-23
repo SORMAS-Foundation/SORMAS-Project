@@ -105,9 +105,9 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		assertThat(export1.getPrescriptionRoute(), is("Test route details"));
 
 		PrescriptionIndexDto export2 = prescriptions.stream().filter(p -> p.getUuid().equals(prescription2.getUuid())).findFirst().get();
-		assertThat(export2.getPrescribingClinician(), isEmptyString());
-		assertThat(export2.getPrescriptionType(), is("Blood transfusion"));
-		assertThat(export2.getPrescriptionRoute(), is("Other"));
+		assertThat(export2.getPrescribingClinician(), is("Confidential"));
+		assertThat(export2.getPrescriptionType(), is("Blood transfusion - Confidential"));
+		assertThat(export2.getPrescriptionRoute(), is("Confidential"));
 	}
 
 
@@ -129,11 +129,11 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		assertThat(export1.getAdditionalNotes(), is("Test additional notes"));
 
 		PrescriptionExportDto export2 = prescriptions.stream().filter(p -> p.getCaseUuid().equals(case2.getUuid())).findFirst().get();
-		assertThat(export2.getCaseName(), isEmptyString());
-		assertThat(export2.getPrescribingClinician(), isEmptyString());
-		assertThat(export2.getPrescriptionDetails(), isEmptyString());
-		assertThat(export2.getRouteDetails(), isEmptyString());
-		assertThat(export2.getAdditionalNotes(), isEmptyString());
+		assertThat(export2.getCaseName(), is("Confidential"));
+		assertThat(export2.getPrescribingClinician(), is("Confidential"));
+		assertThat(export2.getPrescriptionDetails(), is("Confidential"));
+		assertThat(export2.getRouteDetails(), is("Confidential"));
+		assertThat(export2.getAdditionalNotes(), is("Confidential"));
 	}
 
 	@Test

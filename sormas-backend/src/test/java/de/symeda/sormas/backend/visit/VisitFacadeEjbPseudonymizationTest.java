@@ -99,7 +99,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<VisitIndexDto> indexList1 = getVisitFacade().getIndexList(new VisitCriteria().contact(contact1.toReference()), 0, 100, null);
 		VisitIndexDto index1 = indexList1.get(0);
-		assertThat(index1.getVisitRemarks(), isEmptyString());
+		assertThat(index1.getVisitRemarks(), is("Confidential"));
 
 		List<VisitIndexDto> indexList2 = getVisitFacade().getIndexList(new VisitCriteria().contact(contact2.toReference()), 0, 100, null);
 		VisitIndexDto index2 = indexList2.get(0);

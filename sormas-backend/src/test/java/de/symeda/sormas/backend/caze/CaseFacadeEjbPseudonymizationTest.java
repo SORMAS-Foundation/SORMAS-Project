@@ -162,10 +162,10 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseIndexDto caseIndex1 = indexList.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get();
 
-		assertThat(caseIndex1.getPersonFirstName(), isEmptyString());
-		assertThat(caseIndex1.getPersonLastName(), isEmptyString());
-		assertThat(caseIndex1.getHealthFacilityName(), isEmptyString());
-		assertThat(caseIndex1.getPointOfEntryName(), isEmptyString());
+		assertThat(caseIndex1.getPersonFirstName(), is("Confidential"));
+		assertThat(caseIndex1.getPersonLastName(), is("Confidential"));
+		assertThat(caseIndex1.getHealthFacilityName(), is("Confidential"));
+		assertThat(caseIndex1.getPointOfEntryName(), is("Confidential"));
 
 		CaseIndexDto caseIndex2 = indexList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
 		assertThat(caseIndex2.getPersonFirstName(), is("James"));
@@ -191,16 +191,16 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseExportDto caseIndex1 = exportList.stream().filter(c -> c.getUuid().equals(caze1.getUuid())).findFirst().get();
 
-		assertThat(caseIndex1.getCommunity(), isEmptyString());
-		assertThat(caseIndex1.getHealthFacility(), isEmptyString());
-		assertThat(caseIndex1.getPointOfEntry(), isEmptyString());
-		assertThat(caseIndex1.getFirstName(), isEmptyString());
-		assertThat(caseIndex1.getLastName(), isEmptyString());
-		assertThat(caseIndex1.getAddress(), isEmptyString());
+		assertThat(caseIndex1.getCommunity(), is("Confidential"));
+		assertThat(caseIndex1.getHealthFacility(), is("Confidential"));
+		assertThat(caseIndex1.getPointOfEntry(), is("Confidential"));
+		assertThat(caseIndex1.getFirstName(), is("Confidential"));
+		assertThat(caseIndex1.getLastName(), is("Confidential"));
+		assertThat(caseIndex1.getAddress(), is("Confidential"));
 		assertThat(caseIndex1.getPostalCode(), is("123"));
-		assertThat(caseIndex1.getAddressGpsCoordinates(), isEmptyString());
-		assertThat(caseIndex1.getBurialInfo().getBurialPlaceDescription(), is(isEmptyString()));
-		assertThat(caseIndex1.getSample1().formatString(), is("2020-06-10 (Pending)"));
+		assertThat(caseIndex1.getAddressGpsCoordinates(), is("Confidential"));
+		assertThat(caseIndex1.getBurialInfo().getBurialPlaceDescription(), is("Confidential"));
+		assertThat(caseIndex1.getSample1().formatString(), is("2020-06-10 (Confidential, Pending)"));
 
 		CaseExportDto caseIndex2 = exportList.stream().filter(c -> c.getUuid().equals(caze2.getUuid())).findFirst().get();
 		assertThat(caseIndex2.getCommunity(), is(rdcf2.community.getCaption()));

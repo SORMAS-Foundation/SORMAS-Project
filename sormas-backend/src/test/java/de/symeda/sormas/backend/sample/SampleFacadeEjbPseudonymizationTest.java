@@ -164,14 +164,14 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index1.getAssociatedCase().getLastName(), is("Smith"));
 
 		SampleIndexDto index2 = indexList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertThat(index2.getAssociatedCase().getFirstName(), isEmptyString());
-		assertThat(index2.getAssociatedCase().getLastName(), isEmptyString());
+		assertThat(index2.getAssociatedCase().getFirstName(), is("Confidential"));
+		assertThat(index2.getAssociatedCase().getLastName(), is("Confidential"));
 
 		SampleIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst().get();
 		assertThat(index3.getAssociatedContact().getCaption(), is("John SMITH"));
 
 		SampleIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst().get();
-		assertThat(index4.getAssociatedContact().getCaption(), is(DataHelper.getShortUuid(sample4.getAssociatedContact().getUuid())));
+		assertThat(index4.getAssociatedContact().getCaption(), is("Confidential CONFIDENTIAL"));
 	}
 
 	@Test
@@ -217,18 +217,17 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export1.getPathogenTestLab1(), is("Lab - Test lab details"));
 		assertThat(export1.getPathogenTestType1(), is("Test type text"));
 
-
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertThat(export2.getSampleAssociatedCase().getFirstName(), isEmptyString());
-		assertThat(export2.getSampleAssociatedCase().getLastName(), isEmptyString());
-		assertThat(export2.getLab(), isEmptyString());
-		assertThat(export2.getPathogenTestLab1(), isEmptyString());
-		assertThat(export2.getPathogenTestType1(), isEmptyString());
-		assertThat(export2.getPathogenTestLab2(), isEmptyString());
-		assertThat(export2.getPathogenTestType2(), isEmptyString());
-		assertThat(export2.getPathogenTestLab3(), isEmptyString());
-		assertThat(export2.getPathogenTestType3(), isEmptyString());
-		assertThat(export2.getOtherPathogenTestsDetails(), is("2020-06-10 (COVID-19, Pending)"));
+		assertThat(export2.getSampleAssociatedCase().getFirstName(), is("Confidential"));
+		assertThat(export2.getSampleAssociatedCase().getLastName(), is("Confidential"));
+		assertThat(export2.getLab(), is("Confidential"));
+		assertThat(export2.getPathogenTestLab1(), is("Confidential"));
+		assertThat(export2.getPathogenTestType1(), is("Confidential"));
+		assertThat(export2.getPathogenTestLab2(), is("Confidential"));
+		assertThat(export2.getPathogenTestType2(), is("Confidential"));
+		assertThat(export2.getPathogenTestLab3(), is("Confidential"));
+		assertThat(export2.getPathogenTestType3(), is("Confidential"));
+		assertThat(export2.getOtherPathogenTestsDetails(), is("2020-06-10 (Confidential, COVID-19, Pending)"));
 
 		// export contact sample not yet implemented
 		Optional<SampleExportDto> export3 = exportList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst();
@@ -240,11 +239,21 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private void createPathogenTest(SampleDto sample, UserDto user) {
 		Date testDateTime = new Date(1591747200000L);//2020-06-10
-		creator.createPathogenTest(sample.toReference(), PathogenTestType.ISOLATION, Disease.CORONAVIRUS, testDateTime, sample.getLab(), user.toReference(), PathogenTestResultType.PENDING, "", true, t -> {
-			t.setLabDetails("Test lab details");
-			t.setTestType(PathogenTestType.OTHER);
-			t.setTestTypeText("Test type text");
-		});
+		creator.createPathogenTest(
+			sample.toReference(),
+			PathogenTestType.ISOLATION,
+			Disease.CORONAVIRUS,
+			testDateTime,
+			sample.getLab(),
+			user.toReference(),
+			PathogenTestResultType.PENDING,
+			"",
+			true,
+			t -> {
+				t.setLabDetails("Test lab details");
+				t.setTestType(PathogenTestType.OTHER);
+				t.setTestTypeText("Test type text");
+			});
 	}
 
 	@Test

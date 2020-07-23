@@ -150,14 +150,14 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactIndexDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
 		assertThat(index1.getLastName(), is("Smith"));
-		assertThat(index1.getCaze().getFirstName(), is(isEmptyString()));
-		assertThat(index1.getCaze().getLastName(), is(isEmptyString()));
+		assertThat(index1.getCaze().getFirstName(), is("Confidential"));
+		assertThat(index1.getCaze().getLastName(), is("Confidential"));
 
 		ContactIndexDto index2 = indexList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
-		assertThat(index2.getFirstName(), isEmptyString());
-		assertThat(index2.getLastName(), isEmptyString());
-		assertThat(index2.getCaze().getFirstName(), isEmptyString());
-		assertThat(index2.getCaze().getLastName(), isEmptyString());
+		assertThat(index2.getFirstName(), is("Confidential"));
+		assertThat(index2.getLastName(), is("Confidential"));
+		assertThat(index2.getCaze().getFirstName(), is("Confidential"));
+		assertThat(index2.getCaze().getLastName(), is("Confidential"));
 	}
 
 	@Test
@@ -173,15 +173,15 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		ContactIndexDetailedDto index1 = indexList.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get();
 		assertThat(index1.getFirstName(), is("James"));
 		assertThat(index1.getLastName(), is("Smith"));
-		assertThat(index1.getCaze().getFirstName(), is(isEmptyString()));
-		assertThat(index1.getCaze().getLastName(), is(isEmptyString()));
+		assertThat(index1.getCaze().getFirstName(), is(is("Confidential")));
+		assertThat(index1.getCaze().getLastName(), is(is("Confidential")));
 		assertThat(index1.getReportingUser().getUuid(), is(user2.getUuid()));
 
 		ContactIndexDetailedDto index2 = indexList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
-		assertThat(index2.getFirstName(), isEmptyString());
-		assertThat(index2.getLastName(), isEmptyString());
-		assertThat(index2.getCaze().getFirstName(), isEmptyString());
-		assertThat(index2.getCaze().getLastName(), isEmptyString());
+		assertThat(index2.getFirstName(), is("Confidential"));
+		assertThat(index2.getLastName(), is("Confidential"));
+		assertThat(index2.getCaze().getFirstName(), is("Confidential"));
+		assertThat(index2.getCaze().getLastName(), is("Confidential"));
 		assertThat(index2.getReportingUser(), is(nullValue()));
 	}
 
@@ -203,10 +203,10 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index1.getPostalCode(), is("12345"));
 
 		ContactExportDto index2 = exportList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
-		assertThat(index2.getFirstName(), isEmptyString());
-		assertThat(index2.getLastName(), isEmptyString());
-		assertThat(index2.getCity(), isEmptyString());
-		assertThat(index2.getAddress(), isEmptyString());
+		assertThat(index2.getFirstName(), is("Confidential"));
+		assertThat(index2.getLastName(), is("Confidential"));
+		assertThat(index2.getCity(), is("Confidential"));
+		assertThat(index2.getAddress(), is("Confidential"));
 		assertThat(index2.getPostalCode(), is("123"));
 	}
 
@@ -260,8 +260,8 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(followup1.getContactOfficer(), is(user2));
 
 		ContactFollowUpDto followup2 = matchingContacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
-		assertThat(followup2.getPerson().getFirstName(), isEmptyString());
-		assertThat(followup2.getPerson().getLastName(), isEmptyString());
+		assertThat(followup2.getPerson().getFirstName(), is("Confidential"));
+		assertThat(followup2.getPerson().getLastName(), is("Confidential"));
 
 		//sensitive data
 		assertThat(followup2.getContactOfficer(), is(nullValue()));
