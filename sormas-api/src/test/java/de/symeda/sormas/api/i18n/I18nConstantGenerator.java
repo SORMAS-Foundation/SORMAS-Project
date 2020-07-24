@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -18,6 +19,8 @@ import org.junit.Test;
  */
 public class I18nConstantGenerator {
 
+	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
+
 	@Test
 	public void generateI18nConstants() throws FileNotFoundException, IOException {
 
@@ -26,8 +29,24 @@ public class I18nConstantGenerator {
 		generateI18nConstantClass("validations.properties", "Validations", false);
 	}
 
-	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren)
-		throws FileNotFoundException, IOException {
+	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren) throws IOException {
+
+		String filePath = String.format(FILE_PATH_PATTERN, outputClassName);
+		Writer writer = new FileWriter(filePath, false);
+		writeI18nConstantClass(propertiesFileName, outputClassName, ignoreChildren, writer);
+	}
+
+	/**
+	 * @param propertiesFileName
+	 *            The properties file to read the contant keys from.
+	 * @param outputClassName
+	 *            Name of the constants class.
+	 * @param ignoreChildren
+	 * @param writer
+	 *            Writes the java file into this {@code writer}.
+	 * @throws IOException
+	 */
+	private void writeI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren, Writer writer) throws IOException {
 
 		Properties properties = new Properties();
 		InputStream inputStream = I18nProperties.class.getClassLoader().getResourceAsStream(propertiesFileName);
@@ -36,8 +55,7 @@ public class I18nConstantGenerator {
 		}
 
 		Enumeration<?> e = properties.propertyNames();
-		String filePath = "src/main/java/de/symeda/sormas/api/i18n/" + outputClassName + ".java";
-		FileWriter writer = new FileWriter(filePath, false);
+
 		writer.write("package de.symeda.sormas.api.i18n;\n\n");
 		writer.write("import javax.annotation.Generated;\n\n");
 		writer.write("@Generated(value = \"" + getClass().getCanonicalName() + "\")\n");
