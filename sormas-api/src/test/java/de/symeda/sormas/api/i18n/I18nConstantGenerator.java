@@ -4,25 +4,74 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
 /**
- * Intentionally named *Generator because we don't want Maven to execute this
- * class automatically.
+ * Generates Constants out of the corresponding property files.
+ * 
+ * @see Captions
+ * @see Strings
+ * @see Validations
  */
 public class I18nConstantGenerator {
 
 	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
 
-	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren) throws IOException {
+	private final String propertiesFileName;
+	private final String outputClassName;
+	private final String outputClassFilePath;
+	private final boolean ignoreChildren;
 
-		String filePath = String.format(FILE_PATH_PATTERN, outputClassName);
-		Writer writer = new FileWriter(filePath, false);
-		writeI18nConstantClass(propertiesFileName, outputClassName, ignoreChildren, writer);
+	/**
+	 * @param propertiesFileName
+	 *            The properties file to read the contant keys from.
+	 * @param outputClassName
+	 *            Name of the constants class.
+	 * @param ignoreChildren
+	 */
+	public I18nConstantGenerator(String propertiesFileName, String outputClassName, boolean ignoreChildren) {
+
+		this.propertiesFileName = propertiesFileName;
+		this.outputClassName = outputClassName;
+		this.outputClassFilePath = String.format(FILE_PATH_PATTERN, outputClassName);
+		this.ignoreChildren = ignoreChildren;
+	}
+
+	/**
+	 * @return The properties file to look up the what constants need to be generated.
+	 */
+	public String getPropertiesFileName() {
+		return propertiesFileName;
+	}
+
+	/**
+	 * @return Class name of the Constants file.
+	 */
+	public String getOutputClassName() {
+		return outputClassName;
+	}
+
+	/**
+	 * @return Path to the Constants file.
+	 */
+	public String getOutputClassFilePath() {
+		return outputClassFilePath;
+	}
+
+	public boolean isIgnoreChildren() {
+		return ignoreChildren;
+	}
+
+	private void generateI18nConstantClass() throws IOException {
+
+		Writer writer = new FileWriter(outputClassFilePath, false);
+		writeI18nConstantClass(writer);
 	}
 
 	/**
@@ -35,7 +84,7 @@ public class I18nConstantGenerator {
 	 *            Writes the java file into this {@code writer}.
 	 * @throws IOException
 	 */
-	private void writeI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren, Writer writer) throws IOException {
+	void writeI18nConstantClass(Writer writer) throws IOException {
 
 		Properties properties = new Properties();
 		InputStream inputStream = I18nProperties.class.getClassLoader().getResourceAsStream(propertiesFileName);
@@ -76,12 +125,29 @@ public class I18nConstantGenerator {
 		writer.close();
 	}
 
-	public static void main(String[] args) throws IOException {
+	static List<I18nConstantGenerator> buildConfig() {
 
-		I18nConstantGenerator generator = new I18nConstantGenerator();
+		List<I18nConstantGenerator> config = new ArrayList<>();
+		config.add(new I18nConstantGenerator("captions.properties", "Captions", false));
+		config.add(new I18nConstantGenerator("strings.properties", "Strings", false));
+		config.add(new I18nConstantGenerator("validations.properties", "Validations", false));
 
-		generator.generateI18nConstantClass("captions.properties", "Captions", false);
-		generator.generateI18nConstantClass("strings.properties", "Strings", false);
-		generator.generateI18nConstantClass("validations.properties", "Validations", false);
+		return config;
+	}
+
+	/**
+	 * Updates i18n Constant classes.
+	 */
+	public static void main(String[] args) {
+
+		for (I18nConstantGenerator generator : buildConfig()) {
+			try {
+				generator.generateI18nConstantClass();
+			} catch (IOException e) {
+				// This generator is manually run by developers, though print to console is permitted.
+				System.out.println("Failure writing " + generator.outputClassName);
+				e.printStackTrace();
+			}
+		}
 	}
 }
