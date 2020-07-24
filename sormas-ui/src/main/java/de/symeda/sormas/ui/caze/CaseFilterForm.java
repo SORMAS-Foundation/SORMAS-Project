@@ -1,13 +1,7 @@
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Date;
-import java.util.stream.Stream;
-
 import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -16,18 +10,22 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -45,6 +43,13 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
@@ -91,8 +96,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		addFields(
 			FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140),
-			FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140),
-			FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
+			FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
+
+		if (isGermanServer()) {
+			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
+		} else {
+			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
+			caseClassification.setWidth(140, Sizeable.Unit.PIXELS);
+			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
+			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
+		}
 
 		TextField searchField = addField(
 			FieldConfiguration
@@ -243,6 +256,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
+	@Override
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		ComboBox districtField = (ComboBox) getField(CaseDataDto.DISTRICT);

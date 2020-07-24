@@ -116,6 +116,7 @@ public interface Strings {
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityBurial = "entityBurial";
 	String entityCampaign = "entityCampaign";
+	String entityCampaignDataForm = "entityCampaignDataForm";
 	String entityCampaigns = "entityCampaigns";
 	String entityCase = "entityCase";
 	String entityCases = "entityCases";
@@ -320,6 +321,7 @@ public interface Strings {
 	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
+	String headingPickOrCreateEvent = "headingPickOrCreateEvent";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
@@ -373,6 +375,7 @@ public interface Strings {
 	String infoContactDashboard = "infoContactDashboard";
 	String infoContactsViewRegionDistrictFilter = "infoContactsViewRegionDistrictFilter";
 	String infoCreateNewSampleDiscardsChanges = "infoCreateNewSampleDiscardsChanges";
+	String infoCreateNewSampleDiscardsChangesEventParticipant = "infoCreateNewSampleDiscardsChangesEventParticipant";
 	String infoCustomCaseExport = "infoCustomCaseExport";
 	String infoDashboardIncidence = "infoDashboardIncidence";
 	String infoDatabaseExportTables = "infoDatabaseExportTables";
@@ -408,6 +411,7 @@ public interface Strings {
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
 	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
+	String infoPickOrCreateEventForCase = "infoPickOrCreateEventForCase";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
@@ -499,9 +503,11 @@ public interface Strings {
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
+	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
+	String messageCreateContactCase = "messageCreateContactCase";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDistrictArchived = "messageDistrictArchived";
 	String messageDistrictArchivingNotPossible = "messageDistrictArchivingNotPossible";

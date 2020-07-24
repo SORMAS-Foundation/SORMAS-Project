@@ -125,6 +125,9 @@ public interface Captions {
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
+	String campaignCampaignForm = "campaignCampaignForm";
+	String CampaignFormData_campaign = "CampaignFormData.campaign";
+	String CampaignFormData_campaignForm = "CampaignFormData.campaignForm";
 	String campaignNewCampaign = "campaignNewCampaign";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
@@ -145,6 +148,7 @@ public interface Captions {
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
 	String CaseData_classifiedBy = "CaseData.classifiedBy";
+	String CaseData_clinicalConfirmation = "CaseData.clinicalConfirmation";
 	String CaseData_clinicalCourse = "CaseData.clinicalCourse";
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
@@ -156,6 +160,7 @@ public interface Captions {
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_epiData = "CaseData.epiData";
+	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_externalID = "CaseData.externalID";
 	String CaseData_healthConditions = "CaseData.healthConditions";
@@ -165,6 +170,7 @@ public interface Captions {
 	String CaseData_hospitalization = "CaseData.hospitalization";
 	String CaseData_investigatedDate = "CaseData.investigatedDate";
 	String CaseData_investigationStatus = "CaseData.investigationStatus";
+	String CaseData_laboratoryDiagnosticConfirmation = "CaseData.laboratoryDiagnosticConfirmation";
 	String CaseData_maternalHistory = "CaseData.maternalHistory";
 	String CaseData_nationalLevelDate = "CaseData.nationalLevelDate";
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
@@ -221,6 +227,8 @@ public interface Captions {
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
+	String caseEvents = "caseEvents";
+	String caseEventsResetDateFilter = "caseEventsResetDateFilter";
 	String CaseExport_address = "CaseExport.address";
 	String CaseExport_addressDistrict = "CaseExport.addressDistrict";
 	String CaseExport_addressGpsCoordinates = "CaseExport.addressGpsCoordinates";
@@ -343,6 +351,8 @@ public interface Captions {
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
+	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
+	String Contact_contactIdentificationSourceDetails = "Contact.contactIdentificationSourceDetails";
 	String Contact_contactOfficer = "Contact.contactOfficer";
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
 	String Contact_contactProximity = "Contact.contactProximity";
@@ -388,6 +398,8 @@ public interface Captions {
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
+	String Contact_tracingApp = "Contact.tracingApp";
+	String Contact_tracingAppDetails = "Contact.tracingAppDetails";
 	String Contact_uuid = "Contact.uuid";
 	String Contact_visits = "Contact.visits";
 	String contactActiveContacts = "contactActiveContacts";
@@ -434,6 +446,7 @@ public interface Captions {
 	String contactRemoveCase = "contactRemoveCase";
 	String contactResumeFollowUp = "contactResumeFollowUp";
 	String contactSelect = "contactSelect";
+	String convertContactToCase = "convertContactToCase";
 	String convertEventParticipantToCase = "convertEventParticipantToCase";
 	String creationDate = "creationDate";
 	String dashboardAlive = "dashboardAlive";
@@ -716,6 +729,7 @@ public interface Captions {
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
+	String eventNoEventLinkedToCase = "eventNoEventLinkedToCase";
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
@@ -728,6 +742,7 @@ public interface Captions {
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventSearchEvent = "eventSearchEvent";
 	String eventSearchSpecificEvent = "eventSearchSpecificEvent";
+	String eventSelect = "eventSelect";
 	String export = "export";
 	String exportBasic = "exportBasic";
 	String exportCaseCustom = "exportCaseCustom";
@@ -812,6 +827,7 @@ public interface Captions {
 	String lineListingNewCasesList = "lineListingNewCasesList";
 	String lineListingSetEndDateForAll = "lineListingSetEndDateForAll";
 	String lineListingSharedInformation = "lineListingSharedInformation";
+	String linkEventToCase = "linkEventToCase";
 	String Location = "Location";
 	String Location_address = "Location.address";
 	String Location_areaType = "Location.areaType";
@@ -871,6 +887,7 @@ public interface Captions {
 	String menu = "menu";
 	String moreActions = "moreActions";
 	String name = "name";
+	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
@@ -878,6 +895,7 @@ public interface Captions {
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
 	String outbreakNormal = "outbreakNormal";
 	String outbreakOutbreak = "outbreakOutbreak";
+	String passportNumber = "passportNumber";
 	String PathogenTest = "PathogenTest";
 	String PathogenTest_cqValue = "PathogenTest.cqValue";
 	String PathogenTest_fourFoldIncreaseAntibodyTiter = "PathogenTest.fourFoldIncreaseAntibodyTiter";
@@ -1413,8 +1431,8 @@ public interface Captions {
 	String View_aggregatereports = "View.aggregatereports";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
-	String View_campaign_campaigndata_form = "View.campaign.campaigndata.form";
-	String View_campaign_campaigndata_form_short = "View.campaign.campaigndata.form.short";
+	String View_campaign_campaigndata_dataform = "View.campaign.campaigndata.dataform";
+	String View_campaign_campaigndata_dataform_short = "View.campaign.campaigndata.dataform.short";
 	String View_campaign_campaigndata_short = "View.campaign.campaigndata.short";
 	String View_campaign_campaigns = "View.campaign.campaigns";
 	String View_campaign_campaigns_short = "View.campaign.campaigns.short";
