@@ -77,7 +77,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
-	public static final String INTERFACE_PIA_URL = "interface.pia.url";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_AUTH_URL = "interface.symptomjournal.authurl";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
@@ -307,14 +310,29 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getPIAUrl() {
-		return getProperty(INTERFACE_PIA_URL, null);
+	public String getSymptomJournalUrl() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null);
+	}
+
+	@Override
+	public String getSymptomJournalAuthUrl() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_AUTH_URL, null);
+	}
+
+	@Override
+	public String getSymptomJournalClientId() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID, null);
+	}
+
+	@Override
+	public String getSymptomJournalSecret() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null);
 	}
 
 	@Override
 	public void validateExternalUrls() {
 
-		String piaUrl = getPIAUrl();
+		String piaUrl = getSymptomJournalUrl();
 
 		if (StringUtils.isBlank(piaUrl)) {
 			return;
@@ -325,7 +343,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			new String[] {
 				"http",
 				"https" }).isValid(piaUrl)) {
-			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_PIA_URL + "' is not a valid URL");
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
 		}
 	}
 

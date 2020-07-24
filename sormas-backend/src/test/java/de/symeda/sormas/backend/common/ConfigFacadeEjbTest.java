@@ -34,14 +34,14 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testValidateExternalUrls() {
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "https://www.google.com");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		getConfigFacade().validateExternalUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "http://www.google.com");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "http://www.google.com");
 		getConfigFacade().validateExternalUrls();
 
 		try {
-			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PIA_URL, "htps://www.google.com#");
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
 		} catch (IllegalArgumentException ignored) {
 		}
 	}

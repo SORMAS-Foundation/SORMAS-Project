@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormValue;
 import de.symeda.sormas.api.campaign.form.CampaignFormDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -141,7 +143,7 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
-		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null);
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null, null, null);
 	}
 
 	public PersonDto createPerson(
@@ -151,7 +153,21 @@ public class TestDataCreator {
 		Integer birthdateYYYY,
 		Integer birthdateMM,
 		Integer birthdateDD,
-		LocationDto address) {
+		String passportNr,
+		String nationalHealthId) {
+		return createPerson(firstName, lastName, sex, birthdateYYYY, birthdateMM, birthdateDD, null, passportNr, nationalHealthId);
+	}
+
+	private PersonDto createPerson(
+		String firstName,
+		String lastName,
+		Sex sex,
+		Integer birthdateYYYY,
+		Integer birthdateMM,
+		Integer birthdateDD,
+		LocationDto address,
+		String passportNr,
+		String nationalHealthId) {
 
 		PersonDto person = PersonDto.build();
 		person.setFirstName(firstName);
@@ -160,6 +176,8 @@ public class TestDataCreator {
 		person.setBirthdateYYYY(birthdateYYYY);
 		person.setBirthdateMM(birthdateMM);
 		person.setBirthdateDD(birthdateDD);
+		person.setPassportNumber(passportNr);
+		person.setNationalHealthId(nationalHealthId);
 
 		if (address != null) {
 			person.setAddress(address);
@@ -681,20 +699,20 @@ public class TestDataCreator {
 		CampaignFormDto campaignForm;
 
 		String schema =
-			"[{\"type\": \"string\",\"id\": \"teamNumber\",\"caption\": \"Team number\",\"styles\": [\"first\"]},{\"type\": \"string\",\"id\": "
-				+ "\"namesOfTeamMembers\",\"caption\": \"Names of team members\",\"styles\": [\"col-8\"]},{\"type\": \"string\",\"id\": "
-				+ "\"monitorName\",\"caption\": \"Name of monitor\",\"styles\": [\"first\"]},{\"type\": \"string\",\"id\": \"agencyName\",\"caption\": "
+			"[{\"type\": \"text\",\"id\": \"teamNumber\",\"caption\": \"Team number\",\"styles\": [\"first\"]},{\"type\": \"text\",\"id\": "
+				+ "\"namesOfTeamMembers\",\"caption\": \"Names of team members\",\"styles\": [\"col-8\"]},{\"type\": \"text\",\"id\": "
+				+ "\"monitorName\",\"caption\": \"Name of monitor\",\"styles\": [\"first\"]},{\"type\": \"text\",\"id\": \"agencyName\",\"caption\": "
 				+ "\"Agency\"},{\"type\": \"section\",\"id\": \"questionsSection\"},{\"type\": \"label\",\"id\": \"questionsLabel\",\"caption\": \"<h2>Questions</h2>\"}"
 				+ ",{\"type\": \"yes-no\",\"id\": \"oneMemberResident\",\"caption\": \"1) At least one team member is resident of same area (villages)?\"},{\"type\": "
 				+ "\"yes-no\",\"id\": \"vaccinatorsTrained\",\"caption\": \"2) Both vaccinators trained before this campaign?\"},{\"type\": \"section\","
 				+ " \"id\": \"questionsSection2\"},{\"type\": \"label\",\"id\": \"q8To12Label\",\"caption\": \"Q 8-12: Based on observation of team only.\"},"
 				+ "{\"type\": \"yes-no\",\"id\": \"askingAboutMonthOlds\",\"caption\": \"8) Is team specially asking about 0-11 months children?\"},"
 				+ "{\"type\": \"section\", \"id\": \"questionsSection3\"},{\"type\": \"yes-no\",\"id\": \"atLeastOneMemberChw\","
-				+ "\"caption\": \"13) Is at least one member of the team CHW?\"},{\"type\": \"integer\",\"id\": "
+				+ "\"caption\": \"13) Is at least one member of the team CHW?\"},{\"type\": \"number\",\"id\": "
 				+ "\"numberOfChw\",\"caption\": \"No. of CHW\",\"styles\": [\"row\"],\"dependingOn\": \"atLeastOneMemberChw\",\"dependingOnValues\": [\"YES\"]},"
 				+ "{\"type\": \"yes-no\",\"id\": \"anyMemberFemale\",\"caption\": \"14) Is any member of the team female?\"},{\"type\": \"yes-no\","
 				+ "\"id\": \"accompaniedBySocialMobilizer\",\"caption\": \"15) Does social mobilizer accompany the vaccination team in the field?\"},"
-				+ "{\"type\": \"string\",\"id\": \"comments\",\"caption\": \"Comments\",\"styles\": [\"col-12\"]}]";
+				+ "{\"type\": \"text\",\"id\": \"comments\",\"caption\": \"Comments\",\"styles\": [\"col-12\"]}]";
 		String translations =
 			"[{\"languageCode\": \"de-DE\", \"translations\": [{\"elementId\": \"teamNumber\", \"caption\": \"Teamnummer\"}, {\"elementId\": \"namesOfTeamMembers\","
 				+ " \"caption\": \"Namen der Teammitglieder\"}]}, {\"languageCode\": \"fr-FR\", \"translations\": [{\"elementId\": \"teamNumber\", "
@@ -707,6 +725,15 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
+	public String getCampaignFormData() {
+		return "[{\"id\": \"teamNumber\",\"value\": \"12\"},{\"id\": \"namesOfTeamMembers\", \"value\": \"Waldemar Stricker\"},"
+			+ "{\"id\": \"monitorName\", \"value\": \"Josef Saks\"},{\"id\": \"agencyName\",\"value\": \"HZI Institut\"},"
+			+ "{\"id\": \"oneMemberResident\", \"value\": \"yes\"},{\"id\": \"vaccinatorsTrained\",\"value\": \"no\"},"
+			+ "{\"id\": \"askingAboutMonthOlds\",\"value\": \"yes\"},{\"id\": \"atLeastOneMemberChw\",\"value\": \"yes\"},"
+			+ "{\"id\": \"numberOfChw\",\"value\": \"7\"},{\"id\": \"anyMemberFemale\",\"value\": \"yes\"},{\"id\": \"accompaniedBySocialMobilizer\",\"value\": \"no\"},"
+			+ "{\"id\": \"comments\",\"value\": \"other comments\"}]";
+	}
+
 	public CampaignFormDataDto buildCampaignFormDataDto(CampaignDto campaign, CampaignFormDto campaignForm, RDCF rdcf, String formData) {
 		CampaignReferenceDto campaignReferenceDto = new CampaignReferenceDto(campaign.getUuid());
 		CampaignFormReferenceDto campaignFormReferenceDto = new CampaignFormReferenceDto(campaignForm.getUuid());
@@ -714,8 +741,13 @@ public class TestDataCreator {
 		CampaignFormDataDto campaignFormData =
 			CampaignFormDataDto.build(campaignReferenceDto, campaignFormReferenceDto, rdcf.region, rdcf.district, rdcf.community);
 
-//		campaignFormData.setFormValues(formData);
-		return campaignFormData;
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			campaignFormData.setFormValues(Arrays.asList(mapper.readValue(formData, CampaignFormValue[].class)));
+			return campaignFormData;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public CampaignFormDataDto createCampaignFormData(CampaignDto campaign, CampaignFormDto campaignForm, RDCF rdcf, String formData) {

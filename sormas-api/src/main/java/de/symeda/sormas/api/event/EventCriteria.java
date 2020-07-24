@@ -23,6 +23,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -55,6 +56,8 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private UserReferenceDto surveillanceOfficer;
 	private String freeText;
 	private EventSourceType srcType;
+	private CaseReferenceDto caze;
+	private Boolean userFilterIncluded = true;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -76,6 +79,23 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria disease(Disease disease) {
 		setDisease(disease);
 		return this;
+	}
+
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public EventCriteria caze(CaseReferenceDto caze) {
+		this.caze = caze;
+		return this;
+	}
+
+	public Boolean getUserFilterIncluded() {
+		return userFilterIncluded;
+	}
+
+	public void setUserFilterIncluded(Boolean userFilterIncluded) {
+		this.userFilterIncluded = userFilterIncluded;
 	}
 
 	public UserRole getReportingUserRole() {

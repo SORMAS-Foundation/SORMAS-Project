@@ -84,7 +84,7 @@ public enum FeatureType {
 		List<FeatureType> featureDependencyList = Arrays.asList(dependentFeatures);
 		List<FeatureType> listOfEnabledDependentFeatures = new ArrayList<>();
 
-		listOfEnabledDependentFeatures.addAll(checkDependency(Arrays.asList(dependentFeatures)));
+		listOfEnabledDependentFeatures.addAll(checkDependency(featureDependencyList));
 		return listOfEnabledDependentFeatures.isEmpty();
 	}
 

@@ -4760,4 +4760,32 @@ ALTER TABLE campaignformdata_history ADD COLUMN archived boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add archived column to campaign form data #2268');
 
+-- 2020-07-15 Add form date to campaign form data #1997
+ALTER TABLE campaignformdata ADD COLUMN formdate timestamp;
+ALTER TABLE campaignformdata_history ADD COLUMN formdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (225, 'Add form date to campaign form data #1997');
+
+-- 2020-07-03 Add case classification for Germany #2230
+ALTER TABLE cases ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN clinicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN epidemiologicalconfirmation varchar(255);
+ALTER TABLE cases_history ADD COLUMN laboratorydiagnosticconfirmation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (226, 'Add case classification for Germany #2230');
+
+-- 2020-07-16 Add source of identification as contact to contacts #2070
+ALTER TABLE contact ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact ADD COLUMN tracingappdetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsource varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactidentificationsourcedetails varchar(512);
+ALTER TABLE contact_history ADD COLUMN tracingapp varchar(255);
+ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add source of identification as contact to contacts #2070');
+
 -- *** Insert new sql commands BEFORE this line ***

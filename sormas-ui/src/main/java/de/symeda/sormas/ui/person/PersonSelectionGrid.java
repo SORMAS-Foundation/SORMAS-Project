@@ -17,20 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.ui.UserProvider;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class PersonSelectionGrid extends Grid {
@@ -45,20 +47,22 @@ public class PersonSelectionGrid extends Grid {
 		setSelectionMode(SelectionMode.SINGLE);
 		setHeightMode(HeightMode.ROW);
 
-		BeanItemContainer<PersonIndexDto> container = new BeanItemContainer<PersonIndexDto>(PersonIndexDto.class);
+		BeanItemContainer<SimilarPersonDto> container = new BeanItemContainer<>(SimilarPersonDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
 		setColumns(
-			PersonIndexDto.FIRST_NAME,
-			PersonIndexDto.LAST_NAME,
-			PersonIndexDto.NICKNAME,
-			PersonIndexDto.APPROXIMATE_AGE,
-			PersonIndexDto.SEX,
-			PersonIndexDto.PRESENT_CONDITION,
-			PersonIndexDto.DISTRICT_NAME,
-			PersonIndexDto.COMMUNITY_NAME,
-			PersonIndexDto.CITY);
+			SimilarPersonDto.FIRST_NAME,
+			SimilarPersonDto.LAST_NAME,
+			SimilarPersonDto.NICKNAME,
+			SimilarPersonDto.APPROXIMATE_AGE,
+			SimilarPersonDto.SEX,
+			SimilarPersonDto.PRESENT_CONDITION,
+			SimilarPersonDto.DISTRICT_NAME,
+			SimilarPersonDto.COMMUNITY_NAME,
+			SimilarPersonDto.CITY,
+			SimilarPersonDto.NATIONAL_HEALTH_ID,
+			SimilarPersonDto.PASSPORT_NUMBER);
 
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(
@@ -70,9 +74,9 @@ public class PersonSelectionGrid extends Grid {
 	}
 
 	@SuppressWarnings("unchecked")
-	private BeanItemContainer<PersonIndexDto> getContainer() {
+	private BeanItemContainer<SimilarPersonDto> getContainer() {
 		GeneratedPropertyContainer container = (GeneratedPropertyContainer) super.getContainerDataSource();
-		return (BeanItemContainer<PersonIndexDto>) container.getWrappedContainer();
+		return (BeanItemContainer<SimilarPersonDto>) container.getWrappedContainer();
 	}
 
 	private void loadData(PersonSimilarityCriteria criteria) {
@@ -88,7 +92,7 @@ public class PersonSelectionGrid extends Grid {
 					FacadeProvider.getConfigFacade().getNameSimilarityThreshold()))
 			.map(PersonNameDto::getUuid)
 			.collect(Collectors.toList());
-		List<PersonIndexDto> similarPersons = FacadeProvider.getPersonFacade().getIndexDtosByUuids(similarPersonUuids);
+		List<SimilarPersonDto> similarPersons = FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(similarPersonUuids);
 
 		getContainer().removeAllItems();
 		getContainer().addAll(similarPersons);

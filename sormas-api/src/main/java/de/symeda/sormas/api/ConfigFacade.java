@@ -84,7 +84,13 @@ public interface ConfigFacade {
 
 	String getGeocodingOsgtsEndpoint();
 
-	String getPIAUrl();
+	String getSymptomJournalUrl();
+
+	String getSymptomJournalAuthUrl();
+
+	String getSymptomJournalClientId();
+
+	String getSymptomJournalSecret();
 
 	void validateExternalUrls();
 }
