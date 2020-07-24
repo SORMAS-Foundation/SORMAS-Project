@@ -1,6 +1,5 @@
 package de.symeda.sormas.api.i18n;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +10,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
 /**
  * Intentionally named *Generator because we don't want Maven to execute this
  * class automatically.
@@ -20,14 +17,6 @@ import org.junit.Test;
 public class I18nConstantGenerator {
 
 	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
-
-	@Test
-	public void generateI18nConstants() throws FileNotFoundException, IOException {
-
-		generateI18nConstantClass("captions.properties", "Captions", false);
-		generateI18nConstantClass("strings.properties", "Strings", false);
-		generateI18nConstantClass("validations.properties", "Validations", false);
-	}
 
 	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren) throws IOException {
 
@@ -85,5 +74,14 @@ public class I18nConstantGenerator {
 		writer.write("}\n");
 		writer.flush();
 		writer.close();
+	}
+
+	public static void main(String[] args) throws IOException {
+
+		I18nConstantGenerator generator = new I18nConstantGenerator();
+
+		generator.generateI18nConstantClass("captions.properties", "Captions", false);
+		generator.generateI18nConstantClass("strings.properties", "Strings", false);
+		generator.generateI18nConstantClass("validations.properties", "Validations", false);
 	}
 }
