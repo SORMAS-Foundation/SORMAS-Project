@@ -50,7 +50,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
 	private static final String MORE_FILTERS_HTML_LAYOUT =
-		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, EventDto.EVENT_STATUS, EventDto.TYPE_OF_PLACE)
+		filterLocs(EventDto.SRC_TYPE, LocationDto.REGION, LocationDto.DISTRICT, EventDto.TYPE_OF_PLACE)
 			+ loc(WEEK_AND_DATE_FILTER);
 
 	@Override
@@ -83,7 +83,6 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addFields(
 			moreFiltersContainer,
 			FieldConfiguration.pixelSized(EventDto.SRC_TYPE, 140),
-			FieldConfiguration.pixelSized(EventDto.EVENT_STATUS, 140),
 			FieldConfiguration.pixelSized(EventDto.TYPE_OF_PLACE, 140));
 
 		UserDto user = UserProvider.getCurrent().getUser();
