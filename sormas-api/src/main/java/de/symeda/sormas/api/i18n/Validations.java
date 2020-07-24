@@ -26,6 +26,7 @@ public interface Validations {
 	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String caseClassificationInvalid = "caseClassificationInvalid";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
@@ -61,7 +62,6 @@ public interface Validations {
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
-	String caseClassificationInvalid = "caseClassificationInvalid";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityDetails = "noFacilityDetails";
