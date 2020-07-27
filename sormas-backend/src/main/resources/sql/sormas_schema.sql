@@ -4812,4 +4812,11 @@ ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_community_id FOR
 
 INSERT INTO schema_version (version_number, comment) VALUES (229, 'Rename campaignforms to campaignformmeta #1997');
 
+-- 2020-07-27 Drop and re-create versioning trigger for campaignformmeta #1997
+DROP TRIGGER versioning_trigger ON campaignformmeta;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformmeta
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (230, 'Drop and re-create versioning trigger for campaignformmeta #1997');
+
 -- *** Insert new sql commands BEFORE this line ***
