@@ -39,5 +39,5 @@ public interface ActionFacade {
 
 	List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria);
 
-	List<ActionDto> getList(ActionCriteria criteria, Integer first, Integer max);
+	List<ActionDto> getActionList(ActionCriteria criteria, Integer first, Integer max);
 }

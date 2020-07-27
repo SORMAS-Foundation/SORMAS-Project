@@ -48,7 +48,7 @@ public class ActionList extends PaginationList<ActionDto> {
 
 	@Override
 	public void reload() {
-		List<ActionDto> actions = FacadeProvider.getActionFacade().getList(actionCriteria, null, null);
+		List<ActionDto> actions = FacadeProvider.getActionFacade().getActionList(actionCriteria, null, null);
 
 		setEntries(actions);
 		showPage(1);

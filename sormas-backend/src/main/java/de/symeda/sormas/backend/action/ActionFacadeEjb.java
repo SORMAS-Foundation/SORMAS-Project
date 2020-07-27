@@ -181,13 +181,13 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
-	public List<ActionDto> getList(ActionCriteria actionCriteria, Integer first, Integer max) {
+	public List<ActionDto> getActionList(ActionCriteria actionCriteria, Integer first, Integer max) {
 		return actionService.getActionList(actionCriteria, first, max).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria) {
-		return actionService.statsByEvent(actionCriteria);
+		return actionService.getActionStats(actionCriteria);
 	}
 
 	@LocalBean

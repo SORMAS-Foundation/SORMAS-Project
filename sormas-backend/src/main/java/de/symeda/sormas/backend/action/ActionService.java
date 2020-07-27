@@ -129,7 +129,7 @@ public class ActionService extends AbstractAdoService<Action> {
 	/**
 	 * Computes stats for action matching an actionCriteria.
 	 */
-	public List<ActionStatEntry> statsByEvent(ActionCriteria actionCriteria) {
+	public List<ActionStatEntry> getActionStats(ActionCriteria actionCriteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ActionStatEntry> cq = cb.createQuery(ActionStatEntry.class);
 		Root<Action> action = cq.from(getElementClass());
