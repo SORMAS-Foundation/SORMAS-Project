@@ -4788,4 +4788,14 @@ ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add source of identification as contact to contacts #2070');
 
+-- 2020-07-27 Add form name to campaign forms and creating user to form data #1993
+ALTER TABLE campaignforms ADD COLUMN formname varchar(512);
+ALTER TABLE campaignforms_history ADD COLUMN formname varchar(512);
+ALTER TABLE campaignformdata ADD COLUMN creatinguser_id bigint;
+ALTER TABLE campaignformdata_history ADD COLUMN creatinguser_id bigint;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (228, 'Add form name to campaign forms and creating user to form data #1993');
+
 -- *** Insert new sql commands BEFORE this line ***

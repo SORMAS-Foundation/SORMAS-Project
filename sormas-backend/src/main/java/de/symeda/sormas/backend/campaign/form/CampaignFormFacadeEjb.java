@@ -55,6 +55,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setFormId(source.getFormId());
+		target.setFormName(source.getFormName());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElementsList(source.getCampaignFormElements());
 		target.setCampaignFormTranslationsList(source.getCampaignFormTranslations());
@@ -71,6 +72,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setFormId(source.getFormId());
+		target.setFormName(source.getFormName());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
@@ -116,6 +118,20 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	@Override
 	public CampaignFormDto getCampaignFormByUuid(String campaignFormUuid) {
 		return toDto(service.getByUuid(campaignFormUuid));
+	}
+
+	@Override
+	public void validateAllForms() {
+		List<CampaignForm> forms = service.getAll();
+
+		for (CampaignForm form : forms) {
+			try {
+				CampaignFormDto formDto = toDto(form);
+				validateAndClean(formDto);
+			} catch (ValidationRuntimeException e) {
+				throw new ValidationRuntimeException(form.getFormName() + ": " + e.getMessage());
+			}
+		}
 	}
 
 	@Override
@@ -261,7 +277,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		}
 
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
-			return StringUtils.equalsAny(value, CampaignFormElementType.YES_NO.getAllowedValues());
+			return StringUtils.equalsAnyIgnoreCase(value, CampaignFormElementType.YES_NO.getAllowedValues());
 		}
 
 		return true;

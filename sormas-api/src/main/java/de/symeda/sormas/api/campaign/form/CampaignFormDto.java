@@ -1,8 +1,8 @@
 package de.symeda.sormas.api.campaign.form;
 
-import java.util.List;
-
 import de.symeda.sormas.api.EntityDto;
+
+import java.util.List;
 
 public class CampaignFormDto extends EntityDto {
 
@@ -13,6 +13,7 @@ public class CampaignFormDto extends EntityDto {
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 
 	private String formId;
+	private String formName;
 	private String languageCode;
 	private List<CampaignFormElement> campaignFormElements;
 	private List<CampaignFormTranslations> campaignFormTranslations;
@@ -23,6 +24,14 @@ public class CampaignFormDto extends EntityDto {
 
 	public void setFormId(String formId) {
 		this.formId = formId;
+	}
+
+	public String getFormName() {
+		return formName;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
 	}
 
 	public String getLanguageCode() {

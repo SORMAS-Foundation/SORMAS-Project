@@ -31,6 +31,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignService;
+import de.symeda.sormas.backend.campaign.form.CampaignForm;
 import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -43,6 +44,7 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -112,6 +114,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
+		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
 
 		return target;
 	}
@@ -131,6 +134,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+		target.setCreatingUser(UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
 
 		return target;
 	}
@@ -201,6 +205,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
+		Join<CampaignFormData, CampaignForm> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);

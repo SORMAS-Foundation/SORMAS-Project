@@ -26,6 +26,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 
 import java.util.Date;
@@ -51,6 +52,7 @@ public class CampaignFormDataDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
+	private UserReferenceDto creatingUser;
 
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
@@ -123,5 +125,13 @@ public class CampaignFormDataDto extends EntityDto {
 
 	public void setCommunity(CommunityReferenceDto community) {
 		this.community = community;
+	}
+
+	public UserReferenceDto getCreatingUser() {
+		return creatingUser;
+	}
+
+	public void setCreatingUser(UserReferenceDto creatingUser) {
+		this.creatingUser = creatingUser;
 	}
 }

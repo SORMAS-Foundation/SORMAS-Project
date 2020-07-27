@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
@@ -72,6 +73,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private Region region;
 	private District district;
 	private Community community;
+	private User creatingUser;
 	private boolean archived;
 
 	@Lob
@@ -171,6 +173,16 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public User getCreatingUser() {
+		return creatingUser;
+	}
+
+	public void setCreatingUser(User creatingUser) {
+		this.creatingUser = creatingUser;
 	}
 
 	@Column

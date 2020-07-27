@@ -180,6 +180,7 @@ public class CampaignController {
 
 		if (campaignFormData == null) {
 			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
+			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
 		final String campaignFormDataUuid = campaignFormData.getUuid();
