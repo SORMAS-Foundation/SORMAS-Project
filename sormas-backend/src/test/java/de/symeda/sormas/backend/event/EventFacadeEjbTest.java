@@ -126,7 +126,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		creator.createEvent(
 			EventStatus.SIGNAL,
-			"Description",
+			"DescriptionEv1",
 			"First",
 			"Name",
 			"12345",
@@ -138,12 +138,34 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 
-		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.eventStatus(EventStatus.SIGNAL);
-		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		creator.createEvent(
+			EventStatus.EVENT,
+			"DescriptionEv2",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.HOSPITAL,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 
-		// List should have one entry
+		EventCriteria eventCriteria = new EventCriteria();
+		List<EventIndexDto> results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(2, results.size());
+
+		eventCriteria.eventStatus(EventStatus.SIGNAL);
+		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
+		assertEquals("DescriptionEv1", results.get(0).getEventDesc());
+
+		eventCriteria.eventStatus(null);
+		eventCriteria.setTypeOfPlace(TypeOfPlace.HOSPITAL);
+		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
+		assertEquals(1, results.size());
+		assertEquals("DescriptionEv2", results.get(0).getEventDesc());
 	}
 
 	@Test

@@ -6,6 +6,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -166,6 +171,22 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 	protected void applyDependenciesOnNewValue(T newValue) {
 
+	}
+
+	protected void applyRegionFilterDependency(RegionReferenceDto region) {
+		UserDto user = UserProvider.getCurrent().getUser();
+		ComboBox districtField = (ComboBox) getField(ContactCriteria.DISTRICT);
+		if (user.getRegion() != null && user.getDistrict() == null) {
+			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			districtField.setEnabled(true);
+		} else {
+			if (region != null) {
+				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				districtField.setEnabled(true);
+			} else {
+				districtField.setEnabled(false);
+			}
+		}
 	}
 
 	private void onFieldValueChange(String propertyId, Property.ValueChangeEvent event) {
