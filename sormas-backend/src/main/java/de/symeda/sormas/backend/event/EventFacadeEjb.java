@@ -199,7 +199,11 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
 
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = null;
+
+		if (eventCriteria.getUserFilterIncluded()) {
+			eventService.createUserFilter(cb, cq, event);
+		}
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
@@ -248,7 +252,11 @@ public class EventFacadeEjb implements EventFacade {
 			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
 			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
 
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = null;
+
+		if (eventCriteria.getUserFilterIncluded()) {
+			eventService.createUserFilter(cb, cq, event);
+		}
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);

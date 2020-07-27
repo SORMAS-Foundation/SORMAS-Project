@@ -36,6 +36,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
@@ -65,7 +66,7 @@ public class PersonController {
 
 				@Override
 				public void onCommit() {
-					PersonIndexDto selectedPerson = personSelect.getValue();
+					SimilarPersonDto selectedPerson = personSelect.getValue();
 					if (selectedPerson != null) {
 						if (resultConsumer != null) {
 							resultConsumer.accept(selectedPerson.toReference());

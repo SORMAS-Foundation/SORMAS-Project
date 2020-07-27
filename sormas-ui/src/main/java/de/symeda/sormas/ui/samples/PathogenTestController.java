@@ -169,9 +169,6 @@ public class PathogenTestController {
 					&& !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 					if (contact.getDisease() != null && contact.getDisease().equals(dto.getTestedDisease())) {
 						showConvertContactToCaseDialog(contact);
-						if (ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
-							contact.setContactClassification(ContactClassification.CONFIRMED);
-						}
 					} else if (contact.getDisease() != null) {
 						showCreateContactCaseDialog(contact, dto.getTestedDisease());
 					}

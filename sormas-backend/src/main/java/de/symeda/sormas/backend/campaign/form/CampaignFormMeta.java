@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
@@ -18,15 +19,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Entity(name = "campaignforms")
+@Entity
 @Audited
-public class CampaignForm extends AbstractDomainObject {
+public class CampaignFormMeta extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5200626281564146919L;
 
-	public static final String TABLE_NAME = "campaignforms";
+	public static final String TABLE_NAME = "campaignformmeta";
+
+	public static final String FORM_NAME = "formName";
 
 	private String formId;
+	private String formName;
 	private String languageCode;
 	private String campaignFormElements;
 	private List<CampaignFormElement> campaignFormElementsList;
@@ -40,6 +44,15 @@ public class CampaignForm extends AbstractDomainObject {
 
 	public void setFormId(String formId) {
 		this.formId = formId;
+	}
+
+	@Column
+	public String getFormName() {
+		return formName;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
 	}
 
 	@Column
@@ -72,7 +85,8 @@ public class CampaignForm extends AbstractDomainObject {
 					ObjectMapper mapper = new ObjectMapper();
 					campaignFormElementsList = Arrays.asList(mapper.readValue(campaignFormElements, CampaignFormElement[].class));
 				} catch (IOException e) {
-					throw new RuntimeException("Content of campaignFormElements could not be parsed to List<CampaignFormElement> - ID: " + getId());
+					throw new ValidationRuntimeException(
+						"Content of campaignFormElements could not be parsed to List<CampaignFormElement> - ID: " + getId());
 				}
 			}
 		}
@@ -84,6 +98,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 		if (this.campaignFormElementsList == null) {
 			campaignFormElements = null;
+			return;
 		}
 
 		try {
@@ -115,7 +130,7 @@ public class CampaignForm extends AbstractDomainObject {
 					ObjectMapper mapper = new ObjectMapper();
 					campaignFormTranslationsList = Arrays.asList(mapper.readValue(campaignFormTranslations, CampaignFormTranslations[].class));
 				} catch (IOException e) {
-					throw new RuntimeException(
+					throw new ValidationRuntimeException(
 						"Content of campaignFormTranslations could not be parsed to List<CampaignFormTranslations> - ID: " + getId());
 				}
 			}
@@ -128,6 +143,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 		if (this.campaignFormTranslationsList == null) {
 			campaignFormTranslations = null;
+			return;
 		}
 
 		try {
@@ -140,7 +156,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return formId;
+		return formName;
 	}
 
 }

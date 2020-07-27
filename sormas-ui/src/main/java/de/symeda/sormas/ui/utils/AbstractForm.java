@@ -14,6 +14,7 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import de.symeda.sormas.api.FacadeProvider;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -352,5 +353,9 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
+	}
+
+	protected boolean isGermanServer() {
+		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
 }

@@ -17,31 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -59,6 +35,7 @@ import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -88,6 +65,28 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -117,6 +116,16 @@ public class PersonFacadeEjb implements PersonFacade {
 	private UserService userService;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private CaseJurisdictionChecker caseJurisdictionChecker;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
+	@EJB
+	private VisitFacadeEjbLocal visitFacade;
 
 	@Override
 	public List<String> getAllUuids() {
@@ -138,13 +147,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids) {
+	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
 
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toIndexDto(c)).collect(Collectors.toList());
+			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
 		}
 	}
 
@@ -277,12 +286,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
-	}
-
-	@Override
-	public String getPIAAccountCreationUrl(PersonDto person) {
-		return configFacade.getPIAUrl() + "#" + "firstname=" + person.getFirstName() + "&lastname=" + person.getLastName() + "&email="
-			+ person.getEmailAddress() + "&uuid=" + person.getUuid() + "&userUuid=" + userService.getCurrentUser().getUuid();
 	}
 
 	@Override
@@ -539,6 +542,24 @@ public class PersonFacadeEjb implements PersonFacade {
 			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
 			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
 			entity.getAddress().getCity());
+		return dto;
+	}
+
+	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
+
+		SimilarPersonDto dto = new SimilarPersonDto(
+			entity.getUuid(),
+			entity.getFirstName(),
+			entity.getLastName(),
+			entity.getNickname(),
+			entity.getApproximateAge(),
+			entity.getSex(),
+			entity.getPresentCondition(),
+			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
+			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
+			entity.getAddress().getCity(),
+			entity.getNationalHealthId(),
+			entity.getPassportNumber());
 		return dto;
 	}
 

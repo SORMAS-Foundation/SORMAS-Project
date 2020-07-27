@@ -2,17 +2,16 @@ package de.symeda.sormas.backend.campaign.form;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
-import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
-import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +21,6 @@ import org.jsoup.safety.Whitelist;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -34,19 +31,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Stateless(name = "CampaignFormFacade")
-public class CampaignFormFacadeEjb implements CampaignFormFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
+@Stateless(name = "CampaignFormMetaFacade")
+public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 
 	@EJB
-	private CampaignFormService service;
+	private CampaignFormMetaService service;
 
-	public CampaignForm fromDto(@NotNull CampaignFormDto source) {
-		CampaignForm target = service.getByUuid(source.getUuid());
+	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source) {
+		CampaignFormMeta target = service.getByUuid(source.getUuid());
 		if (target == null) {
-			target = new CampaignForm();
+			target = new CampaignFormMeta();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
@@ -55,6 +49,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setFormId(source.getFormId());
+		target.setFormName(source.getFormName());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElementsList(source.getCampaignFormElements());
 		target.setCampaignFormTranslationsList(source.getCampaignFormTranslations());
@@ -62,15 +57,16 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		return target;
 	}
 
-	public CampaignFormDto toDto(CampaignForm source) {
+	public CampaignFormMetaDto toDto(CampaignFormMeta source) {
 		if (source == null) {
 			return null;
 		}
 
-		CampaignFormDto target = new CampaignFormDto();
+		CampaignFormMetaDto target = new CampaignFormMetaDto();
 		DtoHelper.fillDto(target, source);
 
 		target.setFormId(source.getFormId());
+		target.setFormName(source.getFormName());
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
@@ -79,18 +75,18 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	}
 
 	@Override
-	public CampaignFormDto saveCampaignForm(CampaignFormDto campaignFormDto) throws ValidationRuntimeException {
-		validateAndClean(campaignFormDto);
+	public CampaignFormMetaDto saveCampaignFormMeta(CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
+		validateAndClean(campaignFormMetaDto);
 
-		CampaignForm campaignForm = fromDto(campaignFormDto);
-		service.ensurePersisted(campaignForm);
-		return toDto(campaignForm);
+		CampaignFormMeta campaignFormMeta = fromDto(campaignFormMetaDto);
+		service.ensurePersisted(campaignFormMeta);
+		return toDto(campaignFormMeta);
 	}
 
 	@Override
-	public CampaignFormDto buildCampaignFormFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
+	public CampaignFormMetaDto buildCampaignFormMetaFromJson(String formId, String languageCode, String schemaDefinitionJson, String translationsJson)
 		throws IOException {
-		CampaignFormDto campaignForm = new CampaignFormDto();
+		CampaignFormMetaDto campaignForm = new CampaignFormMetaDto();
 		campaignForm.setFormId(formId);
 		campaignForm.setLanguageCode(languageCode);
 		ObjectMapper mapper = new ObjectMapper();
@@ -105,27 +101,41 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 	}
 
 	@Override
-	public List<CampaignFormReferenceDto> getAllCampaignFormsAsReferences() {
+	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences() {
 		return service.getAll()
 			.stream()
-			.map(CampaignFormFacadeEjb::toReferenceDto)
+			.map(CampaignFormMetaFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(ReferenceDto::toString))
 			.collect(Collectors.toList());
 	}
 
 	@Override
-	public CampaignFormDto getCampaignFormByUuid(String campaignFormUuid) {
+	public CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid) {
 		return toDto(service.getByUuid(campaignFormUuid));
 	}
 
 	@Override
-	public void validateAndClean(CampaignFormDto campaignFormDto) throws ValidationRuntimeException {
-		if (CollectionUtils.isEmpty(campaignFormDto.getCampaignFormElements())) {
+	public void validateAllFormMetas() {
+		List<CampaignFormMeta> forms = service.getAll();
+
+		for (CampaignFormMeta form : forms) {
+			try {
+				CampaignFormMetaDto formDto = toDto(form);
+				validateAndClean(formDto);
+			} catch (ValidationRuntimeException e) {
+				throw new ValidationRuntimeException(form.getFormName() + ": " + e.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void validateAndClean(CampaignFormMetaDto campaignFormMetaDto) throws ValidationRuntimeException {
+		if (CollectionUtils.isEmpty(campaignFormMetaDto.getCampaignFormElements())) {
 			return;
 		}
 
 		// Throw an exception when the schema definition contains an element without an ID or type
-		campaignFormDto.getCampaignFormElements()
+		campaignFormMetaDto.getCampaignFormElements()
 			.stream()
 			.filter(e -> StringUtils.isBlank(e.getId()) || StringUtils.isBlank(e.getType()))
 			.findFirst()
@@ -138,15 +148,15 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 			});
 
 		// Throw an exception when the schema definition contains the same ID more than once
-		campaignFormDto.getCampaignFormElements().forEach(e -> {
-			if (Collections.frequency(campaignFormDto.getCampaignFormElements(), e) > 1) {
+		campaignFormMetaDto.getCampaignFormElements().forEach(e -> {
+			if (Collections.frequency(campaignFormMetaDto.getCampaignFormElements(), e) > 1) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormElementDuplicateId, e.getId()));
 			}
 		});
 
 		// Throw an error if any translation does not have a language code or contains an element without an ID or caption
-		if (CollectionUtils.isNotEmpty(campaignFormDto.getCampaignFormTranslations())) {
-			campaignFormDto.getCampaignFormTranslations().forEach(cft -> {
+		if (CollectionUtils.isNotEmpty(campaignFormMetaDto.getCampaignFormTranslations())) {
+			campaignFormMetaDto.getCampaignFormTranslations().forEach(cft -> {
 				if (StringUtils.isBlank(cft.getLanguageCode())) {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormTranslationLanguageCodeRequired));
 				}
@@ -167,10 +177,11 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 			});
 		}
 
-		Map<String, String> idsAndTypes =
-			campaignFormDto.getCampaignFormElements().stream().collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
+		Map<String, String> idsAndTypes = campaignFormMetaDto.getCampaignFormElements()
+			.stream()
+			.collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
 
-		for (CampaignFormElement element : campaignFormDto.getCampaignFormElements()) {
+		for (CampaignFormElement element : campaignFormMetaDto.getCampaignFormElements()) {
 			// Clean the element caption from all HTML tags that are not explicitly allowed
 			if (StringUtils.isNotBlank(element.getCaption())) {
 				Whitelist whitelist = Whitelist.none();
@@ -185,12 +196,12 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 				throw new ValidationRuntimeException(
 					I18nProperties.getValidationError(Validations.campaignFormDependingOnValuesMissing, element.getId()));
 			}
-			validateCampaignFormDependency(element.getId(), element.getDependingOn(), element.getDependingOnValues(), idsAndTypes);
+			validateCampaignFormMetaDependency(element.getId(), element.getDependingOn(), element.getDependingOnValues(), idsAndTypes);
 		}
 
 		// Validate element IDs used in translations and clean HTML used in translation captions
-		if (CollectionUtils.isNotEmpty(campaignFormDto.getCampaignFormTranslations())) {
-			for (CampaignFormTranslations translations : campaignFormDto.getCampaignFormTranslations()) {
+		if (CollectionUtils.isNotEmpty(campaignFormMetaDto.getCampaignFormTranslations())) {
+			for (CampaignFormTranslations translations : campaignFormMetaDto.getCampaignFormTranslations()) {
 				translations.getTranslations().forEach(e -> {
 					if (idsAndTypes.get(e.getElementId()) == null) {
 						throw new ValidationRuntimeException(
@@ -226,7 +237,7 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		}
 	}
 
-	private void validateCampaignFormDependency(String id, String dependingOn, String[] dependingOnValues, Map<String, String> otherElements)
+	private void validateCampaignFormMetaDependency(String id, String dependingOn, String[] dependingOnValues, Map<String, String> otherElements)
 		throws ValidationRuntimeException {
 		if (StringUtils.isBlank(dependingOn)) {
 			return;
@@ -261,23 +272,23 @@ public class CampaignFormFacadeEjb implements CampaignFormFacade {
 		}
 
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
-			return StringUtils.equalsAny(value, CampaignFormElementType.YES_NO.getAllowedValues());
+			return StringUtils.equalsAnyIgnoreCase(value, CampaignFormElementType.YES_NO.getAllowedValues());
 		}
 
 		return true;
 	}
 
-	public static CampaignFormReferenceDto toReferenceDto(CampaignForm entity) {
+	public static CampaignFormMetaReferenceDto toReferenceDto(CampaignFormMeta entity) {
 		if (entity == null) {
 			return null;
 		}
 
-		return new CampaignFormReferenceDto(entity.getUuid(), entity.toString());
+		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	@LocalBean
 	@Stateless
-	public static class CampaignFormFacadeEjbLocal extends CampaignFormFacadeEjb {
+	public static class CampaignFormMetaFacadeEjbLocal extends CampaignFormMetaFacadeEjb {
 	}
 
 }

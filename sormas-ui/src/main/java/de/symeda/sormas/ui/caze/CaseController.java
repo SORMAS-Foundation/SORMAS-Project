@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventDto;
@@ -146,6 +147,16 @@ public class CaseController {
 
 	public void createFromContact(ContactDto contact) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
+		caseCreateComponent.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+				FacadeProvider.getContactFacade().saveContact(updatedContact);
+			}
+		});
+
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
@@ -397,6 +408,8 @@ public class CaseController {
 					final PersonDto duplicatePerson = PersonDto.build();
 					duplicatePerson.setFirstName(createForm.getPersonFirstName());
 					duplicatePerson.setLastName(createForm.getPersonLastName());
+					duplicatePerson.setNationalHealthId(createForm.getNationalHealthId());
+					duplicatePerson.setPassportNumber(createForm.getPassportNumber());
 					duplicatePerson.setBirthdateDD(createForm.getBirthdateDD());
 					duplicatePerson.setBirthdateMM(createForm.getBirthdateMM());
 					duplicatePerson.setBirthdateYYYY(createForm.getBirthdateYYYY());
@@ -505,6 +518,7 @@ public class CaseController {
 		boolean isInJurisdiction) {
 		CaseDataDto caze = findCase(caseUuid);
 		CaseDataForm caseEditForm = new CaseDataForm(
+			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
 			viewMode,

@@ -208,6 +208,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 
 		if (CaseEditAuthorization.isCaseEditAllowed(existingCase)) {
 			if (existingCase.getHealthFacility() != null
+				&& getStoredRootEntity().getHealthFacility() != null
 				&& !existingCase.getHealthFacility().getUuid().equals(getStoredRootEntity().getHealthFacility().getUuid())) {
 				ConfirmationDialog transferCaseDialog = new ConfirmationDialog(
 					this,

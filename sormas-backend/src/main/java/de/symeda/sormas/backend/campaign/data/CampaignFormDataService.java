@@ -22,7 +22,7 @@ package de.symeda.sormas.backend.campaign.data;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.campaign.form.CampaignForm;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -48,7 +48,7 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 
 	public Predicate createCriteriaFilter(CampaignFormDataCriteria criteria, CriteriaBuilder cb, Root<CampaignFormData> root) {
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
-		Join<CampaignFormData, CampaignForm> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM, JoinType.LEFT);
+		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
@@ -57,8 +57,8 @@ public class CampaignFormDataService extends AbstractAdoService<CampaignFormData
 		if (criteria.getCampaign() != null) {
 			filter = and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
 		}
-		if (criteria.getCampaignForm() != null) {
-			filter = and(cb, filter, cb.equal(campaignFormJoin.get(CampaignForm.UUID), criteria.getCampaignForm().getUuid()));
+		if (criteria.getCampaignFormMeta() != null) {
+			filter = and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));

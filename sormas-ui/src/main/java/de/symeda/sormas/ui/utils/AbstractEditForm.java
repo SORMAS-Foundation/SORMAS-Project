@@ -482,8 +482,4 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 	protected boolean isEditableAllowed(String propertyId) {
 		return isEditableAllowed(getFieldGroup().getField(propertyId));
 	}
-
-	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
-	}
 }

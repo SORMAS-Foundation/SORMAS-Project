@@ -26,7 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -87,7 +87,7 @@ public class CampaignController {
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
 	}
 
-	public void createCampaignDataForm(CampaignFormReferenceDto campaignForm) {
+	public void createCampaignDataForm(CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = getCampaignFormDataComponent(null, campaignForm, false, false, () -> {
@@ -169,7 +169,7 @@ public class CampaignController {
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
-		CampaignFormReferenceDto campaignForm,
+		CampaignFormMetaReferenceDto campaignForm,
 		boolean revertFormOnDiscard,
 		boolean showDeleteButton,
 		Runnable commitCallback,
@@ -180,6 +180,7 @@ public class CampaignController {
 
 		if (campaignFormData == null) {
 			campaignFormData = CampaignFormDataDto.build(null, campaignForm, null, null, null);
+			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
 		final String campaignFormDataUuid = campaignFormData.getUuid();

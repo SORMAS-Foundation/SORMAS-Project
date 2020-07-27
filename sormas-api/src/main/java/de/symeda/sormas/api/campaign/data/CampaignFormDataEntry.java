@@ -16,19 +16,20 @@
 package de.symeda.sormas.api.campaign.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-public class CampaignFormValue implements Serializable {
+public class CampaignFormDataEntry implements Serializable {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
 	private String id;
 	private Object value;
 
-	public CampaignFormValue() {
+	public CampaignFormDataEntry() {
 
 	}
 
-	public CampaignFormValue(String id, Object value) {
+	public CampaignFormDataEntry(String id, Object value) {
 		this.id = id;
 		this.value = value;
 	}
@@ -47,5 +48,20 @@ public class CampaignFormValue implements Serializable {
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }
