@@ -138,16 +138,22 @@ public class I18nConstantGenerator {
 	/**
 	 * Updates i18n Constant classes.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
-		for (I18nConstantGenerator generator : buildConfig()) {
+		long startTime = System.currentTimeMillis();
+
+		List<I18nConstantGenerator> generators = buildConfig();
+		for (I18nConstantGenerator generator : generators) {
 			try {
 				generator.generateI18nConstantClass();
 			} catch (IOException e) {
 				// This generator is manually run by developers, though print to console is permitted.
 				System.out.println("Failure writing " + generator.outputClassName);
-				e.printStackTrace();
+				throw e;
 			}
 		}
+
+		System.out
+			.println(String.format("Generation finished. %s ms, generated classes: %s", System.currentTimeMillis() - startTime, generators.size()));
 	}
 }
