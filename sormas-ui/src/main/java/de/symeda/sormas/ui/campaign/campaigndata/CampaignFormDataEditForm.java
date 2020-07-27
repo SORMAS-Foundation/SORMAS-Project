@@ -22,10 +22,9 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.ui.campaign.CampaignFormBuilder;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -129,7 +128,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		campaignFormLayout.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(campaignFormLayout, CssStyles.VSPACE_3);
 
-		CampaignFormDto campaignForm = FacadeProvider.getCampaignFormFacade().getCampaignFormByUuid(campaignFormData.getCampaignForm().getUuid());
+		CampaignFormMetaDto campaignForm =
+			FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormData.getCampaignFormMeta().getUuid());
 		campaignFormBuilder = new CampaignFormBuilder(
 			campaignForm.getCampaignFormElements(),
 			campaignFormData.getFormValues(),

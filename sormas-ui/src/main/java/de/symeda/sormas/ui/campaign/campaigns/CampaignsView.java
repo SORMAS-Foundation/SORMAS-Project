@@ -80,7 +80,7 @@ public class CampaignsView extends AbstractCampaignView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
 			validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
-				FacadeProvider.getCampaignFormFacade().validateAllForms();
+				FacadeProvider.getCampaignFormMetaFacade().validateAllFormMetas();
 				Notification.show(I18nProperties.getString(Strings.messageAllCampaignFormsValid), Type.TRAY_NOTIFICATION);
 			}, ValoTheme.BUTTON_PRIMARY);
 

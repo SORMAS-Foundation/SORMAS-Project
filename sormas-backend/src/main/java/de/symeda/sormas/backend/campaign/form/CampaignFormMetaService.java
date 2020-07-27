@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.campaign.form;
 
+import de.symeda.sormas.backend.common.AbstractAdoService;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -7,18 +9,16 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
-
 @Stateless
 @LocalBean
-public class CampaignFormService extends AbstractAdoService<CampaignForm> {
+public class CampaignFormMetaService extends AbstractAdoService<CampaignFormMeta> {
 
-	public CampaignFormService() {
-		super(CampaignForm.class);
+	public CampaignFormMetaService() {
+		super(CampaignFormMeta.class);
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<CampaignForm, CampaignForm> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<CampaignFormMeta, CampaignFormMeta> from) {
 		return null;
 	}
 }

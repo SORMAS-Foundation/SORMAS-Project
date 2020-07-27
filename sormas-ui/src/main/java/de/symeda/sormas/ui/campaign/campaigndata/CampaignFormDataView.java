@@ -47,9 +47,9 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignForm(), true, true, () -> {
+			.getCampaignFormDataComponent(campaignFormData, campaignFormData.getCampaignFormMeta(), true, true, () -> {
 				Notification.show(
-					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignForm().toString()),
+					String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
 					TRAY_NOTIFICATION);
 			}, null);
 		component.setMargin(false);
@@ -62,6 +62,6 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		hideInfoLabel();
 
-		getViewTitleLabel().setValue(campaignFormData.getCampaignForm().toString());
+		getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
 	}
 }

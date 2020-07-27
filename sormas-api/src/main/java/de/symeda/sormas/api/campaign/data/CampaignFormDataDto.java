@@ -22,7 +22,7 @@ package de.symeda.sormas.api.campaign.data;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -39,15 +39,15 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String I18N_PREFIX = "CampaignFormData";
 
 	public static final String CAMPAIGN = "campaign";
-	public static final String CAMPAIGN_FORM = "campaignForm";
+	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 
-	private List<CampaignFormValue> formValues;
+	private List<CampaignFormDataEntry> formValues;
 	private CampaignReferenceDto campaign;
-	private CampaignFormReferenceDto campaignForm;
+	private CampaignFormMetaReferenceDto campaignFormMeta;
 	private Date formDate;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -56,14 +56,14 @@ public class CampaignFormDataDto extends EntityDto {
 
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
-		CampaignFormReferenceDto campaignForm,
+		CampaignFormMetaReferenceDto campaignFormMeta,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 		CampaignFormDataDto campaignFormData = new CampaignFormDataDto();
 		campaignFormData.setUuid(DataHelper.createUuid());
 		campaignFormData.setCampaign(campaign);
-		campaignFormData.setCampaignForm(campaignForm);
+		campaignFormData.setCampaignFormMeta(campaignFormMeta);
 		campaignFormData.setRegion(region);
 		campaignFormData.setDistrict(district);
 		campaignFormData.setCommunity(community);
@@ -71,20 +71,20 @@ public class CampaignFormDataDto extends EntityDto {
 		return campaignFormData;
 	}
 
-	public List<CampaignFormValue> getFormValues() {
+	public List<CampaignFormDataEntry> getFormValues() {
 		return formValues;
 	}
 
-	public void setFormValues(List<CampaignFormValue> formValues) {
+	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
 	}
 
-	public CampaignFormReferenceDto getCampaignForm() {
-		return campaignForm;
+	public CampaignFormMetaReferenceDto getCampaignFormMeta() {
+		return campaignFormMeta;
 	}
 
-	public void setCampaignForm(CampaignFormReferenceDto campaignForm) {
-		this.campaignForm = campaignForm;
+	public void setCampaignFormMeta(CampaignFormMetaReferenceDto campaignFormMeta) {
+		this.campaignFormMeta = campaignFormMeta;
 	}
 
 	public CampaignReferenceDto getCampaign() {

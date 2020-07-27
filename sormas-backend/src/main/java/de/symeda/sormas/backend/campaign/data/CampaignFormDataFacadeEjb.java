@@ -31,9 +31,9 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignService;
-import de.symeda.sormas.backend.campaign.form.CampaignForm;
-import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb;
-import de.symeda.sormas.backend.campaign.form.CampaignFormService;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
@@ -81,7 +81,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	private CampaignService campaignService;
 
 	@EJB
-	private CampaignFormService campaignFormService;
+	private CampaignFormMetaService campaignFormMetaService;
 
 	@EJB
 	private RegionService regionService;
@@ -109,7 +109,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		target.setFormValuesList(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
-		target.setCampaignForm(campaignFormService.getByReferenceDto(source.getCampaignForm()));
+		target.setCampaignFormMeta(campaignFormMetaService.getByReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
@@ -129,7 +129,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		target.setFormValues(source.getFormValuesList());
 		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampaign()));
-		target.setCampaignForm(CampaignFormFacadeEjb.toReferenceDto(source.getCampaignForm()));
+		target.setCampaignFormMeta(CampaignFormMetaFacadeEjb.toReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
@@ -205,7 +205,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
-		Join<CampaignFormData, CampaignForm> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM, JoinType.LEFT);
+		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
@@ -213,6 +213,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		cq.multiselect(
 			root.get(CampaignFormData.UUID),
 			campaignJoin.get(Campaign.NAME),
+			campaignFormJoin.get(CampaignFormMeta.FORM_NAME),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
@@ -234,6 +235,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					break;
 				case CampaignFormDataIndexDto.CAMPAIGN:
 					expression = campaignJoin.get(Campaign.NAME);
+					break;
+				case CampaignFormDataIndexDto.FORM:
+					expression = campaignFormJoin.get(CampaignFormMeta.FORM_NAME);
 					break;
 				case CampaignFormDataIndexDto.REGION:
 					expression = regionJoin.get(Region.NAME);

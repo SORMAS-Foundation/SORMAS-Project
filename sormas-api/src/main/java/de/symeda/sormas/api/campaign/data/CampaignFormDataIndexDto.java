@@ -24,6 +24,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
+	public static final String FORM = "form";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -33,14 +34,16 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	private String uuid;
 	private String campaign;
+	private String form;
 	private String region;
 	private String district;
 	private String community;
 	private Date formDate;
 
-	public CampaignFormDataIndexDto(String uuid, String campaign, String region, String district, String community, Date formDate) {
+	public CampaignFormDataIndexDto(String uuid, String campaign, String form, String region, String district, String community, Date formDate) {
 		this.uuid = uuid;
 		this.campaign = campaign;
+		this.form = form;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -61,6 +64,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setCampaign(String campaign) {
 		this.campaign = campaign;
+	}
+
+	public String getForm() {
+		return form;
+	}
+
+	public void setForm(String form) {
+		this.form = form;
 	}
 
 	public String getRegion() {

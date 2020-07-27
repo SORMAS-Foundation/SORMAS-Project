@@ -4798,4 +4798,18 @@ ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_creatinguser_id 
 
 INSERT INTO schema_version (version_number, comment) VALUES (228, 'Add form name to campaign forms and creating user to form data #1993');
 
+-- 2020-07-27 Rename campaignforms to campaignformmeta #1997
+ALTER TABLE campaignforms RENAME TO campaignformmeta;
+ALTER TABLE campaignforms_history RENAME TO campaignformmeta_history;
+ALTER TABLE campaignformdata RENAME COLUMN campaignform_id TO campaignformmeta_id;
+ALTER TABLE campaignformdata_history RENAME COLUMN campaignform_id TO campaignformmeta_id;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaignformmeta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (229, 'Rename campaignforms to campaignformmeta #1997');
+
 -- *** Insert new sql commands BEFORE this line ***

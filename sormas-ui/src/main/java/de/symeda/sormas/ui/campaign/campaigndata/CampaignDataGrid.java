@@ -30,11 +30,11 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
+public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 8045806100043073638L;
 
-	public CampaignFormDataGrid(CampaignFormDataCriteria criteria) {
+	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
 		super(CampaignFormDataIndexDto.class);
 		setSizeFull();
 
@@ -48,6 +48,7 @@ public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto,
 		setColumns(
 			EDIT_BTN_ID,
 			CampaignFormDataIndexDto.CAMPAIGN,
+			CampaignFormDataIndexDto.FORM,
 			CampaignFormDataIndexDto.REGION,
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.COMMUNITY,

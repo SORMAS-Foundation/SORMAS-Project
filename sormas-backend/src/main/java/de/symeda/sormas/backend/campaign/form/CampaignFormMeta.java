@@ -19,13 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Entity(name = "campaignforms")
+@Entity
 @Audited
-public class CampaignForm extends AbstractDomainObject {
+public class CampaignFormMeta extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -5200626281564146919L;
 
-	public static final String TABLE_NAME = "campaignforms";
+	public static final String TABLE_NAME = "campaignformmeta";
 
 	public static final String FORM_NAME = "formName";
 
@@ -156,7 +156,7 @@ public class CampaignForm extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return formId;
+		return formName;
 	}
 
 }

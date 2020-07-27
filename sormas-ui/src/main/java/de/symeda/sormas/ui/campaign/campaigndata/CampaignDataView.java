@@ -20,7 +20,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
-import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -37,14 +37,14 @@ public class CampaignDataView extends AbstractCampaignView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
 
 	private final CampaignFormDataCriteria criteria;
-	private final CampaignFormDataGrid grid;
+	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 
 	public CampaignDataView() {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
-		grid = new CampaignFormDataGrid(criteria);
+		grid = new CampaignDataGrid(criteria);
 
 		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.addComponent(createFilterBar());
@@ -65,7 +65,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			PopupButton newFormButton = ButtonHelper.createIconPopupButton(Captions.actionNewForm, VaadinIcons.PLUS_CIRCLE, newFormLayout);
 			newFormButton.setId("new-form");
 
-			for (CampaignFormReferenceDto campaignForm : FacadeProvider.getCampaignFormFacade().getAllCampaignFormsAsReferences()) {
+			for (CampaignFormMetaReferenceDto campaignForm : FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences()) {
 				Button campaignFormButton = ButtonHelper
 					.createButton(campaignForm.toString(), e -> ControllerProvider.getCampaignController().createCampaignDataForm(campaignForm));
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);

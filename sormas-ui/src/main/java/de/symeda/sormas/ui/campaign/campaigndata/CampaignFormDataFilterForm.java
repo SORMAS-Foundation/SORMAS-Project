@@ -43,7 +43,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			CampaignFormDataCriteria.CAMPAIGN,
-			CampaignFormDataCriteria.CAMPAIGN_FORM,
+			CampaignFormDataCriteria.CAMPAIGN_FORM_META,
 			CampaignFormDataCriteria.REGION,
 			CampaignFormDataCriteria.DISTRICT,
 			CampaignFormDataCriteria.COMMUNITY };
@@ -60,10 +60,10 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 		ComboBox cbCampaignForm = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
-				CampaignFormDataCriteria.CAMPAIGN_FORM,
-				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM),
+				CampaignFormDataCriteria.CAMPAIGN_FORM_META,
+				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 				200));
-		cbCampaignForm.addItems(FacadeProvider.getCampaignFormFacade().getAllCampaignFormsAsReferences());
+		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (user.getRegion() == null) {

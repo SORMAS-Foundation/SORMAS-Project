@@ -4,7 +4,7 @@ import de.symeda.sormas.api.EntityDto;
 
 import java.util.List;
 
-public class CampaignFormDto extends EntityDto {
+public class CampaignFormMetaDto extends EntityDto {
 
 	private static final long serialVersionUID = -1163673887940552133L;
 
