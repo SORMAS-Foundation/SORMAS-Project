@@ -20,9 +20,7 @@ package de.symeda.sormas.backend.caze;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -345,10 +343,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getSurveillanceOfficer(), is(nullValue()));
 		assertThat(caze.getClassificationUser(), is(nullValue()));
 
-		assertThat(caze.getReportLat().toString(), startsWith("46."));
-		assertThat(caze.getReportLat(), is(not(46.432)));
-		assertThat(caze.getReportLon().toString(), startsWith("23."));
-		assertThat(caze.getReportLon(), is(not(23.234)));
+		assertThat(caze.getReportLat(), is(nullValue()));
+		assertThat(caze.getReportLon(), is(nullValue()));
 
 		assertThat(caze.getReportLatLonAccuracy(), is(10F));
 	}

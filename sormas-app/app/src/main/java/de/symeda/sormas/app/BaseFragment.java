@@ -76,6 +76,10 @@ public class BaseFragment extends Fragment {
 		super.onPause();
 	}
 
+	public FieldVisibilityCheckers getFieldVisibilityCheckers() {
+		return fieldVisibilityCheckers;
+	}
+
 	public void setFieldVisibilityCheckers(FieldVisibilityCheckers fieldVisibilityCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 	}

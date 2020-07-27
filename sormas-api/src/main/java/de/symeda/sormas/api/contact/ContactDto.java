@@ -34,9 +34,6 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class ContactDto extends PseudonymizableDto {
 
@@ -106,10 +103,8 @@ public class ContactDto extends PseudonymizableDto {
 	@Required
 	private UserReferenceDto reportingUser;
 	@SensitiveData
-	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
-	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;

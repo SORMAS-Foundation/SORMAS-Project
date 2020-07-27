@@ -21,9 +21,7 @@ package de.symeda.sormas.backend.visit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
@@ -119,10 +117,8 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(export1.getLastName(), isEmptyString());
 
 		//sensitive data
-		assertThat(export1.getReportLat().toString(), startsWith("46."));
-		assertThat(export1.getReportLat(), is(not(46.432)));
-		assertThat(export1.getReportLon().toString(), startsWith("23."));
-		assertThat(export1.getReportLon(), is(not(23.234)));
+		assertThat(export1.getReportLat(), is(nullValue()));
+		assertThat(export1.getReportLon(), is(nullValue()));
 
 		VisitExportDto export2 = exportList.stream().filter(v -> v.getUuid().equals(visit2.getUuid())).findFirst().get();
 		assertThat(export2.getFirstName(), is("John"));
@@ -217,10 +213,8 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		// sensitive data
 		assertThat(visit.getVisitUser(), is(nullValue()));
 		assertThat(visit.getVisitRemarks(), isEmptyString());
-		assertThat(visit.getReportLat().toString(), startsWith("46."));
-		assertThat(visit.getReportLat(), is(not(46.432)));
-		assertThat(visit.getReportLon().toString(), startsWith("23."));
-		assertThat(visit.getReportLon(), is(not(23.234)));
+		assertThat(visit.getReportLat(), is(nullValue()));
+		assertThat(visit.getReportLon(), is(nullValue()));
 
 		assertThat(visit.getReportLatLonAccuracy(), is(10F));
 	}

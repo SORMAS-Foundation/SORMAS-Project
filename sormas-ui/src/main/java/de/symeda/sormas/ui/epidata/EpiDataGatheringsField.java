@@ -47,7 +47,6 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 	private static final String GATHERING_DAY = Captions.EpiDataGathering_gatheringDay;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataGatheringsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);

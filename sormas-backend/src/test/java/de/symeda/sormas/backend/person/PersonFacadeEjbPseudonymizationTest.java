@@ -20,9 +20,7 @@ package de.symeda.sormas.backend.person;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -325,10 +323,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getPostalCode(), is("123"));
 		assertThat(person.getAddress().getAreaType(), is(nullValue()));
 		assertThat(person.getAddress().getDetails(), isEmptyString());
-		assertThat(person.getAddress().getLongitude().toString(), startsWith("46."));
-		assertThat(person.getAddress().getLongitude(), is(not(46.432)));
-		assertThat(person.getAddress().getLatitude().toString(), startsWith("23."));
-		assertThat(person.getAddress().getLatitude(), is(not(23.234)));
+		assertThat(person.getAddress().getLongitude(), is(nullValue()));
+		assertThat(person.getAddress().getLatitude(), is(nullValue()));
 		assertThat(person.getAddress().getLatLonAccuracy(), is(10F));
 
 		// sensitive data

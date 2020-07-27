@@ -27,9 +27,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class EventDto extends PseudonymizableDto {
 
@@ -100,10 +97,8 @@ public class EventDto extends PseudonymizableDto {
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
 	@SensitiveData
-	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
-	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 

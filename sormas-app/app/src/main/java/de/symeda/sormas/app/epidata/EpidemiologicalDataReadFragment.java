@@ -28,7 +28,10 @@ import android.view.ViewGroup;
 import androidx.databinding.ObservableArrayList;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
@@ -36,7 +39,11 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -46,7 +53,9 @@ import de.symeda.sormas.app.component.dialog.InfoDialog;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentReadEpidLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentReadEpidLayoutBinding, EpiData, AbstractDomainObject> {
 
@@ -60,43 +69,54 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 
 	// Static methods
 
-	public static EpidemiologicalDataReadFragment newInstance(AbstractDomainObject activityRootData) {
+	public static EpidemiologicalDataReadFragment newInstance(Case activityRootData) {
 		return newInstanceWithFieldCheckers(
 			EpidemiologicalDataReadFragment.class,
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			null);
+			AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+	}
+
+	public static EpidemiologicalDataReadFragment newInstance(Contact activityRootData) {
+		return newInstanceWithFieldCheckers(
+			EpidemiologicalDataReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
+			AppFieldAccessCheckers
+				.withCheckers(ContactEditAuthorization.isContactEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods
 
 	private void setUpControlListeners() {
-		onBurialItemClickListener = new IEntryItemOnClickListener() {
-
-			@Override
-			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_burial_read_layout, item);
-				infoDialog.show();
-			}
+		onBurialItemClickListener = (v, item) -> {
+			InfoDialog infoDialog = new InfoDialog(
+				getContext(),
+				R.layout.dialog_epid_burial_read_layout,
+				item,
+				bindedView -> setFieldAccesses(EpiDataBurialDto.class, bindedView));
+			infoDialog.show();
 		};
 
-		onGatheringItemClickListener = new IEntryItemOnClickListener() {
-
-			@Override
-			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_gathering_read_layout, item);
-				infoDialog.show();
-			}
+		onGatheringItemClickListener = (v, item) -> {
+			InfoDialog infoDialog = new InfoDialog(
+				getContext(),
+				R.layout.dialog_epid_gathering_read_layout,
+				item,
+				bindedView -> setFieldAccesses(EpiDataGatheringDto.class, bindedView));
+			infoDialog.show();
 		};
 
-		onTravelItemClickListener = new IEntryItemOnClickListener() {
-
-			@Override
-			public void onClick(View v, Object item) {
-				InfoDialog infoDialog = new InfoDialog(getContext(), R.layout.dialog_epid_travel_read_layout, item);
-				infoDialog.show();
-			}
+		onTravelItemClickListener = (v, item) -> {
+			InfoDialog infoDialog = new InfoDialog(
+				getContext(),
+				R.layout.dialog_epid_travel_read_layout,
+				item,
+				bindedView -> setFieldAccesses(EpiDataTravelDto.class, bindedView));
+			infoDialog.show();
 		};
 	}
 
@@ -119,12 +139,24 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 		gatherings.addAll(record.getGatherings());
 
 		contentBinding.setData(record);
+
 		contentBinding.setBurialList(burials);
-		contentBinding.setGatheringList(gatherings);
-		contentBinding.setTravelList(travels);
 		contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
+		contentBinding.setBurialListBindCallback(v -> {
+			setFieldAccesses(EpiDataBurialDto.class, v);
+		});
+
+		contentBinding.setGatheringList(gatherings);
 		contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
+		contentBinding.setGatheringListBindCallback(v -> {
+			setFieldAccesses(EpiDataGatheringDto.class, v);
+		});
+
+		contentBinding.setTravelList(travels);
 		contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+		contentBinding.setTravelListBindCallback(v -> {
+			setFieldAccesses(EpiDataTravelDto.class, v);
+		});
 
 		// iterate through all epi data animal fields and add listener
 		ValueChangeListener updateHadAnimalExposureListener = field -> updateHadAnimalExposure();
@@ -190,5 +222,11 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 	@Override
 	public int getReadLayout() {
 		return R.layout.fragment_read_epid_layout;
+	}
+
+	private void setFieldAccesses(Class<?> dtoClass, View view) {
+		FieldVisibilityAndAccessHelper
+			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
+
 	}
 }

@@ -27,9 +27,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class VisitDto extends PseudonymizableDto {
 
@@ -63,10 +60,8 @@ public class VisitDto extends PseudonymizableDto {
 	private SymptomsDto symptoms;
 
 	@SensitiveData
-	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
-	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 
 	private Float reportLatLonAccuracy;

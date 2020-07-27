@@ -135,7 +135,16 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
-		return eventService.getNewEventsForDashboard(eventCriteria);
+		List<DashboardEventDto> dashboardEvents = eventService.getNewEventsForDashboard(eventCriteria);
+
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		pseudonymizer.pseudonymizeDtoCollection(
+			DashboardEventDto.class,
+			dashboardEvents,
+			e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()),
+			null);
+
+		return dashboardEvents;
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {

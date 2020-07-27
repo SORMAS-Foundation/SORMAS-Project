@@ -44,7 +44,6 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataTravelsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);

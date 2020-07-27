@@ -54,7 +54,6 @@ public interface Captions {
 	String actionShowLessFilters = "actionShowLessFilters";
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
-	String inaccessibleValue = "inaccessibleValue";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
@@ -804,6 +803,7 @@ public interface Captions {
 	String importLineListing = "importLineListing";
 	String importProcessed = "importProcessed";
 	String importSkips = "importSkips";
+	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";

@@ -18,9 +18,7 @@ package de.symeda.sormas.backend.event;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -177,10 +175,8 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(event.getSrcTelNo(), isEmptyString());
 		assertThat(event.getSrcEmail(), isEmptyString());
 		assertThat(event.getSurveillanceOfficer(), is(nullValue()));
-		assertThat(event.getReportLat().toString(), startsWith("46."));
-		assertThat(event.getReportLat(), is(not(46.432)));
-		assertThat(event.getReportLon().toString(), startsWith("23."));
-		assertThat(event.getReportLon(), is(not(23.234)));
+		assertThat(event.getReportLat(), is(nullValue()));
+		assertThat(event.getReportLon(), is(nullValue()));
 		assertThat(event.getEventLocation().getCommunity(), is(nullValue()));
 		assertThat(event.getEventLocation().getAddress(), isEmptyString());
 		assertThat(event.getEventLocation().getPostalCode(), is("123"));

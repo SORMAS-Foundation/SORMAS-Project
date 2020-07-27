@@ -63,6 +63,7 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	private int maxLines;
 	private boolean distinct;
 	private Object internalValue;
+	private String inAccessibleValue;
 
 	// Listeners
 
@@ -85,7 +86,9 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 	// Instance methods
 
 	protected String getDefaultValue(String defaultValue) {
-		if (defaultValue != null) {
+		if(inAccessibleValue != null){
+			return inAccessibleValue;
+		} else if (defaultValue != null) {
 			return defaultValue;
 		} else {
 			return getContext().getResources().getString(R.string.notAnswered);
@@ -205,13 +208,19 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 
 	@Override
 	public void setValue(Object value) {
+		String stringValue = DataHelper.toStringNullable(value);
+		stringValue = DataHelper.isNullOrEmpty(stringValue) && inAccessibleValue != null ? inAccessibleValue : stringValue;
+
 		internalValue = value;
-		setFieldValue(DataHelper.toStringNullable(value));
+		setFieldValue(stringValue);
 	}
 
 	public void setValue(Object value, Object internalValue) {
+		String stringValue = DataHelper.toStringNullable(value);
+		stringValue = DataHelper.isNullOrEmpty(stringValue) && inAccessibleValue != null ? inAccessibleValue : stringValue;
+
 		this.internalValue = internalValue;
-		setFieldValue(DataHelper.toStringNullable(value));
+		setFieldValue(stringValue);
 	}
 
 	public void applyDefaultValueStyle() {
@@ -223,8 +232,9 @@ public class ControlTextReadField extends ControlPropertyField<String> {
 		return internalValue;
 	}
 
-	public void setInaccessibleValue(String defaultValue) {
-		setFieldValue(defaultValue);
+	public void setInaccessibleValue(String value) {
+		this.inAccessibleValue = value;
+		setValue(null);
 	}
 
 	@Override

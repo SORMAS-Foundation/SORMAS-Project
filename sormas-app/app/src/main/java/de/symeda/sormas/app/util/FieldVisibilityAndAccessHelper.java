@@ -6,6 +6,8 @@ import static android.view.View.VISIBLE;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Set;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -28,17 +30,35 @@ public class FieldVisibilityAndAccessHelper {
 
 				child.setVisibility(visibleAllowed && child.getVisibility() == VISIBLE ? VISIBLE : GONE);
 				if (child.isEnabled() && !isFieldAccessible(dtoClass, propertyId, accessCheckers)) {
-					child.setEnabled(false);
-					if (child instanceof ControlPropertyEditField) {
-						((ControlPropertyEditField)child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
-					}
-					else if(child instanceof ControlTextReadField){
-						((ControlTextReadField) child).setInaccessibleValue(I18nProperties.getCaption(Captions.inaccessibleValue));
-					}
+					setFieldInaccessibleValue(child);
 				}
 			} else if (child instanceof ViewGroup) {
 				setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) child, visibilityCheckers, accessCheckers);
 			}
+		}
+	}
+
+	public static void setFieldsInaccessible(ViewGroup viewGroup, Set<String> fieldIds){
+		for (int i = 0; i < viewGroup.getChildCount(); i++) {
+			View child = viewGroup.getChildAt(i);
+			if (child instanceof ControlPropertyField) {
+				String propertyId = ((ControlPropertyField) child).getSubPropertyId();
+				if (fieldIds.contains(propertyId)) {
+					setFieldInaccessibleValue(child);
+				}
+			} else if (child instanceof ViewGroup) {
+				setFieldsInaccessible((ViewGroup) child, fieldIds);
+			}
+		}
+	}
+
+	private static void setFieldInaccessibleValue(View child) {
+		child.setEnabled(false);
+		if (child instanceof ControlPropertyEditField) {
+			((ControlPropertyEditField)child).setHint(I18nProperties.getCaption(Captions.inaccessibleValue));
+		}
+		else if(child instanceof ControlTextReadField){
+			((ControlTextReadField) child).setInaccessibleValue(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
 	}
 

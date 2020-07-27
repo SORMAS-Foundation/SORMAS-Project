@@ -49,7 +49,6 @@ public class EpiDataBurialsField extends AbstractTableField<EpiDataBurialDto> {
 	private static final String DISTRICT = LocationDto.DISTRICT;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
-	private UiFieldAccessCheckers fieldAccessCheckers;
 
 	public EpiDataBurialsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);
