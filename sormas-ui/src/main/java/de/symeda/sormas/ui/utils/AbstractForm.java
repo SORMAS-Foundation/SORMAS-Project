@@ -3,20 +3,25 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.FacadeProvider;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
+
+	private static final Logger logger = LoggerFactory.getLogger(AbstractForm.class);
 
 	private static final long serialVersionUID = -4362630675613167165L;
 
@@ -212,7 +217,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, null);
 		return field;
 	}
 
@@ -226,21 +231,21 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings({
-			"rawtypes",
-			"hiding" })
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
 		return addField(getContent(), propertyId, fieldType, fieldWrapper);
 	}
 
 	@SuppressWarnings({
-			"rawtypes",
-			"hiding" })
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		// Add validators before wrapping field, so the wrapper can access validators
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, null);
 		layout.addComponent(fieldWrapper.wrap(field), propertyId);
 		return field;
 	}
@@ -252,7 +257,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		field.setId(fieldId);
 		formatField(field, fieldId);
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, dataType);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -284,15 +289,29 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })
-	protected <T extends Field> T addDefaultAdditionalValidators(T field) {
-		final Class fieldType = field.getClass();
-		if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-		} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
-		}
+	protected <T extends Field> T addDefaultAdditionalValidators(T field, Class<?> typeOfFieldData) {
+		addLengthValidator(field, typeOfFieldData);
 		addFutureDateValidator(field, 0);
 		return field;
+	}
+
+	private <T extends Field> void addLengthValidator(T field, Class<?> typeOfFieldData) {
+		if (field.getId() != null) {
+			final Class fieldType = field.getClass();
+			try {
+				final Class<?> fieldDataType = typeOfFieldData != null ? typeOfFieldData : this.type.getDeclaredField(field.getId()).getType();
+
+				if (fieldDataType.equals(String.class)) {
+					if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+						field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+					} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+						field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+					}
+				}
+			} catch (NoSuchFieldException e) {
+				logger.warn("Field id {[]} not found in {[]}", field.getId(), this.type.getSimpleName());
+			}
+		}
 	}
 
 	@SuppressWarnings({
@@ -308,14 +327,6 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 
 		return field;
-	}
-
-	protected <T extends Field> void removeMaxLengthValidators(T field) {
-		for (Validator validator : field.getValidators()) {
-			if (validator instanceof MaxLengthValidator) {
-				field.removeValidator(validator);
-			}
-		}
 	}
 
 	public Field<?> getField(String fieldOrPropertyId) {

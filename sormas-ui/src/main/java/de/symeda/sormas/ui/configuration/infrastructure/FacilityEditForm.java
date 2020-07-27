@@ -70,12 +70,10 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		TextField latitude = addField(FacilityDto.LATITUDE, TextField.class);
 		latitude.setConverter(new StringToAngularLocationConverter());
 		latitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, latitude.getCaption()));
-		removeMaxLengthValidators(latitude);
-		TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
+        TextField longitude = addField(FacilityDto.LONGITUDE, TextField.class);
 		longitude.setConverter(new StringToAngularLocationConverter());
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
-		removeMaxLengthValidators(longitude);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+        addField(RegionDto.EXTERNAL_ID, TextField.class);
 
 		name.setRequired(true);
 		if (!laboratory) {
