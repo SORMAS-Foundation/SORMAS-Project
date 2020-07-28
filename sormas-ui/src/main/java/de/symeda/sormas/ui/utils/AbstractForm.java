@@ -289,28 +289,30 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })
-	protected <T extends Field> T addDefaultAdditionalValidators(T field, Class<?> typeOfFieldData) {
-		addLengthValidator(field, typeOfFieldData);
+	/**
+	 * @param fieldDataType
+	 *            - must be specified if the current FieldGroup does not know about the field
+	 */
+	protected <T extends Field> T addDefaultAdditionalValidators(T field, Class<?> fieldDataType) {
+		addLengthValidator(field, fieldDataType);
 		addFutureDateValidator(field, 0);
 		return field;
 	}
 
-	private <T extends Field> void addLengthValidator(T field, Class<?> typeOfFieldData) {
-		if (field.getId() != null) {
-			final Class fieldType = field.getClass();
-			try {
-				final Class<?> fieldDataType = typeOfFieldData != null ? typeOfFieldData : this.type.getDeclaredField(field.getId()).getType();
+	private <T extends Field> void addLengthValidator(T field, Class<?> fieldDataType) {
+		final Class fieldType = field.getClass();
+		try {
+			final Class<?> typeOfFieldData = fieldDataType != null ? fieldDataType : this.type.getDeclaredField(field.getId()).getType();
 
-				if (fieldDataType.equals(String.class)) {
-					if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-						field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-					} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-						field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
-					}
+			if (typeOfFieldData.equals(String.class)) {
+				if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+				} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
 				}
-			} catch (NoSuchFieldException e) {
-				logger.warn("Field id {[]} not found in {[]}", field.getId(), this.type.getSimpleName());
 			}
+		} catch (NoSuchFieldException e) {
+			logger.info("Field {[]} not found in {[]}", field.getId() != null ? field.getId() : field.getCaption(), this.type.getSimpleName());
 		}
 	}
 
