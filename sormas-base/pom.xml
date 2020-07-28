@@ -545,7 +545,9 @@
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
 							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
+						<!--suppress MavenModelInspection -->
 						<username>${github.sormas.user}</username>
+						<!--suppress MavenModelInspection -->
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
