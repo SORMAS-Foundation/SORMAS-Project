@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 @Entity
 @Audited
 public class CampaignFormMeta extends AbstractDomainObject {
@@ -28,6 +30,8 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String TABLE_NAME = "campaignformmeta";
 
 	public static final String FORM_NAME = "formName";
+	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
+	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 
 	private String formId;
 	private String formName;
@@ -36,6 +40,8 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	private List<CampaignFormElement> campaignFormElementsList;
 	private String campaignFormTranslations;
 	private List<CampaignFormTranslations> campaignFormTranslationsList;
+	private String campaignFormListElements;
+	private List<String> campaignFormListElementsList;
 
 	@Column
 	public String getFormId() {
@@ -152,6 +158,40 @@ public class CampaignFormMeta extends AbstractDomainObject {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Content of campaignFormTranslationsList could not be parsed to JSON String - ID: " + getId());
 		}
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getCampaignFormListElements() {
+		return campaignFormListElements;
+	}
+
+	public void setCampaignFormListElements(String campaignFormListElements) {
+		this.campaignFormListElements = campaignFormListElements;
+		campaignFormListElementsList = null;
+	}
+
+	@Transient
+	public List<String> getCampaignFormListElementsList() {
+		if (campaignFormListElementsList == null) {
+			if (StringUtils.isBlank(campaignFormListElements)) {
+				campaignFormListElementsList = new ArrayList<>();
+			} else {
+				campaignFormListElementsList = Arrays.asList(campaignFormListElements.split(","));
+			}
+		}
+
+		return campaignFormListElementsList;
+	}
+
+	public void setCampaignFormListElementsList(List<String> campaignFormListElementsList) {
+		this.campaignFormListElementsList = campaignFormListElementsList;
+
+		if (this.campaignFormListElementsList == null) {
+			campaignFormListElements = null;
+			return;
+		}
+
+		campaignFormListElements = String.join(",", campaignFormListElementsList);
 	}
 
 	@Override

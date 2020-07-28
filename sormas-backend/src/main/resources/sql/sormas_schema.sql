@@ -4819,4 +4819,10 @@ FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_histor
 
 INSERT INTO schema_version (version_number, comment) VALUES (230, 'Drop and re-create versioning trigger for campaignformmeta #1997');
 
+-- 2020-07-27 Add list elements to campaignformmeta #2515
+ALTER TABLE campaignformmeta ADD COLUMN campaignformlistelements varchar(4096);
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformlistelements varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add list elements to campaignformmeta #2515');
+
 -- *** Insert new sql commands BEFORE this line ***

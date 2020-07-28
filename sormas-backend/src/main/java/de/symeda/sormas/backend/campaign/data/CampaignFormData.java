@@ -55,6 +55,7 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignFormData";
 
+	public static final String FORM_VALUES = "formValues";
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
@@ -96,7 +97,7 @@ public class CampaignFormData extends AbstractDomainObject {
 					ObjectMapper mapper = new ObjectMapper();
 					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormDataEntry[].class));
 				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormValue> - ID: " + getId());
+					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - ID: " + getId());
 				}
 			}
 		}

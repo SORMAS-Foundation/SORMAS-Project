@@ -27,12 +27,16 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 8045806100043073638L;
+
+	private List<Column<CampaignFormDataIndexDto, String>> customColumns = new ArrayList<>();
 
 	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
 		super(CampaignFormDataIndexDto.class);
@@ -81,6 +85,13 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			query -> (int) FacadeProvider.getCampaignFormDataFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
+	}
+
+	public void addCustomColumn(String property, String caption) {
+		Column<CampaignFormDataIndexDto, Object> newColumn =
+			addColumn(e -> e.getFormValuesList().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
+		newColumn.setSortable(false);
+		newColumn.setCaption(caption);
 	}
 
 }

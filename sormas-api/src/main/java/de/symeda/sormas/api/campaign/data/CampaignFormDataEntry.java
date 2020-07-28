@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -64,4 +67,18 @@ public class CampaignFormDataEntry implements Serializable {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	@Override
+	public String toString() {
+		if (value == null) {
+			return "";
+		}
+
+		if (value instanceof Boolean) {
+			return value.equals(Boolean.TRUE) ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
+		}
+
+		return value.toString();
+	}
+
 }
