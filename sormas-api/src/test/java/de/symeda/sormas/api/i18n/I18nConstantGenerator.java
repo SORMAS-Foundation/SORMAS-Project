@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -141,6 +144,15 @@ public class I18nConstantGenerator {
 	public static void main(String[] args) throws IOException {
 
 		long startTime = System.currentTimeMillis();
+
+		// Check if this program is started with the module directory as working directory.
+		Path path = Paths.get(FILE_PATH_PATTERN.split("/")[0]);
+		if (!Files.exists(path)) {
+			throw new IOException(
+				String.format(
+					"Path '%s' not found. Please make sure the working directory is set to the module path.",
+					path.toAbsolutePath().toString()));
+		}
 
 		List<I18nConstantGenerator> generators = buildConfig();
 		for (I18nConstantGenerator generator : generators) {
