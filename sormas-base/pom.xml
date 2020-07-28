@@ -28,7 +28,7 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- Baseline for tests, so that in all projects in any case the test 
+			<!-- Baseline for tests, so that in all projects in any case the test
 				libs are available -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -184,25 +184,25 @@
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
@@ -214,7 +214,7 @@
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<!-- serverlibs -->
 
 			<dependency>
@@ -331,7 +331,7 @@
 				<artifactId>opencsv</artifactId>
 				<version>4.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
@@ -616,7 +616,7 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-	</repositories>	
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
