@@ -368,6 +368,9 @@ public class CaseController {
 				final CaseDataDto dto = createForm.getValue();
 
 				if (convertedContact != null) {
+					SymptomsDto newSymptoms = dto.getSymptoms() != null ? dto.getSymptoms() : SymptomsDto.build();
+					newSymptoms.setOnsetDate(createForm.getOnsetDate());
+					dto.setSymptoms(newSymptoms);
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
