@@ -81,7 +81,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 				if (gathering.getGatheringDate() != null) {
 					return DateFormatHelper.formatDate(gathering.getGatheringDate());
 				} else {
-					return I18nProperties.getString(Strings.unknown);
+					return I18nProperties.getString(Strings.notSpecified);
 				}
 			}
 		});

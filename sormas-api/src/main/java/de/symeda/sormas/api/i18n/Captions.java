@@ -891,6 +891,7 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
@@ -1414,7 +1415,6 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
-	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";

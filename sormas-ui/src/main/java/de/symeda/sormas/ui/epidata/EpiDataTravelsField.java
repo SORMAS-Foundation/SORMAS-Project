@@ -56,7 +56,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
 				if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
-					return I18nProperties.getString(Strings.unknown);
+					return I18nProperties.getString(Strings.notSpecified);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(travel.getTravelDateFrom() != null ? DateFormatHelper.formatDate(travel.getTravelDateFrom()) : "?");

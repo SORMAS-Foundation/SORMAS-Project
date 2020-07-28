@@ -664,6 +664,7 @@ public interface Strings {
 	String notificationTaskStartSubject = "notificationTaskStartSubject";
 	String notificationVisitCompleted = "notificationVisitCompleted";
 	String notificationVisitCompletedSubject = "notificationVisitCompletedSubject";
+	String notSpecified = "notSpecified";
 	String numberEight = "numberEight";
 	String numberEleven = "numberEleven";
 	String numberFive = "numberFive";
@@ -724,7 +725,6 @@ public interface Strings {
 	String step = "step";
 	String toCase = "toCase";
 	String total = "total";
-	String unknown = "unknown";
 	String until = "until";
 	String week = "week";
 	String weekShort = "weekShort";

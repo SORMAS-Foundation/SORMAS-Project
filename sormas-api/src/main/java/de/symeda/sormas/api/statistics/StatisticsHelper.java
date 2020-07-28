@@ -54,7 +54,7 @@ public final class StatisticsHelper {
 
 	public static final String VALUE_UNKNOWN = "VALUE_UNKNOWN";
 	public static final String TOTAL = "total";
-	public static final String UNKNOWN = "unknown";
+	public static final String NOT_SPECIFIED = "notSpecified";
 
 	public static StatisticsGroupingKey buildGroupingKey(
 		Object attributeValue,
