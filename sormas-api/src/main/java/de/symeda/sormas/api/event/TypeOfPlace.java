@@ -17,17 +17,36 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum TypeOfPlace {
 
-	FESTIVITIES,
-	HOME,
-	HOSPITAL,
-	MEANS_OF_TRANSPORT,
-	PUBLIC_PLACE,
-	UNKNOWN,
-	OTHER;
+	FACILITY(true),
+	FESTIVITIES(false),
+	HOME(true),
+	HOSPITAL(false),
+	MEANS_OF_TRANSPORT(false),
+	PUBLIC_PLACE(false),
+	UNKNOWN(false),
+	OTHER(false);
+
+	private boolean usableForCases;
+
+	TypeOfPlace(boolean usableForCases) {
+		this.usableForCases = usableForCases;
+	}
+
+	public boolean isUsableForCases() {
+		return usableForCases;
+	}
+
+	public static List<TypeOfPlace> getTypesOfPlaceForCases() {
+		return Arrays.stream(TypeOfPlace.values()).filter(e -> e.isUsableForCases()).collect(Collectors.toList());
+	}
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

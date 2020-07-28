@@ -1201,9 +1201,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 
 		if (dto.getHealthFacility() != null
-			&& FacilityDto.OTHER_FACILITY_UUID.equals(dto.getHealthFacility().getUuid())
-			&& dto.getFacilityType() == null) {
-			throw new IllegalArgumentException("The facility type of cases assigned to the other facility must not be null.");
+			&& dto.getFacilityType() == null
+			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getHealthFacility().getUuid())) {
+			throw new IllegalArgumentException("The facility type of cases assigned to a facility other than 'none facility' must not be null.");
 		}
 
 		Case caze = caseService.getByUuid(dto.getUuid());
@@ -1282,7 +1282,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility() != null) {
 			FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
 
-			if (caze.getFacilityType() == null) {
+			if (caze.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
 			}
 			if (caze.getCommunity() == null && healthFacility.getDistrict() != null && !healthFacility.getDistrict().equals(caze.getDistrict())) {
