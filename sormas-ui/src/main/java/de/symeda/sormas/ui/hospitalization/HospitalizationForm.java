@@ -34,7 +34,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -109,12 +108,12 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		getContent().addComponent(hospitalizationHeadingLabel, HOSPITALIZATION_HEADING_LOC);
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
-		FacilityDto healthFacility = FacadeProvider.getFacilityFacade().getByUuid(caze.getHealthFacility().getUuid());
+		FacilityReferenceDto healthFacility = caze.getHealthFacility();
 		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
 		facilityField.setValue(
 			healthFacility == null
 				|| noneFacility
-				|| FacilityType.HOSPITAL.equals(healthFacility.getType()) ? null : healthFacility.toString());
+				|| !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
