@@ -3,25 +3,30 @@ package de.symeda.sormas.ui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.data.util.BeanItem;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.FacadeProvider;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
+	private static final Logger logger = LoggerFactory.getLogger(AbstractForm.class);
+
 	private static final long serialVersionUID = -4362630675613167165L;
 
 	protected final String propertyI18nPrefix;
-	private final BeanFieldGroup<T> fieldGroup;
+	private final SormasBeanFieldGroup<T> fieldGroup;
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
@@ -31,23 +36,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
-		fieldGroup = new BeanFieldGroup<T>(type) {
-
-			@Override
-			protected void configureField(Field<?> field) {
-
-				field.setBuffered(isBuffered());
-				if (!isEnabled()) {
-					field.setEnabled(false);
-				}
-
-				if (field.getPropertyDataSource().isReadOnly()) {
-					field.setReadOnly(true);
-				} else if (isReadOnly()) {
-					field.setReadOnly(true);
-				}
-			}
-		};
+		fieldGroup = new SormasBeanFieldGroup<T>(type);
 
 		fieldGroup.setFieldFactory(fieldFactory);
 		setHeightUndefined();
@@ -83,7 +72,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return layout;
 	}
 
-	public BeanFieldGroup<T> getFieldGroup() {
+	public SormasBeanFieldGroup<T> getFieldGroup() {
 		return this.fieldGroup;
 	}
 
@@ -212,7 +201,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, null);
 		return field;
 	}
 
@@ -226,21 +215,21 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	}
 
 	@SuppressWarnings({
-			"rawtypes",
-			"hiding" })
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
 		return addField(getContent(), propertyId, fieldType, fieldWrapper);
 	}
 
 	@SuppressWarnings({
-			"rawtypes",
-			"hiding" })
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType, FieldWrapper<T> fieldWrapper) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		// Add validators before wrapping field, so the wrapper can access validators
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, null);
 		layout.addComponent(fieldWrapper.wrap(field), propertyId);
 		return field;
 	}
@@ -252,7 +241,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		field.setId(fieldId);
 		formatField(field, fieldId);
-		addDefaultAdditionalValidators(field);
+		addDefaultAdditionalValidators(field, dataType);
 		getContent().addComponent(field, fieldId);
 		customFields.add(field);
 		return field;
@@ -284,15 +273,28 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	@SuppressWarnings({
 		"rawtypes",
 		"hiding" })
-	protected <T extends Field> T addDefaultAdditionalValidators(T field) {
-		final Class fieldType = field.getClass();
-		if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-		} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-			field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
-		}
+	/**
+	 * @param fieldDataType
+	 *            - must be specified if the current FieldGroup does not know about the field
+	 */
+	protected <T extends Field> T addDefaultAdditionalValidators(T field, Class<?> fieldDataType) {
+		addLengthValidator(field, fieldDataType);
 		addFutureDateValidator(field, 0);
 		return field;
+	}
+
+	private <T extends Field> void addLengthValidator(T field, Class<?> fieldDataType) {
+		final Class fieldType = field.getClass();
+		final Class<?> typeOfFieldData =
+			fieldDataType != null ? fieldDataType : getFieldGroup().getPropertyTypeById(getFieldGroup().getPropertyId(field));
+
+		if (typeOfFieldData.equals(String.class)) {
+			if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+			} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
+			}
+		}
 	}
 
 	@SuppressWarnings({
@@ -308,14 +310,6 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 
 		return field;
-	}
-
-	protected <T extends Field> void removeMaxLengthValidators(T field) {
-		for (Validator validator : field.getValidators()) {
-			if (validator instanceof MaxLengthValidator) {
-				field.removeValidator(validator);
-			}
-		}
 	}
 
 	public Field<?> getField(String fieldOrPropertyId) {
@@ -353,5 +347,31 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	protected boolean isGermanServer() {
 		return FacadeProvider.getConfigFacade().isGermanServer();
+	}
+
+	public static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {
+
+		public SormasBeanFieldGroup(Class beanType) {
+			super(beanType);
+		}
+
+		public Class<?> getPropertyTypeById(Object propertyId) {
+			return this.getPropertyType(propertyId);
+		}
+
+		@Override
+		protected void configureField(Field<?> field) {
+
+			field.setBuffered(isBuffered());
+			if (!isEnabled()) {
+				field.setEnabled(false);
+			}
+
+			if (field.getPropertyDataSource().isReadOnly()) {
+				field.setReadOnly(true);
+			} else if (isReadOnly()) {
+				field.setReadOnly(true);
+			}
+		}
 	}
 }
