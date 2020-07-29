@@ -125,7 +125,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 				CampaignFormMetaDto formDto = toDto(form);
 				validateAndClean(formDto);
 			} catch (ValidationRuntimeException e) {
-				throw new ValidationRuntimeException(form.getFormName() + ": " + e.getMessage());
+				throw new ValidationRuntimeException(form.getId() + ": " + e.getMessage());
 			}
 		}
 	}
