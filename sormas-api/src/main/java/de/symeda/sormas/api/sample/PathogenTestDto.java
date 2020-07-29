@@ -63,7 +63,6 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Required
 	private Date testDateTime;
 	@Required
-	@SensitiveData
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	private String labDetails;

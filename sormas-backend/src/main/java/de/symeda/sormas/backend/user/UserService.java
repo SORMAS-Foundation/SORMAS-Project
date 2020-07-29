@@ -39,6 +39,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -204,6 +205,10 @@ public class UserService extends AbstractAdoService<User> {
 
 		Predicate filter = buildDistrictFilter(cb, cq, from, district, includeSupervisors, userRoles);
 
+		if (createExtraFilters != null) {
+			filter = and(cb, filter, createExtraFilters.apply(cb, from));
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -227,6 +232,22 @@ public class UserService extends AbstractAdoService<User> {
 		Predicate filter = cb.and(cb.equal(from.get(User.ASSOCIATED_OFFICER), associatedOfficer));
 		filter = and(cb, filter, buildUserRolesFilter(from, Arrays.asList(userRoles)));
 		cq.where(filter);
+
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<User> getAllInJurisdiction() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+
+		Predicate jurisdictionFilter = createJurisdictionFilter(cb, from);
+
+		if (jurisdictionFilter != null) {
+			cq.where(jurisdictionFilter);
+		}
 
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
 
@@ -308,28 +329,31 @@ public class UserService extends AbstractAdoService<User> {
 	}
 
 	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
-		// user can see only others from the same jurisdiction
-		Predicate filter = cb.conjunction();
-
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
-			return filter;
+			return null;
 		}
 
 		User currentUser = getCurrentUser();
 
+		Predicate regionalOrNationalFilter =
+			from.join(User.USER_ROLES, JoinType.LEFT).in(UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION, JurisdictionLevel.REGION));
+
+		Predicate jurisdictionFilter = cb.conjunction();
 		if (currentUser.getHealthFacility() != null) {
-			filter = cb.and(filter, cb.equal(from.get(User.HEALTH_FACILITY), currentUser.getHealthFacility()));
+			jurisdictionFilter = cb.equal(from.get(User.HEALTH_FACILITY), currentUser.getHealthFacility());
 		} else if (currentUser.getPointOfEntry() != null) {
-			filter = cb.and(filter, cb.equal(from.get(User.POINT_OF_ENTRY), currentUser.getPointOfEntry()));
+			jurisdictionFilter = cb.equal(from.get(User.POINT_OF_ENTRY), currentUser.getPointOfEntry());
+		} else if (currentUser.getLaboratory() != null) {
+			jurisdictionFilter = cb.equal(from.get(User.LABORATORY), currentUser.getLaboratory());
 		} else if (currentUser.getCommunity() != null) {
-			filter = cb.and(filter, cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity()));
+			jurisdictionFilter = cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity());
 		} else if (currentUser.getDistrict() != null) {
-			filter = cb.and(filter, cb.equal(from.get(User.DISTRICT), currentUser.getDistrict()));
+			jurisdictionFilter = cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
 		} else if (currentUser.getRegion() != null) {
-			filter = cb.and(filter, cb.equal(from.get(User.REGION), currentUser.getRegion()));
+			jurisdictionFilter = cb.equal(from.get(User.REGION), currentUser.getRegion());
 		}
 
-		return filter;
+		return or(cb, regionalOrNationalFilter, jurisdictionFilter);
 	}
 
 	public Predicate buildUserRolesFilter(Root<User> from, Collection<UserRole> userRoles) {

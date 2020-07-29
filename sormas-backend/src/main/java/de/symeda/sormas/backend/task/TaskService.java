@@ -118,14 +118,14 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUser));
+		Predicate assigneeFilter = or(cb, cb.isNull(assigneeUser.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUser));
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
-				|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			return assigneeFilter;
 		}
 
@@ -201,10 +201,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(assigneeUser.get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = and(cb, filter, cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(Case.UUID), taskCriteria.getCaze().getUuid()));
@@ -249,7 +246,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 
-		Predicate assigneeFilter = cb.or(cb.isNull(assigneeUser), userService.createJurisdictionFilter(cb, assigneeUser));
+		Predicate assigneeFilter = or(cb, cb.isNull(assigneeUser), userService.createJurisdictionFilter(cb, assigneeUser));
 
 		return and(cb, filter, assigneeFilter);
 	}
@@ -262,24 +259,16 @@ public class TaskService extends AbstractAdoService<Task> {
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
 
 		Predicate filter = cb.or(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
-				cb.and(
-						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-						cb.or(
-								cb.equal(caze.get(Case.ARCHIVED), false),
-								cb.isNull(caze.get(Case.ARCHIVED)))
-				),
-				cb.and(
-						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-						cb.or(
-								cb.equal(contactCaze.get(Case.ARCHIVED), false),
-								cb.isNull(contactCaze.get(Case.ARCHIVED)))
-				),
-				cb.and(
-						cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-						cb.or(
-								cb.equal(event.get(Event.ARCHIVED), false),
-								cb.isNull(event.get(Event.ARCHIVED)))));
+			cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+			cb.and(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+				cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
+			cb.and(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+				cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
+			cb.and(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))));
 
 		return filter;
 	}

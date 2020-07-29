@@ -40,7 +40,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -105,10 +104,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	public List<Facility> getAllActiveLaboratories(boolean includeOtherLaboratory) {
 		return getAllActiveLaboratories(includeOtherLaboratory, null);
-	}
-
-	public List<Facility> getAllActiveLaboratoriesInJurisdiction(boolean includeOtherLaboratory) {
-		return getAllActiveLaboratories(includeOtherLaboratory, this::createJurisdictionFilter);
 	}
 
 	private List<Facility> getAllActiveLaboratories(
@@ -196,24 +191,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
 		// no filter by user needed
 		return null;
-	}
-
-	private Predicate createJurisdictionFilter(CriteriaBuilder cb, From<Facility, Facility> from) {
-		User currentUser = getCurrentUser();
-		Predicate filter = cb.conjunction();
-
-		if (currentUser.getRegion() != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.REGION), currentUser.getRegion()));
-		}
-		if (currentUser.getDistrict() != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), currentUser.getDistrict()));
-		}
-
-		if (currentUser.getCommunity() != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), currentUser.getCommunity()));
-		}
-
-		return filter;
 	}
 
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {

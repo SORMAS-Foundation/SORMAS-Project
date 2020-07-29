@@ -92,7 +92,6 @@ public class SampleDto extends PseudonymizableDto {
 	@Required
 	private SamplePurpose samplePurpose;
 	@Required
-	@SensitiveData
 	private FacilityReferenceDto lab;
 	@SensitiveData
 	private String labDetails;

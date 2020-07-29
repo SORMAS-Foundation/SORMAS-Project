@@ -31,7 +31,6 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
 public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, Serializable {
@@ -83,7 +82,6 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 	private Date sampleDateTime;
 	private Date shipmentDate;
 	private Date receivedDate;
-	@SensitiveData
 	private FacilityReferenceDto lab;
 	private SampleMaterial sampleMaterial;
 	private SamplePurpose samplePurpose;

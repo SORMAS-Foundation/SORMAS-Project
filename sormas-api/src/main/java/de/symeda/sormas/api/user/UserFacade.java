@@ -59,6 +59,8 @@ public interface UserFacade {
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
 
+	List<UserReferenceDto> getAllUserRefs();
+
 	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
 
 	List<String> getAllUuids();

@@ -126,6 +126,11 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public List<UserReferenceDto> getAllUserRefs() {
+		return userService.getAllInJurisdiction().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);

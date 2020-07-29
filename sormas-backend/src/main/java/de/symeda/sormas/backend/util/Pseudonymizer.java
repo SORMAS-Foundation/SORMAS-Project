@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.util;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.pseudonymization.DtoPseudonymizer;
@@ -56,20 +57,24 @@ public class Pseudonymizer extends DtoPseudonymizer {
 
 	private boolean isUserInJurisdiction(User user, User currentUser) {
 
-		if (currentUser.getDistrict() != null) {
-			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
+		if (user.getJurisdictionLevel() == JurisdictionLevel.NATION || user.getJurisdictionLevel() == JurisdictionLevel.REGION) {
+			return true;
 		}
 
-		if (currentUser.getCommunity() != null) {
-			return DataHelper.isSame(currentUser.getCommunity(), user.getCommunity());
+		if (currentUser.getPointOfEntry() != null) {
+			return DataHelper.isSame(currentUser.getPointOfEntry(), user.getPointOfEntry());
 		}
 
 		if (currentUser.getHealthFacility() != null) {
 			return DataHelper.isSame(currentUser.getHealthFacility(), user.getHealthFacility());
 		}
 
-		if (currentUser.getPointOfEntry() != null) {
-			return DataHelper.isSame(currentUser.getPointOfEntry(), user.getPointOfEntry());
+		if (currentUser.getCommunity() != null) {
+			return DataHelper.isSame(currentUser.getCommunity(), user.getCommunity());
+		}
+
+		if (currentUser.getDistrict() != null) {
+			return DataHelper.isSame(currentUser.getDistrict(), user.getDistrict());
 		}
 
 		return true;
