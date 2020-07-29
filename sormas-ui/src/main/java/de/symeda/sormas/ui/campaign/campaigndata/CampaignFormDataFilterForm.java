@@ -17,10 +17,10 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -31,9 +31,14 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 
+import java.util.function.Consumer;
+
 public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 718816470397296272L;
+
+	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
+	private ComboBox cbCampaignForm;
 
 	protected CampaignFormDataFilterForm() {
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
@@ -43,7 +48,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			CampaignFormDataCriteria.CAMPAIGN,
-			CampaignFormDataCriteria.CAMPAIGN_FORM,
+			CampaignFormDataCriteria.CAMPAIGN_FORM_META,
 			CampaignFormDataCriteria.REGION,
 			CampaignFormDataCriteria.DISTRICT,
 			CampaignFormDataCriteria.COMMUNITY };
@@ -58,12 +63,16 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				200));
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllCampaignsAsReference());
 
-		ComboBox cbCampaignForm = addField(
+		cbCampaignForm = addField(
 			FieldConfiguration.withCaptionAndPixelSized(
-				CampaignFormDataCriteria.CAMPAIGN_FORM,
-				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM),
+				CampaignFormDataCriteria.CAMPAIGN_FORM_META,
+				I18nProperties.getPrefixCaption(CampaignFormDataDto.I18N_PREFIX, CampaignFormDataDto.CAMPAIGN_FORM_META),
 				200));
-		cbCampaignForm.addItems(FacadeProvider.getCampaignFormFacade().getAllCampaignFormsAsReferences());
+		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+
+		if (formMetaChangedCallback != null) {
+			cbCampaignForm.addValueChangeListener(e -> formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue()));
+		}
 
 		UserDto user = UserProvider.getCurrent().getUser();
 		if (user.getRegion() == null) {
@@ -146,6 +155,14 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			if (district != null) {
 				cbCommunity.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
 			}
+		}
+	}
+
+	public void setFormMetaChangedCallback(Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback) {
+		this.formMetaChangedCallback = formMetaChangedCallback;
+
+		if (cbCampaignForm != null) {
+			cbCampaignForm.addValueChangeListener(e -> formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue()));
 		}
 	}
 }

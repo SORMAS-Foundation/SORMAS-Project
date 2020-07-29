@@ -47,6 +47,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String QUARANTINE_NOT_ORDERED = "quarantineNotOrdered";
 	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -85,6 +88,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
 	private PersonReferenceDto person;
+	private Integer birthdateYYYY;
+	private Integer birthdateMM;
+	private Integer birthdateDD;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -377,5 +383,29 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria person(PersonReferenceDto person) {
 		this.person = person;
 		return this;
+	}
+
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public Integer getBirthdateDD() {
+		return birthdateDD;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 }

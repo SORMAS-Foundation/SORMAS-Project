@@ -634,6 +634,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 			}
 		}
+		if (caseCriteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
+		}
+		if (caseCriteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), caseCriteria.getBirthdateMM()));
+		}
+		if (caseCriteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
+		}
+
 		return filter;
 	}
 

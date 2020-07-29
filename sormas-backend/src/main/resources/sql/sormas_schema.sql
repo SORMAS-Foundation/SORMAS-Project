@@ -4788,4 +4788,41 @@ ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add source of identification as contact to contacts #2070');
 
+-- 2020-07-27 Add form name to campaign forms and creating user to form data #1993
+ALTER TABLE campaignforms ADD COLUMN formname varchar(512);
+ALTER TABLE campaignforms_history ADD COLUMN formname varchar(512);
+ALTER TABLE campaignformdata ADD COLUMN creatinguser_id bigint;
+ALTER TABLE campaignformdata_history ADD COLUMN creatinguser_id bigint;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (228, 'Add form name to campaign forms and creating user to form data #1993');
+
+-- 2020-07-27 Rename campaignforms to campaignformmeta #1997
+ALTER TABLE campaignforms RENAME TO campaignformmeta;
+ALTER TABLE campaignforms_history RENAME TO campaignformmeta_history;
+ALTER TABLE campaignformdata RENAME COLUMN campaignform_id TO campaignformmeta_id;
+ALTER TABLE campaignformdata_history RENAME COLUMN campaignform_id TO campaignformmeta_id;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaignformmeta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (229, 'Rename campaignforms to campaignformmeta #1997');
+
+-- 2020-07-27 Drop and re-create versioning trigger for campaignformmeta #1997
+DROP TRIGGER versioning_trigger ON campaignformmeta;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformmeta
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (230, 'Drop and re-create versioning trigger for campaignformmeta #1997');
+
+-- 2020-07-27 Add list elements to campaignformmeta #2515
+ALTER TABLE campaignformmeta ADD COLUMN campaignformlistelements varchar(4096);
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformlistelements varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add list elements to campaignformmeta #2515');
+
 -- *** Insert new sql commands BEFORE this line ***

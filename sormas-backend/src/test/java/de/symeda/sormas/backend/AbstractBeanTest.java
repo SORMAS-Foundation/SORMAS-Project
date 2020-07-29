@@ -33,7 +33,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
-import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -73,7 +73,7 @@ import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
-import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb.CampaignFormFacadeEjbLocal;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
@@ -363,8 +363,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
-	public CampaignFormFacade getCampaignFormFacade() {
-		return getBean(CampaignFormFacadeEjbLocal.class);
+	public CampaignFormMetaFacade getCampaignFormFacade() {
+		return getBean(CampaignFormMetaFacadeEjbLocal.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {

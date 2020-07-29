@@ -258,10 +258,12 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add("TOTAL");
 		columnNames.add("MALE_TOTAL");
 		columnNames.add("FEMALE_TOTAL");
+		columnNames.add("OTHER_TOTAL");
 		for (AgeGroup ageGroup : AgeGroup.values()) {
 			columnNames.add("TOTAL_" + ageGroup.name());
 			columnNames.add("MALE_" + ageGroup.name());
 			columnNames.add("FEMALE_" + ageGroup.name());
+			columnNames.add("OTHER_" + ageGroup.name());
 		}
 		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {

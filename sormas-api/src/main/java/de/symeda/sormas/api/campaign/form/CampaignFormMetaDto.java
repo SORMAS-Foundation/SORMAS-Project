@@ -1,10 +1,10 @@
 package de.symeda.sormas.api.campaign.form;
 
-import java.util.List;
-
 import de.symeda.sormas.api.EntityDto;
 
-public class CampaignFormDto extends EntityDto {
+import java.util.List;
+
+public class CampaignFormMetaDto extends EntityDto {
 
 	private static final long serialVersionUID = -1163673887940552133L;
 
@@ -13,9 +13,11 @@ public class CampaignFormDto extends EntityDto {
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 
 	private String formId;
+	private String formName;
 	private String languageCode;
 	private List<CampaignFormElement> campaignFormElements;
 	private List<CampaignFormTranslations> campaignFormTranslations;
+	private List<String> campaignFormListElements;
 
 	public String getFormId() {
 		return formId;
@@ -23,6 +25,14 @@ public class CampaignFormDto extends EntityDto {
 
 	public void setFormId(String formId) {
 		this.formId = formId;
+	}
+
+	public String getFormName() {
+		return formName;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
 	}
 
 	public String getLanguageCode() {
@@ -47,5 +57,13 @@ public class CampaignFormDto extends EntityDto {
 
 	public void setCampaignFormTranslations(List<CampaignFormTranslations> campaignFormTranslations) {
 		this.campaignFormTranslations = campaignFormTranslations;
+	}
+
+	public List<String> getCampaignFormListElements() {
+		return campaignFormListElements;
+	}
+
+	public void setCampaignFormListElements(List<String> campaignFormListElements) {
+		this.campaignFormListElements = campaignFormListElements;
 	}
 }
