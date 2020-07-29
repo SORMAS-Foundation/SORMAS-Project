@@ -26,7 +26,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	private static final long serialVersionUID = -4362630675613167165L;
 
 	protected final String propertyI18nPrefix;
-	private final BeanFieldGroup<T> fieldGroup;
+	private final SormasBeanFieldGroup<T> fieldGroup;
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
@@ -36,23 +36,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
-		fieldGroup = new BeanFieldGroup<T>(type) {
-
-			@Override
-			protected void configureField(Field<?> field) {
-
-				field.setBuffered(isBuffered());
-				if (!isEnabled()) {
-					field.setEnabled(false);
-				}
-
-				if (field.getPropertyDataSource().isReadOnly()) {
-					field.setReadOnly(true);
-				} else if (isReadOnly()) {
-					field.setReadOnly(true);
-				}
-			}
-		};
+		fieldGroup = new SormasBeanFieldGroup<T>(type);
 
 		fieldGroup.setFieldFactory(fieldFactory);
 		setHeightUndefined();
@@ -88,7 +72,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return layout;
 	}
 
-	public BeanFieldGroup<T> getFieldGroup() {
+	public SormasBeanFieldGroup<T> getFieldGroup() {
 		return this.fieldGroup;
 	}
 
@@ -301,18 +285,15 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	private <T extends Field> void addLengthValidator(T field, Class<?> fieldDataType) {
 		final Class fieldType = field.getClass();
-		try {
-			final Class<?> typeOfFieldData = fieldDataType != null ? fieldDataType : this.type.getDeclaredField(field.getId()).getType();
+		final Class<?> typeOfFieldData =
+			fieldDataType != null ? fieldDataType : getFieldGroup().getPropertyTypeById(getFieldGroup().getPropertyId(field));
 
-			if (typeOfFieldData.equals(String.class)) {
-				if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
-					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
-				} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
-					field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
-				}
+		if (typeOfFieldData.equals(String.class)) {
+			if (fieldType.isAssignableFrom(TextArea.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextArea.class)) {
+				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_AREA_MAX_LENGTH));
+			} else if (fieldType.isAssignableFrom(TextField.class) || fieldType.isAssignableFrom(com.vaadin.v7.ui.TextField.class)) {
+				field.addValidator(new MaxLengthValidator(SormasFieldGroupFieldFactory.TEXT_FIELD_MAX_LENGTH));
 			}
-		} catch (NoSuchFieldException e) {
-			logger.info("Field {[]} not found in {[]}", field.getId() != null ? field.getId() : field.getCaption(), this.type.getSimpleName());
 		}
 	}
 
@@ -366,5 +347,31 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 
 	protected boolean isGermanServer() {
 		return FacadeProvider.getConfigFacade().isGermanServer();
+	}
+
+	public static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {
+
+		public SormasBeanFieldGroup(Class beanType) {
+			super(beanType);
+		}
+
+		public Class<?> getPropertyTypeById(Object propertyId) {
+			return this.getPropertyType(propertyId);
+		}
+
+		@Override
+		protected void configureField(Field<?> field) {
+
+			field.setBuffered(isBuffered());
+			if (!isEnabled()) {
+				field.setEnabled(false);
+			}
+
+			if (field.getPropertyDataSource().isReadOnly()) {
+				field.setReadOnly(true);
+			} else if (isReadOnly()) {
+				field.setReadOnly(true);
+			}
+		}
 	}
 }
