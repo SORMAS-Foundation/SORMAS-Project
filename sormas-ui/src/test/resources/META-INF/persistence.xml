@@ -7,6 +7,7 @@
 		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
+		<class>de.symeda.sormas.backend.action.Action</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>

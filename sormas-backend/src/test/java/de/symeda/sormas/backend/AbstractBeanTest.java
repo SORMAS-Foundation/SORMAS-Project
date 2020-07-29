@@ -31,6 +31,7 @@ import org.junit.Before;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
@@ -71,6 +72,7 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
@@ -205,6 +207,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public EventParticipantFacade getEventParticipantFacade() {
 		return getBean(EventParticipantFacadeEjbLocal.class);
+	}
+
+	public ActionFacade getActionFacade() {
+		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
 	}
 
 	public VisitFacade getVisitFacade() {

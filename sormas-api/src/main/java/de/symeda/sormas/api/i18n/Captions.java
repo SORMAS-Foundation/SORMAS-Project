@@ -17,6 +17,16 @@ public interface Captions {
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
+	String Action = "Action";
+	String Action_actionContext = "Action.actionContext";
+	String Action_actionStatus = "Action.actionStatus";
+	String Action_creatorUser = "Action.creatorUser";
+	String Action_date = "Action.date";
+	String Action_description = "Action.description";
+	String Action_event = "Action.event";
+	String Action_priority = "Action.priority";
+	String Action_reply = "Action.reply";
+	String Action_statusChangeDate = "Action.statusChangeDate";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
@@ -29,6 +39,7 @@ public interface Captions {
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
 	String actionCreate = "actionCreate";
+	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
 	String actionDelete = "actionDelete";
 	String actionDeselectAll = "actionDeselectAll";
@@ -42,10 +53,13 @@ public interface Captions {
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
+	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionPick = "actionPick";
+	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -54,6 +68,7 @@ public interface Captions {
 	String actionShowLessFilters = "actionShowLessFilters";
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
+	String actionStatusChangeDate = "actionStatusChangeDate";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
@@ -698,6 +713,7 @@ public interface Captions {
 	String Event = "Event";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
+	String Event_eventActions = "Event.eventActions";
 	String Event_endDate = "Event.endDate";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
@@ -728,6 +744,7 @@ public interface Captions {
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
+	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";

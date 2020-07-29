@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
@@ -120,6 +121,10 @@ public class FacadeProvider {
 
 	public static TaskFacade getTaskFacade() {
 		return get().lookupEjbRemote(TaskFacade.class);
+	}
+
+	public static ActionFacade getActionFacade() {
+		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
 	public static SampleFacade getSampleFacade() {
