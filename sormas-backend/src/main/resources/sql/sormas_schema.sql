@@ -4860,4 +4860,10 @@ ALTER TABLE action_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (232, 'Adds actions to events');
 
+-- 2020-07-29 - Remove list elements from campaignformmeta #2515
+ALTER TABLE campaignformmeta DROP COLUMN campaignformlistelements;
+ALTER TABLE campaignformmeta_history DROP COLUMN campaignformlistelements;
+
+INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list elements from campaignformmeta #2515');
+
 -- *** Insert new sql commands BEFORE this line ***

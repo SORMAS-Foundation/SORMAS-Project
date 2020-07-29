@@ -36,6 +36,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
@@ -100,7 +102,13 @@ public class CampaignDataView extends AbstractCampaignView {
 			navigateTo(null, true);
 		});
 
-		filterForm.setFormMetaChangedCallback(formMetaReference -> {
+		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
+
+		return filterForm;
+	}
+
+	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
+		return formMetaReference -> {
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
@@ -113,32 +121,26 @@ public class CampaignDataView extends AbstractCampaignView {
 						.orElse(null);
 				}
 
-				List<String> formListElements = formMeta.getCampaignFormListElements();
-				for (String element : formListElements) {
+				List<CampaignFormElement> formListElements =
+					formMeta.getCampaignFormElements().stream().filter(CampaignFormElement::isImportant).collect(Collectors.toList());
+				for (CampaignFormElement element : formListElements) {
 					String caption = null;
 					if (translations != null) {
 						caption = translations.getTranslations()
 							.stream()
-							.filter(t -> t.getElementId().equals(element))
+							.filter(t -> t.getElementId().equals(element.getId()))
 							.map(CampaignFormTranslation::getCaption)
 							.findFirst()
 							.orElse(null);
 					}
 					if (caption == null) {
-						caption = formMeta.getCampaignFormElements()
-							.stream()
-							.filter(e -> e.getId().equals(element))
-							.map(CampaignFormElement::getCaption)
-							.findFirst()
-							.orElse(null);
+						caption = element.getCaption();
 					}
 
-					grid.addCustomColumn(element, caption);
+					grid.addCustomColumn(element.getId(), caption);
 				}
 			}
-		});
-
-		return filterForm;
+		};
 	}
 
 	@Override

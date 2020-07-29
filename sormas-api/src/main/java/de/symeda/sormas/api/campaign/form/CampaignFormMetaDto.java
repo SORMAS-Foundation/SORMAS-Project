@@ -17,7 +17,6 @@ public class CampaignFormMetaDto extends EntityDto {
 	private String languageCode;
 	private List<CampaignFormElement> campaignFormElements;
 	private List<CampaignFormTranslations> campaignFormTranslations;
-	private List<String> campaignFormListElements;
 
 	public String getFormId() {
 		return formId;
@@ -59,11 +58,4 @@ public class CampaignFormMetaDto extends EntityDto {
 		this.campaignFormTranslations = campaignFormTranslations;
 	}
 
-	public List<String> getCampaignFormListElements() {
-		return campaignFormListElements;
-	}
-
-	public void setCampaignFormListElements(List<String> campaignFormListElements) {
-		this.campaignFormListElements = campaignFormListElements;
-	}
 }

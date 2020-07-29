@@ -53,7 +53,6 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElementsList(source.getCampaignFormElements());
 		target.setCampaignFormTranslationsList(source.getCampaignFormTranslations());
-		target.setCampaignFormListElementsList(source.getCampaignFormListElements());
 
 		return target;
 	}
@@ -71,7 +70,6 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		target.setLanguageCode(source.getLanguageCode());
 		target.setCampaignFormElements(source.getCampaignFormElementsList());
 		target.setCampaignFormTranslations(source.getCampaignFormTranslationsList());
-		target.setCampaignFormListElements(source.getCampaignFormListElementsList());
 
 		return target;
 	}
@@ -182,15 +180,6 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		Map<String, String> idsAndTypes = campaignFormMetaDto.getCampaignFormElements()
 			.stream()
 			.collect(Collectors.toMap(CampaignFormElement::getId, CampaignFormElement::getType));
-
-		// Throw an error if the list element definition contains an invalid ID
-		if (CollectionUtils.isNotEmpty(campaignFormMetaDto.getCampaignFormListElements())) {
-			campaignFormMetaDto.getCampaignFormListElements().forEach(le -> {
-				if (!idsAndTypes.containsKey(le)) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.campaignFormInvalidIdInListElements, le));
-				}
-			});
-		}
 
 		for (CampaignFormElement element : campaignFormMetaDto.getCampaignFormElements()) {
 			// Clean the element caption from all HTML tags that are not explicitly allowed
