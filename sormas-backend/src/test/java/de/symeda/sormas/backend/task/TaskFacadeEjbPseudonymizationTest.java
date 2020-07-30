@@ -163,14 +163,14 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index1.getCaze().getLastName(), is("Smith"));
 
 		TaskIndexDto index2 = indexList.stream().filter(t -> t.getUuid().equals(task2.getUuid())).findFirst().get();
-		assertThat(index2.getCaze().getFirstName(), is("Confidential"));
-		assertThat(index2.getCaze().getLastName(), is("Confidential"));
+		assertThat(index2.getCaze().getFirstName(), isEmptyString());
+		assertThat(index2.getCaze().getLastName(), isEmptyString());
 
 		TaskIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(index3.getContact().getCaption(), is("John SMITH to case Confidential Confidential"));
+		assertThat(index3.getContact().getCaption(), is("John SMITH"));
 
 		TaskIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
-		assertThat(index4.getContact().getCaption(), is("Confidential CONFIDENTIAL to case Confidential Confidential"));
+		assertThat(index4.getContact().getCaption(), is(DataHelper.getShortUuid(index4.getContact().getUuid())));
 	}
 
 	@Test

@@ -32,6 +32,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, Serializable {
 
@@ -64,12 +66,15 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 	private String uuid;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private CaseReferenceDto associatedCase;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private ContactReferenceDto associatedContact;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;

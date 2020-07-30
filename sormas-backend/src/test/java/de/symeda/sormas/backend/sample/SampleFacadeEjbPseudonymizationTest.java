@@ -162,14 +162,14 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index1.getAssociatedCase().getLastName(), is("Smith"));
 
 		SampleIndexDto index2 = indexList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
-		assertThat(index2.getAssociatedCase().getFirstName(), is("Confidential"));
-		assertThat(index2.getAssociatedCase().getLastName(), is("Confidential"));
+		assertThat(index2.getAssociatedCase().getFirstName(), isEmptyString());
+		assertThat(index2.getAssociatedCase().getLastName(), isEmptyString());
 
 		SampleIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst().get();
 		assertThat(index3.getAssociatedContact().getCaption(), is("John SMITH"));
 
 		SampleIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst().get();
-		assertThat(index4.getAssociatedContact().getCaption(), is("Confidential CONFIDENTIAL"));
+		assertThat(index4.getAssociatedContact().getCaption(), is(DataHelper.getShortUuid(index4.getAssociatedContact().getUuid())));
 	}
 
 	@Test
@@ -318,7 +318,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab().getName(), is("Lab"));
+		assertThat(updatedSample.getLab(), is(nullValue()));
 	}
 
 	@Test
@@ -339,7 +339,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab().getName(), is("Lab"));
+		assertThat(updatedSample.getLab(), is(nullValue()));
 	}
 
 	private SampleDto createCaseSample(CaseDataDto caze, UserDto reportingUser) {
@@ -388,7 +388,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLat(), is(nullValue()));
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
-		assertThat(sample.getLab(), is(nullValue()));
+		assertThat(sample.getLab().getCaption(), is("Lab"));
 		assertThat(sample.getLabDetails(), isEmptyString());
 		assertThat(sample.getShipmentDetails(), isEmptyString());
 		assertThat(sample.getComment(), isEmptyString());

@@ -33,6 +33,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Serializable {
 
@@ -60,12 +62,15 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 	private TaskContext taskContext;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private CaseReferenceDto caze;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventReferenceDto event;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private ContactReferenceDto contact;
 
 	private TaskType taskType;

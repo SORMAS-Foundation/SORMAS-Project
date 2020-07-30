@@ -43,6 +43,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -147,13 +148,27 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	}
 
 	private String buildSourcePersonText(EventIndexDto event) {
-		return (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " " + (event.getSrcLastName() != null ? event.getSrcLastName() : "")
-			+ (event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : "");
+		String srcFirstName = event.getSrcFirstName();
+		String srcLastName = event.getSrcLastName();
+		String srcTelNo = event.getSrcTelNo();
+
+		if (FieldAccessHelper.isAllInaccessible(srcFirstName, srcLastName, srcTelNo)) {
+			return I18nProperties.getCaption(Captions.inaccessibleValue);
+		}
+
+		return (srcFirstName != null ? srcFirstName : "") + " " + (srcLastName != null ? srcLastName : "")
+			+ (srcTelNo != null && !srcTelNo.isEmpty() ? " (" + srcTelNo + ")" : "");
 	}
 
 	private String buildSourceMediaText(EventIndexDto event) {
-		return (event.getSrcMediaWebsite() != null ? event.getSrcMediaWebsite() : "") + " "
-			+ (event.getSrcMediaName() != null ? "(" + event.getSrcMediaName() + ")" : "");
+		String srcMediaWebsite = event.getSrcMediaWebsite();
+		String srcMediaName = event.getSrcMediaName();
+
+		if (FieldAccessHelper.isAllInaccessible(srcMediaWebsite, srcMediaName)) {
+			return I18nProperties.getCaption(Captions.inaccessibleValue);
+		}
+
+		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
 	}
 
 	public void reload() {

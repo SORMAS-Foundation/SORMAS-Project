@@ -448,13 +448,14 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer emptyValuePseudonymizer = new Pseudonymizer(userService::hasRight);
 		pseudonymizer.pseudonymizeDtoCollection(
 			TaskIndexDto.class,
 			tasks,
 			t -> taskJurisdictionChecker.isInJurisdiction(t.getJurisdiction()),
 			(t, ignored) -> {
 				if (t.getCaze() != null) {
-					pseudonymizer.pseudonymizeDto(
+					emptyValuePseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
 						t.getCaze(),
 						caseJurisdictionChecker.isInJurisdiction(t.getJurisdiction().getCaseJurisdiction()),
@@ -462,17 +463,18 @@ public class TaskFacadeEjb implements TaskFacade {
 				}
 
 				if (t.getContact() != null) {
-					pseudonymizeContactReference(pseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
+					pseudonymizeContactReference(emptyValuePseudonymizer, t.getContact(), t.getJurisdiction().getContactJurisdiction());
 				}
 
 				if (t.getEvent() != null) {
-					pseudonymizer.pseudonymizeDto(
+					emptyValuePseudonymizer.pseudonymizeDto(
 						EventReferenceDto.class,
 						t.getEvent(),
 						eventJurisdictionChecker.isInJurisdiction(t.getJurisdiction().getEventJurisdiction()),
 						null);
 				}
-			});
+			},
+			true);
 
 		return tasks;
 	}

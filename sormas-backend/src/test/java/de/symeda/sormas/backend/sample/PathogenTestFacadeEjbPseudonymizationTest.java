@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -27,21 +42,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.facility.Facility;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest {
@@ -188,7 +188,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
 		PathogenTest updatedTest = getPathogenTestService().getByUuid(pathogenTest.getUuid());
 
-		assertThat(updatedTest.getLab().getName(), is("Lab"));
+		assertThat(updatedTest.getLab(), is(nullValue()));
 		assertThat(updatedTest.getLabUser().getUuid(), is(user1.getUuid()));
 	}
 
@@ -208,7 +208,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
 		PathogenTest updatedTest = getPathogenTestService().getByUuid(pathogenTest.getUuid());
 
-		assertThat(updatedTest.getLab().getName(), is("Lab"));
+		assertThat(updatedTest.getLab(), is(nullValue()));
 		assertThat(updatedTest.getLabUser().getUuid(), is(user2.getUuid()));
 	}
 
@@ -237,7 +237,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 	}
 
 	private void assertPseudonymized(PathogenTestDto pathogenTes) {
-		assertThat(pathogenTes.getLab(), is(nullValue()));
+		assertThat(pathogenTes.getLab().getCaption(), is("Lab"));
 		assertThat(pathogenTes.getLabDetails(), isEmptyString());
 		assertThat(pathogenTes.getLabUser(), is(nullValue()));
 		assertThat(pathogenTes.getTestTypeText(), isEmptyString());

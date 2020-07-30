@@ -25,6 +25,8 @@ import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
@@ -55,6 +57,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	@SensitiveData
 	private String eventDesc;
 	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
 	@SensitiveData
