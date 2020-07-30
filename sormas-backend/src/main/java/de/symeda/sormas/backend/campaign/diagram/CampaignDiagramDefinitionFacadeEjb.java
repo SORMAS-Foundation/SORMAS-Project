@@ -1,0 +1,87 @@
+package de.symeda.sormas.backend.campaign.diagram;
+
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
+
+@Stateless(name = "CampaignFormMetaFacade")
+public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefinitionFacade {
+
+	@EJB
+	private CampaignDiagramDefinitionService service;
+
+	@EJB
+	private UserService userService;
+
+	@Override
+	public CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
+
+		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto);
+		service.ensurePersisted(campaignDiagramDefinition);
+		return toDto(campaignDiagramDefinition);
+	}
+
+	@Override
+	public List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids) {
+		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public void delete(String uuid) {
+		if (!userService.hasRight(UserRight.CAMPAIGN_DIAGRAM_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + "is not allowed to delete Campaign Form Data");
+		}
+
+		service.delete(service.getByUuid(uuid));
+	}
+
+	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source) {
+		CampaignDiagramDefinition target = service.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new CampaignDiagramDefinition();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+		DtoHelper.validateDto(source, target);
+
+		target.setDiagramId(source.getDiagramId());
+		target.setDiagramType(source.getDiagramType());
+		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+
+		return target;
+	}
+
+	public CampaignDiagramDefinitionDto toDto(CampaignDiagramDefinition source) {
+		if (source == null) {
+			return null;
+		}
+
+		CampaignDiagramDefinitionDto target = new CampaignDiagramDefinitionDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDiagramId(source.getDiagramId());
+		target.setDiagramType(source.getDiagramType());
+		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+
+		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class CampaignDiagramDefinitionFacadeEjbLocal extends CampaignDiagramDefinitionFacadeEjb {
+	}
+}
