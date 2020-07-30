@@ -4866,4 +4866,26 @@ ALTER TABLE campaignformmeta_history DROP COLUMN campaignformlistelements;
 
 INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list elements from campaignformmeta #2515');
 
+-- 2020-07-29 Campaign diagram definition
+CREATE TABLE campaigndiagramdefinition(
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              diagramId varchar(255) not null unique,
+                              diagramType varchar(255),
+                              campaignDiagramSeries text,
+                              sys_period tstzrange not null,
+                              primary key(id)
+);
+
+ALTER TABLE campaigndiagramdefinition OWNER TO sormas_user;
+
+CREATE TABLE campaigndiagramdefinition_history (LIKE campaigndiagramdefinition);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
+ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (233, 'Campaign diagram definition');
+
 -- *** Insert new sql commands BEFORE this line ***
