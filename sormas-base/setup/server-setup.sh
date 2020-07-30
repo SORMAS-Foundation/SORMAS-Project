@@ -52,7 +52,12 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.2020.2
+# Temporal workaround: Do not use newer version than 5.194 for developers to avoid redeployment issue, see https://github.com/hzi-braunschweig/SORMAS-Project/issues/2511
+if [[ ${DEV_SYSTEM} != true ]]; then
+	PAYARA_VERSION=5.2020.2
+else
+	PAYARA_VERSION=5.194
+fi
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
