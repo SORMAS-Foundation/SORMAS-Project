@@ -4866,4 +4866,11 @@ ALTER TABLE campaignformmeta_history DROP COLUMN campaignformlistelements;
 
 INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list elements from campaignformmeta #2515');
 
+-- 2020-07-30 - Store if quarantine period has been extended #2264
+ALTER TABLE cases ADD COLUMN quarantineextended boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantineextended boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (234, 'Store if quarantine period has been extended #2264');
+
 -- *** Insert new sql commands BEFORE this line ***

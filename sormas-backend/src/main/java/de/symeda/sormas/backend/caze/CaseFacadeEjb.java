@@ -449,10 +449,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
-				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
-				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
-				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
-				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY),
+				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
+				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+				caseRoot.get(Case.QUARANTINE_EXTENDED),
 
 				joins.getHospitalization().get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY), joins.getHospitalization().get(Hospitalization.ADMISSION_DATE),
 				joins.getHospitalization().get(Hospitalization.DISCHARGE_DATE), joins.getHospitalization().get(Hospitalization.LEFT_AGAINST_ADVICE),
@@ -1805,6 +1806,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -1947,6 +1949,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());

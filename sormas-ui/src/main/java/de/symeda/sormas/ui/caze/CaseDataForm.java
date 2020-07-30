@@ -35,6 +35,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
@@ -154,6 +155,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.QUARANTINE_TYPE_DETAILS) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 					fluidRowLocs(CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+					fluidRowLocs(CaseDataDto.QUARANTINE_EXTENDED, "") +
 					fluidRowLocs(CaseDataDto.QUARANTINE_HELP_NEEDED) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
 					loc(MEDICAL_INFORMATION_LOC) +
@@ -269,8 +271,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		if (isGermanServer()) {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
-			cbCaseClassification
-				.addValidator(new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
+			cbCaseClassification.addValidator(
+				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
 
 			addField(CaseDataDto.CLINICAL_CONFIRMATION, ComboBox.class);
 			addField(CaseDataDto.EPIDEMIOLOGICAL_CONFIRMATION, ComboBox.class);
@@ -292,6 +294,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassificationGroup.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
+
+		CheckBox quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
+		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
+		quarantineTo.addValueChangeListener(this::onQuarantineEndChange);
+
 		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 		TextField quarantineTypeDetails = addField(CaseDataDto.QUARANTINE_TYPE_DETAILS, TextField.class);
@@ -686,6 +693,26 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent) {
+		Date quarantineEnd = (Date) valueChangeEvent.getProperty().getValue();
+
+		boolean debug;
+		/*
+		 * VaadinUiUtil.showConfirmationPopup(
+		 * I18nProperties.getString(Strings.headingArchiveCampaign),
+		 * contentLabel,
+		 * I18nProperties.getString(Strings.yes),
+		 * I18nProperties.getString(Strings.no),
+		 * 640,
+		 * e -> {
+		 * if (e) {
+		 * FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, true);
+		 * SormasUI.refreshView();
+		 * }
+		 * });
+		 */
+	}
+
 	private void updateQuarantineFields() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		boolean visible;
@@ -704,7 +731,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (isGermanServer()) {
 			setVisible(visible, CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
-		setVisible(visible, CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED);
+		setVisible(
+			visible,
+			CaseDataDto.QUARANTINE_FROM,
+			CaseDataDto.QUARANTINE_TO,
+			CaseDataDto.QUARANTINE_EXTENDED,
+			CaseDataDto.QUARANTINE_HELP_NEEDED);
 	}
 
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
