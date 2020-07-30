@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -1478,9 +1477,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 216:
 				currentVersion = 216;
 
+				Cursor visitDbCursor = db.query(Visit.TABLE_NAME, null, null, null, null, null, null);
+				String[] visitColumnNames = visitDbCursor.getColumnNames();
+				visitDbCursor.close();
+				String visitQueryColumns = TextUtils.join(",", visitColumnNames);
+
 				db.execSQL("ALTER TABLE visits RENAME TO visits_old;");
 				TableUtils.createTable(connectionSource, Visit.class);
-				db.execSQL("INSERT INTO visits SELECT * FROM visits_old;");
+				db.execSQL("INSERT INTO visits (" + visitQueryColumns + ") SELECT " + visitQueryColumns + " FROM visits_old;");
 				db.execSQL("DROP TABLE visits_old;");
 
 				// ATTENTION: break should only be done after last version
