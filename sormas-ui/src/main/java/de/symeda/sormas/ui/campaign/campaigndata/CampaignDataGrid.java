@@ -83,4 +83,11 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		setSelectionMode(SelectionMode.NONE);
 	}
 
+	public void addCustomColumn(String property, String caption) {
+		Column<CampaignFormDataIndexDto, Object> newColumn =
+			addColumn(e -> e.getFormValuesList().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
+		newColumn.setSortable(false);
+		newColumn.setCaption(caption);
+	}
+
 }

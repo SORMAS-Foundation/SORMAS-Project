@@ -57,4 +57,5 @@ public class CampaignFormMetaDto extends EntityDto {
 	public void setCampaignFormTranslations(List<CampaignFormTranslations> campaignFormTranslations) {
 		this.campaignFormTranslations = campaignFormTranslations;
 	}
+
 }

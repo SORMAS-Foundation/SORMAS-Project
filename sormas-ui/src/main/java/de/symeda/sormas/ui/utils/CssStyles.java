@@ -40,6 +40,9 @@ public final class CssStyles {
 
 	public static final String VR = "vertical-rule";
 
+	public static final String RICH_TEXT_CONTENT_CONTAINER = "rich-text-content-container";
+	public static final String REPLY = "reply";
+
 	// Vertical space
 	public static final String VSPACE_0 = "vspace-0";
 	public static final String VSPACE_1 = "vspace-1";
@@ -118,6 +121,7 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	public static final String LABEL_VERTICAL_ALIGN_SUPER = "vertical-align-super";
+	public static final String LABEL_VERTICAL_ALIGN_TOP = "vertical-align-top";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC = "bg-follow-up-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC = "bg-follow-up-not-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";

@@ -232,7 +232,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			switch (attribute) {
 			case SEX:
 				List<TokenizableValue> tokens = createTokens(Sex.values());
-				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
+				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.notSpecified), tokens.size()));
 				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:

@@ -19,6 +19,7 @@ public interface Validations {
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormInvalidIdInListElements = "campaignFormInvalidIdInListElements";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
 	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
 	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";

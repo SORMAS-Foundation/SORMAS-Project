@@ -28,6 +28,8 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String TABLE_NAME = "campaignformmeta";
 
 	public static final String FORM_NAME = "formName";
+	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
+	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 
 	private String formId;
 	private String formName;

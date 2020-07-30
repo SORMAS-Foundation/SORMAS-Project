@@ -25,7 +25,9 @@ public enum Sex
 	StatisticsGroupingKey {
 
 	MALE,
-	FEMALE;
+	FEMALE,
+	OTHER,
+	UNKNOWN;
 
 	public String getName() {
 		return this.name();

@@ -49,7 +49,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		super(viewName);
 
 		if (FacadeProvider.getConfigFacade().getSymptomJournalUrl() != null
-			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
+			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 			btnCreatePIAAccount.addClickListener(e -> {

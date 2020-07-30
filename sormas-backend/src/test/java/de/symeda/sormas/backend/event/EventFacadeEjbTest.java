@@ -32,6 +32,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -106,16 +108,19 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		ActionDto action = creator.createAction(event.toReference());
 
 		// Database should contain the created event and event participant
 		assertNotNull(getEventFacade().getEventByUuid(event.getUuid()));
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 
 		getEventFacade().deleteEvent(event.getUuid());
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertNull(getActionFacade().getByUuid(action.getUuid()));
 	}
 
 	@Test

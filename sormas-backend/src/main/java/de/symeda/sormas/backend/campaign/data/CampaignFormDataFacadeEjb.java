@@ -20,8 +20,10 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
@@ -63,8 +65,10 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -205,7 +209,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
-		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
+		Join<CampaignFormData, CampaignFormMeta> campaignFormMetaJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
@@ -213,7 +217,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		cq.multiselect(
 			root.get(CampaignFormData.UUID),
 			campaignJoin.get(Campaign.NAME),
-			campaignFormJoin.get(CampaignFormMeta.FORM_NAME),
+			campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
+			root.get(CampaignFormData.FORM_VALUES),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
@@ -237,7 +242,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					expression = campaignJoin.get(Campaign.NAME);
 					break;
 				case CampaignFormDataIndexDto.FORM:
-					expression = campaignFormJoin.get(CampaignFormMeta.FORM_NAME);
+					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME);
 					break;
 				case CampaignFormDataIndexDto.REGION:
 					expression = regionJoin.get(Region.NAME);
@@ -258,11 +263,25 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
 
+		List<CampaignFormDataIndexDto> result;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			result = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			result = em.createQuery(cq).getResultList();
 		}
+
+		if (criteria.getCampaignFormMeta() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			result.forEach(r -> {
+				try {
+					r.setFormValuesList(Arrays.asList(mapper.readValue(r.getFormValues(), CampaignFormDataEntry[].class)));
+				} catch (IOException e) {
+					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - UUID: " + r.getUuid());
+				}
+			});
+		}
+
+		return result;
 	}
 
 	@Override
