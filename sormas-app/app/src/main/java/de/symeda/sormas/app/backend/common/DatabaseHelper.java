@@ -1459,6 +1459,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineExtended boolean;");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineExtended boolean;");
 
+			case 215:
+				currentVersion = 215;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN community_id bigint;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:

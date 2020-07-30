@@ -4897,4 +4897,11 @@ ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
 
+-- 2020-08-10 Add responsible community to contact #2104
+ALTER TABLE contact ADD COLUMN community_id bigint;
+ALTER TABLE contact_history ADD COLUMN community_id bigint;
+ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add responsible community to contact #2104');
+
 -- *** Insert new sql commands BEFORE this line ***
