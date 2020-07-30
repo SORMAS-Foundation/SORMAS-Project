@@ -387,7 +387,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			} else {
 				TaskCriteria pendingUserTaskCriteria =
 					new TaskCriteria().taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference()).taskStatus(TaskStatus.PENDING);
-				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
+				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria, true);
 
 				if (!existingTasks.isEmpty()) {
 					// There is already a task for generating the Weekly Report for last week

@@ -683,7 +683,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
-		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())), true);
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}

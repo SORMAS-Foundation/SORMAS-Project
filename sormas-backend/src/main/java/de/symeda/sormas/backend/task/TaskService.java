@@ -118,7 +118,7 @@ public class TaskService extends AbstractAdoService<Task> {
 
 		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
-		Predicate assigneeFilter = or(cb, cb.isNull(assigneeUser.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUser));
+		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
@@ -149,6 +149,10 @@ public class TaskService extends AbstractAdoService<Task> {
 		return and(cb, filter, assigneeFilter);
 	}
 
+	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
+		return or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUserJoin));
+	}
+
 	public long getCount(TaskCriteria taskCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -166,13 +170,17 @@ public class TaskService extends AbstractAdoService<Task> {
 		return count;
 	}
 
-	public List<Task> findBy(TaskCriteria taskCriteria) {
+	public List<Task> findBy(TaskCriteria taskCriteria, boolean ignoreUserFilter) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
+		if (!ignoreUserFilter) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -246,9 +254,7 @@ public class TaskService extends AbstractAdoService<Task> {
 			}
 		}
 
-		Predicate assigneeFilter = or(cb, cb.isNull(assigneeUser), userService.createJurisdictionFilter(cb, assigneeUser));
-
-		return and(cb, filter, assigneeFilter);
+		return filter;
 	}
 
 	private Predicate buildActiveTasksFilter(CriteriaBuilder cb, Root<Task> from) {

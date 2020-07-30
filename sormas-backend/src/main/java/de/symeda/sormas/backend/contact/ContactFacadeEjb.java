@@ -1234,7 +1234,7 @@ public class ContactFacadeEjb implements ContactFacade {
 				.taskType(TaskType.CONTACT_FOLLOW_UP)
 				.assigneeUser(assignee.toReference())
 				.taskStatus(TaskStatus.PENDING);
-			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria);
+			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria, true);
 
 			if (!pendingUserTasks.isEmpty()) {
 				// the user still has a pending task for this contact
@@ -1244,7 +1244,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			TaskCriteria dayTaskCriteria = new TaskCriteria().contact(contact.toReference())
 				.taskType(TaskType.CONTACT_FOLLOW_UP)
 				.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
-			List<Task> dayTasks = taskService.findBy(dayTaskCriteria);
+			List<Task> dayTasks = taskService.findBy(dayTaskCriteria, true);
 
 			if (!dayTasks.isEmpty()) {
 				// there is already a task for the exact day

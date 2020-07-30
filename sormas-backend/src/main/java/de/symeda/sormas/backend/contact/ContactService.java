@@ -1057,7 +1057,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public void delete(Contact contact) {
 
 		// Delete all tasks associated with this contact
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}

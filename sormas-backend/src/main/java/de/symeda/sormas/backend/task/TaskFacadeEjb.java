@@ -335,10 +335,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> task = cq.from(Task.class);
+		TaskJoins joins = new TaskJoins(task);
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
+		} else {
+			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
@@ -386,6 +389,8 @@ public class TaskFacadeEjb implements TaskFacade {
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
 			filter = taskService.createUserFilter(cb, cq, task);
+		} else {
+			filter = AbstractAdoService.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
@@ -504,7 +509,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().caze(caseRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return taskService.findBy(new TaskCriteria().caze(caseRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -515,7 +520,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().contact(contactRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return taskService.findBy(new TaskCriteria().contact(contactRef), false)
+			.stream()
+			.map(c -> toDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -526,7 +534,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().event(eventRef)).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
+		return taskService.findBy(new TaskCriteria().event(eventRef), false).stream().map(c -> toDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -543,7 +551,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING))
+		return taskService.findBy(new TaskCriteria().caze(caseRef).taskStatus(TaskStatus.PENDING), false)
 			.stream()
 			.map(c -> toDto(c, pseudonymizer))
 			.collect(Collectors.toList());
@@ -600,7 +608,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		calendar.add(Calendar.MINUTE, CronService.TASK_UPDATE_INTERVAL * -1);
 		Date before = calendar.getTime();
 
-		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now));
+		List<Task> startingTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true);
 		for (Task task : startingTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE
@@ -629,7 +637,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			}
 		}
 
-		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now));
+		List<Task> dueTasks = taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).dueDateBetween(before, now), true);
 		for (Task task : dueTasks) {
 			TaskContext context = task.getTaskContext();
 			AbstractDomainObject associatedEntity = context == TaskContext.CASE

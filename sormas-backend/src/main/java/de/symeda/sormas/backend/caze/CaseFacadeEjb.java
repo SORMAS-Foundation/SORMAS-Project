@@ -2083,7 +2083,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			// Set the task status of all investigation tasks to "Removed" because
 			// the case status has been updated manually
 			List<Task> pendingTasks =
-				taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING));
+				taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING), true);
 			for (Task task : pendingTasks) {
 				task.setTaskStatus(TaskStatus.REMOVED);
 				task.setStatusChangeDate(new Date());
@@ -2123,7 +2123,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.setInvestigatedDate(null);
 		} else {
 			// get "case investigation" task created last
-			List<Task> cazeTasks = taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef));
+			List<Task> cazeTasks = taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef), true);
 
 			if (!cazeTasks.isEmpty()) {
 				Task youngestTask = cazeTasks.stream().max(new Comparator<Task>() {
@@ -2493,7 +2493,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (!cloning) {
 			// simply move existing entities to the merge target
 
-			List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())));
+			List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(otherCase.getUuid())), true);
 			for (Task task : tasks) {
 				task.setCaze(leadCase);
 				taskService.ensurePersisted(task);
