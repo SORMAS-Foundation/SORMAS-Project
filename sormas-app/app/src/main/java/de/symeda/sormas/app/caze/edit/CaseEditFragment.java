@@ -234,7 +234,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
+		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 	}
 
 	@Override
@@ -290,6 +290,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
 			record.getRegion(),
@@ -299,9 +300,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataCommunity,
 			initialCommunities,
 			record.getCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			record.getHealthFacility());
+			record.getHealthFacility(),
+			contentBinding.caseDataHealthFacilityDetails);
 
 		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.caseDataHealthFacility.setRequired(false);

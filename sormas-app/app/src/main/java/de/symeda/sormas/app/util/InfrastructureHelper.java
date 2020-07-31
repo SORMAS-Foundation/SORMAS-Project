@@ -23,9 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
+import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
@@ -36,6 +41,7 @@ import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
+import de.symeda.sormas.app.component.controls.ControlTextEditField;
 
 public final class InfrastructureHelper {
 
@@ -51,11 +57,13 @@ public final class InfrastructureHelper {
 		return toItems(district != null ? DatabaseHelper.getCommunityDao().getByDistrict(district) : new ArrayList<>(), true);
 	}
 
-	public static List<Item> loadFacilities(District district, Community community) {
+	public static List<Item> loadFacilities(District district, Community community, FacilityType type) {
 		return toItems(
 			community != null
-				? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByCommunity(community, true, true)
-				: district != null ? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrict(district, true, true) : new ArrayList<>(),
+				? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByCommunityAndType(community, type, true, false)
+				: district != null
+					? DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, type, true, false)
+					: new ArrayList<>(),
 			true);
 	}
 
@@ -126,6 +134,7 @@ public final class InfrastructureHelper {
 	}
 
 	public static void initializeFacilityFields(
+		AbstractDomainObject entity,
 		final ControlSpinnerField regionField,
 		List<Item> regions,
 		Region initialRegion,
@@ -135,10 +144,18 @@ public final class InfrastructureHelper {
 		final ControlSpinnerField communityField,
 		List<Item> communities,
 		Community initialCommunity,
+		final ControlSpinnerField facilityOrHomeField,
+		List<Item> facilityOrHomeList,
+		final ControlSpinnerField typeGroupField,
+		List<Item> typeGroups,
+		final ControlSpinnerField typeField,
+		List<Item> types,
 		final ControlSpinnerField facilityField,
 		List<Item> facilities,
-		Facility initialFacility) {
+		Facility initialFacility,
+		final ControlTextEditField facilityDetailsField) {
 		initializeFacilityFields(
+			entity,
 			regionField,
 			regions,
 			initialRegion,
@@ -148,15 +165,23 @@ public final class InfrastructureHelper {
 			communityField,
 			communities,
 			initialCommunity,
+			facilityOrHomeField,
+			facilityOrHomeList,
+			typeGroupField,
+			typeGroups,
+			typeField,
+			types,
 			facilityField,
 			facilities,
 			initialFacility,
+			facilityDetailsField,
 			null,
 			null,
 			null);
 	}
 
 	public static void initializeFacilityFields(
+		AbstractDomainObject entity,
 		final ControlSpinnerField regionField,
 		List<Item> regions,
 		Region initialRegion,
@@ -166,12 +191,21 @@ public final class InfrastructureHelper {
 		final ControlSpinnerField communityField,
 		List<Item> communities,
 		Community initialCommunity,
+		final ControlSpinnerField facilityOrHomeField,
+		List<Item> facilityOrHomeList,
+		final ControlSpinnerField typeGroupField,
+		List<Item> typeGroups,
+		final ControlSpinnerField typeField,
+		List<Item> types,
 		final ControlSpinnerField facilityField,
 		List<Item> facilities,
 		Facility initialFacility,
+		final ControlTextEditField facilityDetailsField,
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
 		PointOfEntry initialPointOfEntry) {
+
+		final Case caze = entity != null && entity.getClass().isAssignableFrom(Case.class) ? (Case) entity : null;
 
 		Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
 		Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
@@ -212,15 +246,19 @@ public final class InfrastructureHelper {
 			District selectedDistrict = (District) field.getValue();
 			if (selectedDistrict != null) {
 				List<Item> newCommunities = loadCommunities(selectedDistrict);
-				List<Item> newFacilities = loadFacilities(selectedDistrict, null);
 				if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict()) && !newCommunities.contains(communityItem)) {
 					newCommunities.add(communityItem);
 				}
-				if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
-					newFacilities.add(facilityItem);
+				if (typeField.getValue() != null) {
+					List<Item> newFacilities = loadFacilities(selectedDistrict, null, (FacilityType) typeField.getValue());
+					if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
+					facilityField.setSpinnerData(newFacilities, facilityField.getValue());
+				} else {
+					facilityField.setSpinnerData(null);
 				}
 				communityField.setSpinnerData(newCommunities, communityField.getValue());
-				facilityField.setSpinnerData(newFacilities, facilityField.getValue());
 				if (pointOfEntryField != null) {
 					List<Item> newPointsOfEntry = loadPointsOfEntry(selectedDistrict);
 					if (initialPointOfEntry != null
@@ -241,14 +279,14 @@ public final class InfrastructureHelper {
 
 		communityField.initializeSpinner(communities, field -> {
 			Community selectedCommunity = (Community) field.getValue();
-			if (selectedCommunity != null) {
-				List<Item> newFacilities = loadFacilities(null, selectedCommunity);
+			if (selectedCommunity != null && typeField.getValue() != null) {
+				List<Item> newFacilities = loadFacilities(null, selectedCommunity, (FacilityType) typeField.getValue());
 				if (initialFacility != null && selectedCommunity.equals(initialFacility.getCommunity()) && !newFacilities.contains(facilityItem)) {
 					newFacilities.add(facilityItem);
 				}
 				facilityField.setSpinnerData(newFacilities);
-			} else if (districtField.getValue() != null) {
-				List<Item> newFacilities = loadFacilities((District) districtField.getValue(), null);
+			} else if (districtField.getValue() != null && typeField.getValue() != null) {
+				List<Item> newFacilities = loadFacilities((District) districtField.getValue(), null, (FacilityType) typeField.getValue());
 				if (initialFacility != null
 					&& districtField.getValue().equals(initialFacility.getDistrict())
 					&& !newFacilities.contains(facilityItem)) {
@@ -260,7 +298,50 @@ public final class InfrastructureHelper {
 			}
 		});
 
-		facilityField.initializeSpinner(facilities);
+		facilityOrHomeField.initializeSpinner(facilityOrHomeList, field -> {
+			TypeOfPlace selectedType = (TypeOfPlace) field.getValue();
+			if (selectedType == null) {
+				typeGroupField.setSpinnerData(null);
+				facilityDetailsField.setVisibility(GONE);
+			} else if (TypeOfPlace.HOME.equals(selectedType)) {
+				typeGroupField.setSpinnerData(null);
+				facilityField.setValue(DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID));
+				if (caze != null)
+					caze.setFacilityType(null);
+				facilityDetailsField.setVisibility(VISIBLE);
+			} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
+				typeGroupField.setSpinnerData(typeGroups);
+				facilityDetailsField.setVisibility(GONE);
+			}
+		});
+
+		typeGroupField.initializeSpinner(typeGroups, field -> {
+			FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
+			if (selectedGroup != null) {
+				typeField.setSpinnerData(DataUtils.toItems(FacilityType.getFacilityTypesByGroup(selectedGroup, true), true));
+			} else {
+				typeField.setSpinnerData(null);
+			}
+		});
+
+		typeField.initializeSpinner(types, field -> {
+			FacilityType selectedType = (FacilityType) field.getValue();
+			if (selectedType != null) {
+				facilityField
+					.setSpinnerData(loadFacilities((District) districtField.getValue(), (Community) communityField.getValue(), selectedType));
+			} else {
+				facilityField.setSpinnerData(null);
+			}
+		});
+
+		facilityField.initializeSpinner(facilities, field -> {
+			Facility selectedFacility = (Facility) field.getValue();
+			if (selectedFacility != null) {
+				caze.setFacilityType(selectedFacility.getType());
+			} else {
+				caze.setFacilityType(null);
+			}
+		});
 
 		if (pointOfEntryField != null) {
 			pointOfEntryField.initializeSpinner(pointsOfEntry);

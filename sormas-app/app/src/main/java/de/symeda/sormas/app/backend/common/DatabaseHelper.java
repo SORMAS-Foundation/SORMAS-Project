@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 211;
+	public static final int DATABASE_VERSION = 212;
 
 	private static DatabaseHelper instance = null;
 
@@ -1415,6 +1415,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
+			case 211:
+				currentVersion = 211;
+				getDao(Sample.class).executeRaw(
+					"UPDATE samples SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');");
+				getDao(PathogenTest.class).executeRaw(
+					"UPDATE pathogenTest SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');");
+				getDao(Facility.class).executeRaw("DELETE FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO';");
+				getDao(Facility.class).executeRaw(
+					"UPDATE facility SET type = 'HOSPITAL' WHERE type = null AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN facilityType varchar(255);");
+				getDao(Case.class).executeRaw(
+					"UPDATE cases SET facilityType = 'HOSPITAL' WHERE healthFacility_id != (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY');");
 
 				// ATTENTION: break should only be done after last version
 

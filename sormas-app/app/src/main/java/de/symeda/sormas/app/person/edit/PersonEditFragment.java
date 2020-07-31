@@ -112,13 +112,14 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialOccupationRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialOccupationDistricts = InfrastructureHelper.loadDistricts(record.getOccupationRegion());
 		List<Item> initialOccupationCommunities = InfrastructureHelper.loadCommunities(record.getOccupationDistrict());
-		List<Item> initialOccupationFacilities = InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity());
+		List<Item> initialOccupationFacilities =
+			InfrastructureHelper.loadFacilities(record.getOccupationDistrict(), record.getOccupationCommunity(), null);
 
 		List<Item> initialPlaceOfBirthRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialPlaceOfBirthDistricts = InfrastructureHelper.loadDistricts(record.getPlaceOfBirthRegion());
 		List<Item> initialPlaceOfBirthCommunities = InfrastructureHelper.loadCommunities(record.getPlaceOfBirthDistrict());
 		List<Item> initialPlaceOfBirthFacilities =
-			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity());
+			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
 		InfrastructureHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
@@ -132,6 +133,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.personOccupationRegion,
 			initialOccupationRegions,
 			record.getOccupationRegion(),
@@ -141,10 +143,18 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personOccupationCommunity,
 			initialOccupationCommunities,
 			record.getOccupationCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.personOccupationFacility,
 			initialOccupationFacilities,
-			record.getOccupationFacility());
+			record.getOccupationFacility(),
+			contentBinding.personOccupationFacilityDetails);
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,
 			record.getPlaceOfBirthRegion(),
@@ -154,9 +164,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personPlaceOfBirthCommunity,
 			initialPlaceOfBirthCommunities,
 			record.getPlaceOfBirthCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.personPlaceOfBirthFacility,
 			initialPlaceOfBirthFacilities,
-			record.getPlaceOfBirthFacility());
+			record.getPlaceOfBirthFacility(),
+			contentBinding.personPlaceOfBirthFacilityDetails);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));
