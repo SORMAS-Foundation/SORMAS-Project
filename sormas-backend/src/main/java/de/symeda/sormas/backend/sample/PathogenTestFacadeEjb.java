@@ -305,13 +305,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	private void pseudonymizeDto(PathogenTest source, PathogenTestDto target, Pseudonymizer pseudonymizer) {
 		if (source != null && target != null) {
-			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdiction(source.getSample()), null);
+			pseudonymizer.pseudonymizeDto(PathogenTestDto.class, target, sampleJurisdictionChecker.isInJurisdictionOrOwned(source.getSample()), null);
 		}
 	}
 
 	private void restorePseudonymizedDto(PathogenTestDto dto, PathogenTest existingSampleTest, PathogenTestDto existingSampleTestDto) {
 		if (existingSampleTestDto != null) {
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSampleTest.getSample());
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSampleTest.getSample());
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(PathogenTestDto.class, dto, existingSampleTestDto, isInJurisdiction);

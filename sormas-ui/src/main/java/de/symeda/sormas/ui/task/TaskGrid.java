@@ -167,17 +167,23 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> {
 			switch (task.getTaskContext()) {
 			case CASE:
 				isInJurisdiction = FieldAccessColumnStyleGenerator
-					.callJurisdictionChecker(CaseJurisdictionHelper::isInJurisdiction, currentUser, task.getJurisdiction().getCaseJurisdiction());
+					.callJurisdictionChecker(
+						CaseJurisdictionHelper::isInJurisdictionOrOwned,
+						currentUser,
+						task.getJurisdiction().getCaseJurisdiction());
 				break;
 			case CONTACT:
 				isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
-					ContactJurisdictionHelper::isInJurisdiction,
+					ContactJurisdictionHelper::isInJurisdictionOrOwned,
 					currentUser,
 					task.getJurisdiction().getContactJurisdiction());
 				break;
 			case EVENT:
 				isInJurisdiction = FieldAccessColumnStyleGenerator
-					.callJurisdictionChecker(EventJurisdictionHelper::isInJurisdiction, currentUser, task.getJurisdiction().getEventJurisdiction());
+					.callJurisdictionChecker(
+						EventJurisdictionHelper::isInJurisdictionOrOwned,
+						currentUser,
+						task.getJurisdiction().getEventJurisdiction());
 				break;
 			}
 

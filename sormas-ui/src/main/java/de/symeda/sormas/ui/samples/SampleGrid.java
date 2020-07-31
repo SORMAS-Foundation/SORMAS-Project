@@ -150,7 +150,7 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					SampleJurisdictionHelper::isInJurisdiction,
+					SampleJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createSensitiveDataFieldAccessChecker(),
 					FieldHelper.createPersonalDataFieldAccessChecker()));
 

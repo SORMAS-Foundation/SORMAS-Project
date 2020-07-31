@@ -118,7 +118,7 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId,
-					EventJurisdictionHelper::isInJurisdiction,
+					EventJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}

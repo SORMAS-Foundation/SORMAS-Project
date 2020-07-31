@@ -141,7 +141,7 @@ public class EventFacadeEjb implements EventFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			DashboardEventDto.class,
 			dashboardEvents,
-			e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()),
+			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
 			null);
 
 		return dashboardEvents;
@@ -308,7 +308,11 @@ public class EventFacadeEjb implements EventFacade {
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer
-			.pseudonymizeDtoCollection(EventIndexDto.class, indexList, e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()), null);
+			.pseudonymizeDtoCollection(
+				EventIndexDto.class,
+				indexList,
+				e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
+				null);
 
 		return indexList;
 	}
@@ -373,7 +377,11 @@ public class EventFacadeEjb implements EventFacade {
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer
-			.pseudonymizeDtoCollection(EventExportDto.class, exportList, e -> eventJurisdictionChecker.isInJurisdiction(e.getJurisdiction()), null);
+			.pseudonymizeDtoCollection(
+				EventExportDto.class,
+				exportList,
+				e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
+				null);
 
 		return exportList;
 	}
@@ -478,7 +486,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(event);
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
 
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
 				pseudonymizer.pseudonymizeDto(LocationDto.class, dto.getEventLocation(), inJurisdiction, null);
@@ -489,7 +497,7 @@ public class EventFacadeEjb implements EventFacade {
 
 	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(existingEvent);
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
 			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, dto.getEventLocation(), existingDto.getEventLocation(), inJurisdiction);
 			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
@@ -602,6 +610,6 @@ public class EventFacadeEjb implements EventFacade {
 	public Boolean isEventEditAllowed(String eventUuid) {
 
 		Event event = eventService.getByUuid(eventUuid);
-		return eventJurisdictionChecker.isInJurisdiction(event);
+		return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
 	}
 }

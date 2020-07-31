@@ -32,17 +32,17 @@ public class TaskJurisdictionChecker {
 	@EJB
 	private UserService userService;
 
-	public boolean isInJurisdiction(Task task) {
+	public boolean isInJurisdictionOrOwned(Task task) {
 
-		return isInJurisdiction(JurisdictionHelper.createTaskJurisdictionDto(task));
+		return isInJurisdictionOrOwned(JurisdictionHelper.createTaskJurisdictionDto(task));
 	}
 
-	public boolean isInJurisdiction(TaskJurisdictionDto taskJurisdiction) {
+	public boolean isInJurisdictionOrOwned(TaskJurisdictionDto taskJurisdiction) {
 
 		User user = userService.getCurrentUser();
 
 		return TaskJurisdictionHelper
-			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), taskJurisdiction);
+			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), taskJurisdiction);
 	}
 
 }

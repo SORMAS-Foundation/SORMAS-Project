@@ -100,7 +100,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentIndexDto.class,
 			indexList,
-			t -> caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction()),
+			t -> caseJurisdictionChecker.isInJurisdictionOrOwned(t.getCaseJurisdiction()),
 			(t, inJurisdiction) -> {
 				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
@@ -205,7 +205,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentExportDto.class,
 			exportList,
-			t -> caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction()),
+			t -> caseJurisdictionChecker.isInJurisdictionOrOwned(t.getCaseJurisdiction()),
 			null);
 
 		return exportList;
@@ -221,7 +221,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void pseudonymizeDto(Treatment source, TreatmentDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			pseudonymizer.pseudonymizeDto(TreatmentDto.class, dto, caseJurisdictionChecker.isInJurisdiction(source.getTherapy().getCaze()), null);
+			pseudonymizer
+				.pseudonymizeDto(TreatmentDto.class, dto, caseJurisdictionChecker.isInJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 
@@ -232,7 +233,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				TreatmentDto.class,
 				source,
 				existingDto,
-				caseJurisdictionChecker.isInJurisdiction(existingTreatment.getTherapy().getCaze()));
+				caseJurisdictionChecker.isInJurisdictionOrOwned(existingTreatment.getTherapy().getCaze()));
 		}
 	}
 

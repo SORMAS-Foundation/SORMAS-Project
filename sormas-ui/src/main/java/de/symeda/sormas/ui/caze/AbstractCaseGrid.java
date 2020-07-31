@@ -93,7 +93,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					CaseJurisdictionHelper::isInJurisdiction,
+					CaseJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}

@@ -19,9 +19,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
-
 public class FieldAccessCheckers {
 
 	private List<FieldAccessChecker> checkers = new ArrayList<>();
@@ -111,14 +108,6 @@ public class FieldAccessCheckers {
 
 			return null;
 		}
-	}
-
-	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
-		return withCheckers(PersonalDataFieldAccessChecker.create(rightCheck));
-	}
-
-	public static FieldAccessCheckers withSensitiveData(SensitiveDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
-		return withCheckers(SensitiveDataFieldAccessChecker.create(rightCheck));
 	}
 
 	public static FieldAccessCheckers withCheckers(FieldAccessChecker... checkers) {

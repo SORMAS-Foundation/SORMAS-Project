@@ -79,7 +79,7 @@ public class VisitGrid extends FilteredGrid<VisitIndexDto, VisitCriteria> {
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					ContactJurisdictionHelper::isInJurisdiction,
+					ContactJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 

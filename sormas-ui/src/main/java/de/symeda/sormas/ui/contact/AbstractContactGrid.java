@@ -139,7 +139,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					ContactJurisdictionHelper::isInJurisdiction,
+					ContactJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}

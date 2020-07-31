@@ -261,7 +261,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
-			p -> eventJurisdictionChecker.isInJurisdiction(p.getJurisdiction()),
+			p -> eventJurisdictionChecker.isInJurisdictionOrOwned(p.getJurisdiction()),
 			null);
 
 		return indexList;
@@ -323,7 +323,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdiction(source.getEvent());
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(source.getEvent());
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 		}
@@ -340,7 +340,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				EventParticipantDto.class,
 				dto,
 				originalDto,
-				eventJurisdictionChecker.isInJurisdiction(originalEventParticipant.getEvent()));
+				eventJurisdictionChecker.isInJurisdictionOrOwned(originalEventParticipant.getEvent()));
 		}
 	}
 

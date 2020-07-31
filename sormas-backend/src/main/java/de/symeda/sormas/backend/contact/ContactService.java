@@ -1105,7 +1105,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
 	}
 
-	public Predicate isInJurisdiction(CriteriaBuilder cb, CriteriaQuery<Long> cq, ContactJoins joins) {
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, ContactJoins joins) {
 		final User currentUser = this.getCurrentUser();
 
 		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
@@ -1114,7 +1114,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		contactCaseJurisdictionSubQuery.where(
 			cb.and(
 				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
-				caseService.isInInJurisdiction(cb, new CaseJoins<>(contactCaseRoot))));
+				caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
 
 		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
 

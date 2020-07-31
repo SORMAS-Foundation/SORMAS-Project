@@ -117,7 +117,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			ClinicalVisitIndexDto.class,
 			results,
-			v -> caseJurisdictionChecker.isInJurisdiction(v.getCaseJurisdiction()),
+			v -> caseJurisdictionChecker.isInJurisdictionOrOwned(v.getCaseJurisdiction()),
 			null);
 
 		// Build the query to count positive symptoms
@@ -283,7 +283,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		for (ClinicalVisitExportDto exportDto : resultList) {
 			exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptomsService.getById(exportDto.getSymptomsId())));
 
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(exportDto.getCaseJurisdiction());
+			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getCaseJurisdiction());
 			pseudonymizer.pseudonymizeDto(ClinicalVisitExportDto.class, exportDto, inJurisdiction, (v) -> {
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
 			});
@@ -312,7 +312,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	private void pseudonymizeDto(ClinicalVisit source, ClinicalVisitDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getClinicalCourse().getCaze());
+			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(source.getClinicalCourse().getCaze());
 			pseudonymizer.pseudonymizeDto(ClinicalVisitDto.class, dto, inJurisdiction, v -> {
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, dto.getSymptoms(), inJurisdiction, null);
 			});
@@ -321,7 +321,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	private void restorePseudonymizedDto(ClinicalVisitDto clinicalVisit, ClinicalVisit existingClinicalVisit) {
 		if (existingClinicalVisit != null) {
-			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdiction(existingClinicalVisit.getClinicalCourse().getCaze());
+			Boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(existingClinicalVisit.getClinicalCourse().getCaze());
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 			ClinicalVisitDto existingDto = toDto(existingClinicalVisit);
 

@@ -235,11 +235,15 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdiction(task), t -> {
+		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(task), t -> {
 			if (source.getCaze() != null) {
 				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
 				pseudonymizer
-					.pseudonymizeDto(CaseReferenceDto.class, target.getCaze(), caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
+					.pseudonymizeDto(
+						CaseReferenceDto.class,
+						target.getCaze(),
+						caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
+						null);
 			}
 
 			if (source.getContact() != null) {
@@ -252,7 +256,7 @@ public class TaskFacadeEjb implements TaskFacade {
 				pseudonymizer.pseudonymizeDto(
 					EventReferenceDto.class,
 					target.getEvent(),
-					eventJurisdictionChecker.isInJurisdiction(contactJurisdiction),
+					eventJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
 					null);
 			}
 		});
@@ -457,13 +461,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			TaskIndexDto.class,
 			tasks,
-			t -> taskJurisdictionChecker.isInJurisdiction(t.getJurisdiction()),
+			t -> taskJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction()),
 			(t, ignored) -> {
 				if (t.getCaze() != null) {
 					emptyValuePseudonymizer.pseudonymizeDto(
 						CaseReferenceDto.class,
 						t.getCaze(),
-						caseJurisdictionChecker.isInJurisdiction(t.getJurisdiction().getCaseJurisdiction()),
+						caseJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getCaseJurisdiction()),
 						null);
 				}
 
@@ -475,7 +479,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					emptyValuePseudonymizer.pseudonymizeDto(
 						EventReferenceDto.class,
 						t.getEvent(),
-						eventJurisdictionChecker.isInJurisdiction(t.getJurisdiction().getEventJurisdiction()),
+						eventJurisdictionChecker.isInJurisdictionOrOwned(t.getJurisdiction().getEventJurisdiction()),
 						null);
 				}
 			},
@@ -491,13 +495,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		pseudonymizer.pseudonymizeDto(
 			ContactReferenceDto.PersonName.class,
 			contactReference.getContactName(),
-			contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
+			contactJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
 			null);
 
 		pseudonymizer.pseudonymizeDto(
 			ContactReferenceDto.PersonName.class,
 			contactReference.getCaseName(),
-			caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()),
+			caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
 			null);
 	}
 

@@ -412,7 +412,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer
-			.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> sampleJurisdictionChecker.isInJurisdiction(s.getJurisdiction()), null);
+			.pseudonymizeDtoCollection(
+				SampleIndexDto.class,
+				samples,
+				s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
+				null);
 
 		return samples;
 	}
@@ -650,7 +654,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
 
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(exportDto.getJurisdiction());
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
 			pseudonymizer.pseudonymizeDto(SampleExportDto.class, exportDto, isInJurisdiction, s -> {
 				pseudonymizer.pseudonymizeDtoCollection(
 					SampleExportDto.SampleExportPathogenTest.class,
@@ -784,7 +788,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			SampleJurisdictionDto sampleJurisdiction = JurisdictionHelper.createSampleJurisdictionDto(source);
-			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdiction(sampleJurisdiction);
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction);
 			User currentUser = userService.getCurrentUser();
 
 			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
@@ -802,7 +806,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void restorePseudonymizedDto(SampleDto dto, Sample existingSample, SampleDto existingSampleDto) {
 		if (existingSampleDto != null) {
-			boolean inJurisdiction = sampleJurisdictionChecker.isInJurisdiction(existingSample);
+			boolean inJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSample);
 			User currentUser = userService.getCurrentUser();
 
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
@@ -823,7 +827,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				CaseReferenceDto.class,
 				sampleCase,
-				caseJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getCaseJurisdiction()),
+				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getCaseJurisdiction()),
 				null);
 		}
 
@@ -831,12 +835,12 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getContactName(),
-				contactJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getContactJurisdiction()),
+				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
 				null);
 			pseudonymizer.pseudonymizeDto(
 				ContactReferenceDto.PersonName.class,
 				sampleContact.getCaseName(),
-				caseJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
 				null);
 		}
 
@@ -844,7 +848,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			pseudonymizer.pseudonymizeDto(
 				EventParticipantReferenceDto.class,
 				sampleEventParticipant,
-				eventJurisdictionChecker.isInJurisdiction(sampleJurisdiction.getEventJurisdiction()),
+				eventJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getEventJurisdiction()),
 				null);
 		}
 	}
@@ -982,6 +986,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 
 		Sample sample = sampleService.getByUuid(sampleUuid);
-		return sampleJurisdictionChecker.isInJurisdiction(sample);
+		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample);
 	}
 }

@@ -100,7 +100,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionIndexDto.class,
 			indexList,
-			p -> caseJurisdictionChecker.isInJurisdiction(p.getCaseJurisdiction()),
+			p -> caseJurisdictionChecker.isInJurisdictionOrOwned(p.getCaseJurisdiction()),
 			(p, inJurisdiction) -> {
 				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexType.class, p.getPrescriptionIndexType(), inJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(PrescriptionIndexDto.PrescriptionIndexRoute.class, p.getPrescriptionIndexRoute(), inJurisdiction, null);
@@ -210,7 +210,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			PrescriptionExportDto.class,
 			exportList,
-			p -> caseJurisdictionChecker.isInJurisdiction(p.getCaseJurisdiction()),
+			p -> caseJurisdictionChecker.isInJurisdictionOrOwned(p.getCaseJurisdiction()),
 			null);
 
 		return exportList;
@@ -226,7 +226,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	private void pseudonymizeDto(Prescription source, PrescriptionDto dto, Pseudonymizer pseudonymizer) {
 		if (source != null && dto != null) {
-			pseudonymizer.pseudonymizeDto(PrescriptionDto.class, dto, caseJurisdictionChecker.isInJurisdiction(source.getTherapy().getCaze()), null);
+			pseudonymizer
+				.pseudonymizeDto(PrescriptionDto.class, dto, caseJurisdictionChecker.isInJurisdictionOrOwned(source.getTherapy().getCaze()), null);
 		}
 	}
 
@@ -237,7 +238,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 				PrescriptionDto.class,
 				prescription,
 				existingPrescriptionDto,
-				caseJurisdictionChecker.isInJurisdiction(existingPrescription.getTherapy().getCaze()));
+				caseJurisdictionChecker.isInJurisdictionOrOwned(existingPrescription.getTherapy().getCaze()));
 		}
 	}
 

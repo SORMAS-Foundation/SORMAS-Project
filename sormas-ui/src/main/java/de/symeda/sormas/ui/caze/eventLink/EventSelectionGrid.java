@@ -74,7 +74,7 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 				FieldAccessColumnStyleGenerator.withCheckers(
 					EventIndexDto.class,
 					column.getId(),
-					EventJurisdictionHelper::isInJurisdiction,
+					EventJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}
 

@@ -90,7 +90,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					EventJurisdictionHelper::isInJurisdiction,
+					EventJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 

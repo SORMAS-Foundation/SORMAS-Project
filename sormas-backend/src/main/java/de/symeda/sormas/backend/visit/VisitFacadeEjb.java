@@ -312,7 +312,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			indexList.forEach(visitIndex -> {
 				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(visitIndex.getId());
 				VisitContactJurisdiction matchingContactJurisdiction =
-					visitContactJurisdictions.stream().filter(c -> contactJurisdictionChecker.isInJurisdiction(c)).findFirst().orElse(null);
+					visitContactJurisdictions.stream().filter(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c)).findFirst().orElse(null);
 				boolean inJurisdiction = matchingContactJurisdiction != null;
 				visitIndex.setJurisdiction(matchingContactJurisdiction != null ? matchingContactJurisdiction : visitContactJurisdictions.get(0));
 
@@ -399,7 +399,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 				for (VisitExportDto exportDto : resultList) {
 					List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
-					boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+					boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
 
 					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
 						if (v.getSymptoms() != null) {
@@ -456,7 +456,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer pseudonymizer) {
 		if (visitDto != null) {
-			boolean isInJurisdiction = source.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+			boolean isInJurisdiction = source.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
 			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, isInJurisdiction, (v) -> {
 				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, visitDto.getPerson(), isInJurisdiction, null);
 				pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitDto.getSymptoms(), isInJurisdiction, null);
@@ -466,7 +466,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void restorePseudonymizedDto(VisitDto dto, Visit existingVisit, VisitDto existingDto) {
 		if (existingDto != null) {
-			boolean isInJurisdiction = existingVisit.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+			boolean isInJurisdiction = existingVisit.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 
 			pseudonymizer.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
