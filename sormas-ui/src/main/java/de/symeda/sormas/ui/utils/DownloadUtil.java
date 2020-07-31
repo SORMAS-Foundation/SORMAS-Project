@@ -110,6 +110,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -212,8 +213,9 @@ public final class DownloadUtil {
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, null));
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, Sex.MALE));
 							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, Sex.FEMALE));
+							columnNames.add(DataHelper.getSexAndAgeGroupString(ageGroup, Sex.OTHER));
 							ageGroupPositions.put(ageGroup, ageGroupIndex);
-							ageGroupIndex += 3;
+							ageGroupIndex += 4;
 						}
 
 						writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
@@ -250,6 +252,8 @@ public final class DownloadUtil {
 									exportLine[3] = String.valueOf((int) populationExportData[4]);
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
 									exportLine[4] = String.valueOf((int) populationExportData[4]);
+								} else if (Sex.OTHER.getName().equals(sexString)) {
+									exportLine[5] = String.valueOf((int) populationExportData[4]);
 								} else {
 									exportLine[2] = String.valueOf((int) populationExportData[4]);
 								}
@@ -261,6 +265,8 @@ public final class DownloadUtil {
 									ageGroupPosition += 1;
 								} else if (Sex.FEMALE.getName().equals(sexString)) {
 									ageGroupPosition += 2;
+								} else if (Sex.OTHER.getName().equals(sexString)) {
+									ageGroupPosition += 3;
 								}
 								exportLine[ageGroupPosition] = String.valueOf((int) populationExportData[4]);
 							}
@@ -576,6 +582,8 @@ public final class DownloadUtil {
 		String exportFileName,
 		ExportConfigurationDto exportConfiguration) {
 
+
+		CountryFieldVisibilityChecker countryFieldVisibilityChecker = new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
 		StreamResource extendedStreamResource = new StreamResource(() -> {
 
 			return new DelayedInputStream((out) -> {
@@ -590,6 +598,7 @@ public final class DownloadUtil {
 							.filter(
 								m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
 									&& m.isAnnotationPresent(Order.class)
+									&& (countryFieldVisibilityChecker.isVisible(m))
 									&& (exportType == null || hasExportTarget(exportType, m))
 									&& (exportConfiguration == null
 										|| exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
@@ -704,6 +713,10 @@ public final class DownloadUtil {
 						startIndex += DETAILED_EXPORT_STEP_SIZE;
 						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					}
+				}
+				catch (Exception e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					throw new RuntimeException(e);
 				}
 			},
 				e -> {

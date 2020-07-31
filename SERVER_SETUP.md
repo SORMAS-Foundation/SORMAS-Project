@@ -5,7 +5,7 @@
 
 ## Content
 * [Prerequisites](#prerequisites)
-  * [Java 8](#java-8)
+  * [Java 11](#java-11)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
 * [Web Server Setup](#web-server-setup)
@@ -21,24 +21,22 @@
 
 ## Prerequisites
 
-### Java 8
+### Java 11
 
-**Please note:** Because of a bug in the current Payara version, deployment will fail with a Java version above 8u202!
-
-* Download and install the Java 8u202 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+* Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
 		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
 		sudo apt-get update
-		sudo apt-get install zulu-8
-  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 8 **JDK** for 32 or 64 bit client systems (depending on your system).
+		sudo apt-get install zulu-11
+  * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
 ### Postgres Database
 
 * Install PostgreSQL (currently 9.5, 9.6 or 10) on your system (manuals for all OS can be found here: https://www.postgresql.org/download)
-* set **max_prepared_transactions = 64** (at least) in postgresql.conf (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
+* Set **max_connections = 288** and **max_prepared_transactions = 256** (at least, sum of all connection pools) in ``postgresql.conf`` (e.g. ``/etc/postgresql/10.0/main/postgresql.conf``; ``C:/Program Files/PostgreSQL/10.0/data``) - make sure the property is uncommented
 * Install the "temporal tables" extension for Postgres (https://github.com/arkhipov/temporal_tables)
     * **Windows**: Download the latest version for your Postgres version: https://github.com/arkhipov/temporal_tables/releases/latest, then copy the DLL from the project into the PostgreSQL's lib directory and the .sql and .control files into the directory share\extension.	
     * **Linux** (see https://github.com/arkhipov/temporal_tables#installation):
@@ -53,9 +51,15 @@
 
 * Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
-  * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
-  * ``cd /root/deploy/sormas/$(date +%F)``
-  * Make the setup script executable with ``chmod +x server-setup.sh``
+  * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
+        
+		cd /root/deploy/sormas
+		SORMAS_VERSION=1.y.z
+		wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+		unzip sormas_${SORMAS_VERSION}.zip
+		mv deploy/ $(date +%F)
+		rm sormas_${SORMAS_VERSION}.zip
+		chmod +x $(date +%F)/server-setup.sh
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
   * Unzip the ZIP archive (e.g. into you download directory)

@@ -31,8 +31,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
@@ -49,7 +51,7 @@ public class Event extends AbstractDomainObject {
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
 	public static final String EVENT_DESC = "eventDesc";
-	public static final String EVENT_DATE = "eventDate";
+	public static final String START_DATE = "startDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT_LOCATION = "eventLocation";
@@ -70,11 +72,20 @@ public class Event extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private EventStatus eventStatus;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String externalId;
+
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String eventDesc;
 
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown nosocomial;
+
 	@DatabaseField(dataType = DataType.DATE_LONG)
-	private Date eventDate;
+	private Date startDate;
+
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date endDate;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date reportDateTime;
@@ -88,6 +99,9 @@ public class Event extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private TypeOfPlace typeOfPlace;
 
+	@Enumerated(EnumType.STRING)
+	private EventSourceType srcType;
+
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcFirstName;
 
@@ -99,6 +113,15 @@ public class Event extends AbstractDomainObject {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcEmail;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String srcMediaWebsite;
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String srcMediaName;
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	private String srcMediaDetails;
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
@@ -127,6 +150,14 @@ public class Event extends AbstractDomainObject {
 		this.eventStatus = eventStatus;
 	}
 
+	public String getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	public String getEventDesc() {
 		return eventDesc;
 	}
@@ -135,12 +166,28 @@ public class Event extends AbstractDomainObject {
 		this.eventDesc = eventDesc;
 	}
 
-	public Date getEventDate() {
-		return eventDate;
+	public YesNoUnknown getNosocomial() {
+		return nosocomial;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public void setNosocomial(YesNoUnknown nosocomial) {
+		this.nosocomial = nosocomial;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public Date getReportDateTime() {
@@ -175,6 +222,14 @@ public class Event extends AbstractDomainObject {
 		this.typeOfPlace = typeOfPlace;
 	}
 
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
+	}
+
 	public String getSrcFirstName() {
 		return srcFirstName;
 	}
@@ -205,6 +260,30 @@ public class Event extends AbstractDomainObject {
 
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	public String getSrcMediaWebsite() {
+		return srcMediaWebsite;
+	}
+
+	public void setSrcMediaWebsite(String srcMediaWebsite) {
+		this.srcMediaWebsite = srcMediaWebsite;
+	}
+
+	public String getSrcMediaName() {
+		return srcMediaName;
+	}
+
+	public void setSrcMediaName(String srcMediaName) {
+		this.srcMediaName = srcMediaName;
+	}
+
+	public String getSrcMediaDetails() {
+		return srcMediaDetails;
+	}
+
+	public void setSrcMediaDetails(String srcMediaDetails) {
+		this.srcMediaDetails = srcMediaDetails;
 	}
 
 	public Disease getDisease() {
@@ -257,7 +336,7 @@ public class Event extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
 	}
 
 	@Override

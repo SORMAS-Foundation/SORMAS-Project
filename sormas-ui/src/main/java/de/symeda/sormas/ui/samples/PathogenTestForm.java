@@ -109,10 +109,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addDiseaseField(PathogenTestDto.TESTED_DISEASE, true);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 
-		addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
+		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		addField(PathogenTestDto.SEROTYPE, TextField.class);
-		addField(PathogenTestDto.CQ_VALUE, TextField.class);
-		OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
+		TextField cqValueField = addField(PathogenTestDto.CQ_VALUE, TextField.class);
+        OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
 		CssStyles.style(fourFoldIncrease, VSPACE_3, VSPACE_TOP_4);
@@ -170,6 +170,28 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 				labDetails.setVisible(false);
 				labDetails.setRequired(false);
 				labDetails.clear();
+			}
+		});
+
+		testTypeField.addValueChangeListener(e -> {
+			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
+			if ((testType == PathogenTestType.PCR_RT_PCR && testResultField.getValue() == PathogenTestResultType.POSITIVE)
+				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else {
+				cqValueField.setVisible(false);
+				cqValueField.clear();
+			}
+		});
+
+		testResultField.addValueChangeListener(e -> {
+			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
+			if ((testTypeField.getValue() == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
+				|| testTypeField.getValue() == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else {
+				cqValueField.setVisible(false);
+				cqValueField.clear();
 			}
 		});
 

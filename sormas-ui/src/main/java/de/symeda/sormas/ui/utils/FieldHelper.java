@@ -197,6 +197,22 @@ public final class FieldHelper {
 		}
 	}
 
+	public static void setCaptionWhen(Field<?> sourceField, Field<?> targetField, Object sourceValue, String matchCaption, String noMatchCaption) {
+		if (sourceField != null) {
+			// initialize
+			{
+				boolean matches = sourceValue.equals(sourceField.getValue());
+
+				targetField.setCaption(matches ? matchCaption : noMatchCaption);
+			}
+
+			sourceField.addValueChangeListener(event -> {
+				boolean matches = sourceValue.equals(sourceField.getValue());
+				targetField.setCaption(matches ? matchCaption : noMatchCaption);
+			});
+		}
+	}
+
 	public static void setVisibleWhen(
 		final FieldGroup fieldGroup,
 		List<String> targetPropertyIds,

@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Bestätigte Ereignisse</string>
     <string name="caption_contact_information">Kontaktinformationen</string>
     <string name="caption_contact_tasks">Kontakt-Aufgaben</string>
+    <string name="caption_contact_epidemiological_data">Epidemiologische Info</string>
     <string name="caption_contact_visits">Nachverfolgung Informationen</string>
     <string name="caption_converted_to_case">In Fall konvertiert</string>
     <string name="caption_date_of_birth">Geburtsdatum (Jahr / Monat / Tag)</string>
@@ -186,7 +187,7 @@
     <string name="caption_present_condition">Aktueller Status</string>
     <string name="caption_probable_case">Wahrscheinlicher Fall</string>
     <string name="caption_rapid_case_entry">Schnell-Falleintrag verwenden</string>
-    <string name="caption_report_date">Berichtsdatum: %1$s</string>
+    <string name="caption_report_date">Meldedatum: %1$s</string>
     <string name="caption_reported_case_count">Anzahl der von Ihnen gemeldeten Fälle</string>
     <string name="caption_reported_informant_case_count">Anzahl der von Informant*innen gemeldeten Fälle</string>
     <string name="caption_resulting_case_status">Status des resultierenden Falls</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Für dieses Feld ist ein Wert erforderlich. Bitte geben Sie einen Wert ein oder wählen Sie einen Wert aus, bevor Sie fortfahren.</string>
     <string name="validation_soft_add_list_entry">Bitte fügen Sie einen Eintrag zur Liste hinzu, wenn Ihnen Daten zur Verfügung stehen.</string>
     <string name="validation_soft_case_classification">Dieser Fall sollte eingestuft werden, sobald die erforderlichen Informationen zur Verfügung stehen.</string>
+    <string name="validation_case_classification">Die Fallklassifizierung entspricht nicht den Laborergebnissen und Symptomen des Falls.</string>
     <string name="validation_soft_case_epid_number">Die EPID-Nummer stimmt nicht mit dem erforderlichen Muster überein. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_soft_case_epid_number_empty">Es muss eine EPID-Nummer angegeben werden. Sie können den Fall trotzdem speichern und später die korrekte Nummer eingeben.</string>
     <string name="validation_symptoms_fever">Die Temperatur liegt im Fieberbereich. Das Fieber sollte auf \"Ja\" gesetzt werden.</string>
@@ -536,7 +538,7 @@
     <string name="value_prescribing_clinician_unknown">Verschreibende*r Arzt/Ärztin N/A</string>
     <string name="value_prescription_date_unknown">Datum der Rezeptausstellung N/A</string>
     <string name="value_prescription_period_unknown">Verschreibungsdauer N/A</string>
-    <string name="value_report_date_unknown">Berichtsdatum N/A</string>
+    <string name="value_report_date_unknown">Meldedatum N/A</string>
     <string name="value_role_unassigned">Rolle nicht zugewiesen</string>
     <string name="value_sample_date_unknown">Probenentnahme-Datum N/A</string>
     <string name="value_sample_material_unknown">Probenmaterial N/A</string>

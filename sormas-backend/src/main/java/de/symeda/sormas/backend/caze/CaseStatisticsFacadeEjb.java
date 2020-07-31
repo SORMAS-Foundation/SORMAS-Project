@@ -273,7 +273,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(Facility.TABLE_NAME)
 				.append(".")
 				.append(Facility.ID);
-		} else if (subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.COMMUNITY || subGroupingB == StatisticsCaseSubAttribute.COMMUNITY) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Community.TABLE_NAME)
 				.append(" ON ")
@@ -284,7 +285,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(Community.TABLE_NAME)
 				.append(".")
 				.append(Community.ID);
-		} else if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.DISTRICT || subGroupingB == StatisticsCaseSubAttribute.DISTRICT) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(District.TABLE_NAME)
 				.append(" ON ")
@@ -295,7 +297,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				.append(District.TABLE_NAME)
 				.append(".")
 				.append(District.ID);
-		} else {
+		}
+		if (subGroupingA == StatisticsCaseSubAttribute.REGION || subGroupingB == StatisticsCaseSubAttribute.REGION) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Region.TABLE_NAME)
 				.append(" ON ")
@@ -733,7 +736,10 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			}
 			if (groupingB != null) {
 				groupingSelectQueryB = buildCaseGroupingSelectQuery(groupingB, subGroupingB, groupBAlias);
-				caseGroupByBuilder.append(",").append(groupBAlias);
+				if (groupingA != null) {
+					caseGroupByBuilder.append(",");
+				}
+				caseGroupByBuilder.append(groupBAlias);
 			}
 		}
 

@@ -12,6 +12,8 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	private String passportNumber;
+	private String nationalHealthId;
 
 	@IgnoreForUrl
 	public String getFirstName() {
@@ -70,6 +72,26 @@ public class PersonSimilarityCriteria extends BaseCriteria implements Cloneable 
 
 	public PersonSimilarityCriteria birthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public PersonSimilarityCriteria passportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public String getNationalHealthId() {
+		return nationalHealthId;
+	}
+
+	public PersonSimilarityCriteria nationalHealthId(String nationalHealthId) {
+		this.nationalHealthId = nationalHealthId;
 		return this;
 	}
 }

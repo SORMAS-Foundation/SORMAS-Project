@@ -23,6 +23,8 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -65,6 +67,13 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Location, Region> contactPersonAddressRegion;
 	private Join<Location, District> contactPersonAddressDistrict;
 	private Join<Location, Community> contactPersonAddressCommunity;
+	private Join<Sample, EventParticipant> eventParticipant;
+	private Join<EventParticipant, Person> eventParticipantPerson;
+	private Join<EventParticipant, Event> event;
+	private Join<Event, Location> eventLocation;
+	private Join<Location, Region> eventRegion;
+	private Join<Location, District> eventDistrict;
+	private Join<Location, Community> eventCommunity;
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
@@ -156,6 +165,62 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	private void setContact(Join<Sample, Contact> contact) {
 		this.contact = contact;
+	}
+
+	public Join<Sample, EventParticipant> getEventParticipant() {
+		return getOrCreate(eventParticipant, Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT, this::setEventParticipant);
+	}
+
+	private void setEventParticipant(Join<Sample, EventParticipant> eventParticipant) {
+		this.eventParticipant = eventParticipant;
+	}
+
+	public Join<EventParticipant, Person> getEventParticipantPerson() {
+		return getOrCreate(eventParticipantPerson, EventParticipant.PERSON, JoinType.LEFT, getEventParticipant(), this::setEventParticipantPerson);
+	}
+
+	public void setEventParticipantPerson(Join<EventParticipant, Person> eventParticipantPerson) {
+		this.eventParticipantPerson = eventParticipantPerson;
+	}
+
+	public Join<EventParticipant, Event> getEvent() {
+		return getOrCreate(event, EventParticipant.EVENT, JoinType.LEFT, getEventParticipant(), this::setEvent);
+	}
+
+	public void setEvent(Join<EventParticipant, Event> event) {
+		this.event = event;
+	}
+
+	public Join<Event, Location> getEventLocation() {
+		return getOrCreate(eventLocation, Event.EVENT_LOCATION, JoinType.LEFT, getEvent(), this::setEventLocation);
+	}
+
+	public void setEventLocation(Join<Event, Location> eventLocation) {
+		this.eventLocation = eventLocation;
+	}
+
+	public Join<Location, Region> getEventRegion() {
+		return getOrCreate(eventRegion, Location.REGION, JoinType.LEFT, getEventLocation(), this::setEventRegion);
+	}
+
+	public void setEventRegion(Join<Location, Region> eventRegion) {
+		this.eventRegion = eventRegion;
+	}
+
+	public Join<Location, District> getEventDistrict() {
+		return getOrCreate(eventDistrict, Location.DISTRICT, JoinType.LEFT, getEventLocation(), this::setEventDistrict);
+	}
+
+	public Join<Location, Community> getEventCommunity() {
+		return getOrCreate(eventCommunity, Location.COMMUNITY, JoinType.LEFT, getEventLocation(), this::setEventCommunity);
+	}
+
+	public void setEventCommunity(Join<Location, Community> eventCommunity) {
+		this.eventCommunity = eventCommunity;
+	}
+
+	public void setEventDistrict(Join<Location, District> eventDistrict) {
+		this.eventDistrict = eventDistrict;
 	}
 
 	public Join<Contact, Person> getContactPerson() {

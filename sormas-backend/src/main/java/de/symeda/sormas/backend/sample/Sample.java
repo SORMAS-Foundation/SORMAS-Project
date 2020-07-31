@@ -54,6 +54,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
@@ -67,6 +68,7 @@ public class Sample extends CoreAdo {
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String ASSOCIATED_CONTACT = "associatedContact";
+	public static final String ASSOCIATED_EVENT_PARTICIPANT = "associatedEventParticipant";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -100,6 +102,7 @@ public class Sample extends CoreAdo {
 
 	private Case associatedCase;
 	private Contact associatedContact;
+	private EventParticipant associatedEventParticipant;
 	private String labSampleID;
 	private String fieldSampleID;
 	private Date sampleDateTime;
@@ -158,6 +161,16 @@ public class Sample extends CoreAdo {
 
 	public void setAssociatedContact(Contact associatedContact) {
 		this.associatedContact = associatedContact;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public EventParticipant getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
+	public void setAssociatedEventParticipant(EventParticipant associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -504,7 +517,8 @@ public class Sample extends CoreAdo {
 		return SampleReferenceDto.buildCaption(
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	public SampleReferenceDto toReference() {
@@ -512,7 +526,8 @@ public class Sample extends CoreAdo {
 			getUuid(),
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	public Double getReportLat() {

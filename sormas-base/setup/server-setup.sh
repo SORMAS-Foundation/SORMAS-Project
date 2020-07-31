@@ -116,6 +116,7 @@ else
 fi
 remember_choice DEMO_SYSTEM
 
+
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
 else
@@ -180,14 +181,16 @@ abspath CUSTOM_DIR
 abspath PAYARA_HOME
 abspath DOMAINS_HOME
 
-prompted_defaulted PAYARA_VERSION=5.192 \
+prompted_defaulted PAYARA_VERSION=5.2020.2 \
   "Payara version to use"
 prompted_defaulted DOMAIN_NAME=sormas \
   "Name for the Payara domain created for SORMAS"
 prompted_defaulted PAYARA_PORT_BASE=6000 \
   "Base port for the SORMAS Payara domain"
 PORT_ADMIN=$(expr $PAYARA_PORT_BASE + 48)
+defaulted DOMAIN_XMX=4096m
 DOMAIN_DIR="${DOMAINS_HOME}/${DOMAIN_NAME}"
+
 
 # DB
 prompted_defaulted DB_HOST=localhost \
@@ -198,9 +201,9 @@ prompted_defaulted DB_NAME=sormas_db \
   "Name of SORMAS database"
 prompted_defaulted DB_NAME_AUDIT=sormas_audit_db \
   "Name of SORMAS database for auditing"
-# Name of the database user; DO NOT CHANGE THIS!
 prompted_defaulted DB_USER=sormas_user \
   "Database user to be used by SORMAS"
+defaulted DB_JDBC_MAXPOOLSIZE=128
 
 # ------ Config END ------
 
@@ -346,6 +349,7 @@ if [[ -z "${AS_JAVA_NATIVE}" && ${LINUX} = true ]]; then
   AS_JAVA_NATIVE="$(realpath -P "$(dirname "$(which javac)")/..")"
 fi
 
+JDK_VERSION_REQUIRED=11
 while [[ -z "$JDK_HOME" ]]; do
   prompted_defaulted JDK_HOME="$AS_JAVA_NATIVE" \
     "Home directory of the JDK to use"
@@ -366,11 +370,11 @@ while [[ -z "$JDK_HOME" ]]; do
   # Check Java JDK
   CHOICES=("Choose other" "Abort")
   JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/^.\+ //;s/^1\.//;s/[^0-9].*//')
-  if [[ "${JAVA_VERSION}" -eq 8 ]]; then
+  if [[ "${JAVA_VERSION}" -eq $JDK_VERSION_REQUIRED ]]; then
     echo "Found Java ${JAVA_VERSION} JDK."
     CHOICES=()
-  elif [[ "${JAVA_VERSION}" -gt 8 ]]; then
-    echo "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK."
+  elif [[ "${JAVA_VERSION}" -gt $JDK_VERSION_REQUIRED ]]; then
+    echo "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java $JDK_VERSION_REQUIRED SDK."
     CHOICES=("Continue anyway" "${CHOICES[@]}")
   else
     echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
@@ -476,13 +480,14 @@ EOF
   rm setup.sql
 
   echo "---"
-  read -p "$(bold "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel.")"
+  bold "Database setup completed. Please check the output for any substantial errors ('already existing' errors are typically OK)."
+  read -p "$(bold "Press [Enter] to continue or [Ctrl+C] to cancel.")"
 fi # End of ${INIT_DB} = true
 
 
 # PAYARA DOMAIN: Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
-"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PAYARA_PORT_BASE}" --nopassword "${DOMAIN_NAME}"
+"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PAYARA_PORT_BASE}" --nopassword --template ${PAYARA_HOME}/glassfish/common/templates/gf/production-domain.jar "${DOMAIN_NAME}"
 ASADMIN=("${PAYARA_HOME}/bin/asadmin" --port ${PORT_ADMIN})
 
 if [[ ${LINUX} = true ]]; then
@@ -505,19 +510,21 @@ remember_choice MAIL_FROM
 echo "Configuring domain..."
 
 # General domain settings
-"${ASADMIN[@]}" delete-jvm-options -Xmx512m
-"${ASADMIN[@]}" create-jvm-options -Xmx4096m
+"${ASADMIN[@]}" delete-jvm-options -Xms2g
+"${ASADMIN[@]}" delete-jvm-options -Xmx2g
+"${ASADMIN[@]}" create-jvm-options -Xmx${DOMAIN_XMX}
+"${ASADMIN[@]}" set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
+"${ASADMIN[@]}" set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
 
 # JDBC pool
-"${ASADMIN[@]}" create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PASSWORD}" ${DOMAIN_NAME}DataPool
-"${ASADMIN[@]}" create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
+"${ASADMIN[@]}" create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PASSWORD}" ${DOMAIN_NAME}DataPool
+"${ASADMIN[@]}" create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/sormasDataPool
 
 # Pool for audit log
-"${ASADMIN[@]}" create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PASSWORD}" ${DOMAIN_NAME}AuditlogPool
+"${ASADMIN[@]}" create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PASSWORD}" ${DOMAIN_NAME}AuditlogPool
 "${ASADMIN[@]}" create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 "${ASADMIN[@]}" create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession
-
 "${ASADMIN[@]}" create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
 
@@ -549,6 +556,7 @@ if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
 	cp cacerts.jks.bin "${DOMAIN_DIR}/config/cacerts.jks"
 fi
 cp loginsidebar.html "${CUSTOM_DIR}"
+cp loginsidebar-header.html "${CUSTOM_DIR}"
 cp logindetails.html "${CUSTOM_DIR}"
 if [[ ${DEMO_SYSTEM} = true ]]; then
 	cp demologinmain.html "${CUSTOM_DIR}/loginmain.html"

@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Evento confirmado</string>
     <string name="caption_contact_information">Información de contacto</string>
     <string name="caption_contact_tasks">Tareas del contacto</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Información de seguimiento</string>
     <string name="caption_converted_to_case">Convertido a caso</string>
     <string name="caption_date_of_birth">Fecha de nacimiento (año / mes / día)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Se requiere un valor para este campo. Por favor, asegúrese de escribir o seleccionar un valor antes de continuar.</string>
     <string name="validation_soft_add_list_entry">Agregue un registro a la lista a continuación si hay datos disponibles para usted.</string>
     <string name="validation_soft_case_classification">Este caso debe ser clasificado tan pronto como la información requerida esté disponible.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">El número EPID no coincide con el patrón requerido. Puede guardar el caso e introducir el número correcto más tarde.</string>
     <string name="validation_soft_case_epid_number_empty">El número EPID no coincide con el patrón requerido. Puede guardar el caso e introducir el número correcto más tarde.</string>
     <string name="validation_symptoms_fever">La temperatura está en el rango de la fiebre. La fiebre debe establecerse en \"Sí\".</string>

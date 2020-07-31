@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.renderers.DateRenderer;
@@ -24,6 +25,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
@@ -62,11 +64,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(e -> {
-			if ((e.getColumn() != null && ContactFollowUpDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
-				ControllerProvider.getContactController().navigateToData(e.getItem().getUuid());
-			}
-		});
+		addItemClickListener(
+			new ShowDetailsListener<>(ContactFollowUpDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
 	}
 
 	public void setVisitColumns(Date referenceDate, int interval, ContactCriteria criteria) {
@@ -92,8 +91,24 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 					date,
 					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
 					item.getFollowUpUntil());
+			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
+				final VisitResult visitResult = item.getVisitResults()[index];
+				final Date date = dates.get(index);
+				return getVisitResultDescription(
+					visitResult,
+					date,
+					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDateTime()),
+					item.getFollowUpUntil());
 			});
 		}
+	}
+
+	private String getVisitResultDescription(VisitResult result, Date date, Date contactDate, Date followUpUntil) {
+
+		if (!DateHelper.isBetween(date, DateHelper.getStartOfDay(contactDate), DateHelper.getEndOfDay(followUpUntil))) {
+			return "";
+		}
+		return result.toString();
 	}
 
 	private String getVisitResultCssStyle(VisitResult result, Date date, Date contactDate, Date followUpUntil) {

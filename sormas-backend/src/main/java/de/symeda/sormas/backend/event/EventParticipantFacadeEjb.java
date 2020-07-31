@@ -246,6 +246,17 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return eventParticipantService.exists(uuid);
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		return new EventParticipantReferenceDto(eventParticipant.getUuid());
+	}
+
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
 
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());

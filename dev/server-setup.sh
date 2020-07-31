@@ -416,7 +416,7 @@ echo "You can find a reference with important information about your development
 echo "  $SYSSPECS_FILE"
 echo
 success "You are good to go. Happy coding! :)"
-echo "Note: You may want to adjust $(highlight sormas.properites) file in $SORMAS_DOMAIN_DIR"
+echo "Note: You may want to adjust $(highlight sormas.properties) file in $SORMAS_DOMAIN_DIR"
 echo
 highlight "Tips:"
 echo "Open http://localhost:$(expr $PAYARA_PORT_BASE + 48) to verify Payara is running."

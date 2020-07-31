@@ -33,21 +33,21 @@ public class ContactJurisdictionHelper {
 			return true;
 		}
 
-		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
-		}
-
 		switch (jurisdictionLevel) {
 		case NONE:
 			return false;
 		case NATION:
 			return true;
 		case REGION:
-			return contactJurisdiction.getRegionUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			if (contactJurisdiction.getRegionUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			}
+			break;
 		case DISTRICT:
-			return contactJurisdiction.getDistrictUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			if (contactJurisdiction.getDistrictUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			}
+			break;
 		case COMMUNITY:
 			return false;
 		case HEALTH_FACILITY:
@@ -58,8 +58,12 @@ public class ContactJurisdictionHelper {
 			return false;
 		case POINT_OF_ENTRY:
 			return false;
-		default:
-			return false;
 		}
+
+		if (contactJurisdiction.getCaseJurisdiction() != null) {
+			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
+		}
+
+		return false;
 	}
 }

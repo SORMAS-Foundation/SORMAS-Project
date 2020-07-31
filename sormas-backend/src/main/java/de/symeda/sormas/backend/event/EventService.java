@@ -49,6 +49,8 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.action.Action;
+import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -73,12 +75,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private ActionService actionService;
 
 	public EventService() {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, User user) {
+	public List<Event> getAllActiveEventsAfter(Date date) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -87,6 +91,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -104,7 +109,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getAllActiveUuids(User user) {
+	public List<String> getAllActiveUuids() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -112,6 +117,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = createActiveEventsFilter(cb, from);
 
+		User user = getCurrentUser();
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -123,7 +129,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria, User user) {
+	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
@@ -144,7 +150,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.EVENT_STATUS),
 				event.get(Event.DISEASE),
 				event.get(Event.DISEASE_DETAILS),
-				event.get(Event.EVENT_DATE),
+				event.get(Event.START_DATE),
 				event.get(Event.REPORT_LAT),
 				event.get(Event.REPORT_LON),
 				eventLocation.get(Location.LATITUDE),
@@ -164,7 +170,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return result;
 	}
 
-	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria, User user) {
+	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -182,12 +188,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<Disease, Long> events = results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (Disease) e[0], e -> (Long) e[1]));
 	}
 
-	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria, User user) {
+	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -205,12 +209,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
-		Map<EventStatus, Long> events = results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
-
-		return events;
+		return results.stream().collect(Collectors.toMap(e -> (EventStatus) e[0], e -> (Long) e[1]));
 	}
 
-	public List<String> getArchivedUuidsSince(User user, Date since) {
+	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -239,7 +241,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<String> getDeletedUuidsSince(User user, Date since) {
+	public List<String> getDeletedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -338,6 +340,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			taskService.delete(task);
 		}
 
+		// Delete all event actions associated with this event
+		List<Action> actions = actionService.getAllByEvent(event);
+		for (Action action : actions) {
+			actionService.delete(action);
+		}
+
 		// Mark the event as deleted
 		super.delete(event);
 	}
@@ -356,6 +364,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
+		}
+		if (eventCriteria.getTypeOfPlace() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
 		}
 		if (eventCriteria.getRelevanceStatus() != null) {
 			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
@@ -388,11 +399,30 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				and(cb, filter, cb.between(from.get(Event.REPORT_DATE_TIME), eventCriteria.getReportedDateFrom(), eventCriteria.getReportedDateTo()));
 		}
 		if (eventCriteria.getEventDateFrom() != null && eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.between(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(
+					cb.between(from.get(Event.START_DATE), eventCriteria.getEventDateFrom(), eventCriteria.getEventDateTo()),
+					cb.and(
+						cb.isNotNull(from.get(Event.END_DATE)),
+						cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+						cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom()))));
 		} else if (eventCriteria.getEventDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateFrom()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(cb.greaterThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateFrom())),
+				cb.and(
+					cb.isNotNull(from.get(Event.END_DATE)),
+					cb.lessThan(from.get(Event.START_DATE), eventCriteria.getEventDateFrom()),
+					cb.greaterThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateFrom())));
 		} else if (eventCriteria.getEventDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Event.EVENT_DATE), eventCriteria.getEventDateTo()));
+			filter = and(
+				cb,
+				filter,
+				cb.or(cb.and(cb.isNull(from.get(Event.END_DATE)), cb.lessThanOrEqualTo(from.get(Event.START_DATE), eventCriteria.getEventDateTo()))),
+				cb.lessThanOrEqualTo(from.get(Event.END_DATE), eventCriteria.getEventDateTo()));
 		}
 		if (eventCriteria.getSurveillanceOfficer() != null) {
 			filter = and(
@@ -410,6 +440,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					filter = and(cb, filter, likeFilters);
 				}
 			}
+		}
+		if (eventCriteria.getSrcType() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
+		}
+
+		if (eventCriteria.getCaze() != null) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+
+			filter = and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
 		}
 
 		return filter;

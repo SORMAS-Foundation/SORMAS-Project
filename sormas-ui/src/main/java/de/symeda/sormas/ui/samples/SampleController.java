@@ -42,6 +42,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -88,6 +90,10 @@ public class SampleController {
 
 	public void create(ContactReferenceDto contactRef, Runnable callback) {
 		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	public void create(EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef));
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
@@ -144,7 +150,8 @@ public class SampleController {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
-			pathogenTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
+			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
+			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
@@ -152,6 +159,13 @@ public class SampleController {
 			newSample.setPathogenTestResult(testResult);
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
+			if (eventParticipantRef != null && testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
+				EventParticipantDto eventParticipant =
+					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+				ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant);
+			}
 		} else {
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 		}
@@ -274,10 +288,15 @@ public class SampleController {
 				popupWindow.close();
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
 				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 				if (associatedCase != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto);
 				} else if (associatedContact != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto);
+				} else if (associatedEventParticipant != null) {
+					final EventParticipantDto eventParticipantDto =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto);
 				}
 			}
 		});

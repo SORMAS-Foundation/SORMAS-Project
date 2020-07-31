@@ -307,11 +307,11 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		// Count layout
 		CssLayout countLayout = eventComponent.createCountLayout(true);
-		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.CONFIRMED.toString(), CountElementStyle.CRITICAL);
+		eventStatusConfirmed = new DashboardStatisticsCountElement(EventStatus.EVENT.toString(), CountElementStyle.CRITICAL);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusConfirmed);
-		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.POSSIBLE.toString(), CountElementStyle.IMPORTANT);
+		eventStatusPossible = new DashboardStatisticsCountElement(EventStatus.SIGNAL.toString(), CountElementStyle.IMPORTANT);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusPossible);
-		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.NO_EVENT.toString(), CountElementStyle.POSITIVE);
+		eventStatusNotAnEvent = new DashboardStatisticsCountElement(EventStatus.DROPPED.toString(), CountElementStyle.POSITIVE);
 		eventComponent.addComponentToCountLayout(countLayout, eventStatusNotAnEvent);
 		eventComponent.addComponent(countLayout);
 
@@ -442,9 +442,9 @@ public class DiseaseStatisticsComponent extends CustomLayout {
 
 		eventCountLabel.setValue(events.values().stream().collect(Collectors.summingLong(Long::longValue)).toString());
 
-		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.CONFIRMED, 0L).toString());
-		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.POSSIBLE, 0L).toString());
-		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.NO_EVENT, 0L).toString());
+		eventStatusConfirmed.updateCountLabel(events.getOrDefault(EventStatus.EVENT, 0L).toString());
+		eventStatusPossible.updateCountLabel(events.getOrDefault(EventStatus.SIGNAL, 0L).toString());
+		eventStatusNotAnEvent.updateCountLabel(events.getOrDefault(EventStatus.DROPPED, 0L).toString());
 	}
 
 	private void updateTestResultComponent(Disease disease) {

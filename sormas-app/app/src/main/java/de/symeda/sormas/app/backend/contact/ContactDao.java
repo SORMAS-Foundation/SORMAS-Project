@@ -72,7 +72,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		try {
 			QueryBuilder qb = queryBuilder();
 			qb.where().eq(Contact.CASE_UUID, caze.getUuid()).and().eq(AbstractDomainObject.SNAPSHOT, false);
-			qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+			qb.orderBy(Contact.LOCAL_CHANGE_DATE, false);
 			return qb.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getByCase on Contact");
@@ -92,7 +92,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			if (disease != null) {
 				where.and(where, where.eq(Contact.DISEASE, disease));
 			}
-			qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+			qb.orderBy(Contact.LOCAL_CHANGE_DATE, false);
 			return (int) qb.countOf();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getCountByPersonAndDisease on Contact");
@@ -114,6 +114,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		if (user.getDistrict() != null) {
 			contact.setDistrict(user.getDistrict());
 		}
+
+		// Epi Data
+		contact.setEpiData(DatabaseHelper.getEpiDataDao().build());
 
 		return contact;
 	}
@@ -173,7 +176,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 	public List<Contact> queryByCriteria(ContactCriteria criteria, long offset, long limit) {
 		try {
-			return buildQueryBuilder(criteria).orderBy(Contact.REPORT_DATE_TIME, true).offset(offset).limit(limit).query();
+			return buildQueryBuilder(criteria).orderBy(Contact.LOCAL_CHANGE_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform queryByCriteria on Contact");
 			throw new RuntimeException(e);
@@ -263,5 +266,20 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+		if (epiDataDate != null && epiDataDate.after(date)) {
+			date = epiDataDate;
+		}
+
+		return date;
 	}
 }

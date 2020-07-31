@@ -57,6 +57,7 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getCaption(EventDto.I18N_PREFIX), params);
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
+		menu.addView(EventActionsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventActions), params);
 		infoLabel.setValue(getReference().getCaption());
 		infoLabelSub.setValue(DataHelper.getShortUuid(getReference().getUuid()));
 	}
@@ -84,6 +85,15 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 
 		if (FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
 			newComponent.setEnabled(false);
+		}
+	}
+
+	public void setEventEditPermission(Component component) {
+
+		Boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid());
+
+		if (!isEventEditAllowed) {
+			component.setEnabled(false);
 		}
 	}
 

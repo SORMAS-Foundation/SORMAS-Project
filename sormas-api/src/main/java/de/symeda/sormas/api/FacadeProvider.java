@@ -17,10 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
+import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.region.AreaFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.GeoShapeProvider;
@@ -62,6 +63,9 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 public class FacadeProvider {
 
@@ -117,6 +121,10 @@ public class FacadeProvider {
 
 	public static TaskFacade getTaskFacade() {
 		return get().lookupEjbRemote(TaskFacade.class);
+	}
+
+	public static ActionFacade getActionFacade() {
+		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
 	public static SampleFacade getSampleFacade() {
@@ -257,6 +265,18 @@ public class FacadeProvider {
 
 	public static CampaignFacade getCampaignFacade() {
 		return get().lookupEjbRemote(CampaignFacade.class);
+	}
+
+	public static CampaignFormMetaFacade getCampaignFormMetaFacade() {
+		return get().lookupEjbRemote(CampaignFormMetaFacade.class);
+	}
+
+	public static CampaignFormDataFacade getCampaignFormDataFacade() {
+		return get().lookupEjbRemote(CampaignFormDataFacade.class);
+	}
+
+	public static AreaFacade getAreaFacade() {
+		return get().lookupEjbRemote(AreaFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")

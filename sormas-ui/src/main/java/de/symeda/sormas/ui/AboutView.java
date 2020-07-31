@@ -70,8 +70,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
-			new ExternalResource(
-				"https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/releases%2Fversion-" + InfoProvider.get().getBaseVersion()));
+			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
 		whatsNewLink.setTargetName("_blank");
 		infoLayout.addComponent(whatsNewLink);
 

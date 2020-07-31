@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,6 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
@@ -243,9 +246,9 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				EnvParam.CONTACT_IDS.put(env, contactIdStr);
 				EnvParam.OUTFILE.put(env, outputFile.toString());
 
-//				File outFile = tempDir.resolve("console.log").toFile();
-//				pb.redirectOutput(outFile );
-//				pb.redirectError(outFile);
+				File outFile = tempDir.resolve("console.log").toFile();
+				pb.redirectErrorStream(true);
+				pb.redirectOutput(outFile);
 
 				Process pr = pb.start();
 				int exitCode = pr.waitFor();
@@ -254,8 +257,13 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 					String html = new String(Files.readAllBytes(outputFile));
 					return extractJson(html, language);
 				} else {
-					LoggerFactory.getLogger(VisualizationFacadeEjb.class)
-						.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
+					logger.warn("R failed with code {} : {}", exitCode, pb.command().stream().collect(Collectors.joining(" ")));
+					if (logger.isDebugEnabled() && outFile.length() > 0) {
+						try (Stream<String> lines = Files.lines(outFile.toPath(), Charset.defaultCharset())) {
+							logger.debug(lines.collect(Collectors.joining("\n  ", "Console output of R script:\n  ", "")));
+						}
+					}
 					return null;
 				}
 
@@ -263,6 +271,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				throw new UncheckedIOException(e);
 
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				throw new RuntimeException(e);
 			}
 
@@ -270,7 +279,8 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 			try {
 				FileUtils.deleteDirectory(tempDir.toFile());
 			} catch (IOException e) {
-				throw new UncheckedIOException(e);
+				Logger logger = LoggerFactory.getLogger(VisualizationFacadeEjb.class);
+				logger.warn(e.getMessage(), e);
 			}
 		}
 	}
@@ -307,29 +317,22 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		supportedEnums = Collections.unmodifiableMap(map);
 	}
 
-	private static final Pattern ENUM_PATTERN = Pattern.compile("\"(([A-Za-z]+)\\.([A-Z_]+))\"");
+	private static final Pattern ENUM_PATTERN = Pattern.compile("[A-Za-z]+\\.[A-Z_]+");
+	private static final Pattern INTERNATIONALIZATION_KEY_PATTERN = Pattern.compile("\\{([A-Za-z_.]+)\\}");
+	private static final String DISEASE_NETWORK_DIAGRAM_PREFIX = "DiseaseNetworkDiagram.";
 
 	private static String doI18n(String json, Language language) {
 
-		Matcher m = ENUM_PATTERN.matcher(json);
+		Matcher m = INTERNATIONALIZATION_KEY_PATTERN.matcher(json);
 
 		StringBuffer sb = new StringBuffer(json.length());
 		while (m.find()) {
 			String replacement = Optional.of(m.group(1))
-				.map(supportedEnums::get)
-				.map(c -> I18nProperties.getEnumCaption(language, c))
-				//TODO real json escaping
-				.map(c -> "\"" + c.replace("\"", "\\\"") + "\"")
-				.orElseGet(
-					() -> {
-						//TODO i18n of Classification.HEALTHY
-						if (m.group(2).equals("Classification")) {
-							String name = m.group(3);
-							return "\"" + name.charAt(0) + name.substring(1).toLowerCase() + "\"";
-						} else {
-							return m.group();
-						}
-					});
+				.map(c -> I18nProperties.getString(language, DISEASE_NETWORK_DIAGRAM_PREFIX + c))
+				.map(c -> escapeJsonString(c))
+				.orElseGet(() -> {
+					return findEnumCaption(m.group(1), language).map(s -> escapeJsonString(s)).orElse(m.group());
+				});
 
 			m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
 		}
@@ -337,6 +340,17 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 		return sb.toString();
 
+	}
+
+	private static Optional<String> findEnumCaption(String key, Language language) {
+		return Optional.of(key)
+			.filter(k -> ENUM_PATTERN.matcher(k).matches())
+			.map(supportedEnums::get)
+			.map(c -> I18nProperties.getEnumCaption(language, c));
+	}
+
+	private static String escapeJsonString(String string) {
+		return string.replace("\"", "\\\"");
 	}
 
 	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
@@ -355,6 +369,5 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 	@LocalBean
 	@Stateless
 	public static class VisualizationFacadeEjbLocal extends VisualizationFacadeEjb {
-
 	}
 }

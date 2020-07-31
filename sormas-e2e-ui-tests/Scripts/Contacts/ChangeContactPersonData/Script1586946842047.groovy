@@ -17,7 +17,6 @@ WebUI.click(findTestObject('Contacts/ContactInformationView/ChangeContactPersonD
 WebUI.waitForElementPresent(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'), 2)
 
 // TESTCASE
-//WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'))
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'))
 
@@ -34,9 +33,6 @@ WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/
     'abc')
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Type of occupation_v-filterselect-button'))
-
-//WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_National health ID_nationalHealthId'), 
-//    'abc')
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_Farmer'))
 
@@ -63,6 +59,9 @@ WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/Ch
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_Nickname_nickname'), 
     'Pete')
 
+WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s maiden name)_mothers_787cb7'),
+	'maiden')
+
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s name)_mothersName'), 
     'mom')
 
@@ -80,9 +79,6 @@ WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/
 
 WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_General practitioner name and contact_e27f79'), 
     'practitioner')
-
-WebUI.setText(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/input_concat(Mother  s maiden name)_mothers_787cb7'), 
-    'maiden')
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Save'))
 
@@ -179,6 +175,7 @@ if (!practitioner.contains('practitioner')) {
 
 // CLEANUP
 
+WebUI.scrollToElement(findTestObject('Contacts/ContactInformationView/ChangeContactPersonData/div_Contact person'), 2)
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/div_Sex_v-filterselect-button'))
 
 WebUI.click(findTestObject('Object Repository/Contacts/ContactInformationView/ChangeContactPersonData/td_'))

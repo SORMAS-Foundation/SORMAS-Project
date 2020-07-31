@@ -26,11 +26,11 @@ SORMAS comes with an installation script for setting up a local Payara environme
   container for your SORMAS database. A suitable container is already included in the `dev/postgres-docker` directory.
   
 Some additional features of the development server setup:
-* It will create the `dev/env.sh` sourceable shell script containing exports for environment variables required on various occasions during
+* It will create the `dev/config/env.sh` sourceable shell script containing exports for environment variables required on various occasions during
  development
 * Configuration of `sormas-base/build.properties` so that you can use the `deploy-serverlibs` and `deploy-artifacts` Ant tasks to deploy your
  latest SORMAS build to your development server
-* You get a reference description of your development server installation under `dev/SERVER_SPECS.md`, giving you a quick overview over
+* You get a reference description of your development server installation under `dev/config/SERVER_SPECS.md`, giving you a quick overview over
  relevant URLs on your server and listing your chosen configuration values
 
 ## Prerequisites
@@ -45,7 +45,11 @@ Download and install Ant, it can be done from [Ant site](https://ant.apache.org/
 
 ### Maven
 
+<<<<<<< HEAD
 Download and install Maven, available from the [Apache Maven Project](https://maven.apache.org/download.cgi) or package repositories.
+=======
+See [Installing Postgresql](SERVER_SETUP.md#postgres-database)
+>>>>>>> origin/development
 
 ### Docker
 

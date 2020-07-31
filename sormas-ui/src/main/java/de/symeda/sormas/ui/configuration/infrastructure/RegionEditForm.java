@@ -19,9 +19,13 @@ package de.symeda.sormas.ui.configuration.infrastructure;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.region.RegionDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
 public class RegionEditForm extends AbstractEditForm<RegionDto> {
@@ -30,33 +34,56 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
-			fluidRowLocs(RegionDto.EXTERNAL_ID);
+			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) + 
+					fluidRowLocs(RegionDto.AREA) + 
+					fluidRowLocs(RegionDto.EXTERNAL_ID);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
 
+	private final Boolean create;
+
 	public RegionEditForm(boolean create) {
 
-		super(RegionDto.class, RegionDto.I18N_PREFIX);
+		super(
+			RegionDto.class,
+			RegionDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes()),
+			new FieldAccessCheckers());
+		this.create = create;
 
 		setWidth(540, Unit.PIXELS);
 
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
+
+		addFields();
 	}
 
 	@Override
 	protected void addFields() {
+		if (create == null) {
+			return;
+		}
 
 		addField(RegionDto.NAME, TextField.class);
 		addField(RegionDto.EPID_CODE, TextField.class);
+		ComboBox area = addInfrastructureField(RegionDto.AREA);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
+		initializeVisibilitiesAndAllowedVisibilities();
+
 		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
+
+		area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+
+		if (!create) {
+			area.setEnabled(false);
+		}
 	}
 
 	@Override

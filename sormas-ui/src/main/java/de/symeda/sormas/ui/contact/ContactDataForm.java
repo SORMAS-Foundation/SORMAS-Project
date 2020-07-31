@@ -26,6 +26,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.TracingApp;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -100,7 +102,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
                     fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM, "") +
                     loc(ContactDto.CASE_OR_EVENT_INFORMATION) +
-                    fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE, 6, ContactDto.TRACING_APP) +
+					fluidRowLocs(6, ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, 6, ContactDto.TRACING_APP_DETAILS) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
                     fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) +
                     fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
                     fluidRowLocs(ContactDto.RELATION_TO_CASE) +
@@ -109,6 +113,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
                     fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
@@ -168,6 +173,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
+		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
+		contactIdentificationSourceDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+//		contactIdentificationSourceDetails.setVisible(false);
+		ComboBox tracingApp = addField(ContactDto.TRACING_APP, ComboBox.class);
+		TextField tracingAppDetails = addField(ContactDto.TRACING_APP_DETAILS, TextField.class);
+		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+//		tracingApp.setVisible(false);
+//		tracingAppDetails.setVisible(false);
+		if (isGermanServer()) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS,
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE,
+				Arrays.asList(ContactIdentificationSource.OTHER),
+				true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.TRACING_APP,
+				ContactDto.CONTACT_IDENTIFICATION_SOURCE,
+				Arrays.asList(ContactIdentificationSource.TRACING_APP),
+				true);
+			FieldHelper
+				.setVisibleWhen(getFieldGroup(), ContactDto.TRACING_APP_DETAILS, ContactDto.TRACING_APP, Arrays.asList(TracingApp.OTHER), true);
+		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
@@ -202,7 +232,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
-		setVisible(false, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
+		quarantineTypeDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
+		setVisible(
+			false,
+			ContactDto.QUARANTINE_FROM,
+			ContactDto.QUARANTINE_TO,
+			ContactDto.QUARANTINE_HELP_NEEDED,
+			ContactDto.QUARANTINE_TYPE_DETAILS);
 
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE, OptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
@@ -227,6 +264,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
 			Arrays.asList(YesNoUnknown.NO),
 			true);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_TYPE_DETAILS, ContactDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
 		if (isGermanServer()) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),

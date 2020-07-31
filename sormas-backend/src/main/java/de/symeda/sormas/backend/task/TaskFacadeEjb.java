@@ -375,7 +375,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_DATE),
+				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.START_DATE),
 				joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY),
@@ -438,7 +438,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					expression = joins.getContactPerson().get(Person.FIRST_NAME);
 					break;
 				case TaskIndexDto.EVENT:
-					expression = joins.getEvent().get(Event.EVENT_DATE);
+					expression = joins.getEvent().get(Event.START_DATE);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
