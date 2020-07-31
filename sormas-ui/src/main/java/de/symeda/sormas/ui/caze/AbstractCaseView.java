@@ -66,6 +66,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	private final boolean redirectSimpleModeToCaseDataView;
 	private final OptionGroup viewModeToggle;
 	private final Property.ValueChangeListener viewModeToggleListener;
+	private final boolean caseFollowUpEnabled;
 
 	protected AbstractCaseView(String viewName, boolean redirectSimpleModeToCaseDataView) {
 
@@ -79,6 +80,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 
+		this.caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 		this.viewConfiguration = ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class);
 		this.redirectSimpleModeToCaseDataView = redirectSimpleModeToCaseDataView;
 
@@ -171,7 +173,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 				menu.addView(TherapyView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.THERAPY), params);
 			}
 		}
-		menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
+		if (caseFollowUpEnabled) {
+			menu.addView(CaseVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.VISITS), params);
+		}
 
 		if (showExtraMenuEntries) {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)

@@ -181,7 +181,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							CaseDataDto.NATIONAL_LEVEL_DATE);
 
 	private static final String FOLLOWUP_LAYOUT =
-			fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
+			loc(FOLLOW_UP_STATUS_HEADING_LOC) +
+					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 					fluidRowLocs(4, CaseDataDto.FOLLOW_UP_UNTIL, 8, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 
@@ -232,9 +233,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		caseDataHeadingLabel.addStyleName(H3);
 		getContent().addComponent(caseDataHeadingLabel, CASE_DATA_HEADING_LOC);
 
-		Label followUpStausHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
-		followUpStausHeadingLabel.addStyleName(H3);
-		getContent().addComponent(followUpStausHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
+		if (caseFollowUpEnabled) {
+			Label followUpStatusHeadingLabel = new Label(I18nProperties.getString(Strings.headingFollowUpStatus));
+			followUpStatusHeadingLabel.addStyleName(H3);
+			getContent().addComponent(followUpStatusHeadingLabel, FOLLOW_UP_STATUS_HEADING_LOC);
+		}
 
 		// Add fields
 		DateField reportDate = addField(CaseDataDto.REPORT_DATE, DateField.class);

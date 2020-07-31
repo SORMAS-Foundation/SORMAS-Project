@@ -22,6 +22,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -148,13 +149,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 		}
 
-		Field<?> followUpUntilTo = addField(
-				moreFiltersContainer,
-				FieldConfiguration.withCaptionAndPixelSized(
-						CaseCriteria.FOLLOW_UP_UNTIL_TO,
-						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
-						200));
-		followUpUntilTo.removeAllValidators();
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+			Field<?> followUpUntilTo = addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							CaseCriteria.FOLLOW_UP_UNTIL_TO,
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
+							200));
+			followUpUntilTo.removeAllValidators();
+		}
 
 		addField(
 			moreFiltersContainer,
