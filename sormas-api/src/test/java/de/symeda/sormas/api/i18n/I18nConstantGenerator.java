@@ -159,7 +159,7 @@ public class I18nConstantGenerator {
 			try {
 				generator.generateI18nConstantClass();
 			} catch (IOException e) {
-				// This generator is manually run by developers, though print to console is permitted.
+				// This generator is manually run by developers, so print to console is permitted.
 				System.out.println("Failure writing " + generator.outputClassName);
 				throw e;
 			}
