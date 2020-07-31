@@ -914,7 +914,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return newCaseFilter;
 	}
 
-	public Case getRelevantCase(Person person, Disease disease, Date referenceDate) {
+	public Case getRelevantCaseForFollowUp(Person person, Disease disease, Date referenceDate) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(Case.class);

@@ -538,7 +538,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			return;
 		}
 
-		Case caze = caseService.getRelevantCase(visit.getPerson(), visit.getDisease(), visit.getVisitDateTime());
+		Case caze = caseService.getRelevantCaseForFollowUp(visit.getPerson(), visit.getDisease(), visit.getVisitDateTime());
 		visit.setCaze(caze);
 		if (caze != null) {
 			caze.getVisits().add(visit);
