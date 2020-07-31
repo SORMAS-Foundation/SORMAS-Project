@@ -19,6 +19,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationReferenceDto;
@@ -26,10 +27,13 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class SampleExportDto implements Serializable {
 
@@ -41,18 +45,26 @@ public class SampleExportDto implements Serializable {
 	private String uuid;
 	private String labSampleID;
 	private String epidNumber;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SampleExportAssociatedCase sampleAssociatedCase;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private ContactReferenceDto associatedContact;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String contactRegion;
 	private String contactDistrict;
 	private String disease;
 	private Date sampleReportDate;
 	private Date sampleDateTime;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private SampleExportMaterial sampleSampleExportMaterial;
 	private String samplePurpose;
 	private SampleSource sampleSource;
-	@SensitiveData
 	private String lab;
 	private PathogenTestResultType pathogenTestResult;
 	private Boolean pathogenTestingRequested;
@@ -77,12 +89,21 @@ public class SampleExportDto implements Serializable {
 	private final String contactUuid;
 	private String personAge;
 	private Sex personSex;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private final SampleExportPersonAddress personAddress;
 	private Date caseReportDate;
 	private CaseClassification caseClassification;
 	private CaseOutcome caseOutcome;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SampleExportPathogenTest pathogenTest1 = new SampleExportPathogenTest();
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SampleExportPathogenTest pathogenTest2 = new SampleExportPathogenTest();
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private SampleExportPathogenTest pathogenTest3 = new SampleExportPathogenTest();
 	private List<SampleExportPathogenTest> otherPathogenTests = new ArrayList<>();
 	private AdditionalTestDto additionalTest;
@@ -116,7 +137,8 @@ public class SampleExportDto implements Serializable {
 						   String reportingUserUuid, String labUuid,
 						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
-						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
+						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
+						   String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid
 	) {
 	//@formatter:on
 
@@ -244,7 +266,18 @@ public class SampleExportDto implements Serializable {
 			this.contactDistrict = contactDistrict;
 		}
 
-		jurisdiction = new SampleJurisdictionDto(reportingUserUuid, associatedCaseJurisdiction, associatedContactJurisdiction, labUuid);
+		EventJurisdictionDto associatedEventJurisdiction = null;
+		if (eventParticipantUuid != null) {
+			associatedEventJurisdiction =
+				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
+		}
+
+		jurisdiction = new SampleJurisdictionDto(
+			reportingUserUuid,
+			associatedCaseJurisdiction,
+			associatedContactJurisdiction,
+			associatedEventJurisdiction,
+			labUuid);
 	}
 
 	@Order(0)
@@ -886,7 +919,6 @@ public class SampleExportDto implements Serializable {
 		private String testTypeText;
 		private String disease;
 		private Date dateTime;
-		@SensitiveData
 		private String lab;
 		private PathogenTestResultType testResult;
 		private Boolean verified;

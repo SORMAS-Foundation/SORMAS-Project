@@ -43,12 +43,11 @@ public class EventParticipantReferenceDto extends ReferenceDto {
 		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.setCaption(buildCaption(uuid, firstName, lastName));
 	}
 
-	public EventParticipantReferenceDto(String uuid, String caption) {
-		setUuid(uuid);
-		setCaption(caption);
+	@Override
+	public String getCaption() {
+		return buildCaption(getUuid(), firstName, lastName);
 	}
 
 	public static String buildCaption(String uuid, String firstName, String lastName) {

@@ -1112,7 +1112,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		final Root<Case> contactCaseRoot = contactCaseJurisdictionSubQuery.from(Case.class);
 		contactCaseJurisdictionSubQuery.select(contactCaseRoot.get(Contact.ID));
 		contactCaseJurisdictionSubQuery.where(
-			cb.and(cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)), caseService.inInJurisdiction(cb, new CaseJoins<>(contactCaseRoot))));
+			cb.and(
+				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
+				caseService.isInInJurisdiction(cb, new CaseJoins<>(contactCaseRoot))));
 
 		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
 

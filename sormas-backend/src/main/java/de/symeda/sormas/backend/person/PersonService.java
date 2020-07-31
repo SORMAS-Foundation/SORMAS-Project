@@ -250,7 +250,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Root<Case> caseRoot = caseJurisdictionSubQuery.from(Case.class);
 		caseJurisdictionSubQuery.select(caseRoot.get(Case.ID));
 		caseJurisdictionSubQuery
-			.where(cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.inInJurisdiction(cb, new CaseJoins<>(caseRoot))));
+			.where(
+				cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.isInInJurisdiction(cb, new CaseJoins<>(caseRoot))));
 		final Predicate isCaseInJurisdiction = cb.exists(caseJurisdictionSubQuery);
 
 		final Subquery<Long> contactJurisdictionSubQuery = cq.subquery(Long.class);

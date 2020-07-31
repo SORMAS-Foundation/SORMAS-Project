@@ -23,7 +23,7 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.ReferenceDto;
 
-public class SormasComboBox extends ComboBox {
+public class ComboBoxWithPlaceholder extends ComboBox {
 
 	private static final long serialVersionUID = 27751677500982303L;
 

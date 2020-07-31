@@ -463,8 +463,8 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 					((AbstractTextField) field).setInputPrompt(I18nProperties.getCaption(Captions.inaccessibleValue));
 				}
 
-				if (field instanceof SormasComboBox) {
-					SormasComboBox combo = (SormasComboBox) field;
+				if (field instanceof ComboBoxWithPlaceholder) {
+					ComboBoxWithPlaceholder combo = (ComboBoxWithPlaceholder) field;
 					combo.setPlaceholder(I18nProperties.getCaption(Captions.inaccessibleValue));
 				}
 			}

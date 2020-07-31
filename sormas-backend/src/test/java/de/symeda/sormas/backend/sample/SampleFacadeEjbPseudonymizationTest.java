@@ -218,12 +218,12 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleExportDto export2 = exportList.stream().filter(t -> t.getUuid().equals(sample2.getUuid())).findFirst().get();
 		assertThat(export2.getSampleAssociatedCase().getFirstName(), is("Confidential"));
 		assertThat(export2.getSampleAssociatedCase().getLastName(), is("Confidential"));
-		assertThat(export2.getLab(), is("Confidential"));
-		assertThat(export2.getPathogenTestLab1(), is("Confidential"));
+		assertThat(export2.getLab(), is("Lab - Test lab details"));
+		assertThat(export2.getPathogenTestLab1(), is("Lab - Test lab details"));
 		assertThat(export2.getPathogenTestType1(), is("Confidential"));
-		assertThat(export2.getPathogenTestLab2(), is("Confidential"));
+		assertThat(export2.getPathogenTestLab2(), is("Lab - Test lab details"));
 		assertThat(export2.getPathogenTestType2(), is("Confidential"));
-		assertThat(export2.getPathogenTestLab3(), is("Confidential"));
+		assertThat(export2.getPathogenTestLab3(), is("Lab - Test lab details"));
 		assertThat(export2.getPathogenTestType3(), is("Confidential"));
 		assertThat(export2.getOtherPathogenTestsDetails(), is("2020-06-10 (Confidential, COVID-19, Pending)"));
 

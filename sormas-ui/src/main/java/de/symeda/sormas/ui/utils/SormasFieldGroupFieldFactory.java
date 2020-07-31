@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Date;
+import java.util.List;
+
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
@@ -11,6 +14,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -25,9 +29,6 @@ import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
-
-import java.util.Date;
-import java.util.List;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
@@ -82,8 +83,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) OptionGroup.class;
 
 			return createBooleanField(fieldType);
-		} else if (ComboBox.class.isAssignableFrom(fieldType) || SormasComboBox.class.isAssignableFrom(fieldType)) {
-			SormasComboBox combo = new SormasComboBox();
+		} else if (ComboBox.class.isAssignableFrom(fieldType) || ComboBoxWithPlaceholder.class.isAssignableFrom(fieldType)) {
+			ComboBoxWithPlaceholder combo = new ComboBoxWithPlaceholder();
 			combo.setImmediate(true);
 
 			return (T) combo;

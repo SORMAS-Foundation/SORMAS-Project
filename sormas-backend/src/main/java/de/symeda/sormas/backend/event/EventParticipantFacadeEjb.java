@@ -350,8 +350,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return null;
 		}
 
-		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		Person person = entity.getPerson();
+
+		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
 	}
 
 	public static EventParticipantDto toDto(EventParticipant source) {

@@ -887,7 +887,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return newCaseFilter;
 	}
 
-	public Predicate inInJurisdiction(CriteriaBuilder cb, CaseJoins<Case> joins) {
+	public Predicate isInInJurisdiction(CriteriaBuilder cb, CaseJoins<Case> joins) {
 
 		final User currentUser = userService.getCurrentUser();
 

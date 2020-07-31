@@ -82,7 +82,7 @@ public class InfoDialog extends AlertDialog.Builder {
 			Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
 		}
 
-		if(bindCallback != null){
+		if (bindCallback != null) {
 			bindCallback.onBind(binding.getRoot());
 		}
 
