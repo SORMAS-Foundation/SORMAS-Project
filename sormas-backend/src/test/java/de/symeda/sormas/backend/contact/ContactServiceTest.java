@@ -47,12 +47,12 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Contacts with a report/last contact date after the reference date should not be included
 		ContactDto contact1 = creator.createContact(user.toReference(), contactPerson.toReference());
 		contact1.setReportDateTime(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
+		updateContact(contact1);
 
 		ContactDto contact2 = creator.createContact(user.toReference(), contactPerson.toReference());
 		contact2.setReportDateTime(referenceDate);
 		contact2.setLastContactDate(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact2);
+		updateContact(contact2);
 
 		Set<Contact> contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
@@ -60,8 +60,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Contacts with a report/last contact date after the reference date but within the offset should be included
 		contact1.setReportDateTime(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
 		contact2.setLastContactDate(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
@@ -69,8 +69,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Contacts with a report/last contact date before the reference date should be included
 		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
 		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
@@ -80,8 +80,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 		contact1.setOverwriteFollowUpUntil(true);
 		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
 		contact2.setOverwriteFollowUpUntil(true);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
@@ -89,8 +89,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Contacts with a follow-up until date before the reference date but within the offset should be included
 		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
@@ -98,8 +98,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 		// Contacts with a follow-up until date after the reference date should be included
 		contact1.setFollowUpUntil(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
 		contact2.setFollowUpUntil(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
@@ -111,16 +111,16 @@ public class ContactServiceTest extends AbstractBeanTest {
 		contact2.setOverwriteFollowUpUntil(false);
 		contact1.setFollowUpUntil(null);
 		contact2.setFollowUpUntil(null);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
 
 		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2));
 		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		updateContact(contact1);
+		updateContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
@@ -129,14 +129,21 @@ public class ContactServiceTest extends AbstractBeanTest {
 		PersonDto contactPerson2 = creator.createPerson();
 		ContactDto contact3 = creator.createContact(user.toReference(), contactPerson2.toReference());
 		contact3.setReportDateTime(referenceDate);
-		getContactFacade().saveContact(contact3);
+		updateContact(contact3);
 
 		ContactDto contact4 = creator.createContact(user.toReference(), contactPerson.toReference(), Disease.CSM);
 		contact4.setReportDateTime(referenceDate);
-		getContactFacade().saveContact(contact4);
+		updateContact(contact4);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
+	}
+
+	// Workaround for timing issues in the tests:
+	private void updateContact(ContactDto contact) {
+		Date changeDate = getContactFacade().saveContact(contact).getChangeDate();
+		contact.setChangeDate(changeDate);
+		contact.getEpiData().setChangeDate(changeDate);
 	}
 
 	@Test
@@ -170,7 +177,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 		assertEquals(LocalDate.now().plusDays(21 + 1), DateHelper8.toLocalDate(contact.getFollowUpUntil()));
 
 		visit.setVisitStatus(VisitStatus.COOPERATIVE);
-		visit = getVisitFacade().saveVisit(visit);
+		getVisitFacade().saveVisit(visit);
 
 		// Follow-up until should be back at the original date and follow-up should be completed
 		contact = getContactFacade().getContactByUuid(contact.getUuid());
