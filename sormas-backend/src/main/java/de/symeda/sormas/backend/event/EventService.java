@@ -35,6 +35,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -77,6 +79,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private TaskService taskService;
 	@EJB
 	private ActionService actionService;
+	@EJB
+	private CaseService caseService;
 
 	public EventService() {
 		super(Event.class);
@@ -93,7 +97,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		User user = getCurrentUser();
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+			eventUserFilterCriteria.includeUserCaseFilter(true);
+			eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+			Predicate userFilter = createUserFilter(cb, cq, from, eventUserFilterCriteria);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -119,7 +127,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		User user = getCurrentUser();
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+			eventUserFilterCriteria.includeUserCaseFilter(true);
+			eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+			Predicate userFilter = createUserFilter(cb, cq, from, eventUserFilterCriteria);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
 		}
 
@@ -218,7 +230,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> event = cq.from(Event.class);
 
-		Predicate filter = createUserFilter(cb, cq, event);
+		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+		Predicate filter = createUserFilter(cb, cq, event, eventUserFilterCriteria);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(event.get(Event.CHANGE_DATE), since);
 			if (filter != null) {
@@ -247,7 +263,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> event = cq.from(Event.class);
 
-		Predicate filter = createUserFilter(cb, cq, event);
+		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+		Predicate filter = createUserFilter(cb, cq, event, eventUserFilterCriteria);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(event.get(Event.CHANGE_DATE), since);
 			if (filter != null) {
@@ -273,6 +293,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+		return createUserFilter(cb, cq, eventPath, null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(
+		CriteriaBuilder cb,
+		CriteriaQuery cq,
+		From<Event, Event> eventPath,
+		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -305,6 +334,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Predicate filterResponsible = cb.equal(eventPath.join(Event.REPORTING_USER, JoinType.LEFT), currentUser);
 		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
 
+		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseFilter()) {
+			filter = cb.or(filter, createCaseFilter(cb, cq, eventPath));
+		}
+
+		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
+			filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+		}
+
 		if (filter != null) {
 			filter = cb.or(filter, filterResponsible);
 		} else {
@@ -312,6 +349,24 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		return filter;
+	}
+
+	public Predicate createCaseFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Event, Event> eventPath) {
+
+		Predicate filter = null;
+
+		Join<Event, EventParticipant> eventParticipantJoin = eventPath.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+
+		Subquery<Long> caseSubquery = cq.subquery(Long.class);
+		Root<Case> caseRoot = caseSubquery.from(Case.class);
+		caseSubquery.where(caseService.createUserFilter(cb, cq, caseRoot));
+		caseSubquery.select(caseRoot.get(Case.ID));
+
+		filter = cb.in(caseJoin.get(Case.ID)).value(caseSubquery);
+
+		return filter;
+
 	}
 
 	@Override
