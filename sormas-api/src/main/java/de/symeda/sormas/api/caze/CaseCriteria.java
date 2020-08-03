@@ -343,6 +343,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
 		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
 	}
+	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
+		setNameUuidEpidNumberLike(nameUuidEpidNumberLike);
+		return this;
+	}
 
 	@IgnoreForUrl
 	public String getNameUuidEpidNumberLike() {
