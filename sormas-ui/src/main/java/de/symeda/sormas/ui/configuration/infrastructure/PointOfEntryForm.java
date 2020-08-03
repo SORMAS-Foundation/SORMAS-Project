@@ -55,12 +55,10 @@ public class PointOfEntryForm extends AbstractEditForm<PointOfEntryDto> {
 
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
 		tfLatitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLatitude.getCaption()));
-		removeMaxLengthValidators(tfLatitude);
-		tfLongitude.setConverter(new StringToAngularLocationConverter());
+        tfLongitude.setConverter(new StringToAngularLocationConverter());
 		tfLongitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, tfLongitude.getCaption()));
-		removeMaxLengthValidators(tfLongitude);
 
-		cbRegion.addValueChangeListener(e -> {
+        cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
 				.updateItems(cbDistrict, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);

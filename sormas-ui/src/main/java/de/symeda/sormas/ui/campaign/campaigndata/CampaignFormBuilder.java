@@ -13,10 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.campaign;
+package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -26,7 +28,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
@@ -48,8 +50,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.vaadin.server.Sizeable.Unit;
-
 public class CampaignFormBuilder {
 
 	private final List<CampaignFormElement> formElements;
@@ -61,12 +61,13 @@ public class CampaignFormBuilder {
 
 	public CampaignFormBuilder(
 		List<CampaignFormElement> formElements,
-		List<CampaignFormValue> formValues,
+		List<CampaignFormDataEntry> formValues,
 		GridLayout campaignFormLayout,
 		List<CampaignFormTranslations> translations) {
 		this.formElements = formElements;
 		if (formValues != null) {
-			this.formValuesMap = formValues.stream().collect(Collectors.toMap(CampaignFormValue::getId, CampaignFormValue::getValue));
+			this.formValuesMap = new HashMap<>();
+			formValues.forEach(formValue -> formValuesMap.put(formValue.getId(), formValue.getValue()));
 		} else {
 			this.formValuesMap = new HashMap<>();
 		}
@@ -107,6 +108,7 @@ public class CampaignFormBuilder {
 			if (type == CampaignFormElementType.SECTION) {
 				sectionCount++;
 				GridLayout sectionLayout = new GridLayout(12, 1);
+				sectionLayout.setMargin(new MarginInfo(true, true));
 				CssStyles.style(
 					sectionLayout,
 					CssStyles.GRID_LAYOUT_SECTION,
@@ -274,7 +276,7 @@ public class CampaignFormBuilder {
 			((TextField) field).setValue(value == null ? null : (String) value);
 			break;
 		case NUMBER:
-			((TextField) field).setValue(value == null ? null : ((Integer) value).toString());
+			((TextField) field).setValue(value == null ? null : value.toString());
 			break;
 		default:
 			throw new IllegalArgumentException(type.toString());
@@ -326,13 +328,20 @@ public class CampaignFormBuilder {
 		return defaultCaption;
 	}
 
-	public List<CampaignFormValue> getFormValues() {
-		return fields.keySet().stream().map(id -> new CampaignFormValue(id, fields.get(id).getValue())).collect(Collectors.toList());
+	public List<CampaignFormDataEntry> getFormValues() {
+		return fields.keySet().stream().map(id -> new CampaignFormDataEntry(id, fields.get(id).getValue())).collect(Collectors.toList());
 	}
 
 	public void validateFields() throws Validator.InvalidValueException {
 		fields.forEach((key, value) -> {
 			value.validate();
+		});
+	}
+
+	public void resetFormValues() {
+		fields.keySet().forEach(key -> {
+			Field<?> field = fields.get(key);
+			((Field<Object>) field).setValue(formValuesMap.get(key));
 		});
 	}
 

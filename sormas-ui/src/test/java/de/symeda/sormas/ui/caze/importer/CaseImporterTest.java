@@ -27,6 +27,18 @@ import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Consumer;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(MockitoJUnitRunner.class)
 public class CaseImporterTest extends AbstractBeanTest {
 
@@ -91,7 +103,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(
 					new CaseImportSimilarityResult(
-						getPersonFacade().getIndexDto(getPersonFacade().getAllUuids().get(0)),
+						getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
 			}
@@ -130,7 +142,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(
 					new CaseImportSimilarityResult(
-						getPersonFacade().getIndexDto(getPersonFacade().getAllUuids().get(0)),
+							getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
 			}
@@ -154,7 +166,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 			protected void handlePersonSimilarity(PersonDto newPerson, Consumer<CaseImportSimilarityResult> resultConsumer) {
 				resultConsumer.accept(
 					new CaseImportSimilarityResult(
-						getPersonFacade().getIndexDto(getPersonFacade().getAllUuids().get(0)),
+							getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(getPersonFacade().getAllUuids().get(0))).get(0),
 						null,
 						ImportSimilarityResultOption.PICK));
 			}

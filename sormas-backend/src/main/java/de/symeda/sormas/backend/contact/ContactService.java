@@ -1033,6 +1033,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			filter = and(cb, filter, cb.equal(person.get(Person.UUID), contactCriteria.getPerson().getUuid()));
 		}
+		if (contactCriteria.getBirthdateYYYY() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
+		}
+		if (contactCriteria.getBirthdateMM() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), contactCriteria.getBirthdateMM()));
+		}
+		if (contactCriteria.getBirthdateDD() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
+		}
 
 		return filter;
 	}

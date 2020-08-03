@@ -17,10 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -56,11 +58,34 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ContactController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public ContactController() {
 
@@ -155,6 +180,8 @@ public class ContactController {
 				final PersonDto person = PersonDto.build();
 				person.setFirstName(createForm.getPersonFirstName());
 				person.setLastName(createForm.getPersonLastName());
+				person.setNationalHealthId(createForm.getNationalHealthId());
+				person.setPassportNumber(createForm.getPassportNumber());
 				person.setBirthdateYYYY(createForm.getBirthdateYYYY());
 				person.setBirthdateMM(createForm.getBirthdateMM());
 				person.setBirthdateDD(createForm.getBirthdateDD());
@@ -450,12 +477,89 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
-	public void openPIAAccountCreationWindow(PersonDto person) {
-		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(FacadeProvider.getPersonFacade().getPIAAccountCreationUrl(person)));
-		piaIFrame.setWidth("800px");
-		piaIFrame.setHeight("600px");
+	/**
+	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
+	 * The steps to build that iFrame are:
+	 * 1. Request an authentication token based on the stored client ID and secret
+	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
+	 * 3. The form is automatically submitted and replaced by the iFrame
+	 */
+	public void openSymptomJournalWindow(PersonDto person) {
+		String authToken = getSymptomJournalAuthToken();
+		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
+			String formUrl = FacadeProvider.getConfigFacade().getSymptomJournalUrl();
+			Map<String, String> parameters = new LinkedHashMap<>();
+			parameters.put("token", authToken);
+			parameters.put("uuid", person.getUuid());
+			parameters.put("firstname", person.getFirstName());
+			parameters.put("lastname", person.getLastName());
+			parameters.put("email", person.getEmailAddress());
+			byte[] document = createSymptomJournalForm(formUrl, parameters);
 
-		VaadinUiUtil.showPopupWindow(piaIFrame, I18nProperties.getString(Strings.headingPIAAccountCreation));
+			return new ByteArrayInputStream(document);
+		}, "symptomJournal.html"));
+		frame.setWidth("100%");
+		frame.setHeight("100%");
+
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setContent(frame);
+		window.setCaption(I18nProperties.getString(Strings.headingPIAAccountCreation));
+		window.setWidth(80, Unit.PERCENTAGE);
+		window.setHeight(80, Unit.PERCENTAGE);
+
+		UI.getCurrent().addWindow(window);
+	}
+
+	private String getSymptomJournalAuthToken() {
+		String authenticationUrl = FacadeProvider.getConfigFacade().getSymptomJournalAuthUrl();
+		String clientId = FacadeProvider.getConfigFacade().getSymptomJournalClientId();
+		String secret = FacadeProvider.getConfigFacade().getSymptomJournalSecret();
+
+		if (StringUtils.isBlank(authenticationUrl)) {
+			throw new IllegalArgumentException("Property interface.symptomjournal.authurl is not defined");
+		}
+		if (StringUtils.isBlank(clientId)) {
+			throw new IllegalArgumentException("Property interface.symptomjournal.clientid is not defined");
+		}
+		if (StringUtils.isBlank(secret)) {
+			throw new IllegalArgumentException("Property interface.symptomjournal.secret is not defined");
+		}
+
+		try {
+			Client client = ClientBuilder.newClient();
+			HttpAuthenticationFeature feature = HttpAuthenticationFeature.basic(clientId, secret);
+			client.register(feature);
+			WebTarget webTarget = client.target(authenticationUrl);
+			Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+			Response response = invocationBuilder.post(Entity.json(""));
+			String responseJson = response.readEntity(String.class);
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readValue(responseJson, JsonNode.class);
+			return node.get("auth").textValue();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
+	 */
+	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
+		Document document;
+		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
+			document = Jsoup.parse(in, StandardCharsets.UTF_8.name(), FacadeProvider.getConfigFacade().getSymptomJournalUrl());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+
+		Element form = document.getElementById("form");
+		form.attr("action", formUrl);
+		Element parametersElement = form.getElementById("parameters");
+
+		inputs.forEach((k, v) -> parametersElement.appendChild(new Element("input").attr("type", "hidden").attr("name", k).attr("value", v)));
+		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, ViewMode viewMode) {
@@ -469,16 +573,12 @@ public class ContactController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			epiDataForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-				contactDto.setEpiData(epiDataForm.getValue());
-				FacadeProvider.getContactFacade().saveContact(contactDto);
-				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
-			}
+		editView.addCommitListener(() -> {
+			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+			contactDto.setEpiData(epiDataForm.getValue());
+			FacadeProvider.getContactFacade().saveContact(contactDto);
+			Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+			SormasUI.refreshView();
 		});
 
 		return editView;

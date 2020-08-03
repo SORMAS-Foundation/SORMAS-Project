@@ -21,18 +21,50 @@ import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.databinding.DialogEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditPortHealthInfoLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 final class CaseValidator {
+
+	static void initializeGermanCaseClassificationValidation(
+		Case caze,
+		CaseClassification caseClassification,
+		FragmentCaseEditLayoutBinding contentBinding) {
+		if (ConfigProvider.isGermanServer()) {
+			final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+			final CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
+			final boolean hasPositiveTestResult = DatabaseHelper.getSampleDao().hasPositiveTestResult(caze);
+			final boolean validCaseClassification =
+				GermanCaseClassificationValidator.isValidGermanCaseClassification(caseClassification, caseDataDto, hasPositiveTestResult);
+
+			if (validCaseClassification) {
+				contentBinding.caseDataCaseClassification.disableErrorState();
+			} else {
+				contentBinding.caseDataCaseClassification.enableErrorState(R.string.validation_case_classification);
+			}
+
+			contentBinding.caseDataCaseClassification.setValidationCallback(() -> {
+				if (validCaseClassification) {
+					return false;
+				}
+				return true;
+			});
+		}
+	}
 
 	static void initializePortHealthInfoValidation(final FragmentCaseEditPortHealthInfoLayoutBinding contentBinding, final Case caze) {
 		if (contentBinding.portHealthInfoDepartureDateTime.getVisibility() == View.GONE

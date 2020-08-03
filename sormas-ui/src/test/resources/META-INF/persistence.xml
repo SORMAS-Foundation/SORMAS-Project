@@ -7,6 +7,7 @@
 		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
+		<class>de.symeda.sormas.backend.action.Action</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
@@ -50,9 +51,10 @@
 		<class>de.symeda.sormas.backend.feature.FeatureConfiguration</class>
 		<class>de.symeda.sormas.backend.report.AggregateReport</class>
 		<class>de.symeda.sormas.backend.campaign.Campaign</class>
-		<class>de.symeda.sormas.backend.campaign.form.CampaignForm</class>
+		<class>de.symeda.sormas.backend.campaign.form.CampaignFormMeta</class>
 		<class>de.symeda.sormas.backend.region.Area</class>
 		<class>de.symeda.sormas.backend.campaign.data.CampaignFormData</class>
+		<class>de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition</class>
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 

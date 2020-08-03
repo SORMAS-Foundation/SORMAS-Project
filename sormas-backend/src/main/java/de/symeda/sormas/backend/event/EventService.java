@@ -49,6 +49,8 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.action.Action;
+import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -73,6 +75,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private EventParticipantService eventParticipantService;
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private ActionService actionService;
 
 	public EventService() {
 		super(Event.class);
@@ -336,6 +340,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			taskService.delete(task);
 		}
 
+		// Delete all event actions associated with this event
+		List<Action> actions = actionService.getAllByEvent(event);
+		for (Action action : actions) {
+			actionService.delete(action);
+		}
+
 		// Mark the event as deleted
 		super.delete(event);
 	}
@@ -354,6 +364,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getEventStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.EVENT_STATUS), eventCriteria.getEventStatus()));
+		}
+		if (eventCriteria.getTypeOfPlace() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Event.TYPE_OF_PLACE), eventCriteria.getTypeOfPlace()));
 		}
 		if (eventCriteria.getRelevanceStatus() != null) {
 			if (eventCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
@@ -430,6 +443,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 		if (eventCriteria.getSrcType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Event.SRC_TYPE), eventCriteria.getSrcType()));
+		}
+
+		if (eventCriteria.getCaze() != null) {
+			Join<Event, EventParticipant> eventParticipantJoin = from.join(Event.EVENT_PERSONS, JoinType.LEFT);
+			Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+
+			filter = and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
 		}
 
 		return filter;

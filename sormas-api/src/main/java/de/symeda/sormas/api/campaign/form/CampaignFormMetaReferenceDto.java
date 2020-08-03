@@ -22,16 +22,16 @@ package de.symeda.sormas.api.campaign.form;
 
 import de.symeda.sormas.api.ReferenceDto;
 
-public class CampaignFormReferenceDto extends ReferenceDto {
+public class CampaignFormMetaReferenceDto extends ReferenceDto {
 
-	public CampaignFormReferenceDto() {
+	public CampaignFormMetaReferenceDto() {
 	}
 
-	public CampaignFormReferenceDto(String uuid) {
+	public CampaignFormMetaReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
 
-	public CampaignFormReferenceDto(String uuid, String caption) {
+	public CampaignFormMetaReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}

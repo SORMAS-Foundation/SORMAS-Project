@@ -24,13 +24,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.campaign.form.CampaignForm;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
@@ -39,10 +40,13 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "campaignFormData")
@@ -51,17 +55,26 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignFormData";
 
+	public static final String FORM_VALUES = "formValues";
+	public static final String CAMPAIGN = "campaign";
+	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
+	public static final String FORM_DATE = "formDate";
+	public static final String REGION = "region";
+	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String ARCHIVED = "archived";
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
-	private List<CampaignFormValue> formValuesList;
+	private List<CampaignFormDataEntry> formValuesList;
 	private String formValues;
 	private Campaign campaign;
-	private CampaignForm campaignForm;
+	private CampaignFormMeta campaignFormMeta;
+	private Date formDate;
 	private Region region;
 	private District district;
 	private Community community;
+	private User creatingUser;
 	private boolean archived;
 
 	@Lob
@@ -75,27 +88,28 @@ public class CampaignFormData extends AbstractDomainObject {
 	}
 
 	@Transient
-	public List<CampaignFormValue> getFormValuesList() {
+	public List<CampaignFormDataEntry> getFormValuesList() {
 		if (formValuesList == null) {
 			if (StringUtils.isBlank(formValues)) {
 				formValuesList = new ArrayList<>();
 			} else {
 				try {
 					ObjectMapper mapper = new ObjectMapper();
-					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormValue[].class));
+					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormDataEntry[].class));
 				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormValue> - ID: " + getId());
+					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - ID: " + getId());
 				}
 			}
 		}
 		return formValuesList;
 	}
 
-	public void setFormValuesList(List<CampaignFormValue> formValuesList) {
+	public void setFormValuesList(List<CampaignFormDataEntry> formValuesList) {
 		this.formValuesList = formValuesList;
 
 		if (this.formValuesList == null) {
 			formValues = null;
+			return;
 		}
 
 		try {
@@ -118,12 +132,21 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	@ManyToOne()
 	@JoinColumn(nullable = false)
-	public CampaignForm getCampaignForm() {
-		return campaignForm;
+	public CampaignFormMeta getCampaignFormMeta() {
+		return campaignFormMeta;
 	}
 
-	public void setCampaignForm(CampaignForm campaignForm) {
-		this.campaignForm = campaignForm;
+	public void setCampaignFormMeta(CampaignFormMeta campaignFormMeta) {
+		this.campaignFormMeta = campaignFormMeta;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getFormDate() {
+		return formDate;
+	}
+
+	public void setFormDate(Date formDate) {
+		this.formDate = formDate;
 	}
 
 	@ManyToOne()
@@ -151,6 +174,16 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public User getCreatingUser() {
+		return creatingUser;
+	}
+
+	public void setCreatingUser(User creatingUser) {
+		this.creatingUser = creatingUser;
 	}
 
 	@Column

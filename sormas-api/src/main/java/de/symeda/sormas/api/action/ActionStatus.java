@@ -1,47 +1,31 @@
-/*
+/*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
+ *******************************************************************************/
+package de.symeda.sormas.api.action;
 
-package de.symeda.sormas.api.campaign.data;
+import de.symeda.sormas.api.i18n.I18nProperties;
 
-import java.io.Serializable;
+public enum ActionStatus {
 
-public class CampaignFormValue implements Serializable {
+	PENDING,
+	IN_PROGRESS,
+	DONE;
 
-	private static final long serialVersionUID = -3096020120349257398L;
-
-	private String id;
-	private Object value;
-
-	public CampaignFormValue(String id, Object value) {
-		this.id = id;
-		this.value = value;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public Object getValue() {
-		return value;
-	}
-
-	public void setValue(Object value) {
-		this.value = value;
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

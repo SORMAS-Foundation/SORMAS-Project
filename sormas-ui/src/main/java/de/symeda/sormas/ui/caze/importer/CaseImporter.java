@@ -49,8 +49,8 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -267,6 +267,8 @@ public class CaseImporter extends DataImporter {
 					// If the user picked an existing person, override the case person with it
 					if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
 						newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(consumer.result.getMatchingPerson().getUuid());
+						// Reset the result option for case selection
+						resultOption = null;
 					}
 				}
 
@@ -588,7 +590,7 @@ public class CaseImporter extends DataImporter {
 			if (personSelect.hasMatches()) {
 				final CommitDiscardWrapperComponent<PersonSelectionField> component = new CommitDiscardWrapperComponent<>(personSelect);
 				component.addCommitListener(() -> {
-					PersonIndexDto person = personSelect.getValue();
+					SimilarPersonDto person = personSelect.getValue();
 					if (person == null) {
 						resultConsumer.accept(new CaseImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 					} else {

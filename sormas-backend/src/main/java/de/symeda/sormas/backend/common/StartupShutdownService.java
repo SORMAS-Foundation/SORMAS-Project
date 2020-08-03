@@ -47,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -67,6 +66,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
@@ -135,6 +135,8 @@ public class StartupShutdownService {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
 	@EJB
@@ -225,7 +227,7 @@ public class StartupShutdownService {
 		// Facility
 		Facility facility;
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
-		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
+		if (facilityFacade.count(facilityCriteria) == 0) {
 			facility = new Facility();
 			facility.setUuid(DataHelper.createUuid());
 			facility.setType(FacilityType.HOSPITAL);
@@ -248,7 +250,7 @@ public class StartupShutdownService {
 		// Laboratory
 		Facility laboratory;
 		facilityCriteria.type(FacilityType.LABORATORY);
-		if (FacadeProvider.getFacilityFacade().count(facilityCriteria) == 0) {
+		if (facilityFacade.count(facilityCriteria) == 0) {
 			laboratory = new Facility();
 			laboratory.setUuid(DataHelper.createUuid());
 			laboratory.setName(I18nProperties.getCaption(Captions.defaultLaboratory, "Default Laboratory"));

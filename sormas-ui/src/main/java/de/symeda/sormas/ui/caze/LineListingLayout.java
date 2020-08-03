@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
@@ -16,8 +17,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -43,11 +42,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
 
@@ -69,7 +66,8 @@ public class LineListingLayout extends VerticalLayout {
 	private Button cancelButton;
 	private Button saveButton;
 
-	private Window window;
+	private final Window window;
+	private Consumer<List<CaseLineDto>> saveCallback;
 
 	public LineListingLayout(Window window) {
 
@@ -183,8 +181,8 @@ public class LineListingLayout extends VerticalLayout {
 			newLineDto.setDistrict(lastLineDto.getDistrict());
 			newLineDto.setDateOfReport(lastLineDto.getDateOfReport());
 			newLineDto.setCommunity(lastLineDto.getCommunity());
-			newLineDto.setTypeGroup(lastLineDto.getTypeGroup());
-			newLineDto.setType(lastLineDto.getType());
+			newLineDto.setFacilityTypeGroup(lastLineDto.getFacilityTypeGroup());
+			newLineDto.setFacilityType(lastLineDto.getFacilityType());
 			newLineDto.setFacility(lastLineDto.getFacility());
 			newLineDto.setFacilityDetails(lastLineDto.getFacilityDetails());
 			newLine.setBean(newLineDto);
@@ -214,7 +212,7 @@ public class LineListingLayout extends VerticalLayout {
 		buttonsPanel.setComponentAlignment(cancelButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(cancelButton, 1);
 
-		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> save(), ValoTheme.BUTTON_PRIMARY);
+		saveButton = ButtonHelper.createButton(Captions.actionSave, event -> saveCallback.accept(getCaseLineDtos()), ValoTheme.BUTTON_PRIMARY);
 
 		buttonsPanel.addComponent(saveButton);
 		buttonsPanel.setComponentAlignment(saveButton, Alignment.BOTTOM_RIGHT);
@@ -259,60 +257,8 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	private void closeWindow() {
+	public void closeWindow() {
 		window.close();
-	}
-
-	private void save() {
-		try {
-			validate();
-		} catch (ValidationRuntimeException e) {
-			Notification.show(I18nProperties.getString(Strings.errorFieldValidationFailed), "", Type.ERROR_MESSAGE);
-			return;
-		}
-
-		for (CaseLineDto caseLineDto : getCaseLineDtos()) {
-
-			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
-
-			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
-			newCase.setRegion(caseLineDto.getRegion());
-			newCase.setDistrict(caseLineDto.getDistrict());
-			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
-			newCase.setEpidNumber(caseLineDto.getEpidNumber());
-			newCase.setCommunity(caseLineDto.getCommunity());
-			newCase.setHealthFacility(caseLineDto.getFacility());
-			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
-			newCase.setFacilityType(type.getValue());
-
-			if (caseLineDto.getDateOfOnset() != null) {
-				newCase.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
-			}
-
-			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
-
-			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(caseLineDto.getFirstName());
-			newPerson.setLastName(caseLineDto.getLastName());
-			newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
-			newPerson.setSex(caseLineDto.getSex());
-
-			ControllerProvider.getCaseController().selectOrCreateCase(newCase, newPerson, uuid -> {
-				if (uuid == null) {
-
-					FacadeProvider.getPersonFacade().savePerson(newPerson);
-
-					newCase.setPerson(newPerson.toReference());
-
-					FacadeProvider.getCaseFacade().saveCase(newCase);
-					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
-				}
-			});
-		}
-		closeWindow();
-		ControllerProvider.getCaseController().navigateToIndex();
 	}
 
 	private void updateCommunitiesAndFacilities(DistrictReferenceDto districtDto) {
@@ -393,6 +339,10 @@ public class LineListingLayout extends VerticalLayout {
 		return caseLines.stream().map(caseLine -> caseLine.getBean()).collect(Collectors.toList());
 	}
 
+	public void setSaveCallback(Consumer<List<CaseLineDto>> saveCallback) {
+		this.saveCallback = saveCallback;
+	}
+
 	class CaseLineLayout extends HorizontalLayout {
 
 		private static final long serialVersionUID = 4159615474757272630L;
@@ -425,8 +375,8 @@ public class LineListingLayout extends VerticalLayout {
 				.bind(CaseLineDto.DISEASE_DETAILS);
 			binder.forField(region).asRequired().bind(CaseLineDto.REGION);
 			binder.forField(district).asRequired().bind(CaseLineDto.DISTRICT);
-			binder.forField(typeGroup).asRequired().bind(CaseLineDto.TYPE_GROUP);
-			binder.forField(type).asRequired().bind(CaseLineDto.TYPE);
+			binder.forField(typeGroup).asRequired().bind(CaseLineDto.FACILITY_TYPE_GROUP);
+			binder.forField(type).asRequired().bind(CaseLineDto.FACILITY_TYPE);
 
 			dateOfReport = new DateField();
 			dateOfReport.setId("lineListingDateOfReport_" + lineIndex);
@@ -449,8 +399,7 @@ public class LineListingLayout extends VerticalLayout {
 						communityDto != null
 							? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, type.getValue(), true)
 							: district.getValue() != null
-								? FacadeProvider.getFacilityFacade()
-									.getActiveFacilitiesByDistrictAndType(district.getValue(), type.getValue(), true)
+								? FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district.getValue(), type.getValue(), true)
 								: null);
 				}
 			});
@@ -691,8 +640,8 @@ public class LineListingLayout extends VerticalLayout {
 		public static final String DATE_OF_BIRTH_DD = "dateOfBirthDD";
 		public static final String SEX = "sex";
 		public static final String DATE_OF_ONSET = "dateOfOnset";
-		public static final String TYPE_GROUP = "typeGroup";
-		public static final String TYPE = "type";
+		public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
+		public static final String FACILITY_TYPE = "facilityType";
 
 		private Disease disease;
 		private String diseaseDetails;
@@ -701,6 +650,8 @@ public class LineListingLayout extends VerticalLayout {
 		private LocalDate dateOfReport;
 		private String epidNumber;
 		private CommunityReferenceDto community;
+		private FacilityTypeGroup facilityTypeGroup;
+		private FacilityType facilityType;
 		private FacilityReferenceDto facility;
 		private String facilityDetails;
 		private String firstName;
@@ -710,8 +661,6 @@ public class LineListingLayout extends VerticalLayout {
 		private Integer dateOfBirthDD;
 		private Sex sex;
 		private LocalDate dateOfOnset;
-		private FacilityTypeGroup typeGroup;
-		private FacilityType type;
 
 		public CaseLineDto(
 			Disease disease,
@@ -721,6 +670,8 @@ public class LineListingLayout extends VerticalLayout {
 			LocalDate dateOfReport,
 			String epidNumber,
 			CommunityReferenceDto community,
+			FacilityTypeGroup facilityTypeGroup,
+			FacilityType facilityType,
 			FacilityReferenceDto facility,
 			String facilityDetails,
 			String firstname,
@@ -729,9 +680,7 @@ public class LineListingLayout extends VerticalLayout {
 			Integer dateOfBirthMonth,
 			Integer dateOfBirthDay,
 			Sex sex,
-			LocalDate dateOfOnset,
-			FacilityTypeGroup typeGroup,
-			FacilityType type) {
+			LocalDate dateOfOnset) {
 
 			this.disease = disease;
 			this.diseaseDetails = diseaseDetails;
@@ -749,8 +698,8 @@ public class LineListingLayout extends VerticalLayout {
 			this.dateOfBirthDD = dateOfBirthDay;
 			this.sex = sex;
 			this.dateOfOnset = dateOfOnset;
-			this.typeGroup = typeGroup;
-			this.type = type;
+			this.facilityTypeGroup = facilityTypeGroup;
+			this.facilityType = facilityType;
 		}
 
 		public CaseLineDto() {
@@ -884,20 +833,20 @@ public class LineListingLayout extends VerticalLayout {
 			this.dateOfOnset = dateOfOnset;
 		}
 
-		public FacilityTypeGroup getTypeGroup() {
-			return typeGroup;
+		public FacilityTypeGroup getFacilityTypeGroup() {
+			return facilityTypeGroup;
 		}
 
-		public void setTypeGroup(FacilityTypeGroup typeGroup) {
-			this.typeGroup = typeGroup;
+		public void setFacilityTypeGroup(FacilityTypeGroup facilityTypeGroup) {
+			this.facilityTypeGroup = facilityTypeGroup;
 		}
 
-		public FacilityType getType() {
-			return type;
+		public FacilityType getFacilityType() {
+			return facilityType;
 		}
 
-		public void setType(FacilityType type) {
-			this.type = type;
+		public void setFacilityType(FacilityType facilityType) {
+			this.facilityType = facilityType;
 		}
 	}
 }

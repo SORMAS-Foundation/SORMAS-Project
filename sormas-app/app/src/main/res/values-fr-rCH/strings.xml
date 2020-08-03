@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Événements confirmés</string>
     <string name="caption_contact_information">Informations de contact</string>
     <string name="caption_contact_tasks">Tâches de contact</string>
+    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Informations de suivi</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Une valeur est requise pour ce champ. Veuillez vous assurer de saisir ou de sélectionner une valeur avant de continuer.</string>
     <string name="validation_soft_add_list_entry">Veuillez ajouter une entrée à la liste si vous disposez de données.</string>
     <string name="validation_soft_case_classification">Ce cas devrait être classé dès que les renseignements requis seront disponibles.</string>
+    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
     <string name="validation_soft_case_epid_number">Le numéro EPID ne correspond pas au modèle requis. Vous pouvez toujours enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_soft_case_epid_number_empty">Un numéro EPID doit être fourni. Vous pouvez encore enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_symptoms_fever">La température se situe dans la marge de la fièvre. La fièvre doit être réglée sur \"Oui\".</string>

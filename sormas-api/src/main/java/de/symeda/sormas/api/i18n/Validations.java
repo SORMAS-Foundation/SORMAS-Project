@@ -19,6 +19,7 @@ public interface Validations {
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormInvalidIdInListElements = "campaignFormInvalidIdInListElements";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
 	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
 	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
@@ -26,6 +27,7 @@ public interface Validations {
 	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String caseClassificationInvalid = "caseClassificationInvalid";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
