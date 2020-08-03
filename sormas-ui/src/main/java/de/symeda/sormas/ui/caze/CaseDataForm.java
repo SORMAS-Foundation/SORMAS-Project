@@ -296,8 +296,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		CheckBox quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended.setEnabled(false);
+		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
-		quarantineTo.addValueChangeListener(this::onQuarantineEndChange);
+		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended));
 
 		TextField quarantineHelpNeeded = addField(CaseDataDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -693,24 +695,30 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent) {
-		Date quarantineEnd = (Date) valueChangeEvent.getProperty().getValue();
-
-		boolean debug;
-		/*
-		 * VaadinUiUtil.showConfirmationPopup(
-		 * I18nProperties.getString(Strings.headingArchiveCampaign),
-		 * contentLabel,
-		 * I18nProperties.getString(Strings.yes),
-		 * I18nProperties.getString(Strings.no),
-		 * 640,
-		 * e -> {
-		 * if (e) {
-		 * FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, true);
-		 * SormasUI.refreshView();
-		 * }
-		 * });
-		 */
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+		Property<Date> quarantineEndField = valueChangeEvent.getProperty();
+		Date newQuarantineEnd = quarantineEndField.getValue();
+		CaseDataDto originalCase = getInternalValue();
+		Date oldQuarantineEnd = originalCase.getQuarantineTo();
+		if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingExtendQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (!originalCase.isQuarantineExtended()) {
+							quarantineExtendedCheckbox.setValue(true);
+						}
+					} else {
+						quarantineEndField.setValue(oldQuarantineEnd);
+					}
+				});
+		} else if (!originalCase.isQuarantineExtended()) {
+			quarantineExtendedCheckbox.setValue(false);
+		}
 	}
 
 	private void updateQuarantineFields() {
