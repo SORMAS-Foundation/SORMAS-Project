@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -1043,6 +1044,24 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
 		caze = getCaseFacade().saveCase(caze);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
+	}
+
+	@Test
+	public void testSearchCasesWithExtendedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze =
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+		caze.setQuarantineExtended(true);
+		getCaseFacade().saveCase(caze);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(caze.getUuid()));
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setWithExtendedQuarantine(true);
+
+		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
 	}
 
 //	@Test
