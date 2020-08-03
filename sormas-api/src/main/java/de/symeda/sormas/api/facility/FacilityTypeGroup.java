@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.api.facility;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
@@ -34,12 +33,22 @@ public enum FacilityTypeGroup {
 
 	private final boolean suitableForLongerStay;
 
+	private static List<FacilityTypeGroup> groupsWithOvernightAccomodation = null;
+
 	FacilityTypeGroup(boolean suitableForLongerStay) {
 		this.suitableForLongerStay = suitableForLongerStay;
 	}
 
 	public static List<FacilityTypeGroup> getTypeGroupsSuitableForLongerStay() {
-		return Arrays.stream(FacilityTypeGroup.values()).filter(FacilityTypeGroup::isSuitableForLongerStay).collect(Collectors.toList());
+		if (groupsWithOvernightAccomodation == null) {
+			groupsWithOvernightAccomodation = new ArrayList<FacilityTypeGroup>();
+			for (FacilityTypeGroup facilityTypeGroup : values()) {
+				if (facilityTypeGroup.isSuitableForLongerStay()) {
+					groupsWithOvernightAccomodation.add(facilityTypeGroup);
+				}
+			}
+		}
+		return groupsWithOvernightAccomodation;
 	}
 
 	public boolean isSuitableForLongerStay() {

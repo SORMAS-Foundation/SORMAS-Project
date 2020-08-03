@@ -17,9 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
@@ -34,6 +33,8 @@ public enum TypeOfPlace {
 	UNKNOWN(false),
 	OTHER(false);
 
+	private static List<TypeOfPlace> typesUsableForCases = null;
+
 	private boolean usableForCases;
 
 	TypeOfPlace(boolean usableForCases) {
@@ -45,7 +46,15 @@ public enum TypeOfPlace {
 	}
 
 	public static List<TypeOfPlace> getTypesOfPlaceForCases() {
-		return Arrays.stream(TypeOfPlace.values()).filter(e -> e.isUsableForCases()).collect(Collectors.toList());
+		if (typesUsableForCases == null) {
+			typesUsableForCases = new ArrayList<TypeOfPlace>();
+			for (TypeOfPlace typeOfPlace : values()) {
+				if (typeOfPlace.isUsableForCases()) {
+					typesUsableForCases.add(typeOfPlace);
+				}
+			}
+		}
+		return typesUsableForCases;
 	}
 
 	public String toString() {

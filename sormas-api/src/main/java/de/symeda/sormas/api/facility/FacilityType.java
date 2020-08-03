@@ -17,9 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
@@ -67,6 +68,8 @@ public enum FacilityType {
 	UNIVERSITY(FacilityTypeGroup.EDUCATIONAL_FACILITY),
 	ZOO(FacilityTypeGroup.LEISURE_FACILITY);
 
+	private static final Map<FacilityTypeGroup, List<FacilityType>> facilityTypesByGroup = new HashMap<FacilityTypeGroup, List<FacilityType>>();
+
 	private final FacilityTypeGroup facilityTypeGroup;
 
 	FacilityType(FacilityTypeGroup group) {
@@ -81,13 +84,21 @@ public enum FacilityType {
 		if (group == null) {
 			return null;
 		}
-		List<FacilityType> list =
-			Arrays.stream(FacilityType.values()).filter(e -> group.equals(e.getFacilityTypeGroup())).collect(Collectors.toList());
-
-		if (withoutLaboratory && FacilityTypeGroup.MEDICAL_FACILITY.equals(group)) {
-			list.remove(FacilityType.LABORATORY);
+		if (!facilityTypesByGroup.containsKey(group)) {
+			List<FacilityType> facilityTypes = new ArrayList<FacilityType>();
+			for (FacilityType facilityType : values()) {
+				if (group.equals(facilityType.getFacilityTypeGroup())) {
+					facilityTypes.add(facilityType);
+				}
+			}
+			facilityTypesByGroup.put(group, facilityTypes);
 		}
-		return list;
+		return facilityTypesByGroup.get(group);
+
+//		if (withoutLaboratory && FacilityTypeGroup.MEDICAL_FACILITY.equals(group)) {
+//			list.remove(FacilityType.LABORATORY);
+//		}
+//		return list;
 	}
 
 	public String toString() {
