@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -324,6 +325,65 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Facility - xyz", results.get(0).getHealthFacilityName());
 		assertEquals("Facility - abc", results.get(1).getHealthFacilityName());
 		assertEquals("Facility", results.get(2).getHealthFacilityName());
+	}
+
+	@Test
+	public void testGetIndexListByFreeText() {
+
+		String districtName = "District";
+		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
+		useSurveillanceOfficerLogin(rdcf);
+
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person1 = creator.createPerson("FirstName1", "LastName1");
+		person1.getAddress().setPostalCode("10115");
+		person1.getAddress().setCity("Berlin");
+		person1.setPhone("+4930-901820");
+		getPersonFacade().savePerson(person1);
+		creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto person2 = creator.createPerson("FirstName2", "LastName2");
+		person2.getAddress().setPostalCode("20095");
+		person2.getAddress().setCity("Hamburg");
+		person2.setPhone("+49-30-901822");
+		getPersonFacade().savePerson(person2);
+		creator.createCase(
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto person3 = creator.createPerson("FirstName3", "LastName3");
+		person3.getAddress().setPostalCode("80331");
+		person3.getAddress().setCity("Munich");
+		person3.setPhone("+49 31 901820");
+		getPersonFacade().savePerson(person3);
+		creator.createCase(
+			user.toReference(),
+			person3.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Munich"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("20095"), 0, 100, null).size());
+		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("+49-31-901-820"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("4930901822"), 0, 100, null).size());
 	}
 
 	@Test
