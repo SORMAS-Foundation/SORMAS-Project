@@ -4886,6 +4886,6 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignd
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
 ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment) VALUES (233, 'Campaign diagram definition');
+INSERT INTO schema_version (version_number, comment) VALUES (234, 'Campaign diagram definition');
 
 -- *** Insert new sql commands BEFORE this line ***
