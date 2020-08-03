@@ -358,6 +358,9 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
 					joins.getPerson().get(Person.SEX),
+					joins.getPerson().get(Person.BIRTHDATE_DD),
+					joins.getPerson().get(Person.BIRTHDATE_MM),
+					joins.getPerson().get(Person.BIRTHDATE_YYYY),
 					joins.getPerson().get(Person.APPROXIMATE_AGE),
 					joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
 					contact.get(Contact.REPORT_DATE_TIME),
@@ -485,11 +488,10 @@ public class ContactFacadeEjb implements ContactFacade {
 					});
 				}
 
-//				pseudonymizationService.pseudonymizeDto(
-//					ContactExportDto.class,
-//					exportContact,
-//					contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()),
-//					null);
+//				boolean inJurisdiction = contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction());
+//				pseudonymizationService.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, (c) -> {
+//					pseudonymizationService.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
+//				});
 			}
 		}
 
