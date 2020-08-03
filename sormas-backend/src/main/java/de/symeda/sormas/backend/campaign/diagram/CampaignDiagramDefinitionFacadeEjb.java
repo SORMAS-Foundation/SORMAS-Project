@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -36,15 +34,6 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 	@Override
 	public List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
-	public void delete(String uuid) {
-		if (!userService.hasRight(UserRight.CAMPAIGN_DIAGRAM_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + "is not allowed to delete Campaign Form Data");
-		}
-
-		service.delete(service.getByUuid(uuid));
 	}
 
 	public CampaignDiagramDefinition fromDto(@NotNull CampaignDiagramDefinitionDto source) {

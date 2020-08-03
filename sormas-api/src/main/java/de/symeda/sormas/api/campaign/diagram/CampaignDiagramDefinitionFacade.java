@@ -10,6 +10,4 @@ public interface CampaignDiagramDefinitionFacade {
 	CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto);
 
 	List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids);
-
-	void delete(String uuid);
 }
