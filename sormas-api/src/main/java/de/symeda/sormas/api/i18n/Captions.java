@@ -26,7 +26,6 @@ public interface Captions {
 	String Action_event = "Action.event";
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
-	String Action_statusChangeDate = "Action.statusChangeDate";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
@@ -713,8 +712,8 @@ public interface Captions {
 	String Event = "Event";
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
-	String Event_eventActions = "Event.eventActions";
 	String Event_endDate = "Event.endDate";
+	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
@@ -1505,6 +1504,7 @@ public interface Captions {
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
+	String View_events_eventactions = "View.events.eventactions";
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
