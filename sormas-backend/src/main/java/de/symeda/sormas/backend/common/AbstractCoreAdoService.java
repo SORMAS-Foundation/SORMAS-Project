@@ -2,12 +2,10 @@ package de.symeda.sormas.backend.common;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.person.Person;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractAdoService<ADO> {
 
@@ -25,8 +23,12 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		em.flush();
 	}
 
-	protected String formatForLike(String textFilter1) {
-		return "%" + textFilter1.toLowerCase() + "%";
+	protected String formatForLike(String textFilter) {
+		return "%" + textFilter.toLowerCase() + "%";
+	}
+
+	protected Predicate phoneNumberPredicate(CriteriaBuilder cb, Path<Object> path, String textFilter) {
+		return cb.like(removeNonNumbersExpression(cb, path), formatPhoneNumberForSearch(textFilter));
 	}
 
 	protected String formatPhoneNumberForSearch(String textFilter) {
@@ -41,7 +43,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 				: formattedPhoneNumber);
 	}
 
-	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Join<?, Person> person) {
-		return cb.function("REGEXP_REPLACE", String.class, person.get(Person.PHONE), cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
+	protected Expression<String> removeNonNumbersExpression(CriteriaBuilder cb, Path<Object> path) {
+		return cb.function("REGEXP_REPLACE", String.class, path, cb.literal("[^0-9]"), cb.literal(""), cb.literal("g"));
 	}
 }
