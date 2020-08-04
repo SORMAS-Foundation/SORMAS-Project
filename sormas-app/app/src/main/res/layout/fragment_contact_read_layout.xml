@@ -213,6 +213,14 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineExtended"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineExtended}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
                     android:id="@+id/contact_quarantineOrderedVerbally"
                     app:dependencyParentField="@{contactQuarantine}"
                     app:dependencyParentValue="@{QuarantineType.HOME}"
@@ -240,14 +248,6 @@
                     app:dependencyParentField="@{contactQuarantineOrderedOfficialDocument}"
                     app:dependencyParentValue="@{true}"
                     app:value="@{data.quarantineOrderedOfficialDocumentDate}"
-                    style="@style/ControlSingleColumnStyle" />
-
-                <de.symeda.sormas.app.component.controls.ControlTextImageField
-                    android:id="@+id/caseData_quarantineExtended"
-                    app:dependencyParentField="@{contactQuarantine}"
-                    app:dependencyParentValue="@{QuarantineType.HOME}"
-                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
-                    app:value="@{data.quarantineExtended}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
