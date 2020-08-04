@@ -55,6 +55,7 @@
 	 ``<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...``
 - Open the Ant window, click on the "+" icon and select the build.xml file from the sormas-base project
 - Execute the "install" and "deploy-serverlibs" scripts in this order
+- Set the default working directory for run configurations: Run -> Edit Configurations -> Templates -> Application -> set the value for *Working directory* to ``$MODULE_WORKING_DIR$``
 - Configure code formatting:
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"

@@ -141,7 +141,12 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
 		// can see the participants of all accessible events
-		Predicate filter = eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT));
+		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+		Predicate filter =
+			eventService.createUserFilter(cb, cq, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
 
 		return filter;
 	}

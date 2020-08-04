@@ -16,6 +16,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -57,7 +59,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		DISTRICT_INFO_LABEL_ID,
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
-		ContactCriteria.FOLLOW_UP_UNTIL_TO)
+		ContactCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.BIRTHDATE_YYYY,
+		ContactCriteria.BIRTHDATE_MM,
+		ContactCriteria.BIRTHDATE_DD)
 		+ filterLocs(
 			ContactCriteria.QUARANTINE_TYPE,
 			ContactDto.QUARANTINE_TO,
@@ -169,6 +174,18 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO),
 				140));
 		quarantineTo.removeAllValidators();
+		ComboBox birthDateYYYY = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_YYYY, ComboBox.class);
+		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
+		birthDateYYYY.setWidth(140, Unit.PIXELS);
+		birthDateYYYY.addItems(DateHelper.getYearsToNow());
+		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+		ComboBox birthDateMM = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_MM, ComboBox.class);
+		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
+		birthDateMM.setWidth(140, Unit.PIXELS);
+		birthDateMM.addItems(DateHelper.getMonthsInYear());
+		ComboBox birthDateDD = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_DD, ComboBox.class);
+		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
+		birthDateDD.setWidth(140, Unit.PIXELS);
 
 		if (isGermanServer()) {
 			addField(
@@ -235,22 +252,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	@Override
 	protected void applyDependenciesOnNewValue(ContactCriteria newValue) {
 
-		UserDto user = UserProvider.getCurrent().getUser();
-
 		RegionReferenceDto region = newValue.getRegion();
+		applyRegionFilterDependency(region);
 
-		ComboBox districtField = (ComboBox) getField(ContactCriteria.DISTRICT);
-		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-			districtField.setEnabled(true);
-		} else {
-			if (region != null) {
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				districtField.setEnabled(true);
-			} else {
-				districtField.setEnabled(false);
-			}
-		}
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		ComboBox officerField = (ComboBox) getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
@@ -259,6 +264,17 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
 		} else {
 			officerField.removeAllItems();
+		}
+		ComboBox birthDateDD = (ComboBox) getField(ContactCriteria.BIRTHDATE_DD);
+		if (getField(ContactCriteria.BIRTHDATE_YYYY).getValue() != null && getField(ContactCriteria.BIRTHDATE_MM).getValue() != null) {
+			birthDateDD.addItems(
+				DateHelper.getDaysInMonth(
+					(Integer) getField(ContactCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(ContactCriteria.BIRTHDATE_YYYY).getValue()));
+			birthDateDD.setEnabled(true);
+		} else {
+			birthDateDD.clear();
+			birthDateDD.setEnabled(false);
 		}
 
 		// Date/Epi week filter

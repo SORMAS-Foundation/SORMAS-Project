@@ -40,6 +40,12 @@ In general data access & synchronisation is based on the following rules:
 * all tasks for the user's contacts
 * all tasks for the user's events
 
+
+# Actions
+* only users that are permitted to see action at all
+* whoever created the action is allowed to access it
+* all actions for the user's events
+
 # Samples
 * only users that are permitted to see samples at all
 * whoever created the sample or is assigned to it is allowed to access it

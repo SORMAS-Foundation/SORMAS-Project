@@ -13,15 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.campaign;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
+package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
@@ -36,8 +28,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
-
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementStyle;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
@@ -51,6 +42,14 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class CampaignFormBuilder {
 
 	private final List<CampaignFormElement> formElements;
@@ -62,7 +61,7 @@ public class CampaignFormBuilder {
 
 	public CampaignFormBuilder(
 		List<CampaignFormElement> formElements,
-		List<CampaignFormValue> formValues,
+		List<CampaignFormDataEntry> formValues,
 		GridLayout campaignFormLayout,
 		List<CampaignFormTranslations> translations) {
 		this.formElements = formElements;
@@ -329,8 +328,8 @@ public class CampaignFormBuilder {
 		return defaultCaption;
 	}
 
-	public List<CampaignFormValue> getFormValues() {
-		return fields.keySet().stream().map(id -> new CampaignFormValue(id, fields.get(id).getValue())).collect(Collectors.toList());
+	public List<CampaignFormDataEntry> getFormValues() {
+		return fields.keySet().stream().map(id -> new CampaignFormDataEntry(id, fields.get(id).getValue())).collect(Collectors.toList());
 	}
 
 	public void validateFields() throws Validator.InvalidValueException {

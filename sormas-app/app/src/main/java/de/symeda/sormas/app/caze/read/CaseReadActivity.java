@@ -86,6 +86,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
+		if (caze != null && caze.isUnreferredPortHealthCase()) {
+			menuItems.set(CaseSection.EVENTS.ordinal(), null);
+		}
 		if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
@@ -138,6 +141,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			break;
 		case SAMPLES:
 			fragment = CaseReadSampleListFragment.newInstance(activityRootData);
+			break;
+		case EVENTS:
+			fragment = CaseReadEventListFragment.newInstance(activityRootData);
 			break;
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);

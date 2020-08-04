@@ -49,6 +49,7 @@ public class CampaignFormElement implements Serializable {
 	private String[] styles;
 	private String dependingOn;
 	private String[] dependingOnValues;
+	private boolean important;
 
 	public String getType() {
 		return type;
@@ -96,5 +97,13 @@ public class CampaignFormElement implements Serializable {
 
 	public void setDependingOnValues(String[] dependingOnValues) {
 		this.dependingOnValues = dependingOnValues;
+	}
+
+	public boolean isImportant() {
+		return important;
+	}
+
+	public void setImportant(boolean important) {
+		this.important = important;
 	}
 }

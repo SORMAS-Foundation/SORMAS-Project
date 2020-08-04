@@ -17,6 +17,15 @@ public interface Captions {
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
+	String Action = "Action";
+	String Action_actionContext = "Action.actionContext";
+	String Action_actionStatus = "Action.actionStatus";
+	String Action_creatorUser = "Action.creatorUser";
+	String Action_date = "Action.date";
+	String Action_description = "Action.description";
+	String Action_event = "Action.event";
+	String Action_priority = "Action.priority";
+	String Action_reply = "Action.reply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
@@ -29,6 +38,7 @@ public interface Captions {
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
 	String actionCreate = "actionCreate";
+	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
 	String actionDelete = "actionDelete";
 	String actionDeselectAll = "actionDeselectAll";
@@ -42,10 +52,13 @@ public interface Captions {
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
+	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionPick = "actionPick";
+	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -54,6 +67,7 @@ public interface Captions {
 	String actionShowLessFilters = "actionShowLessFilters";
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
+	String actionStatusChangeDate = "actionStatusChangeDate";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
@@ -127,8 +141,10 @@ public interface Captions {
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
 	String campaignCampaignForm = "campaignCampaignForm";
 	String CampaignFormData_campaign = "CampaignFormData.campaign";
-	String CampaignFormData_campaignForm = "CampaignFormData.campaignForm";
+	String CampaignFormData_campaignFormMeta = "CampaignFormData.campaignFormMeta";
+	String CampaignFormData_formDate = "CampaignFormData.formDate";
 	String campaignNewCampaign = "campaignNewCampaign";
+	String campaignValidateForms = "campaignValidateForms";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -697,6 +713,7 @@ public interface Captions {
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_endDate = "Event.endDate";
+	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
@@ -726,6 +743,7 @@ public interface Captions {
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
+	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
@@ -889,6 +907,7 @@ public interface Captions {
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
 	String notAvailableShort = "notAvailableShort";
+	String notSpecified = "notSpecified";
 	String numberOfCharacters = "numberOfCharacters";
 	String options = "options";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
@@ -1412,7 +1431,6 @@ public interface Captions {
 	String TreatmentExport_caseUuid = "TreatmentExport.caseUuid";
 	String treatmentNewTreatment = "treatmentNewTreatment";
 	String treatmentOpenPrescription = "treatmentOpenPrescription";
-	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
 	String User_address = "User.address";
@@ -1486,6 +1504,7 @@ public interface Captions {
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
+	String View_events_eventactions = "View.events.eventactions";
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";

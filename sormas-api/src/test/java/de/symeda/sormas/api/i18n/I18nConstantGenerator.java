@@ -1,33 +1,93 @@
 package de.symeda.sormas.api.i18n;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.junit.Test;
-
 /**
- * Intentionally named *Generator because we don't want Maven to execute this
- * class automatically.
+ * Generates Constants out of the corresponding property files.
+ * 
+ * @see Captions
+ * @see Strings
+ * @see Validations
  */
 public class I18nConstantGenerator {
 
-	@Test
-	public void generateI18nConstants() throws FileNotFoundException, IOException {
+	private static final String FILE_PATH_PATTERN = "src/main/java/de/symeda/sormas/api/i18n/%s.java";
 
-		generateI18nConstantClass("captions.properties", "Captions", false);
-		generateI18nConstantClass("strings.properties", "Strings", false);
-		generateI18nConstantClass("validations.properties", "Validations", false);
+	private final String propertiesFileName;
+	private final String outputClassName;
+	private final String outputClassFilePath;
+	private final boolean ignoreChildren;
+
+	/**
+	 * @param propertiesFileName
+	 *            The properties file to read the contant keys from.
+	 * @param outputClassName
+	 *            Name of the constants class.
+	 * @param ignoreChildren
+	 */
+	public I18nConstantGenerator(String propertiesFileName, String outputClassName, boolean ignoreChildren) {
+
+		this.propertiesFileName = propertiesFileName;
+		this.outputClassName = outputClassName;
+		this.outputClassFilePath = String.format(FILE_PATH_PATTERN, outputClassName);
+		this.ignoreChildren = ignoreChildren;
 	}
 
-	private void generateI18nConstantClass(String propertiesFileName, String outputClassName, boolean ignoreChildren)
-		throws FileNotFoundException, IOException {
+	/**
+	 * @return The properties file to look up the what constants need to be generated.
+	 */
+	public String getPropertiesFileName() {
+		return propertiesFileName;
+	}
+
+	/**
+	 * @return Class name of the Constants file.
+	 */
+	public String getOutputClassName() {
+		return outputClassName;
+	}
+
+	/**
+	 * @return Path to the Constants file.
+	 */
+	public String getOutputClassFilePath() {
+		return outputClassFilePath;
+	}
+
+	public boolean isIgnoreChildren() {
+		return ignoreChildren;
+	}
+
+	private void generateI18nConstantClass() throws IOException {
+
+		Writer writer = new FileWriter(outputClassFilePath, false);
+		writeI18nConstantClass(writer);
+	}
+
+	/**
+	 * @param propertiesFileName
+	 *            The properties file to read the contant keys from.
+	 * @param outputClassName
+	 *            Name of the constants class.
+	 * @param ignoreChildren
+	 * @param writer
+	 *            Writes the java file into this {@code writer}.
+	 * @throws IOException
+	 */
+	void writeI18nConstantClass(Writer writer) throws IOException {
 
 		Properties properties = new Properties();
 		InputStream inputStream = I18nProperties.class.getClassLoader().getResourceAsStream(propertiesFileName);
@@ -36,8 +96,7 @@ public class I18nConstantGenerator {
 		}
 
 		Enumeration<?> e = properties.propertyNames();
-		String filePath = "src/main/java/de/symeda/sormas/api/i18n/" + outputClassName + ".java";
-		FileWriter writer = new FileWriter(filePath, false);
+
 		writer.write("package de.symeda.sormas.api.i18n;\n\n");
 		writer.write("import javax.annotation.Generated;\n\n");
 		writer.write("@Generated(value = \"" + getClass().getCanonicalName() + "\")\n");
@@ -67,5 +126,46 @@ public class I18nConstantGenerator {
 		writer.write("}\n");
 		writer.flush();
 		writer.close();
+	}
+
+	static List<I18nConstantGenerator> buildConfig() {
+
+		List<I18nConstantGenerator> config = new ArrayList<>();
+		config.add(new I18nConstantGenerator("captions.properties", "Captions", false));
+		config.add(new I18nConstantGenerator("strings.properties", "Strings", false));
+		config.add(new I18nConstantGenerator("validations.properties", "Validations", false));
+
+		return config;
+	}
+
+	/**
+	 * Updates i18n Constant classes.
+	 */
+	public static void main(String[] args) throws IOException {
+
+		long startTime = System.currentTimeMillis();
+
+		// Check if this program is started with the module directory as working directory.
+		Path path = Paths.get(FILE_PATH_PATTERN.split("/")[0]);
+		if (!Files.exists(path)) {
+			throw new IOException(
+				String.format(
+					"Path '%s' not found. Please make sure the working directory is set to the module path.",
+					path.toAbsolutePath().toString()));
+		}
+
+		List<I18nConstantGenerator> generators = buildConfig();
+		for (I18nConstantGenerator generator : generators) {
+			try {
+				generator.generateI18nConstantClass();
+			} catch (IOException e) {
+				// This generator is manually run by developers, so print to console is permitted.
+				System.out.println("Failure writing " + generator.outputClassName);
+				throw e;
+			}
+		}
+
+		System.out
+			.println(String.format("Generation finished. %s ms, generated classes: %s", System.currentTimeMillis() - startTime, generators.size()));
 	}
 }

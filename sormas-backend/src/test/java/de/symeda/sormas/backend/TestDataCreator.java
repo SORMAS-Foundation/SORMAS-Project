@@ -20,12 +20,14 @@ package de.symeda.sormas.backend;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
-import de.symeda.sormas.api.campaign.form.CampaignFormDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormReferenceDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -491,6 +493,14 @@ public class TestDataCreator {
 		return eventParticipant;
 	}
 
+	public ActionDto createAction(EventReferenceDto event) {
+
+		ActionDto action = ActionDto.build(ActionContext.EVENT, event);
+
+		action = beanTest.getActionFacade().saveAction(action);
+		return action;
+	}
+
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
 		return createSample(associatedCase, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
 	}
@@ -694,9 +704,9 @@ public class TestDataCreator {
 		return campaign;
 	}
 
-	public CampaignFormDto createCampaignForm(CampaignDto campaign) throws IOException {
+	public CampaignFormMetaDto createCampaignForm(CampaignDto campaign) throws IOException {
 
-		CampaignFormDto campaignForm;
+		CampaignFormMetaDto campaignForm;
 
 		String schema =
 			"[{\"type\": \"text\",\"id\": \"teamNumber\",\"caption\": \"Team number\",\"styles\": [\"first\"]},{\"type\": \"text\",\"id\": "
@@ -718,9 +728,9 @@ public class TestDataCreator {
 				+ " \"caption\": \"Namen der Teammitglieder\"}]}, {\"languageCode\": \"fr-FR\", \"translations\": [{\"elementId\": \"teamNumber\", "
 				+ "\"caption\": \"Numéro de l'équipe\"}]}]";
 
-		campaignForm = beanTest.getCampaignFormFacade().buildCampaignFormFromJson("testForm", null, schema, translations);
+		campaignForm = beanTest.getCampaignFormFacade().buildCampaignFormMetaFromJson("testForm", null, schema, translations);
 
-		campaignForm = beanTest.getCampaignFormFacade().saveCampaignForm(campaignForm);
+		campaignForm = beanTest.getCampaignFormFacade().saveCampaignFormMeta(campaignForm);
 
 		return campaignForm;
 	}
@@ -734,23 +744,23 @@ public class TestDataCreator {
 			+ "{\"id\": \"comments\",\"value\": \"other comments\"}]";
 	}
 
-	public CampaignFormDataDto buildCampaignFormDataDto(CampaignDto campaign, CampaignFormDto campaignForm, RDCF rdcf, String formData) {
+	public CampaignFormDataDto buildCampaignFormDataDto(CampaignDto campaign, CampaignFormMetaDto campaignForm, RDCF rdcf, String formData) {
 		CampaignReferenceDto campaignReferenceDto = new CampaignReferenceDto(campaign.getUuid());
-		CampaignFormReferenceDto campaignFormReferenceDto = new CampaignFormReferenceDto(campaignForm.getUuid());
+		CampaignFormMetaReferenceDto campaignFormMetaReferenceDto = new CampaignFormMetaReferenceDto(campaignForm.getUuid());
 
 		CampaignFormDataDto campaignFormData =
-			CampaignFormDataDto.build(campaignReferenceDto, campaignFormReferenceDto, rdcf.region, rdcf.district, rdcf.community);
+			CampaignFormDataDto.build(campaignReferenceDto, campaignFormMetaReferenceDto, rdcf.region, rdcf.district, rdcf.community);
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			campaignFormData.setFormValues(Arrays.asList(mapper.readValue(formData, CampaignFormValue[].class)));
+			campaignFormData.setFormValues(Arrays.asList(mapper.readValue(formData, CampaignFormDataEntry[].class)));
 			return campaignFormData;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public CampaignFormDataDto createCampaignFormData(CampaignDto campaign, CampaignFormDto campaignForm, RDCF rdcf, String formData) {
+	public CampaignFormDataDto createCampaignFormData(CampaignDto campaign, CampaignFormMetaDto campaignForm, RDCF rdcf, String formData) {
 
 		CampaignFormDataDto campaignFormData = buildCampaignFormDataDto(campaign, campaignForm, rdcf, formData);
 

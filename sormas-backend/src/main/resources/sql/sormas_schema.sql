@@ -4788,4 +4788,104 @@ ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add source of identification as contact to contacts #2070');
 
+-- 2020-07-27 Add form name to campaign forms and creating user to form data #1993
+ALTER TABLE campaignforms ADD COLUMN formname varchar(512);
+ALTER TABLE campaignforms_history ADD COLUMN formname varchar(512);
+ALTER TABLE campaignformdata ADD COLUMN creatinguser_id bigint;
+ALTER TABLE campaignformdata_history ADD COLUMN creatinguser_id bigint;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_creatinguser_id FOREIGN KEY (creatinguser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (228, 'Add form name to campaign forms and creating user to form data #1993');
+
+-- 2020-07-27 Rename campaignforms to campaignformmeta #1997
+ALTER TABLE campaignforms RENAME TO campaignformmeta;
+ALTER TABLE campaignforms_history RENAME TO campaignformmeta_history;
+ALTER TABLE campaignformdata RENAME COLUMN campaignform_id TO campaignformmeta_id;
+ALTER TABLE campaignformdata_history RENAME COLUMN campaignform_id TO campaignformmeta_id;
+
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaign_id FOREIGN KEY (campaign_id) REFERENCES campaigns(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_campaignformmeta_id FOREIGN KEY (campaignformmeta_id) REFERENCES campaignformmeta(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_region_id FOREIGN KEY (region_id) REFERENCES region(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_district_id FOREIGN KEY (district_id) REFERENCES district(id);
+ALTER TABLE campaignformdata ADD CONSTRAINT fk_campaignformdata_community_id FOREIGN KEY (community_id) REFERENCES community(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (229, 'Rename campaignforms to campaignformmeta #1997');
+
+-- 2020-07-27 Drop and re-create versioning trigger for campaignformmeta #1997
+DROP TRIGGER versioning_trigger ON campaignformmeta;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignformmeta
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+
+INSERT INTO schema_version (version_number, comment) VALUES (230, 'Drop and re-create versioning trigger for campaignformmeta #1997');
+
+-- 2020-07-27 Add list elements to campaignformmeta #2515
+ALTER TABLE campaignformmeta ADD COLUMN campaignformlistelements varchar(4096);
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformlistelements varchar(4096);
+
+INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add list elements to campaignformmeta #2515');
+
+-- 2020-06-10 Add actions
+
+CREATE TABLE action (
+id bigint not null,
+reply varchar(4096),
+changedate timestamp not null,
+creationdate timestamp not null,
+description varchar(4096),
+date timestamp,
+statuschangedate timestamp,
+actioncontext varchar(512),
+actionstatus varchar(512),
+uuid varchar(36) not null unique,
+event_id bigint,
+creatoruser_id bigint,
+priority varchar(512),
+replyinguser_id bigint,
+sys_period tstzrange not null,
+PRIMARY KEY (id));
+
+ALTER TABLE action OWNER TO sormas_user;
+
+ALTER TABLE action ADD CONSTRAINT fk_action_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+ALTER TABLE action ADD CONSTRAINT fk_action_creatoruser_id FOREIGN KEY (creatoruser_id) REFERENCES users (id);
+
+UPDATE action SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE action ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE action_history (LIKE action);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON action
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+ALTER TABLE action_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (232, 'Adds actions to events');
+
+-- 2020-07-29 - Remove list elements from campaignformmeta #2515
+ALTER TABLE campaignformmeta DROP COLUMN campaignformlistelements;
+ALTER TABLE campaignformmeta_history DROP COLUMN campaignformlistelements;
+
+INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list elements from campaignformmeta #2515');
+
+-- 2020-07-29 Campaign diagram definition
+CREATE TABLE campaigndiagramdefinition(
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              diagramId varchar(255) not null unique,
+                              diagramType varchar(255),
+                              campaignDiagramSeries text,
+                              sys_period tstzrange not null,
+                              primary key(id)
+);
+
+ALTER TABLE campaigndiagramdefinition OWNER TO sormas_user;
+
+CREATE TABLE campaigndiagramdefinition_history (LIKE campaigndiagramdefinition);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
+ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (234, 'Campaign diagram definition');
+
 -- *** Insert new sql commands BEFORE this line ***

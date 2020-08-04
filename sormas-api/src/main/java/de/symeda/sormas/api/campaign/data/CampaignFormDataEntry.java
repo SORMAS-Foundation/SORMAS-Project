@@ -15,21 +15,24 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CampaignFormValue implements Serializable {
+public class CampaignFormDataEntry implements Serializable {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
 	private String id;
 	private Object value;
 
-	public CampaignFormValue() {
+	public CampaignFormDataEntry() {
 
 	}
 
-	public CampaignFormValue(String id, Object value) {
+	public CampaignFormDataEntry(String id, Object value) {
 		this.id = id;
 		this.value = value;
 	}
@@ -56,7 +59,7 @@ public class CampaignFormValue implements Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		CampaignFormValue that = (CampaignFormValue) o;
+		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
 		return Objects.equals(id, that.id);
 	}
 
@@ -64,4 +67,18 @@ public class CampaignFormValue implements Serializable {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	@Override
+	public String toString() {
+		if (value == null) {
+			return "";
+		}
+
+		if (value instanceof Boolean) {
+			return value.equals(Boolean.TRUE) ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
+		}
+
+		return value.toString();
+	}
+
 }

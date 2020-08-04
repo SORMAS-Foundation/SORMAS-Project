@@ -477,6 +477,13 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
+	/**
+	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
+	 * The steps to build that iFrame are:
+	 * 1. Request an authentication token based on the stored client ID and secret
+	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
+	 * 3. The form is automatically submitted and replaced by the iFrame
+	 */
 	public void openSymptomJournalWindow(PersonDto person) {
 		String authToken = getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
@@ -536,6 +543,9 @@ public class ContactController {
 		}
 	}
 
+	/**
+	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
+	 */
 	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
 		Document document;
 		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
