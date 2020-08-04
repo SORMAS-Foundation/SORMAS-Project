@@ -120,6 +120,14 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
+		<!-- Open ID -->
+		<dependency>
+			<groupId>fish.payara.api</groupId>
+			<artifactId>payara-api</artifactId>
+			<version>5.194</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

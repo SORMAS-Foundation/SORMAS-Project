@@ -26,6 +26,12 @@ import javax.security.enterprise.SecurityContext;
 import javax.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.servlet.ServletException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
@@ -35,13 +41,23 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.UserRightsException;
+import fish.payara.security.openid.api.OpenIdContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class LoginHelper {
+
+	private final static Logger logger = LoggerFactory.getLogger(LoginHelper.class);
 
 	private LoginHelper() {
 		// Hide Utility Class Constructor
 	}
 
+	/**
+	 * @see de.symeda.sormas.ui.ApplicationSecurityConfig
+	 * @deprecated since introducing the {@link fish.payara.security.annotations.OpenIdAuthenticationDefinition}, this is not used anymore.
+	 */
+	@Deprecated
 	public static boolean login(String username, String password) throws UserRightsException {
 
 		if (username == null || username.isEmpty()) {
@@ -74,6 +90,10 @@ public final class LoginHelper {
 
 	public static boolean logout() {
 
+		if (!idpLogout()) {
+			return false;
+		}
+
 		try {
 			VaadinServletService.getCurrentServletRequest().logout();
 		} catch (ServletException e) {
@@ -85,4 +105,39 @@ public final class LoginHelper {
 
 		return true;
 	}
+
+	/**
+	 * Logging out the user from the IDP.
+	 * This is required since the payara-api version < 5.2020.3 doesn't have automated IDP logout built in it.
+	 * @return <code>true</code> if the logout was successful, <code>false</code> otherwise
+	 */
+	private static boolean idpLogout() {
+		BeanManager bm = CDI.current().getBeanManager();
+		@SuppressWarnings("unchecked")
+		Bean<OpenIdContext> openIdContextBean = (Bean<OpenIdContext>) bm.getBeans(OpenIdContext.class).iterator().next();
+		CreationalContext<OpenIdContext> ctx = bm.createCreationalContext(openIdContextBean);
+		OpenIdContext openIdContext = (OpenIdContext) bm.getReference(openIdContextBean, OpenIdContext.class, ctx);
+
+		String accessToken = openIdContext.getAccessToken().getToken();
+		String logoutEndpoint = openIdContext.getProviderMetadata().getString("end_session_endpoint");
+
+		Form form = new Form();
+		form.param("client_id", "sormas-ui");
+		form.param("client_secret", "secret");
+		openIdContext.getRefreshToken().ifPresent(refreshToken -> form.param("refresh_token", refreshToken.getToken()));
+
+		Client client = ClientBuilder.newClient();
+		Response response = client.target(logoutEndpoint)
+			.request()
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+			.post(Entity.form(form));
+
+		if (response.getStatus() != Response.Status.NO_CONTENT.getStatusCode()) {
+			logger.error("Cannot logout the use because: {}. For more information, check the IDP logs", response.getStatusInfo().getReasonPhrase());
+			return false;
+		}
+
+		return true;
+	}
+
 }
