@@ -319,7 +319,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
 				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
 
-				if (!eventLinkedToCase(caze, event)) {
+				if (!isEventLinkedToCase(caze, event)) {
 					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
 				} else {
 					NotificationHelper
@@ -333,7 +333,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		});
 	}
 
-	private boolean eventLinkedToCase(Case caze, Event event) {
+	private boolean isEventLinkedToCase(Case caze, Event event) {
 
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.caze(caze);

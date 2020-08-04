@@ -68,7 +68,7 @@ public class CaseReadEventListFragment extends BaseReadFragment<FragmentFormList
 	@Override
 	protected String getSubHeadingTitle() {
 		Resources r = getResources();
-		return "Case events";
+		return r.getString(R.string.caption_case_events);
 	}
 
 	@Override
