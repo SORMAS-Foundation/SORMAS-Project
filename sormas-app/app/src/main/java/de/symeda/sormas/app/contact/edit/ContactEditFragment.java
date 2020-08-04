@@ -19,11 +19,10 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import android.view.View;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
@@ -46,6 +45,9 @@ import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
@@ -214,11 +216,47 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 					contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
+
+				contentBinding.contactQuarantineExtended.setVisibility(VISIBLE);
 			} else {
 				contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+
+				contentBinding.contactQuarantineExtended.setVisibility(GONE);
 			}
 		});
+
+		contentBinding.contactQuarantineExtended.setEnabled(false);
+
+		contentBinding.contactQuarantineTo.addValueChangedListener(new ValueChangeListener() {
+
+			private Date currentQuarantineTo = record.getQuarantineTo();
+			private boolean currentQuarantineExtended = record.isQuarantineExtended();
+
+			@Override
+			public void onChange(ControlPropertyField e) {
+				Date newQuarantineTo = (Date) e.getValue();
+
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) > 0) {
+					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+						getActivity(),
+						R.string.heading_extend_quarantine,
+						R.string.confirmation_extend_quarantine,
+						R.string.yes,
+						R.string.no);
+
+					confirmationDialog.setPositiveCallback(() -> {
+						contentBinding.contactQuarantineExtended.setValue(true);
+					});
+					confirmationDialog.setNegativeCallback(() -> contentBinding.contactQuarantineTo.setValue(currentQuarantineTo));
+
+					confirmationDialog.show();
+				} else if (!currentQuarantineExtended) {
+					contentBinding.contactQuarantineExtended.setValue(false);
+				}
+			}
+		});
+
 		contentBinding.contactContactIdentificationSource.addValueChangedListener(e -> {
 			if (ContactIdentificationSource.TRACING_APP.equals(e.getValue())) {
 				contentBinding.contactTracingApp.setVisibility(VISIBLE);

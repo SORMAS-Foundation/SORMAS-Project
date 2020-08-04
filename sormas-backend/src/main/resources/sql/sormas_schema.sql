@@ -4888,4 +4888,13 @@ ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (234, 'Campaign diagram definition');
 
+-- 2020-07-30 - Store if quarantine period has been extended #2264
+ALTER TABLE cases ADD COLUMN quarantineextended boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineextended boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantineextended boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
+
 -- *** Insert new sql commands BEFORE this line ***
