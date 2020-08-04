@@ -1017,7 +1017,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
-						cb.like(removeNonNumbersExpression(cb, person), formatPhoneNumberForSearch(textFilter)),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
