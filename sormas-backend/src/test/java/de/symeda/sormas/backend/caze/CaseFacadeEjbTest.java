@@ -340,7 +340,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1");
 		person1.getAddress().setPostalCode("10115");
 		person1.getAddress().setCity("Berlin");
-		person1.setPhone("+4930-901820");
+		person1.setPhone("+4930-90-1820");
 		getPersonFacade().savePerson(person1);
 		creator.createCase(
 			user.toReference(),
@@ -368,7 +368,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson("FirstName3", "LastName3");
 		person3.getAddress().setPostalCode("80331");
 		person3.getAddress().setCity("Munich");
-		person3.setPhone("+49 31 901820");
+		person3.setPhone("+49 31 9018 20");
 		getPersonFacade().savePerson(person3);
 		creator.createCase(
 			user.toReference(),

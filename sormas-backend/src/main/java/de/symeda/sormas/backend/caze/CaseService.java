@@ -603,7 +603,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
 						cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
 						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
-						cb.like(cb.lower(person.get(Person.PHONE)), formatPhoneNumberForSearch(textFilter)),
+						cb.like(removeNonNumbersExpression(cb, person), formatPhoneNumberForSearch(textFilter)),
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
