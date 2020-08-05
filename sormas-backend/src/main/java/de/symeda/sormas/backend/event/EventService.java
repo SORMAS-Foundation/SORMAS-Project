@@ -335,15 +335,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		filterResponsible = cb.or(filterResponsible, cb.equal(eventPath.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
 
 		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseFilter()) {
-			filter = cb.or(filter, createCaseFilter(cb, cq, eventPath));
+			filter = or(cb, filter, createCaseFilter(cb, cq, eventPath));
 		}
 
 		if (eventUserFilterCriteria != null && eventUserFilterCriteria.isForceRegionJurisdiction()) {
-			filter = cb.or(filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
+			filter = or(cb, filter, cb.equal(eventPath.join(Event.EVENT_LOCATION, JoinType.LEFT).get(Location.REGION), currentUser.getRegion()));
 		}
 
 		if (filter != null) {
-			filter = cb.or(filter, filterResponsible);
+			filter = or(cb, filter, filterResponsible);
 		} else {
 			filter = filterResponsible;
 		}
