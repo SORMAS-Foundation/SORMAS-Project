@@ -53,6 +53,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private static final String DISTRICT_INFO_LABEL_ID = "infoContactsViewRegionDistrictFilter";
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
+	private static final String CHECKBOX_STYLE = CssStyles.CHECKBOX_FILTER_INLINE + " " + CssStyles.VSPACE_3;
+
 	private static final String MORE_FILTERS_HTML = filterLocs(
 		ContactCriteria.REGION,
 		ContactCriteria.DISTRICT,
@@ -70,7 +72,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
-			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS)
+			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
+			ContactCriteria.WITH_EXTENDED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -195,7 +198,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_VERBALLY,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -203,7 +206,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -211,7 +214,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_NOT_ORDERED,
 					I18nProperties.getCaption(Captions.contactQuarantineNotOrdered),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 		}
 
 		addField(
@@ -221,7 +224,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 				I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
 		addField(
 			moreFiltersContainer,
 			CheckBox.class,
@@ -229,7 +232,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 				I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_EXTENDED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithExtendedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
+				CHECKBOX_STYLE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
