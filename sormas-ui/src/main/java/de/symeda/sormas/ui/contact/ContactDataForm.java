@@ -203,9 +203,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+
+			contactProximity.addValueChangeListener(e -> {
+				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
+					updateContactCategory((ContactProximity) contactProximity.getValue());
+				}
+			});
 		}
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
