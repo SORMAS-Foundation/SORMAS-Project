@@ -49,7 +49,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());
-		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+		target.setCampaignDiagramSeries(source.getCampaignDiagramSeriesList());
 
 		return target;
 	}
@@ -64,7 +64,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());
-		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeries());
 
 		return target;
 	}

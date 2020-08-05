@@ -31,9 +31,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
+
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 
+@TypeDefs({
+	@TypeDef(name = "json", typeClass = JsonStringType.class) })
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 

@@ -4897,4 +4897,11 @@ ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
 
+-- 2020-07-29 Campaign diagram visualisation
+
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json;
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Campaign diagram visualisation');
+
 -- *** Insert new sql commands BEFORE this line ***
