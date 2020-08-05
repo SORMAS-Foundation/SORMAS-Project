@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -40,6 +41,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 	public static final String INVALID_CASE_CLASSIFICATION = "invalid case classification";
 
 	@Test
+	@Ignore("see #2599")
 	public void testCaseClassificationValidator() {
 
 		final TestDataCreator creator = new TestDataCreator();
