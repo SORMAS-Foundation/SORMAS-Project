@@ -25,41 +25,42 @@ public class GermanCaseClassificationValidator {
 		CaseClassification caseClassification,
 		CaseDataDto caseDataDto,
 		Boolean hasPositiveLabResult) {
-		switch (caseClassification) {
-
-		case NOT_CLASSIFIED:
-		case NO_CASE:
-		case PROBABLE:
-			return true;
-		case SUSPECT: {
-
-			return hasCoronavirusSymptom(caseDataDto);
-		}
-		case CONFIRMED: {
-			return hasPositiveLabResult && hasCoronavirusSymptom(caseDataDto);
-		}
-		case CONFIRMED_NO_SYMPTOMS: {
-			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return hasPositiveLabResult
-				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
-				&& (SymptomsHelper.allSymptomsFalse(symptoms)
-					|| SymptomsHelper.atLeastOnSymptomTrue(
-						symptoms.getFever(),
-						symptoms.getGeneralSignsOfDisease(),
-						symptoms.getDiarrhea(),
-						symptoms.getLossOfSmell(),
-						symptoms.getLossOfTaste(),
-						symptoms.getFastHeartRate(),
-						symptoms.getRapidBreathing(),
-						symptoms.getOxygenSaturationLower94(),
-						symptoms.getVomiting(),
-						symptoms.getChillsSweats()));
-		}
-		case CONFIRMED_UNKNOWN_SYMPTOMS:
-			final SymptomsDto symptoms = caseDataDto.getSymptoms();
-			return hasPositiveLabResult && caseDataDto.getDisease() == Disease.CORONAVIRUS && SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
-		}
-		return false;
+		return true;
+//		switch (caseClassification) {
+//
+//		case NOT_CLASSIFIED:
+//		case NO_CASE:
+//		case PROBABLE:
+//			return true;
+//		case SUSPECT: {
+//
+//			return hasCoronavirusSymptom(caseDataDto);
+//		}
+//		case CONFIRMED: {
+//			return hasPositiveLabResult && hasCoronavirusSymptom(caseDataDto);
+//		}
+//		case CONFIRMED_NO_SYMPTOMS: {
+//			final SymptomsDto symptoms = caseDataDto.getSymptoms();
+//			return hasPositiveLabResult
+//				&& caseDataDto.getDisease() == Disease.CORONAVIRUS
+//				&& (SymptomsHelper.allSymptomsFalse(symptoms)
+//					|| SymptomsHelper.atLeastOnSymptomTrue(
+//						symptoms.getFever(),
+//						symptoms.getGeneralSignsOfDisease(),
+//						symptoms.getDiarrhea(),
+//						symptoms.getLossOfSmell(),
+//						symptoms.getLossOfTaste(),
+//						symptoms.getFastHeartRate(),
+//						symptoms.getRapidBreathing(),
+//						symptoms.getOxygenSaturationLower94(),
+//						symptoms.getVomiting(),
+//						symptoms.getChillsSweats()));
+//		}
+//		case CONFIRMED_UNKNOWN_SYMPTOMS:
+//			final SymptomsDto symptoms = caseDataDto.getSymptoms();
+//			return hasPositiveLabResult && caseDataDto.getDisease() == Disease.CORONAVIRUS && SymptomsHelper.allSymptomsUnknownOrNull(symptoms);
+//		}
+//		return false;
 	}
 
 	private static boolean hasCoronavirusSymptom(CaseDataDto caseDataDto) {
