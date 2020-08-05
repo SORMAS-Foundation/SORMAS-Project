@@ -31,17 +31,25 @@ public class ContactJurisdictionDto implements Serializable {
 
 	private String districtUuid;
 
+	private String communityUuid;
+
 	private CaseJurisdictionDto caseJurisdiction;
 
 	public ContactJurisdictionDto() {
 
 	}
 
-	public ContactJurisdictionDto(String reportingUserUuid, String regionUuid, String districtUuid, CaseJurisdictionDto caseJurisdiction) {
+	public ContactJurisdictionDto(
+		String reportingUserUuid,
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		CaseJurisdictionDto caseJurisdiction) {
 
 		this.reportingUserUuid = reportingUserUuid;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
+		this.communityUuid = communityUuid;
 		this.caseJurisdiction = caseJurisdiction;
 	}
 
@@ -67,6 +75,14 @@ public class ContactJurisdictionDto implements Serializable {
 
 	public void setDistrictUuid(String districtUuid) {
 		this.districtUuid = districtUuid;
+	}
+
+	public void setCommunityUuid(String communityUuid) {
+		this.communityUuid = communityUuid;
+	}
+
+	public String getCommunityUuid() {
+		return communityUuid;
 	}
 
 	public CaseJurisdictionDto getCaseJurisdiction() {

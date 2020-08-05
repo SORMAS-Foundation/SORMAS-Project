@@ -38,7 +38,7 @@ public class ContactFollowUpDto implements Serializable {
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDateTime, Date followUpUntil, Disease disease,
-							  String reportingUserUuid, String regionUuid, String districtUuid,
+							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
@@ -60,7 +60,7 @@ public class ContactFollowUpDto implements Serializable {
 				caseCommunityUud,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public void initVisitSize(int i) {

@@ -121,7 +121,7 @@ public class SampleExportDto implements Serializable {
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
 						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
 	) {
 	//@formatter:on
@@ -162,8 +162,12 @@ public class SampleExportDto implements Serializable {
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			this.associatedContactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			this.associatedContactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
 		}

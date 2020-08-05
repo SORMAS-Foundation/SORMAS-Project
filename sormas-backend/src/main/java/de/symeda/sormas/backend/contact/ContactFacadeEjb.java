@@ -51,6 +51,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import org.apache.commons.collections.CollectionUtils;
@@ -402,6 +403,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 					joins.getRegion().get(Region.NAME),
 					joins.getDistrict().get(District.NAME),
+					joins.getCommunity().get(Community.NAME),
 					joins.getEpiData().get(EpiData.ID),
 					joins.getEpiData().get(EpiData.TRAVELED),
 					joins.getEpiData().get(EpiData.BURIAL_ATTENDED),

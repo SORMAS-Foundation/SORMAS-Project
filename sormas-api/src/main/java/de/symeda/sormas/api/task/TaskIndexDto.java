@@ -80,7 +80,7 @@ public class TaskIndexDto implements Serializable {
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
 			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid) {
 	//@formatter:on
 
@@ -112,8 +112,12 @@ public class TaskIndexDto implements Serializable {
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			this.contactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			this.contactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 		}
 
 		this.taskType = taskType;

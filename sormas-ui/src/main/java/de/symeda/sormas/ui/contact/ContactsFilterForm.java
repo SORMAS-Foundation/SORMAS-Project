@@ -32,6 +32,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -58,6 +59,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private static final String MORE_FILTERS_HTML = filterLocs(
 		ContactCriteria.REGION,
 		ContactCriteria.DISTRICT,
+		ContactCriteria.COMMUNITY,
 		DISTRICT_INFO_LABEL_ID,
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
@@ -140,6 +142,13 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID),
 				240));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+
+		ComboBox communityField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				ContactCriteria.COMMUNITY,
+				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMMUNITY_UUID),
+				240));
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
@@ -252,6 +261,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		switch (propertyId) {
 		case ContactCriteria.REGION: {
 			getField(ContactCriteria.DISTRICT).setValue(null);
+			getField(ContactCriteria.COMMUNITY).setValue(null);
+			break;
+		}
+		case ContactCriteria.DISTRICT: {
+			getField(ContactCriteria.COMMUNITY).setValue(null);
 			break;
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
@@ -265,7 +279,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	protected void applyDependenciesOnNewValue(ContactCriteria newValue) {
 
 		RegionReferenceDto region = newValue.getRegion();
-		applyRegionFilterDependency(region);
+		DistrictReferenceDto district = newValue.getDistrict();
+		applyRegionAndDistrictFilterDependency(region, district);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 

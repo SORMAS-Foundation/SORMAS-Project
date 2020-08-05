@@ -433,6 +433,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getContactReportingUser().get(User.UUID),
 			joins.getContactRegion().get(Region.UUID),
 			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCommunity().get(Community.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),

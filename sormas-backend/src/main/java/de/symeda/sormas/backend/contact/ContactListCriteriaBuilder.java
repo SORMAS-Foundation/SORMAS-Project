@@ -90,6 +90,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCasePerson().get(Person.LAST_NAME),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
