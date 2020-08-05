@@ -448,6 +448,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter =
@@ -580,6 +581,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithExtendedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
+		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
@@ -593,7 +597,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
 			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
@@ -601,7 +605,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
 						cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
-						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
+						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
@@ -609,7 +616,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getReportingUserLike() != null) {
 			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
@@ -622,7 +629,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getSourceCaseInfoLike() != null) {
 			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
@@ -634,6 +641,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 			}
 		}
+		if (caseCriteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
+		}
+		if (caseCriteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), caseCriteria.getBirthdateMM()));
+		}
+		if (caseCriteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
+		}
+
 		return filter;
 	}
 

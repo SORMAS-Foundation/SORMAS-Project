@@ -23,8 +23,8 @@ package de.symeda.sormas.backend.campaign.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
-import de.symeda.sormas.api.campaign.form.CampaignFormDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
+public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testSaveCampaignFormData() throws Exception {
@@ -48,7 +48,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
-		final CampaignFormDto campaignForm = creator.createCampaignForm(campaign);
+		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		String formData = creator.getCampaignFormData();
 
@@ -56,7 +56,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 		newCampaignFormDataDto = getCampaignFormDataFacade().saveCampaignFormData(newCampaignFormDataDto);
 
 		assertNotNull(newCampaignFormDataDto);
-		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormValue[].class)), newCampaignFormDataDto.getFormValues());
+		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormDataEntry[].class)), newCampaignFormDataDto.getFormValues());
 		assertEquals(rdcf.region.getUuid(), newCampaignFormDataDto.getRegion().getUuid());
 		assertEquals(rdcf.district.getUuid(), newCampaignFormDataDto.getDistrict().getUuid());
 		assertEquals(rdcf.community.getUuid(), newCampaignFormDataDto.getCommunity().getUuid());
@@ -64,12 +64,12 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 		String newFormData = "[{\"id\":\"teamNumber\",\"value\":\"12\"},{\"id\":\"namesOfTeamMembers\",\"value\":\"Ekkehard Rosin\"},"
 			+ "{\"id\":\"monitorName\",\"value\":\"Ralf Windisch\"},{\"id\":\"agencyName\",\"value\":\"Sormas Institut\"}]";
 
-		newCampaignFormDataDto.setFormValues(Arrays.asList(mapper.readValue(newFormData, CampaignFormValue[].class)));
+		newCampaignFormDataDto.setFormValues(Arrays.asList(mapper.readValue(newFormData, CampaignFormDataEntry[].class)));
 
 		CampaignFormDataDto updatedCampaignFormData = getCampaignFormDataFacade().saveCampaignFormData(newCampaignFormDataDto);
 
 		assertNotNull(updatedCampaignFormData);
-		assertEquals(Arrays.asList(mapper.readValue(newFormData, CampaignFormValue[].class)), updatedCampaignFormData.getFormValues());
+		assertEquals(Arrays.asList(mapper.readValue(newFormData, CampaignFormDataEntry[].class)), updatedCampaignFormData.getFormValues());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
-		final CampaignFormDto campaignForm = creator.createCampaignForm(campaign);
+		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		String formData = creator.getCampaignFormData();
 
@@ -90,7 +90,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 		CampaignFormDataDto retrievedCampaignFormDataDto = getCampaignFormDataFacade().getCampaignFormDataByUuid(newCampaignFormDataDto.getUuid());
 
 		assertNotNull(retrievedCampaignFormDataDto);
-		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormValue[].class)), retrievedCampaignFormDataDto.getFormValues());
+		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormDataEntry[].class)), retrievedCampaignFormDataDto.getFormValues());
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
-		final CampaignFormDto campaignForm = creator.createCampaignForm(campaign);
+		final CampaignFormMetaDto campaignForm = creator.createCampaignForm(campaign);
 
 		String formData = creator.getCampaignFormData();
 
@@ -109,7 +109,7 @@ public class CampaignFormDataFacadeEjbTest extends AbstractBeanTest {
 		newCampaignFormDataDto = getCampaignFormDataFacade().saveCampaignFormData(newCampaignFormDataDto);
 
 		assertNotNull(newCampaignFormDataDto);
-		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormValue[].class)), newCampaignFormDataDto.getFormValues());
+		assertEquals(Arrays.asList(mapper.readValue(formData, CampaignFormDataEntry[].class)), newCampaignFormDataDto.getFormValues());
 
 		getCampaignFormDataFacade().deleteCampaignFormData(newCampaignFormDataDto.getUuid());
 

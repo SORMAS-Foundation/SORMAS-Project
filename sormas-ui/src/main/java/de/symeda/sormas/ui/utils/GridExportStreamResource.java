@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +32,7 @@ import com.opencsv.CSVWriter;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Grid;
@@ -79,7 +79,16 @@ public class GridExportStreamResource extends StreamResource {
 
 				DataProvider<?, ?> dataProvider = grid.getDataProvider();
 
-				List<?> sortOrder = new ArrayList<>(grid.getSortOrder());
+				List<QuerySortOrder> sortOrder = grid.getSortOrder()
+					.stream()
+					.flatMap(
+						gridSortOrder -> grid.getColumns()
+							.stream()
+							.filter(column -> column.getId().equals(gridSortOrder.getSorted().getId()))
+							.findFirst()
+							.get()
+							.getSortOrder(gridSortOrder.getDirection()))
+					.collect(Collectors.toList());
 
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 					try (CSVWriter writer = CSVUtils.createCSVWriter(

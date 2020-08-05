@@ -1,5 +1,12 @@
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
@@ -8,24 +15,22 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -44,13 +49,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 
-import java.util.Date;
-import java.util.stream.Stream;
-
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 	private static final long serialVersionUID = -8326451364091398731L;
@@ -61,10 +59,13 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION,
 			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
-			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO)
+			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO,
+			CaseCriteria.BIRTHDATE_YYYY,
+			CaseCriteria.BIRTHDATE_MM,
+			CaseCriteria.BIRTHDATE_DD)			
 			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
-					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER)
+					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE)
 			+ loc(WEEK_AND_DATE_FILTER);
 	//@formatter:on
 
@@ -94,9 +95,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
-		addFields(
-			FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140),
-			FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
+		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
 
 		if (isGermanServer()) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
@@ -154,7 +153,18 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		Field<?> quarantineTo = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.QUARANTINE_TO, 200));
 		quarantineTo.removeAllValidators();
-
+		ComboBox birthDateYYYY = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_YYYY, ComboBox.class);
+		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
+		birthDateYYYY.setWidth(140, Unit.PIXELS);
+		birthDateYYYY.addItems(DateHelper.getYearsToNow());
+		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+		ComboBox birthDateMM = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_MM, ComboBox.class);
+		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
+		birthDateMM.setWidth(140, Unit.PIXELS);
+		birthDateMM.addItems(DateHelper.getMonthsInYear());
+		ComboBox birthDateDD = addField(moreFiltersContainer, CaseCriteria.BIRTHDATE_DD, ComboBox.class);
+		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
+		birthDateDD.setWidth(140, Unit.PIXELS);
 		addField(
 			moreFiltersContainer,
 			CheckBox.class,
@@ -204,6 +214,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
 				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer),
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.WITH_EXTENDED_QUARANTINE,
+				I18nProperties.getCaption(Captions.caseFilterWithExtendedQuarantine),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithExtendedQuarantine),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
@@ -345,6 +364,17 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				weekAndDateFilter.getDateFromFilter().setValue(criteria.getNewCaseDateFrom());
 				weekAndDateFilter.getDateToFilter().setValue(criteria.getNewCaseDateTo());
 			}
+		}
+		ComboBox birthDateDD = (ComboBox) getField(CaseCriteria.BIRTHDATE_DD);
+		if (getField(CaseCriteria.BIRTHDATE_YYYY).getValue() != null && getField(CaseCriteria.BIRTHDATE_MM).getValue() != null) {
+			birthDateDD.addItems(
+				DateHelper.getDaysInMonth(
+					(Integer) getField(CaseCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(CaseCriteria.BIRTHDATE_YYYY).getValue()));
+			birthDateDD.setEnabled(true);
+		} else {
+			birthDateDD.clear();
+			birthDateDD.setEnabled(false);
 		}
 	}
 

@@ -6,7 +6,7 @@ public enum CampaignFormElementType {
 	SECTION,
 	NUMBER,
 	TEXT,
-	YES_NO("YES", "NO");
+	YES_NO("yes", "no", "true", "false");
 
 	private final String[] allowedValues;
 

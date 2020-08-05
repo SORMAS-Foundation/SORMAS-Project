@@ -17,6 +17,33 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -56,31 +83,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import org.apache.commons.collections.CollectionUtils;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -992,6 +994,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_VERBALLY)),
 					cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT))));
 		}
+		if (Boolean.TRUE.equals(contactCriteria.getWithExtendedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_EXTENDED)));
+		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
@@ -1004,10 +1009,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i].toLowerCase());
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(from.get(Contact.UUID)), textFilter),
@@ -1015,7 +1021,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 						cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter));
+						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
@@ -1032,6 +1041,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		if (contactCriteria.getPerson() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
 			filter = and(cb, filter, cb.equal(person.get(Person.UUID), contactCriteria.getPerson().getUuid()));
+		}
+		if (contactCriteria.getBirthdateYYYY() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), contactCriteria.getBirthdateYYYY()));
+		}
+		if (contactCriteria.getBirthdateMM() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), contactCriteria.getBirthdateMM()));
+		}
+		if (contactCriteria.getBirthdateDD() != null) {
+			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), contactCriteria.getBirthdateDD()));
 		}
 
 		return filter;

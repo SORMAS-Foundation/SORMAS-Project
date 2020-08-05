@@ -116,15 +116,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
-		removeMaxLengthValidators(tfLatitude);
-		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
+        TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
 		tfLongitude.setConverter(new StringToAngularLocationConverter());
-		removeMaxLengthValidators(tfLongitude);
-		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+        TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 		tfAccuracy.setConverter(new StringToAngularLocationConverter());
-		removeMaxLengthValidators(tfAccuracy);
 
-		ComboBox region = addInfrastructureField(LocationDto.REGION);
+        ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 

@@ -30,11 +30,11 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
+public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 8045806100043073638L;
 
-	public CampaignFormDataGrid(CampaignFormDataCriteria criteria) {
+	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
 		super(CampaignFormDataIndexDto.class);
 		setSizeFull();
 
@@ -48,6 +48,7 @@ public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto,
 		setColumns(
 			EDIT_BTN_ID,
 			CampaignFormDataIndexDto.CAMPAIGN,
+			CampaignFormDataIndexDto.FORM,
 			CampaignFormDataIndexDto.REGION,
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.COMMUNITY,
@@ -80,6 +81,13 @@ public class CampaignFormDataGrid extends FilteredGrid<CampaignFormDataIndexDto,
 			query -> (int) FacadeProvider.getCampaignFormDataFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
+	}
+
+	public void addCustomColumn(String property, String caption) {
+		Column<CampaignFormDataIndexDto, Object> newColumn =
+			addColumn(e -> e.getFormValuesList().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
+		newColumn.setSortable(false);
+		newColumn.setCaption(caption);
 	}
 
 }
