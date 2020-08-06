@@ -29,6 +29,7 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class SampleDto extends EntityDto {
 
@@ -39,6 +40,7 @@ public class SampleDto extends EntityDto {
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
+	public static final String FOR_RETEST = "forRetest";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
@@ -70,6 +72,7 @@ public class SampleDto extends EntityDto {
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String labSampleID;
 	private String fieldSampleID;
+	private YesNoUnknown forRetest;
 	@Required
 	private Date sampleDateTime;
 
@@ -149,6 +152,14 @@ public class SampleDto extends EntityDto {
 
 	public void setFieldSampleID(String fieldSampleID) {
 		this.fieldSampleID = fieldSampleID;
+	}
+	
+	public YesNoUnknown getForRetest() {
+		return forRetest;
+	}
+	
+	public void setForRetest(YesNoUnknown forRetest) {
+		this.forRetest = forRetest;
 	}
 
 	public Date getSampleDateTime() {

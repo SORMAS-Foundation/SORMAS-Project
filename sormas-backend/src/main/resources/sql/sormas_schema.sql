@@ -4787,5 +4787,10 @@ ALTER TABLE contact_history ADD COLUMN tracingapp varchar(255);
 ALTER TABLE contact_history ADD COLUMN tracingappdetails varchar(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (227, 'Add source of identification as contact to contacts #2070');
+--	2020-07-01	Mark samples that are for retest
+ALTER TABLE samples ADD COLUMN forretest varchar(512);
+ALTER TABLE samples_history ADD COLUMN forretest varchar(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (228, 'Mark samples that are for retest');
 
 -- *** Insert new sql commands BEFORE this line ***

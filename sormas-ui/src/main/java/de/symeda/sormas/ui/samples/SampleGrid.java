@@ -87,13 +87,14 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 
 		setColumns(
 			EDIT_BTN_ID,
-			SampleIndexDto.LAB_SAMPLE_ID,
+			SampleIndexDto.FIELD_SAMPLE_ID,
 			SampleIndexDto.EPID_NUMBER,
 			SampleIndexDto.ASSOCIATED_CASE,
 			SampleIndexDto.ASSOCIATED_CONTACT,
 			SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT,
 			DISEASE_SHORT,
 			SampleIndexDto.DISTRICT,
+			SampleIndexDto.COMMUNITY,
 			SampleIndexDto.SHIPPED,
 			SampleIndexDto.RECEIVED,
 			SampleIndexDto.SHIPMENT_DATE,

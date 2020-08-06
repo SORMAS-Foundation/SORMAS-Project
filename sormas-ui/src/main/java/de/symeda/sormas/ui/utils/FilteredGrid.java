@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collections;
 import java.util.function.Consumer;
 
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
@@ -67,8 +68,11 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		return getDataProvider().size(new Query<>());
 	}
 
+	public T getFirstItem () {
+		return getDataProvider().fetch(new Query<>(0, 1, Collections.emptyList(), null, null)).findFirst().orElse(null);
+	}	
+	
 	protected void addEditColumn(Consumer<T> handler) {
-
 		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
 		editColumn.setSortable(false);

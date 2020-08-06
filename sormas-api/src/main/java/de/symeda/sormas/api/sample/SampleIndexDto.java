@@ -28,6 +28,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 
 public class SampleIndexDto implements Serializable {
@@ -44,7 +45,9 @@ public class SampleIndexDto implements Serializable {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String EPID_NUMBER = "epidNumber";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SHIPMENT_DATE = "shipmentDate";
 	public static final String RECEIVED_DATE = "receivedDate";
@@ -64,9 +67,11 @@ public class SampleIndexDto implements Serializable {
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String epidNumber;
 	private String labSampleID;
+	private String fieldSampleID;
 	private Disease disease;
 	private String diseaseDetails;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private boolean shipped;
 	private boolean received;
 	private boolean referred;
@@ -84,7 +89,7 @@ public class SampleIndexDto implements Serializable {
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	//@formatter:off
-	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, Date sampleDateTime,
+	public SampleIndexDto(String uuid, String epidNumber, String labSampleId, String fieldSampleId, Date sampleDateTime,
 						  boolean shipped, Date shipmentDate, boolean received, Date receivedDate,
 						  SampleMaterial sampleMaterial, SamplePurpose samplePurpose, SpecimenCondition specimenCondition,
 						  String labUuid, String labName, String referredSampleUuid,
@@ -93,6 +98,7 @@ public class SampleIndexDto implements Serializable {
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
 						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
+						  String caseCommunityName, String contactCommunityName, String contactCaseCommunityName,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
@@ -134,6 +140,7 @@ public class SampleIndexDto implements Serializable {
 		}
 		this.epidNumber = epidNumber;
 		this.labSampleID = labSampleId;
+		this.fieldSampleID = fieldSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.district = createDistrictReference(
@@ -145,6 +152,12 @@ public class SampleIndexDto implements Serializable {
 			contactDistrictUuid,
 			contactCaseDistrictUuid,
 			districtUuid);
+		this.community = createCommunityReference(
+			caseCommunityName, 
+			contactCommunityName, 
+			contactCaseCommunityName, 
+			caseCommunityUuid,
+			contactCaseCommunityUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -159,6 +172,23 @@ public class SampleIndexDto implements Serializable {
 		this.additionalTestingStatus = Boolean.TRUE.equals(additionalTestPerformed)
 			? AdditionalTestingStatus.PERFORMED
 			: (Boolean.TRUE.equals(additionalTestingRequested) ? AdditionalTestingStatus.REQUESTED : AdditionalTestingStatus.NOT_REQUESTED);
+	}
+
+	private CommunityReferenceDto createCommunityReference(
+		String caseCommunityName,
+		String contactCommunityName,
+		String contactCaseCommunityName,
+		String caseCommunityUuid,
+		String contactCaseCommunityUuid) {
+
+		CommunityReferenceDto ref = null;
+		if (caseCommunityUuid != null) {
+			ref = new CommunityReferenceDto(caseCommunityUuid, caseCommunityName);
+		} else if (contactCaseCommunityUuid != null) {
+			ref = new CommunityReferenceDto(contactCaseCommunityUuid, contactCaseCommunityName);
+		}
+
+		return ref;
 	}
 
 	private DistrictReferenceDto createDistrictReference(
@@ -248,6 +278,14 @@ public class SampleIndexDto implements Serializable {
 	public void setLabSampleID(String labSampleID) {
 		this.labSampleID = labSampleID;
 	}
+	
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
+	
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
+	}
 
 	public DistrictReferenceDto getDistrict() {
 		return district;
@@ -255,6 +293,14 @@ public class SampleIndexDto implements Serializable {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
 	}
 
 	public Date getShipmentDate() {

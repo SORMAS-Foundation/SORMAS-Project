@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -43,11 +44,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	public static final String DISEASE = "disease";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String LAB = "laboratory";
 	public static final String CASE_CODE_ID_LIKE = "caseCodeIdLike";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private FacilityReferenceDto laboratory;
 	private Boolean shipped;
 	private Boolean received;
@@ -64,8 +67,9 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private EntityRelevanceStatus relevanceStatus;
 	private SampleAssociationType sampleAssociationType;
 
-	private Date sampleReportDateFrom;
-	private Date sampleReportDateTo;
+	private Date sampleDateFrom;
+	private Date sampleDateTo;
+	private SampleDateType sampleDateType;
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public RegionReferenceDto getRegion() {
@@ -82,6 +86,14 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
 	}
 
 	public FacilityReferenceDto getLaboratory() {
@@ -119,9 +131,10 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
-	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
-		this.sampleReportDateFrom = reportDateFrom;
-		this.sampleReportDateTo = reportDateTo;
+	public SampleCriteria reportDateBetween(Date sampleDateFrom, Date sampleDateTo, SampleDateType sampleDateType, DateFilterOption dateFilterOption) {
+		this.sampleDateFrom = sampleDateFrom;
+		this.sampleDateTo = sampleDateTo;
+		this.sampleDateType = sampleDateType;
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
@@ -135,20 +148,20 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		return dateFilterOption;
 	}
 
-	public Date getSampleReportDateFrom() {
-		return sampleReportDateFrom;
+	public Date getSampleDateFrom() {
+		return sampleDateFrom;
 	}
 
-	public void setSampleReportDateFrom(Date sampleReportDateFrom) {
-		this.sampleReportDateFrom = sampleReportDateFrom;
+	public void setSampleDateFrom(Date sampleDateFrom) {
+		this.sampleDateFrom = sampleDateFrom;
 	}
 
-	public Date getSampleReportDateTo() {
-		return sampleReportDateTo;
+	public Date getSampleDateTo() {
+		return sampleDateTo;
 	}
 
-	public void setSampleReportDateTo(Date sampleReportDateTo) {
-		this.sampleReportDateTo = sampleReportDateTo;
+	public void setSampleDateTo(Date sampleDateTo) {
+		this.sampleDateTo = sampleDateTo;
 	}
 
 	public PathogenTestResultType getPathogenTestResult() {
@@ -249,5 +262,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	@IgnoreForUrl
 	public String getCaseCodeIdLike() {
 		return caseCodeIdLike;
+	}
+
+	public SampleDateType getSampleDateType() {
+		return sampleDateType;
+	}
+	
+	public void setSampleDateType(SampleDateType sampleActivity) {
+		this.sampleDateType = sampleActivity;
 	}
 }

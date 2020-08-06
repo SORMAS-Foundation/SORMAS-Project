@@ -199,6 +199,7 @@ public interface Strings {
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
+	String headingCreateBulkTests = "headingCreateBulkTests";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
@@ -302,9 +303,11 @@ public interface Strings {
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
 	String headingNoEventFound = "headingNoEventFound";
+	String headingNoDiseasesSelected = "headingNoDiseasesSelected";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";
+	String headingNoLaboratoriesSelected = "headingNoLaboratoriesSelected";
 	String headingNoPathogenTestsSelected = "headingNoPathogenTestsSelected";
 	String headingNoPrescriptionsSelected = "headingNoPrescriptionsSelected";
 	String headingNoRowsSelected = "headingNoRowsSelected";
@@ -480,11 +483,13 @@ public interface Strings {
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCaseTransfered = "messageCaseTransfered";
 	String messageChangePathogenTestResult = "messageChangePathogenTestResult";
+	String messageChangePathogenTestsResults = "messageChangePathogenTestsResults";
 	String messageCheckInputData = "messageCheckInputData";
 	String messageClinicalCourseSaved = "messageClinicalCourseSaved";
 	String messageClinicalVisitCreated = "messageClinicalVisitCreated";
 	String messageClinicalVisitSaved = "messageClinicalVisitSaved";
 	String messageClinicalVisitsDeleted = "messageClinicalVisitsDeleted";
+	String messageCloneCasesWithNewDisease = "messageCloneCasesWithNewDisease";
 	String messageCloneCaseWithNewDisease = "messageCloneCaseWithNewDisease";
 	String messageCommunitiesArchived = "messageCommunitiesArchived";
 	String messageCommunitiesArchivingNotPossible = "messageCommunitiesArchivingNotPossible";
@@ -496,6 +501,7 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	String messageConfirmCasesAfterPathogenTest = "messageConfirmCasesAfterPathogenTest";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
@@ -572,10 +578,12 @@ public interface Strings {
 	String messageNoClinicalVisitsSelected = "messageNoClinicalVisitsSelected";
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
+	String messageNoDiseasesSelected = "messageNoDiseasesSelected";
 	String messageNoEndDate = "messageNoEndDate";
 	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
+	String messageNoLaboratoriesSelected = "messageNoLaboratoriesSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
 	String messageNoPrescriptionsSelected = "messageNoPrescriptionsSelected";
 	String messageNoRowsSelected = "messageNoRowsSelected";
@@ -587,6 +595,8 @@ public interface Strings {
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";
+	String messagePathogenTestsSaved = "messagePathogenTestsSaved";
+	String messagePathogenTestsSavedShort = "messagePathogenTestsSavedShort";
 	String messagePersonSaved = "messagePersonSaved";
 	String messagePersonSavedClassificationChanged = "messagePersonSavedClassificationChanged";
 	String messagePlagueTypeChange = "messagePlagueTypeChange";
@@ -618,6 +628,7 @@ public interface Strings {
 	String messageSystemFollowUpCanceled = "messageSystemFollowUpCanceled";
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	String messageTestsCreated = "messageTestsCreated";
 	String messageTreatmentCreated = "messageTreatmentCreated";
 	String messageTreatmentSaved = "messageTreatmentSaved";
 	String messageTreatmentsDeleted = "messageTreatmentsDeleted";
@@ -707,6 +718,7 @@ public interface Strings {
 	String promptRegion = "promptRegion";
 	String promptSampleDateFrom = "promptSampleDateFrom";
 	String promptSampleDateTo = "promptSampleDateTo";
+	String promptSampleDateType = "promptSampleDateType";
 	String promptSampleEpiWeekFrom = "promptSampleEpiWeekFrom";
 	String promptSampleEpiWeekTo = "promptSampleEpiWeekTo";
 	String promptSamplesSearchField = "promptSamplesSearchField";

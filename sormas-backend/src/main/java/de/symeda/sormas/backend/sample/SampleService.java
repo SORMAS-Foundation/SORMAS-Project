@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
@@ -360,6 +361,15 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 								.otherwise(joins.getEventDistrict().get(District.UUID))));
 			filter = and(cb, filter, cb.equal(districtExpression, criteria.getDistrict().getUuid()));
 		}
+		if (criteria.getCommunity() != null) {
+			Expression<Object> communityExpression = cb.selectCase()
+				.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.UUID))
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.UUID))
+						.otherwise(joins.getContactCaseCommunity().get(Community.UUID)));
+			filter = and(cb, filter, cb.equal(communityExpression, criteria.getCommunity().getUuid()));
+		}
 		if (criteria.getLaboratory() != null) {
 			filter = and(cb, filter, cb.equal(joins.getLab().get(Facility.UUID), criteria.getLaboratory().getUuid()));
 		}
@@ -400,16 +410,9 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		if (criteria.getEventParticipant() != null) {
 			filter = and(cb, filter, cb.equal(joins.getEventParticipant().get(EventParticipant.UUID), criteria.getEventParticipant().getUuid()));
 		}
-		if (criteria.getSampleReportDateFrom() != null && criteria.getSampleReportDateTo() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.between(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom(), criteria.getSampleReportDateTo()));
-		} else if (criteria.getSampleReportDateFrom() != null) {
-			filter = and(cb, filter, cb.greaterThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateFrom()));
-		} else if (criteria.getSampleReportDateTo() != null) {
-			filter = and(cb, filter, cb.lessThanOrEqualTo(sample.get(Sample.SAMPLE_DATE_TIME), criteria.getSampleReportDateTo()));
-		}
+		
+		filter = createSampleDateFilter(cb, filter, sample, criteria);
+		
 		if (criteria.getSpecimenCondition() != null) {
 			filter = and(cb, filter, cb.equal(sample.get(Sample.SPECIMEN_CONDITION), criteria.getSpecimenCondition()));
 		}
@@ -442,6 +445,33 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			}
 		}
 
+		return filter;
+	}
+	
+	private Predicate createSampleDateFilter(CriteriaBuilder cb, Predicate filter, From<?, ?> sample, SampleCriteria criteria) {
+		
+		String dateProperty = Sample.SAMPLE_DATE_TIME;
+		if (criteria.getSampleDateType() != null) {
+			switch (criteria.getSampleDateType()) {
+				case REPORT: dateProperty = Sample.REPORT_DATE_TIME; break;
+				case SHIPPED: dateProperty = Sample.SHIPMENT_DATE; break;
+				case RECEIVED: dateProperty = Sample.RECEIVED_DATE; break;
+				case RESULT: dateProperty = Sample.PATHOGEN_TEST_RESULT_CHANGE_DATE; break;
+				default: dateProperty = Sample.SAMPLE_DATE_TIME; break;
+			}
+		}
+		
+		if (criteria.getSampleDateFrom() != null && criteria.getSampleDateTo() != null) {
+			filter = and(
+				cb,
+				filter,
+				cb.between(sample.get(dateProperty), criteria.getSampleDateFrom(), criteria.getSampleDateTo()));
+		} else if (criteria.getSampleDateFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(sample.get(dateProperty), criteria.getSampleDateFrom()));
+		} else if (criteria.getSampleDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(sample.get(dateProperty), criteria.getSampleDateTo()));
+		}
+		
 		return filter;
 	}
 

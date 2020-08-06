@@ -41,12 +41,14 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.core.YesNo;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name = Sample.TABLE_NAME)
@@ -66,6 +68,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
+	public static final String FOR_RETEST = "forRetest";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Case associatedCase;
@@ -81,6 +84,9 @@ public class Sample extends AbstractDomainObject {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String fieldSampleID;
+
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown forRetest;
 
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date sampleDateTime;
@@ -212,6 +218,14 @@ public class Sample extends AbstractDomainObject {
 
 	public void setFieldSampleID(String fieldSampleID) {
 		this.fieldSampleID = fieldSampleID;
+	}
+
+	public YesNoUnknown getForRetest() {
+		return forRetest;
+	}
+
+	public void setForRetest(YesNoUnknown forRetest) {
+		this.forRetest = forRetest;
 	}
 
 	public void setSampleDateTime(Date sampleDateTime) {

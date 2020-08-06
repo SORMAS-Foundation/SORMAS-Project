@@ -260,10 +260,14 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
+		final Join<Case, Community> caseCommunity = joins.getCaseCommunity();
 
 		final Join<Sample, Contact> contact = joins.getContact();
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
+		final Join<Contact, Community> contactCommunity = joins.getContactCommunity();
+
 		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
+		final Join<Case, Community> contactCaseCommunity = joins.getContactCaseCommunity();
 
 		final Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<Location, District> eventDistrict = joins.getEventDistrict();
@@ -285,11 +289,19 @@ public class SampleFacadeEjb implements SampleFacade {
 							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.UUID))
 							.otherwise(eventDistrict.get(District.UUID))));
 
+		Expression<Object> communitySelect = cb.selectCase()
+			.when(cb.isNotNull(caseCommunity), caseCommunity.get(Community.UUID))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(contactCommunity), contactCommunity.get(Community.UUID))
+					.otherwise(contactCaseCommunity.get(Community.UUID)));
+
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
 				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.FIELD_SAMPLE_ID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SHIPPED),
 				sample.get(Sample.SHIPMENT_DATE),
@@ -315,9 +327,12 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				joins.getCaseDistrict().get(Region.NAME),
-				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME)));
+				joins.getCaseDistrict().get(District.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCaseDistrict().get(District.NAME),
+				joins.getCaseCommunity().get(Community.NAME),
+				joins.getContactCommunity().get(Community.NAME),
+				joins.getContactCaseCommunity().get(Community.NAME)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
 		selections.add(districtSelect);
@@ -343,6 +358,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
 				case SampleIndexDto.LAB_SAMPLE_ID:
+				case SampleIndexDto.FIELD_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:
@@ -378,6 +394,9 @@ public class SampleFacadeEjb implements SampleFacade {
 					break;
 				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
+					break;
+				case SampleIndexDto.COMMUNITY:
+					expression = communitySelect;
 					break;
 				case SampleIndexDto.LAB:
 					expression = joins.getLab().get(Facility.NAME);
@@ -758,6 +777,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -864,6 +884,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));

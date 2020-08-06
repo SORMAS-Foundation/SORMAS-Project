@@ -21,8 +21,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDateType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
@@ -57,6 +59,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			SampleCriteria.DISEASE,
 			SampleCriteria.REGION,
 			SampleCriteria.DISTRICT,
+			SampleCriteria.COMMUNITY,
 			SampleCriteria.LAB,
 			SampleCriteria.CASE_CODE_ID_LIKE };
 	}
@@ -106,6 +109,12 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT),
 				140));
 
+		addField(
+			FieldConfiguration.withCaptionAndPixelSized(
+				SampleCriteria.COMMUNITY,
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.COMMUNITY),
+				140));
+
 		ComboBox labField = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(SampleCriteria.LAB, I18nProperties.getPrefixCaption(SampleIndexDto.I18N_PREFIX, SampleIndexDto.LAB), 140));
@@ -115,20 +124,24 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			FieldConfiguration
 				.withCaptionAndPixelSized(SampleCriteria.CASE_CODE_ID_LIKE, I18nProperties.getString(Strings.promptSamplesSearchField), 200));
 		searchField.setNullRepresentation("");
-
 	}
 
 	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
-
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 
 	private HorizontalLayout buildWeekAndDateFilter() {
-
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null);
+		EpiWeekAndDateFilterComponent<SampleDateType> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(
+				applyButton,
+				false,
+				false,
+				null,
+				SampleDateType.class,
+				I18nProperties.getString(Strings.promptSampleDateType),
+				SampleDateType.COLLECTION);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekTo));
@@ -150,7 +163,11 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
 				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.reportDateBetween(fromDate, toDate, dateFilterOption);
+				
+				SampleDateType sampleDateType = (SampleDateType) weekAndDateFilter.getDateTypeSelector().getValue();
+				sampleDateType = sampleDateType != null ? sampleDateType : SampleDateType.COLLECTION;
+						
+				criteria.reportDateBetween(fromDate, toDate, sampleDateType, dateFilterOption);
 
 				fireValueChange(true);
 			} else {
@@ -181,6 +198,8 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		dateFilterRowLayout.addComponent(weekAndDateFilter);
 		dateFilterRowLayout.addComponent(applyButton);
 
+		dateFilterRowLayout.addStyleName("wrap");
+
 		return dateFilterRowLayout;
 	}
 
@@ -189,6 +208,10 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 		switch (propertyId) {
 		case SampleCriteria.REGION: {
 			getField(SampleCriteria.DISTRICT).setValue(null);
+			break;
+		}
+		case SampleCriteria.DISTRICT: {
+			getField(SampleCriteria.COMMUNITY).setValue(null);
 			break;
 		}
 		}
@@ -213,13 +236,28 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 			}
 		}
 
+		ComboBox communityField = (ComboBox) getField(SampleCriteria.COMMUNITY);
+		if (user.getDistrict() != null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			communityField.setEnabled(true);
+		} else {
+			DistrictReferenceDto district = criteria.getDistrict();
+			if (district != null) {
+				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				communityField.setEnabled(true);
+			} else {
+				communityField.setEnabled(false);
+			}
+		}
+
 		HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
 		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter;
 		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
 
+		weekAndDateFilter.getDateTypeSelector().setValue(criteria.getSampleDateType());	
 		weekAndDateFilter.getDateFilterOptionFilter().setValue(criteria.getDateFilterOption());
-		Date sampleDateFrom = criteria.getSampleReportDateFrom();
-		Date sampleDateTo = criteria.getSampleReportDateTo();
+		Date sampleDateFrom = criteria.getSampleDateFrom();
+		Date sampleDateTo = criteria.getSampleDateTo();
 
 		if (DateFilterOption.EPI_WEEK.equals(criteria.getDateFilterOption())) {
 			weekAndDateFilter.getWeekFromFilter().setValue(sampleDateFrom == null ? null : DateHelper.getEpiWeek(sampleDateFrom));
