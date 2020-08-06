@@ -214,7 +214,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 						CommunityReferenceDto selectedCommunity = (CommunityReferenceDto) selectedCommunityTokenizable.getValue();
 						facilities.addAll(
 							FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByCommunityAndType(selectedCommunity, jurisdictionElement.getFacilityType(), false));
+								.getActiveFacilitiesByCommunityAndType(selectedCommunity, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else if (CollectionUtils.isNotEmpty(selectedDistrictTokenizables)) {
@@ -223,7 +223,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 						DistrictReferenceDto selectedDistrict = (DistrictReferenceDto) selectedDistrictTokenizable.getValue();
 						facilities.addAll(
 							FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(selectedDistrict, jurisdictionElement.getFacilityType(), false));
+								.getActiveFacilitiesByDistrictAndType(selectedDistrict, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else {

@@ -49,7 +49,6 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
 	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 	private static final String TYPE_LOC = "typeLoc";
@@ -89,7 +88,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		typeGroup.setId("typeGroup");
 		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.setWidth(100, Unit.PERCENTAGE);
-		typeGroup.addItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay());
+		typeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
 		typeGroup.setVisible(false);
 		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
 		type = new ComboBox();
@@ -119,7 +118,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			if (districtDto != null && type.getValue() != null) {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true, false));
 			}
 
 			List<UserReferenceDto> assignableSurveillanceOfficers =
@@ -138,13 +138,15 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				FieldHelper.updateItems(
 					facility,
 					communityDto != null
-						? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) type.getValue(), true)
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) type.getValue(), true, false)
 						: district.getValue() != null
 							? FacadeProvider.getFacilityFacade()
 								.getActiveFacilitiesByDistrictAndType(
 									(DistrictReferenceDto) district.getValue(),
 									(FacilityType) type.getValue(),
-									true)
+									true,
+									false)
 							: null);
 			}
 		});
@@ -172,7 +174,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		});
 		typeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true));
+			FieldHelper.updateEnumData(type, FacilityType.getAccommodationTypes((FacilityTypeGroup) typeGroup.getValue()));
 		});
 		type.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
@@ -184,12 +186,17 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 							.getActiveFacilitiesByCommunityAndType(
 								(CommunityReferenceDto) community.getValue(),
 								(FacilityType) type.getValue(),
-								true));
+								true,
+								false));
 				} else {
 					FieldHelper.updateItems(
 						facility,
 						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) district.getValue(), (FacilityType) type.getValue(), true));
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) type.getValue(),
+								true,
+								false));
 				}
 			}
 		});
@@ -219,7 +226,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 			}
 			if (noneHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
 			if (!visibleAndRequired) {
 				tfFacilityDetails.clear();
@@ -237,11 +244,11 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			if (community != null) {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, (FacilityType) type.getValue(), true, false));
 			} else {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, (FacilityType) type.getValue(), true, false));
 			}
 		}
 	}

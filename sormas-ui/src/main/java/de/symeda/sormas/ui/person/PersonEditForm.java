@@ -51,6 +51,7 @@ import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -101,11 +102,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
+	private ComboBox occupationFacilityType;
 	private ComboBox occupationFacility;
 	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
-	private ComboBox occupationFacilityType;
 	private ComboBox placeOfBirthFacilityType;
 	private ComboBox cbPlaceOfBirthFacility;
 
@@ -258,7 +259,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		placeOfBirthFacilityType.setId("placeOfBirthFacilityType");
 		placeOfBirthFacilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
 		placeOfBirthFacilityType.setWidth(100, Unit.PERCENTAGE);
-		placeOfBirthFacilityType.addItems(FacilityType.getFacilityTypesByGroup(FacilityTypeGroup.MEDICAL_FACILITY, true));
+		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
 		getContent().addComponent(placeOfBirthFacilityType, PLACE_OF_BIRTH_FACILITY_TYPE_LOC);
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
@@ -281,7 +282,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		occupationFacilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
 		occupationFacilityType.setWidth(100, Unit.PERCENTAGE);
 		occupationFacilityType.setVisible(false);
-		occupationFacilityType.addItems(FacilityType.getFacilityTypesByGroup(FacilityTypeGroup.MEDICAL_FACILITY, true));
+		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		getContent().addComponent(occupationFacilityType, OCCUPATION_FACILITY_TYPE_LOC);
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
@@ -379,14 +380,16 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			cbPlaceOfBirthCommunity,
 			placeOfBirthFacilityType,
 			cbPlaceOfBirthFacility,
-			tfPlaceOfBirthFacilityDetails);
+			tfPlaceOfBirthFacilityDetails,
+			true);
 		addListenersToInfrastructureFields(
 			facilityRegion,
 			facilityDistrict,
 			facilityCommunity,
 			occupationFacilityType,
 			occupationFacility,
-			occupationFacilityDetails);
+			occupationFacilityDetails,
+			false);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		facilityRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
@@ -434,7 +437,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox communityField,
 		ComboBox typeField,
 		ComboBox facilityField,
-		TextField detailsField) {
+		TextField detailsField,
+		boolean allowNoneFacility) {
 
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -443,65 +447,65 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		districtField.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityField);
-			FieldHelper.removeItems(communityField);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				communityField,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			if (typeField.getValue() != null) {
-				FieldHelper.updateItems(
-					facilityField,
-					districtDto != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) typeField.getValue(), true)
-						: null);
-			}
+			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
+
 		});
 
 		communityField.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityField);
-			if (typeField.getValue() != null) {
-				CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-				FieldHelper.updateItems(
-					facilityField,
-					communityDto != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) typeField.getValue(), true)
-						: districtField.getValue() != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) districtField.getValue(),
-									(FacilityType) typeField.getValue(),
-									true)
-							: null);
-			}
+			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
 		});
 		typeField.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facilityField);
-			if (e.getProperty().getValue() != null) {
-				FieldHelper.updateItems(
-					facilityField,
-					communityField.getValue() != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) communityField.getValue(),
-								(FacilityType) typeField.getValue(),
-								true)
-						: districtField.getValue() != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) districtField.getValue(),
-									(FacilityType) typeField.getValue(),
-									true)
-							: null);
-			}
+			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
 		});
+		FieldHelper
+			.updateItems(facilityField, Arrays.asList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
 		});
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
+	}
+
+	private void updateFacilities(
+		ComboBox facilityField,
+		ComboBox typeField,
+		ComboBox communityField,
+		ComboBox districtField,
+		boolean allowNoneFacility) {
+		if (typeField.getValue() != null) {
+			FieldHelper.updateItems(
+				facilityField,
+				communityField.getValue() != null
+					? FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByCommunityAndType(
+							(CommunityReferenceDto) communityField.getValue(),
+							(FacilityType) typeField.getValue(),
+							true,
+							false)
+					: districtField.getValue() != null
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) districtField.getValue(),
+								(FacilityType) typeField.getValue(),
+								true,
+								false)
+						: null);
+		} else {
+			if (allowNoneFacility) {
+				// "home or other place" as fallback
+				FieldHelper.updateItems(
+					facilityField,
+					Arrays.asList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+			} else {
+				FieldHelper.removeItems(facilityField);
+			}
+		}
+
 	}
 
 	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
@@ -626,17 +630,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			return;
 		}
 
-		boolean otherHealthFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
-		boolean noneHealthFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-		boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+		boolean otherFacility = facility.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+		boolean noneFacility = facility.getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+		boolean visibleAndRequired = otherFacility || noneFacility;
 
 		detailsField.setVisible(visibleAndRequired);
 
-		if (otherHealthFacility) {
+		if (otherFacility) {
 			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 		}
-		if (noneHealthFacility) {
-			detailsField.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+		if (noneFacility) {
+			detailsField.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 		}
 		if (!visibleAndRequired) {
 			detailsField.clear();

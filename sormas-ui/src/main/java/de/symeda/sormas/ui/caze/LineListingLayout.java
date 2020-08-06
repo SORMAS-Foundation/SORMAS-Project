@@ -106,7 +106,7 @@ public class LineListingLayout extends VerticalLayout {
 		typeGroup = new ComboBox<>(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		typeGroup.setId("typeGroup");
 		typeGroup.setWidth(200, Unit.PIXELS);
-		typeGroup.setItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay());
+		typeGroup.setItems(FacilityTypeGroup.getAccomodationGroups());
 		sharedInformationBar.addComponent(typeGroup);
 
 		type = new ComboBox<>(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
@@ -127,9 +127,7 @@ public class LineListingLayout extends VerticalLayout {
 		typeGroup.addValueChangeListener(e -> {
 			removeFacilities();
 			type.setItems(
-				typeGroup.getValue() != null
-					? FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true)
-					: new ArrayList<>());
+				typeGroup.getValue() != null ? FacilityType.getAccommodationTypes((FacilityTypeGroup) typeGroup.getValue()) : new ArrayList<>());
 			type.setValue(null);
 		});
 		type.addValueChangeListener(e -> {
@@ -290,13 +288,13 @@ public class LineListingLayout extends VerticalLayout {
 	private void updateFacility(FacilityType type, DistrictReferenceDto districtDto, CaseLineLayout line) {
 		FieldHelper.updateItems(
 			line.getFacility(),
-			districtDto != null ? FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, type, true) : null);
+			districtDto != null ? FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, type, true, false) : null);
 	}
 
 	private void updateFacility(FacilityType type, CommunityReferenceDto communityDto, CaseLineLayout line) {
 		FieldHelper.updateItems(
 			line.getFacility(),
-			communityDto != null ? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, type, true) : null);
+			communityDto != null ? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, type, true, false) : null);
 	}
 
 	private void removeCommunities() {
@@ -397,9 +395,10 @@ public class LineListingLayout extends VerticalLayout {
 					FieldHelper.updateItems(
 						facility,
 						communityDto != null
-							? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, type.getValue(), true)
+							? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, type.getValue(), true, false)
 							: district.getValue() != null
-								? FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district.getValue(), type.getValue(), true)
+								? FacadeProvider.getFacilityFacade()
+									.getActiveFacilitiesByDistrictAndType(district.getValue(), type.getValue(), true, false)
 								: null);
 				}
 			});

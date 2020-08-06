@@ -90,10 +90,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto communityRef,
 		FacilityType type,
-		boolean includeStaticFacility) {
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveFacilitiesByCommunityAndType(community, type, includeStaticFacility);
+		List<Facility> facilities = facilityService.getActiveFacilitiesByCommunityAndType(community, type, includeOtherFacility, includeNoneFacility);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
@@ -101,24 +102,27 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	public List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(
 		DistrictReferenceDto districtRef,
 		FacilityType type,
-		boolean includeStaticFacility) {
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveFacilitiesByDistrictAndType(district, type, includeStaticFacility);
+		List<Facility> facilities = facilityService.getActiveFacilitiesByDistrictAndType(district, type, includeOtherFacility, includeNoneFacility);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacility) {
+	public List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto communityRef, boolean includeOtherFacility) {
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, includeStaticFacility);
+		List<Facility> facilities =
+			facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, includeOtherFacility, false);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto districtRef, boolean includeStaticFacilities) {
+	public List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto districtRef, boolean includeOtherFacility) {
 		District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, includeStaticFacilities);
+		List<Facility> facilities =
+			facilityService.getActiveFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, includeOtherFacility, false);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 

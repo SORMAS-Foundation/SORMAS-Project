@@ -70,13 +70,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
-	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
-	private static final String TYPE_LOC = "typeLoc";
+	private static final String FACILITY_TYPE_GROUP_LOC = "typeGroupLoc";
 
 	private ComboBox birthDateDay;
 	private OptionGroup facilityOrHome;
-	private ComboBox typeGroup;
-	private ComboBox type;
+	private ComboBox facilityTypeGroup;
+	private ComboBox facilityType;
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
@@ -85,9 +84,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					fluidColumn(6, 0,
 							locs(CaseDataDto.DISEASE_DETAILS, CaseDataDto.PLAGUE_TYPE, CaseDataDto.DENGUE_FEVER_TYPE,
 									CaseDataDto.RABIES_TYPE)))
-			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT)
-			+ fluidRowLocs(CaseDataDto.COMMUNITY, FACILITY_OR_HOME_LOC)
-			+ fluidRowLocs(TYPE_GROUP_LOC, TYPE_LOC)
+			+ fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY)
+			+ fluidRowLocs(FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE)
 			+ fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
@@ -172,19 +170,19 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
 		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
-		typeGroup = new ComboBox();
-		typeGroup.setId("typeGroup");
-		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
-		typeGroup.setWidth(100, Unit.PERCENTAGE);
-		typeGroup.addItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay());
-		typeGroup.setVisible(false);
-		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
-		type = new ComboBox();
-		type.setId("type");
-		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-		type.setWidth(100, Unit.PERCENTAGE);
-		type.setVisible(false);
-		getContent().addComponent(type, TYPE_LOC);
+		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.setVisible(false);
+		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
+		facilityType = addField(CaseDataDto.FACILITY_TYPE);
+//		facilityType.setId(CaseDataDto.FACILITY_TYPE);
+//		facilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+//		facilityType.setWidth(100, Unit.PERCENTAGE);
+		facilityType.setVisible(false);
+//		getContent().addComponent(facilityType, TYPE_LOC);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		facility.setVisible(false);
@@ -207,10 +205,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			if (districtDto != null && type.getValue() != null) {
+			if (districtDto != null && facilityType.getValue() != null) {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, true));
 			}
 			FieldHelper.updateItems(
 				cbPointOfEntry,
@@ -219,63 +218,82 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			if (type.getValue() != null) {
+			if (facilityType.getValue() != null) {
 				FieldHelper.updateItems(
 					facility,
 					communityDto != null
-						? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) type.getValue(), true)
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
 						: district.getValue() != null
 							? FacadeProvider.getFacilityFacade()
 								.getActiveFacilitiesByDistrictAndType(
 									(DistrictReferenceDto) district.getValue(),
-									(FacilityType) type.getValue(),
+									(FacilityType) facilityType.getValue(),
+									true,
 									true)
 							: null);
 			}
 		});
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
-				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
-				facility.addItem(noFacilityRef);
-				facility.setValue(noFacilityRef);
-			}
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
-				typeGroup.setVisible(true);
-				type.setVisible(true);
+				facilityTypeGroup.setVisible(true);
+				facilityType.setVisible(true);
 				facility.setVisible(true);
-				if (type.getValue() != null)
+
+				if (facilityTypeGroup.getValue() == null) {
+					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+				}
+				if (facilityType.getValue() == null && FacilityTypeGroup.MEDICAL_FACILITY.equals(facilityTypeGroup.getValue())) {
+					facilityType.setValue(FacilityType.HOSPITAL);
+				}
+
+				if (facilityType.getValue() != null) {
 					updateFacility((DistrictReferenceDto) district.getValue(), (CommunityReferenceDto) community.getValue(), facility);
-				if (CaseOrigin.IN_COUNTRY.equals(ogCaseOrigin.getValue()))
+				}
+
+				if (CaseOrigin.IN_COUNTRY.equals(ogCaseOrigin.getValue())) {
 					facility.setRequired(true);
+				}
 			} else {
-				typeGroup.setVisible(false);
-				type.setVisible(false);
+				facilityTypeGroup.setVisible(false);
+				facilityType.setVisible(false);
 				facility.setVisible(false);
 				facility.setRequired(false);
+
+				if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+					facility.addItem(noFacilityRef);
+					facility.setValue(noFacilityRef);
+				}
 			}
 			updateFacilityFields(facility, facilityDetails);
 		});
-		typeGroup.addValueChangeListener(e -> {
+		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true));
+			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
-		type.addValueChangeListener(e -> {
+		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (type.getValue() != null && district.getValue() != null) {
+			if (facilityType.getValue() != null && district.getValue() != null) {
 				if (community.getValue() != null) {
 					FieldHelper.updateItems(
 						facility,
 						FacadeProvider.getFacilityFacade()
 							.getActiveFacilitiesByCommunityAndType(
 								(CommunityReferenceDto) community.getValue(),
-								(FacilityType) type.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
 								true));
 				} else {
 					FieldHelper.updateItems(
 						facility,
 						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) district.getValue(), (FacilityType) type.getValue(), true));
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								true));
 				}
 			}
 		});
@@ -285,14 +303,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
-					setRequired(true, FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC, CaseDataDto.HEALTH_FACILITY);
+					setRequired(true, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
 					setRequired(false, CaseDataDto.POINT_OF_ENTRY);
 					updateFacilityFields(facility, facilityDetails);
 				} else {
 					facilityOrHome.clear();
 					setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 					setRequired(true, CaseDataDto.POINT_OF_ENTRY);
-					setRequired(false, FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, TYPE_LOC, CaseDataDto.HEALTH_FACILITY);
+					setRequired(false, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE, CaseDataDto.HEALTH_FACILITY);
 					updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 				}
 			});
@@ -307,8 +325,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			FACILITY_OR_HOME_LOC,
-			TYPE_GROUP_LOC,
-			TYPE_LOC);
+			FACILITY_TYPE_GROUP_LOC,
+			CaseDataDto.FACILITY_TYPE);
 		FieldHelper.addSoftRequiredStyle(plagueType, community, facilityDetails, sex);
 
 		FieldHelper
@@ -331,7 +349,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);
-			this.getValue().setFacilityType((FacilityType) type.getValue());
+			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 
 		cbPointOfEntry.addValueChangeListener(e -> {
@@ -353,15 +371,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updateFacility(DistrictReferenceDto district, CommunityReferenceDto community, ComboBox facility) {
 		FieldHelper.removeItems(facility);
-		if (type.getValue() != null && district != null) {
+		if (facilityType.getValue() != null && district != null) {
 			if (community != null) {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByCommunityAndType(community, (FacilityType) facilityType.getValue(), true, false));
 			} else {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(district, (FacilityType) facilityType.getValue(), true, false));
 			}
 		}
 	}
@@ -390,7 +410,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 			}
 			if (noneHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS));
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
 			if (!visibleAndRequired) {
 				tfFacilityDetails.clear();

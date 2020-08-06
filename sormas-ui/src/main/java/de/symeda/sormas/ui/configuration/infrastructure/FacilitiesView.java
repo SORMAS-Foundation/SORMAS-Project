@@ -215,7 +215,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 		typeGroupFilter.addItems(FacilityTypeGroup.values());
 		typeGroupFilter.addValueChangeListener(e -> {
 			criteria.typeGroup((FacilityTypeGroup) e.getProperty().getValue());
-			FieldHelper.updateItems(typeFilter, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroupFilter.getValue(), false));
+			FieldHelper.updateItems(typeFilter, FacilityType.getTypes((FacilityTypeGroup) typeGroupFilter.getValue()));
 		});
 		filterLayout.addComponent(typeGroupFilter);
 

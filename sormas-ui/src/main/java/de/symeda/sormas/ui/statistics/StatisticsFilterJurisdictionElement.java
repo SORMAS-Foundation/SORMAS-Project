@@ -177,7 +177,7 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 		});
 
 		typeGroup.addValueChangeListener(e -> {
-			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true));
+			FieldHelper.updateEnumData(type, FacilityType.getAccommodationTypes((FacilityTypeGroup) typeGroup.getValue()));
 		});
 
 		type.addValueChangeListener(e -> {
@@ -191,7 +191,7 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 					CommunityReferenceDto selectedCommunity = (CommunityReferenceDto) selectedCommunityTokenizable.getValue();
 					facilities.addAll(
 						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(selectedCommunity, (FacilityType) type.getValue(), false));
+							.getActiveFacilitiesByCommunityAndType(selectedCommunity, (FacilityType) type.getValue(), false, false));
 				}
 				Map<String, String> facilityCommunitiesMap = FacadeProvider.getFacilityFacade()
 					.getCommunityUuidsForFacilities(

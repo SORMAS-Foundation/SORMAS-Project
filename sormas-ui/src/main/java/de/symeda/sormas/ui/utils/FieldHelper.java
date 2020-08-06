@@ -454,6 +454,9 @@ public final class FieldHelper {
 		"rawtypes" })
 	public static void updateEnumData(AbstractSelect select, Iterable<? extends Enum> enumData) {
 
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		Object value = select.getValue();
 		select.removeAllItems();
 		select.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
 		select.setItemCaptionPropertyId((SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID));
@@ -463,6 +466,8 @@ public final class FieldHelper {
 				newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
 			}
 		}
+		select.setValue(value);
+		select.setReadOnly(readOnly);
 	}
 
 	public static void removeItems(AbstractSelect select) {

@@ -86,7 +86,8 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			1,
-			getFacilityFacade().getActiveFacilitiesByCommunityAndType(new CommunityReferenceDto(c.getUuid()), FacilityType.HOSPITAL, false).size());
+			getFacilityFacade().getActiveFacilitiesByCommunityAndType(new CommunityReferenceDto(c.getUuid()), FacilityType.HOSPITAL, false, false)
+				.size());
 	}
 
 	@Test
@@ -102,7 +103,8 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(
 			1,
-			getFacilityFacade().getActiveFacilitiesByDistrictAndType(new DistrictReferenceDto(d.getUuid()), FacilityType.HOSPITAL, false).size());
+			getFacilityFacade().getActiveFacilitiesByDistrictAndType(new DistrictReferenceDto(d.getUuid()), FacilityType.HOSPITAL, false, false)
+				.size());
 	}
 
 	@Test

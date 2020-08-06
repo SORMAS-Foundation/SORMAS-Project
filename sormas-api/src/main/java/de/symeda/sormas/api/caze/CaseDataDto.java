@@ -80,7 +80,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -207,6 +206,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	@PersonalData
 	private CommunityReferenceDto community;
+	@PersonalData
 	private FacilityType facilityType;
 	@Outbreaks
 	@Required

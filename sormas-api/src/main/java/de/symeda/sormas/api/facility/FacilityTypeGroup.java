@@ -22,37 +22,30 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum FacilityTypeGroup {
 
-	ACCOMMODATION(true),
-	CARE_FACILITY(false),
-	CATERING_OUTLET(false),
-	EDUCATIONAL_FACILITY(false),
-	LEISURE_FACILITY(false),
-	MEDICAL_FACILITY(true),
-	WORKING_PLACE(false),
-	RESIDENCE(true);
+	ACCOMMODATION(),
+	CARE_FACILITY(),
+	CATERING_OUTLET(),
+	EDUCATIONAL_FACILITY(),
+	LEISURE_FACILITY(),
+	MEDICAL_FACILITY(),
+	WORKING_PLACE(),
+	RESIDENCE();
 
-	private final boolean suitableForLongerStay;
+	private static List<FacilityTypeGroup> accomodationGroups = null;
 
-	private static List<FacilityTypeGroup> groupsWithOvernightAccomodation = null;
-
-	FacilityTypeGroup(boolean suitableForLongerStay) {
-		this.suitableForLongerStay = suitableForLongerStay;
+	FacilityTypeGroup() {
 	}
 
-	public static List<FacilityTypeGroup> getTypeGroupsSuitableForLongerStay() {
-		if (groupsWithOvernightAccomodation == null) {
-			groupsWithOvernightAccomodation = new ArrayList<FacilityTypeGroup>();
-			for (FacilityTypeGroup facilityTypeGroup : values()) {
-				if (facilityTypeGroup.isSuitableForLongerStay()) {
-					groupsWithOvernightAccomodation.add(facilityTypeGroup);
+	public static List<FacilityTypeGroup> getAccomodationGroups() {
+		if (accomodationGroups == null) {
+			accomodationGroups = new ArrayList<FacilityTypeGroup>();
+			for (FacilityTypeGroup group : values()) {
+				if (!FacilityType.getAccommodationTypes(group).isEmpty()) {
+					accomodationGroups.add(group);
 				}
 			}
 		}
-		return groupsWithOvernightAccomodation;
-	}
-
-	public boolean isSuitableForLongerStay() {
-		return suitableForLongerStay;
+		return accomodationGroups;
 	}
 
 	public String toString() {

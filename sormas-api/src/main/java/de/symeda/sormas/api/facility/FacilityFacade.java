@@ -39,13 +39,18 @@ public interface FacilityFacade {
 	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto community,
 		FacilityType type,
-		boolean includeStaticFacility);
+		boolean includeOtherFacility,
+		boolean includeNoneFacility);
 
-	List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(DistrictReferenceDto district, FacilityType type, boolean includeStaticFacility);
+	List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(
+		DistrictReferenceDto district,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility);
 
-	List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto community, boolean includeStaticFacility);
+	List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto community, boolean includeOtherFacility);
 
-	List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto district, boolean includeStaticFacility);
+	List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto district, boolean includeOtherFacility);
 
 	List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherFacility);
 

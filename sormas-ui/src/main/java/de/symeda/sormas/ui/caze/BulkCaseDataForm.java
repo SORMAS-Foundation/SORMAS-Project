@@ -100,8 +100,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 	private CheckBox outcomeCheckBox;
 	private CheckBox surveillanceOfficerCheckBox;
 	private CheckBox healthFacilityCheckbox;
-	private ComboBox typeGroup;
-	private ComboBox type;
+	private ComboBox facilityTypeGroup;
+	private ComboBox facilityType;
 
 	public BulkCaseDataForm(DistrictReferenceDto singleSelectedDistrict) {
 		super(CaseBulkEditData.class, CaseDataDto.I18N_PREFIX);
@@ -193,19 +193,19 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 		ComboBox community = addInfrastructureField(CaseBulkEditData.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.setEnabled(false);
-		typeGroup = new ComboBox();
-		typeGroup.setId("typeGroup");
-		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
-		typeGroup.setWidth(100, Unit.PERCENTAGE);
-		typeGroup.addItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay());
-		typeGroup.setEnabled(false);
-		getContent().addComponent(typeGroup, TYPE_GROUP_LOC);
-		type = new ComboBox();
-		type.setId("type");
-		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-		type.setWidth(100, Unit.PERCENTAGE);
-		type.setEnabled(false);
-		getContent().addComponent(type, TYPE_LOC);
+		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.setEnabled(false);
+		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
+		facilityType = new ComboBox();
+		facilityType.setId(CaseDataDto.FACILITY_TYPE);
+		facilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		facilityType.setWidth(100, Unit.PERCENTAGE);
+		facilityType.setEnabled(false);
+		getContent().addComponent(facilityType, TYPE_LOC);
 		ComboBox facility = addInfrastructureField(CaseBulkEditData.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		facility.setEnabled(false);
@@ -222,52 +222,64 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			if (districtDto != null && type.getValue() != null) {
+			if (districtDto != null && facilityType.getValue() != null) {
 				FieldHelper.updateItems(
 					facility,
-					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true));
+					FacadeProvider.getFacilityFacade()
+						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
 			}
 		});
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			if (type.getValue() != null) {
+			if (facilityType.getValue() != null) {
 				FieldHelper.updateItems(
 					facility,
 					communityDto != null
-						? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) type.getValue(), true)
+						? FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
 						: district.getValue() != null
 							? FacadeProvider.getFacilityFacade()
 								.getActiveFacilitiesByDistrictAndType(
 									(DistrictReferenceDto) district.getValue(),
-									(FacilityType) type.getValue(),
-									true)
+									(FacilityType) facilityType.getValue(),
+									true,
+									false)
 							: null);
 			}
 		});
-		typeGroup.addValueChangeListener(e -> {
+		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			FieldHelper.updateEnumData(type, FacilityType.getFacilityTypesByGroup((FacilityTypeGroup) typeGroup.getValue(), true));
+			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 		});
-		type.addValueChangeListener(e -> {
+		facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY); // default value
+
+		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-			if (type.getValue() != null && district.getValue() != null) {
+			if (facilityType.getValue() != null && district.getValue() != null) {
 				if (community.getValue() != null) {
 					FieldHelper.updateItems(
 						facility,
 						FacadeProvider.getFacilityFacade()
 							.getActiveFacilitiesByCommunityAndType(
 								(CommunityReferenceDto) community.getValue(),
-								(FacilityType) type.getValue(),
-								true));
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
 				} else {
 					FieldHelper.updateItems(
 						facility,
 						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) district.getValue(), (FacilityType) type.getValue(), true));
+							.getActiveFacilitiesByDistrictAndType(
+								(DistrictReferenceDto) district.getValue(),
+								(FacilityType) facilityType.getValue(),
+								true,
+								false));
 				}
 			}
 		});
+		facilityType.setValue(FacilityType.HOSPITAL); // default
+
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
 		FieldHelper.setRequiredWhen(getFieldGroup(), diseaseCheckBox, Arrays.asList(CaseBulkEditData.DISEASE), Arrays.asList(true));
@@ -281,7 +293,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			healthFacilityCheckbox,
 			Arrays.asList(CaseBulkEditData.REGION, CaseBulkEditData.DISTRICT, CaseBulkEditData.HEALTH_FACILITY),
 			Arrays.asList(true));
-		FieldHelper.setRequiredWhen(healthFacilityCheckbox, Arrays.asList(typeGroup, type), Arrays.asList(true), false, null);
+		FieldHelper.setRequiredWhen(healthFacilityCheckbox, Arrays.asList(facilityTypeGroup, facilityType), Arrays.asList(true), false, null);
 
 		diseaseCheckBox.addValueChangeListener(e -> {
 			disease.setEnabled((boolean) e.getProperty().getValue());
@@ -299,8 +311,8 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 			region.setEnabled((boolean) e.getProperty().getValue());
 			district.setEnabled((boolean) e.getProperty().getValue());
 			community.setEnabled((boolean) e.getProperty().getValue());
-			typeGroup.setEnabled((boolean) e.getProperty().getValue());
-			type.setEnabled((boolean) e.getProperty().getValue());
+			facilityTypeGroup.setEnabled((boolean) e.getProperty().getValue());
+			facilityType.setEnabled((boolean) e.getProperty().getValue());
 			facility.setEnabled((boolean) e.getProperty().getValue());
 			if ((boolean) e.getProperty().getValue()) {
 				FieldHelper.addSoftRequiredStyle(community);

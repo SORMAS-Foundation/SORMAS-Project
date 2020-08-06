@@ -789,6 +789,8 @@ public interface Captions {
 	String facilityActiveFacilities = "facilityActiveFacilities";
 	String facilityAllFacilities = "facilityAllFacilities";
 	String facilityArchivedFacilities = "facilityArchivedFacilities";
+	String facilityType = "facilityType";
+	String facilityTypeGroup = "facilityTypeGroup";
 	String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
 	String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
 	String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
