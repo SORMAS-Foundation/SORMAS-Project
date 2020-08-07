@@ -1380,14 +1380,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN pseudonymized boolean;");
 			case 207:
 				currentVersion = 207;
-				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineTypeDetails varchar(512);");
-				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineTypeDetails varchar(512);");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN forRetest varchar(255);")
 			case 208:
 				currentVersion = 208;
-				getDao(Sample.class)
-					.executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineTypeDetails varchar(512);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineTypeDetails varchar(512);");
 			case 209:
 				currentVersion = 209;
+				getDao(Sample.class)
+					.executeRaw("ALTER TABLE samples ADD COLUMN associatedEventParticipant_id bigint REFERENCES eventParticipants (id);");
+			case 210:
+				currentVersion = 210;
 
 				getDao(Event.class).executeRaw("UPDATE events set eventStatus='SIGNAL' where eventStatus='POSSIBLE'");
 				getDao(Event.class).executeRaw("UPDATE events set eventStatus='EVENT' where eventStatus='CONFIRMED'");
@@ -1407,24 +1410,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				getDao(Event.class).executeRaw(
 					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
-			case 210:
-				currentVersion = 210;
+			case 211:
+				currentVersion = 211;
 				getDao(Sample.class).executeRaw("ALTER TABLE contacts ADD COLUMN epiData_id bigint REFERENCES epidata (id);");
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
-			case 211:
+			case 212:
 				// Re-synchronize all contacts and epi data to prevent missing embedded entities
-				currentVersion = 211;
+				currentVersion = 212;
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
-			case 212:
+			case 213:
+				currentVersion = 213;
 				// Re-synchronize all contacts and epi data to prevent missing embedded entities
 				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -1443,21 +1447,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Event.class).executeRaw(
 					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
-			case 213:
-				currentVersion = 213;
+			case 214:
+				currentVersion = 214;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN clinicalConfirmation varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN epidemiologicalConfirmation varchar(255);");
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN laboratoryDiagnosticConfirmation varchar(255);");
 
-			case 214:
-				currentVersion = 214;
+			case 215:
+				currentVersion = 215;
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSource varchar(255);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSourceDetails varchar(512);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingApp varchar(255);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingAppDetails varchar(512);");
-			case 215:
-				currentVersion = 215;
-				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN forRetest varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;
