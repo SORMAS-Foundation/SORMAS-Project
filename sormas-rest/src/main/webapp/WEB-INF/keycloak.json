@@ -1,0 +1,12 @@
+{
+  "realm": "SORMAS",
+  "auth-server-url": "http://localhost:8080/auth/",
+  "ssl-required": "external",
+  "resource": "sormas-rest",
+  "credentials": {
+    "secret": "secret"
+  },
+  "confidential-port": 0,
+  "principal-attribute": "preferred_username",
+  "enable-basic-auth": true
+}

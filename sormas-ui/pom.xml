@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>fish.payara.api</groupId>
 			<artifactId>payara-api</artifactId>
-			<version>5.194</version>
+			<version>${payara.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
