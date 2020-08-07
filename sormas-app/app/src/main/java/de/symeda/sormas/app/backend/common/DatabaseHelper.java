@@ -1380,7 +1380,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN pseudonymized boolean;");
 			case 207:
 				currentVersion = 207;
-				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN forRetest varchar(255);")
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN forRetest varchar(255);");
 			case 208:
 				currentVersion = 208;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineTypeDetails varchar(512);");
