@@ -367,6 +367,7 @@ public interface Strings {
 	String infoArchivedEvents = "infoArchivedEvents";
 	String infoBasicExport = "infoBasicExport";
 	String infoCalculateCompleteness = "infoCalculateCompleteness";
+	String infoCampaignsDashboard = "infoCampaignsDashboard";
 	String infoCanceledBy = "infoCanceledBy";
 	String infoCaseCompleteness = "infoCaseCompleteness";
 	String infoCaseDate = "infoCaseDate";
@@ -688,6 +689,8 @@ public interface Strings {
 	String or = "or";
 	String pleaseSpecify = "pleaseSpecify";
 	String previousPeriod = "previousPeriod";
+	String promptArea = "promptArea";
+	String promptCampaign = "promptCampaign";
 	String promptCampaignSearch = "promptCampaignSearch";
 	String promptCasesDateFrom = "promptCasesDateFrom";
 	String promptCasesEpiWeekFrom = "promptCasesEpiWeekFrom";

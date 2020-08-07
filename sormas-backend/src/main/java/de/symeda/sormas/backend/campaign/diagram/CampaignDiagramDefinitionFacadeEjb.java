@@ -32,6 +32,11 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 	}
 
 	@Override
+	public List<CampaignDiagramDefinitionDto> getAll() {
+		return service.getAll().stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}

@@ -9,5 +9,7 @@ public interface CampaignDiagramDefinitionFacade {
 
 	CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto);
 
+	List<CampaignDiagramDefinitionDto> getAll();
+
 	List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids);
 }
