@@ -1,5 +1,5 @@
 language: java
 jdk:
-  - openjdk8
+  - openjdk11
 before_install: cd sormas-base
 install: mvn test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
