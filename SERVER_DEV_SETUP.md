@@ -5,7 +5,7 @@
 
 ## Content
 * [Prerequisites](#prerequisites)
-  * [Java 8](#java-8)
+  * [Java 11](#java-11)
   * [ant](#ant)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
@@ -15,9 +15,9 @@
 
 ## Prerequisites
 
-### Java 8
+### Java 11
 
-See [Installing Java](SERVER_SETUP.md#java-8)
+See [Installing Java](SERVER_SETUP.md#java-11)
 
 ### Ant
 
