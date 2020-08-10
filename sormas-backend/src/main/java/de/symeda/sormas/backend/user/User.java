@@ -182,7 +182,7 @@ public class User extends AbstractDomainObject {
 		this.phone = phone;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public Location getAddress() {
 		if (address == null) {
 			address = new Location();
@@ -203,7 +203,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ElementCollection(fetch = FetchType.LAZY)
+	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERROLES,
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),

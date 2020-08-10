@@ -852,20 +852,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		// whoever created it or is assigned to it is allowed to access it
-		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
+		Predicate filter = cb.equal(contactPath.get(Contact.REPORTING_USER).get(User.ID), currentUser.getId());
+		filter = cb.or(filter, cb.equal(contactPath.get(Contact.CONTACT_OFFICER).get(User.ID), currentUser.getId()));
 
 		switch (jurisdictionLevel) {
 		case REGION:
 			final Region region = currentUser.getRegion();
 			if (region != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION).get(Region.ID), currentUser.getRegion().getId()));
 			}
 			break;
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 			}
 			break;
 		default:

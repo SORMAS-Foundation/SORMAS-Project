@@ -31,6 +31,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -47,6 +48,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -65,6 +67,8 @@ public class PersonService extends AbstractAdoService<Person> {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public PersonService() {
 		super(Person.class);
@@ -231,7 +235,7 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME), casePersonsJoin.get(Person.UUID));
 
-		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsRoot.join(Case.PERSON, JoinType.LEFT));
+		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsJoin);
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		casePersonsQuery.where(
@@ -337,9 +341,27 @@ public class PersonService extends AbstractAdoService<Person> {
 		return result;
 	}
 
-	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<Person, Person> personFrom) {
+	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<?, Person> personFrom) {
 
 		Predicate filter = null;
+
+		if (criteria.getFirstName() != null && criteria.getLastName() != null) {
+			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
+			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
+
+			Expression<String> nameInvertedExpr = cb.concat(personFrom.get(Person.LAST_NAME), " ");
+			nameInvertedExpr = cb.concat(nameInvertedExpr, personFrom.get(Person.FIRST_NAME));
+
+			String name = criteria.getFirstName() + " " + criteria.getLastName();
+			String nameInverted = criteria.getLastName() + " " + criteria.getFirstName();
+
+			double nameSimilarityThreshold = Math.max(0, configFacade.getNameSimilarityThreshold() - 0.2);
+			filter = and(
+				cb,
+				filter,
+				cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold),
+				cb.gt(cb.function("similarity", double.class, nameInvertedExpr, cb.literal(nameInverted)), nameSimilarityThreshold));
+		}
 
 		if (criteria.getSex() != null) {
 			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));

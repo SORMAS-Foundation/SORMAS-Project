@@ -208,6 +208,7 @@ public abstract class DataImporter {
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
+		Date methodDate = new Date();
 
 		CSVReader csvReader = null;
 		try {
@@ -255,6 +256,7 @@ public abstract class DataImporter {
 			}
 
 			logger.debug("runImport - done");
+			logger.debug("import took - " + (new Date().getTime() - methodDate.getTime()) / 1000d);
 
 			if (cancelAfterCurrent) {
 				if (!hasImportError) {
