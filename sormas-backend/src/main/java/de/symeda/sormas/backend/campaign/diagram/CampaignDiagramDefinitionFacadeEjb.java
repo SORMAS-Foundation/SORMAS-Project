@@ -14,7 +14,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
-@Stateless(name = "CampaignFormMetaFacade")
+@Stateless(name = "CampaignDiagramDefinitionFacade")
 public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefinitionFacade {
 
 	@EJB
