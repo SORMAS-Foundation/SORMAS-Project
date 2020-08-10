@@ -149,6 +149,11 @@ public class CaseController {
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
+	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, disease);
+		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+	}
+
 	public void createFromContact(ContactDto contact) {
 		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null);
 		caseCreateComponent.addCommitListener(new CommitListener() {
@@ -328,7 +333,11 @@ public class CaseController {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
 			symptoms = null;
 			person = convertedEventParticipant.getPerson();
-			caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
+			if (unrelatedDisease == null) {
+				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, event.getDisease());
+			} else {
+				caze = CaseDataDto.buildFromEventParticipant(convertedEventParticipant, unrelatedDisease);
+			}
 		} else {
 			symptoms = null;
 			person = null;
@@ -406,11 +415,16 @@ public class CaseController {
 							saveCase(dto);
 							// retrieve the event participant just in case it has been changed during case saving
 							EventParticipantDto updatedEventParticipant =
-								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
-							// set resulting case on event participant and save it
-							updatedEventParticipant.setResultingCase(dto.toReference());
-							FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
-							FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
+									FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
+							if (unrelatedDisease == null) {
+								// set resulting case on event participant and save it
+								updatedEventParticipant.setResultingCase(dto.toReference());
+								FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+								FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
+							} else {
+								FacadeProvider.getCaseFacade()
+									.setSampleAssociationsUnrelatedDisease(updatedEventParticipant.toReference(), dto.toReference());
+							}
 							navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 						} else {
 							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));

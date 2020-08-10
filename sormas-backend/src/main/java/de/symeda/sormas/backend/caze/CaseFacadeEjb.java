@@ -1338,6 +1338,23 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+		if (sourceEventParticipant != null) {
+			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
+			final Case caze = caseService.getByUuid(cazeRef.getUuid());
+			final Disease disease = caze.getDisease();
+			eventParticipant.getSamples()
+				.stream()
+				.filter(sample -> sampleContainsTestForDisease(sample, disease))
+				.forEach(sample -> sample.setAssociatedCase(caze));
+		}
+	}
+
+	private boolean sampleContainsTestForDisease(Sample sample, Disease disease) {
+		return sample.getPathogenTests().stream().anyMatch(test -> test.getTestedDisease().equals(disease));
+	}
+
+	@Override
 	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in

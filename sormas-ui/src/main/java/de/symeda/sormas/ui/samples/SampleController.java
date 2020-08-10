@@ -42,6 +42,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -156,15 +157,18 @@ public class SampleController {
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
 			pathogenTest.setTestResultText((String) (createForm.getField(PathogenTestDto.TEST_RESULT_TEXT)).getValue());
-			newSample.setPathogenTestResult(testResult);
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
-
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
+			EventParticipantDto eventParticipant =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+			final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+			Disease testedDisease = pathogenTest.getTestedDisease();
+			if (event.getDisease().equals(testedDisease)) {
+				newSample.setPathogenTestResult(testResult);
+			}
 			if (eventParticipantRef != null && testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
-				EventParticipantDto eventParticipant =
-					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
-				ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant);
+				ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
 			}
 		} else {
 			FacadeProvider.getSampleFacade().saveSample(newSample);
