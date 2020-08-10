@@ -69,6 +69,7 @@ public class ContactListCriteriaBuilder {
 			joins.getReportingUser().get(User.UUID),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
 			joins.getCaseReportingUser().get(User.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),

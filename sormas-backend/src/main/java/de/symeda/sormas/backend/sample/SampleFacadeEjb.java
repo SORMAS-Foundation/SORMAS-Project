@@ -562,6 +562,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getContactRegion().get(Region.NAME),
 				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCommunity().get(Community.NAME),
 				joins.getContact().get(Contact.REPORT_DATE_TIME),
 				joins.getContact().get(Contact.LAST_CONTACT_DATE),
 				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),

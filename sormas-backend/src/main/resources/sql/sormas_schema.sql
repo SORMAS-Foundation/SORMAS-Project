@@ -4902,6 +4902,6 @@ ALTER TABLE contact ADD COLUMN community_id bigint;
 ALTER TABLE contact_history ADD COLUMN community_id bigint;
 ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFERENCES community (id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (231, 'Add responsible community to contact #2104');
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Add responsible community to contact #2104');
 
 -- *** Insert new sql commands BEFORE this line ***

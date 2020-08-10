@@ -169,10 +169,12 @@ public interface Captions {
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
 	String CaseData_clinicianPhone = "CaseData.clinicianPhone";
+	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_distric = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_epiData = "CaseData.epiData";
@@ -219,6 +221,7 @@ public interface Captions {
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
+	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingType = "CaseData.reportingType";
@@ -367,6 +370,8 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_community = "Contact.community";
+	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
 	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";

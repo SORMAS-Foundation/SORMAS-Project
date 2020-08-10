@@ -869,6 +869,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
 			}
 			break;
+		case COMMUNITY:
+			final Community community = currentUser.getCommunity();
+			if (community != null) {
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.COMMUNITY), currentUser.getCommunity()));
+			}
+			break;
 		default:
 		}
 
