@@ -16,8 +16,10 @@
 ## Prerequisites
 
 ### Java 11
-
 See [Installing Java](SERVER_SETUP.md#java-11)
+
+SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just 
+use Java 8 language features for now.
 
 ### Ant
 
