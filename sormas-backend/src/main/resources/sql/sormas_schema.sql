@@ -4899,9 +4899,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quar
 
 -- 2020-07-29 Campaign diagram visualisation
 
-ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaigndiagramseries::json;
-ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json USING campaigndiagramseries::json;
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaignformdata ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING formvalues::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (236, 'Campaign diagram visualisation');
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Campaign diagram visualization #2526');
+
 
 -- *** Insert new sql commands BEFORE this line ***

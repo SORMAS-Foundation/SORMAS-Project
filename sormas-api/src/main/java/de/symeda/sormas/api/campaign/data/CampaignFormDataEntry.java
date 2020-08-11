@@ -15,13 +15,14 @@
 
 package de.symeda.sormas.api.campaign.data;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CampaignFormDataEntry implements Serializable {
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
+
+public class CampaignFormDataEntry implements Serializable, Comparable<CampaignFormDataEntry> {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
@@ -79,6 +80,11 @@ public class CampaignFormDataEntry implements Serializable {
 		}
 
 		return value.toString();
+	}
+
+	@Override
+	public int compareTo(CampaignFormDataEntry o) {
+		return DataHelper.compare(id, o.id);
 	}
 
 }

@@ -20,10 +20,28 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
@@ -50,27 +68,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
@@ -111,7 +108,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		DtoHelper.validateDto(source, target);
 
-		target.setFormValuesList(source.getFormValues());
+		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(campaignFormMetaService.getByReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
@@ -131,7 +128,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CampaignFormDataDto target = new CampaignFormDataDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setFormValues(source.getFormValuesList());
+		target.setFormValues(source.getFormValues());
 		target.setCampaign(CampaignFacadeEjb.toReferenceDto(source.getCampaign()));
 		target.setCampaignFormMeta(CampaignFormMetaFacadeEjb.toReferenceDto(source.getCampaignFormMeta()));
 		target.setFormDate(source.getFormDate());
@@ -218,7 +215,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			root.get(CampaignFormData.UUID),
 			campaignJoin.get(Campaign.NAME),
 			campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
-			root.get(CampaignFormData.FORM_VALUES),
+			criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES) : cb.nullLiteral(String.class),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
@@ -270,16 +267,16 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			result = em.createQuery(cq).getResultList();
 		}
 
-		if (criteria.getCampaignFormMeta() != null) {
-			ObjectMapper mapper = new ObjectMapper();
-			result.forEach(r -> {
-				try {
-					r.setFormValuesList(Arrays.asList(mapper.readValue(r.getFormValues(), CampaignFormDataEntry[].class)));
-				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - UUID: " + r.getUuid());
-				}
-			});
-		}
+//		if (criteria.getCampaignFormMeta() != null) {
+//			ObjectMapper mapper = new ObjectMapper();
+//			result.forEach(r -> {
+//				try {
+//					r.setFormValuesList(Arrays.asList(mapper.readValue(r.getFormValues(), CampaignFormDataEntry[].class)));
+//				} catch (IOException e) {
+//					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - UUID: " + r.getUuid());
+//				}
+//			});
+//		}
 
 		return result;
 	}
