@@ -210,7 +210,7 @@ public class CampaignController {
 			component.addDiscardListener(discardCallback::run);
 		}
 
-		if (showDeleteButton) {
+		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);

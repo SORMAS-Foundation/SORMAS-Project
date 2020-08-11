@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -35,6 +40,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -96,11 +102,6 @@ import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class CaseController {
 
@@ -371,6 +372,7 @@ public class CaseController {
 				final CaseDataDto dto = createForm.getValue();
 
 				if (convertedContact != null) {
+					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
@@ -385,9 +387,7 @@ public class CaseController {
 				} else if (convertedEventParticipant != null) {
 					selectOrCreateCase(dto, convertedEventParticipant.getPerson(), uuid -> {
 						if (uuid == null) {
-							SymptomsDto newSymptoms = SymptomsDto.build();
-							newSymptoms.setOnsetDate(createForm.getOnsetDate());
-							dto.setSymptoms(newSymptoms);
+							dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 							saveCase(dto);
 							// retrieve the event participant just in case it has been changed during case saving
 							EventParticipantDto updatedEventParticipant =
@@ -423,9 +423,7 @@ public class CaseController {
 
 								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 									if (uuid == null) {
-										SymptomsDto newSymptoms = SymptomsDto.build();
-										newSymptoms.setOnsetDate(createForm.getOnsetDate());
-										dto.setSymptoms(newSymptoms);
+										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 										saveCase(dto);
 										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 									} else {

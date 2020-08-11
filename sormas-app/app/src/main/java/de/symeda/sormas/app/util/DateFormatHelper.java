@@ -34,4 +34,17 @@ public class DateFormatHelper {
 		Integer birthdateYYYY) {
 		return PersonHelper.getAgeAndBirthdateString(age, ageType, birthdateDD, birthdateMM, birthdateYYYY, I18nProperties.getUserLanguage());
 	}
+
+	public static String formatDateInterval(Date startDate, Date endDate) {
+		String intervalDate = null;
+
+		String formatedStartDate = DateHelper.formatLocalDate(startDate, I18nProperties.getUserLanguage());
+		if (endDate == null) {
+			intervalDate = formatedStartDate;
+		} else {
+			String formatedEndDate = DateHelper.formatLocalDate(endDate, I18nProperties.getUserLanguage());
+			intervalDate = String.format("%s - %s", formatedStartDate, formatedEndDate);
+		}
+		return intervalDate;
+	}
 }

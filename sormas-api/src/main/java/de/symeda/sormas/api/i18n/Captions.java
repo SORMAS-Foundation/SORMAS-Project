@@ -205,6 +205,7 @@ public interface Captions {
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
+	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
 	String CaseData_quarantineHomePossible = "CaseData.quarantineHomePossible";
@@ -284,6 +285,7 @@ public interface Captions {
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
+	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
@@ -394,6 +396,7 @@ public interface Captions {
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
 	String Contact_quarantine = "Contact.quarantine";
+	String Contact_quarantineExtended = "Contact.quarantineExtended";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
 	String Contact_quarantineHomePossible = "Contact.quarantineHomePossible";
@@ -454,6 +457,7 @@ public interface Captions {
 	String contactNewContact = "contactNewContact";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
+	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";

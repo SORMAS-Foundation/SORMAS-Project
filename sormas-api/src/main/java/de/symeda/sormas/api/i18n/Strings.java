@@ -97,6 +97,7 @@ public interface Strings {
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
+	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
@@ -257,6 +258,7 @@ public interface Strings {
 	String headingEventsDeleted = "headingEventsDeleted";
 	String headingExplanationOfTerms = "headingExplanationOfTerms";
 	String headingExportFailed = "headingExportFailed";
+	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingFilters = "headingFilters";
 	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";

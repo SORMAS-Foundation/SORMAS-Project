@@ -364,6 +364,9 @@ public class ContactFacadeEjb implements ContactFacade {
 					joins.getPerson().get(Person.FIRST_NAME),
 					joins.getPerson().get(Person.LAST_NAME),
 					joins.getPerson().get(Person.SEX),
+					joins.getPerson().get(Person.BIRTHDATE_DD),
+					joins.getPerson().get(Person.BIRTHDATE_MM),
+					joins.getPerson().get(Person.BIRTHDATE_YYYY),
 					joins.getPerson().get(Person.APPROXIMATE_AGE),
 					joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
 					contact.get(Contact.REPORT_DATE_TIME),
@@ -384,6 +387,7 @@ public class ContactFacadeEjb implements ContactFacade {
 					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 					contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
 					contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+					contact.get(Contact.QUARANTINE_EXTENDED),
 					joins.getPerson().get(Person.PRESENT_CONDITION),
 					joins.getPerson().get(Person.DEATH_DATE),
 					joins.getAddressRegion().get(Region.NAME),
@@ -955,6 +959,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
@@ -1164,6 +1169,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));

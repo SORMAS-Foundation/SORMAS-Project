@@ -279,6 +279,8 @@ public class Case extends PseudonymizableAdo {
 	private Date quarantineOrderedVerballyDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOrderedOfficialDocumentDate;
+	@DatabaseField
+	private boolean quarantineExtended;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -880,6 +882,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
 	}
 
 	public YesNoUnknown getQuarantineHomePossible() {

@@ -82,7 +82,28 @@ Now we need to make sure data in the new field is exchanged between the backend 
     ```
 	target.setSoreThroat(source.getSoreThroat());
     ```
+Now we need to make sure data in the new field is exported by the detailed export.
 
+11. Identify corresponding *ExportDto (e.g. CaseExportDto)
+12. Add the field as a private member of the dto class with a get- and set-method.
+13. Add the @Order annotation on the getter method of the new field
+    ```
+    @Order(33)
+    public SymptomState getSoreThroat() {
+        return soreThroat;
+    }
+    ```
+    > **NOTE**: The @Order numbers should be unique so please increase the order of the getters below if there are any.
+14. Initialize the new field in the constructor
+15. Add the new field in the selection list in the `getExportList` method of the *FacadeEJB
+    ```
+    cq.multiselect(
+        ...,
+        caseRoot.get(Case.SORE_THROAT),
+        ...
+    )
+    ``` 
+    > **NOTE**: Make sure the order of the fields in the selection list corresponds the order of arguments in the constructor of *ExportDto class  
 ### III. Adding the field to the SORMAS UI
 
 The SORMAS UI is the web application that is used by supervisors, laboratory users, national instances and others.
