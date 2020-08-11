@@ -40,6 +40,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
