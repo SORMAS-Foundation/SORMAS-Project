@@ -20,9 +20,8 @@ import java.util.Objects;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
 
-public class CampaignFormDataEntry implements Serializable, Comparable<CampaignFormDataEntry> {
+public class CampaignFormDataEntry implements Serializable {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
@@ -81,10 +80,4 @@ public class CampaignFormDataEntry implements Serializable, Comparable<CampaignF
 
 		return value.toString();
 	}
-
-	@Override
-	public int compareTo(CampaignFormDataEntry o) {
-		return DataHelper.compare(id, o.id);
-	}
-
 }

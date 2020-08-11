@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -40,6 +41,7 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 		this.diagramType = diagramType;
 	}
 
+	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public List<CampaignDiagramSeries> getCampaignDiagramSeries() {

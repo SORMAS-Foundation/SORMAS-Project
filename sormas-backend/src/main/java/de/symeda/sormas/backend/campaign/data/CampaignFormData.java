@@ -33,6 +33,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -70,6 +71,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private User creatingUser;
 	private boolean archived;
 
+	@AuditedIgnore
 	@Type(type = "json")
 	@Column(columnDefinition = "json")
 	public List<CampaignFormDataEntry> getFormValues() {
