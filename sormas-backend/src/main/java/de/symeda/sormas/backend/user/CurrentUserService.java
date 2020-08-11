@@ -52,7 +52,7 @@ public class CurrentUserService {
 		final Root<User> from = cq.from(User.class);
 		cq.where(cb.equal(cb.lower(from.get(User.USER_NAME)), userNameParam));
 
-		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
 		final User user = q.getResultList().stream().findFirst().orElse(null);
 

@@ -93,4 +93,6 @@ public interface ConfigFacade {
 	String getSymptomJournalSecret();
 
 	void validateExternalUrls();
+
+	String getAuthenticationProvider();
 }
