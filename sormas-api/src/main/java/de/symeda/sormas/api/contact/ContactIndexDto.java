@@ -38,9 +38,6 @@ public class ContactIndexDto implements Serializable {
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
-	public static final String REGION_UUID = "regionUuid";
-	public static final String DISTRICT_UUID = "districtUuid";
-	public static final String COMMUNITY_UUID = "communityUuid";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";

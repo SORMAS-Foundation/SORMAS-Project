@@ -174,7 +174,7 @@ public interface Captions {
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
-	String CaseData_distric = "CaseData.district";
+	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_epiData = "CaseData.epiData";
@@ -1128,6 +1128,7 @@ public interface Captions {
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
+	String SampleExport_contactCommunity = "SampleExport.contactCommunity";
 	String SampleExport_contactDistrict = "SampleExport.contactDistrict";
 	String SampleExport_contactRegion = "SampleExport.contactRegion";
 	String SampleExport_contactReportDate = "SampleExport.contactReportDate";

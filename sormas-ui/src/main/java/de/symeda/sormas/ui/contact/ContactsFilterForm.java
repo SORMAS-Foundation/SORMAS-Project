@@ -28,6 +28,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -130,7 +131,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
 					ContactCriteria.REGION,
-					I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID),
+					I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID),
 					240));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
@@ -139,7 +140,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.DISTRICT,
-				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID),
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID),
 				240));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 
@@ -147,7 +148,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.COMMUNITY,
-				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMMUNITY_UUID),
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.COMMUNITY_UUID),
 				240));
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);

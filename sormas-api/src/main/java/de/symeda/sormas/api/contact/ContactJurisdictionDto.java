@@ -25,6 +25,12 @@ public class ContactJurisdictionDto implements Serializable {
 
 	private static final long serialVersionUID = 2345261069774868477L;
 
+	public static final String I18N_PREFIX = "Contact";
+
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT_UUID = "districtUuid";
+	public static final String COMMUNITY_UUID = "communityUuid";
+
 	private String reportingUserUuid;
 
 	private String regionUuid;
