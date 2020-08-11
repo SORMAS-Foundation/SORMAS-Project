@@ -556,6 +556,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			String reportingUserUuid,
 			String regionUuid,
 			String districtUuid,
+			String communityUuid,
 			String caseReportingUserUuid,
 			String caseRegionUui,
 			String caseDistrictUud,
@@ -567,6 +568,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				reportingUserUuid,
 				regionUuid,
 				districtUuid,
+				communityUuid,
 				caseReportingUserUuid != null
 					? new CaseJurisdictionDto(
 						caseReportingUserUuid,

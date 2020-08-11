@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -185,6 +186,23 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 				districtField.setEnabled(true);
 			} else {
 				districtField.setEnabled(false);
+			}
+		}
+	}
+
+	protected void applyRegionAndDistrictFilterDependency(RegionReferenceDto region, DistrictReferenceDto district) {
+		applyRegionFilterDependency(region);
+		UserDto user = UserProvider.getCurrent().getUser();
+		ComboBox communityField = (ComboBox) getField(ContactCriteria.COMMUNITY);
+		if (user.getDistrict() != null && user.getCommunity() == null) {
+			communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(user.getDistrict().getUuid()));
+			communityField.setEnabled(true);
+		} else {
+			if (district != null) {
+				communityField.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				communityField.setEnabled(true);
+			} else {
+				communityField.setEnabled(false);
 			}
 		}
 	}

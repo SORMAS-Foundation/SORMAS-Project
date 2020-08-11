@@ -40,6 +40,7 @@ public class SampleExportDto implements Serializable {
 	private EventParticipantReferenceDto associatedEventParticipant;
 	private String contactRegion;
 	private String contactDistrict;
+	private String contactCommunity;
 	private String disease;
 	private Date sampleReportDate;
 	private Date sampleDateTime;
@@ -118,10 +119,10 @@ public class SampleExportDto implements Serializable {
 						   String contactAddressRegion, String contactAddressDistrict, String contactAddressCommunity, String contactAddressCity, String contactAddressAddress,
 						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressAddress,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
-						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict,
+						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
 						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
 	) {
 	//@formatter:on
@@ -162,10 +163,15 @@ public class SampleExportDto implements Serializable {
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			this.associatedContactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			this.associatedContactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
+			this.contactCommunity = contactCommunity;
 		}
 		if (eventParticipantUuid != null) {
 			this.associatedEventParticipant =
@@ -618,6 +624,11 @@ public class SampleExportDto implements Serializable {
 	@Order(66)
 	public String getContactDistrict() {
 		return contactDistrict;
+	}
+
+	@Order(67)
+	public String getContactCommunity() {
+		return contactCommunity;
 	}
 
 	@Order(71)

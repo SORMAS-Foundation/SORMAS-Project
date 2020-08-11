@@ -25,11 +25,19 @@ public class ContactJurisdictionDto implements Serializable {
 
 	private static final long serialVersionUID = 2345261069774868477L;
 
+	public static final String I18N_PREFIX = "Contact";
+
+	public static final String REGION_UUID = "regionUuid";
+	public static final String DISTRICT_UUID = "districtUuid";
+	public static final String COMMUNITY_UUID = "communityUuid";
+
 	private String reportingUserUuid;
 
 	private String regionUuid;
 
 	private String districtUuid;
+
+	private String communityUuid;
 
 	private CaseJurisdictionDto caseJurisdiction;
 
@@ -37,11 +45,17 @@ public class ContactJurisdictionDto implements Serializable {
 
 	}
 
-	public ContactJurisdictionDto(String reportingUserUuid, String regionUuid, String districtUuid, CaseJurisdictionDto caseJurisdiction) {
+	public ContactJurisdictionDto(
+		String reportingUserUuid,
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		CaseJurisdictionDto caseJurisdiction) {
 
 		this.reportingUserUuid = reportingUserUuid;
 		this.regionUuid = regionUuid;
 		this.districtUuid = districtUuid;
+		this.communityUuid = communityUuid;
 		this.caseJurisdiction = caseJurisdiction;
 	}
 
@@ -67,6 +81,14 @@ public class ContactJurisdictionDto implements Serializable {
 
 	public void setDistrictUuid(String districtUuid) {
 		this.districtUuid = districtUuid;
+	}
+
+	public void setCommunityUuid(String communityUuid) {
+		this.communityUuid = communityUuid;
+	}
+
+	public String getCommunityUuid() {
+		return communityUuid;
 	}
 
 	public CaseJurisdictionDto getCaseJurisdiction() {

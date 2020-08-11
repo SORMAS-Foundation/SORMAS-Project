@@ -53,6 +53,7 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Community> contactCommunity;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
 	private Join<Case, District> contactCaseDistrict;
@@ -208,6 +209,14 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 		this.contactDistrict = contactDistrict;
 	}
 
+	public Join<Contact, Community> getContactCommunity() {
+		return getOrCreate(contactCommunity, Contact.COMMUNITY, JoinType.LEFT, getContact(), this::setContactCommunity);
+	}
+
+	public void setContactCommunity(Join<Contact, Community> contactCommunity) {
+		this.contactCommunity = contactCommunity;
+	}
+
 	public Join<Case, User> getContactCaseReportingUser() {
 		return getOrCreate(contactCaseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getContactCase(), this::setContactCaseReportingUser);
 	}
@@ -255,4 +264,5 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private void setContactCasePointOfEntry(Join<Case, PointOfEntry> contactCasePointOfEntry) {
 		this.contactCasePointOfEntry = contactCasePointOfEntry;
 	}
+
 }

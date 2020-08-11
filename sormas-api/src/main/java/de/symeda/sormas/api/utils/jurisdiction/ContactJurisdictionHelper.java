@@ -49,7 +49,10 @@ public class ContactJurisdictionHelper {
 			}
 			break;
 		case COMMUNITY:
-			return false;
+			if (contactJurisdiction.getCommunityUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getCommunityUuid(), userJurisdiction.getCommunityUuid());
+			}
+			break;
 		case HEALTH_FACILITY:
 			return false;
 		case LABORATORY:
