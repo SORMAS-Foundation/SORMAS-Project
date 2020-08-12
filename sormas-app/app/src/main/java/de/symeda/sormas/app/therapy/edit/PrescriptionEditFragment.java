@@ -30,7 +30,9 @@ import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.therapy.Prescription;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPrescriptionEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescriptionEditLayoutBinding, Prescription, Prescription> {
@@ -47,7 +49,12 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 	// Static methods
 
 	public static PrescriptionEditFragment newInstance(Prescription activityRootData) {
-		return newInstance(PrescriptionEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			PrescriptionEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods
@@ -105,6 +112,7 @@ public class PrescriptionEditFragment extends BaseEditFragment<FragmentPrescript
 
 	@Override
 	public void onAfterLayoutBinding(FragmentPrescriptionEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(PrescriptionDto.class, contentBinding.mainContent);
 		setUpFieldVisibilities(contentBinding);
 
 		// Initialize fields

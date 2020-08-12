@@ -39,6 +39,7 @@ import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.SoftKeyboardHelper;
 
 public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, TActivityRootData extends AbstractDomainObject> extends BaseFragment {
@@ -73,7 +74,7 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 		Bundle data,
 		AbstractDomainObject activityRootData,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
-		FieldAccessCheckers fieldAccessCheckers) {
+		AppFieldAccessCheckers fieldAccessCheckers) {
 		TFragment fragment = newInstance(fragmentClass, data, activityRootData);
 		fragment.setFieldVisibilityCheckers(fieldVisibilityCheckers);
 		fragment.setFieldAccessCheckers(fieldAccessCheckers);

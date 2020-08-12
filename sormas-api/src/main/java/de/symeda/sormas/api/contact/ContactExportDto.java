@@ -35,7 +35,10 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class ContactExportDto implements Serializable {
 
@@ -61,8 +64,10 @@ public class ContactExportDto implements Serializable {
 	private String approximateAge;
 	private Date reportDate;
 	private ContactIdentificationSource contactIdentificationSource;
+	@SensitiveData
 	private String contactIdentificationSourceDetails;
 	private TracingApp tracingApp;
+	@SensitiveData
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
@@ -73,11 +78,16 @@ public class ContactExportDto implements Serializable {
 	private String addressRegion;
 	private String addressDistrict;
 	@PersonalData
+	@SensitiveData
 	private String city;
 	@PersonalData
+	@SensitiveData
 	private String address;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@SensitiveData
 	private String phone;
 	private String occupationType;
 	private int numberOfVisits;
@@ -92,6 +102,7 @@ public class ContactExportDto implements Serializable {
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private long epiDataId;
 	private YesNoUnknown traveled;

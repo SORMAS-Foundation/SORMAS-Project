@@ -27,6 +27,7 @@ import android.view.View;
 
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -137,6 +138,7 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 
 	@Override
 	public void onAfterLayoutBinding(FragmentSampleReadLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(SampleDto.class, contentBinding.mainContent);
 		setUpFieldVisibilities(contentBinding);
 
 		if (!requestedPathogenTests.isEmpty()) {

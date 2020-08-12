@@ -39,14 +39,19 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -75,6 +80,23 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		}
 
 		initColumns();
+
+		for (Column<IndexDto, ?> column : getColumns()) {
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(
+					column.getId(),
+					column.getCaption(),
+					CaseIndexDto.I18N_PREFIX,
+					PersonDto.I18N_PREFIX,
+					LocationDto.I18N_PREFIX));
+			column.setStyleGenerator(
+				FieldAccessColumnStyleGenerator.withCheckers(
+					getBeanType(),
+					column.getId(),
+					CaseJurisdictionHelper::isInJurisdictionOrOwned,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
+		}
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
 	}
@@ -126,16 +148,6 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		} else {
 			removeColumn(CaseIndexDto.CREATION_DATE);
-		}
-
-		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(
-				I18nProperties.findPrefixCaptionWithDefault(
-					column.getId(),
-					column.getCaption(),
-					CaseIndexDto.I18N_PREFIX,
-					PersonDto.I18N_PREFIX,
-					LocationDto.I18N_PREFIX));
 		}
 	}
 
@@ -220,4 +232,32 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 	}
 
 	protected abstract List<IndexDto> getGridData(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	public static UserJurisdiction createUserJurisdiction(UserDto user) {
+
+		UserJurisdiction jurisdiction = new UserJurisdiction();
+		jurisdiction.setUuid(user.getUuid());
+
+		if (user.getRegion() != null) {
+			jurisdiction.setRegionUuid(user.getRegion().getUuid());
+		}
+		if (user.getDistrict() != null) {
+			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
+		}
+		if (user.getCommunity() != null) {
+			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
+		}
+		if (user.getHealthFacility() != null) {
+			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
+		}
+		if (user.getPointOfEntry() != null) {
+			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
+		}
+
+		if (user.getLaboratory() != null) {
+			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
+		}
+
+		return jurisdiction;
+	}
 }

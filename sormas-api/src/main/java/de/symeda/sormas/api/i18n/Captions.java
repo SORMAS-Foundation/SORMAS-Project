@@ -841,6 +841,7 @@ public interface Captions {
 	String importLineListing = "importLineListing";
 	String importProcessed = "importProcessed";
 	String importSkips = "importSkips";
+	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";

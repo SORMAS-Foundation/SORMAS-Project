@@ -69,7 +69,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -77,6 +76,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -141,13 +141,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
 
-	public ContactDataForm(Disease disease, ViewMode viewMode) {
+	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 		super(
 			ContactDto.class,
 			ContactDto.I18N_PREFIX,
 			false,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			new FieldAccessCheckers());
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
+
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
@@ -351,6 +352,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(3);
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);
 

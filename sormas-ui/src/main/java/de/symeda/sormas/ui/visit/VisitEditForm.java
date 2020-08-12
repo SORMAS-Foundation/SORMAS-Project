@@ -40,6 +40,7 @@ import de.symeda.sormas.ui.symptoms.SymptomsForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
@@ -53,9 +54,14 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private final PersonDto person;
 	private SymptomsForm symptomsForm;
 
-	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create, boolean isInJurisdiction) {
 
-		super(VisitDto.class, VisitDto.I18N_PREFIX);
+		super(
+			VisitDto.class,
+			VisitDto.I18N_PREFIX,
+			false,
+			null,
+			UiFieldAccessCheckers.withCheckers(create || isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -89,11 +95,13 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
 		addField(VisitDto.VISIT_REMARKS, TextField.class);
 
-		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
+		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null, fieldAccessCheckers);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
 
 		setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
+
+		initializeAccessAndAllowedAccesses();
 
 		if (contact != null) {
 			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {

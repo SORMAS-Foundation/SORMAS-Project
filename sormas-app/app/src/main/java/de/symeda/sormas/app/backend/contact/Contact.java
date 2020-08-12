@@ -42,7 +42,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
@@ -52,7 +52,7 @@ import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Contact.TABLE_NAME)
 @DatabaseTable(tableName = Contact.TABLE_NAME)
-public class Contact extends AbstractDomainObject {
+public class Contact extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -7799607075875188799L;
 

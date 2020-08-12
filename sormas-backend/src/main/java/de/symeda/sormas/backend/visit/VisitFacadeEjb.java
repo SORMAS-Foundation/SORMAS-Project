@@ -17,14 +17,46 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -33,6 +65,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
+import de.symeda.sormas.api.visit.VisitContactJurisdiction;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -65,35 +98,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -118,8 +123,6 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
-	private PseudonymizationService pseudonymizationService;
-	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -137,41 +140,47 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<VisitDto> getByUuids(List<String> uuids) {
-		return visitService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return visitService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		return toDto(contact.getVisits().stream().max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime())).orElse(null));
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+		return convertToDto(contact.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null), pseudonymizer);
 	}
 
 	@Override
 	public VisitDto getVisitByUuid(String uuid) {
-		return toDto(visitService.getByUuid(uuid));
+		return convertToDto(visitService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
+		final String visitUuid = dto.getUuid();
+		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
+		final VisitDto existingDto = toDto(existingVisit);
+
+		restorePseudonymizedDto(dto, existingVisit, existingDto);
 
 		this.validate(dto);
-
-		final String visitUuid = dto.getUuid();
-		final VisitDto existingVisit = toDto(visitUuid != null ? visitService.getByUuid(visitUuid) : null);
 
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 		Visit entity = fromDto(dto);
 
 		visitService.ensurePersisted(entity);
 
-		onVisitChanged(existingVisit, entity);
+		onVisitChanged(existingDto, entity);
 
-		return toDto(entity);
+		return convertToDto(entity, new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -250,6 +259,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 		cq.multiselect(
+			visit.get(Visit.ID),
 			visit.get(Visit.UUID),
 			visit.get(Visit.VISIT_DATE_TIME),
 			visit.get(Visit.VISIT_STATUS),
@@ -286,11 +296,31 @@ public class VisitFacadeEjb implements VisitFacade {
 			cq.orderBy(cb.desc(visit.get(Visit.VISIT_DATE_TIME)));
 		}
 
+		final List<VisitIndexDto> indexList;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			indexList = em.createQuery(cq).getResultList();
 		}
+
+		if (indexList.size() > 0) {
+			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+				getVisitContactJurisdictions(indexList.stream().map(VisitIndexDto::getId).collect(Collectors.toList()));
+
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+			indexList.forEach(visitIndex -> {
+				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(visitIndex.getId());
+				VisitContactJurisdiction matchingContactJurisdiction =
+					visitContactJurisdictions.stream().filter(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c)).findFirst().orElse(null);
+				boolean inJurisdiction = matchingContactJurisdiction != null;
+				visitIndex.setJurisdiction(matchingContactJurisdiction != null ? matchingContactJurisdiction : visitContactJurisdictions.get(0));
+
+				pseudonymizer.pseudonymizeDto(VisitIndexDto.class, visitIndex, inJurisdiction, null);
+			});
+		}
+
+		return indexList;
 	}
 
 	@Override
@@ -340,7 +370,10 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			personJoin.get(Person.UUID));
 
-		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
+		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
+		if (filter != null) {
+			cq.where(filter);
+		}
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
 		List<VisitExportDto> resultList =
@@ -359,18 +392,25 @@ public class VisitFacadeEjb implements VisitFacade {
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
-//			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
-//				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
+			if (resultList.size() > 0) {
+				Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+					getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
 
-			for (VisitExportDto exportDto : resultList) {
-//				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
-//				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-//
-//				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
+				Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+				for (VisitExportDto exportDto : resultList) {
+					List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
+					boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
 
-				if (symptoms != null) {
-					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
-						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
+						if (v.getSymptoms() != null) {
+							pseudonymizer.pseudonymizeDto(SymptomsDto.class, v.getSymptoms(), inJurisdiction, null);
+						}
+					});
+
+					if (symptoms != null) {
+						Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
+							.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+					}
 				}
 			}
 		}
@@ -404,6 +444,34 @@ public class VisitFacadeEjb implements VisitFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	public VisitDto convertToDto(Visit source, Pseudonymizer pseudonymizer) {
+		VisitDto visitDto = toDto(source);
+
+		pseudonymizeDto(source, visitDto, pseudonymizer);
+
+		return visitDto;
+	}
+
+	private void pseudonymizeDto(Visit source, VisitDto visitDto, Pseudonymizer pseudonymizer) {
+		if (visitDto != null) {
+			boolean isInJurisdiction = source.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
+			pseudonymizer.pseudonymizeDto(VisitDto.class, visitDto, isInJurisdiction, (v) -> {
+				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, visitDto.getPerson(), isInJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitDto.getSymptoms(), isInJurisdiction, null);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(VisitDto dto, Visit existingVisit, VisitDto existingDto) {
+		if (existingDto != null) {
+			boolean isInJurisdiction = existingVisit.getContacts().stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdictionOrOwned(c));
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+			pseudonymizer.restorePseudonymizedValues(VisitDto.class, dto, existingDto, isInJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(SymptomsDto.class, dto.getSymptoms(), existingDto.getSymptoms(), isInJurisdiction);
+		}
 	}
 
 	public static VisitReferenceDto toReferenceDto(Visit source) {
@@ -526,6 +594,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			joins.getContactReportingUser().get(User.UUID),
 			joins.getContactRegion().get(Region.UUID),
 			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCommunity().get(District.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),
@@ -545,44 +614,5 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
 
-	}
-
-	static class VisitContactJurisdiction extends ContactJurisdictionDto {
-
-		private long visitId;
-
-		public VisitContactJurisdiction(
-			long visitId,
-			String reportingUserUuid,
-			String regionUuid,
-			String districtUuid,
-			String communityUuid,
-			String caseReportingUserUuid,
-			String caseRegionUui,
-			String caseDistrictUud,
-			String caseCommunityUuid,
-			String caseHealthFacilityUuid,
-			String casePointOfEntryUuid) {
-
-			super(
-				reportingUserUuid,
-				regionUuid,
-				districtUuid,
-				communityUuid,
-				caseReportingUserUuid != null
-					? new CaseJurisdictionDto(
-						caseReportingUserUuid,
-						caseRegionUui,
-						caseDistrictUud,
-						caseCommunityUuid,
-						caseHealthFacilityUuid,
-						casePointOfEntryUuid)
-					: null);
-			this.visitId = visitId;
-		}
-
-		public long getVisitId() {
-			return visitId;
-		}
 	}
 }

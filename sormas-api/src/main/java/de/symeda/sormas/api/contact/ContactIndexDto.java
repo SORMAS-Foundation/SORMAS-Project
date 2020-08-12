@@ -25,8 +25,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class ContactIndexDto implements Serializable {
+public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 

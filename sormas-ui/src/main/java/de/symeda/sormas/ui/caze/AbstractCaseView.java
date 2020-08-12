@@ -153,7 +153,9 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
 					params);
 			}
-			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
+			if (caze.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY
+				&& caze.getPointOfEntry() != null
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW)) {
 				menu.addView(
 					PortHealthInfoView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PORT_HEALTH_INFO),
@@ -251,9 +253,13 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		Boolean isCaseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
+		Boolean isCaseEditAllowed = isCaseEditAllowed();
 		if (!isCaseEditAllowed) {
 			component.setEnabled(false);
 		}
+	}
+
+	protected Boolean isCaseEditAllowed() {
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
 	}
 }

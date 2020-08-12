@@ -46,10 +46,12 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 
@@ -159,6 +161,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private RabiesType rabiesType;
 	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
 	private String epidNumber;
@@ -180,6 +183,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date classificationDate;
 	@Outbreaks
+	@SensitiveData
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
@@ -196,6 +200,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
+	@SensitiveData
 	private String sequelaeDetails;
 	@Outbreaks
 	@Required
@@ -205,13 +210,16 @@ public class CaseDataDto extends PseudonymizableDto {
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
 	@Outbreaks
 	@Required
 	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -281,19 +289,27 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
+	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
+	@SensitiveData
 	private String clinicianName;
+	@SensitiveData
 	private String clinicianPhone;
+	@SensitiveData
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	private HospitalWardType notifyingClinic;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private String notifyingClinicDetails;
 	@Deprecated
+	@SensitiveData
 	private UserReferenceDto caseOfficer;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
@@ -303,19 +319,25 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
 	private String creationVersion;
+	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
+	@SensitiveData
 	private String pointOfEntryDetails;
+	@SensitiveData
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -324,10 +346,12 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private ReportingType reportingType;

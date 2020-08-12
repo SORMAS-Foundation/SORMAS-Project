@@ -329,4 +329,14 @@
     float: right;
   }
 
+  .inaccessible-field {
+    font-style: italic;
+  }
+
+  .inaccessible-column,
+  .v-table-cell-content-inaccessible-column,
+  .inaccessible-label {
+    font-style: italic;
+    opacity: 0.5;
+  }
 }

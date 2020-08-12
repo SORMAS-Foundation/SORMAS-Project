@@ -42,13 +42,16 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -80,7 +83,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			null);
+			AppFieldAccessCheckers
+				.withCheckers(ContactEditAuthorization.isContactEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {

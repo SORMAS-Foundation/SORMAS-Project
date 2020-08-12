@@ -30,13 +30,15 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 @SuppressWarnings("serial")
-public class ContactInfoLayout extends AbstractInfoLayout {
+public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 
 	private final ContactDto contactDto;
 
-	public ContactInfoLayout(ContactDto contactDto) {
+	public ContactInfoLayout(ContactDto contactDto, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(ContactDto.class, fieldAccessCheckers);
 
 		this.contactDto = contactDto;
 		setSpacing(true);
@@ -58,10 +60,15 @@ public class ContactInfoLayout extends AbstractInfoLayout {
 		{
 			addDescLabel(
 				firstColumn,
+				ContactDto.UUID,
 				DataHelper.getShortUuid(contactDto.getUuid()),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID)).setDescription(contactDto.getUuid());
 
-			addDescLabel(firstColumn, contactDto.getPerson(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
+			addDescLabel(
+				firstColumn,
+				ContactDto.PERSON,
+				contactDto.getPerson(),
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
@@ -69,16 +76,24 @@ public class ContactInfoLayout extends AbstractInfoLayout {
 				ageSexRow.setMargin(false);
 				ageSexRow.setSpacing(true);
 
-				addDescLabel(
+				addCustomDescLabel(
 					ageSexRow,
+					PersonDto.class,
+					PersonDto.APPROXIMATE_AGE,
 					ApproximateAgeHelper.formatApproximateAge(personDto.getApproximateAge(), personDto.getApproximateAgeType()),
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
 
-				addDescLabel(ageSexRow, personDto.getSex(), I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+				addCustomDescLabel(
+					ageSexRow,
+					PersonDto.class,
+					PersonDto.SEX,
+					personDto.getSex(),
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 				firstColumn.addComponent(ageSexRow);
 
 				addDescLabel(
 					firstColumn,
+					ContactDto.CONTACT_OFFICER,
 					contactDto.getContactOfficer(),
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_OFFICER));
 			}
@@ -91,15 +106,21 @@ public class ContactInfoLayout extends AbstractInfoLayout {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
-			addDescLabel(secondColumn, contactDto.getDisease(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
+			addDescLabel(
+				secondColumn,
+				ContactDto.DISEASE,
+				contactDto.getDisease(),
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
 
 			addDescLabel(
 				secondColumn,
+				ContactDto.CONTACT_CLASSIFICATION,
 				contactDto.getContactClassification(),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION));
 
 			addDescLabel(
 				secondColumn,
+				ContactDto.LAST_CONTACT_DATE,
 				DateFormatHelper.formatDate(contactDto.getLastContactDate()),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
 		}

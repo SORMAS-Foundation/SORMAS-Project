@@ -48,7 +48,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -57,6 +56,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -82,7 +82,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private MapPopupView leafletMapPopup;
 
-	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
@@ -129,7 +129,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setReadOnly(true, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
 		region.addValueChangeListener(e -> {

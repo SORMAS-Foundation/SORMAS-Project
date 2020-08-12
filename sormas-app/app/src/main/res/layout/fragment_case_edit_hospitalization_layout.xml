@@ -33,6 +33,7 @@
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case" />
         <variable name="previousHospitalizationList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization&gt;" />
         <variable name="prevHosItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="previousHospitalizationBindCallback" type="de.symeda.sormas.app.util.TemplateBindingCallback" />
     </data>
 
     <ScrollView
@@ -207,7 +208,8 @@
                     android:padding="@dimen/rowListItemParentPadding"
                     app:callback="@{prevHosItemClickCallback}"
                     app:entries="@{previousHospitalizationList}"
-                    app:layout="@{@layout/row_case_previous_hospitalization_layout}" />
+                    app:layout="@{@layout/row_case_previous_hospitalization_layout}"
+                    app:bindCallback="@{previousHospitalizationBindCallback}" />
 
             </LinearLayout>
 

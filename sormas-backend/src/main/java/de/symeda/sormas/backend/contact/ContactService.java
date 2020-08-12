@@ -40,6 +40,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -64,6 +65,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
@@ -1079,7 +1081,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public void delete(Contact contact) {
 
 		// Delete all tasks associated with this contact
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -1125,5 +1127,45 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			cb.or(
 				cb.and(cb.isNotNull(contact.get(Contact.LAST_CONTACT_DATE)), cb.lessThanOrEqualTo(contact.get(Contact.LAST_CONTACT_DATE), to)),
 				cb.lessThanOrEqualTo(contact.get(Contact.REPORT_DATE_TIME), to)));
+	}
+
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CriteriaQuery<Long> cq, ContactJoins joins) {
+		final User currentUser = this.getCurrentUser();
+
+		final Subquery<Long> contactCaseJurisdictionSubQuery = cq.subquery(Long.class);
+		final Root<Case> contactCaseRoot = contactCaseJurisdictionSubQuery.from(Case.class);
+		contactCaseJurisdictionSubQuery.select(contactCaseRoot.get(Contact.ID));
+		contactCaseJurisdictionSubQuery.where(
+			cb.and(
+				cb.equal(contactCaseRoot, joins.getRoot().get(Contact.CAZE)),
+				caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(contactCaseRoot))));
+
+		final Predicate contactCaseInJurisdiction = cb.exists(contactCaseJurisdictionSubQuery);
+
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final Predicate jurisdictionPredicate;
+		switch (jurisdictionLevel) {
+		case NATION:
+			jurisdictionPredicate = cb.conjunction();
+			break;
+		case REGION:
+			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
+			break;
+		case DISTRICT:
+			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
+			break;
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+		case NONE:
+		case COMMUNITY:
+		case HEALTH_FACILITY:
+		case POINT_OF_ENTRY:
+		default:
+			jurisdictionPredicate = cb.disjunction();
+		}
+		return cb.or(reportedByCurrentUser, contactCaseInJurisdiction, jurisdictionPredicate);
 	}
 }

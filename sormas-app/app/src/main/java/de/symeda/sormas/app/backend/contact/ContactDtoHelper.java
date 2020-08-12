@@ -135,6 +135,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -244,6 +246,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setEpiData(null);
 		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {
