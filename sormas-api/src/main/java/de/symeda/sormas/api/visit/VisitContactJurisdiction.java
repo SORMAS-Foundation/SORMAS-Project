@@ -27,6 +27,7 @@ public class VisitContactJurisdiction extends ContactJurisdictionDto {
 		String reportingUserUuid,
 		String regionUuid,
 		String districtUuid,
+		String communityUuid,
 		String caseReportingUserUuid,
 		String caseRegionUui,
 		String caseDistrictUud,
@@ -38,6 +39,7 @@ public class VisitContactJurisdiction extends ContactJurisdictionDto {
 			reportingUserUuid,
 			regionUuid,
 			districtUuid,
+			communityUuid,
 			caseReportingUserUuid != null
 				? new CaseJurisdictionDto(
 					caseReportingUserUuid,

@@ -180,7 +180,12 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
 			associatedContactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+				new ContactJurisdictionDto(
+					contactReportingUserUuid,
+					contactRegionUuid,
+					contactDistrictUuid,
+					contactCommunityUuid,
+					contactCaseJurisdiction);
 		}
 
 		EventJurisdictionDto eventJurisdiction = null;

@@ -263,7 +263,12 @@ public class SampleExportDto implements Serializable {
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
 			associatedContactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+				new ContactJurisdictionDto(
+					contactReportingUserUuid,
+					contactRegionUuid,
+					contactDistrictUuid,
+					contactCommunityUuid,
+					contactCaseJurisdiction);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
 		}

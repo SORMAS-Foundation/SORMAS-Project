@@ -594,6 +594,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			joins.getContactReportingUser().get(User.UUID),
 			joins.getContactRegion().get(Region.UUID),
 			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCommunity().get(District.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),

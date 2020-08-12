@@ -39,6 +39,7 @@ public class VisitSummaryExportDetails {
 		String reportingUserUuid,
 		String regionUuid,
 		String districtUuid,
+		String communityUuid,
 		String caseReportingUserUuid,
 		String caseRegionUui,
 		String caseDistrictUud,
@@ -60,7 +61,7 @@ public class VisitSummaryExportDetails {
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public Long getContactId() {
