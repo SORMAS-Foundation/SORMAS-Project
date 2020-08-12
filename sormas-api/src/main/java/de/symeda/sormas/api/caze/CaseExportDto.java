@@ -103,8 +103,10 @@ public class CaseExportDto implements Serializable {
 	private String diseaseFormatted;
 	private Disease disease;
 	@PersonalData
+	@SensitiveData
 	private String firstName;
 	@PersonalData
+	@SensitiveData
 	private String lastName;
 	private Sex sex;
 	private YesNoUnknown pregnant;
@@ -179,6 +181,7 @@ public class CaseExportDto implements Serializable {
 	private List<CaseExportSampleDto> otherSamples = new ArrayList<>();
 
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;

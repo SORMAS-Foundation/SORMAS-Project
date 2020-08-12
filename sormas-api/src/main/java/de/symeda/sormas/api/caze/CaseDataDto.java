@@ -333,6 +333,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;

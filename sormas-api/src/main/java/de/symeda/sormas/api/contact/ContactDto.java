@@ -121,10 +121,12 @@ public class ContactDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private ContactIdentificationSource contactIdentificationSource;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String contactIdentificationSourceDetails;
 	@HideForCountriesExcept
 	private TracingApp tracingApp;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	@SensitiveData
@@ -151,6 +153,7 @@ public class ContactDto extends PseudonymizableDto {
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;

@@ -67,8 +67,10 @@ public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Seri
 	private String epidNumber;
 	private String externalID;
 	@PersonalData
+	@SensitiveData
 	private String personFirstName;
 	@PersonalData
+	@SensitiveData
 	private String personLastName;
 	private Disease disease;
 	private String diseaseDetails;

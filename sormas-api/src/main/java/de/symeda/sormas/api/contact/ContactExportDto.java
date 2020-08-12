@@ -64,8 +64,10 @@ public class ContactExportDto implements Serializable {
 	private String approximateAge;
 	private Date reportDate;
 	private ContactIdentificationSource contactIdentificationSource;
+	@SensitiveData
 	private String contactIdentificationSourceDetails;
 	private TracingApp tracingApp;
+	@SensitiveData
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
