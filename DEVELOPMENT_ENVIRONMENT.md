@@ -60,9 +60,9 @@
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"
 	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
-	- check optimize imports and, for "Iport order", select ``sormas-base/java-importorder-profile.importorder``
+	- check optimize imports and, for "Import order", select ``sormas-base/java-importorder-profile.importorder``
 	- **Important:** select "Do not format other file types by IntelliJ formatter"
-	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
+	- go to Preferences -> Editor -> Code style -> Java -> Imports: set class and static names counts for import with * to 99
 	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 ## Android Studio
