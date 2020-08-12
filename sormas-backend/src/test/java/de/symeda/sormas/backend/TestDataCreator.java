@@ -147,13 +147,22 @@ public class TestDataCreator {
 	}
 
 	public PersonDto createPerson(String firstName, String lastName) {
+		return createPerson(firstName, lastName, null);
+	}
 
-		PersonDto cazePerson = PersonDto.build();
-		cazePerson.setFirstName(firstName);
-		cazePerson.setLastName(lastName);
-		cazePerson = beanTest.getPersonFacade().savePerson(cazePerson);
+	public PersonDto createPerson(String firstName, String lastName, Consumer<PersonDto> customConfig) {
 
-		return cazePerson;
+		PersonDto person = PersonDto.build();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+
+		if (customConfig != null) {
+			customConfig.accept(person);
+		}
+
+		person = beanTest.getPersonFacade().savePerson(person);
+
+		return person;
 	}
 
 	public PersonDto createPerson(String firstName, String lastName, Sex sex, Integer birthdateYYYY, Integer birthdateMM, Integer birthdateDD) {
