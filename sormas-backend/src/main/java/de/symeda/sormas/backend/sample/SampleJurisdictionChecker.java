@@ -17,17 +17,17 @@ public class SampleJurisdictionChecker {
 	@EJB
 	private UserService userService;
 
-	public boolean isInJurisdiction(Sample sample) {
+	public boolean isInJurisdictionOrOwned(Sample sample) {
 
-		return isInJurisdiction(JurisdictionHelper.createSampleJurisdictionDto(sample));
+		return isInJurisdictionOrOwned(JurisdictionHelper.createSampleJurisdictionDto(sample));
 	}
 
-	public boolean isInJurisdiction(SampleJurisdictionDto sampleJurisdiction) {
+	public boolean isInJurisdictionOrOwned(SampleJurisdictionDto sampleJurisdiction) {
 
 		User user = userService.getCurrentUser();
 
 		return SampleJurisdictionHelper
-			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), sampleJurisdiction);
+			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), sampleJurisdiction);
 	}
 
 }

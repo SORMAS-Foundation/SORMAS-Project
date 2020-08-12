@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -128,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 215;
+	public static final int DATABASE_VERSION = 219;
 
 	private static DatabaseHelper instance = null;
 
@@ -1455,7 +1454,45 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN contactIdentificationSourceDetails varchar(512);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingApp varchar(255);");
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN tracingAppDetails varchar(512);");
+			case 215:
+				currentVersion = 215;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineExtended boolean;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineExtended boolean;");
+			case 216:
+				currentVersion = 216;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN community_id bigint;");
+			case 217:
+				currentVersion = 217;
+				getDao(PathogenTest.class).executeRaw("ALTER TABLE pathogenTest ADD COLUMN pseudonymized boolean;");
+				getDao(PreviousHospitalization.class).executeRaw("ALTER TABLE previoushospitalizations ADD COLUMN pseudonymized boolean;");
+				getDao(EpiData.class).executeRaw("ALTER TABLE epidata ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataGathering.class).executeRaw("ALTER TABLE epidatagathering ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataTravel.class).executeRaw("ALTER TABLE epidatatravel ADD COLUMN pseudonymized boolean;");
+				getDao(EpiDataBurial.class).executeRaw("ALTER TABLE epidataburial ADD COLUMN pseudonymized boolean;");
+				getDao(MaternalHistory.class).executeRaw("ALTER TABLE maternalHistory ADD COLUMN pseudonymized boolean;");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN pseudonymized boolean;");
+				getDao(HealthConditions.class).executeRaw("ALTER TABLE healthConditions ADD COLUMN pseudonymized boolean;");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN pseudonymized boolean;");
+				getDao(Visit.class).executeRaw("ALTER TABLE visits ADD COLUMN pseudonymized boolean;");
+				getDao(ClinicalVisit.class).executeRaw("ALTER TABLE clinicalVisit ADD COLUMN pseudonymized boolean;");
+				getDao(Treatment.class).executeRaw("ALTER TABLE treatment ADD COLUMN pseudonymized boolean;");
+				getDao(Prescription.class).executeRaw("ALTER TABLE prescription ADD COLUMN pseudonymized boolean;");
+				getDao(Sample.class).executeRaw("ALTER TABLE samples ADD COLUMN pseudonymized boolean;");
+				getDao(Event.class).executeRaw("ALTER TABLE events ADD COLUMN pseudonymized boolean;");
+				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN pseudonymized boolean;");
 
+			case 218:
+				currentVersion = 218;
+
+				Cursor visitDbCursor = db.query(Visit.TABLE_NAME, null, null, null, null, null, null);
+				String[] visitColumnNames = visitDbCursor.getColumnNames();
+				visitDbCursor.close();
+				String visitQueryColumns = TextUtils.join(",", visitColumnNames);
+
+				db.execSQL("ALTER TABLE visits RENAME TO visits_old;");
+				TableUtils.createTable(connectionSource, Visit.class);
+				db.execSQL("INSERT INTO visits (" + visitQueryColumns + ") SELECT " + visitQueryColumns + " FROM visits_old;");
+				db.execSQL("DROP TABLE visits_old;");
 				// ATTENTION: break should only be done after last version
 				break;
 			default:

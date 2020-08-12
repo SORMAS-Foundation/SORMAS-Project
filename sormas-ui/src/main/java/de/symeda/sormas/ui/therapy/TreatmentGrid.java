@@ -18,6 +18,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.FieldAccessCellStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.V7AbstractGrid;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -27,8 +30,11 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 	private static final String EDIT_BTN_ID = "edit";
 
 	private TreatmentCriteria treatmentCriteria = new TreatmentCriteria();
+	private boolean isInJurisdiction;
 
-	public TreatmentGrid() {
+	public TreatmentGrid(boolean isInJurisdiction) {
+		this.isInJurisdiction = isInJurisdiction;
+
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -47,7 +53,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			TreatmentIndexDto.TREATMENT_TYPE,
 			TreatmentIndexDto.TREATMENT_DATE_TIME,
 			TreatmentIndexDto.DOSE,
-			TreatmentIndexDto.ROUTE,
+			TreatmentIndexDto.TREATMENT_ROUTE,
 			TreatmentIndexDto.EXECUTING_CLINICIAN);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
@@ -58,6 +64,12 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 		for (Column column : getColumns()) {
 			column.setHeaderCaption(
 				I18nProperties.getPrefixCaption(TreatmentIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+
+			setCellStyleGenerator(
+				FieldAccessCellStyleGenerator.withFieldAccessCheckers(
+					TreatmentIndexDto.class,
+					UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker())));
+
 		}
 
 		addItemClickListener(e -> {
@@ -66,7 +78,7 @@ public class TreatmentGrid extends Grid implements V7AbstractGrid<TreatmentCrite
 			}
 
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload);
+				ControllerProvider.getTherapyController().openTreatmentEditForm((TreatmentIndexDto) e.getItemId(), this::reload, isInJurisdiction);
 			}
 		});
 	}

@@ -40,8 +40,8 @@ import static de.symeda.sormas.api.Disease.YELLOW_FEVER;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
@@ -50,9 +50,10 @@ import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.Outbreaks;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class SymptomsDto extends EntityDto {
+public class SymptomsDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4146526547904182448L;
 
@@ -1125,6 +1126,7 @@ public class SymptomsDto extends EntityDto {
 		OTHER })
 	@DependantOn(OTHER_HEMORRHAGIC_SYMPTOMS)
 	@HideForCountries
+	@SensitiveData
 	private String otherHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1169,6 +1171,7 @@ public class SymptomsDto extends EntityDto {
 		OTHER })
 	@Outbreaks
 	@DependantOn(OTHER_NON_HEMORRHAGIC_SYMPTOMS)
+	@SensitiveData
 	private String otherNonHemorrhagicSymptomsText;
 
 	@Diseases({
@@ -1222,6 +1225,7 @@ public class SymptomsDto extends EntityDto {
 		POLIO,
 		UNDEFINED,
 		OTHER })
+	@SensitiveData
 	private String patientIllLocation;
 
 	@Diseases({
@@ -1412,6 +1416,7 @@ public class SymptomsDto extends EntityDto {
 		CORONAVIRUS,
 		UNDEFINED,
 		OTHER })
+	@SensitiveData
 	private String symptomsComments;
 
 	@Diseases({
@@ -1545,6 +1550,7 @@ public class SymptomsDto extends EntityDto {
 	@Diseases({
 		CONGENITAL_RUBELLA })
 	@HideForCountries
+	@SensitiveData
 	private String congenitalHeartDiseaseDetails;
 
 	@Diseases({

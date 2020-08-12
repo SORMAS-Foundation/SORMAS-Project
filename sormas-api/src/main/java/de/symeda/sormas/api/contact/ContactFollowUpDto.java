@@ -8,9 +8,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 import de.symeda.sormas.api.visit.VisitResult;
 
-public class ContactFollowUpDto implements Serializable {
+public class ContactFollowUpDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = -1257025719012862417L;
 
@@ -24,7 +27,9 @@ public class ContactFollowUpDto implements Serializable {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 
 	private String uuid;
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
+	@SensitiveData
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
 	private Date reportDateTime;
@@ -38,7 +43,7 @@ public class ContactFollowUpDto implements Serializable {
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDateTime, Date followUpUntil, Disease disease,
-							  String reportingUserUuid, String regionUuid, String districtUuid,
+							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
@@ -60,7 +65,7 @@ public class ContactFollowUpDto implements Serializable {
 				caseCommunityUud,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public void initVisitSize(int i) {

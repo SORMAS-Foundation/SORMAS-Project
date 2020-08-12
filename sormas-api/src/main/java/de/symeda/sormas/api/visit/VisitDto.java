@@ -20,14 +20,15 @@ package de.symeda.sormas.api.visit;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class VisitDto extends EntityDto {
+public class VisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -441664767075414789L;
 
@@ -50,14 +51,19 @@ public class VisitDto extends EntityDto {
 	@Required
 	private Date visitDateTime;
 	@Required
+	@SensitiveData
 	private UserReferenceDto visitUser;
 	@Required
 	private VisitStatus visitStatus;
+	@SensitiveData
 	private String visitRemarks;
 	private SymptomsDto symptoms;
 
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+
 	private Float reportLatLonAccuracy;
 
 	public static VisitDto build(PersonReferenceDto contactPerson, Disease disease) {

@@ -222,6 +222,8 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -393,5 +395,7 @@ public class SymptomsDtoHelper extends AdoDtoHelper<Symptoms, SymptomsDto> {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

@@ -62,6 +62,7 @@ public class EventController {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
 		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
+		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
 	}
 
 	public EventDto create(CaseReferenceDto caseRef) {
@@ -165,14 +166,13 @@ public class EventController {
 			caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		}
 
-		EventDataForm eventCreateForm = new EventDataForm(true);
+		EventDataForm eventCreateForm = new EventDataForm(true, true);
 		if (caseRef != null) {
 			eventCreateForm.setValue(createNewEvent(caseDataDto.getDisease()));
 			eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
 		} else {
 			eventCreateForm.setValue(createNewEvent(null));
 		}
-
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventCreateForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
@@ -203,10 +203,10 @@ public class EventController {
 		return editView;
 	}
 
-	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
+	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, boolean inJurisdiction) {
 
 		EventDto event = findEvent(eventUuid);
-		EventDataForm eventEditForm = new EventDataForm(false);
+		EventDataForm eventEditForm = new EventDataForm(false, inJurisdiction);
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,

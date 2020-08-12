@@ -42,16 +42,17 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Contact.TABLE_NAME)
 @DatabaseTable(tableName = Contact.TABLE_NAME)
-public class Contact extends AbstractDomainObject {
+public class Contact extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -7799607075875188799L;
 
@@ -96,6 +97,8 @@ public class Contact extends AbstractDomainObject {
 	private Region region;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community community;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField
@@ -183,6 +186,8 @@ public class Contact extends AbstractDomainObject {
 	private Date quarantineOrderedVerballyDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOrderedOfficialDocumentDate;
+	@DatabaseField
+	private boolean quarantineExtended;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -451,6 +456,14 @@ public class Contact extends AbstractDomainObject {
 		this.district = district;
 	}
 
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+
 	public boolean isHighPriority() {
 		return highPriority;
 	}
@@ -595,6 +608,14 @@ public class Contact extends AbstractDomainObject {
 
 	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
 	}
 
 	public YesNoUnknown getQuarantineHomePossible() {

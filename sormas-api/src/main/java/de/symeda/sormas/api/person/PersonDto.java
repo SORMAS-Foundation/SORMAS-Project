@@ -28,9 +28,12 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -136,12 +139,15 @@ public class PersonDto extends PseudonymizableDto {
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -155,6 +161,7 @@ public class PersonDto extends PseudonymizableDto {
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
+	@SensitiveData
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -175,6 +182,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -197,6 +205,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -209,23 +218,36 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private BurialConductor burialConductor;
+	@SensitiveData
 	private String phone;
+	@SensitiveData
 	private String phoneOwner;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private LocationDto address;
+	@SensitiveData
 	private String emailAddress;
 
 	private EducationType educationType;
+	@SensitiveData
 	private String educationDetails;
 
 	private OccupationType occupationType;
+	@SensitiveData
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
 	private DistrictReferenceDto occupationDistrict;
+	@SensitiveData
 	private CommunityReferenceDto occupationCommunity;
+	@SensitiveData
 	private FacilityReferenceDto occupationFacility;
+	@SensitiveData
 	private String occupationFacilityDetails;
+	@SensitiveData
 	private String generalPractitionerDetails;
+	@SensitiveData
 	private String passportNumber;
+	@SensitiveData
 	private String nationalHealthId;
 
 	public Integer getBirthdateDD() {

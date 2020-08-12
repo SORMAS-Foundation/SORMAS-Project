@@ -102,6 +102,7 @@ $login-background-image: null !default;
 
       .login-sidebar-custom-header {
         flex-grow: 1;
+        min-width: 350px;
       }
     }
     

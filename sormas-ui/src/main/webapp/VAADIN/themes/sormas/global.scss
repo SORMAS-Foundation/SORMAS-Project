@@ -79,6 +79,7 @@
   .v-widget.v-datefield,
   .v-widget.v-filterselect,
   .v-widget.fieldwrapper,
+  .v-widget.v-richtextarea,
   .v-widget.v-select-optiongroup {
     margin-bottom: 16px;
   }
@@ -238,6 +239,23 @@
 	border-right: 1px solid #CDD8EC;
   }
 
+  .rich-text-content-container {
+    box-shadow: inset 0 0 4px #CDD8EC;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #F7F8F8;
+    margin-top: 10px;
+  }
+  .rich-text-content-container .reply {
+    border-top: 2px dashed #CDD8EC;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .v-richtextarea-v-richtextarea-readonly .gwt-HTML {
+    height: 200px;
+  }
+
   .text-bold {
   	font-weight: bold;
   }
@@ -311,4 +329,14 @@
     float: right;
   }
 
+  .inaccessible-field {
+    font-style: italic;
+  }
+
+  .inaccessible-column,
+  .v-table-cell-content-inaccessible-column,
+  .inaccessible-label {
+    font-style: italic;
+    opacity: 0.5;
+  }
 }

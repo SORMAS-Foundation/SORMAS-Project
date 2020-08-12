@@ -17,9 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -339,5 +343,17 @@ public enum UserRole
 		}
 
 		return this.toString().compareTo(o.toString());
+	}
+
+	public static List<UserRole> getWithJurisdictionLevels(JurisdictionLevel... jurisdictionLevels) {
+		List<UserRole> ret = new ArrayList<>();
+
+		for (UserRole role : UserRole.values()) {
+			if (ArrayUtils.contains(jurisdictionLevels, role.jurisdictionLevel)) {
+				ret.add(role);
+			}
+		}
+
+		return ret;
 	}
 }

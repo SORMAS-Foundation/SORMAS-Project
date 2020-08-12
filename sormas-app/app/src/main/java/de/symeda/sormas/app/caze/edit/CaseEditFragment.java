@@ -18,6 +18,7 @@ package de.symeda.sormas.app.caze.edit;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import java.util.Date;
 import java.util.List;
 
 import android.view.ViewTreeObserver;
@@ -60,8 +61,10 @@ import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -98,7 +101,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
+			AppFieldAccessCheckers.withCheckers(
+				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods
@@ -322,9 +328,13 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
+
+				contentBinding.caseDataQuarantineExtended.setVisibility(VISIBLE);
 			} else {
 				contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+
+				contentBinding.caseDataQuarantineExtended.setVisibility(GONE);
 			}
 		});
 		if (!ConfigProvider.isGermanServer()) {
@@ -333,6 +343,37 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
 		}
+
+		contentBinding.caseDataQuarantineExtended.setEnabled(false);
+
+		contentBinding.caseDataQuarantineTo.addValueChangedListener(new ValueChangeListener() {
+
+			private Date currentQuarantineTo = record.getQuarantineTo();
+			private boolean currentQuarantineExtended = record.isQuarantineExtended();
+
+			@Override
+			public void onChange(ControlPropertyField e) {
+				Date newQuarantineTo = (Date) e.getValue();
+
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) > 0) {
+					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+						getActivity(),
+						R.string.heading_extend_quarantine,
+						R.string.confirmation_extend_quarantine,
+						R.string.yes,
+						R.string.no);
+
+					confirmationDialog.setPositiveCallback(() -> {
+						contentBinding.caseDataQuarantineExtended.setValue(true);
+					});
+					confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
+
+					confirmationDialog.show();
+				} else if (!currentQuarantineExtended) {
+					contentBinding.caseDataQuarantineExtended.setValue(false);
+				}
+			}
+		});
 	}
 
 	@Override

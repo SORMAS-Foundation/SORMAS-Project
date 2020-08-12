@@ -53,6 +53,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
@@ -84,12 +85,14 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	//@formatter:on
 
-	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode) {
+	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isInJurisdiction) {
 
 		super(
 			HospitalizationDto.class,
 			HospitalizationDto.I18N_PREFIX,
-			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)));
+			false,
+			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)),
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();
@@ -108,10 +111,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
-		facilityField.setValue(
-			healthFacility == null
-					|| noneFacility ? null : healthFacility.toString());
+		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
+		facilityField.setValue(noneFacility ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
@@ -147,6 +148,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(

@@ -31,9 +31,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -324,6 +326,65 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Facility - xyz", results.get(0).getHealthFacilityName());
 		assertEquals("Facility - abc", results.get(1).getHealthFacilityName());
 		assertEquals("Facility", results.get(2).getHealthFacilityName());
+	}
+
+	@Test
+	public void testGetIndexListByFreeText() {
+
+		String districtName = "District";
+		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
+		useSurveillanceOfficerLogin(rdcf);
+
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
+			p.getAddress().setPostalCode("10115");
+			p.getAddress().setCity("Berlin");
+			p.setPhone("+4930-90-1820");
+		});
+		creator.createCase(
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
+			p.getAddress().setPostalCode("20095");
+			p.getAddress().setCity("Hamburg");
+			p.setPhone("+49-30-901822");
+		});
+		creator.createCase(
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
+			p.getAddress().setPostalCode("80331");
+			p.getAddress().setCity("Munich");
+			p.setPhone("+49 31 9018 20");
+		});
+		creator.createCase(
+			user.toReference(),
+			person3.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		Assert.assertEquals(3, getCaseFacade().getIndexList(null, 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("Munich"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("20095"), 0, 100, null).size());
+		Assert.assertEquals(2, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("+49-31-901-820"), 0, 100, null).size());
+		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().nameUuidEpidNumberLike("4930901822"), 0, 100, null).size());
 	}
 
 	@Test
@@ -808,7 +869,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMergeCase() {
 
-		useSurveillanceOfficerLogin(null);
+		useNationalUserLogin();
 		// 1. Create
 
 		// Create leadCase
@@ -894,10 +955,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNull(mergedPerson.getBirthdateDD());
 
 		// Check 'lead and other have different values'
-		assertEquals(leadPerson.getFirstName(), mergedPerson.getFirstName());
+		assertEquals(leadCase.getPerson().getFirstName(), mergedPerson.getFirstName());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadPerson.getLastName(), mergedPerson.getLastName());
+		assertEquals(leadCase.getPerson().getLastName(), mergedPerson.getLastName());
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
@@ -1043,6 +1104,24 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid()));
 		caze = getCaseFacade().saveCase(caze);
 		assertThat(caze.getSurveillanceOfficer(), is(survOff3));
+	}
+
+	@Test
+	public void testSearchCasesWithExtendedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		CaseDataDto caze =
+			creator.createCase(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference(), rdcf);
+		caze.setQuarantineExtended(true);
+		getCaseFacade().saveCase(caze);
+
+		List<CaseIndexDto> indexList = getCaseFacade().getIndexList(new CaseCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(caze.getUuid()));
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setWithExtendedQuarantine(true);
+
+		List<CaseIndexDto> indexListFiltered = getCaseFacade().getIndexList(caseCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(caze.getUuid()));
 	}
 
 //	@Test

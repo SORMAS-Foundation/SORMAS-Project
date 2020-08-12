@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.contact;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,9 +50,11 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -810,5 +813,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().saveContact(contact2);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
+	}
+
+	@Test
+	public void testSearchContactsWithExtendedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		ContactDto contact =
+			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+		contact.setQuarantineExtended(true);
+		getContactFacade().saveContact(contact);
+
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setWithExtendedQuarantine(true);
+
+		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
 	}
 }

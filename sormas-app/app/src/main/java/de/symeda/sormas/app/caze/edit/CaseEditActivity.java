@@ -27,6 +27,7 @@ import android.view.Menu;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -41,6 +42,9 @@ import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventCriteria;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.clinicalcourse.edit.ClinicalVisitNewActivity;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
@@ -52,6 +56,9 @@ import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.epidata.EpidemiologicalDataEditFragment;
+import de.symeda.sormas.app.event.EventPickOrCreateDialog;
+import de.symeda.sormas.app.event.edit.EventNewActivity;
+import de.symeda.sormas.app.event.eventparticipant.EventParticipantSaver;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.sample.edit.SampleNewActivity;
 import de.symeda.sormas.app.symptoms.SymptomsEditFragment;
@@ -182,6 +189,9 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		case TASKS:
 			fragment = CaseEditTaskListFragment.newInstance(activityRootData);
 			break;
+		case EVENTS:
+			fragment = CaseEditEventListFragment.newInstance(activityRootData);
+			break;
 		default:
 			throw new IndexOutOfBoundsException(DataHelper.toStringNullable(section));
 		}
@@ -286,6 +296,8 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			SampleNewActivity.startActivity(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.TASKS) {
 			TaskNewActivity.startActivityFromCase(getContext(), getRootUuid());
+		} else if (activeSection == CaseSection.EVENTS) {
+			linkEventToCase();
 		} else if (activeSection == CaseSection.CLINICAL_VISITS) {
 			ClinicalVisitNewActivity.startActivity(getContext(), getRootUuid());
 		} else if (activeSection == CaseSection.PRESCRIPTIONS) {
@@ -293,6 +305,41 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		} else if (activeSection == CaseSection.TREATMENTS) {
 			TreatmentNewActivity.startActivity(getContext(), getRootUuid());
 		}
+	}
+
+	private void linkEventToCase() {
+		Case caze = DatabaseHelper.getCaseDao().getByReferenceDto(new CaseReferenceDto(getRootUuid()));
+
+		EventPickOrCreateDialog.pickOrCreateEvent(caze, null, event -> {
+			if (event != null) {
+				//link existing event to case
+				EventParticipant eventParticipantToSave = DatabaseHelper.getEventParticipantDao().build();
+				eventParticipantToSave.setPerson(caze.getPerson());
+				eventParticipantToSave.setEvent(event);
+				eventParticipantToSave.setResultingCaseUuid(caze.getUuid());
+				EventParticipantSaver eventParticipantSaver = new EventParticipantSaver(this);
+
+				if (!isEventLinkedToCase(caze, event)) {
+					eventParticipantSaver.saveEventParticipantLinkedToCase(eventParticipantToSave);
+				} else {
+					NotificationHelper
+						.showNotification(this, WARNING, getString(R.string.message_Event_already_linked_to_Case) + " " + caze.getUuid());
+				}
+
+			} else {
+				// create event and then link it to the case
+				EventNewActivity.startActivityFromCase(getContext(), getRootUuid());
+			}
+		});
+	}
+
+	private boolean isEventLinkedToCase(Case caze, Event event) {
+
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.caze(caze);
+		List<Event> eventsLinkedToCase = DatabaseHelper.getEventDao().queryByCriteria(eventCriteria, 0, 0);
+
+		return eventsLinkedToCase.contains(event);
 	}
 
 	@Override

@@ -34,16 +34,16 @@ public class EventJurisdictionChecker {
 	@EJB
 	private UserService userService;
 
-	public boolean isInJurisdiction(Event event) {
+	public boolean isInJurisdictionOrOwned(Event event) {
 
-		return isInJurisdiction(JurisdictionHelper.createEventJurisdictionDto(event));
+		return isInJurisdictionOrOwned(JurisdictionHelper.createEventJurisdictionDto(event));
 	}
 
-	public boolean isInJurisdiction(EventJurisdictionDto eventJurisdiction) {
+	public boolean isInJurisdictionOrOwned(EventJurisdictionDto eventJurisdiction) {
 
 		User user = userService.getCurrentUser();
 
 		return EventJurisdictionHelper
-			.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
+			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), eventJurisdiction);
 	}
 }

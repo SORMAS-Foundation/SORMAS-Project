@@ -28,10 +28,12 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -53,9 +55,12 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private static final String DISTRICT_INFO_LABEL_ID = "infoContactsViewRegionDistrictFilter";
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
+	private static final String CHECKBOX_STYLE = CssStyles.CHECKBOX_FILTER_INLINE + " " + CssStyles.VSPACE_3;
+
 	private static final String MORE_FILTERS_HTML = filterLocs(
 		ContactCriteria.REGION,
 		ContactCriteria.DISTRICT,
+		ContactCriteria.COMMUNITY,
 		DISTRICT_INFO_LABEL_ID,
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
@@ -70,7 +75,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
-			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS)
+			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
+			ContactCriteria.WITH_EXTENDED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -125,7 +131,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
 					ContactCriteria.REGION,
-					I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID),
+					I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID),
 					240));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
@@ -134,9 +140,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.DISTRICT,
-				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID),
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID),
 				240));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+
+		ComboBox communityField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				ContactCriteria.COMMUNITY,
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.COMMUNITY_UUID),
+				240));
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
@@ -195,7 +208,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_VERBALLY,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -203,7 +216,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -211,7 +224,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_NOT_ORDERED,
 					I18nProperties.getCaption(Captions.contactQuarantineNotOrdered),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 		}
 
 		addField(
@@ -221,7 +234,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 				I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
 		addField(
 			moreFiltersContainer,
 			CheckBox.class,
@@ -229,7 +242,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 				I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_EXTENDED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithExtendedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
+				CHECKBOX_STYLE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
@@ -240,6 +262,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		switch (propertyId) {
 		case ContactCriteria.REGION: {
 			getField(ContactCriteria.DISTRICT).setValue(null);
+			getField(ContactCriteria.COMMUNITY).setValue(null);
+			break;
+		}
+		case ContactCriteria.DISTRICT: {
+			getField(ContactCriteria.COMMUNITY).setValue(null);
 			break;
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
@@ -253,7 +280,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	protected void applyDependenciesOnNewValue(ContactCriteria newValue) {
 
 		RegionReferenceDto region = newValue.getRegion();
-		applyRegionFilterDependency(region);
+		DistrictReferenceDto district = newValue.getDistrict();
+		applyRegionAndDistrictFilterDependency(region, district);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 

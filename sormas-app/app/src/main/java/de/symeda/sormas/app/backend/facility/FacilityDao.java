@@ -145,6 +145,7 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			where.and().eq(InfrastructureAdo.ARCHIVED, false);
 			where.and().eq(AbstractDomainObject.SNAPSHOT, false);
 			where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
+
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
 			if (includeOtherLaboratory) {

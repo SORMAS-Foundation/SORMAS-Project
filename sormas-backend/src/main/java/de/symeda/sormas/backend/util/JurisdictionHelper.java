@@ -26,6 +26,7 @@ import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.sample.Sample;
@@ -210,6 +211,11 @@ public class JurisdictionHelper {
 		Contact contact = sample.getAssociatedContact();
 		if (contact != null) {
 			jurisdiction.setContactJurisdiction(createContactJurisdictionDto(contact));
+		}
+
+		EventParticipant eventParticipant = sample.getAssociatedEventParticipant();
+		if (eventParticipant != null) {
+			jurisdiction.setEventJurisdiction(createEventJurisdictionDto(eventParticipant.getEvent()));
 		}
 
 		Facility labFacility = sample.getLab();

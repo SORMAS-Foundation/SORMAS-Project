@@ -101,6 +101,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -160,6 +162,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static SampleReferenceDto toReferenceDto(Sample ado) {

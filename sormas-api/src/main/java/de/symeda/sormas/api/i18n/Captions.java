@@ -17,6 +17,15 @@ public interface Captions {
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
+	String Action = "Action";
+	String Action_actionContext = "Action.actionContext";
+	String Action_actionStatus = "Action.actionStatus";
+	String Action_creatorUser = "Action.creatorUser";
+	String Action_date = "Action.date";
+	String Action_description = "Action.description";
+	String Action_event = "Action.event";
+	String Action_priority = "Action.priority";
+	String Action_reply = "Action.reply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
@@ -29,6 +38,7 @@ public interface Captions {
 	String actionConfirm = "actionConfirm";
 	String actionConfirmFilters = "actionConfirmFilters";
 	String actionCreate = "actionCreate";
+	String actionCreatingLabel = "actionCreatingLabel";
 	String actionDearchive = "actionDearchive";
 	String actionDelete = "actionDelete";
 	String actionDeselectAll = "actionDeselectAll";
@@ -42,10 +52,13 @@ public interface Captions {
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
+	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionPick = "actionPick";
+	String actionReplyingLabel = "actionReplyingLabel";
 	String actionResetFilters = "actionResetFilters";
 	String actionSave = "actionSave";
 	String actionSaveChanges = "actionSaveChanges";
@@ -54,6 +67,7 @@ public interface Captions {
 	String actionShowLessFilters = "actionShowLessFilters";
 	String actionShowMoreFilters = "actionShowMoreFilters";
 	String actionSkip = "actionSkip";
+	String actionStatusChangeDate = "actionStatusChangeDate";
 	String AdditionalTest = "AdditionalTest";
 	String AdditionalTest_altSgpt = "AdditionalTest.altSgpt";
 	String AdditionalTest_arterialVenousBloodGas = "AdditionalTest.arterialVenousBloodGas";
@@ -155,10 +169,12 @@ public interface Captions {
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
 	String CaseData_clinicianPhone = "CaseData.clinicianPhone";
+	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_epiData = "CaseData.epiData";
@@ -191,6 +207,7 @@ public interface Captions {
 	String CaseData_postpartum = "CaseData.postpartum";
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
+	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
 	String CaseData_quarantineHomePossible = "CaseData.quarantineHomePossible";
@@ -204,6 +221,7 @@ public interface Captions {
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
+	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingType = "CaseData.reportingType";
@@ -270,6 +288,7 @@ public interface Captions {
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
+	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
@@ -351,6 +370,8 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_community = "Contact.community";
+	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
 	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
@@ -380,6 +401,7 @@ public interface Captions {
 	String Contact_overwriteFollowUpUntil = "Contact.overwriteFollowUpUntil";
 	String Contact_person = "Contact.person";
 	String Contact_quarantine = "Contact.quarantine";
+	String Contact_quarantineExtended = "Contact.quarantineExtended";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
 	String Contact_quarantineHomePossible = "Contact.quarantineHomePossible";
@@ -440,6 +462,7 @@ public interface Captions {
 	String contactNewContact = "contactNewContact";
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
+	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
@@ -699,6 +722,7 @@ public interface Captions {
 	String Event_diseaseDetails = "Event.diseaseDetails";
 	String Event_diseaseShort = "Event.diseaseShort";
 	String Event_endDate = "Event.endDate";
+	String Event_eventActions = "Event.eventActions";
 	String Event_eventDesc = "Event.eventDesc";
 	String Event_eventLocation = "Event.eventLocation";
 	String Event_eventParticipants = "Event.eventParticipants";
@@ -728,6 +752,7 @@ public interface Captions {
 	String eventActiveEvents = "eventActiveEvents";
 	String eventAllEvents = "eventAllEvents";
 	String eventArchivedEvents = "eventArchivedEvents";
+	String eventEventActions = "eventEventActions";
 	String eventEventParticipants = "eventEventParticipants";
 	String eventEventsList = "eventEventsList";
 	String eventNewEvent = "eventNewEvent";
@@ -816,6 +841,7 @@ public interface Captions {
 	String importLineListing = "importLineListing";
 	String importProcessed = "importProcessed";
 	String importSkips = "importSkips";
+	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";
@@ -1103,6 +1129,7 @@ public interface Captions {
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
+	String SampleExport_contactCommunity = "SampleExport.contactCommunity";
 	String SampleExport_contactDistrict = "SampleExport.contactDistrict";
 	String SampleExport_contactRegion = "SampleExport.contactRegion";
 	String SampleExport_contactReportDate = "SampleExport.contactReportDate";
@@ -1488,6 +1515,7 @@ public interface Captions {
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
 	String View_events_data = "View.events.data";
+	String View_events_eventactions = "View.events.eventactions";
 	String View_events_eventparticipants = "View.events.eventparticipants";
 	String View_events_eventparticipants_data = "View.events.eventparticipants.data";
 	String View_events_sub = "View.events.sub";
