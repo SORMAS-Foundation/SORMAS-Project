@@ -30,6 +30,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -42,9 +43,12 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -279,6 +283,54 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 //		}
 
 		return result;
+	}
+
+	@Override
+	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeriesList) {
+
+		List<CampaignDiagramDataDto> resultData = new ArrayList<CampaignDiagramDataDto>();
+
+		for (CampaignDiagramSeries diagramSeries : diagramSeriesList) {
+
+			// TODO check data type of field
+			// - int: as-is
+			// - yes-no/other: CampaignDiagramSeries.fieldValue should be defined -> count the number of form data that match the value
+
+			// TODO use parameters for the WHERE part
+			// TODO add district and community
+			//@formatter:off
+			Query seriesDataQuery = em.createNativeQuery(
+				"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+					+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+					+ ", sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
+					+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME
+				+ " FROM " + CampaignFormData.TABLE_NAME 
+				+ " LEFT JOIN " + CampaignFormMeta.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN_FORM_META + "_id = " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.ID
+				+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
+				+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") jsonData"
+				+ " WHERE " + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
+					+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
+					+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
+				+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+					+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+					+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME );
+			//@formatter:on
+
+			@SuppressWarnings("unchecked")
+			List<Object[]> resultList = seriesDataQuery.getResultList();
+
+			resultData.addAll(
+				resultList.stream()
+					.map(
+						(result) -> new CampaignDiagramDataDto(
+							(String) result[0],
+							(String) result[1],
+							(Object) result[2],
+							(String) result[3],
+							(String) result[4]))
+					.collect(Collectors.toList()));
+		}
+		return resultData;
 	}
 
 	@Override

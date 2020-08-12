@@ -1,12 +1,12 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -19,18 +19,16 @@ public class CampaignDashboardDataProvider {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 
-	private Map<CampaignDiagramDefinitionDto, List<CampaignFormDataDto>> campaignFormDataMap;
+	private final Map<CampaignDiagramDefinitionDto, List<CampaignDiagramDataDto>> campaignFormDataMap =
+		new HashMap<CampaignDiagramDefinitionDto, List<CampaignDiagramDataDto>>();
 
 	public void refreshData() {
 
 		List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
 		campaignDiagramDefinitions.forEach(campaignDiagramDefinitionDto -> {
-			final List<CampaignFormDataDto> campaignFormDataList = new ArrayList<>();
-			campaignDiagramDefinitionDto.getCampaignDiagramSeriesList()
-				.forEach(
-					campaignDiagramSeries -> campaignFormDataList
-						.add(FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(campaignDiagramSeries.getFormId())));
-			campaignFormDataMap.put(campaignDiagramDefinitionDto, campaignFormDataList);
+			List<CampaignDiagramDataDto> diagramData =
+				FacadeProvider.getCampaignFormDataFacade().getDiagramData(campaignDiagramDefinitionDto.getCampaignDiagramSeriesList());
+			campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
 		});
 
 	}
@@ -67,7 +65,7 @@ public class CampaignDashboardDataProvider {
 		this.district = district;
 	}
 
-	public Map<CampaignDiagramDefinitionDto, List<CampaignFormDataDto>> getCampaignFormDataMap() {
+	public Map<CampaignDiagramDefinitionDto, List<CampaignDiagramDataDto>> getCampaignFormDataMap() {
 		return campaignFormDataMap;
 	}
 }

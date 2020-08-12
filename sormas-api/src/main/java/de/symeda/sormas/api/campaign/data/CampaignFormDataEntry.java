@@ -25,6 +25,9 @@ public class CampaignFormDataEntry implements Serializable {
 
 	private static final long serialVersionUID = -3096020120349257398L;
 
+	public static final String ID = "id";
+	public static final String VALUE = "value";
+
 	private String id;
 	private Object value;
 

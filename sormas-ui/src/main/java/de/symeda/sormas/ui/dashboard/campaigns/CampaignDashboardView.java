@@ -20,14 +20,12 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
 		dashboardLayout.addComponent(filterLayout);
+		dashboardLayout.setExpandRatio(filterLayout, 0);
 
 		dashboardSwitcher.setValue(DashboardType.CAMPAIGNS);
 		dashboardSwitcher.addValueChangeListener(e -> navigateToDashboardView(e));
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoCampaignsDashboard));
-
-		dashboardLayout.addComponent(filterLayout);
-		dashboardLayout.setSpacing(false);
 	}
 
 	@Override
@@ -38,10 +36,11 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	@Override
 	public void refreshDashboard() {
 		dataProvider.refreshData();
-		dataProvider.getCampaignFormDataMap()
-			.forEach(
-				(campaignDiagramDefinitionDto, campaignFormDataDtos) -> dashboardLayout
-					.addComponent(new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, campaignFormDataDtos)));
+		dataProvider.getCampaignFormDataMap().forEach((campaignDiagramDefinitionDto, diagramData) -> {
+			CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, diagramData);
+			dashboardLayout.addComponent(diagramComponent);
+			dashboardLayout.setExpandRatio(diagramComponent, 1);
+		});
 
 	}
 }
