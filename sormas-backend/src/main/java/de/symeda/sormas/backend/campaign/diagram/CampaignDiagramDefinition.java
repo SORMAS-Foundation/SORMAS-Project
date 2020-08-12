@@ -19,6 +19,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 @Audited
 public class CampaignDiagramDefinition extends AbstractDomainObject {
 
+	private static final long serialVersionUID = 7360131476160449930L;
+
 	private String diagramId;
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
