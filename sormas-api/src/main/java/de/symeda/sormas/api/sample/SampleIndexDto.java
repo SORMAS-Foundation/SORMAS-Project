@@ -109,7 +109,7 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
 						  String reportingUserUuid, String labUuid,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
 						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventDistrictName,
 						  String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {

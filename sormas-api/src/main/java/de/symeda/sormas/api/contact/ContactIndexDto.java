@@ -39,8 +39,6 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
-	public static final String REGION_UUID = "regionUuid";
-	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
@@ -77,7 +75,7 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
@@ -114,7 +112,7 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 		this.caseClassification = caseClassification;
 		this.visitCount = visitCount;
 
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public String getUuid() {

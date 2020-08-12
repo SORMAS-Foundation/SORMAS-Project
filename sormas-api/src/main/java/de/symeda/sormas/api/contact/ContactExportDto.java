@@ -96,6 +96,7 @@ public class ContactExportDto implements Serializable {
 	private String lastCooperativeVisitSymptoms;
 	private String region;
 	private String district;
+	private String community;
 
 	private QuarantineType quarantine;
 	private String quarantineTypeDetails;
@@ -131,9 +132,9 @@ public class ContactExportDto implements Serializable {
 							String addressRegion, String addressDistrict, String city, String address, String postalCode,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
-							String region, String district,
+							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
-							String reportingUserUuid, String regionUuid, String districtUuid,
+							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
@@ -185,6 +186,7 @@ public class ContactExportDto implements Serializable {
 			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
+		this.community = community;
 		this.epiDataId = epiDataId;
 		this.traveled = traveled;
 		this.burialAttended = burialAttended;
@@ -201,7 +203,7 @@ public class ContactExportDto implements Serializable {
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public ContactReferenceDto toReference() {
@@ -292,6 +294,11 @@ public class ContactExportDto implements Serializable {
 	@Order(17)
 	public String getDistrict() {
 		return district;
+	}
+
+	@Order(17)
+	public String getCommunity() {
+		return community;
 	}
 
 	@Order(20)
@@ -631,6 +638,10 @@ public class ContactExportDto implements Serializable {
 		this.district = district;
 	}
 
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
 	public void setEpiDataId(long epiDataId) {
 		this.epiDataId = epiDataId;
 	}
@@ -645,6 +656,10 @@ public class ContactExportDto implements Serializable {
 
 	public String getDistrictUuid() {
 		return jurisdiction.getDistrictUuid();
+	}
+
+	public String getCommunityUuid() {
+		return jurisdiction.getCommunityUuid();
 	}
 
 	public ContactJurisdictionDto getJurisdiction() {

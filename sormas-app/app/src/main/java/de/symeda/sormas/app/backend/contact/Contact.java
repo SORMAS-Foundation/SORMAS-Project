@@ -45,6 +45,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
@@ -96,6 +97,8 @@ public class Contact extends PseudonymizableAdo {
 	private Region region;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community community;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField
@@ -451,6 +454,14 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
 	}
 
 	public boolean isHighPriority() {

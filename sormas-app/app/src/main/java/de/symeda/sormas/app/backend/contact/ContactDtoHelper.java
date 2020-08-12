@@ -27,6 +27,8 @@ import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
@@ -104,6 +106,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setExternalID(source.getExternalID());
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
 
 		target.setHighPriority(source.isHighPriority());
 		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
@@ -155,6 +158,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
 		} else {
 			target.setDistrict(null);
+		}
+		if (source.getCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+			target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setCommunity(null);
 		}
 		if (source.getCaseUuid() != null) {
 			target.setCaze(new CaseReferenceDto(source.getCaseUuid()));

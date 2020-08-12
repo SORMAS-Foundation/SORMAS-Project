@@ -94,7 +94,7 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
 			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
+			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
 			String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
 	//@formatter:on
@@ -135,8 +135,12 @@ public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Seri
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			contactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			contactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 		}
 
 		this.taskType = taskType;
