@@ -24,6 +24,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class MapCaseDto implements Serializable {
 
@@ -37,15 +41,26 @@ public class MapCaseDto implements Serializable {
 	private Disease disease;
 	private PersonReferenceDto person;
 	@PersonalData
+	@SensitiveData
 	private Double healthFacilityLat;
 	@PersonalData
+	@SensitiveData
 	private Double healthFacilityLon;
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double addressLat;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double addressLon;
+
 	private CaseJurisdictionDto jurisdiction;
 
 	public MapCaseDto(

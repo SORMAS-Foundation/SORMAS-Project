@@ -6,8 +6,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class ContactFollowUpDto extends FollowUpDto {
+public class ContactFollowUpDto extends FollowUpDto implements WithJurisdiction<ContactJurisdictionDto> {
 
 	private static final long serialVersionUID = -1257025719012862417L;
 
@@ -16,6 +18,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 
+	@SensitiveData
 	private UserReferenceDto contactOfficer;
 	private Date lastContactDate;
 
@@ -25,7 +28,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	public ContactFollowUpDto(String uuid, String personUuid, String personFirstName, String personLastName,
 							  String contactOfficerUuid, String contactOfficerFirstName, String contactOfficerLastName,
 							  Date lastContactDate, Date reportDate, Date followUpUntil, Disease disease,
-							  String reportingUserUuid, String regionUuid, String districtUuid,
+							  String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUud, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//formatter:on
@@ -43,7 +46,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 				caseCommunityUud,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public UserReferenceDto getContactOfficer() {

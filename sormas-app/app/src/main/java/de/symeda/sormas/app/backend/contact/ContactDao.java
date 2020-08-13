@@ -114,6 +114,9 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		if (user.getDistrict() != null) {
 			contact.setDistrict(user.getDistrict());
 		}
+		if (user.getCommunity() != null) {
+			contact.setCommunity(user.getCommunity());
+		}
 
 		// Epi Data
 		contact.setEpiData(DatabaseHelper.getEpiDataDao().build());

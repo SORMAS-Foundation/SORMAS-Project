@@ -73,7 +73,7 @@ public class PathogenTestController {
 		Runnable callback,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
-		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount);
+		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, true);
 		createForm.setValue(PathogenTestDto.build(sampleDto, UserProvider.getCurrent().getUser()));
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
 			createForm,
@@ -94,8 +94,9 @@ public class PathogenTestController {
 		// get fresh data
 		PathogenTestDto newDto = facade.getByUuid(dto.getUuid());
 
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid());
 		PathogenTestForm form =
-			new PathogenTestForm(FacadeProvider.getSampleFacade().getSampleByUuid(dto.getSample().getUuid()), false, caseSampleCount);
+			new PathogenTestForm(sample, false, caseSampleCount, !sample.isPseudonymized());
 		form.setValue(newDto);
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView = new CommitDiscardWrapperComponent<PathogenTestForm>(
 			form,

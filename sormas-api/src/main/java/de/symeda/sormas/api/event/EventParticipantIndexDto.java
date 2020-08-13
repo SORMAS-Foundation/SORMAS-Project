@@ -5,8 +5,11 @@ import java.io.Serializable;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventParticipantIndexDto implements Serializable {
+public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 1136399297437006739L;
 
@@ -25,10 +28,15 @@ public class EventParticipantIndexDto implements Serializable {
 	private String personUuid;
 	private String caseUuid;
 	private String eventUuid;
+	@PersonalData
+	@SensitiveData
 	private String name;
 	private Sex sex;
 	private String approximateAge;
+	@SensitiveData
 	private String involvementDescription;
+
+	private EventJurisdictionDto eventJurisdiction;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -40,7 +48,12 @@ public class EventParticipantIndexDto implements Serializable {
 		Sex sex,
 		Integer approximateAge,
 		ApproximateAgeType approximateAgeType,
-		String involvementDescription) {
+		String involvementDescription,
+		String eventReportingUserUuid,
+		String eventSurveillanceOfficerUuid,
+		String eventRegionUuid,
+		String eventDsitrictUuid,
+		String eventCommunityUuid) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -50,6 +63,9 @@ public class EventParticipantIndexDto implements Serializable {
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.involvementDescription = involvementDescription;
+
+		this.eventJurisdiction =
+			new EventJurisdictionDto(eventReportingUserUuid, eventSurveillanceOfficerUuid, eventRegionUuid, eventDsitrictUuid, eventCommunityUuid);
 	}
 
 	public String getUuid() {
@@ -114,5 +130,10 @@ public class EventParticipantIndexDto implements Serializable {
 
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
+	}
+
+	@Override
+	public EventJurisdictionDto getJurisdiction() {
+		return eventJurisdiction;
 	}
 }

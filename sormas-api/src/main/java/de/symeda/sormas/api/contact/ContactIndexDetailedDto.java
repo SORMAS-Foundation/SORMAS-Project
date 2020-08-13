@@ -8,6 +8,9 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class ContactIndexDetailedDto extends ContactIndexDto {
 
@@ -26,17 +29,22 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String approximateAge;
 	private String districtName;
 	@PersonalData
+	@SensitiveData
 	private String city;
 	@PersonalData
+	@SensitiveData
 	private String address;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@SensitiveData
 	private String phone;
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
 	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
-								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
+								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid, String communityUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
@@ -50,7 +58,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	//@formatter:on
 
 		//@formatter:off
-		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, communityUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
@@ -96,5 +104,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

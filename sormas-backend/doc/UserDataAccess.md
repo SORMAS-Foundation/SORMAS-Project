@@ -20,7 +20,7 @@ In general data access & synchronisation is based on the following rules:
 * only users that are permitted to see contacts at all
 * whoever created it or is assigned to it is allowed to access it
 * users see all contacts of their cases
-* access by region/district of the contact
+* access by region/district/community of the contact
 
 # Visits
 * users see all visits of the user's contacts

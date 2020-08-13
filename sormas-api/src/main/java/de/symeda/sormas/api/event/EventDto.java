@@ -20,14 +20,15 @@ package de.symeda.sormas.api.event;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class EventDto extends EntityDto {
+public class EventDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
 
@@ -65,6 +66,7 @@ public class EventDto extends EntityDto {
 	private EventStatus eventStatus;
 	private String externalId;
 	@Required
+	@SensitiveData
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private Date startDate;
@@ -76,18 +78,28 @@ public class EventDto extends EntityDto {
 	private LocationDto eventLocation;
 	private TypeOfPlace typeOfPlace;
 	private EventSourceType srcType;
+	@SensitiveData
 	private String srcFirstName;
+	@SensitiveData
 	private String srcLastName;
+	@SensitiveData
 	private String srcTelNo;
+	@SensitiveData
 	private String srcEmail;
+	@SensitiveData
 	private String srcMediaWebsite;
+	@SensitiveData
 	private String srcMediaName;
+	@SensitiveData
 	private String srcMediaDetails;
 	private Disease disease;
 	private String diseaseDetails;
+	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
 	private String typeOfPlaceText;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 

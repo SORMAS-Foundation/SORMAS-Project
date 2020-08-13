@@ -9,6 +9,16 @@
 - Recommended: Install a Git client such as [TortoiseGit](https://tortoisegit.org/) if you don't want to handle version control from the command line or separately for the Eclipse and Android Studio projects
 - Open the Git Bash and execute the command <code>git config --global branch.development.rebase true</code> (which ensures that rebase is used when pulling rather than merge)
 
+## Java
+- Download and install the Java 8 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
+  * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
+        
+		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+		sudo apt-get update
+		sudo apt-get install zulu-8
+  - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 8 **JDK** for 32 or 64 bit client systems (depending on your system).
+
 ## Eclipse
 - Install the latest Eclipse version
 - Set the default JRE of Eclipse to the installed Zulu Java SDK: [Assigning the default JRE for the workbench ](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
@@ -35,7 +45,7 @@
 
 ## IntelliJ
 - Install the latest Ultimate edition IntelliJ
-- Set the project SDK to use the installed Zulu Java SDK
+- Set the project SDK to use the installed Zulu Java 8 SDK
 - Clone the SORMAS-Project repository and open the project in IntelliJ
 	- make sure the under "File -> Project Structure -> Modules" all the modules (except the android app - this should not be added) are recognized, if not add the modules with +
 - Make sure under "File -> Settings -> Plugins" Glassfish & Ant integrations are enabled (look into the "Installed" tab)
@@ -60,9 +70,9 @@
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
 	- open the plugin settings (Other Settings -> Eclipse Code Formatter) and select "Use the Eclipse Code Formatter"
 	- under "Eclipse Formatter config file", select ``sormas-base/java-formatter-profile.xml``
-	- check optimize imports and, for "Iport order", select ``sormas-base/java-importorder-profile.importorder``
+	- check optimize imports and, for "Import order", select ``sormas-base/java-importorder-profile.importorder``
 	- **Important:** select "Do not format other file types by IntelliJ formatter"
-	- go to Preferences -> Editor -> Code style -> Java : set class and static names counts for import with * to 99
+	- go to Preferences -> Editor -> Code style -> Java -> Imports: set class and static names counts for import with * to 99
 	- for IntelliJ, code formatting is usually done with Ctrl+Alt+L. For automatic formatting, it's recommended to use the plugin Save Actions (https://plugins.jetbrains.com/plugin/7642-save-actions)
 
 ## Android Studio

@@ -17,8 +17,10 @@ package de.symeda.sormas.app.epidata;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 
 public class EpiDataFragmentHelper {
@@ -33,6 +35,14 @@ public class EpiDataFragmentHelper {
 		} else {
 			Contact contact = (Contact) abstractDomainObject;
 			return contact.getDisease();
+		}
+	}
+
+	public static boolean isEditAllowed(AbstractDomainObject abstractDomainObject) {
+		if (abstractDomainObject instanceof Case) {
+			return CaseEditAuthorization.isCaseEditAllowed((Case) abstractDomainObject);
+		} else {
+			return ContactEditAuthorization.isContactEditAllowed((Contact) abstractDomainObject);
 		}
 	}
 

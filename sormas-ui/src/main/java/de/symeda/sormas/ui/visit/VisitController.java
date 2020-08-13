@@ -59,11 +59,11 @@ public class VisitController {
 		if (contactRef != null) {
 			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, !contact.isPseudonymized());
 		} else if (caseRef != null) {
 			CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
-			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false);
+			editForm = new VisitEditForm(visit.getDisease(), caze, visitPerson, false, !caze.isPseudonymized());
 		} else {
 			throw new IllegalArgumentException("Cannot edit a visit without contact nor case");
 		}
@@ -130,7 +130,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true);
 		createForm.setValue(visit);
 
 		createVisit(createForm, doneConsumer);
@@ -140,7 +140,7 @@ public class VisitController {
 		VisitDto visit = createNewVisit(caseRef);
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true);
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), caze, person, true, true);
 		createForm.setValue(visit);
 
 		createVisit(createForm, doneConsumer);

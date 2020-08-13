@@ -37,6 +37,7 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
+	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;
 	private Join<Sample, Facility> lab;
 	private Join<Sample, Case> caze;
@@ -52,6 +53,7 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Community> contactCommunity;
 	private Join<Contact, Case> contactCase;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
@@ -74,9 +76,19 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 	private Join<Location, Region> eventRegion;
 	private Join<Location, District> eventDistrict;
 	private Join<Location, Community> eventCommunity;
+	private Join<Event, User> eventReportingUser;
+	private Join<Event, User> eventSurveillanceOfficer;
 
 	public SampleJoins(From<Sample, Sample> root) {
 		super(root);
+	}
+
+	public Join<Sample, User> getReportingUser() {
+		return getOrCreate(reportingUser, Sample.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
+	}
+
+	private void setReportingUser(Join<Sample, User> reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public Join<Sample, Sample> getReferredSample() {
@@ -223,6 +235,22 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 		this.eventDistrict = eventDistrict;
 	}
 
+	public Join<Event, User> getEventReportingUser() {
+		return getOrCreate(eventReportingUser, Event.REPORTING_USER, JoinType.LEFT, getEvent(), this::setEventReportingUser);
+	}
+
+	private void setEventReportingUser(Join<Event, User> eventReportingUser) {
+		this.eventReportingUser = eventReportingUser;
+	}
+
+	public Join<Event, User> getEventSurveillanceOfficer() {
+		return getOrCreate(eventSurveillanceOfficer, Event.SURVEILLANCE_OFFICER, JoinType.LEFT, getEvent(), this::setEventSurveillanceOfficer);
+	}
+
+	private void setEventSurveillanceOfficer(Join<Event, User> eventSurveillanceOfficer) {
+		this.eventSurveillanceOfficer = eventSurveillanceOfficer;
+	}
+
 	public Join<Contact, Person> getContactPerson() {
 		return getOrCreate(contactPerson, Contact.PERSON, JoinType.LEFT, getContact(), this::setContactPerson);
 	}
@@ -253,6 +281,14 @@ public class SampleJoins extends AbstractDomainObjectJoins<Sample, Sample> {
 
 	private void setContactDistrict(Join<Contact, District> contactDistrict) {
 		this.contactDistrict = contactDistrict;
+	}
+
+	public Join<Contact, Community> getContactCommunity() {
+		return getOrCreate(contactCommunity, Contact.COMMUNITY, JoinType.LEFT, getContact(), this::setContactCommunity);
+	}
+
+	private void setContactCommunity(Join<Contact, Community> contactCommunity) {
+		this.contactCommunity = contactCommunity;
 	}
 
 	public Join<Contact, Case> getContactCase() {

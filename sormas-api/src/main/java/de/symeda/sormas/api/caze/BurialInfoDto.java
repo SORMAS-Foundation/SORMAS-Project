@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class BurialInfoDto implements Serializable {
 
@@ -11,6 +12,7 @@ public class BurialInfoDto implements Serializable {
 
 	private Date burialDate;
 	private BurialConductor burialConductor;
+	@SensitiveData
 	private String burialPlaceDescription;
 
 	public BurialInfoDto(Date burialDate, BurialConductor burialConductor, String burialPlaceDescription) {

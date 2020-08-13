@@ -6,9 +6,11 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.visit.VisitResult;
 
 public abstract class FollowUpDto implements Serializable {
+
 	private static final long serialVersionUID = 8562530147842271464L;
 
 	public static final String I18N_PREFIX = "FollowUp";
@@ -18,6 +20,7 @@ public abstract class FollowUpDto implements Serializable {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 
 	private String uuid;
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	private Date reportDate;
 	private Date followUpUntil;
