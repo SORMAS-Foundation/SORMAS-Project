@@ -17,25 +17,24 @@
  */
 package de.symeda.sormas.rest.security;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.keycloak.KeycloakSecurityContext;
-import org.keycloak.util.BasicAuthHelper;
+import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
+import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.AuthenticationStatus;
+import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
-import javax.security.enterprise.credential.CallerOnlyCredential;
-import javax.security.enterprise.credential.Credential;
-import javax.security.enterprise.credential.UsernamePasswordCredential;
-import javax.security.enterprise.identitystore.CredentialValidationResult;
-import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,9 +43,9 @@ import javax.servlet.http.HttpServletResponse;
  * <p/>
  * Supported at the moment: Sormas and Keycloak.
  * <p/>
- * Sormas provider accepts Basic authentication. The {@link SormasIdentityStore} validated the credentials and obtains the user's roles.
+ * Sormas provider uses the {@link BasicAuthenticationMechanism}. The {@link SormasIdentityStore} validated the credentials and obtains the user's roles.
  * <p/>
- * Keycloak provider accepts Bearer and if enabled also Basic authentication. Configuration provided by {@link KeycloakConfigResolver}.<br/>
+ * Keycloak provider uses {@link KeycloakHttpAuthenticationMechanism} and accepts Bearer and if enabled also Basic authentication. Configuration provided by {@link KeycloakConfigResolver}.<br/>
  * The token validation is done trough {@link KeycloakFilter} and then the user is authenticated and it's roles are obtained by {@link KeycloakIdentityStore}.<br/>
  * <b>Note:</b> As a precondition the Keycloak user needs a valid role which the {@link KeycloakFilter} will use to pre-validate the request.
  *
@@ -55,50 +54,53 @@ import javax.servlet.http.HttpServletResponse;
  * @see SormasIdentityStore
  * @see KeycloakIdentityStore
  * @see KeycloakConfigResolver
+ * @see KeycloakHttpAuthenticationMechanism
  */
+@OpenAPIDefinition(security = {
+	@SecurityRequirement(name = "http-basic"),
+	@SecurityRequirement(name = "http-bearer")
+})
+@SecurityScheme(
+	name = "http-basic",
+	type = SecuritySchemeType.HTTP,
+	scheme = "Basic"
+)
+@SecurityScheme(
+	name = "http-bearer",
+	type = SecuritySchemeType.HTTP,
+	scheme = "Bearer",
+	bearerFormat = "JWT"
+)
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
 
-	private String authenticationProvider;
+	private HttpAuthenticationMechanism authenticationMechanism;
 
 	@Inject
-	private IdentityStoreHandler identityStoreHandler;
-
-	@PostConstruct
-	public void init() {
-		authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+	public MultiAuthenticationMechanism(KeycloakHttpAuthenticationMechanism keycloakHttpAuthenticationMechanism) {
+		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+		if (authenticationProvider.equals(AuthProvider.KEYCLOAK)) {
+			authenticationMechanism = keycloakHttpAuthenticationMechanism;
+		} else {
+			BasicAuthenticationMechanismDefinition definition = new BasicAuthenticationMechanismDefinitionAnnotationLiteral("sormas-rest-realm");
+			authenticationMechanism = new BasicAuthenticationMechanism(definition);
+		}
 	}
 
 	@Override
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
 		throws AuthenticationException {
-
-		if (!hasValidAuthorization(request)) {
-			return context.responseUnauthorized();
-		}
-
-		Credential credential;
-		if (authenticationProvider.equals("KEYCLOAK")) {
-			KeycloakSecurityContext keycloakContext = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
-			if (keycloakContext == null) {
-				//the filter will trigger the validateRequest once more if the context is empty
-				return context.doNothing();
-			}
-			credential = new CallerOnlyCredential(keycloakContext.getToken().getPreferredUsername());
-		} else {
-			String[] credentials = BasicAuthHelper.parseHeader(request.getHeader("Authorization"));
-			if (credentials == null || credentials.length != 2) {
-				return context.responseUnauthorized();
-			}
-			credential = new UsernamePasswordCredential(credentials[0], credentials[1]);
-		}
-
-		CredentialValidationResult result = identityStoreHandler.validate(credential);
-		return context.notifyContainerAboutLogin(result);
+		return authenticationMechanism.validateRequest(request, response, context);
 	}
 
-	private boolean hasValidAuthorization(HttpServletRequest request) {
-		String authorization = request.getHeader("Authorization");
-		return StringUtils.isNotBlank(authorization) && StringUtils.startsWithAny(authorization, "Basic", "Bearer");
+	@Override
+	public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
+		throws AuthenticationException {
+		return authenticationMechanism.secureResponse(request, response, httpMessageContext);
+	}
+
+	@Override
+	public void cleanSubject(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) {
+		authenticationMechanism.cleanSubject(request, response, httpMessageContext);
 	}
 }

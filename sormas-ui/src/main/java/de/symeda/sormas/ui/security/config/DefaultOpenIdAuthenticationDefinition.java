@@ -28,15 +28,18 @@ import fish.payara.security.openid.api.PromptType;
 import java.lang.annotation.Annotation;
 
 /**
+ * Default implementation of  {@link OpenIdAuthenticationDefinition} to allow inline declaration.
+ * <p/>
+ * Configurations to be provided trough Payara MP.
+ *
  * @author Alex Vidrean
  * @since 12-Aug-20
  */
-//TODO: extract configs from properties
-public class SormasOpenIdAuthenticationDefinition implements OpenIdAuthenticationDefinition {
+public class DefaultOpenIdAuthenticationDefinition implements OpenIdAuthenticationDefinition {
 
 	@Override
 	public String providerURI() {
-		return "http://localhost:7080/auth/realms/SORMAS/";
+		return "";
 	}
 
 	@Override
@@ -93,17 +96,17 @@ public class SormasOpenIdAuthenticationDefinition implements OpenIdAuthenticatio
 
 	@Override
 	public String clientId() {
-		return "sormas-ui";
+		return "";
 	}
 
 	@Override
 	public String clientSecret() {
-		return "c4957395-56f7-431b-a2fe-7e5203c720e0";
+		return "";
 	}
 
 	@Override
 	public String redirectURI() {
-		return "http://localhost:9080/sormas-ui/callback";
+		return "${baseURL}/Callback";
 	}
 
 	@Override
@@ -148,7 +151,7 @@ public class SormasOpenIdAuthenticationDefinition implements OpenIdAuthenticatio
 
 	@Override
 	public Class<? extends Annotation> annotationType() {
-		return OpenIdAuthenticationDefinition.class;
+		return fish.payara.security.annotations.OpenIdAuthenticationDefinition.class;
 	}
 
 	@Override

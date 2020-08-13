@@ -14,6 +14,7 @@
 
 	<properties>    
 		<m2e.jpa.activation>false</m2e.jpa.activation>
+		<microprofile.api.version>1.3</microprofile.api.version>
 	</properties>
 
 	<dependencies>
@@ -132,6 +133,13 @@
 			<groupId>fish.payara.security.connectors</groupId>
 			<artifactId>security-connector-oidc-client</artifactId>
 			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
+			<version>${microprofile.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

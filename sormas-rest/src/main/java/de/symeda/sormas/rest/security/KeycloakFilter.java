@@ -19,6 +19,7 @@
 package de.symeda.sormas.rest.security;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
 
 import javax.inject.Inject;

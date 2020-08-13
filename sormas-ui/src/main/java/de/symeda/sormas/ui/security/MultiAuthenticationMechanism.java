@@ -18,11 +18,14 @@
 
 package de.symeda.sormas.ui.security;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.ui.login.LoginHelper;
-import de.symeda.sormas.ui.security.config.SormasOpenIdAuthenticationDefinition;
+import de.symeda.sormas.ui.security.config.DefaultOpenIdAuthenticationDefinition;
+import fish.payara.security.annotations.OpenIdAuthenticationDefinition;
 import fish.payara.security.openid.OpenIdAuthenticationMechanism;
 import fish.payara.security.openid.api.OpenIdContext;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.glassfish.soteria.cdi.LoginToContinueAnnotationLiteral;
 import org.glassfish.soteria.mechanisms.CustomFormAuthenticationMechanism;
 import org.slf4j.Logger;
@@ -55,7 +58,7 @@ import javax.ws.rs.core.Response;
  * The token validation and it's roles are obtained by {@link SormasOpenIdIdentityStore}.<br/>
  *
  * @author Alex Vidrean
- * @see SormasOpenIdAuthenticationDefinition
+ * @see DefaultOpenIdAuthenticationDefinition
  * @see CustomFormAuthenticationMechanism
  * @see OpenIdAuthenticationMechanism
  * @see SormasOpenIdIdentityStore
@@ -70,18 +73,24 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	private HttpAuthenticationMechanism authenticationMechanism;
 
-	private static final String KEYCLOAK_AUTH_PROVIDER = "SORMAS";
-
 	@Inject
 	private OpenIdContext openIdContext;
+
+	@Inject
+	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_ID)
+	private String clientId;
+
+	@Inject
+	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_SECRET)
+	private String clientSecret;
 
 	@Inject
 	public MultiAuthenticationMechanism(
 		OpenIdAuthenticationMechanism openIdAuthenticationMechanism, CustomFormAuthenticationMechanism customFormAuthenticationMechanism) {
 
 		authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
-		if (authenticationProvider.equalsIgnoreCase(KEYCLOAK_AUTH_PROVIDER)) {
-			openIdAuthenticationMechanism.setConfiguration(new SormasOpenIdAuthenticationDefinition());
+		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
+			openIdAuthenticationMechanism.setConfiguration(new DefaultOpenIdAuthenticationDefinition());
 			authenticationMechanism = openIdAuthenticationMechanism;
 		} else {
 			customFormAuthenticationMechanism.setLoginToContinue(new LoginToContinueAnnotationLiteral("/login", false, "", "/login-error"));
@@ -90,8 +99,8 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	}
 
 	@Override
-	public AuthenticationStatus validateRequest(
-		HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
+	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
+		throws AuthenticationException {
 		return authenticationMechanism.validateRequest(request, response, httpMessageContext);
 	}
 
@@ -114,8 +123,8 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	 */
 	public void logoutEvent(@Observes LoginHelper.LogoutEvent logoutEvent) throws AuthenticationException {
 
-		if (!authenticationProvider.equalsIgnoreCase(KEYCLOAK_AUTH_PROVIDER)) {
-			logger.trace("Authentication provider doesn't require IDP Logout");
+		if (!authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
+			logger.trace("{} authentication provider doesn't require IDP logout", authenticationProvider);
 			return;
 		}
 
@@ -123,8 +132,8 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		String logoutEndpoint = openIdContext.getProviderMetadata().getString("end_session_endpoint");
 
 		Form form = new Form();
-		form.param("client_id", "sormas-ui");
-		form.param("client_secret", "secret");
+		form.param("client_id", clientId);
+		form.param("client_secret", clientSecret);
 		openIdContext.getRefreshToken().ifPresent(refreshToken -> form.param("refresh_token", refreshToken.getToken()));
 
 		Client client = ClientBuilder.newClient();
