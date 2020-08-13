@@ -2,6 +2,7 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
@@ -23,6 +24,12 @@ import java.util.List;
 public class ExternalVisitsResource extends EntityDtoResource {
 
 	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
+
+	@GET
+	@Path("/person/{personUuid}")
+	public PersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
+		return FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+	}
 
 	@GET
 	@Path("/person/{personUuid}/isValid")
