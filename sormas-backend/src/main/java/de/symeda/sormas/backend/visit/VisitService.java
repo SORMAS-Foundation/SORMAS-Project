@@ -114,10 +114,14 @@ public class VisitService extends AbstractAdoService<Visit> {
 		return resultList;
 	}
 
+	/**
+	 * Attention: For now this only returns the visits of contacts, since case visits are not yet implemented in the mobile app
+	 */
 	public List<Visit> getAllActiveVisitsAfter(Date date) {
 		List<Visit> result = new ArrayList<>();
 		result.addAll(getAllActiveVisitsInContactsAfter(date));
-		result.addAll(getAllActiveVisitsInCasesAfter(date));
+		// include when case visits are implemented for the mobile app
+//		result.addAll(getAllActiveVisitsInCasesAfter(date));
 
 		return result.stream().distinct().sorted(Comparator.comparing(AbstractDomainObject::getId)).collect(Collectors.toList());
 	}
@@ -221,28 +225,28 @@ public class VisitService extends AbstractAdoService<Visit> {
 		if (criteria.getContact() != null) {
 			Contact contact = contactService.getByUuid(criteria.getContact().getUuid());
 			filter = and(
+				cb,
+				filter,
+				buildRelevantVisitsFilter(
+					contact.getPerson(),
+					contact.getDisease(),
+					ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()),
+					ContactLogic.getEndDate(contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil()),
 					cb,
-					filter,
-					buildRelevantVisitsFilter(
-							contact.getPerson(),
-							contact.getDisease(),
-							ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime()),
-							ContactLogic.getEndDate(contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil()),
-							cb,
-							from));
+					from));
 		}
 		if (criteria.getCaze() != null) {
 			Case caze = caseService.getByUuid(criteria.getCaze().getUuid());
 			filter = and(
+				cb,
+				filter,
+				buildRelevantVisitsFilter(
+					caze.getPerson(),
+					caze.getDisease(),
+					CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+					CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()),
 					cb,
-					filter,
-					buildRelevantVisitsFilter(
-							caze.getPerson(),
-							caze.getDisease(),
-							CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
-							CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()),
-							cb,
-							from));
+					from));
 		}
 
 		return filter;

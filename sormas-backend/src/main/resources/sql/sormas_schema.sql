@@ -4904,6 +4904,8 @@ ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
 ALTER TABLE cases ADD COLUMN followupuntil timestamp;
 ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
 
+UPDATE cases SET followupstatus = 'CANCELED';
+UPDATE cases SET followupcomment = '-';
 UPDATE cases SET overwritefollowupuntil = false;
 
 ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);

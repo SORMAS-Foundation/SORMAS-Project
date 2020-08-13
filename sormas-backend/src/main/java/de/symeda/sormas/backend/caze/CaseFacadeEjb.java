@@ -1289,9 +1289,9 @@ public class CaseFacadeEjb implements CaseFacade {
 	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
 
 		if (existingCase != null
-				&& existingCase.getReportDate() == caze.getReportDate()
-				&& existingCase.getFollowUpUntil() == caze.getFollowUpUntil()
-				&& existingCase.getDisease() == caze.getDisease()) {
+			&& existingCase.getReportDate() == caze.getReportDate()
+			&& existingCase.getFollowUpUntil() == caze.getFollowUpUntil()
+			&& existingCase.getDisease() == caze.getDisease()) {
 			return;
 		}
 
@@ -1302,10 +1302,10 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		for (Visit visit : visitService.getAllRelevantVisits(
-				caze.getPerson(),
-				caze.getDisease(),
-				CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
-				CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()))) {
+			caze.getPerson(),
+			caze.getDisease(),
+			CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+			CaseLogic.getEndDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), caze.getFollowUpUntil()))) {
 			caze.getVisits().add(visit); // Necessary for further logic during the case save process
 			visit.setCaze(caze);
 		}
@@ -1893,10 +1893,14 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
-		target.setFollowUpComment(source.getFollowUpComment());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setFollowUpUntil(source.getFollowUpUntil());
-		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+
+		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
+		if (source.getFollowUpStatus() != null) {
+			target.setFollowUpComment(source.getFollowUpComment());
+			target.setFollowUpStatus(source.getFollowUpStatus());
+			target.setFollowUpUntil(source.getFollowUpUntil());
+			target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+		}
 
 		return target;
 	}
@@ -2600,7 +2604,13 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public List<CaseFollowUpDto> getCaseFollowUpList(CaseCriteria caseCriteria, Date referenceDate, int interval, Integer first, Integer max, List<SortProperty> sortProperties) {
+	public List<CaseFollowUpDto> getCaseFollowUpList(
+		CaseCriteria caseCriteria,
+		Date referenceDate,
+		int interval,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
 
 		Date end = DateHelper.getEndOfDay(referenceDate);
 		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
@@ -2633,18 +2643,18 @@ public class CaseFacadeEjb implements CaseFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-					case FollowUpDto.UUID:
-					case FollowUpDto.REPORT_DATE:
-					case FollowUpDto.FOLLOW_UP_UNTIL:
-						expression = caze.get(sortProperty.propertyName);
-						break;
-					case FollowUpDto.PERSON:
-						expression = joins.getPerson().get(Person.FIRST_NAME);
-						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-						expression = joins.getPerson().get(Person.LAST_NAME);
-						break;
-					default:
-						throw new IllegalArgumentException(sortProperty.propertyName);
+				case FollowUpDto.UUID:
+				case FollowUpDto.REPORT_DATE:
+				case FollowUpDto.FOLLOW_UP_UNTIL:
+					expression = caze.get(sortProperty.propertyName);
+					break;
+				case FollowUpDto.PERSON:
+					expression = joins.getPerson().get(Person.FIRST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getPerson().get(Person.LAST_NAME);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
 				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 			}
@@ -2665,20 +2675,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 			visitsCq.where(
-					AbstractAdoService.and(
-							cb,
-							caze.get(AbstractDomainObject.UUID).in(caseUuids),
-							cb.isNotEmpty(visitsCqRoot.get(Case.VISITS)),
-							cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end)));
+				AbstractAdoService.and(
+					cb,
+					caze.get(AbstractDomainObject.UUID).in(caseUuids),
+					cb.isNotEmpty(visitsCqRoot.get(Case.VISITS)),
+					cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end)));
 			visitsCq.multiselect(
-					visitsCqRoot.get(Case.UUID),
-					visitsJoin.get(Visit.VISIT_DATE_TIME),
-					visitsJoin.get(Visit.VISIT_STATUS),
-					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+				visitsCqRoot.get(Case.UUID),
+				visitsJoin.get(Visit.VISIT_DATE_TIME),
+				visitsJoin.get(Visit.VISIT_STATUS),
+				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
-			Map<String, CaseFollowUpDto> resultMap =
-					resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
+			Map<String, CaseFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
