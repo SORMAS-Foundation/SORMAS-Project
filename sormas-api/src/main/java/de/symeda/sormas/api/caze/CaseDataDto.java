@@ -135,6 +135,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
@@ -334,6 +335,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
 	private String quarantineHomeSupplyEnsuredComment;
+	private boolean quarantineExtended;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
@@ -1019,6 +1021,14 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
 	}
 
 	public ReportingType getReportingType() {

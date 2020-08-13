@@ -44,6 +44,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
@@ -136,6 +138,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		DateField startDate = addField(EventDto.START_DATE, DateField.class);
 		CheckBox multiDayCheckbox = addField(EventDto.MULTI_DAY_EVENT, CheckBox.class);
 		DateField endDate = addField(EventDto.END_DATE, DateField.class);
+
+		initEventDateValidation(startDate, endDate, multiDayCheckbox);
+
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
 
@@ -233,6 +238,33 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			srcTelNo,
 			srcMediaWebsite,
 			srcMediaName);
+	}
+
+	private void initEventDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
+		DateComparisonValidator startDateValidator = new DateComparisonValidator(
+			startDate,
+			endDate,
+			true,
+			true,
+			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+
+		DateComparisonValidator endDateValidator = new DateComparisonValidator(
+			endDate,
+			startDate,
+			false,
+			true,
+			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+
+		multiDayCheckbox.addValueChangeListener(e -> {
+			if ((Boolean) e.getProperty().getValue()) {
+				startDate.addValidator(startDateValidator);
+				endDate.addValidator(endDateValidator);
+			} else {
+				startDate.removeValidator(startDateValidator);
+				endDate.removeValidator(endDateValidator);
+			}
+		});
+
 	}
 
 	@Override

@@ -4866,7 +4866,38 @@ ALTER TABLE campaignformmeta_history DROP COLUMN campaignformlistelements;
 
 INSERT INTO schema_version (version_number, comment) VALUES (233, 'Remove list elements from campaignformmeta #2515');
 
--- 2020-07-07 Adds visit to cases
+-- 2020-07-29 Campaign diagram definition
+CREATE TABLE campaigndiagramdefinition(
+                              id bigint not null,
+                              uuid varchar(36) not null unique,
+                              changedate timestamp not null,
+                              creationdate timestamp not null,
+                              diagramId varchar(255) not null unique,
+                              diagramType varchar(255),
+                              campaignDiagramSeries text,
+                              sys_period tstzrange not null,
+                              primary key(id)
+);
+
+ALTER TABLE campaigndiagramdefinition OWNER TO sormas_user;
+
+CREATE TABLE campaigndiagramdefinition_history (LIKE campaigndiagramdefinition);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
+ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (234, 'Campaign diagram definition');
+
+-- 2020-07-30 - Store if quarantine period has been extended #2264
+ALTER TABLE cases ADD COLUMN quarantineextended boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineextended boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantineextended boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
+
+-- 2020-08-13 Adds visit to cases
 
 ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
 ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
@@ -4883,6 +4914,6 @@ ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
 ALTER TABLE visit ADD COLUMN caze_id bigint;
 ALTER TABLE visit_history ADD COLUMN caze_id bigint;
 
-INSERT INTO schema_version (version_number, comment) VALUES (234, 'Adds visit to cases');
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Adds visit to cases');
 
 -- *** Insert new sql commands BEFORE this line ***

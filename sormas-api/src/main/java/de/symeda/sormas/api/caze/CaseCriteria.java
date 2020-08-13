@@ -46,6 +46,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
 	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
+	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
@@ -82,6 +83,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
 	private Boolean withoutResponsibleOfficer;
+	private Boolean withExtendedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -274,6 +276,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return this.withoutResponsibleOfficer;
 	}
 
+	public Boolean getWithExtendedQuarantine() {
+		return withExtendedQuarantine;
+	}
+
+	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
+		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -348,6 +358,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	 */
 	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
 		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
+	}
+	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
+		setNameUuidEpidNumberLike(nameUuidEpidNumberLike);
+		return this;
 	}
 
 	@IgnoreForUrl

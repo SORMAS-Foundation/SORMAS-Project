@@ -49,6 +49,10 @@ public class EventEditActivity extends BaseEditActivity<Event> {
 
 	private AsyncTask saveTask;
 
+	public static void startActivity(Context context, String rootUuid) {
+		BaseEditActivity.startActivity(context, EventEditActivity.class, buildBundle(rootUuid));
+	}
+
 	public static void startActivity(Context context, String rootUuid, EventSection section) {
 		BaseEditActivity.startActivity(context, EventEditActivity.class, buildBundle(rootUuid, section));
 	}

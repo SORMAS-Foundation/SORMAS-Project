@@ -995,6 +995,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_VERBALLY)),
 					cb.isFalse(from.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT))));
 		}
+		if (Boolean.TRUE.equals(contactCriteria.getWithExtendedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Contact.QUARANTINE_EXTENDED)));
+		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
@@ -1007,10 +1010,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getNameUuidCaseLike() != null) {
 			Join<Contact, Person> person = from.join(Contact.PERSON, JoinType.LEFT);
+			Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Join<Case, Person> casePerson = caze.join(Case.PERSON, JoinType.LEFT);
 			String[] textFilters = contactCriteria.getNameUuidCaseLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i].toLowerCase());
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(from.get(Contact.UUID)), textFilter),
@@ -1018,7 +1022,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
 						cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
-						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter));
+						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}

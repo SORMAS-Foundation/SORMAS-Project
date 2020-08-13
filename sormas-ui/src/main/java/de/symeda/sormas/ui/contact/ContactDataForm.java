@@ -26,14 +26,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
-import de.symeda.sormas.api.contact.ContactIdentificationSource;
-import de.symeda.sormas.api.contact.TracingApp;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
@@ -52,11 +51,13 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -113,9 +114,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_POSSIBLE, 8, ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
+					fluidRowLocs(ContactDto.QUARANTINE_EXTENDED) +
 					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
-                    fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
-                    fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
+					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
+					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
                     fluidRowLocs(ContactDto.QUARANTINE_HELP_NEEDED) +
                     locCss(VSPACE_3, ContactDto.HIGH_PRIORITY) +
                     fluidRowLocs(ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS) +
@@ -201,9 +203,14 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
-			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
+
+			contactProximity.addValueChangeListener(e -> {
+				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
+					updateContactCategory((ContactProximity) contactProximity.getValue());
+				}
+			});
 		}
 		ComboBox relationToCase = addField(ContactDto.RELATION_TO_CASE, ComboBox.class);
 		addField(ContactDto.RELATION_DESCRIPTION, TextField.class);
@@ -230,6 +237,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
 		}
+
+		CheckBox quarantineExtended = addField(ContactDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended.setEnabled(false);
+		quarantineExtended.setVisible(false);
+		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
+		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended));
+
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
@@ -491,7 +505,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		if (isGermanServer()) {
 			setVisible(visible, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
-		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED);
+		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_EXTENDED, ContactDto.QUARANTINE_HELP_NEEDED);
 	}
 
 	private ValueChangeListener getHighPriorityValueChangeListener(CheckBox cbHighPriority) {
@@ -608,5 +622,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+		Property<Date> quarantineEndField = valueChangeEvent.getProperty();
+		Date newQuarantineEnd = quarantineEndField.getValue();
+		ContactDto originalContact = getInternalValue();
+		Date oldQuarantineEnd = originalContact.getQuarantineTo();
+		if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingExtendQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (!originalContact.isQuarantineExtended()) {
+							quarantineExtendedCheckbox.setValue(true);
+						}
+					} else {
+						quarantineEndField.setValue(oldQuarantineEnd);
+					}
+				});
+		} else if (!originalContact.isQuarantineExtended()) {
+			quarantineExtendedCheckbox.setValue(false);
+		}
 	}
 }

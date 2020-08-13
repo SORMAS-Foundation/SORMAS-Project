@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_layout"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.person.PersonHelper" />
+        <import type="de.symeda.sormas.app.util.DateFormatHelper" />
+
+        <variable name="data" type="de.symeda.sormas.app.backend.event.Event" />
+        <variable name="eventSelectList" type="androidx.databinding.ObservableList&lt;de.symeda.sormas.app.backend.event.Event>" />
+        <variable name="updateSearchCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+        <variable name="eventSelectItemClickCallback" type="de.symeda.sormas.app.core.IEntryItemOnClickListener" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                android:paddingEnd="@dimen/rowListItemHorizontalMargin">
+
+                <TextView
+                    android:id="@+id/dialog_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                    android:text="@string/info_pick_or_create_event"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/pageHintText"
+                    android:textSize="@dimen/defaultPageHintTextSize"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/parentLayoutVerticalMargin"
+                android:layout_marginBottom="@dimen/controlReadTextMarginBottom"
+                android:background="@color/formListSectionBackground"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/parentLayoutHorizontalPadding"
+                android:paddingTop="@dimen/parentLayoutVerticalMargin"
+                android:paddingRight="@dimen/parentLayoutHorizontalPadding">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/SubHeadingCompactStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/caption_possible_events" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/existing_events_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:padding="@dimen/rowListItemParentPadding"
+                    app:callback="@{eventSelectItemClickCallback}"
+                    app:entries="@{eventSelectList}"
+                    app:layout="@{@layout/row_event_pick_or_create_layout}"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/create_event_description"
+                style="@style/SubHeadingDescriptionStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/rowListItemHorizontalMargin"
+                android:paddingEnd="@dimen/rowListItemHorizontalMargin"
+                android:text="@string/info_create_event" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>
