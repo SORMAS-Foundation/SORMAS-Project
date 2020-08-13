@@ -1,7 +1,7 @@
 
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2018 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2020 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@ GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
 CUSTOM_DIR=${ROOT_PREFIX}/opt/sormas/custom
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
+SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas2sormas
 
 DOMAIN_NAME=sormas
 PORT_BASE=6000
@@ -116,6 +117,7 @@ echo "Directory for generated files: ${GENERATED_DIR}"
 echo "Directory for custom files: ${CUSTOM_DIR}"
 echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
+echo "SORMAS to SORMAS directory:" ${SORMAS2SORMAS_DIR}
 echo "Base port: ${PORT_BASE}"
 echo "Admin port: ${PORT_ADMIN}"
 echo "---"
@@ -134,6 +136,7 @@ mkdir -p "${DOMAINS_HOME}"
 mkdir -p "${TEMP_DIR}"
 mkdir -p "${GENERATED_DIR}"
 mkdir -p "${CUSTOM_DIR}"
+mkdir -p "${SORMAS2SORMAS_DIR}"
 
 if [[ ${LINUX} = true ]]; then
 	mkdir -p "${DOWNLOAD_DIR}"
@@ -143,6 +146,7 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:${USER_NAME}:rwx "${TEMP_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${GENERATED_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${CUSTOM_DIR}"
+	setfacl -m u:${USER_NAME}:rwx "${SORMAS2SORMAS_DIR}"
 
 	setfacl -m u:postgres:rwx "${TEMP_DIR}"
 	setfacl -m u:postgres:rwx "${GENERATED_DIR}"
@@ -331,6 +335,12 @@ ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --froma
 ${ASADMIN} create-custom-resource --restype java.util.Properties --factoryclass org.glassfish.resources.custom.factory.PropertiesFactory --property "org.glassfish.resources.custom.factory.PropertiesFactory.fileName=\${com.sun.aas.instanceRoot}/sormas.properties" sormas/Properties
 
 cp sormas.properties "${DOMAIN_DIR}"
+SORMAS_PROPERTIES=${DOMAIN_DIR}/sormas.properties
+if [[ ${LINUX} = true ]]; then
+  export SORMAS_PROPERTIES
+else
+  setx SORMAS_PROPERTIES ${SORMAS_PROPERTIES}
+fi
 cp start-payara-sormas.sh "${DOMAIN_DIR}"
 cp stop-payara-sormas.sh "${DOMAIN_DIR}"
 cp logback.xml ${DOMAIN_DIR}/config/
@@ -403,3 +413,4 @@ if [[ ${DEV_SYSTEM} != true ]]; then
 	echo "  - Configure the apache web server according to the server setup guide"
 fi
 	echo "  - Execute the r-setup.sh file to enable disease network diagrams"
+  echo "  - To enable SORMAS to SORMAS communication, see the related guide and execute the generate-cert.sh and import-to-truststore.sh scripts"
