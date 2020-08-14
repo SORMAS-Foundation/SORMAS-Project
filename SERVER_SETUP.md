@@ -3,6 +3,7 @@
 # Installing a SORMAS Server
 **Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows.**
 
+
 ## Content
 * [Prerequisites](#prerequisites)
   * [Java 11](#java-11)
@@ -252,3 +253,11 @@ Old servers were set up with a memory size of less than 2048MB. You can change t
 	/opt/payara-172/glassfish/bin/asadmin --port 6048 create-jvm-options -Xmx2048m
 
 Alternative: You can edit the settings directly in the domain.xml in the config directory of the SORMAS domain. Just search for ``Xmx`` - there should be two entries that need to be changed.
+
+#Possible Alternatives to the above installation guide
+
+
+ Follow the  [Docker installation guide](https://github.com/hzi-braunschweig/SORMAS-Docker)
+
+Before attempting to go through the installation process, there is a docker installation guide to ease setup of the server to get it up and running in no time 
+.This acts as an alternative to those who do not want to install dependecies on theie machines.

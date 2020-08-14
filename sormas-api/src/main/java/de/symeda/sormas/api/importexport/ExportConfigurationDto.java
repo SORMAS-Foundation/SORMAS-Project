@@ -1,7 +1,6 @@
 package de.symeda.sormas.api.importexport;
 
 import java.util.Set;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
