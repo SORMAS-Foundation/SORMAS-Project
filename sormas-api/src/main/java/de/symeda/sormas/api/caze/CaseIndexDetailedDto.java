@@ -3,6 +3,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -46,15 +47,15 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
-								Date quarantineTo, Float completeness,
+								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
 								String city, String address, String postalCode, String phone,
-								String reportingUserFirstName, String reportingUserLastName) {
+								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
 				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid, districtUuid, districtName, communityUuid,
 				healthFacilityUuid, healthFacilityName, healthFacilityDetails, pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
 				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex,
-				quarantineTo, completeness);
+				quarantineTo, completeness, followUpStatus, followUpUntil, visitCount);
 		//@formatter:on
 
 		this.city = city;

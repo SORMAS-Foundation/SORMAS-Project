@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -88,6 +89,10 @@ public class CaseExportDto implements Serializable {
 	public static final String NUMBER_OF_CLINICAL_VISITS = "numberOfClinicalVisits";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String QUARANTINE_INFORMATION = "quarantineInformation";
+//	public static final String NUMBER_OF_VISITS = "numberOfVisits";
+//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
+//	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
+//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
 
 	private String country;
 	private long id;
@@ -195,6 +200,13 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntil;
+//	private int numberOfVisits;
+//	private YesNoUnknown lastCooperativeVisitSymptomatic;
+//	private Date lastCooperativeVisitDate;
+//	private String lastCooperativeVisitSymptoms;
+
 	private CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
@@ -207,6 +219,7 @@ public class CaseExportDto implements Serializable {
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 InvestigationStatus investigationStatus, CaseOutcome outcome,
+						 FollowUpStatus followUpStatus, Date followUpUntil,
 						 // Quarantine
 						 QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
 						 boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate,
@@ -290,6 +303,8 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 		this.postpartum = postpartum;
 		this.trimester = trimester;
+		this.followUpStatus = followUpStatus;
+		this.followUpUntil = followUpUntil;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1113,6 +1128,60 @@ public class CaseExportDto implements Serializable {
 		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
 	}
 
+	@Order(131)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	@Order(132)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.FOLLOW_UP_UNTIL)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+//	@Order(133)
+//	@ExportTarget(caseExportTypes = {
+//			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
+//	@ExportGroup(ExportGroupType.FOLLOW_UP)
+//	public int getNumberOfVisits() {
+//		return numberOfVisits;
+//	}
+//
+//	@Order(134)
+//	@ExportTarget(caseExportTypes = {
+//			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
+//	@ExportGroup(ExportGroupType.FOLLOW_UP)
+//	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
+//		return lastCooperativeVisitSymptomatic;
+//	}
+//
+//	@Order(135)
+//	@ExportTarget(caseExportTypes = {
+//			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
+//	@ExportGroup(ExportGroupType.FOLLOW_UP)
+//	public Date getLastCooperativeVisitDate() {
+//		return lastCooperativeVisitDate;
+//	}
+//
+//	@Order(136)
+//	@ExportTarget(caseExportTypes = {
+//			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
+//	@ExportGroup(ExportGroupType.FOLLOW_UP)
+//	public String getLastCooperativeVisitSymptoms() {
+//		return lastCooperativeVisitSymptoms;
+//	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -1293,7 +1362,6 @@ public class CaseExportDto implements Serializable {
 //		this.onsetDate = onsetDate;
 //	}
 
-
 	public void setSymptoms(SymptomsDto symptoms) {
 		this.symptoms = symptoms;
 	}
@@ -1386,4 +1454,28 @@ public class CaseExportDto implements Serializable {
 			return sb.toString();
 		}
 	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+//	public void setNumberOfVisits(int numberOfVisits) {
+//		this.numberOfVisits = numberOfVisits;
+//	}
+//
+//	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
+//		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
+//	}
+//
+//	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
+//		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
+//	}
+//
+//	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
+//		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
+//	}
 }

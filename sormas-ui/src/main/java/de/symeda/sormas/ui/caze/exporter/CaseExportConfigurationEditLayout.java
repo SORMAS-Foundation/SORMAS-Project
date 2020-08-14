@@ -1,15 +1,12 @@
 package de.symeda.sormas.ui.caze.exporter;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,24 +23,25 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
-import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -51,6 +49,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 @SuppressWarnings("serial")
 public class CaseExportConfigurationEditLayout extends VerticalLayout {
 
+	private final boolean caseFollowUpEnabled;
 	private TextField tfName;
 	private Label lblDescription;
 	private Map<ExportGroupType, Label> groupTypeLabels;
@@ -64,6 +63,7 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		Consumer<ExportConfigurationDto> resultCallback,
 		Runnable discardCallback) {
 
+		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 		if (exportConfiguration == null) {
 			exportConfiguration = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
 			exportConfiguration.setExportType(ExportType.CASE);
@@ -108,26 +108,15 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		checkBoxes = new HashMap<>();
 		int checkBoxCount = 0;
 
-		List<Method> readMethods = new ArrayList<Method>();
-		readMethods.addAll(
-			Arrays.stream(CaseExportDto.class.getDeclaredMethods())
-				.filter(m -> (m.getName().startsWith("get") || m.getName().startsWith("is")) && m.isAnnotationPresent(ExportGroup.class))
-				.sorted((a, b) -> Integer.compare(a.getAnnotationsByType(Order.class)[0].value(), b.getAnnotationsByType(Order.class)[0].value()))
-				.collect(Collectors.toList()));
-
-		Set<String> combinedProperties = new HashSet<>();
-		for (Method method : readMethods) {
-			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
-
-			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
-				continue;
-			}
-
+		List<Pair<String, ExportGroupType>> caseExportProperties =
+			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS));
+		for (Pair<String, ExportGroupType> pair : caseExportProperties) {
+			ExportGroupType groupType = pair.getElement1();
+			String property = pair.getElement0();
 			if (!checkBoxGroups.containsKey(groupType)) {
 				checkBoxGroups.put(groupType, new ArrayList<>());
 			}
 
-			String property = method.getAnnotation(ExportProperty.class).value();
 			String caption = I18nProperties.getPrefixCaption(
 				CaseExportDto.I18N_PREFIX,
 				property,
@@ -147,14 +136,6 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 									HospitalizationDto.I18N_PREFIX,
 									property,
 									I18nProperties.getPrefixCaption(HealthConditionsDto.I18N_PREFIX, property)))))));
-
-			if (method.getAnnotation(ExportProperty.class).combined()) {
-				if (combinedProperties.contains(property)) {
-					continue;
-				} else {
-					combinedProperties.add(property);
-				}
-			}
 
 			CheckBox cb = new CheckBox(caption);
 
@@ -193,6 +174,9 @@ public class CaseExportConfigurationEditLayout extends VerticalLayout {
 		int currentCheckBoxCount = 0;
 		for (ExportGroupType groupType : ExportGroupType.values()) {
 			if (ExportGroupType.CASE_MANAGEMENT == groupType && !UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+				continue;
+			}
+			if (ExportGroupType.FOLLOW_UP == groupType && !caseFollowUpEnabled) {
 				continue;
 			}
 

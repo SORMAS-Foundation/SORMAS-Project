@@ -4904,4 +4904,26 @@ ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFER
 
 INSERT INTO schema_version (version_number, comment) VALUES (236, 'Add responsible community to contact #2104');
 
+-- 2020-08-13 Adds visit to cases
+
+ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE cases SET followupstatus = 'CANCELED';
+UPDATE cases SET followupcomment = '-';
+UPDATE cases SET overwritefollowupuntil = false;
+
+ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
+
+ALTER TABLE visit ADD COLUMN caze_id bigint;
+ALTER TABLE visit_history ADD COLUMN caze_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
+
+
 -- *** Insert new sql commands BEFORE this line ***

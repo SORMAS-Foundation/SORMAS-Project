@@ -35,6 +35,9 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -61,12 +64,16 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends FilteredGrid<IndexDto, CaseCriteria> {
 
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
+	public static final String NUMBER_OF_VISITS = Captions.CaseData_numberOfVisits;
 	public static final String COLUMN_COMPLETENESS = "completenessValue";
+
+	private final boolean caseFollowUpEnabled;
 
 	public AbstractCaseGrid(Class<IndexDto> beanType, CaseCriteria criteria) {
 
 		super(beanType);
 		setSizeFull();
+		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(CasesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
@@ -108,6 +115,24 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(CaseIndexDto.DISEASE);
 
+		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
+			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
+				int numberOfVisits = entry.getVisitCount();
+				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDate(), entry.getFollowUpUntil());
+				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
+				// Set number of missed visits to 0 when more visits than expected have been done
+				if (numberOfMissedVisits < 0) {
+					numberOfMissedVisits = 0;
+				}
+				return String.format(I18nProperties.getCaption(Captions.formatNumberOfVisitsFormat), numberOfVisits, numberOfMissedVisits);
+			} else {
+				return "-";
+			}
+
+		});
+		visitsColumn.setId(NUMBER_OF_VISITS);
+		visitsColumn.setSortable(false);
+
 		addComponentColumn(indexDto -> {
 			Label label =
 				new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
@@ -142,6 +167,10 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.QUARANTINE_TO))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		if (caseFollowUpEnabled) {
+			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
+					.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
+		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.CREATION_DATE))
@@ -169,8 +198,12 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.POINT_OF_ENTRY_NAME,
 				CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.QUARANTINE_TO,
-				CaseIndexDto.CREATION_DATE,
-				COLUMN_COMPLETENESS))
+				CaseIndexDto.CREATION_DATE),
+		caseFollowUpEnabled ? Stream.of(
+				CaseIndexDto.FOLLOW_UP_STATUS,
+				CaseIndexDto.FOLLOW_UP_UNTIL,
+				NUMBER_OF_VISITS) : Stream.<String>empty(),
+				Stream.of(COLUMN_COMPLETENESS))
 			.flatMap(s -> s);
 	}
 
@@ -188,6 +221,14 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(false);
 		} else if (this.getColumn(CaseIndexDto.OUTCOME) != null) {
 			this.getColumn(CaseIndexDto.OUTCOME).setHidden(true);
+		}
+
+		if (caseFollowUpEnabled) {
+			if (getCriteria().getFollowUpStatus() == FollowUpStatus.NO_FOLLOW_UP) {
+				this.getColumn(NUMBER_OF_VISITS).setHidden(true);
+			} else {
+				this.getColumn(NUMBER_OF_VISITS).setHidden(false);
+			}
 		}
 
 		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles()) && getColumn(CaseIndexDto.HEALTH_FACILITY_NAME) != null) {

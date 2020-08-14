@@ -58,6 +58,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -133,6 +134,9 @@ public class CaseController {
 		}
 		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
+		}
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+			navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 		}
 	}
 
@@ -519,6 +523,7 @@ public class CaseController {
 			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
+			caze.getSymptoms(),
 			viewMode,
 			isInJurisdiction);
 		caseEditForm.setValue(caze);

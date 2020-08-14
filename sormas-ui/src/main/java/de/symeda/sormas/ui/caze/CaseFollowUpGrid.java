@@ -1,4 +1,21 @@
-package de.symeda.sormas.ui.contact;
+/*******************************************************************************
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *******************************************************************************/
+package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
 import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
@@ -17,71 +34,59 @@ import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
-import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
-public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, ContactCriteria> {
+public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria> {
 
 	private List<Date> dates = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
-	public <V extends View> ContactFollowUpGrid(ContactCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
+	public <V extends View> CaseFollowUpGrid(CaseCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
 
-		super(ContactFollowUpDto.class);
+		super(CaseFollowUpDto.class);
 		setSizeFull();
 
 		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
 		setColumns(
-			FollowUpDto.UUID,
-			FollowUpDto.PERSON,
-			ContactFollowUpDto.CONTACT_OFFICER,
-			ContactFollowUpDto.LAST_CONTACT_DATE,
-			FollowUpDto.REPORT_DATE,
-			FollowUpDto.FOLLOW_UP_UNTIL);
+				FollowUpDto.UUID,
+				FollowUpDto.PERSON,
+				FollowUpDto.REPORT_DATE,
+				FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
-		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE))
+		((Column<CaseFollowUpDto, String>) getColumn(CaseFollowUpDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL))
+		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.FOLLOW_UP_UNTIL))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					ContactJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(FollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
 
-		addItemClickListener(
-			new ShowDetailsListener<>(ContactFollowUpDto.UUID, e -> ControllerProvider.getContactController().navigateToData(e.getUuid())));
+		addItemClickListener(e -> {
+			if ((e.getColumn() != null && CaseFollowUpDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getCaseController().navigateToCase(e.getItem().getUuid());
+			}
+		});
 	}
 
-	public void setVisitColumns(Date referenceDate, int interval, ContactCriteria criteria) {
+	public void setVisitColumns(Date referenceDate, int interval, CaseCriteria criteria) {
 
 		setDataProvider(referenceDate, interval - 1);
 		setCriteria(criteria);
@@ -91,26 +96,24 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 		for (int i = 0; i < interval; i++) {
 			String columnId = DateFormatHelper.formatDate(dates.get(i));
-			addComponentColumn(followUpDto -> {
-				return new Label("");
-			}).setId(columnId);
+			addComponentColumn(followUpDto -> new Label("")).setId(columnId);
 
 			final int index = i;
-			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<ContactFollowUpDto>) item -> {
+			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<CaseFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultCssStyle(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
+					CaseLogic.getStartDate(item.getSymptomsOnsetDate(), item.getReportDate()),
 					item.getFollowUpUntil());
-			}).setDescriptionGenerator((DescriptionGenerator<ContactFollowUpDto>) item -> {
+			}).setDescriptionGenerator((DescriptionGenerator<CaseFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
 				return getVisitResultDescription(
 					visitResult,
 					date,
-					ContactLogic.getStartDate(item.getLastContactDate(), item.getReportDate()),
+					CaseLogic.getStartDate(item.getSymptomsOnsetDate(), item.getReportDate()),
 					item.getFollowUpUntil());
 			});
 		}
@@ -122,9 +125,9 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 	public void setDataProvider(Date referenceDate, int interval) {
 
-		DataProvider<ContactFollowUpDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-			query -> FacadeProvider.getContactFacade()
-				.getContactFollowUpList(
+		DataProvider<CaseFollowUpDto, CaseCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getCaseFacade()
+				.getCaseFollowUpList(
 					query.getFilter().orElse(null),
 					referenceDate,
 					interval,
@@ -135,7 +138,7 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList()))
 				.stream(),
-			query -> (int) FacadeProvider.getContactFacade().count(query.getFilter().orElse(null)));
+			query -> (int) FacadeProvider.getCaseFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

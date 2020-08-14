@@ -32,8 +32,8 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -96,7 +96,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
 				int numberOfVisits = entry.getVisitCount();
-				int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
+				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
 				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
 				// Set number of missed visits to 0 when more visits than expected have been done
 				if (numberOfMissedVisits < 0) {

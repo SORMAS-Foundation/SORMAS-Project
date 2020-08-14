@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.ui.contact;
+package de.symeda.sormas.ui.caze;
 
 import java.util.Date;
 
@@ -30,7 +30,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
@@ -50,26 +49,21 @@ import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.visit.VisitGrid;
 
-public class ContactVisitsView extends AbstractContactView {
-
-	private static final long serialVersionUID = -1L;
+public class CaseVisitsView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/visits";
-
+	private static final long serialVersionUID = -4715387348091488461L;
 	private VisitCriteria criteria;
 
 	private VisitGrid grid;
 	private Button newButton;
 	private VerticalLayout gridLayout;
-//	private HashMap<Button, String> statusButtons;
-//	private Button activeStatusButton;
 
-	public ContactVisitsView() {
-		super(VIEW_NAME);
-
+	public CaseVisitsView() {
+		super(VIEW_NAME, false);
 		setSizeFull();
 
-		criteria = ViewModelProviders.of(ContactVisitsView.class).get(VisitCriteria.class);
+		criteria = ViewModelProviders.of(CaseVisitsView.class).get(VisitCriteria.class);
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -80,18 +74,12 @@ public class ContactVisitsView extends AbstractContactView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
-
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 				Captions.bulkActions,
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
+					ControllerProvider.getVisitController()
+						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}));
-
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
@@ -124,7 +112,7 @@ public class ContactVisitsView extends AbstractContactView {
 					}
 					return caption;
 				},
-				createFileNameWithCurrentDate("sormas_contact_visits_", ".csv"),
+				createFileNameWithCurrentDate("sormas_case_visits_", ".csv"),
 				null);
 
 			new FileDownloader(exportStreamResource).extend(exportButton);
@@ -132,7 +120,7 @@ public class ContactVisitsView extends AbstractContactView {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE)) {
 			newButton = ButtonHelper.createIconButton(Captions.visitNewVisit, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getVisitController().createVisit(this.getContactRef(), r -> navigateTo(criteria));
+				ControllerProvider.getVisitController().createVisit(this.getCaseRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			topLayout.addComponent(newButton);
@@ -142,32 +130,9 @@ public class ContactVisitsView extends AbstractContactView {
 		return topLayout;
 	}
 
-//	private void updateActiveStatusButtonCaption() {
-//		if (activeStatusButton != null) {
-//			activeStatusButton.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getContainer().size())));
-//		}
-//	}
-
-//	private void processStatusChangeVisuals(Button button) {
-//		statusButtons.keySet().forEach(b -> {
-//			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
-//			b.setCaption(statusButtons.get(b));
-//		});
-//		CssStyles.removeStyles(button, CssStyles.BUTTON_FILTER_LIGHT);
-//		activeStatusButton = button;
-//		updateActiveStatusButtonCaption();
-//	}
-
 	@Override
 	protected void initView(String params) {
-
-		// Hide the "New visit" button for converted contacts
-		if (newButton != null
-			&& FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
-			newButton.setVisible(false);
-		}
-
-		criteria.contact(getContactRef());
+		criteria.caze(getCaseRef());
 
 		if (grid == null) {
 			grid = new VisitGrid(criteria);
@@ -182,8 +147,7 @@ public class ContactVisitsView extends AbstractContactView {
 		}
 
 		grid.reload();
-//		updateActiveStatusButtonCaption();
 
-		setContactEditPermission(gridLayout);
+		setCaseEditPermission(gridLayout);
 	}
 }

@@ -64,6 +64,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -777,7 +778,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
 
 		// Changing the report date to a value beyond the threshold should remove the association
-		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 20));
+		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 20));
 		getContactFacade().saveContact(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), empty());
@@ -797,7 +798,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(
 			user.toReference(),
 			person.toReference(),
-			DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+			DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
 
