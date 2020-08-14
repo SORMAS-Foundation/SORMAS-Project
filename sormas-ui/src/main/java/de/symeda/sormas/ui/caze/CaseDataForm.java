@@ -370,11 +370,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.setVisible(false);
 		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
 		facilityType = addField(CaseDataDto.FACILITY_TYPE);
-//		type.setId("type");
-//		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-//		type.setWidth(100, Unit.PERCENTAGE);
 		facilityType.setVisible(false);
-//		getContent().addComponent(type, TYPE_LOC);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
 		facility.setVisible(false);

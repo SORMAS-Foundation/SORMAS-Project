@@ -237,7 +237,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 					facility,
 					communityDto != null
 						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
+							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, false)
 						: district.getValue() != null
 							? FacadeProvider.getFacilityFacade()
 								.getActiveFacilitiesByDistrictAndType(

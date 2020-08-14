@@ -179,6 +179,7 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
@@ -978,6 +979,7 @@ public interface Captions {
 	String Person_occupationDistrict = "Person.occupationDistrict";
 	String Person_occupationFacility = "Person.occupationFacility";
 	String Person_occupationFacilityDetails = "Person.occupationFacilityDetails";
+	String Person_occupationFacilityType = "Person.occupationFacilityType";
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
 	String Person_other_occupationDetails = "Person.other.occupationDetails";
@@ -988,6 +990,7 @@ public interface Captions {
 	String Person_placeOfBirthDistrict = "Person.placeOfBirthDistrict";
 	String Person_placeOfBirthFacility = "Person.placeOfBirthFacility";
 	String Person_placeOfBirthFacilityDetails = "Person.placeOfBirthFacilityDetails";
+	String Person_placeOfBirthFacilityType = "Person.placeOfBirthFacilityType";
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";

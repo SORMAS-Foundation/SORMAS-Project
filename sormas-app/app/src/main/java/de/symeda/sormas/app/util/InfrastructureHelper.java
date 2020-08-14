@@ -318,7 +318,7 @@ public final class InfrastructureHelper {
 		typeGroupField.initializeSpinner(typeGroups, field -> {
 			FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
 			if (selectedGroup != null) {
-				typeField.setSpinnerData(DataUtils.toItems(FacilityType.getFacilityTypesByGroup(selectedGroup, true), true));
+				typeField.setSpinnerData(DataUtils.toItems(FacilityType.getTypes(selectedGroup), true));
 			} else {
 				typeField.setSpinnerData(null);
 			}
@@ -378,7 +378,7 @@ public final class InfrastructureHelper {
 				}
 			} else if (noneHealthFacility) {
 				healthFacilityDetailsField.setVisibility(VISIBLE);
-				String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.NONE_HEALTH_FACILITY_DETAILS);
+				String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
 				healthFacilityDetailsField.setCaption(caption);
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
 					((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);

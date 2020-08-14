@@ -30,13 +30,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.Label;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -50,7 +50,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
-import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -90,8 +89,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
-	private static final String OCCUPATION_FACILITY_TYPE_LOC = "occupationFacilityTypeLoc";
-	private static final String PLACE_OF_BIRTH_FACILITY_TYPE_LOC = "placeOfBirthFacilityTypeLoc";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
 	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
@@ -102,12 +99,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
-	private ComboBox occupationFacilityType;
+//	private ComboBox occupationFacilityType;
 	private ComboBox occupationFacility;
 	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
-	private ComboBox placeOfBirthFacilityType;
+//	private ComboBox placeOfBirthFacilityType;
 	private ComboBox cbPlaceOfBirthFacility;
 
 	//@formatter:off
@@ -119,7 +116,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             fluidRowLocs(PersonDto.APPROXIMATE_AGE, PersonDto.APPROXIMATE_AGE_TYPE, PersonDto.APPROXIMATE_AGE_REFERENCE_DATE)
                     ) +
                     fluidRowLocs(PersonDto.PLACE_OF_BIRTH_REGION, PersonDto.PLACE_OF_BIRTH_DISTRICT, PersonDto.PLACE_OF_BIRTH_COMMUNITY) +
-                    fluidRowLocs(PLACE_OF_BIRTH_FACILITY_TYPE_LOC, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
+                    fluidRowLocs(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE, PersonDto.PLACE_OF_BIRTH_FACILITY, PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS) +
                     fluidRowLocs(PersonDto.GESTATION_AGE_AT_BIRTH, PersonDto.BIRTH_WEIGHT) +
                     fluidRowLocs(PersonDto.SEX, PersonDto.PRESENT_CONDITION) +
                     fluidRow(
@@ -143,7 +140,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
                             fluidRowLocs(PersonDto.OCCUPATION_REGION, PersonDto.OCCUPATION_DISTRICT, PersonDto.OCCUPATION_COMMUNITY),
-                            fluidRowLocs(OCCUPATION_FACILITY_TYPE_LOC, PersonDto.OCCUPATION_FACILITY, PersonDto.OCCUPATION_FACILITY_DETAILS),
+                            fluidRowLocs(PersonDto.OCCUPATION_FACILITY_TYPE, PersonDto.OCCUPATION_FACILITY, PersonDto.OCCUPATION_FACILITY_DETAILS),
                             fluidRowLocs(PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS)
                     ) +
 
@@ -255,12 +252,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
-		placeOfBirthFacilityType = new ComboBox();
-		placeOfBirthFacilityType.setId("placeOfBirthFacilityType");
-		placeOfBirthFacilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-		placeOfBirthFacilityType.setWidth(100, Unit.PERCENTAGE);
-		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
-		getContent().addComponent(placeOfBirthFacilityType, PLACE_OF_BIRTH_FACILITY_TYPE_LOC);
+		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
@@ -277,13 +269,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox facilityCommunity = addInfrastructureField(PersonDto.OCCUPATION_COMMUNITY);
 		facilityCommunity.setImmediate(true);
 		facilityCommunity.setNullSelectionAllowed(true);
-		occupationFacilityType = new ComboBox();
-		occupationFacilityType.setId("occupationFacilityType");
-		occupationFacilityType.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
-		occupationFacilityType.setWidth(100, Unit.PERCENTAGE);
-		occupationFacilityType.setVisible(false);
-		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
-		getContent().addComponent(occupationFacilityType, OCCUPATION_FACILITY_TYPE_LOC);
+		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
@@ -298,6 +284,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setVisible(
 			false,
 			PersonDto.OCCUPATION_DETAILS,
+			PersonDto.OCCUPATION_FACILITY_TYPE,
 			PersonDto.OCCUPATION_FACILITY,
 			PersonDto.OCCUPATION_FACILITY_DETAILS,
 			PersonDto.OCCUPATION_REGION,
@@ -455,17 +442,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		});
 
-		communityField.addValueChangeListener(e -> {
-			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
-		});
-		typeField.addValueChangeListener(e -> {
-			updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility);
-		});
-		FieldHelper
-			.updateItems(facilityField, Arrays.asList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+		communityField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
+		typeField.addValueChangeListener(e -> updateFacilities(facilityField, typeField, communityField, districtField, allowNoneFacility));
+		FieldHelper.updateItems(
+			facilityField,
+			Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
+			if (facilityField.equals(occupationFacility)) {
+				this.getValue().setOccupationFacilityType((FacilityType) typeField.getValue());
+			} else if (facilityField.equals(cbPlaceOfBirthFacility)) {
+				this.getValue().setPlaceOfBirthFacilityType((FacilityType) typeField.getValue());
+			}
 		});
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());
@@ -500,7 +489,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				// "home or other place" as fallback
 				FieldHelper.updateItems(
 					facilityField,
-					Arrays.asList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
+					Collections.singletonList(FacadeProvider.getFacilityFacade().getFacilityReferenceByUuid(FacilityDto.NONE_FACILITY_UUID)));
 			} else {
 				FieldHelper.removeItems(facilityField);
 			}
@@ -579,12 +568,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			case OTHER:
 				setVisible(
 					false,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY,
 					PersonDto.OCCUPATION_FACILITY_DETAILS,
 					PersonDto.OCCUPATION_REGION,
 					PersonDto.OCCUPATION_DISTRICT,
 					PersonDto.OCCUPATION_COMMUNITY);
-				occupationFacilityType.setVisible(false);
 				setVisible(true, PersonDto.OCCUPATION_DETAILS);
 				break;
 			case HEALTHCARE_WORKER:
@@ -594,32 +583,32 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.OCCUPATION_REGION,
 					PersonDto.OCCUPATION_DISTRICT,
 					PersonDto.OCCUPATION_COMMUNITY,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY);
-				occupationFacilityType.setVisible(true);
 				updateFacilityDetailsVisibility(occupationFacilityDetails, (FacilityReferenceDto) occupationFacility.getValue());
 				break;
 			default:
 				setVisible(
 					false,
 					PersonDto.OCCUPATION_DETAILS,
+					PersonDto.OCCUPATION_FACILITY_TYPE,
 					PersonDto.OCCUPATION_FACILITY,
 					PersonDto.OCCUPATION_FACILITY_DETAILS,
 					PersonDto.OCCUPATION_REGION,
 					PersonDto.OCCUPATION_DISTRICT,
 					PersonDto.OCCUPATION_COMMUNITY);
-				occupationFacilityType.setVisible(false);
 				break;
 			}
 		} else {
 			setVisible(
 				false,
 				PersonDto.OCCUPATION_DETAILS,
+				PersonDto.OCCUPATION_FACILITY_TYPE,
 				PersonDto.OCCUPATION_FACILITY,
 				PersonDto.OCCUPATION_FACILITY_DETAILS,
 				PersonDto.OCCUPATION_REGION,
 				PersonDto.OCCUPATION_DISTRICT,
 				PersonDto.OCCUPATION_COMMUNITY);
-			occupationFacilityType.setVisible(false);
 		}
 	}
 
@@ -804,17 +793,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	@Override
-	public void setValue(PersonDto person) throws ReadOnlyException, Converter.ConversionException {
-		if (person.getOccupationFacility() != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getOccupationFacility().getUuid());
-			occupationFacilityType.setValue(facility.getType());
-		}
-		if (person.getPlaceOfBirthFacility() != null) {
-			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getPlaceOfBirthFacility().getUuid());
-			placeOfBirthFacilityType.setValue(facility.getType());
-		}
-		super.setValue(person);
-		placeOfBirthFacilityType.setVisible(cbPlaceOfBirthFacility.isVisible());
-	}
+//	@Override
+//	public void setValue(PersonDto person) throws ReadOnlyException, Converter.ConversionException {
+//		if (person.getOccupationFacility() != null) {
+//			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getOccupationFacility().getUuid());
+//			occupationFacilityType.setValue(facility.getType());
+//		}
+//		if (person.getPlaceOfBirthFacility() != null) {
+//			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getPlaceOfBirthFacility().getUuid());
+//			placeOfBirthFacilityType.setValue(facility.getType());
+//		}
+//		super.setValue(person);
+//		placeOfBirthFacilityType.setVisible(cbPlaceOfBirthFacility.isVisible());
+//	}
 }

@@ -4888,7 +4888,6 @@ ALTER TABLE campaigndiagramdefinition_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (234, 'Campaign diagram definition');
 
--- *** Insert new sql commands BEFORE this line ***
 -- 2020-06-23 Import and use new facility types #1637
 UPDATE samples SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
 UPDATE pathogentest SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
@@ -4897,6 +4896,12 @@ UPDATE facility SET type = 'HOSPITAL' WHERE type IS NULL AND uuid NOT IN ('SORMA
 ALTER TABLE cases ADD COLUMN facilitytype varchar(255);
 ALTER TABLE cases_history ADD COLUMN facilitytype varchar(255);
 UPDATE cases SET facilitytype = 'HOSPITAL' WHERE healthfacility_id != (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY');
+ALTER TABLE person ADD COLUMN occupationfacilitytype varchar(255);
+ALTER TABLE person_history ADD COLUMN occupationfacilitytype varchar(255);
+UPDATE person SET occupationfacilitytype = 'HOSPITAL' WHERE occupationfacility_id IS NOT NULL;
+ALTER TABLE person ADD COLUMN placeofbirthfacilitytype varchar(255);
+ALTER TABLE person_history ADD COLUMN placeofbirthfacilitytype varchar(255);
+UPDATE person SET placeofbirthfacilitytype = 'HOSPITAL' WHERE placeofbirthfacility_id IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Import and use new facility types #1637');
 -- *** Insert new sql commands BEFORE this line ***

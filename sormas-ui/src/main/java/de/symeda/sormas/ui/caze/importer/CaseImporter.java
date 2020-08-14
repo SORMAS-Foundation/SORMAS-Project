@@ -108,6 +108,7 @@ public class CaseImporter extends DataImporter {
 	 * it is discarded.
 	 */
 	private boolean currentPathogenTestHasEntries = false;
+	private boolean unexpectedErrorFlag = false;
 
 	private UI currentUI;
 
@@ -448,14 +449,15 @@ public class CaseImporter extends DataImporter {
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImporterPersonHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
-						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
+						List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade()
 							.getByNameAndType(
 								entry,
 								infrastructureData.getElement0(),
 								infrastructureData.getElement1(),
-								caze.getFacilityType(),
+								getTypeOfFacility(pd.getName(), currentElement),
 								false);
-						if (facility.isEmpty()) {
+
+						if (facilities.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
@@ -469,16 +471,16 @@ public class CaseImporter extends DataImporter {
 										entry,
 										buildEntityProperty(entryHeaderPath)));
 							}
-						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
-						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
-							pd.getWriteMethod().invoke(currentElement, facility.get(0));
+							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
 						List<PointOfEntryReferenceDto> pointOfEntry =
@@ -516,7 +518,12 @@ public class CaseImporter extends DataImporter {
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
-				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
+				if (unexpectedErrorFlag) {
+					logger.warn("Unexpected error when trying to import a case: " + e.getMessage());
+				} else {
+					unexpectedErrorFlag = true;
+					logger.error("Unexpected error when trying to import a case: " + e.getMessage(), e);
+				}
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}

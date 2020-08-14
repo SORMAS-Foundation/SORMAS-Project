@@ -116,7 +116,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		initialPointsOfEntry = InfrastructureHelper.loadPointsOfEntry(record.getDistrict());
 
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
-		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getTypeGroupsSuitableForLongerStay(), true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
