@@ -260,4 +260,4 @@ Alternative: You can edit the settings directly in the domain.xml in the config 
  Follow the  [Docker installation guide](https://github.com/hzi-braunschweig/SORMAS-Docker)
 
 Before attempting to go through the installation process, there is a docker installation guide to ease setup of the server to get it up and running in no time 
-.This acts as an alternative to those who do not want to install dependecies on theie machines.
+.This acts as an alternative to those who do not want to install dependecies on their machines.
