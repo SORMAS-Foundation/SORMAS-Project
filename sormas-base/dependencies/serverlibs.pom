@@ -66,6 +66,12 @@
 			<artifactId>jsoup</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>
