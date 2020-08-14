@@ -21,6 +21,13 @@ public interface ModelConstants {
 
 	String PERSISTENCE_UNIT_NAME = "SormasPU";
 	String PERSISTENCE_UNIT_NAME_AUDITLOG = "auditlogPU";
-	String HINT_HIBERNATE_READ_ONLY = "org.hibernate.readOnly";
+
+	/**
+	 * A query hint to make JPA entities loaded as read-only to avoid caching and dirty checks. Usage:
+	 *
+	 * "List<JpaEntity> resultList = em.createQuery(cq).setHint(ModelConstants.READ_ONLY, true).getResultList();"
+	 * Note: This does not have any effect on Multiselect-Queries directly into DTOs.
+	 */
+	String HINT_READ_ONLY = "org.hibernate.readOnly";
 
 }

@@ -344,7 +344,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
 		List<VisitExportDto> resultList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+			em.createQuery(cq).setHint(ModelConstants.HINT_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!resultList.isEmpty()) {
 
@@ -355,7 +355,7 @@ public class VisitFacadeEjb implements VisitFacade {
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
 				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
 				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(VisitExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
@@ -536,7 +536,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		cq.where(visitRoot.get(Visit.ID).in(visitIds));
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
-		List<VisitContactJurisdiction> jurisdictions = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+		List<VisitContactJurisdiction> jurisdictions = em.createQuery(cq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 
 		return jurisdictions.stream().collect(Collectors.groupingBy(VisitContactJurisdiction::getVisitId));
 	}
