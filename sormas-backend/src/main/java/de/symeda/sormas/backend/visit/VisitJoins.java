@@ -32,10 +32,17 @@ import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 
 	private Join<Visit, Contact> contacts;
+	private Join<Visit, Case> caze;
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
-	private Join<Contact, District> contactCommunity;
+	private Join<Contact, Community> contactCommunity;
+	private Join<Case, User> caseReportingUser;
+	private Join<Case, Region> caseRegion;
+	private Join<Case, District> caseDistrict;
+	private Join<Case, Community> caseCommunity;
+	private Join<Case, Facility> caseHealthFacility;
+	private Join<Case, PointOfEntry> casePointOfEntry;
 	private Join<Contact, Case> contactCase;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
@@ -56,16 +63,24 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 		return getOrCreate(contacts, Visit.CONTACTS, contactJoinType, this::setContacts);
 	}
 
+	private void setContacts(Join<Visit, Contact> contacts) {
+		this.contacts = contacts;
+	}
+
+	public Join<Visit, Case> getCase() {
+		return getOrCreate(caze, Visit.CAZE, JoinType.LEFT, this::setCase);
+	}
+
+	private void setCase(Join<Visit, Case> caze) {
+		this.caze = caze;
+	}
+
 	public Join<Contact, User> getContactReportingUser() {
 		return getOrCreate(contactReportingUser, Contact.REPORTING_USER, JoinType.LEFT, getContacts(), this::setContactReportingUser);
 	}
 
 	private void setContactReportingUser(Join<Contact, User> contactReportingUser) {
 		this.contactReportingUser = contactReportingUser;
-	}
-
-	private void setContacts(Join<Visit, Contact> contacts) {
-		this.contacts = contacts;
 	}
 
 	public Join<Contact, Region> getContactRegion() {
@@ -84,12 +99,60 @@ public class VisitJoins extends AbstractDomainObjectJoins<Visit, Visit> {
 		this.contactDistrict = contactDistrict;
 	}
 
-	public Join<Contact, District> getContactCommunity() {
+	public Join<Contact, Community> getContactCommunity() {
 		return getOrCreate(contactCommunity, Contact.COMMUNITY, JoinType.LEFT, getContacts(), this::setContactCommunity);
 	}
 
-	private void setContactCommunity(Join<Contact, District> contactCommunity) {
+	private void setContactCommunity(Join<Contact, Community> contactCommunity) {
 		this.contactCommunity = contactCommunity;
+	}
+
+	public Join<Case, User> getCaseReportingUser() {
+		return getOrCreate(caseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getCase(), this::setCaseReportingUser);
+	}
+
+	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
+		this.caseReportingUser = caseReportingUser;
+	}
+
+	public Join<Case, Region> getCaseRegion() {
+		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getCase(), this::setCaseRegion);
+	}
+
+	private void setCaseRegion(Join<Case, Region> caseRegion) {
+		this.caseRegion = caseRegion;
+	}
+
+	public Join<Case, District> getCaseDistrict() {
+		return getOrCreate(caseDistrict, Case.DISTRICT, JoinType.LEFT, getCase(), this::setCaseDistrict);
+	}
+
+	private void setCaseDistrict(Join<Case, District> caseDistrict) {
+		this.caseDistrict = caseDistrict;
+	}
+
+	public Join<Case, Community> getCaseCommunity() {
+		return getOrCreate(caseCommunity, Case.COMMUNITY, JoinType.LEFT, getCase(), this::setCaseCommunity);
+	}
+
+	private void setCaseCommunity(Join<Case, Community> caseCommunity) {
+		this.caseCommunity = caseCommunity;
+	}
+
+	public Join<Case, Facility> getCaseHealthFacility() {
+		return getOrCreate(caseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getCase(), this::setCaseHealthFacility);
+	}
+
+	private void setCaseHealthFacility(Join<Case, Facility> caseHealthFacility) {
+		this.caseHealthFacility = caseHealthFacility;
+	}
+
+	public Join<Case, PointOfEntry> getCasePointOfEntry() {
+		return getOrCreate(casePointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getCase(), this::setCasePointOfEntry);
+	}
+
+	private void setCasePointOfEntry(Join<Case, PointOfEntry> casePointOfEntry) {
+		this.casePointOfEntry = casePointOfEntry;
 	}
 
 	public Join<Contact, Case> getContactCase() {

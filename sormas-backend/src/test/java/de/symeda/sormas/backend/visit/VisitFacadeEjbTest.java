@@ -96,8 +96,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(visitRemarks, visitIndexDto.getVisitRemarks());
 
 		final VisitCriteria visitCriteria2 = new VisitCriteria();
-		final List<VisitIndexDto> visitIndexList2 =
-				visitFacade.getIndexList(visitCriteria2.caze(new CaseReferenceDto(caze.getUuid())), 0, 100, null);
+		final List<VisitIndexDto> visitIndexList2 = visitFacade.getIndexList(visitCriteria2.caze(new CaseReferenceDto(caze.getUuid())), 0, 100, null);
 		assertNotNull(visitIndexList2);
 		assertEquals(1, visitIndexList2.size());
 		VisitIndexDto visitIndexDto2 = visitIndexList2.get(0);
@@ -163,11 +162,10 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(VisitStatus.COOPERATIVE, visitExportDto2.getVisitStatus());
 		assertEquals(SymptomState.YES, visitExportDto2.getSymptoms().getAgitation());
 
-
 		final VisitCriteria visitCriteria2 = new VisitCriteria();
 		visitCriteria2.caze(new CaseReferenceDto(caze.getUuid()));
 		final List<VisitExportDto> visitsExportList2 =
-				getVisitFacade().getVisitsExportList(visitCriteria2, VisitExportType.CONTACT_VISITS, 0, 10, null);
+			getVisitFacade().getVisitsExportList(visitCriteria2, VisitExportType.CONTACT_VISITS, 0, 10, null);
 
 		assertNotNull(visitsExportList2);
 		assertEquals(2, visitsExportList2.size());
@@ -303,13 +301,14 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		creator.createVisit(person.toReference());
 		creator.createVisit(person3.toReference());
-		creator.createVisit(person4.toReference());
+		VisitDto visitOfPureCase = creator.createVisit(person4.toReference());
 		VisitDto visitWithChanges = creator.createVisit(person.toReference());
 		VisitDto visitOfDeletedContact = creator.createVisit(person2.toReference());
 		VisitDto visitOfDeletedCase = creator.createVisit(person5.toReference());
 
 		List<VisitDto> visits = getVisitFacade().getAllActiveVisitsAfter(date);
-		assertThat(visits, hasSize(4));
+		assertThat(visits, hasSize(3));
+		assertThat(visits, not(contains(visitOfPureCase))); // TODO change once visits are synchronized to app
 		assertThat(visits, not(contains(visitOfDeletedContact)));
 		assertThat(visits, not(contains(visitOfDeletedCase)));
 
@@ -317,7 +316,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		TimeUnit.MILLISECONDS.sleep(1);
 		visitWithChanges.getSymptoms().setAbdominalPain(SymptomState.YES);
-		getVisitFacade().saveVisit(visitWithChanges);
+		visitWithChanges = getVisitFacade().saveVisit(visitWithChanges);
 
 		visits = getVisitFacade().getAllActiveVisitsAfter(date);
 		assertThat(visits, hasSize(1));
@@ -337,7 +336,6 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		assertThat(getVisitFacade().getLastVisitByContact(contact.toReference()), is(visit));
 	}
-
 
 	@Test
 	public void testGetLastVisitByCase() {
@@ -397,7 +395,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		List<VisitIndexDto> indexVisits2 = getVisitFacade().getIndexList(new VisitCriteria().caze(caze2.toReference()), null, null, null);
 		assertEquals(indexVisits.size(), indexVisits2.size());
-		for(int i = 0; i < indexVisits.size(); ++i) {
+		for (int i = 0; i < indexVisits.size(); ++i) {
 			assertEquals(indexVisits.get(i).getUuid(), indexVisits2.get(i).getUuid());
 		}
 	}

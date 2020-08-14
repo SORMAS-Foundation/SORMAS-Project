@@ -39,7 +39,7 @@ public class VisitIndexDto implements WithJurisdiction<ContactJurisdictionDto>, 
 	private ContactJurisdictionDto contactJurisdiction;
 
 	public VisitIndexDto(
-			Long id,
+		Long id,
 		String uuid,
 		Date visitDateTime,
 		VisitStatus visitStatus,

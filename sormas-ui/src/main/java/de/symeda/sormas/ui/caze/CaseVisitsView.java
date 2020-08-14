@@ -77,10 +77,11 @@ public class CaseVisitsView extends AbstractCaseView {
 			MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
 				Captions.bulkActions,
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getVisitController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					ControllerProvider.getVisitController()
+						.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}));
 			topLayout.addComponent(bulkOperationsDropdown);
-			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
+			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
@@ -88,7 +89,10 @@ public class CaseVisitsView extends AbstractCaseView {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
-				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+				topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+				if (topLayout.getComponentCount() == 1) {
+					topLayout.setExpandRatio(exportButton, 1);
+				}
 			}
 
 			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
