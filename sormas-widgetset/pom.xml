@@ -12,7 +12,7 @@
 	<name>${project.artifactId}</name>
 
 	<properties>
-		<vaadin-widgetsets-dir>src/main/resources/de.symeda.sormas/SormasWidgetset</vaadin-widgetsets-dir>
+		<vaadin-widgetsets-dir>src/main/webapp/VAADIN/widgetsets</vaadin-widgetsets-dir>
 	</properties>
 	
     <dependencies>

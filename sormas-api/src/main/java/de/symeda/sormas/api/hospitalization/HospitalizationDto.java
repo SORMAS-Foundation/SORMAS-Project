@@ -17,22 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public class HospitalizationDto extends EntityDto {
 
-	private static final long serialVersionUID = 4846215199480684369L;
-
 	public static final String I18N_PREFIX = "CaseHospitalization";
-
 	public static final String ADMITTED_TO_HEALTH_FACILITY = "admittedToHealthFacility";
 	public static final String ADMISSION_DATE = "admissionDate";
 	public static final String DISCHARGE_DATE = "dischargeDate";
@@ -44,9 +41,9 @@ public class HospitalizationDto extends EntityDto {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
+	private static final long serialVersionUID = 4846215199480684369L;
 
 	// Fields are declared in the order they should appear in the import template
-
 	@Outbreaks
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
@@ -66,7 +63,6 @@ public class HospitalizationDto extends EntityDto {
 		hospitalization.setUuid(DataHelper.createUuid());
 		return hospitalization;
 	}
-
 
 	public Date getAdmissionDate() {
 		return admissionDate;
