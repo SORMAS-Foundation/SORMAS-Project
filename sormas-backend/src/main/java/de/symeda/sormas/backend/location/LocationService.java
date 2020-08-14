@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
+import de.symeda.sormas.backend.common.AbstractAdoService;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-
-import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
@@ -40,4 +40,8 @@ public class LocationService extends AbstractAdoService<Location> {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
+
+
+
+
 }

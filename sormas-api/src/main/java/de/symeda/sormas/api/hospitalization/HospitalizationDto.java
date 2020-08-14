@@ -17,15 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class HospitalizationDto extends EntityDto {
 
@@ -66,6 +66,7 @@ public class HospitalizationDto extends EntityDto {
 		hospitalization.setUuid(DataHelper.createUuid());
 		return hospitalization;
 	}
+
 
 	public Date getAdmissionDate() {
 		return admissionDate;

@@ -62,6 +62,13 @@
 		   <artifactId>extended-token-field</artifactId>
 		</dependency>
 
+		<!--ADDED VADDIN DEPENDENCY FOR LOADING WIDGET-->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>

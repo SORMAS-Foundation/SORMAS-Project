@@ -48,7 +48,7 @@ import javax.servlet.annotation.WebServlet;
 @SuppressWarnings("serial")
 @Viewport("user-scalable=no,initial-scale=1.0")
 @Theme("sormas")
-@Widgetset("de.symeda.sormas.SormasWidgetset")
+@Widgetset(value = "de.symeda.sormas.SormasWidgetset")
 public class LoginUI extends UI {
 
 	@Override

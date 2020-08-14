@@ -17,8 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.UserRoleConfigDto;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -27,9 +27,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserRoleConfigDto;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
