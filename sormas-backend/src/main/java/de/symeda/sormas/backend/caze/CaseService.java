@@ -708,6 +708,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				.forEach(c -> clinicalVisitService.delete(c));
 		}
 
+		//Remove all events linked to case by removing the case_id from event participant
+		caze.getEventParticipants().stream().forEach(eventParticipant -> eventParticipant.setResultingCase(null));
+
 		// Mark the case as deleted
 		super.delete(caze);
 	}

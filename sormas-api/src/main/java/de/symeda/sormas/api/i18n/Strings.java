@@ -308,6 +308,8 @@ public interface Strings {
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
 	String headingNoEventFound = "headingNoEventFound";
+	String headingEventNotDeleted = "headingEventNotDeleted";
+	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";
@@ -538,6 +540,8 @@ public interface Strings {
 	String messageEventSaved = "messageEventSaved";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
+	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
+	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsEdited = "messageEventsEdited";
 	String messageExportConfigurationDeleted = "messageExportConfigurationDeleted";
 	String messageExportConfigurationSaved = "messageExportConfigurationSaved";

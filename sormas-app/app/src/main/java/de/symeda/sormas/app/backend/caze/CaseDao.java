@@ -562,6 +562,12 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 		}
 
+		//Remove events linked to case by removing case_id from event participants
+		List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByCase(caze);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipant);
+		}
+
 		// Delete case
 		deleteCascade(caze);
 	}

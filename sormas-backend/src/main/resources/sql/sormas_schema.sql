@@ -4897,4 +4897,11 @@ ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
 
+-- 2020-08-10 - Update app synchronization related to event participants #2596
+ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
+ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
+UPDATE eventparticipant SET deleted = false;
+UPDATE eventparticipant_history SET deleted = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Update app synchronization related to event participants #2596');
 -- *** Insert new sql commands BEFORE this line ***

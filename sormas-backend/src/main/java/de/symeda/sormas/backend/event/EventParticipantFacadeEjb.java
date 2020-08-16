@@ -113,8 +113,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		List<EventParticipantDto> collect =
+			eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return collect;
 	}
+
+	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
+		return deletedEventParticipants;
+	};
 
 	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
@@ -308,4 +322,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
 
 	}
+
+	@Override
+	public List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid) {
+
+		User user = userService.getCurrentUser();
+		Event event = eventService.getByUuid(eventUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		if (event == null) {
+			return Collections.emptyList();
+		}
+
+		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+	}
+
 }
