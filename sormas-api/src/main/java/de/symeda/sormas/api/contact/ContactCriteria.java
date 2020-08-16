@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -38,6 +39,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
@@ -59,6 +61,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private CaseReferenceDto caze;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private UserReferenceDto contactOfficer;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -149,6 +152,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public ContactCriteria district(DistrictReferenceDto district) {
 		setDistrict(district);
+		return this;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
+	public ContactCriteria community(CommunityReferenceDto community) {
+		setCommunity(community);
 		return this;
 	}
 

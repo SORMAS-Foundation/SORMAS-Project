@@ -27,19 +27,22 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.AbstractDialog;
+import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
 import de.symeda.sormas.app.databinding.DialogEpidTravelEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
-public class EpiDataTravelDialog extends AbstractDialog {
+public class EpiDataTravelDialog extends FormDialog {
 
 	public static final String TAG = EpiDataTravelDialog.class.getSimpleName();
 
@@ -55,7 +58,8 @@ public class EpiDataTravelDialog extends AbstractDialog {
 			R.layout.dialog_epid_travel_edit_layout,
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_travel,
-			-1);
+			-1,
+			AppFieldAccessCheckers.withCheckers(!epiDataTravel.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		this.data = epiDataTravel;
 	}
@@ -77,6 +81,7 @@ public class EpiDataTravelDialog extends AbstractDialog {
 		contentBinding.epiDataTravelTravelDateFrom.initializeDateField(getFragmentManager());
 		contentBinding.epiDataTravelTravelDateTo.initializeDateField(getFragmentManager());
 
+		setFieldVisibilitiesAndAccesses(EpiDataTravelDto.class, contentBinding.mainContent);
 		EpiDataValidator.initializeEpiDataTravelValidation(contentBinding);
 
 		if (data.getId() == null) {

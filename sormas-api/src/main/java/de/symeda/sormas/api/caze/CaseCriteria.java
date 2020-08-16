@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -56,6 +57,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -93,6 +95,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntilTo;
+	private Date followUpUntilFrom;
+	private Date reportDateTo;
 
 	@Override
 	public CaseCriteria clone() {
@@ -446,5 +452,48 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+	}
+
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public void setFollowUpUntilTo(Date followUpUntilTo) {
+		this.followUpUntilTo = followUpUntilTo;
+	}
+
+	public CaseCriteria followUpUntilTo(Date followUpUntilTo) {
+		this.followUpUntilTo = followUpUntilTo;
+		return this;
+	}
+
+	public Date getFollowUpUntilTo() {
+		return followUpUntilTo;
+	}
+
+	public CaseCriteria followUpUntilFrom(Date followUpUntilFrom) {
+		this.followUpUntilFrom = followUpUntilFrom;
+		return this;
+	}
+
+	public Date getFollowUpUntilFrom() {
+		return followUpUntilFrom;
+	}
+
+	public CaseCriteria reportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
+		return this;
+	}
+
+	public Date getReportDateTo() {
+		return reportDateTo;
+	}
+
+	public void setReportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
 	}
 }

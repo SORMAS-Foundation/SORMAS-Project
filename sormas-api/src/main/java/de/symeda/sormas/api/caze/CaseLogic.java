@@ -51,6 +51,10 @@ public final class CaseLogic {
 		}
 	}
 
+	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
+		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate: reportDate;
+	}
+
 	public static boolean isEpidNumberPrefix(String s) {
 
 		if (StringUtils.isEmpty(s)) {

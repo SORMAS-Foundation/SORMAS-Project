@@ -20,11 +20,12 @@ package de.symeda.sormas.api.epidata;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class EpiDataTravelDto extends EntityDto {
+public class EpiDataTravelDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 7369710205233407286L;
 
@@ -66,6 +67,7 @@ public class EpiDataTravelDto extends EntityDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String travelDestination;
 	@Diseases({
 		Disease.AFP,

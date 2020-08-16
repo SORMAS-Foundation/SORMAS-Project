@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.facility;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -39,6 +40,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -46,6 +48,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 	@EJB
 	private RegionService regionService;
+
+	@EJB
+	private UserService userService;
 
 	public FacilityService() {
 		super(Facility.class);
@@ -98,16 +103,29 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	}
 
 	public List<Facility> getAllActiveLaboratories(boolean includeOtherLaboratory) {
+		return getAllActiveLaboratories(includeOtherLaboratory, null);
+	}
+
+	private List<Facility> getAllActiveLaboratories(
+		boolean includeOtherLaboratory,
+		BiFunction<CriteriaBuilder, Root<Facility>, Predicate> createExtraFilters) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		cq.where(
-			cb.and(
-				createBasicFilter(cb, from),
-				cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)));
+		Predicate filter = cb.and(
+			createBasicFilter(cb, from),
+			cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
+			cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)
+
+		);
+
+		if (createExtraFilters != null) {
+			filter = and(cb, filter, createExtraFilters.apply(cb, from));
+		}
+
+		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
@@ -176,7 +194,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	}
 
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
-
 		Predicate filter = null;
 		if (facilityCriteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));

@@ -4897,11 +4897,40 @@ ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
 
+-- 2020-08-10 Add responsible community to contact #2104
+ALTER TABLE contact ADD COLUMN community_id bigint;
+ALTER TABLE contact_history ADD COLUMN community_id bigint;
+ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Add responsible community to contact #2104');
+
+-- 2020-08-13 Adds visit to cases
+
+ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE cases SET followupstatus = 'CANCELED';
+UPDATE cases SET followupcomment = '-';
+UPDATE cases SET overwritefollowupuntil = false;
+
+ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
+
+ALTER TABLE visit ADD COLUMN caze_id bigint;
+ALTER TABLE visit_history ADD COLUMN caze_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
+
+
 -- 2020-08-10 - Update app synchronization related to event participants #2596
 ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
 ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
 UPDATE eventparticipant SET deleted = false;
 UPDATE eventparticipant_history SET deleted = false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (236, 'Update app synchronization related to event participants #2596');
+INSERT INTO schema_version (version_number, comment) VALUES (238, 'Update app synchronization related to event participants #2596');
 -- *** Insert new sql commands BEFORE this line ***

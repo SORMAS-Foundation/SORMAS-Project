@@ -22,6 +22,10 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class DashboardEventDto implements Serializable {
 
@@ -37,12 +41,21 @@ public class DashboardEventDto implements Serializable {
 	private Disease disease;
 	private String diseaseDetails;
 	private Date eventDate;
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double locationLat;
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double locationLon;
-	private String districtUuid;
 	private DistrictReferenceDto district;
+
+	private EventJurisdictionDto jurisdiction;
 
 	public DashboardEventDto(
 		String uuid,
@@ -54,7 +67,12 @@ public class DashboardEventDto implements Serializable {
 		Double reportLon,
 		Double locationLat,
 		Double locationLon,
-		String districtUuid) {
+		String reportingUserUuid,
+		String surveillanceOfficerUuid,
+		String regionUuid,
+		String districtName,
+		String districtUuid,
+		String communityUuid) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
@@ -65,7 +83,9 @@ public class DashboardEventDto implements Serializable {
 		this.reportLon = reportLon;
 		this.locationLat = locationLat;
 		this.locationLon = locationLon;
-		this.districtUuid = districtUuid;
+		this.district = new DistrictReferenceDto(districtUuid, districtName);
+
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	public String getUuid() {
@@ -140,24 +160,16 @@ public class DashboardEventDto implements Serializable {
 		this.locationLon = locationLon;
 	}
 
-	public String getDistrictUuid() {
-		return districtUuid;
-	}
-
-	public void setDistrictUuid(String districtUuid) {
-		this.districtUuid = districtUuid;
-	}
-
 	public DistrictReferenceDto getDistrict() {
 		return district;
-	}
-
-	public void setDistrict(DistrictReferenceDto district) {
-		this.district = district;
 	}
 
 	@Override
 	public String toString() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+	}
+
+	public EventJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

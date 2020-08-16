@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 /**
  * The class ExternalVisitDto.
@@ -25,7 +26,7 @@ public class ExternalVisitDto implements Serializable, Cloneable {
 	private Date visitDateTime;
 	@Required
 	private VisitStatus visitStatus;
-
+	@SensitiveData
 	private String visitRemarks;
 
 	private SymptomsDto symptoms;

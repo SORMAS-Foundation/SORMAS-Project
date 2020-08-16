@@ -49,7 +49,6 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -57,6 +56,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -98,8 +98,16 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
 
-	public EventDataForm(boolean create) {
-		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), new FieldAccessCheckers());
+	public EventDataForm(boolean create, boolean inJurisdiction) {
+		super(
+			EventDto.class,
+			EventDto.I18N_PREFIX,
+			false,
+			new FieldVisibilityCheckers(),
+			UiFieldAccessCheckers.withCheckers(
+				inJurisdiction,
+				FieldHelper.createSensitiveDataFieldAccessChecker(),
+				FieldHelper.createPersonalDataFieldAccessChecker()));
 
 		isCreateForm = create;
 		if (create) {
@@ -175,6 +183,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		surveillanceOfficerField.setNullSelectionAllowed(true);
 
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

@@ -19,9 +19,9 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -40,87 +40,79 @@ public class ContactServiceTest extends AbstractBeanTest {
 
 		UserDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR);
 
-		Date referenceDate = DateHelper.subtractDays(new Date(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2);
+		Date referenceDate = DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET * 2);
 		PersonDto contactPerson = creator.createPerson();
 		Person contactPersonEntity = getPersonService().getByUuid(contactPerson.getUuid());
 
 		// Contacts with a report/last contact date after the reference date should not be included
 		ContactDto contact1 = creator.createContact(user.toReference(), contactPerson.toReference());
-		contact1.setReportDateTime(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
+		contact1.setReportDateTime(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact1 = getContactFacade().saveContact(contact1);
 
 		ContactDto contact2 = creator.createContact(user.toReference(), contactPerson.toReference());
 		contact2.setReportDateTime(referenceDate);
-		contact2.setLastContactDate(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact2);
+		contact2.setLastContactDate(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact2 = getContactFacade().saveContact(contact2);
 
 		Set<Contact> contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
 
 		// Contacts with a report/last contact date after the reference date but within the offset should be included
-		contact1.setReportDateTime(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		contact2.setLastContactDate(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		contact1.setReportDateTime(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
+		contact2.setLastContactDate(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
 
 		// Contacts with a report/last contact date before the reference date should be included
-		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
 
 		// Contacts with a follow-up until date before the reference date should not be included
-		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 		contact1.setOverwriteFollowUpUntil(true);
-		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 		contact2.setOverwriteFollowUpUntil(true);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
 
 		// Contacts with a follow-up until date before the reference date but within the offset should be included
-		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
+		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET));
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
 
 		// Contacts with a follow-up until date after the reference date should be included
-		contact1.setFollowUpUntil(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		contact2.setFollowUpUntil(DateHelper.addDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		contact1.setFollowUpUntil(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact2.setFollowUpUntil(DateHelper.addDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, hasSize(2));
 
-		// Contacts without a follow-up until date should be included as long as the report/last contact date is within the threshold
-		contact1.setFollowUpStatus(FollowUpStatus.CANCELED);
-		contact2.setFollowUpStatus(FollowUpStatus.CANCELED);
-		contact1.setOverwriteFollowUpUntil(false);
-		contact2.setOverwriteFollowUpUntil(false);
-		contact1.setFollowUpUntil(null);
-		contact2.setFollowUpUntil(null);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
-
-		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
-		assertThat(contacts, hasSize(2));
-
-		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2));
-		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2));
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		// move contacts outside of relevant time frame
+		contact1.setReportDateTime(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact1.setLastContactDate(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact1.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact2.setReportDateTime(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact2.setLastContactDate(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact2.setFollowUpUntil(DateHelper.subtractDays(referenceDate, FollowUpLogic.ALLOWED_DATE_OFFSET * 2));
+		contact1 = getContactFacade().saveContact(contact1);
+		contact2 = getContactFacade().saveContact(contact2);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
@@ -129,11 +121,11 @@ public class ContactServiceTest extends AbstractBeanTest {
 		PersonDto contactPerson2 = creator.createPerson();
 		ContactDto contact3 = creator.createContact(user.toReference(), contactPerson2.toReference());
 		contact3.setReportDateTime(referenceDate);
-		getContactFacade().saveContact(contact3);
+		contact3 = getContactFacade().saveContact(contact3);
 
 		ContactDto contact4 = creator.createContact(user.toReference(), contactPerson.toReference(), Disease.CSM);
 		contact4.setReportDateTime(referenceDate);
-		getContactFacade().saveContact(contact4);
+		contact4 = getContactFacade().saveContact(contact4);
 
 		contacts = getContactService().getAllRelevantContacts(contactPersonEntity, contact1.getDisease(), referenceDate);
 		assertThat(contacts, empty());
