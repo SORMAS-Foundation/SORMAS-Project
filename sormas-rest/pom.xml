@@ -56,21 +56,17 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-servlet-filter-adapter</artifactId>
-			<version>11.0.0</version>
+			<version>${keycloak.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>fish.payara.api</groupId>
 			<artifactId>payara-api</artifactId>
-			<version>${payara.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>fish.payara.security.connectors</groupId>
 			<artifactId>security-connector-oidc-client</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

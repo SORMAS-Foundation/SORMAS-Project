@@ -121,7 +121,25 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-    </dependencies>
+		<!-- Keycloak -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-admin-client</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>fish.payara.api</groupId>
+			<artifactId>payara-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>fish.payara.security.connectors</groupId>
+			<artifactId>security-connector-oidc-client</artifactId>
+		</dependency>
+
+
+	</dependencies>
 
 	<build>
 	</build>

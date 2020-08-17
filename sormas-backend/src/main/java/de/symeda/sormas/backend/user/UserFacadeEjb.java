@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -72,9 +74,12 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.event.PasswordResetEvent;
+import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PasswordHelper;
+import fish.payara.security.openid.api.OpenIdContext;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -104,6 +109,10 @@ public class UserFacadeEjb implements UserFacade {
 	private EventService eventService;
 	@EJB
 	private PointOfEntryService pointOfEntryService;
+	@Inject
+	private Event<UserCreateEvent> userCreateEvent;
+	@Inject
+	private Event<PasswordResetEvent> passwordResetEvent;
 
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
@@ -179,6 +188,8 @@ public class UserFacadeEjb implements UserFacade {
 		}
 
 		userService.ensurePersisted(user);
+
+		userCreateEvent.fire(new UserCreateEvent(user));
 
 		return toDto(user);
 	}
@@ -345,7 +356,9 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public String resetPassword(String uuid) {
-		return userService.resetPassword(uuid);
+		String resetPassword = userService.resetPassword(uuid);
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+		return resetPassword;
 	}
 
 	@Override

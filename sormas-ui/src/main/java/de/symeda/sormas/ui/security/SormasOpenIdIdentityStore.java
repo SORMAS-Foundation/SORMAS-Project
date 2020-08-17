@@ -29,10 +29,18 @@ import fish.payara.security.openid.domain.OpenIdConfiguration;
 import fish.payara.security.openid.domain.OpenIdContextImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.soteria.WrappingCallerPrincipal;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.TokenVerifier;
+import org.keycloak.common.VerificationException;
+import org.keycloak.representations.AccessToken;
+import org.keycloak.representations.IDToken;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.JsonObject;
+import javax.security.enterprise.CallerPrincipal;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
@@ -46,7 +54,6 @@ import static java.util.Objects.nonNull;
 
 /**
  * Identity store validates the identity token & access token and returns the validation result with the caller name and groups.
- *
  * Implementation based on {@link fish.payara.security.openid.OpenIdIdentityStore}, but updated to read the user roles from the Sormas System.
  *
  * @author Alex Vidrean
@@ -100,7 +107,11 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 		//TODO: check if the context.setCallerGroups works for newer versions of Payara
 		context.setCallerGroups(StringUtils.join(groups, ","));
 
-		return new CredentialValidationResult(context.getCallerName(), groups);
+		try {
+			return new CredentialValidationResult(createPrincipal(accessToken.getToken(), idToken.getToken()), groups);
+		} catch (VerificationException e) {
+			return CredentialValidationResult.INVALID_RESULT;
+		}
 	}
 
 	private String getCallerName(OpenIdConfiguration configuration) {
@@ -126,6 +137,15 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 		}
 
 		return Collections.emptySet();
+	}
+
+	private CallerPrincipal createPrincipal(String accessToken, String identityToken) throws VerificationException {
+
+		AccessToken keycloakAccessToken = TokenVerifier.create(accessToken, AccessToken.class).getToken();
+		IDToken keycloakIDToken = TokenVerifier.create(identityToken, IDToken.class).getToken();
+
+		KeycloakSecurityContext securityContext = new KeycloakSecurityContext(accessToken, keycloakAccessToken, identityToken, keycloakIDToken);
+		return new WrappingCallerPrincipal(new KeycloakPrincipal<>(context.getCallerName(), securityContext));
 	}
 
 }

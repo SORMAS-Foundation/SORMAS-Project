@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -36,6 +34,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
@@ -54,7 +53,10 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserController {
 
+	public final boolean isSormasAuthentication;
+
 	public UserController() {
+		isSormasAuthentication = FacadeProvider.getConfigFacade().getAuthenticationProvider().equalsIgnoreCase(AuthProvider.SORMAS);
 	}
 
 	public void create() {
@@ -180,11 +182,28 @@ public class UserController {
 	public void makeNewPassword(String userUuid) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
+		if (isSormasAuthentication) {
+			showPasswordResetWithPasswordPopup(newPassword);
+		} else {
+			showPasswordResetNoPasswordPopup();
+		}
+	}
+
+	private void showPasswordResetWithPasswordPopup(String newPassword) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
 		Label passwordLabel = new Label(newPassword);
 		passwordLabel.addStyleName(CssStyles.H2);
 		layout.addComponent(passwordLabel);
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		layout.setMargin(true);
+	}
+
+	private void showPasswordResetNoPasswordPopup() {
+		VerticalLayout layout = new VerticalLayout();
+		//TODO: set internationalized message
+		layout.addComponent(new Label("You password was updated successfully"));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
 		layout.setMargin(true);
@@ -272,5 +291,9 @@ public class UserController {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
+	}
+
+	public boolean isEmailRequired() {
+		return !isSormasAuthentication;
 	}
 }

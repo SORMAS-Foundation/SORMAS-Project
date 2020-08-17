@@ -19,7 +19,11 @@
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!--TODO extract payara and microprofile properties as environment variables -->
 		<payara.version>5.194</payara.version>
+		<payara.oidc.version>1.0</payara.oidc.version>
+		<microprofile.api.version>1.3</microprofile.api.version>
+		<keycloak.version>11.0.0</keycloak.version>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -214,6 +218,27 @@
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
 				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.api</groupId>
+				<artifactId>payara-api</artifactId>
+				<version>${payara.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>fish.payara.security.connectors</groupId>
+				<artifactId>security-connector-oidc-client</artifactId>
+				<version>${payara.oidc.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.microprofile.config</groupId>
+				<artifactId>microprofile-config-api</artifactId>
+				<version>${microprofile.api.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<!-- serverlibs -->
