@@ -229,9 +229,9 @@ if [[ ! "${JAVA_VERSION}" =~ ^[0-9]+$ ]]; then
 		fi
 	fi
 	exit 1
-elif [[ "${JAVA_VERSION}" -eq 11 ]]; then
+elif [[ "${JAVA_VERSION}" -eq "${JAVA_JDK_VERSION}" ]]; then
 	echo "Found Java ${JAVA_VERSION} JDK."
-elif [[ "${JAVA_VERSION}" -gt 11 ]]; then
+elif [[ "${JAVA_VERSION}" -gt "${JAVA_JDK_VERSION}" ]]; then
 	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java ${JAVA_JDK_VERSION} JDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
 else
 	echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
