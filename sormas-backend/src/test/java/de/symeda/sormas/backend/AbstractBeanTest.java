@@ -63,6 +63,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -121,6 +122,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeE
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -411,6 +413,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFormMetaFacadeEjbLocal.class);
 	}
 
+	public SormasToSormasFacade getSormasToSormasFacade() {
+		return getBean(SormasToSormasFacadeEjbLocal.class);
+	}
+
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
 		if (rdcf == null) {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -431,7 +437,9 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFacadeEjbLocal.class);
 	}
 
-	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);}
+	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);
+	}
 
 	protected UserDto useNationalUserLogin() {
 		UserDto natUser =
@@ -444,5 +452,4 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
 	}
-
 }

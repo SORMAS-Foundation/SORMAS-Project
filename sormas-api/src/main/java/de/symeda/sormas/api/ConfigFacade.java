@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.region.GeoLatLon;
-
 import javax.ejb.Remote;
+
+import de.symeda.sormas.api.region.GeoLatLon;
 
 @Remote
 public interface ConfigFacade {
@@ -91,6 +91,8 @@ public interface ConfigFacade {
 	String getSymptomJournalClientId();
 
 	String getSymptomJournalSecret();
+
+	String getSormasToSormasUserPassword();
 
 	void validateExternalUrls();
 }

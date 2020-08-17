@@ -71,6 +71,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -277,6 +278,8 @@ public class Case extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+
+	private SormasToSormasShareInfo sormasShareInfo;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1152,5 +1155,15 @@ public class Case extends CoreAdo {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasShareInfo getSormasShareInfo() {
+		return sormasShareInfo;
+	}
+
+	public void setSormasShareInfo(SormasToSormasShareInfo sormasShareInfo) {
+		this.sormasShareInfo = sormasShareInfo;
 	}
 }

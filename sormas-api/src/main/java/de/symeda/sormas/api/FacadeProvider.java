@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
@@ -54,6 +57,7 @@ import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
 import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.therapy.PrescriptionFacade;
@@ -63,9 +67,6 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 public class FacadeProvider {
 
@@ -273,6 +274,10 @@ public class FacadeProvider {
 
 	public static CampaignFormDataFacade getCampaignFormDataFacade() {
 		return get().lookupEjbRemote(CampaignFormDataFacade.class);
+	}
+
+	public static SormasToSormasFacade getSormasToSormasFacade() {
+		return get().lookupEjbRemote(SormasToSormasFacade.class);
 	}
 
 	public static AreaFacade getAreaFacade() {

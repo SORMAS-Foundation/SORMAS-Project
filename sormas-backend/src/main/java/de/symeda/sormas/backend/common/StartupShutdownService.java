@@ -84,6 +84,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.MockDataGenerator;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.PasswordHelper;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
@@ -96,6 +97,8 @@ public class StartupShutdownService {
 	static final String AUDIT_SCHEMA = "sql/sormas_audit_schema.sql";
 
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
+
+	private static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -411,6 +414,29 @@ public class StartupShutdownService {
 			poeInformant.setPointOfEntry(pointOfEntry);
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
+		}
+
+		createSormasToSormasUser();
+	}
+
+	private void createSormasToSormasUser() {
+		User sormasToSormas = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
+		String sormasToSormasUserPassword = configFacade.getSormasToSormasUserPassword();
+		if (sormasToSormas == null) {
+			if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
+				sormasToSormas = MockDataGenerator.createUser(UserRole.REST_USER, "Sormas", "Sormas", sormasToSormasUserPassword);
+				sormasToSormas.setUserName(SORMAS_TO_SORMAS_USER_NAME);
+
+				userService.persist(sormasToSormas);
+			}
+		} else if (DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
+			userService.delete(sormasToSormas);
+		} else if (DataHelper
+			.equal(sormasToSormas.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormas.getSeed()))) {
+			sormasToSormas.setSeed(PasswordHelper.createPass(16));
+			sormasToSormas.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormas.getSeed()));
+
+			userService.persist(sormasToSormas);
 		}
 	}
 

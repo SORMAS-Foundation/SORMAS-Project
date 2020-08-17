@@ -77,6 +77,12 @@ public interface Validations {
 	String required = "required";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
+	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
+	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
+	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasSenderHealthDepartmentMissing = "sormasToSormasSenderHealthDepartmentMissing";
+	String sormasToSormasSenderNameMissing = "sormasToSormasSenderNameMissing";
+	String sormasToSormasShareInfoMissing = "sormasToSormasShareInfoMissing";
 	String specifyFirstName = "specifyFirstName";
 	String specifyLastName = "specifyLastName";
 	String statisticsIncidenceOnlyNumbersAllowed = "statisticsIncidenceOnlyNumbersAllowed";

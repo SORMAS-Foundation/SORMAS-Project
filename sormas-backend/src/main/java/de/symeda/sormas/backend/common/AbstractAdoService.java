@@ -302,7 +302,12 @@ public abstract class AbstractAdoService<ADO extends AbstractDomainObject> imple
 
 		final TypedQuery<Object> typedQuery = em.createQuery(query);
 
-		return (Boolean) typedQuery.getSingleResult();
+		try {
+			return (Boolean) typedQuery.getSingleResult();
+		} catch (NoResultException e) {
+			// h2 database entity manager throws "NoResultException" if the entity not found
+			return false;
+		}
 	}
 
 	@Override

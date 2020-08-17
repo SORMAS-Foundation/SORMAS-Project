@@ -52,7 +52,6 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -62,6 +61,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -199,6 +199,8 @@ public class Contact extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+
+	private SormasToSormasShareInfo sormasShareInfo;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -753,5 +755,15 @@ public class Contact extends CoreAdo {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@AuditedIgnore
+	public SormasToSormasShareInfo getSormasShareInfo() {
+		return sormasShareInfo;
+	}
+
+	public void setSormasShareInfo(SormasToSormasShareInfo sormasShareInfo) {
+		this.sormasShareInfo = sormasShareInfo;
 	}
 }

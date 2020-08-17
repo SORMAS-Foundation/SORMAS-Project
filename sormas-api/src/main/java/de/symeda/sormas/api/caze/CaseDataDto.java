@@ -42,6 +42,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -367,6 +368,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	private SormasToSormasShareInfoDto sormasShareInfo;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -1109,5 +1111,13 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	public SormasToSormasShareInfoDto getSormasShareInfo() {
+		return sormasShareInfo;
+	}
+
+	public void setSormasShareInfo(SormasToSormasShareInfoDto sormasShareInfo) {
+		this.sormasShareInfo = sormasShareInfo;
 	}
 }
