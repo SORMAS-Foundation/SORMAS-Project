@@ -24,6 +24,7 @@ import java.util.List;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -388,15 +389,17 @@ public class EventController {
 							Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
 					} else {
-						VaadinUiUtil.showSimplePopupWindow(
+						Window response = VaadinUiUtil.showSimplePopupWindow(
 							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
 							String.format(
-								"%1s %2s",
+								"%1s <br/> <br/> %2s",
 								String.format(
 									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
-									countNotDeletedEvents,
-									nonDeletableEvents),
-								I18nProperties.getString(Strings.messageEventsNotDeletedReason)));
+									String.format("<b>%s</b>", countNotDeletedEvents),
+									String.format("<b>%s</b>", nonDeletableEvents)),
+								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
+							ContentMode.HTML);
+						response.setWidth(600, Sizeable.Unit.PIXELS);
 					}
 				});
 		}
