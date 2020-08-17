@@ -28,9 +28,9 @@ echo "# Welcome to the SORMAS server setup routine. This script will guide you t
 echo "# If anything goes wrong, please consult the server setup guide or get in touch with the developers."
 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
-#AS_JAVA_NATIVE='C:\zulu-8'
-#AS_JAVA_NATIVE='/opt/zulu-8'
-#AS_JAVA_NATIVE=/usr/lib/jvm/zulu-8-amd64/
+#AS_JAVA_NATIVE='C:\zulu-11'
+#AS_JAVA_NATIVE='/opt/zulu-11'
+#AS_JAVA_NATIVE=/usr/lib/jvm/zulu-11-amd64/
 
 PAYARA_VERSION=5.192
 
