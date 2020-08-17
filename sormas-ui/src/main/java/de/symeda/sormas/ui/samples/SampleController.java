@@ -160,15 +160,17 @@ public class SampleController {
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
 			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
-			EventParticipantDto eventParticipant =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
-			final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-			Disease testedDisease = pathogenTest.getTestedDisease();
-			if (event.getDisease().equals(testedDisease)) {
-				newSample.setPathogenTestResult(testResult);
-			}
-			if (eventParticipantRef != null && testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
-				ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
+			if (eventParticipantRef != null) {
+				EventParticipantDto eventParticipant =
+					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+				final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+				Disease testedDisease = pathogenTest.getTestedDisease();
+				if (event.getDisease().equals(testedDisease)) {
+					newSample.setPathogenTestResult(testResult);
+				}
+				if (testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
+					ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant, testedDisease);
+				}
 			}
 		} else {
 			FacadeProvider.getSampleFacade().saveSample(newSample);

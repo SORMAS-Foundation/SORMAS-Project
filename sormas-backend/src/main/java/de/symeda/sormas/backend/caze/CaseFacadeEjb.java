@@ -1339,15 +1339,14 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
-		if (sourceEventParticipant != null) {
-			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
-			final Case caze = caseService.getByUuid(cazeRef.getUuid());
-			final Disease disease = caze.getDisease();
-			eventParticipant.getSamples()
-				.stream()
-				.filter(sample -> sampleContainsTestForDisease(sample, disease))
-				.forEach(sample -> sample.setAssociatedCase(caze));
-		}
+		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
+		final Case caze = caseService.getByUuid(cazeRef.getUuid());
+		final Disease disease = caze.getDisease();
+		eventParticipant.getSamples()
+			.stream()
+			.filter(sample -> sampleContainsTestForDisease(sample, disease))
+			.forEach(sample -> sample.setAssociatedCase(caze));
+
 	}
 
 	private boolean sampleContainsTestForDisease(Sample sample, Disease disease) {
