@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
@@ -14,6 +15,7 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
+	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testSaveAndGetCampaignDiagramDefinition() {
 
 		final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = new CampaignDiagramDefinitionDto();
@@ -46,7 +48,6 @@ public class CampaignDiagramDefinitionFacadeEjbTest extends AbstractBeanTest {
 
 		savedDiagramDefinition.setDiagramId("test2");
 		getCampaignDiagramDefinitionFacade().save(savedDiagramDefinition);
-
 	}
 
 	private CampaignDiagramSeries diagramSeries(String fieldId, String formId, String stack) {

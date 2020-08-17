@@ -6,6 +6,7 @@ import java.util.Map;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -26,11 +27,12 @@ public class CampaignDashboardDataProvider {
 
 		List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
 		campaignDiagramDefinitions.forEach(campaignDiagramDefinitionDto -> {
-			List<CampaignDiagramDataDto> diagramData =
-				FacadeProvider.getCampaignFormDataFacade().getDiagramData(campaignDiagramDefinitionDto.getCampaignDiagramSeriesList());
+			List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
+				.getDiagramData(
+					campaignDiagramDefinitionDto.getCampaignDiagramSeriesList(),
+					new CampaignDiagramCriteria(campaign, area, region, district));
 			campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
 		});
-
 	}
 
 	public CampaignReferenceDto getCampaign() {

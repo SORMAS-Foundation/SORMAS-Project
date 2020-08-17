@@ -1,5 +1,8 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.navigator.ViewChangeListener;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -13,6 +16,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
+
+	private List<CampaignDashboardDiagramComponent> campaignDashboardDiagramComponents = new ArrayList<>();
 
 	public CampaignDashboardView() {
 		super(VIEW_NAME);
@@ -35,12 +40,15 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	@Override
 	public void refreshDashboard() {
+
+		campaignDashboardDiagramComponents
+			.forEach(campaignDashboardDiagramComponents -> dashboardLayout.removeComponent(campaignDashboardDiagramComponents));
 		dataProvider.refreshData();
 		dataProvider.getCampaignFormDataMap().forEach((campaignDiagramDefinitionDto, diagramData) -> {
 			CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, diagramData);
+			campaignDashboardDiagramComponents.add(diagramComponent);
 			dashboardLayout.addComponent(diagramComponent);
 			dashboardLayout.setExpandRatio(diagramComponent, 1);
 		});
-
 	}
 }

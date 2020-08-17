@@ -41,14 +41,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -286,7 +290,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
-	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeriesList) {
+		public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeriesList, CampaignDiagramCriteria campaignDiagramCriteria) {
 
 		List<CampaignDiagramDataDto> resultData = new ArrayList<CampaignDiagramDataDto>();
 
@@ -299,21 +303,32 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			// TODO use parameters for the WHERE part
 			// TODO add district and community
 			//@formatter:off
+			final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
+			final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
+			final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
+			final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'": "";
+			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
+			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
 			Query seriesDataQuery = em.createNativeQuery(
-				"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
-					+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
-					+ ", sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
-					+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME
-				+ " FROM " + CampaignFormData.TABLE_NAME 
-				+ " LEFT JOIN " + CampaignFormMeta.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN_FORM_META + "_id = " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.ID
-				+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
-				+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") jsonData"
-				+ " WHERE " + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
-					+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
-					+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
-				+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
-					+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
-					+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME );
+					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+							+ ", sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME
+							+ " FROM " + CampaignFormData.TABLE_NAME
+							+ " LEFT JOIN " + CampaignFormMeta.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN_FORM_META + "_id = " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.ID
+							+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
+							+ " LEFT JOIN " + District.TABLE_NAME + " ON " + CampaignFormData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
+							+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN + "_id = " + Campaign.TABLE_NAME + "." + Campaign.ID
+							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") jsonData"
+							+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
+							+ regionFilter
+							+ districtFilter
+							+ campaignFilter
+							+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME);
 			//@formatter:on
 
 			@SuppressWarnings("unchecked")

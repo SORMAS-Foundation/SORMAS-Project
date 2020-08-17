@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +43,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
+	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testSaveCampaignFormData() throws Exception {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
@@ -75,6 +77,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testGetCampaignFormDataByUuid() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
@@ -96,6 +99,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testDeleteCampaignFormData() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
