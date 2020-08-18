@@ -4926,4 +4926,11 @@ ALTER TABLE visit_history ADD COLUMN caze_id bigint;
 INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
 
 
+-- 2020-08-10 - Update app synchronization related to event participants #2596
+ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
+ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
+UPDATE eventparticipant SET deleted = false;
+UPDATE eventparticipant_history SET deleted = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (238, 'Update app synchronization related to event participants #2596');
 -- *** Insert new sql commands BEFORE this line ***

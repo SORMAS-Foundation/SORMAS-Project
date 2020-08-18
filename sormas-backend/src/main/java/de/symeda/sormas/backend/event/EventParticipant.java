@@ -28,13 +28,13 @@ import javax.persistence.OneToMany;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 
 @Entity
 @Audited
-public class EventParticipant extends AbstractDomainObject {
+public class EventParticipant extends CoreAdo {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
