@@ -20,15 +20,16 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class PathogenTestDto extends EntityDto {
+public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
 
@@ -57,21 +58,26 @@ public class PathogenTestDto extends EntityDto {
 	private String testedDiseaseDetails;
 	@Required
 	private PathogenTestType testType;
+	@SensitiveData
 	private String testTypeText;
 	@Required
 	private Date testDateTime;
 	@Required
 	private FacilityReferenceDto lab;
+	@SensitiveData
 	private String labDetails;
 	@Required
+	@SensitiveData
 	private UserReferenceDto labUser;
 	@Required
 	private PathogenTestResultType testResult;
 	@Required
+	@SensitiveData
 	private String testResultText;
 	@Required
 	private Boolean testResultVerified;
 	private boolean fourFoldIncreaseAntibodyTiter;
+	@SensitiveData
 	private String serotype;
 	private Float cqValue;
 

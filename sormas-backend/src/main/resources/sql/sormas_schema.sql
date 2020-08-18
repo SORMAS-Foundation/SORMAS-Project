@@ -4897,6 +4897,35 @@ ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
 
+-- 2020-08-10 Add responsible community to contact #2104
+ALTER TABLE contact ADD COLUMN community_id bigint;
+ALTER TABLE contact_history ADD COLUMN community_id bigint;
+ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Add responsible community to contact #2104');
+
+-- 2020-08-13 Adds visit to cases
+
+ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE cases SET followupstatus = 'CANCELED';
+UPDATE cases SET followupcomment = '-';
+UPDATE cases SET overwritefollowupuntil = false;
+
+ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
+
+ALTER TABLE visit ADD COLUMN caze_id bigint;
+ALTER TABLE visit_history ADD COLUMN caze_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
+
+
 -- 2020-07-29 Campaign diagram visualisation
 
 ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
@@ -4904,7 +4933,7 @@ ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries
 ALTER TABLE campaignformdata ALTER COLUMN formvalues TYPE json USING formvalues::json;
 ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING formvalues::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (236, 'Campaign diagram visualization #2526');
+INSERT INTO schema_version (version_number, comment) VALUES (238, 'Campaign diagram visualization #2526');
 
 
 -- *** Insert new sql commands BEFORE this line ***

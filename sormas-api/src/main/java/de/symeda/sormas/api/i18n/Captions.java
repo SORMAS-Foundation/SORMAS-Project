@@ -169,16 +169,21 @@ public interface Captions {
 	String CaseData_clinicianEmail = "CaseData.clinicianEmail";
 	String CaseData_clinicianName = "CaseData.clinicianName";
 	String CaseData_clinicianPhone = "CaseData.clinicianPhone";
+	String CaseData_community = "CaseData.community";
 	String CaseData_completeness = "CaseData.completeness";
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_diseaseDetails = "CaseData.diseaseDetails";
+	String CaseData_district = "CaseData.district";
 	String CaseData_districtLevelDate = "CaseData.districtLevelDate";
 	String CaseData_doses = "CaseData.doses";
 	String CaseData_epiData = "CaseData.epiData";
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_followUpComment = "CaseData.followUpComment";
+	String CaseData_followUpStatus = "CaseData.followUpStatus";
+	String CaseData_followUpUntil = "CaseData.followUpUntil";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
@@ -192,8 +197,10 @@ public interface Captions {
 	String CaseData_noneHealthFacilityDetails = "CaseData.noneHealthFacilityDetails";
 	String CaseData_notifyingClinic = "CaseData.notifyingClinic";
 	String CaseData_notifyingClinicDetails = "CaseData.notifyingClinicDetails";
+	String CaseData_numberOfVisits = "CaseData.numberOfVisits";
 	String CaseData_outcome = "CaseData.outcome";
 	String CaseData_outcomeDate = "CaseData.outcomeDate";
+	String CaseData_overwriteFollowUpUntil = "CaseData.overwriteFollowUpUntil";
 	String CaseData_person = "CaseData.person";
 	String CaseData_personFirstName = "CaseData.personFirstName";
 	String CaseData_personLastName = "CaseData.personLastName";
@@ -219,6 +226,7 @@ public interface Captions {
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
+	String CaseData_region = "CaseData.region";
 	String CaseData_regionLevelDate = "CaseData.regionLevelDate";
 	String CaseData_reportDate = "CaseData.reportDate";
 	String CaseData_reportingType = "CaseData.reportingType";
@@ -241,6 +249,7 @@ public interface Captions {
 	String CaseData_vaccinationDoses = "CaseData.vaccinationDoses";
 	String CaseData_vaccinationInfoSource = "CaseData.vaccinationInfoSource";
 	String CaseData_vaccine = "CaseData.vaccine";
+	String CaseData_visits = "CaseData.visits";
 	String caseDefaultView = "caseDefaultView";
 	String caseDetailedView = "caseDetailedView";
 	String caseEditData = "caseEditData";
@@ -261,6 +270,9 @@ public interface Captions {
 	String CaseExport_id = "CaseExport.id";
 	String CaseExport_initialDetectionPlace = "CaseExport.initialDetectionPlace";
 	String CaseExport_labResults = "CaseExport.labResults";
+	String CaseExport_lastCooperativeVisitDate = "CaseExport.lastCooperativeVisitDate";
+	String CaseExport_lastCooperativeVisitSymptomatic = "CaseExport.lastCooperativeVisitSymptomatic";
+	String CaseExport_lastCooperativeVisitSymptoms = "CaseExport.lastCooperativeVisitSymptoms";
 	String CaseExport_lastName = "CaseExport.lastName";
 	String CaseExport_maxSourceCaseClassification = "CaseExport.maxSourceCaseClassification";
 	String CaseExport_numberOfClinicalVisits = "CaseExport.numberOfClinicalVisits";
@@ -288,6 +300,7 @@ public interface Captions {
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -307,12 +320,14 @@ public interface Captions {
 	String caseInfrastructureDataChanged = "caseInfrastructureDataChanged";
 	String caseLineListing = "caseLineListing";
 	String caseMergeDuplicates = "caseMergeDuplicates";
+	String caseMinusDays = "caseMinusDays";
 	String caseNewCase = "caseNewCase";
 	String caseNewCaseDate = "caseNewCaseDate";
 	String caseNumberOfDuplicatesDetected = "caseNumberOfDuplicatesDetected";
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
 	String casePickCase = "casePickCase";
+	String casePlusDays = "casePlusDays";
 	String CasePreviousHospitalization = "CasePreviousHospitalization";
 	String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
@@ -367,6 +382,8 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_community = "Contact.community";
+	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
 	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
@@ -794,6 +811,10 @@ public interface Captions {
 	String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
 	String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
 	String firstName = "firstName";
+	String FollowUp_followUpUntil = "FollowUp.followUpUntil";
+	String FollowUp_person = "FollowUp.person";
+	String FollowUp_reportDate = "FollowUp.reportDate";
+	String FollowUp_uuid = "FollowUp.uuid";
 	String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";
@@ -836,6 +857,7 @@ public interface Captions {
 	String importLineListing = "importLineListing";
 	String importProcessed = "importProcessed";
 	String importSkips = "importSkips";
+	String inaccessibleValue = "inaccessibleValue";
 	String info = "info";
 	String lastName = "lastName";
 	String lineListingAddLine = "lineListingAddLine";
@@ -1123,6 +1145,7 @@ public interface Captions {
 	String SampleExport_caseReportDate = "SampleExport.caseReportDate";
 	String SampleExport_caseUuid = "SampleExport.caseUuid";
 	String SampleExport_conjBilirubin = "SampleExport.conjBilirubin";
+	String SampleExport_contactCommunity = "SampleExport.contactCommunity";
 	String SampleExport_contactDistrict = "SampleExport.contactDistrict";
 	String SampleExport_contactRegion = "SampleExport.contactRegion";
 	String SampleExport_contactReportDate = "SampleExport.contactReportDate";
@@ -1472,6 +1495,7 @@ public interface Captions {
 	String View_cases_sub = "View.cases.sub";
 	String View_cases_symptoms = "View.cases.symptoms";
 	String View_cases_therapy = "View.cases.therapy";
+	String View_cases_visits = "View.cases.visits";
 	String View_configuration_areas = "View.configuration.areas";
 	String View_configuration_areas_short = "View.configuration.areas.short";
 	String View_configuration_communities = "View.configuration.communities";

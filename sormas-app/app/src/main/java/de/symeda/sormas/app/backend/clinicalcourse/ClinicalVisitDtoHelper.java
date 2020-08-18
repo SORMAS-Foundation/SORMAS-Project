@@ -64,6 +64,8 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -86,5 +88,7 @@ public class ClinicalVisitDtoHelper extends AdoDtoHelper<ClinicalVisit, Clinical
 		target.setVisitDateTime(source.getVisitDateTime());
 		target.setVisitRemarks(source.getVisitRemarks());
 		target.setVisitingPerson(source.getVisitingPerson());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

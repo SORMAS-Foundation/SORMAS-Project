@@ -17,9 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -31,6 +35,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -40,6 +45,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
@@ -49,10 +55,14 @@ import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ExportType;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
@@ -60,6 +70,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.SormasUI;
@@ -72,7 +83,9 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
@@ -96,10 +109,13 @@ public class CasesView extends AbstractView {
 	 */
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
+	private final boolean caseFollowUpEnabled;
+	private final ExportConfigurationDto detailedExportConfiguration;
+
 	private CaseCriteria criteria;
 	private CasesViewConfiguration viewConfiguration;
 
-	private AbstractCaseGrid<?> grid;
+	private FilteredGrid<?, CaseCriteria> grid;
 	private Button createButton;
 	private Button lineListingButton;
 	private HashMap<Button, String> statusButtons;
@@ -120,10 +136,16 @@ public class CasesView extends AbstractView {
 	private Button btnEnterBulkEditMode;
 	private Button btnLeaveBulkEditMode;
 
+	private int followUpRangeInterval = 14;
+	private boolean buttonPreviousOrNextClick = false;
+	private Date followUpToDate;
+
 	public CasesView() {
 
 		super(VIEW_NAME);
 
+		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
+		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
 			viewConfiguration.setViewType(CasesViewType.DEFAULT);
@@ -134,12 +156,24 @@ public class CasesView extends AbstractView {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = CasesViewType.DEFAULT.equals(viewConfiguration.getViewType()) ? new CaseGrid(criteria) : new CaseGridDetailed(criteria);
-
+		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			criteria.followUpUntilFrom(DateHelper.getStartOfDay(DateHelper.subtractDays(new Date(), 4)));
+			grid = new CaseFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
+		} else {
+			criteria.followUpUntilFrom(null);
+			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType())
+					? new CaseGridDetailed(criteria)
+					: new CaseGrid(criteria);
+		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
+
+		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+			gridLayout.addComponent(createFollowUpLegend());
+		}
+
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
 		gridLayout.setSizeFull();
@@ -148,6 +182,51 @@ public class CasesView extends AbstractView {
 
 		grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
+		OptionGroup casesViewSwitcher = new OptionGroup();
+		casesViewSwitcher.setId("casesViewSwitcher");
+		CssStyles.style(casesViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		casesViewSwitcher.addItem(CasesViewType.DEFAULT);
+		casesViewSwitcher.setItemCaption(CasesViewType.DEFAULT, I18nProperties.getCaption(Captions.caseDefaultView));
+
+		casesViewSwitcher.addItem(CasesViewType.DETAILED);
+		casesViewSwitcher.setItemCaption(CasesViewType.DETAILED, I18nProperties.getCaption(Captions.caseDetailedView));
+
+		if (caseFollowUpEnabled) {
+			casesViewSwitcher.addItem(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW);
+			casesViewSwitcher
+					.setItemCaption(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW, I18nProperties.getCaption(Captions.caseFollowupVisitsView));
+		}
+
+		casesViewSwitcher.setValue(viewConfiguration.getViewType());
+		casesViewSwitcher.addValueChangeListener(e -> {
+			CasesViewType viewType = (CasesViewType) e.getProperty().getValue();
+
+			viewConfiguration.setViewType(viewType);
+			SormasUI.get().getNavigator().navigateTo(CasesView.VIEW_NAME);
+		});
+		addHeaderComponent(casesViewSwitcher);
+
+		if (viewConfiguration.getViewType().isCaseOverview()) {
+			addCommonCasesOverviewToolbar();
+		}
+
+		addComponent(gridLayout);
+	}
+
+	private ExportConfigurationDto buildDetailedExportConfiguration() {
+		ExportConfigurationDto res = ExportConfigurationDto.build(UserProvider.getCurrent().getUserReference());
+
+		res.setExportType(ExportType.CASE);
+
+		res.setProperties(
+			ImportExportUtils.getCaseExportProperties(caseFollowUpEnabled, UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS))
+				.stream()
+				.map(p -> p.getElement0())
+				.collect(Collectors.toSet()));
+		return res;
+	}
+
+	private void addCommonCasesOverviewToolbar() {
 		moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
 		moreButton.setId("more");
 		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
@@ -202,7 +281,13 @@ public class CasesView extends AbstractView {
 					CaseExportDto.class,
 					CaseExportType.CASE_SURVEILLANCE,
 					(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-						.getExportList(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, start, max, null, I18nProperties.getUserLanguage()),
+						.getExportList(
+							grid.getCriteria(),
+							CaseExportType.CASE_SURVEILLANCE,
+							start,
+							max,
+							detailedExportConfiguration,
+							I18nProperties.getUserLanguage()),
 					(propertyId, type) -> {
 						String caption = I18nProperties.findPrefixCaption(
 							propertyId,
@@ -219,7 +304,7 @@ public class CasesView extends AbstractView {
 						return caption;
 					},
 					createFileNameWithCurrentDate("sormas_cases_", ".csv"),
-					null);
+					detailedExportConfiguration);
 				addExportButton(
 					exportStreamResource,
 					exportPopupButton,
@@ -392,31 +477,7 @@ public class CasesView extends AbstractView {
 				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
-
-		Button defaultVewButton = ButtonHelper.createButton(Captions.caseDefaultView, null, ValoTheme.BUTTON_PRIMARY);
-		defaultVewButton.setWidth(100, Unit.PERCENTAGE);
-		defaultVewButton.setVisible(viewConfiguration.getViewType() == CasesViewType.DETAILED);
-		moreLayout.addComponent(defaultVewButton);
-
-		Button detailedViewButton = ButtonHelper.createButton(Captions.caseDetailedView, null, ValoTheme.BUTTON_PRIMARY);
-		detailedViewButton.setWidth(100, Unit.PERCENTAGE);
-		detailedViewButton.setVisible(viewConfiguration.getViewType() == CasesViewType.DEFAULT);
-		moreLayout.addComponent(detailedViewButton);
-
-		defaultVewButton.addClickListener(e -> {
-			changeViewType(CasesViewType.DEFAULT);
-			defaultVewButton.setVisible(false);
-			detailedViewButton.setVisible(true);
-		});
-		detailedViewButton.addClickListener(e -> {
-			changeViewType(CasesViewType.DETAILED);
-			defaultVewButton.setVisible(true);
-			detailedViewButton.setVisible(false);
-		});
-
 		addHeaderComponent(moreButton);
-
-		addComponent(gridLayout);
 	}
 
 	protected void changeViewType(CasesViewType type) {
@@ -428,7 +489,8 @@ public class CasesView extends AbstractView {
 		Button lineListingImportButton = ButtonHelper.createIconButton(captionKey, VaadinIcons.UPLOAD, e -> {
 			Window popupWindow = VaadinUiUtil.showPopupWindow(windowContentSupplier.get());
 			popupWindow.setCaption(I18nProperties.getString(windowHeadingKey));
-			popupWindow.addCloseListener(c -> grid.reload());
+			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+			popupWindow.addCloseListener(c -> caseGrid.reload());
 		}, ValoTheme.BUTTON_PRIMARY);
 		lineListingImportButton.setWidth(100, Unit.PERCENTAGE);
 		importLayout.addComponent(lineListingImportButton);
@@ -478,8 +540,9 @@ public class CasesView extends AbstractView {
 		btnEnterBulkEditMode.setVisible(false);
 		btnLeaveBulkEditMode.setVisible(true);
 		filterForm.disableSearchAndReportingUser();
-		grid.setEagerDataProvider();
-		grid.reload();
+		AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+		caseGrid.setEagerDataProvider();
+		caseGrid.reload();
 	}
 
 	public VerticalLayout createFilterBar() {
@@ -492,7 +555,11 @@ public class CasesView extends AbstractView {
 		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria, false)) {
 				filterForm.updateResetButtonState();
-				grid.reload();
+				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+					((CaseFollowUpGrid) grid).reload();
+				} else {
+					((AbstractCaseGrid<?>) grid).reload();
+				}
 			}
 		});
 		filterForm.addResetHandler(e -> {
@@ -501,7 +568,79 @@ public class CasesView extends AbstractView {
 		});
 		filterLayout.addComponent(filterForm);
 
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+		{
+			// Follow-up overview scrolling
+			if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
+				filterLayout.setWidth(100, Unit.PERCENTAGE);
+
+				HorizontalLayout scrollLayout = new HorizontalLayout();
+				scrollLayout.setMargin(false);
+
+				DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
+				toReferenceDate.setId("toReferenceDateField");
+				LocalDate fromReferenceLocal =
+					DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
+				DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
+				fromReferenceDate.setId("fromReferenceDateField");
+
+				Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.caseMinusDays), e -> {
+					followUpRangeInterval =
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+					buttonPreviousOrNextClick = true;
+					toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
+					fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				scrollLayout.addComponent(minusDaysButton);
+
+				fromReferenceDate.addValueChangeListener(e -> {
+					Date newFromDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+					applyingCriteria = true;
+					criteria.followUpUntilFrom(DateHelper.getStartOfDay(newFromDate));
+					applyingCriteria = false;
+					followUpRangeInterval = DateHelper.getDaysBetween(newFromDate, DateHelper8.toDate(toReferenceDate.getValue()));
+					reloadGrid();
+				});
+				scrollLayout.addComponent(fromReferenceDate);
+
+				toReferenceDate.addValueChangeListener(e -> {
+					followUpToDate = e.getValue() != null ? DateHelper8.toDate(e.getValue()) : new Date();
+					applyingCriteria = true;
+					criteria.reportDateTo(DateHelper.getEndOfDay(followUpToDate));
+					applyingCriteria = false;
+					if (!buttonPreviousOrNextClick) {
+						followUpRangeInterval = DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), followUpToDate);
+						reloadGrid();
+					}
+				});
+				scrollLayout.addComponent(toReferenceDate);
+
+				Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.casePlusDays), e -> {
+					followUpRangeInterval =
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+					buttonPreviousOrNextClick = true;
+					toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
+					fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				scrollLayout.addComponent(plusDaysButton);
+
+				actionButtonsLayout.addComponent(scrollLayout);
+
+			}
+		}
+		filterLayout.addComponent(actionButtonsLayout);
+		filterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		filterLayout.setExpandRatio(actionButtonsLayout, 1);
+
 		return filterLayout;
+	}
+
+	private void reloadGrid() {
+		((CaseFollowUpGrid) grid).setVisitColumns(followUpToDate, followUpRangeInterval, criteria);
+		((CaseFollowUpGrid) grid).reload();
+		updateStatusButtons();
+		buttonPreviousOrNextClick = false;
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
@@ -567,33 +706,36 @@ public class CasesView extends AbstractView {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
-			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.bulkEdit),
-						VaadinIcons.ELLIPSIS_H,
-						mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(grid.asMultiSelect().getSelectedItems())),
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.bulkDelete),
-						VaadinIcons.TRASH,
-						selectedItem -> ControllerProvider.getCaseController()
-							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.actionArchive),
-						VaadinIcons.ARCHIVE,
-						mi -> ControllerProvider.getCaseController()
-							.archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
-					new MenuBarHelper.MenuBarItem(
-						I18nProperties.getCaption(Captions.actionDearchive),
-						VaadinIcons.ARCHIVE,
-						mi -> ControllerProvider.getCaseController()
-							.dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
-						false));
+			if (viewConfiguration.getViewType().isCaseOverview()) {
+				AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+				// Bulk operation dropdown
+				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(
+						Captions.bulkActions,
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkEdit),
+							VaadinIcons.ELLIPSIS_H,
+							mi -> ControllerProvider.getCaseController().showBulkCaseDataEditComponent(caseGrid.asMultiSelect().getSelectedItems())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.bulkDelete),
+							VaadinIcons.TRASH,
+							selectedItem -> ControllerProvider.getCaseController()
+								.deleteAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchive),
+							VaadinIcons.ARCHIVE,
+							mi -> ControllerProvider.getCaseController()
+								.archiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria))),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchive),
+							VaadinIcons.ARCHIVE,
+							mi -> ControllerProvider.getCaseController()
+								.dearchiveAllSelectedItems(caseGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria)),
+							false));
 
-				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
-				actionButtonsLayout.addComponent(bulkOperationsDropdown);
+					bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
+					actionButtonsLayout.addComponent(bulkOperationsDropdown);
+				}
 			}
 		}
 		statusFilterLayout.addComponent(actionButtonsLayout);
@@ -612,7 +754,8 @@ public class CasesView extends AbstractView {
 		}
 
 		if (viewConfiguration.isInEagerMode()) {
-			grid.setEagerDataProvider();
+			AbstractCaseGrid<?> caseGrid = (AbstractCaseGrid<?>) this.grid;
+			caseGrid.setEagerDataProvider();
 		}
 
 		updateFilterComponents();

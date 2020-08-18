@@ -120,6 +120,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_community"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.community}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/contact_caseIdExternalSystem"
                     app:value="@={data.caseIdExternalSystem}"

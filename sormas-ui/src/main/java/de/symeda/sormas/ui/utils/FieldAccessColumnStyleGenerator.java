@@ -1,0 +1,105 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.utils;
+
+import java.util.function.Function;
+
+import com.vaadin.ui.StyleGenerator;
+
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.ui.UserProvider;
+
+public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
+
+	private static final long serialVersionUID = -8348150203879621498L;
+
+	public static <T extends WithJurisdiction<J>, J> FieldAccessColumnStyleGenerator<T> withCheckers(
+		Class<T> beanType,
+		String columnId,
+		JurisdictionChecker<J> jurisdictionChecker,
+		FieldAccessChecker... checkers) {
+
+		FieldAccessCheckers fieldAccessCheckers = FieldAccessCheckers.withCheckers(checkers);
+		UserDto currentUser = UserProvider.getCurrent().getUser();
+
+		return new FieldAccessColumnStyleGenerator<>((t) -> {
+			boolean inJurisdiction = callJurisdictionChecker(jurisdictionChecker, currentUser, t.getJurisdiction());
+
+			return fieldAccessCheckers.isEmbedded(beanType, columnId)
+				? fieldAccessCheckers.hasRights(inJurisdiction)
+				: fieldAccessCheckers.isAccessible(beanType, columnId, inJurisdiction);
+		});
+	}
+
+	private Function<T, Boolean> accessCheck;
+
+	public FieldAccessColumnStyleGenerator(Function<T, Boolean> accessCheck) {
+		this.accessCheck = accessCheck;
+	}
+
+	@Override
+	public String apply(T dto) {
+		if (!accessCheck.apply(dto)) {
+			return CssStyles.INACCESSIBLE_COLUMN;
+		}
+
+		return "";
+	}
+
+	public static <J> boolean callJurisdictionChecker(JurisdictionChecker<J> jurisdictionChecker, UserDto currentUser, J jurisdictionDto) {
+		return jurisdictionChecker
+			.isInJurisdiction(UserRole.getJurisdictionLevel(currentUser.getUserRoles()), createUserJurisdiction(currentUser), jurisdictionDto);
+	}
+
+	private static UserJurisdiction createUserJurisdiction(UserDto user) {
+
+		UserJurisdiction jurisdiction = new UserJurisdiction();
+		jurisdiction.setUuid(user.getUuid());
+
+		if (user.getRegion() != null) {
+			jurisdiction.setRegionUuid(user.getRegion().getUuid());
+		}
+		if (user.getDistrict() != null) {
+			jurisdiction.setDistrictUuid(user.getDistrict().getUuid());
+		}
+		if (user.getCommunity() != null) {
+			jurisdiction.setCommunityUuid(user.getCommunity().getUuid());
+		}
+		if (user.getHealthFacility() != null) {
+			jurisdiction.setHealthFacilityUuid(user.getHealthFacility().getUuid());
+		}
+		if (user.getPointOfEntry() != null) {
+			jurisdiction.setPointOfEntryUuid(user.getPointOfEntry().getUuid());
+		}
+
+		if (user.getLaboratory() != null) {
+			jurisdiction.setLabUuid(user.getLaboratory().getUuid());
+		}
+
+		return jurisdiction;
+	}
+
+	public interface JurisdictionChecker<J> {
+
+		boolean isInJurisdiction(JurisdictionLevel jurisdictionLevel, UserJurisdiction userJurisdiction, J jurisdiction);
+	}
+}

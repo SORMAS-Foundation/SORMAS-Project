@@ -47,24 +47,25 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleJurisdictionDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
@@ -83,6 +84,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJurisdictionChecker;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantService;
@@ -103,8 +105,9 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -151,13 +154,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
-	private PseudonymizationService pseudonymizationService;
+	private SampleJurisdictionChecker sampleJurisdictionChecker;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
-	private SampleJurisdictionChecker sampleJurisdictionChecker;
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -178,17 +181,20 @@ public class SampleFacadeEjb implements SampleFacade {
 			return Collections.emptyList();
 		}
 
-		return sampleService.getAllActiveSamplesAfter(date, user).stream().map(e -> convertToDto(e)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return sampleService.getAllActiveSamplesAfter(date, user).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<SampleDto> getByUuids(List<String> uuids) {
-		return sampleService.getByUuids(uuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return sampleService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
-		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -209,7 +215,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public SampleDto getSampleByUuid(String uuid) {
-		return convertToDto(sampleService.getByUuid(uuid));
+		return convertToDto(sampleService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -219,7 +225,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public SampleDto saveSample(SampleDto dto, boolean handleChanges) {
 
-		SampleDto existingSample = toDto(sampleService.getByUuid(dto.getUuid()));
+		Sample existingSample = sampleService.getByUuid(dto.getUuid());
+		SampleDto existingSampleDto = toDto(existingSample);
+
+		restorePseudonymizedDto(dto, existingSample, existingSampleDto);
+
 		Sample sample = fromDto(dto);
 
 		// Set defaults for testing requests
@@ -233,7 +243,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		sampleService.ensurePersisted(sample);
 
 		if (handleChanges) {
-			onSampleChanged(existingSample, sample);
+			onSampleChanged(existingSampleDto, sample);
 		}
 
 		return toDto(sample);
@@ -298,7 +308,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SPECIMEN_CONDITION),
-				joins.getLab().get(Facility.UUID),
 				joins.getLab().get(Facility.NAME),
 				joins.getReferredSample().get(Sample.UUID),
 				caze.get(Case.UUID),
@@ -317,11 +326,13 @@ public class SampleFacadeEjb implements SampleFacade {
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
 				joins.getCaseDistrict().get(Region.NAME),
 				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME)));
+				joins.getContactCaseDistrict().get(Region.NAME),
+				joins.getReportingUser().get(User.UUID),
+				joins.getLab().get(Facility.UUID)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
-		selections.add(districtSelect);
 		selections.add(joins.getEventDistrict().get(District.NAME));
+		selections.addAll(getEventJurisdictionSelections(joins));
 
 		cq.multiselect(selections);
 
@@ -399,19 +410,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
-//		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> {
-//			CaseReferenceDto associatedCase = s.getAssociatedCase();
-//			ContactReferenceDto associatedContact = s.getAssociatedContact();
-//			return isInJurisdiction(
-//				associatedCase != null ? s.getAssociatedCaseJurisdiction() : null,
-//				associatedContact != null ? s.getAssociatedContactJurisdiction() : null);
-//		}, (s, isInJurisdiction) -> {
-//			pseudonymizeEmbeddedObjects(
-//				s.getAssociatedCase(),
-//				s.getAssociatedCaseJurisdiction(),
-//				s.getAssociatedContact(),
-//				s.getAssociatedContactJurisdiction());
-//		});
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer
+			.pseudonymizeDtoCollection(
+				SampleIndexDto.class,
+				samples,
+				s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
+				null);
 
 		return samples;
 	}
@@ -427,12 +432,24 @@ public class SampleFacadeEjb implements SampleFacade {
 			joins.getCasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
+	private Collection<Selection<?>> getEventJurisdictionSelections(SampleJoins joins) {
+
+		return Arrays.asList(
+			joins.getEventReportingUser().get(User.UUID),
+			joins.getEventSurveillanceOfficer().get(User.UUID),
+			joins.getEventRegion().get(Region.UUID),
+			joins.getEventDistrict().get(District.UUID),
+			joins.getEventCommunity().get(User.UUID));
+	}
+
 	private Collection<Selection<?>> getContactJurisdictionSelections(SampleJoins joins) {
 
+		// eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid
 		return Arrays.asList(
 			joins.getContactReportingUser().get(User.UUID),
 			joins.getContactRegion().get(Region.UUID),
 			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCommunity().get(Community.UUID),
 			joins.getContactCaseReportingUser().get(User.UUID),
 			joins.getContactCaseRegion().get(Region.UUID),
 			joins.getContactCaseDistrict().get(District.UUID),
@@ -505,7 +522,6 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
 				sample.get(Sample.SAMPLE_PURPOSE),
 				sample.get(Sample.SAMPLE_SOURCE),
-				joins.getLab().get(Facility.UUID),
 				joins.getLab().get(Facility.NAME),
 				sample.get(Sample.LAB_DETAILS),
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
@@ -561,15 +577,19 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getContactRegion().get(Region.NAME),
 				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCommunity().get(Community.NAME),
 				joins.getContact().get(Contact.REPORT_DATE_TIME),
 				joins.getContact().get(Contact.LAST_CONTACT_DATE),
 				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
-				joins.getContact().get(Contact.CONTACT_STATUS)));
+				joins.getContact().get(Contact.CONTACT_STATUS),
+				joins.getReportingUser().get(User.UUID),
+				joins.getLab().get(Facility.UUID)));
 
 		cq.distinct(true);
 
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
+		selections.addAll(getEventJurisdictionSelections(joins));
 
 		cq.multiselect(selections);
 
@@ -591,78 +611,37 @@ public class SampleFacadeEjb implements SampleFacade {
 		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)), cb.desc(sample.get(Sample.ID)));
 
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 		for (SampleExportDto exportDto : resultList) {
-//			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), exportDto.getAssociatedContactJurisdiction());
-//
-//			if (exportDto.getAssociatedCase() != null) {
-//				pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
-//			}
-//
-//			if (exportDto.getAssociatedContact() != null) {
-//				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
-//			}
-//
-//			pseudonymizationService
-//				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
-
 			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
 			int count = 0;
 			for (PathogenTest pathogenTest : pathogenTests) {
+				String lab = pathogenTest.getLab() != null
+					? FacilityHelper
+						.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails())
+					: null;
+				SampleExportDto.SampleExportPathogenTest sampleExportPathogenTest = new SampleExportDto.SampleExportPathogenTest(
+					pathogenTest.getTestType(),
+					pathogenTest.getTestTypeText(),
+					DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()),
+					pathogenTest.getTestDateTime(),
+					lab,
+					pathogenTest.getTestResult(),
+					pathogenTest.getTestResultVerified());
+
 				switch (++count) {
 				case 1:
-					exportDto.setPathogenTestType1(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto
-						.setPathogenTestDisease1(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime1(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto.setPathogenTestLab1(
-							FacilityHelper
-								.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult1(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified1(pathogenTest.getTestResultVerified());
+					exportDto.setPathogenTest1(sampleExportPathogenTest);
 					break;
 				case 2:
-					exportDto.setPathogenTestType2(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto
-						.setPathogenTestDisease2(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime2(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto.setPathogenTestLab2(
-							FacilityHelper
-								.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult2(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified2(pathogenTest.getTestResultVerified());
+					exportDto.setPathogenTest2(sampleExportPathogenTest);
 					break;
 				case 3:
-					exportDto.setPathogenTestType3(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()));
-					exportDto
-						.setPathogenTestDisease3(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()));
-					exportDto.setPathogenTestDateTime3(pathogenTest.getTestDateTime());
-					if (pathogenTest.getLab() != null) {
-						exportDto.setPathogenTestLab3(
-							FacilityHelper
-								.buildFacilityString(pathogenTest.getLab().getUuid(), pathogenTest.getLab().getName(), pathogenTest.getLabDetails()));
-					}
-					exportDto.setPathogenTestResult3(pathogenTest.getTestResult());
-					exportDto.setPathogenTestVerified3(pathogenTest.getTestResultVerified());
+					exportDto.setPathogenTest3(sampleExportPathogenTest);
 					break;
 				default:
-					StringBuilder sb = new StringBuilder();
-					if (!exportDto.getOtherPathogenTestsDetails().isEmpty()) {
-						sb.append(", ");
-					}
-					sb.append(DateHelper.formatDateForExport(pathogenTest.getTestDateTime()))
-						.append(" (")
-						.append(PathogenTestType.toString(pathogenTest.getTestType(), pathogenTest.getTestTypeText()))
-						.append(", ")
-						.append(DiseaseHelper.toString(pathogenTest.getTestedDisease(), pathogenTest.getTestedDiseaseDetails()))
-						.append(", ")
-						.append(pathogenTest.getTestResult())
-						.append(")");
-					exportDto.setOtherPathogenTestsDetails(exportDto.getOtherPathogenTestsDetails() + sb.toString());
+					exportDto.addOtherPathogenTest(sampleExportPathogenTest);
 					break;
 				}
 			}
@@ -676,6 +655,15 @@ public class SampleFacadeEjb implements SampleFacade {
 			} else {
 				exportDto.setOtherAdditionalTestsDetails(I18nProperties.getString(Strings.no));
 			}
+
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+			pseudonymizer.pseudonymizeDto(SampleExportDto.class, exportDto, isInJurisdiction, s -> {
+				pseudonymizer.pseudonymizeDtoCollection(
+					SampleExportDto.SampleExportPathogenTest.class,
+					exportDto.getOtherPathogenTests(),
+					t -> isInJurisdiction,
+					null);
+			});
 		}
 
 		return resultList;
@@ -791,63 +779,80 @@ public class SampleFacadeEjb implements SampleFacade {
 		return target;
 	}
 
-	private SampleDto convertToDto(Sample source) {
+	private SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
 
 		SampleDto dto = toDto(source);
-
-//		if (dto != null) {
-//
-//			CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
-//			ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
-//
-//			boolean isInJurisdiction = isInJurisdiction(
-//				source.getAssociatedCase() != null ? caseJurisdiction : null,
-//				source.getAssociatedContact() != null ? contactJurisdiction : null);
-//
-//			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
-//				pseudonymizeEmbeddedObjects(s.getAssociatedCase(), caseJurisdiction, s.getAssociatedContact(), contactJurisdiction);
-//			});
-//
-//		}
+		pseudonymizeDto(source, dto, pseudonymizer);
 
 		return dto;
 	}
 
-//	private void pseudonymizeEmbeddedObjects(
-//		CaseReferenceDto sampleCase,
-//		CaseJurisdictionDto caseJurisdiction,
-//		ContactReferenceDto sampleContact,
-//		ContactJurisdictionDto contactJurisdiction) {
-//
-//		if (sampleCase != null) {
-//			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, sampleCase, isInJurisdiction(caseJurisdiction, null), null);
-//		}
-//
-//		if (sampleContact != null) {
-//			pseudonymizationService.pseudonymizeDto(
-//				ContactReferenceDto.PersonName.class,
-//				sampleContact.getContactName(),
-//				isInJurisdiction(null, contactJurisdiction),
-//				null);
-//			pseudonymizationService.pseudonymizeDto(
-//				ContactReferenceDto.PersonName.class,
-//				sampleContact.getCaseName(),
-//				isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
-//				null);
-//		}
-//	}
+	private void pseudonymizeDto(Sample source, SampleDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			SampleJurisdictionDto sampleJurisdiction = JurisdictionHelper.createSampleJurisdictionDto(source);
+			boolean isInJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction);
+			User currentUser = userService.getCurrentUser();
 
-	private boolean isInJurisdiction(CaseJurisdictionDto caseJurisdiction, ContactJurisdictionDto contactJurisdiction) {
+			pseudonymizer.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, s::setReportingUser);
+				pseudonymizeAssociatedObjects(
+					sampleJurisdiction,
+					s.getAssociatedCase(),
+					s.getAssociatedContact(),
+					s.getAssociatedEventParticipant(),
+					pseudonymizer);
+			});
 
-		if (caseJurisdiction != null) {
-			return caseJurisdictionChecker.isInJurisdiction(caseJurisdiction);
+		}
+	}
+
+	private void restorePseudonymizedDto(SampleDto dto, Sample existingSample, SampleDto existingSampleDto) {
+		if (existingSampleDto != null) {
+			boolean inJurisdiction = sampleJurisdictionChecker.isInJurisdictionOrOwned(existingSample);
+			User currentUser = userService.getCurrentUser();
+
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+
+			pseudonymizer.restoreUser(existingSample.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restorePseudonymizedValues(SampleDto.class, dto, existingSampleDto, inJurisdiction);
+		}
+	}
+
+	private void pseudonymizeAssociatedObjects(
+		SampleJurisdictionDto sampleJurisdiction,
+		CaseReferenceDto sampleCase,
+		ContactReferenceDto sampleContact,
+		EventParticipantReferenceDto sampleEventParticipant,
+		Pseudonymizer pseudonymizer) {
+
+		if (sampleCase != null) {
+			pseudonymizer.pseudonymizeDto(
+				CaseReferenceDto.class,
+				sampleCase,
+				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getCaseJurisdiction()),
+				null);
 		}
 
-		if (contactJurisdiction != null) {
-			return contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
+		if (sampleContact != null) {
+			pseudonymizer.pseudonymizeDto(
+				ContactReferenceDto.PersonName.class,
+				sampleContact.getContactName(),
+				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
+				null);
+			pseudonymizer.pseudonymizeDto(
+				ContactReferenceDto.PersonName.class,
+				sampleContact.getCaseName(),
+				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+				null);
 		}
 
-		return true;
+		if (sampleEventParticipant != null) {
+			pseudonymizer.pseudonymizeDto(
+				EventParticipantReferenceDto.class,
+				sampleEventParticipant,
+				eventJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getEventJurisdiction()),
+				null);
+		}
 	}
 
 	public static SampleDto toDto(Sample source) {
@@ -983,6 +988,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 
 		Sample sample = sampleService.getByUuid(sampleUuid);
-		return sampleJurisdictionChecker.isInJurisdiction(sample);
+		return sampleJurisdictionChecker.isInJurisdictionOrOwned(sample);
 	}
 }

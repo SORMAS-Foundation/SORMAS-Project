@@ -35,6 +35,8 @@ import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
+import static de.symeda.sormas.api.user.UserRole.REST_USER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;

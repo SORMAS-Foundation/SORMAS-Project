@@ -93,7 +93,7 @@ public class ContactVisitsView extends AbstractContactView {
 				}));
 
 			topLayout.addComponent(bulkOperationsDropdown);
-			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
+			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
 		}
 
@@ -101,7 +101,10 @@ public class ContactVisitsView extends AbstractContactView {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 			{
 				topLayout.addComponent(exportButton);
-				topLayout.setComponentAlignment(exportButton, Alignment.TOP_RIGHT);
+				topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
+				if (topLayout.getComponentCount() == 1) {
+					topLayout.setExpandRatio(exportButton, 1);
+				}
 			}
 
 			StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(

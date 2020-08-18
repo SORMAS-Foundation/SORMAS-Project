@@ -27,16 +27,20 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.FragmentEventEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -54,7 +58,15 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 	private boolean isMultiDayEvent;
 
 	public static EventEditFragment newInstance(Event activityRootData) {
-		EventEditFragment fragment = newInstance(EventEditFragment.class, null, activityRootData);
+		EventEditFragment fragment = newInstanceWithFieldCheckers(
+			EventEditFragment.class,
+			null,
+			activityRootData,
+			new FieldVisibilityCheckers(),
+			AppFieldAccessCheckers.withCheckers(
+				EventEditAuthorization.isEventEditAllowed(activityRootData),
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		fragment.isMultiDayEvent = activityRootData.getEndDate() != null;
 
@@ -139,6 +151,8 @@ public class EventEditFragment extends BaseEditFragment<FragmentEventEditLayoutB
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
 		contentBinding.eventEndDate.initializeDateField(getFragmentManager());
+
+		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class TaskJurisdictionHelper {
 
-	public static boolean isInJurisdiction(
+	public static boolean isInJurisdictionOrOwned(
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		TaskJurisdictionDto taskJurisdiction) {
@@ -20,15 +20,15 @@ public class TaskJurisdictionHelper {
 		}
 
 		if (taskJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, taskJurisdiction.getCaseJurisdiction());
+			return CaseJurisdictionHelper.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, taskJurisdiction.getCaseJurisdiction());
 		}
 
 		if (taskJurisdiction.getContactJurisdiction() != null) {
-			return ContactJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, taskJurisdiction.getContactJurisdiction());
+			return ContactJurisdictionHelper.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, taskJurisdiction.getContactJurisdiction());
 		}
 
 		if (taskJurisdiction.getEventJurisdiction() != null) {
-			return EventJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, taskJurisdiction.getEventJurisdiction());
+			return EventJurisdictionHelper.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, taskJurisdiction.getEventJurisdiction());
 		}
 
 		switch (jurisdictionLevel) {

@@ -34,7 +34,7 @@ public class MaternalHistoryView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<MaternalHistoryForm> maternalHistoryComponent =
-			ControllerProvider.getCaseController().getMaternalHistoryComponent(getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getMaternalHistoryComponent(getCaseRef().getUuid(), getViewMode(), isCaseEditAllowed());
 		setSubComponent(maternalHistoryComponent);
 
 		setCaseEditPermission(maternalHistoryComponent);

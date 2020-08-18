@@ -95,6 +95,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -149,6 +151,8 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static EventReferenceDto toReferenceDto(Event ado) {

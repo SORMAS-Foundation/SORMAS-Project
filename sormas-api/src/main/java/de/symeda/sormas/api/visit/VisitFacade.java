@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -56,4 +57,6 @@ public interface VisitFacade {
 		ExportConfigurationDto exportConfiguration);
 
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
+
+	VisitDto getLastVisitByCase(CaseReferenceDto caseRef);
 }

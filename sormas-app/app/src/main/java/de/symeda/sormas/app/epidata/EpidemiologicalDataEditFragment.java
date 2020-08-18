@@ -27,7 +27,10 @@ import androidx.databinding.ObservableArrayList;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.epidata.AnimalCondition;
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -37,6 +40,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
@@ -51,11 +55,14 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentEditEpidLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.isEditAllowed;
 
 public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, AbstractDomainObject> {
 
@@ -79,7 +86,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			null);
+			AppFieldAccessCheckers.withCheckers(isEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods
@@ -304,12 +311,25 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 		contentBinding.setData(record);
 		contentBinding.setWaterSourceClass(WaterSource.class);
 		contentBinding.setVaccinationClass(Vaccination.class);
+
 		contentBinding.setGatheringList(getGatherings());
-		contentBinding.setTravelList(getTravels());
-		contentBinding.setBurialList(getBurials());
 		contentBinding.setGatheringItemClickCallback(onGatheringItemClickListener);
+		contentBinding.setBurialListBindCallback(v -> {
+			setFieldAccesses(EpiDataBurialDto.class, v);
+		});
+
+		contentBinding.setTravelList(getTravels());
 		contentBinding.setTravelItemClickCallback(onTravelItemClickListener);
+		contentBinding.setGatheringListBindCallback(v -> {
+			setFieldAccesses(EpiDataGatheringDto.class, v);
+		});
+
+		contentBinding.setBurialList(getBurials());
 		contentBinding.setBurialItemClickCallback(onBurialItemClickListener);
+		contentBinding.setTravelListBindCallback(v -> {
+			setFieldAccesses(EpiDataTravelDto.class, v);
+		});
+
 
 		contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
 
@@ -425,5 +445,11 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 	@Override
 	public boolean isShowNewAction() {
 		return false;
+	}
+
+	private void setFieldAccesses(Class<?> dtoClass, View view) {
+		FieldVisibilityAndAccessHelper
+				.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
+
 	}
 }

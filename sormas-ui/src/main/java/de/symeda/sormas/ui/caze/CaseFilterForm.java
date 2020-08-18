@@ -27,6 +27,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,7 +60,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION,
 			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
-			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO,
+			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO,
 			CaseCriteria.BIRTHDATE_YYYY,
 			CaseCriteria.BIRTHDATE_MM,
 			CaseCriteria.BIRTHDATE_DD)			
@@ -81,6 +82,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE,
 			CaseDataDto.CASE_CLASSIFICATION,
+			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE };
 	}
 
@@ -105,6 +107,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			caseClassification.removeItem(CaseClassification.CONFIRMED_NO_SYMPTOMS);
 			caseClassification.removeItem(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS);
 		}
+		addFields(FieldConfiguration.pixelSized(CaseDataDto.FOLLOW_UP_STATUS, 140));
 
 		TextField searchField = addField(
 			FieldConfiguration
@@ -141,6 +144,16 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
 		if (user.getRegion() != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
+			Field<?> followUpUntilTo = addField(
+					moreFiltersContainer,
+					FieldConfiguration.withCaptionAndPixelSized(
+							CaseCriteria.FOLLOW_UP_UNTIL_TO,
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
+							200));
+			followUpUntilTo.removeAllValidators();
 		}
 
 		addField(

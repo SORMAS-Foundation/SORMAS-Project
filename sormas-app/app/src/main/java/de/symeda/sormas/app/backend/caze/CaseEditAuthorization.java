@@ -10,7 +10,7 @@ public class CaseEditAuthorization {
 
 	public static Boolean isCaseEditAllowed(Case caze) {
 		User user = ConfigProvider.getUser();
-		return CaseJurisdictionHelper.isInJurisdiction(
+		return CaseJurisdictionHelper.isInJurisdictionOrOwned(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
 			JurisdictionHelper.createCaseJurisdictionDto(caze));

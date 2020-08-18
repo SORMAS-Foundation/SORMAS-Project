@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.Disease;
-
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import de.symeda.sormas.api.Disease;
 
 public final class CssStyles {
 
@@ -267,6 +268,10 @@ public final class CssStyles {
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
+
+	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
+	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
+	public static final String INACCESSIBLE_LABEL = "inaccessible-label";
 
 	@Deprecated
 	public static final String CALLOUT = "callout";
