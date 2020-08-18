@@ -42,6 +42,8 @@ public interface ContactFacade {
 
 	ContactDto saveContact(ContactDto dto);
 
+	ContactDto saveContact(ContactDto dto, boolean handleChanges);
+
 	ContactReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
