@@ -24,14 +24,16 @@ public class CampaignDashboardDataProvider {
 		new HashMap<CampaignDiagramDefinitionDto, List<CampaignDiagramDataDto>>();
 
 	public void refreshData() {
-
+		campaignFormDataMap.clear();
 		List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
 		campaignDiagramDefinitions.forEach(campaignDiagramDefinitionDto -> {
 			List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
 				.getDiagramData(
 					campaignDiagramDefinitionDto.getCampaignDiagramSeriesList(),
 					new CampaignDiagramCriteria(campaign, area, region, district));
-			campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
+			if (diagramData != null && !diagramData.isEmpty()) {
+				campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
+			}
 		});
 	}
 

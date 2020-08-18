@@ -309,6 +309,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'": "";
 			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
 			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
+			final String jurisdictionGrouping =
+					district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
+					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "";
 			Query seriesDataQuery = em.createNativeQuery(
 					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
@@ -328,6 +331,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ campaignFilter
 							+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
+							+ jurisdictionGrouping
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME);
 			//@formatter:on
 

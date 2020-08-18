@@ -43,7 +43,9 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		campaignDashboardDiagramComponents
 			.forEach(campaignDashboardDiagramComponents -> dashboardLayout.removeComponent(campaignDashboardDiagramComponents));
-		dataProvider.refreshData();
+		campaignDashboardDiagramComponents.clear();
+		dataProvider.
+				refreshData();
 		dataProvider.getCampaignFormDataMap().forEach((campaignDiagramDefinitionDto, diagramData) -> {
 			CampaignDashboardDiagramComponent diagramComponent = new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, diagramData);
 			campaignDashboardDiagramComponents.add(diagramComponent);
