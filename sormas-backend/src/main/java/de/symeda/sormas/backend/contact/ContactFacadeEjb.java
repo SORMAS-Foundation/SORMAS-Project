@@ -249,6 +249,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		return saveContact(dto, true);
 	}
 
+	@Override
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);

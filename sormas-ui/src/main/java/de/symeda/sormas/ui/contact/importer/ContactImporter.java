@@ -209,7 +209,7 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
-					FacadeProvider.getContactFacade().saveContact(newContact);
+					FacadeProvider.getContactFacade().saveContact(newContact, false);
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;
