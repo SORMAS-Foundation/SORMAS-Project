@@ -25,11 +25,14 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -39,6 +42,9 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
+
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
@@ -98,6 +104,16 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		final ContactReferenceDto reference;
 		if (FacadeProvider.getContactFacade().exists(uuid)) {
 			reference = FacadeProvider.getContactFacade().getReferenceByUuid(uuid);
+		} else if (FacadeProvider.getPersonFacade().isValidPersonUuid(uuid)) {
+			PersonReferenceDto person = FacadeProvider.getPersonFacade().getReferenceByUuid(uuid);
+			ContactCriteria criteria = new ContactCriteria();
+			criteria.person(person);
+			List<ContactIndexDto> personContacts = FacadeProvider.getContactFacade().getIndexList(criteria, null, null, Collections.emptyList());
+			if (personContacts != null) {
+				reference = FacadeProvider.getContactFacade().getReferenceByUuid(personContacts.get(0).getUuid());
+			} else {
+				reference = null;
+			}
 		} else {
 			reference = null;
 		}
