@@ -1,7 +1,9 @@
-# How to create a new certificate?
+# How to create and add certificates?
 
-This guide explains how to create a new self-signed certificate, used for SORMAS to SORMAS communication.
-   
+This guide explains how to:
+ * create a new self-signed certificate, used for SORMAS to SORMAS communication
+ * add certificates of other SORMAS instances to the local truststore
+
 ### Using the certificate generation script
 
 1. Run ``bash ./generate-cert.sh``
@@ -39,3 +41,30 @@ This guide explains how to create a new self-signed certificate, used for SORMAS
 
 ### Adding a new certificate to the Truststore
 
+To enable other SORMAS instances to request data from this instance, their certificate must be added to the 
+truststore of this instance. After obtaining their certificate file, which should be a ``.crt`` file, please
+follow the next steps:
+1. Run ``bash ./import-to-truststore.sh``
+2. If ``sormas2sormas.truststore.p12`` is not found in the folder ``/sormas2sormas``, it will be created. 
+    The truststore password may be provided in an environment variable ``SORMAS_S2S_TRUSTSTORE_PASS`` (recommended), 
+    or manually as the script executes.
+    * If the ``SORMAS_PROPERTIES`` environment variable is available, the relevant properties will be 
+      automatically set by the script.
+    * Else, the properties which need to be added will be displayed in the console after the script finishes executing.
+    * Please note these properties and add them to the ``sormas.properties`` file. This should be located in the 
+        ``/domains/sormas`` folder.
+     * Example output:
+     ```
+     sormas.properties file was not found. 
+     Please add the following properties to the sormas.properties file:
+     sormas2sormas.truststoreName=name
+     sormas2sormas.truststorePass=pass
+     ```
+3. If the environment variable ``SORMAS_S2S_TRUSTSTORE_PASS`` is not available, you will be prompted to 
+   provide the password for the truststore.
+4. You will be prompted to provide the file name of the certificate to be imported. This certificate should be located
+in the ``/sormas2sormas`` folder.
+5. You will be prompted to provide a name for the certificate. This name is not relevant for SORMAS, it should
+be a friendly name to help you identify the certificate among others. E.g.: *GA Braunschweig Zertifikat*
+6. After providing the requested data, the certificate will be imported to the truststore.
+7. You may now delete the ``.crt`` file.
