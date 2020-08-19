@@ -29,13 +29,23 @@ else
 	LINUX=false
 fi
 
-# DIRECTORIES
 if [[ ${LINUX} = true ]]; then
 	ROOT_PREFIX=
 else
 	ROOT_PREFIX=/c
 fi
-SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas2sormas
+
+if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+  DEFAULT_SORMAS2SORMAS_DIR="${ROOT_PREFIX}/opt/sormas2sormas"
+  if [[ -d "${DEFAULT_SORMAS2SORMAS_DIR}" ]]; then
+    SORMAS2SORMAS_DIR="${DEFAULT_SORMAS2SORMAS_DIR}"
+  else
+    while [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; do
+		  read -r -p "Please specify a valid sormas2sormas directory: " SORMAS2SORMAS_DIR
+	  done
+	  export SORMAS2SORMAS_DIR
+  fi
+fi
 
 while [[ -z "${SORMAS_S2S_CERT_PASS}" ]]; do
   read -sp "Please provide a password for the certificate: " SORMAS_S2S_CERT_PASS
@@ -80,7 +90,7 @@ if [[ -z ${SORMAS_PROPERTIES} ]]; then
 else
   {
   echo;
-  echo "# Key data for the generated SORMAS 2 SORMAS certificates";
+  echo "# Key data for the generated SORMAS to SORMAS certificate";
   echo "sormas2sormas.keyAlias=${CRT_NAME}";
   echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}";
   } >> "${SORMAS_PROPERTIES}"

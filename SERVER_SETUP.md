@@ -242,8 +242,6 @@ To be able to communicate with other SORMAS instances, there are some additional
 up the certificate and the truststore. Please see the [related guide](GUIDE_CREATE_CERTIFICATE.md) for detailed instructions regarding
 SORMAS to SORMAS setup.
 <br/>
-*Note*: If the SORMAS installation has been customized, the install paths for the scripts ``generate-cert.sh`` and ``import-to-truststore.sh`` 
-will have to be adjusted accordingly with a text editor. 
 
 ## Troubleshooting
 

@@ -1,16 +1,10 @@
 # How to create a new certificate?
 
-This guide explains how to create a new self signed certifcate, used for SORMAS to SORMAS communication or 
-for accessing the SurvNet interface.
-
-**Important:** This is the first version of this guide. Please get in contact if anything is not clear or 
-you have suggestions on how to improve the guide, the source code or the underlying architecture.
+This guide explains how to create a new self-signed certificate, used for SORMAS to SORMAS communication.
    
 ### Using the certificate generation script
 
-1. **Important**: If you customized the install paths during server installation, please open ``generate-cert.sh`` in a text editor and 
-   set the ``ROOT_PREFIX`` variable to the same value which was used during the installation. <br/>
-   Run ``bash ./generate-cert.sh``
+1. Run ``bash ./generate-cert.sh``
 2. For the generation of the certificate, the following data is needed: a password, a *Common Name* (CN) 
     and an *Organization* (O). These may be set in environment variables (recommended), or provided 
     manually as the script executes.
@@ -32,8 +26,7 @@ you have suggestions on how to improve the guide, the source code or the underly
    in the next section.
 5. If the ``SORMAS_PROPERTIES`` environment variable is available, the relevant properties will be 
     automatically set by the script.
-    * If the ``SORMAS_PROPERTIES`` environment variable is not available, the properties which need to be added will be 
-    displayed in the console after the script finishes executing.
+    * Else, the properties which need to be added will be displayed in the console after the script finishes executing.
     * Please note these properties and add them to the ``sormas.properties`` file. This should be located in the 
     ``/domains/sormas`` folder.
     * Example output:
