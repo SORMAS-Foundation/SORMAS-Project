@@ -76,6 +76,13 @@ public final class CaseLogic {
 		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
 	}
 
+	/**
+	 * Should be called if the facility of a case is changed
+	 * 
+	 * @param caze
+	 * @param oldCase
+	 * @param isTransfer
+	 */
 	public static void handleHospitalization(CaseDataDto caze, CaseDataDto oldCase, boolean isTransfer) {
 
 		if (isTransfer && FacilityType.HOSPITAL.equals(oldCase.getFacilityType())) {
@@ -84,7 +91,7 @@ public final class CaseLogic {
 			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
 		}
 
-		if (isTransfer || !(FacilityType.HOSPITAL.equals(oldCase.getFacilityType()) && FacilityType.HOSPITAL.equals(caze.getFacilityType()))) {
+		if (isTransfer || !FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			// set everything but previous hospitalization to null
 			try {
 				PropertyDescriptor[] pds = Introspector.getBeanInfo(HospitalizationDto.class, EntityDto.class).getPropertyDescriptors();
@@ -107,7 +114,7 @@ public final class CaseLogic {
 		if (isTransfer && FacilityType.HOSPITAL.equals(caze.getFacilityType()))
 
 		{
-		caze.getHospitalization().setAdmissionDate(new Date());
-	}
+			caze.getHospitalization().setAdmissionDate(new Date());
+		}
 	}
 }

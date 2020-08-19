@@ -305,7 +305,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateFacilityLaboratoryImportTemplateFile() throws IOException {
+	public void generateFacilityImportTemplateFile() throws IOException {
 		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
 	}
 

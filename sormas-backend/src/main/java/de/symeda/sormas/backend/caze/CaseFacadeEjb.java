@@ -1199,12 +1199,6 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public CaseDataDto saveCase(CaseDataDto dto, boolean handleChanges) throws ValidationRuntimeException {
 
-		if (dto.getHealthFacility() != null
-			&& dto.getFacilityType() == null
-			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getHealthFacility().getUuid())) {
-			throw new IllegalArgumentException("The facility type of cases assigned to a facility other than 'none facility' must not be null.");
-		}
-
 		Case caze = caseService.getByUuid(dto.getUuid());
 		CaseDataDto existingCaseDto = handleChanges ? toDto(caze) : null;
 

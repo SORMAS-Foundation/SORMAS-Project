@@ -608,7 +608,7 @@ public class StartupShutdownService {
 			logger.error("Could not create community import template .csv file.");
 		}
 		try {
-			importFacade.generateFacilityLaboratoryImportTemplateFile();
+			importFacade.generateFacilityImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}

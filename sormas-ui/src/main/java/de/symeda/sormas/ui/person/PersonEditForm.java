@@ -50,6 +50,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -99,12 +100,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox causeOfDeathField;
 	private ComboBox causeOfDeathDiseaseField;
 	private TextField causeOfDeathDetailsField;
-//	private ComboBox occupationFacilityType;
 	private ComboBox occupationFacility;
 	private TextField occupationFacilityDetails;
 	private final ViewMode viewMode;
 	private ComboBox birthDateDay;
-//	private ComboBox placeOfBirthFacilityType;
 	private ComboBox cbPlaceOfBirthFacility;
 
 	//@formatter:off
@@ -253,6 +252,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
 		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
+		FieldHelper.removeItems(placeOfBirthFacilityType);
+		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
 		TextField tfPlaceOfBirthFacilityDetails = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_DETAILS, TextField.class);
@@ -270,6 +271,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		facilityCommunity.setImmediate(true);
 		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
+		FieldHelper.removeItems(occupationFacilityType);
+		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
 		occupationFacility.setNullSelectionAllowed(true);
@@ -792,18 +795,4 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			burialPlaceDesc.setValue(getValue().getAddress().toString());
 		}
 	}
-
-//	@Override
-//	public void setValue(PersonDto person) throws ReadOnlyException, Converter.ConversionException {
-//		if (person.getOccupationFacility() != null) {
-//			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getOccupationFacility().getUuid());
-//			occupationFacilityType.setValue(facility.getType());
-//		}
-//		if (person.getPlaceOfBirthFacility() != null) {
-//			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(person.getPlaceOfBirthFacility().getUuid());
-//			placeOfBirthFacilityType.setValue(facility.getType());
-//		}
-//		super.setValue(person);
-//		placeOfBirthFacilityType.setVisible(cbPlaceOfBirthFacility.isVisible());
-//	}
 }

@@ -22,19 +22,16 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum FacilityTypeGroup {
 
-	ACCOMMODATION(),
-	CARE_FACILITY(),
-	CATERING_OUTLET(),
-	EDUCATIONAL_FACILITY(),
-	LEISURE_FACILITY(),
-	MEDICAL_FACILITY(),
-	WORKING_PLACE(),
-	RESIDENCE();
+	ACCOMMODATION,
+	CARE_FACILITY,
+	CATERING_OUTLET,
+	EDUCATIONAL_FACILITY,
+	LEISURE_FACILITY,
+	MEDICAL_FACILITY,
+	WORKING_PLACE,
+	RESIDENCE;
 
 	private static List<FacilityTypeGroup> accomodationGroups = null;
-
-	FacilityTypeGroup() {
-	}
 
 	public static List<FacilityTypeGroup> getAccomodationGroups() {
 		if (accomodationGroups == null) {

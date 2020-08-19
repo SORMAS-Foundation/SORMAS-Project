@@ -123,10 +123,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialPlaceOfBirthFacilities =
 			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
-		List<FacilityType> typeList = FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY);
-		List<Item> occupationFacilityTypeList = DataUtils.toItems(typeList, true);
-		typeList.remove(FacilityType.LABORATORY);
-		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(typeList, true);
+		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
+		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 
 		InfrastructureHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
