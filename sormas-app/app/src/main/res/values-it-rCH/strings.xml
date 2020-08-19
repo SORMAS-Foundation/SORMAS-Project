@@ -156,6 +156,7 @@
     <string name="caption_event_participants">Persone coinvolte</string>
     <string name="caption_event_tasks">Attività Evento</string>
     <string name="caption_executed_by">Eseguito da</string>
+    <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Decessi</string>
     <string name="caption_first_name">Nome</string>
     <string name="caption_sex">Sesso</string>
@@ -575,4 +576,6 @@
     <string name="no_camera_permission">Non hai il permesso di accedere alla fotocamera</string>
     <string name="permission_camera_rationale">L\'accesso alla fotocamera è necessario per la rilevazione</string>
     <string name="scan_field_sample_id">Scansiona id campione di campo</string>
+    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type">Facility type</string>
 </resources>
