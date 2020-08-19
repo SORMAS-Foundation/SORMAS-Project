@@ -33,11 +33,19 @@ fi
 if [[ ${LINUX} = true ]]; then
 	ROOT_PREFIX=
 else
-#	ROOT_PREFIX=/c
-	ROOT_PREFIX=/d/Software/sormas
+	ROOT_PREFIX=/c
 fi
-#SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas2sormas
-SORMAS2SORMAS_DIR=${ROOT_PREFIX}/sormas2sormas
+if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+  DEFAULT_SORMAS2SORMAS_DIR="${ROOT_PREFIX}/opt/sormas2sormas"
+  if [[ -d "${DEFAULT_SORMAS2SORMAS_DIR}" ]]; then
+    SORMAS2SORMAS_DIR="${DEFAULT_SORMAS2SORMAS_DIR}"
+  else
+    while [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; do
+		  read -r -p "Please specify a valid sormas2sormas directory: " SORMAS2SORMAS_DIR
+	  done
+	  export SORMAS2SORMAS_DIR
+  fi
+fi
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
@@ -59,14 +67,10 @@ while [[ -z "${CRT_FILE_NAME}" ]] || [ ! -f "${CRT_FILE}" ]; do
   read -p "Please provide the file name of the certificate to import. It should be located inside the /sormas2sormas folder: " CRT_FILE_NAME
 done
 
-while [[ -z "${CERT_NAME}" ]]; do
-  read -p "Please provide a name for the certificate: " CERT_NAME
-done
-
 # import crt
 echo "Importing certificate into truststore..."
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
-  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -name "${CERT_NAME}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}"
+  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}"
   #update properties
   if [[ -z ${SORMAS_PROPERTIES} ]]; then
 	  echo "sormas.properties file was not found."
@@ -88,9 +92,12 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
     } >> "${SORMAS_PROPERTIES}"
 fi
 else
+  # export existing certificates to temporary file
   TEMP_FILE=${SORMAS2SORMAS_DIR}/tempcert.pem
   openssl pkcs12 -in "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -out ${TEMP_FILE}
-  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -name "${CERT_NAME}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}" -certfile ${TEMP_FILE}
+
+  # create new truststore with the new certificate and the certificates from the temporary file
+  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}" -certfile ${TEMP_FILE}
   rm ${TEMP_FILE}
 fi
 

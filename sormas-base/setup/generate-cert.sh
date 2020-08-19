@@ -70,36 +70,39 @@ echo "The certificate will be generated with the following subject:"
 echo "CN=${SORMAS_S2S_CERT_CN},OU=SORMAS,O=${SORMAS_S2S_CERT_ORG}"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 
-PEM_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
-P12_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
-CRT_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
+PEM_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
+P12_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
+CRT_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
 
 # generate private key and self signed certificate
-openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_NAME}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_NAME}"
+openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_FILE}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_FILE}"
 
 # add to encrypted keystore
-openssl pkcs12 -export -inkey "${PEM_NAME}" -out "${P12_NAME}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -in "${CRT_NAME}"
+openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -name "${SORMAS_S2S_CERT_CN}" -in "${CRT_FILE}"
 
-rm "${PEM_NAME}"
+rm "${PEM_FILE}"
 
 #update properties
 if [[ -z ${SORMAS_PROPERTIES} ]]; then
 	echo "sormas.properties file was not found."
   echo "Please add the following properties to the sormas.properties file:"
-  echo "sormas2sormas.keyAlias=${CRT_NAME}"
-  echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}"
+  echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
+  echo "sormas2sormas.keystoreName=${P12_FILE}"
+  echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
 else
   # remove existing properties and empty spaces at end of file
   sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
   sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
-  sed -i "/^sormas2sormas\.keyPassword/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
   sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
   # add new properties
   {
     echo;
     echo "# Key data for the generated SORMAS to SORMAS certificate";
-    echo "sormas2sormas.keyAlias=${CRT_NAME}";
-    echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}";
+    echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
+    echo "sormas2sormas.keystoreName=${P12_FILE}"
+    echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
   } >> "${SORMAS_PROPERTIES}"
 fi
 
