@@ -33,9 +33,11 @@ fi
 if [[ ${LINUX} = true ]]; then
 	ROOT_PREFIX=
 else
-	ROOT_PREFIX=/c
+#	ROOT_PREFIX=/c
+	ROOT_PREFIX=/d/Software/sormas
 fi
-SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas2sormas
+#SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas2sormas
+SORMAS2SORMAS_DIR=${ROOT_PREFIX}/sormas2sormas
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
@@ -72,11 +74,18 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
     echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}"
     echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}"
   else
+    # remove existing properties and empty spaces at end of file
+    sed -i "/^# SORMAS to SORMAS truststore data/d" "${SORMAS_PROPERTIES}"
+    sed -i "/^sormas2sormas\.truststoreName/d" "${SORMAS_PROPERTIES}"
+    sed -i "/^sormas2sormas\.truststorePass/d" "${SORMAS_PROPERTIES}"
+    sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
+    # add new properties
     {
-    echo;
-    echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}";
-    echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
-  } >> "${SORMAS_PROPERTIES}"
+      echo;
+      echo "# SORMAS to SORMAS truststore data";
+      echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}";
+      echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
+    } >> "${SORMAS_PROPERTIES}"
 fi
 else
   TEMP_FILE=${SORMAS2SORMAS_DIR}/tempcert.pem

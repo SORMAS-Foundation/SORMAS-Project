@@ -29,6 +29,7 @@ else
 	LINUX=false
 fi
 
+# DIRECTORIES
 if [[ ${LINUX} = true ]]; then
 	ROOT_PREFIX=
 else
@@ -88,11 +89,17 @@ if [[ -z ${SORMAS_PROPERTIES} ]]; then
   echo "sormas2sormas.keyAlias=${CRT_NAME}"
   echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}"
 else
+  # remove existing properties and empty spaces at end of file
+  sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.keyPassword/d" "${SORMAS_PROPERTIES}"
+  sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
+  # add new properties
   {
-  echo;
-  echo "# Key data for the generated SORMAS to SORMAS certificate";
-  echo "sormas2sormas.keyAlias=${CRT_NAME}";
-  echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}";
+    echo;
+    echo "# Key data for the generated SORMAS to SORMAS certificate";
+    echo "sormas2sormas.keyAlias=${CRT_NAME}";
+    echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}";
   } >> "${SORMAS_PROPERTIES}"
 fi
 
