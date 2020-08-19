@@ -60,18 +60,16 @@ echo "CN=${SORMAS_S2S_CERT_CN},OU=SORMAS,O=${SORMAS_S2S_CERT_ORG}"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 
 PEM_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
-P10_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.request.p10
 P12_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
 CRT_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
 
-# generate Private & Public Key & CSR
-openssl req -passout pass:"${SORMAS_S2S_CERT_PASS}" -sha256 -newkey rsa:4096 -keyform PEM -new -keyout "${PEM_NAME}" -out "${P10_NAME}" -subj "${CERT_SUBJ}"
+# generate private key and self signed certificate
+openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_NAME}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_NAME}"
 
-# generate self signed certifcate
-openssl x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -req -days 1095 -sha256 -in "${P10_NAME}" -keyform PEM -signkey "${PEM_NAME}" -out "${CRT_NAME}"
-
-# encrypt
+# add to encrypted keystore
 openssl pkcs12 -export -inkey "${PEM_NAME}" -out "${P12_NAME}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -in "${CRT_NAME}"
+
+rm "${PEM_NAME}"
 
 #update properties
 if [[ -z ${SORMAS_PROPERTIES} ]]; then
