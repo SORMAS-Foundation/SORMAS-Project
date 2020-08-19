@@ -150,12 +150,12 @@
                     app:required="true"/>
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
-                    android:id="@+id/facilityType"
+                    android:id="@+id/caseData_facilityType"
                     style="@style/ControlSecondOfTwoColumnsStyle"
-                    app:caption="@string/caption_facility_type"
                     app:dependencyParentField="@{facilityOrHome}"
                     app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
-                    app:required="true"/>
+                    app:required="true"
+                    app:value="@={data.facilityType}"/>
 
             </LinearLayout>
 

@@ -105,7 +105,8 @@ public class ReferCaseFromPoeDialog extends AbstractDialog {
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
 			data.getHealthFacility(),
-			contentBinding.caseDataHealthFacilityDetails);
+			contentBinding.caseDataHealthFacilityDetails,
+			false);
 	}
 
 	@Override

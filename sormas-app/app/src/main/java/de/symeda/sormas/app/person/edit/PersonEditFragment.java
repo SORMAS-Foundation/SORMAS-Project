@@ -25,6 +25,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
@@ -121,6 +123,11 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialPlaceOfBirthFacilities =
 			InfrastructureHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
+		List<FacilityType> typeList = FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY);
+		List<Item> occupationFacilityTypeList = DataUtils.toItems(typeList, true);
+		typeList.remove(FacilityType.LABORATORY);
+		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(typeList, true);
+
 		InfrastructureHelper
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.personOccupationFacility, contentBinding.personOccupationFacilityDetails);
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
@@ -147,12 +154,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			null,
 			null,
-			null,
-			null,
+			contentBinding.personOccupationFacilityType,
+			occupationFacilityTypeList,
 			contentBinding.personOccupationFacility,
 			initialOccupationFacilities,
 			record.getOccupationFacility(),
-			contentBinding.personOccupationFacilityDetails);
+			contentBinding.personOccupationFacilityDetails,
+			true);
 		InfrastructureHelper.initializeFacilityFields(
 			record,
 			contentBinding.personPlaceOfBirthRegion,
@@ -168,12 +176,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			null,
 			null,
 			null,
-			null,
-			null,
+			contentBinding.personPlaceOfBirthFacilityType,
+			placeOfBirthFacilityTypeList,
 			contentBinding.personPlaceOfBirthFacility,
 			initialPlaceOfBirthFacilities,
 			record.getPlaceOfBirthFacility(),
-			contentBinding.personPlaceOfBirthFacilityDetails);
+			contentBinding.personPlaceOfBirthFacilityDetails,
+			false);
 
 		// Initialize ControlSpinnerFields
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));

@@ -20,6 +20,7 @@ import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.util.DataUtils.toItems;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -153,7 +155,8 @@ public final class InfrastructureHelper {
 		final ControlSpinnerField facilityField,
 		List<Item> facilities,
 		Facility initialFacility,
-		final ControlTextEditField facilityDetailsField) {
+		final ControlTextEditField facilityDetailsField,
+		boolean withLaboratory) {
 		initializeFacilityFields(
 			entity,
 			regionField,
@@ -177,7 +180,8 @@ public final class InfrastructureHelper {
 			facilityDetailsField,
 			null,
 			null,
-			null);
+			null,
+			withLaboratory);
 	}
 
 	public static void initializeFacilityFields(
@@ -203,7 +207,8 @@ public final class InfrastructureHelper {
 		final ControlTextEditField facilityDetailsField,
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
-		PointOfEntry initialPointOfEntry) {
+		PointOfEntry initialPointOfEntry,
+		boolean withLaboratory) {
 
 		final Case caze = entity != null && entity.getClass().isAssignableFrom(Case.class) ? (Case) entity : null;
 
@@ -298,31 +303,39 @@ public final class InfrastructureHelper {
 			}
 		});
 
-		facilityOrHomeField.initializeSpinner(facilityOrHomeList, field -> {
-			TypeOfPlace selectedType = (TypeOfPlace) field.getValue();
-			if (selectedType == null) {
-				typeGroupField.setSpinnerData(null);
-				facilityDetailsField.setVisibility(GONE);
-			} else if (TypeOfPlace.HOME.equals(selectedType)) {
-				typeGroupField.setSpinnerData(null);
-				facilityField.setValue(DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID));
-				if (caze != null)
+		if (facilityOrHomeField != null) {
+			facilityOrHomeField.initializeSpinner(facilityOrHomeList, field -> {
+				TypeOfPlace selectedType = (TypeOfPlace) field.getValue();
+				if (selectedType == null) {
+					typeGroupField.setSpinnerData(null);
+					facilityDetailsField.setVisibility(GONE);
+				} else if (TypeOfPlace.HOME.equals(selectedType)) {
+					typeGroupField.setSpinnerData(null);
+					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
+					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
+					facilityField.setValue(noneFacility);
+					if (caze != null)
+						caze.setHealthFacility(noneFacility);
 					caze.setFacilityType(null);
-				facilityDetailsField.setVisibility(VISIBLE);
-			} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
-				typeGroupField.setSpinnerData(typeGroups);
-				facilityDetailsField.setVisibility(GONE);
-			}
-		});
+				} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
+					typeGroupField.setSpinnerData(typeGroups);
+					facilityDetailsField.setVisibility(GONE);
+				}
+			});
+		}
 
-		typeGroupField.initializeSpinner(typeGroups, field -> {
-			FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
-			if (selectedGroup != null) {
-				typeField.setSpinnerData(DataUtils.toItems(FacilityType.getTypes(selectedGroup), true));
-			} else {
-				typeField.setSpinnerData(null);
-			}
-		});
+		if (typeGroupField != null) {
+			typeGroupField.initializeSpinner(typeGroups, field -> {
+				FacilityTypeGroup selectedGroup = (FacilityTypeGroup) field.getValue();
+				if (selectedGroup != null && withLaboratory) {
+					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getTypes(selectedGroup), true));
+				} else if (selectedGroup != null) {
+					typeField.setSpinnerData(DataUtils.toItems(FacilityType.getAccommodationTypes(selectedGroup), true));
+				} else {
+					typeField.setSpinnerData(null);
+				}
+			});
+		}
 
 		typeField.initializeSpinner(types, field -> {
 			FacilityType selectedType = (FacilityType) field.getValue();
@@ -334,14 +347,7 @@ public final class InfrastructureHelper {
 			}
 		});
 
-		facilityField.initializeSpinner(facilities, field -> {
-			Facility selectedFacility = (Facility) field.getValue();
-			if (selectedFacility != null) {
-				caze.setFacilityType(selectedFacility.getType());
-			} else {
-				caze.setFacilityType(null);
-			}
-		});
+		facilityField.setSpinnerData(facilities);
 
 		if (pointOfEntryField != null) {
 			pointOfEntryField.initializeSpinner(pointsOfEntry);
@@ -378,7 +384,7 @@ public final class InfrastructureHelper {
 				}
 			} else if (noneHealthFacility) {
 				healthFacilityDetailsField.setVisibility(VISIBLE);
-				String caption = I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS);
+				String caption = I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails);
 				healthFacilityDetailsField.setCaption(caption);
 				if (healthFacilityDetailsField instanceof ControlPropertyEditField) {
 					((ControlPropertyEditField) healthFacilityDetailsField).setHint(caption);

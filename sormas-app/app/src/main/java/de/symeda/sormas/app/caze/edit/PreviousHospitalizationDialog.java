@@ -107,7 +107,8 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			initialFacilities,
 			data.getHealthFacility(),
-			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
+			contentBinding.casePreviousHospitalizationHealthFacilityDetails,
+			false);
 
 		CaseValidator.initializePreviousHospitalizationValidation(contentBinding);
 	}

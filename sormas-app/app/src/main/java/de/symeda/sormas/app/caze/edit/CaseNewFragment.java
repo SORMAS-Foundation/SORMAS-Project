@@ -142,7 +142,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			facilityOrHomeList,
 			contentBinding.facilityTypeGroup,
 			facilityTypeGroupList,
-			contentBinding.facilityType,
+			contentBinding.caseDataFacilityType,
 			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
@@ -150,7 +150,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataHealthFacilityDetails,
 			contentBinding.caseDataPointOfEntry,
 			initialPointsOfEntry,
-			record.getPointOfEntry());
+			record.getPointOfEntry(),
+			false);
 
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.caseDataDisease.addValueChangedListener(e -> {
@@ -246,7 +247,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.facilityTypeGroup.setRequired(false);
-			contentBinding.facilityType.setRequired(false);
+			contentBinding.caseDataFacilityType.setRequired(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
 			contentBinding.caseDataHealthFacilityDetails.setRequired(false);
 		} else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {

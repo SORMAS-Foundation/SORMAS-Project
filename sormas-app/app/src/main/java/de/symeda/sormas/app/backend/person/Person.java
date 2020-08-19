@@ -31,6 +31,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -97,6 +98,8 @@ public class Person extends PseudonymizableAdo {
 	private District placeOfBirthDistrict;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Community placeOfBirthCommunity;
+	@Enumerated(EnumType.STRING)
+	private FacilityType placeOfBirthFacilityType;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility placeOfBirthFacility;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -157,6 +160,8 @@ public class Person extends PseudonymizableAdo {
 	private District occupationDistrict;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Community occupationCommunity;
+	@Enumerated(EnumType.STRING)
+	private FacilityType occupationFacilityType;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility occupationFacility;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -168,6 +173,9 @@ public class Person extends PseudonymizableAdo {
 	private String passportNumber;
 	@Column
 	private String nationalHealthId;
+
+	public Person() {
+	}
 
 	@Bindable
 	public String getFirstName() {
@@ -551,5 +559,21 @@ public class Person extends PseudonymizableAdo {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	public FacilityType getPlaceOfBirthFacilityType() {
+		return placeOfBirthFacilityType;
+	}
+
+	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
+		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
+	}
+
+	public FacilityType getOccupationFacilityType() {
+		return occupationFacilityType;
+	}
+
+	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
+		this.occupationFacilityType = occupationFacilityType;
 	}
 }
