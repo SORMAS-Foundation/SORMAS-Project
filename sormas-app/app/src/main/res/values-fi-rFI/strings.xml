@@ -156,6 +156,7 @@
     <string name="caption_event_participants">Osallisia henkilöitä</string>
     <string name="caption_event_tasks">Tapahtumatehtävät</string>
     <string name="caption_executed_by">Suorittaja</string>
+    <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Kuolleita</string>
     <string name="caption_first_name">Etunimi</string>
     <string name="caption_sex">Sukupuoli</string>
@@ -575,4 +576,6 @@
     <string name="no_camera_permission">Ei lupaa kameran käyttöön</string>
     <string name="permission_camera_rationale">Tunnistaminen vaatii käyttöoikeuden kameraan</string>
     <string name="scan_field_sample_id">Skannaa kenttänäytteen ID</string>
+    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type">Facility type</string>
 </resources>
