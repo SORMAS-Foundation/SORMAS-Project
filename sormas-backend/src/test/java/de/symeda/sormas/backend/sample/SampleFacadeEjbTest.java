@@ -17,6 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -51,23 +69,6 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.facility.Facility;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
@@ -241,6 +242,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
 		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
 		caseDataDto.setReportingUser(user.toReference());
 		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);

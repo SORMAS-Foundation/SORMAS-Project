@@ -59,15 +59,14 @@ public class InfrastructureController {
 
 	}
 
-	public void createHealthFacility(boolean laboratory) {
-		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null, laboratory);
-		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateEntry));
+	public void createFacility() {
+		CommitDiscardWrapperComponent<FacilityEditForm> createComponent = getFacilityEditComponent(null);
+		VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getString(Strings.headingCreateNewFacility));
 	}
 
-	public void editHealthFacility(String uuid) {
+	public void editFacility(String uuid) {
 		FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(uuid);
-		CommitDiscardWrapperComponent<FacilityEditForm> editComponent =
-			getFacilityEditComponent(facility, facility.getType() == FacilityType.LABORATORY);
+		CommitDiscardWrapperComponent<FacilityEditForm> editComponent = getFacilityEditComponent(facility);
 		String caption = I18nProperties.getString(Strings.edit) + " " + facility.getName();
 		VaadinUiUtil.showModalPopupWindow(editComponent, caption);
 	}
@@ -133,15 +132,12 @@ public class InfrastructureController {
 		VaadinUiUtil.showModalPopupWindow(component, caption);
 	}
 
-	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility, boolean laboratory) {
+	private CommitDiscardWrapperComponent<FacilityEditForm> getFacilityEditComponent(FacilityDto facility) {
 
 		boolean isNew = facility == null;
-		FacilityEditForm editForm = new FacilityEditForm(isNew, laboratory);
+		FacilityEditForm editForm = new FacilityEditForm(isNew);
 		if (isNew) {
 			facility = FacilityDto.build();
-			if (laboratory) {
-				facility.setType(FacilityType.LABORATORY);
-			}
 		}
 
 		editForm.setValue(facility);
@@ -156,13 +152,8 @@ public class InfrastructureController {
 			@Override
 			public void onCommit() {
 				FacadeProvider.getFacilityFacade().saveFacility(editForm.getValue());
-				if (laboratory) {
-					Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
-					SormasUI.get().getNavigator().navigateTo(LaboratoriesView.VIEW_NAME);
-				} else {
-					Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
-					SormasUI.get().getNavigator().navigateTo(HealthFacilitiesView.VIEW_NAME);
-				}
+				Notification.show(I18nProperties.getString(Strings.messageEntryCreated), Type.ASSISTIVE_NOTIFICATION);
+				SormasUI.get().getNavigator().navigateTo(FacilitiesView.VIEW_NAME);
 			}
 		});
 
@@ -354,13 +345,13 @@ public class InfrastructureController {
 							&& FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))
 						|| InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType)
 							&& FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(Arrays.asList(uuid))) {
-						showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
+						showDearchivingNotPossibleWindow(infrastructureType, false);
 						return;
 					}
 				}
 
 				component.commit();
-				archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType, facilityType);
+				archiveOrDearchiveInfrastructure(!isArchived, uuid, infrastructureType);
 			}, ValoTheme.BUTTON_LINK);
 
 			component.getButtonsPanel().addComponentAsFirst(archiveButton);
@@ -394,7 +385,7 @@ public class InfrastructureController {
 		VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingArchivingNotPossible), contentText);
 	}
 
-	private void showDearchivingNotPossibleWindow(InfrastructureType infrastructureType, FacilityType facilityType, boolean bulkArchiving) {
+	private void showDearchivingNotPossibleWindow(InfrastructureType infrastructureType, boolean bulkArchiving) {
 
 		final String contentText;
 		switch (infrastructureType) {
@@ -407,13 +398,8 @@ public class InfrastructureController {
 				.getString(bulkArchiving ? Strings.messageCommunitiesDearchivingNotPossible : Strings.messageCommunityDearchivingNotPossible);
 			break;
 		case FACILITY:
-			if (FacilityType.LABORATORY.equals(facilityType)) {
-				contentText = I18nProperties
-					.getString(bulkArchiving ? Strings.messageLaboratoriesDearchivingNotPossible : Strings.messageLaboratoryDearchivingNotPossible);
-			} else {
-				contentText = I18nProperties
-					.getString(bulkArchiving ? Strings.messageFacilitiesDearchivingNotPossible : Strings.messageFacilityDearchivingNotPossible);
-			}
+			contentText = I18nProperties
+				.getString(bulkArchiving ? Strings.messageFacilitiesDearchivingNotPossible : Strings.messageFacilityDearchivingNotPossible);
 			break;
 		case POINT_OF_ENTRY:
 			contentText = I18nProperties
@@ -425,11 +411,7 @@ public class InfrastructureController {
 		VaadinUiUtil.showSimplePopupWindow(I18nProperties.getString(Strings.headingDearchivingNotPossible), contentText);
 	}
 
-	private void archiveOrDearchiveInfrastructure(
-		boolean archive,
-		String entityUuid,
-		InfrastructureType infrastructureType,
-		FacilityType facilityType) {
+	private void archiveOrDearchiveInfrastructure(boolean archive, String entityUuid, InfrastructureType infrastructureType) {
 
 		Label contentLabel = new Label();
 		final String notificationMessage;
@@ -451,15 +433,8 @@ public class InfrastructureController {
 			notificationMessage = I18nProperties.getString(archive ? Strings.messageCommunityArchived : Strings.messageCommunityDearchived);
 			break;
 		case FACILITY:
-			if (FacilityType.LABORATORY.equals(facilityType)) {
-				contentLabel
-					.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveLaboratory : Strings.confirmationDearchiveLaboratory));
-				notificationMessage = I18nProperties.getString(archive ? Strings.messageLaboratoryArchived : Strings.messageLaboratoryDearchived);
-			} else {
-				contentLabel
-					.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveFacility : Strings.confirmationDearchiveFacility));
-				notificationMessage = I18nProperties.getString(archive ? Strings.messageFacilityArchived : Strings.messageFacilityDearchived);
-			}
+			contentLabel.setValue(I18nProperties.getString(archive ? Strings.confirmationArchiveFacility : Strings.confirmationDearchiveFacility));
+			notificationMessage = I18nProperties.getString(archive ? Strings.messageFacilityArchived : Strings.messageFacilityDearchived);
 			break;
 		case POINT_OF_ENTRY:
 			contentLabel
@@ -517,11 +492,7 @@ public class InfrastructureController {
 						} else {
 							FacadeProvider.getFacilityFacade().dearchive(entityUuid);
 						}
-						if (FacilityType.LABORATORY.equals(facilityType)) {
-							SormasUI.get().getNavigator().navigateTo(LaboratoriesView.VIEW_NAME);
-						} else {
-							SormasUI.get().getNavigator().navigateTo(HealthFacilitiesView.VIEW_NAME);
-						}
+						SormasUI.get().getNavigator().navigateTo(FacilitiesView.VIEW_NAME);
 						break;
 					case POINT_OF_ENTRY:
 						if (archive) {
@@ -545,7 +516,6 @@ public class InfrastructureController {
 		boolean archive,
 		Collection<?> selectedRows,
 		InfrastructureType infrastructureType,
-		FacilityType facilityType,
 		Runnable callback) {
 
 		// Check that at least one entry is selected
@@ -578,7 +548,7 @@ public class InfrastructureController {
 				&& FacadeProvider.getFacilityFacade().hasArchivedParentInfrastructure(selectedRowsUuids)
 			|| InfrastructureType.POINT_OF_ENTRY.equals(infrastructureType)
 				&& FacadeProvider.getPointOfEntryFacade().hasArchivedParentInfrastructure(selectedRowsUuids)) {
-			showDearchivingNotPossibleWindow(infrastructureType, facilityType, false);
+			showDearchivingNotPossibleWindow(infrastructureType, false);
 			return;
 		}
 
@@ -614,21 +584,11 @@ public class InfrastructureController {
 				: I18nProperties.getString(Strings.messageCommunitiesDearchived);
 			break;
 		case FACILITY:
-			if (FacilityType.LABORATORY.equals(facilityType)) {
-				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchiveLaboratories)
-					: I18nProperties.getString(Strings.confirmationDearchiveLaboratories);
-				notificationMessage = archive
-					? I18nProperties.getString(Strings.messageLaboratoriesArchived)
-					: I18nProperties.getString(Strings.messageLaboratoriesDearchived);
-			} else {
-				confirmationMessage = archive
-					? I18nProperties.getString(Strings.confirmationArchiveFacilities)
-					: I18nProperties.getString(Strings.confirmationDearchiveFacilities);
-				notificationMessage = archive
-					? I18nProperties.getString(Strings.messageFacilitiesArchived)
-					: I18nProperties.getString(Strings.messageFacilitiesDearchived);
-			}
+			confirmationMessage = archive
+				? I18nProperties.getString(Strings.confirmationArchiveFacilities)
+				: I18nProperties.getString(Strings.confirmationDearchiveFacilities);
+			notificationMessage =
+				archive ? I18nProperties.getString(Strings.messageFacilitiesArchived) : I18nProperties.getString(Strings.messageFacilitiesDearchived);
 			break;
 		case POINT_OF_ENTRY:
 			confirmationMessage = archive

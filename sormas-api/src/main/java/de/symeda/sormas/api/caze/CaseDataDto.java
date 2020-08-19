@@ -36,6 +36,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -82,7 +83,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -146,6 +146,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -218,6 +219,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
+	@PersonalData
+	private FacilityType facilityType;
 	@Outbreaks
 	@Required
 	@PersonalData
@@ -1109,5 +1112,13 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

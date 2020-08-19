@@ -56,6 +56,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -163,6 +164,7 @@ public class Case extends CoreAdo {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private Person person;
 	private String description;
@@ -193,6 +195,7 @@ public class Case extends CoreAdo {
 	private Region region;
 	private District district;
 	private Community community;
+	private FacilityType facilityType;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 
@@ -1163,5 +1166,14 @@ public class Case extends CoreAdo {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

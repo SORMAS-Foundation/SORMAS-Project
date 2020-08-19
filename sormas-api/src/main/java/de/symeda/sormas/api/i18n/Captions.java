@@ -124,7 +124,7 @@ public interface Captions {
 	String bulkEdit = "bulkEdit";
 	String bulkEventStatus = "bulkEventStatus";
 	String bulkEventType = "bulkEventType";
-	String bulkHealthFacility = "bulkHealthFacility";
+	String bulkFacility = "bulkFacility";
 	String bulkInvestigationStatus = "bulkInvestigationStatus";
 	String bulkLostToFollowUp = "bulkLostToFollowUp";
 	String bulkSurveillanceOfficer = "bulkSurveillanceOfficer";
@@ -181,6 +181,7 @@ public interface Captions {
 	String CaseData_epidemiologicalConfirmation = "CaseData.epidemiologicalConfirmation";
 	String CaseData_epidNumber = "CaseData.epidNumber";
 	String CaseData_externalID = "CaseData.externalID";
+	String CaseData_facilityType = "CaseData.facilityType";
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
@@ -293,6 +294,7 @@ public interface Captions {
 	String CaseExport_sampleResult3 = "CaseExport.sampleResult3";
 	String CaseExport_sampleTaken = "CaseExport.sampleTaken";
 	String CaseExport_travelHistory = "CaseExport.travelHistory";
+	String caseFacilityDetailsShort = "caseFacilityDetailsShort";
 	String caseFilterCasesWithCaseManagementData = "caseFilterCasesWithCaseManagementData";
 	String caseFilterExcludeSharedCases = "caseFilterExcludeSharedCases";
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
@@ -301,7 +303,6 @@ public interface Captions {
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
-	String caseHealthFacilityDetailsShort = "caseHealthFacilityDetailsShort";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
@@ -327,6 +328,7 @@ public interface Captions {
 	String caseOpenCasesGuide = "caseOpenCasesGuide";
 	String caseOpenMergeGuide = "caseOpenMergeGuide";
 	String casePickCase = "casePickCase";
+	String casePlaceOfStay = "casePlaceOfStay";
 	String casePlusDays = "casePlusDays";
 	String CasePreviousHospitalization = "CasePreviousHospitalization";
 	String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
@@ -363,8 +365,7 @@ public interface Captions {
 	String communityAllCommunities = "communityAllCommunities";
 	String communityArchivedCommunities = "communityArchivedCommunities";
 	String communityName = "communityName";
-	String Configuration_HealthFacilities = "Configuration.HealthFacilities";
-	String Configuration_Laboratories = "Configuration.Laboratories";
+	String Configuration_Facilities = "Configuration.Facilities";
 	String Configuration_LineListing = "Configuration.LineListing";
 	String Configuration_Outbreaks = "Configuration.Outbreaks";
 	String Configuration_PointsOfEntry = "Configuration.PointsOfEntry";
@@ -514,6 +515,7 @@ public interface Captions {
 	String dashboardDiseaseDifference = "dashboardDiseaseDifference";
 	String dashboardDiseaseDifferenceYAxisLabel = "dashboardDiseaseDifferenceYAxisLabel";
 	String dashboardDone = "dashboardDone";
+	String dashboardFacilities = "dashboardFacilities";
 	String dashboardFatalities = "dashboardFatalities";
 	String dashboardFollowUpStatusChart = "dashboardFollowUpStatusChart";
 	String dashboardFollowUpUntilChart = "dashboardFollowUpUntilChart";
@@ -523,7 +525,6 @@ public interface Captions {
 	String dashboardGt1ProbableCases = "dashboardGt1ProbableCases";
 	String dashboardGt1SuspectCases = "dashboardGt1SuspectCases";
 	String dashboardGtThreeDays = "dashboardGtThreeDays";
-	String dashboardHealthFacilities = "dashboardHealthFacilities";
 	String dashboardHideOtherCountries = "dashboardHideOtherCountries";
 	String dashboardHideOverview = "dashboardHideOverview";
 	String dashboardHigh = "dashboardHigh";
@@ -602,7 +603,7 @@ public interface Captions {
 	String dashboardYesterday = "dashboardYesterday";
 	String defaultCommunity = "defaultCommunity";
 	String defaultDistrict = "defaultDistrict";
-	String defaultHealthFacility = "defaultHealthFacility";
+	String defaultFacility = "defaultFacility";
 	String defaultLaboratory = "defaultLaboratory";
 	String defaultPointOfEntry = "defaultPointOfEntry";
 	String defaultRegion = "defaultRegion";
@@ -795,18 +796,23 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String Facility_city = "Facility.city";
+	String Facility_community = "Facility.community";
+	String Facility_district = "Facility.district";
 	String Facility_externalID = "Facility.externalID";
 	String Facility_latitude = "Facility.latitude";
 	String Facility_longitude = "Facility.longitude";
+	String Facility_name = "Facility.name";
 	String Facility_NO_FACILITY = "Facility.NO_FACILITY";
 	String Facility_OTHER_FACILITY = "Facility.OTHER_FACILITY";
-	String Facility_OTHER_LABORATORY = "Facility.OTHER_LABORATORY";
+	String Facility_region = "Facility.region";
+	String Facility_type = "Facility.type";
+	String Facility_typeGroup = "Facility.typeGroup";
 	String facilityActiveFacilities = "facilityActiveFacilities";
-	String facilityActiveLaboratories = "facilityActiveLaboratories";
 	String facilityAllFacilities = "facilityAllFacilities";
-	String facilityAllLaboratories = "facilityAllLaboratories";
 	String facilityArchivedFacilities = "facilityArchivedFacilities";
-	String facilityArchivedLaboratories = "facilityArchivedLaboratories";
+	String facilityType = "facilityType";
+	String facilityTypeGroup = "facilityTypeGroup";
 	String FeatureConfiguration_districtName = "FeatureConfiguration.districtName";
 	String FeatureConfiguration_enabled = "FeatureConfiguration.enabled";
 	String FeatureConfiguration_endDate = "FeatureConfiguration.endDate";
@@ -999,6 +1005,7 @@ public interface Captions {
 	String Person_occupationDistrict = "Person.occupationDistrict";
 	String Person_occupationFacility = "Person.occupationFacility";
 	String Person_occupationFacilityDetails = "Person.occupationFacilityDetails";
+	String Person_occupationFacilityType = "Person.occupationFacilityType";
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
 	String Person_other_occupationDetails = "Person.other.occupationDetails";
@@ -1009,6 +1016,7 @@ public interface Captions {
 	String Person_placeOfBirthDistrict = "Person.placeOfBirthDistrict";
 	String Person_placeOfBirthFacility = "Person.placeOfBirthFacility";
 	String Person_placeOfBirthFacilityDetails = "Person.placeOfBirthFacilityDetails";
+	String Person_placeOfBirthFacilityType = "Person.placeOfBirthFacilityType";
 	String Person_placeOfBirthRegion = "Person.placeOfBirthRegion";
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
@@ -1504,8 +1512,8 @@ public interface Captions {
 	String View_configuration_devMode_short = "View.configuration.devMode.short";
 	String View_configuration_districts = "View.configuration.districts";
 	String View_configuration_districts_short = "View.configuration.districts.short";
-	String View_configuration_healthFacilities = "View.configuration.healthFacilities";
-	String View_configuration_healthFacilities_short = "View.configuration.healthFacilities.short";
+	String View_configuration_facilities = "View.configuration.facilities";
+	String View_configuration_facilities_short = "View.configuration.facilities.short";
 	String View_configuration_laboratories = "View.configuration.laboratories";
 	String View_configuration_laboratories_short = "View.configuration.laboratories.short";
 	String View_configuration_linelisting = "View.configuration.linelisting";

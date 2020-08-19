@@ -108,6 +108,7 @@ import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -542,7 +543,7 @@ public class CaseFacadeEjb implements CaseFacade {
 //				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 //
 //				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
-//				
+//
 //				visitsCq.where(
 //					CaseService.and(cb, caseRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
 //				visitsCq.multiselect(
@@ -1365,6 +1366,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		if (caze.getHealthFacility() != null) {
 			FacilityDto healthFacility = facilityFacade.getByUuid(caze.getHealthFacility().getUuid());
 
+			if (caze.getFacilityType() == null && !FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacility().getUuid())) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityType));
+			}
 			if (caze.getCommunity() == null && healthFacility.getDistrict() != null && !healthFacility.getDistrict().equals(caze.getDistrict())) {
 				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noFacilityInDistrict));
 			}
@@ -1589,8 +1593,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
 		} else {
-			List<User> informants =
-				caze.getHealthFacility() != null ? userService.getInformantsOfFacility(caze.getHealthFacility()) : new ArrayList<>();
+			List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+				? userService.getInformantsOfFacility(caze.getHealthFacility())
+				: new ArrayList<>();
 			Random rand = new Random();
 			if (!informants.isEmpty()) {
 				caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
@@ -1898,6 +1903,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+		target.setFacilityType(source.getFacilityType());
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
 		if (source.getFollowUpStatus() != null) {
@@ -2164,6 +2170,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+		target.setFacilityType(source.getFacilityType());
 
 		return target;
 	}

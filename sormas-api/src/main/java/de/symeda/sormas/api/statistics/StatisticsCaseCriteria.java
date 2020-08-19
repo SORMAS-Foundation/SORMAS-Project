@@ -397,7 +397,7 @@ public class StatisticsCaseCriteria implements Serializable {
 				return districts;
 			case COMMUNITY:
 				return communities;
-			case HEALTH_FACILITY:
+			case FACILITY:
 				return healthFacilities;
 			case YEAR:
 				switch (attribute) {

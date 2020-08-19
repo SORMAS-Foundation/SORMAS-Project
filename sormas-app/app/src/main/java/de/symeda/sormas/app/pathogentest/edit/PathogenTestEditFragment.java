@@ -20,7 +20,6 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -130,7 +129,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			@Override
 			public void onChange(ControlPropertyField field) {
 				Facility laboratory = (Facility) field.getValue();
-				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 					contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
 				} else {
 					contentBinding.pathogenTestLabDetails.hideField(true);

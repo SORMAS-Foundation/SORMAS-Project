@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -97,6 +98,8 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
+	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -141,6 +144,9 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
+	private FacilityType placeOfBirthFacilityType;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	@SensitiveData
@@ -239,6 +245,8 @@ public class PersonDto extends PseudonymizableDto {
 	private DistrictReferenceDto occupationDistrict;
 	@SensitiveData
 	private CommunityReferenceDto occupationCommunity;
+	@SensitiveData
+	private FacilityType occupationFacilityType;
 	@SensitiveData
 	private FacilityReferenceDto occupationFacility;
 	@SensitiveData
@@ -616,6 +624,22 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	public FacilityType getOccupationFacilityType() {
+		return occupationFacilityType;
+	}
+
+	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
+		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	public FacilityType getPlaceOfBirthFacilityType() {
+		return placeOfBirthFacilityType;
+	}
+
+	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
+		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
 	}
 
 	@Override

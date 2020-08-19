@@ -145,8 +145,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
-	private static final String FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME =
-		ImportExportUtils.FILE_PREFIX + "_import_facility_laboratory_template.csv";
+	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_contact_template.csv";
 
 	@Override
@@ -230,6 +229,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.REGION);
 		columnNames.add(CaseDataDto.DISTRICT);
 		columnNames.add(CaseDataDto.COMMUNITY);
+		columnNames.add(CaseDataDto.FACILITY_TYPE);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
 		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
@@ -305,8 +305,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateFacilityLaboratoryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityLaboratoryImportTemplateFilePath()));
+	public void generateFacilityImportTemplateFile() throws IOException {
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
 	}
 
 	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
@@ -395,10 +395,10 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public String getFacilityLaboratoryImportTemplateFilePath() {
+	public String getFacilityImportTemplateFilePath() {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME);
+		Path filePath = exportDirectory.resolve(FACILITY_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
