@@ -446,6 +446,7 @@ public interface Captions {
 	String contactChangeCase = "contactChangeCase";
 	String contactChooseCase = "contactChooseCase";
 	String contactChooseSourceCase = "contactChooseSourceCase";
+	String contactClimedoAccount = "Contact.climedoAccount";
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";

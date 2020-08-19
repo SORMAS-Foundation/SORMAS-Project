@@ -65,6 +65,18 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 			});
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
+
+		if (FacadeProvider.getConfigFacade().getPatientDiaryUrl() != null
+			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.contactClimedoAccount));
+			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
+			btnClimedoAccount.addClickListener(e -> {
+				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
+				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+				ControllerProvider.getContactController().openDiaryTab(contactPerson);
+			});
+			getButtonsLayout().addComponent(btnClimedoAccount);
+		}
 	}
 
 	@Override
