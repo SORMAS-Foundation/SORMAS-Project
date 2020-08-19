@@ -262,7 +262,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 		StringBuilder caseJoinBuilder = new StringBuilder();
 
-		if (subGroupingA == StatisticsCaseSubAttribute.HEALTH_FACILITY || subGroupingB == StatisticsCaseSubAttribute.HEALTH_FACILITY) {
+		if (subGroupingA == StatisticsCaseSubAttribute.FACILITY || subGroupingB == StatisticsCaseSubAttribute.FACILITY) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Facility.TABLE_NAME)
 				.append(" ON ")
@@ -1213,7 +1213,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			case COMMUNITY:
 				groupingSelectPartBuilder.append(Community.TABLE_NAME).append(".").append(Community.ID).append(" AS ").append(groupAlias);
 				break;
-			case HEALTH_FACILITY:
+			case FACILITY:
 				groupingSelectPartBuilder.append(Facility.TABLE_NAME).append(".").append(Facility.ID).append(" AS ").append(groupAlias);
 				break;
 			default:

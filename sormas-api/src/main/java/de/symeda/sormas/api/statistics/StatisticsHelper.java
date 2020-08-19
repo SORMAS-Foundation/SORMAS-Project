@@ -100,7 +100,7 @@ public final class StatisticsHelper {
 				return districtProvider.apply(((Number) attributeValue).intValue());
 			case COMMUNITY:
 				return communityProvider.apply(((Number) attributeValue).intValue());
-			case HEALTH_FACILITY:
+			case FACILITY:
 				return facilityProvider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());
@@ -293,7 +293,7 @@ public final class StatisticsHelper {
 				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) FacadeProvider.getDistrictFacade()
 					.getAllActiveAsReference();
 			case COMMUNITY:
-			case HEALTH_FACILITY:
+			case FACILITY:
 				return new ArrayList<>();
 			default:
 				throw new IllegalArgumentException(subAttribute.toString());

@@ -92,7 +92,7 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 		facilityElement = new StatisticsFilterValuesElement(
 			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY),
 			StatisticsCaseAttribute.JURISDICTION,
-			StatisticsCaseSubAttribute.HEALTH_FACILITY,
+			StatisticsCaseSubAttribute.FACILITY,
 			this,
 			rowIndex);
 

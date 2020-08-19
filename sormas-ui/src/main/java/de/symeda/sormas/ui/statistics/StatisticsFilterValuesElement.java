@@ -201,7 +201,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				} else {
 					return new ArrayList<>();
 				}
-			case HEALTH_FACILITY:
+			case FACILITY:
 				if (jurisdictionElement == null) {
 					return new ArrayList<>();
 				}
