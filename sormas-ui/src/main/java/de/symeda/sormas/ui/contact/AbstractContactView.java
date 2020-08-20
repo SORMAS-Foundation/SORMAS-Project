@@ -68,7 +68,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 
 		if (FacadeProvider.getConfigFacade().getPatientDiaryUrl() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
-			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.contactClimedoAccount));
+			Button btnClimedoAccount = new Button(I18nProperties.getCaption(Captions.Contact_climedoAccount));
 			CssStyles.style(btnClimedoAccount, ValoTheme.BUTTON_PRIMARY);
 			btnClimedoAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());

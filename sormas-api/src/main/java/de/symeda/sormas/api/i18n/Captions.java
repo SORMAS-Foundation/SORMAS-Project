@@ -382,6 +382,7 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_climedoAccount = "Contact.climedoAccount";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
@@ -446,7 +447,6 @@ public interface Captions {
 	String contactChangeCase = "contactChangeCase";
 	String contactChooseCase = "contactChooseCase";
 	String contactChooseSourceCase = "contactChooseSourceCase";
-	String contactClimedoAccount = "Contact.climedoAccount";
 	String contactContactsList = "contactContactsList";
 	String contactContactsOverview = "contactContactsOverview";
 	String contactCreateContactCase = "contactCreateContactCase";
