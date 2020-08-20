@@ -156,7 +156,7 @@
     <string name="caption_event_participants">Beteiligte Personen</string>
     <string name="caption_event_tasks">Ereignis-Aufgaben</string>
     <string name="caption_executed_by">Ausgeführt von</string>
-    <string name="caption_facility_or_home">Place of stay</string>
+    <string name="caption_facility_or_home">Aufenthaltsort</string>
     <string name="caption_fatalities">Todesfälle</string>
     <string name="caption_first_name">Vorname</string>
     <string name="caption_sex">Geschlecht</string>
@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Keine Kameraberechtigung</string>
     <string name="permission_camera_rationale">Zugriff auf die Kamera wird für die Erkennung benötigt</string>
     <string name="scan_field_sample_id">Scanbereich Proben ID</string>
-    <string name="caption_facility_type_group">Facility type group</string>
-    <string name="caption_facility_type">Facility type</string>
+    <string name="caption_facility_type_group">Einrichtungstyp Gruppierung</string>
+    <string name="caption_facility_type">Art der Einrichtung</string>
 </resources>
