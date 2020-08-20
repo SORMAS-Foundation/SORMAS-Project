@@ -25,6 +25,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskContext;
@@ -34,6 +35,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
 import de.symeda.sormas.ui.samples.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -95,8 +97,16 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, CASE_LOC);
+
+		VerticalLayout caseLayout = new VerticalLayout();
+		caseLayout.setMargin(false);
+		caseLayout.addStyleNames(CssStyles.MAIN_COMPONENT);
+		caseLayout.addComponent(ButtonHelper.createButton(Captions.caseShareToSormas, (e) -> {
+			ControllerProvider.getSormasToSormasController().shareCaseToSormas(getCaseRef());
+		}));
+		caseLayout.addComponent(editComponent);
+
+		layout.addComponent(caseLayout, CASE_LOC);
 
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);

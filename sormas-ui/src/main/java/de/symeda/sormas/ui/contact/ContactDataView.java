@@ -97,8 +97,16 @@ public class ContactDataView extends AbstractContactView {
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, EDIT_LOC);
+
+		VerticalLayout caseLayout = new VerticalLayout();
+		caseLayout.setMargin(false);
+		caseLayout.addStyleNames(CssStyles.MAIN_COMPONENT);
+		caseLayout.addComponent(ButtonHelper.createButton(Captions.caseShareToSormas, (e) -> {
+			ControllerProvider.getSormasToSormasController().shareContactToSormas(getContactRef());
+		}));
+		caseLayout.addComponent(editComponent);
+
+		layout.addComponent(caseLayout, EDIT_LOC);
 
 		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 		if (contactDto.getCaze() != null) {

@@ -39,6 +39,10 @@ public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker
 			rightCheck.check(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION));
 	}
 
+	public static PersonalDataFieldAccessChecker forcedNoAccess() {
+		return new PersonalDataFieldAccessChecker(false, false);
+	}
+
 	public interface RightCheck {
 
 		boolean check(UserRight userRight);

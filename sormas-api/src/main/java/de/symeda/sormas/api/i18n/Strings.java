@@ -158,6 +158,8 @@ public interface Strings {
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorSetFeverRequired = "errorSetFeverRequired";
+	String errorShareToSormas = "errorShareToSormas";
+	String errorShareToSormasResult = "errorShareToSormasResult";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";

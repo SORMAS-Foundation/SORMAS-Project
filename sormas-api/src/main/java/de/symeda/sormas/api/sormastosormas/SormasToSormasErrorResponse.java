@@ -15,16 +15,24 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import javax.ejb.Remote;
+import java.io.Serializable;
 
-@Remote
-public interface SormasToSormasFacade {
+public class SormasToSormasErrorResponse implements Serializable {
 
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
+	private String message;
 
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
+	public SormasToSormasErrorResponse() {
+	}
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public SormasToSormasErrorResponse(String message) {
+		this.message = message;
+	}
 
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

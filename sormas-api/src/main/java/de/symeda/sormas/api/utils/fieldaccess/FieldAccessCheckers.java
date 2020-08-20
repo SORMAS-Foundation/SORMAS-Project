@@ -119,4 +119,14 @@ public class FieldAccessCheckers {
 
 		return ret;
 	}
+
+	public <T extends FieldAccessChecker> T getCheckerByType(Class<T> checkerType) {
+		for (FieldAccessChecker checker : checkers) {
+			if (checkerType.isAssignableFrom(checker.getClass())) {
+				return (T) checker;
+			}
+		}
+
+		return null;
+	}
 }

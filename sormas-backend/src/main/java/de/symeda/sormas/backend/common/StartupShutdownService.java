@@ -98,7 +98,7 @@ public class StartupShutdownService {
 
 	private static final Pattern SQL_COMMENT_PATTERN = Pattern.compile("^\\s*(--.*)?");
 
-	private static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
+	public static final String SORMAS_TO_SORMAS_USER_NAME = "Sormas2Sormas";
 
 	//@formatter:off
 	private static final Pattern SCHEMA_VERSION_SQL_PATTERN = Pattern.compile(
@@ -429,8 +429,6 @@ public class StartupShutdownService {
 
 				userService.persist(sormasToSormas);
 			}
-		} else if (DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
-			userService.delete(sormasToSormas);
 		} else if (DataHelper
 			.equal(sormasToSormas.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormas.getSeed()))) {
 			sormasToSormas.setSeed(PasswordHelper.createPass(16));

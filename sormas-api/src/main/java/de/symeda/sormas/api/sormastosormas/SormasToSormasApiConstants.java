@@ -15,16 +15,12 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import javax.ejb.Remote;
+public class SormasToSormasApiConstants {
 
-@Remote
-public interface SormasToSormasFacade {
+	private static final String SORMAS_TO_SORMAS_ENDPOINT = "/sormasToSormas";
 
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
+	public static final String SAVE_SHARED_CASE_ENDPOINT = SORMAS_TO_SORMAS_ENDPOINT + "/case";
 
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
+	public static final String SAVE_SHARED_CONTACT_ENDPOINT = SORMAS_TO_SORMAS_ENDPOINT + "/contact";
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
 }

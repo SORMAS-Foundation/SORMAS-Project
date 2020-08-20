@@ -22,34 +22,23 @@ import java.util.List;
 
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
 
 public class DtoPseudonymizer {
 
-	private final FieldAccessCheckers fieldAccessCheckers;
-	protected final SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker;
+	protected final FieldAccessCheckers fieldAccessCheckers;
 
 	private String stringValuePlaceholder = "";
 
-	public DtoPseudonymizer(final RightCheck rightCheck) {
-		sensitiveDataFieldAccessChecker = SensitiveDataFieldAccessChecker.create(new SensitiveDataFieldAccessChecker.RightCheck() {
-
-			@Override
-			public boolean check(UserRight userRight) {
-				return rightCheck.hasRight(userRight);
-			}
-		});
-
-		this.fieldAccessCheckers = createFieldAccessCheckers(rightCheck).add(sensitiveDataFieldAccessChecker);
+	protected DtoPseudonymizer(FieldAccessCheckers fieldAccessCheckers, String stringValuePlaceholder) {
+		this.fieldAccessCheckers = fieldAccessCheckers;
+		this.stringValuePlaceholder = stringValuePlaceholder;
 	}
 
-	public DtoPseudonymizer(final RightCheck rightCheck, String stringValuePlaceholder) {
-		this(rightCheck);
-
-		this.stringValuePlaceholder = stringValuePlaceholder;
+	public void addFieldAccessChecker(FieldAccessChecker checker) {
+		this.fieldAccessCheckers.add(checker);
 	}
 
 	public <DTO> void pseudonymizeDtoCollection(
@@ -196,16 +185,6 @@ public class DtoPseudonymizer {
 		if (customPseudonymization != null) {
 			customPseudonymization.pseudonymize(dto);
 		}
-	}
-
-	private FieldAccessCheckers createFieldAccessCheckers(final RightCheck rightCheck) {
-		return FieldAccessCheckers.withCheckers(PersonalDataFieldAccessChecker.create(new PersonalDataFieldAccessChecker.RightCheck() {
-
-			@Override
-			public boolean check(UserRight userRight) {
-				return rightCheck.hasRight(userRight);
-			}
-		}));
 	}
 
 	private <DTO> void pseudonymizeField(DTO dto, Field field, Class<? extends ValuePseudonymizer> pseudonymizerClass) {

@@ -341,6 +341,7 @@ public interface Captions {
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
+	String caseShareToSormas = "caseShareToSormas";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
 	String city = "city";
@@ -1216,6 +1217,11 @@ public interface Captions {
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String singleDayEventDate = "singleDayEventDate";
+	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
+	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
+	String SormasToSormasOptions_healthDepartment = "SormasToSormasOptions.healthDepartment";
+	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
+	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

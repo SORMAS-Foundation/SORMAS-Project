@@ -26,6 +26,16 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private String senderEmail;
 	private String senderPhoneNumber;
 
+	public SormasToSormasShareInfoDto() {
+	}
+
+	public SormasToSormasShareInfoDto(String senderHealthDepartment, String senderName, String senderEmail, String senderPhoneNumber) {
+		this.senderHealthDepartment = senderHealthDepartment;
+		this.senderName = senderName;
+		this.senderEmail = senderEmail;
+		this.senderPhoneNumber = senderPhoneNumber;
+	}
+
 	public String getSenderHealthDepartment() {
 		return senderHealthDepartment;
 	}

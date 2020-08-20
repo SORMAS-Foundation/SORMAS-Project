@@ -37,6 +37,10 @@ public class SensitiveDataFieldAccessChecker extends RightBasedFieldAccessChecke
 			rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION));
 	}
 
+	public static SensitiveDataFieldAccessChecker forcedNoAccess() {
+		return new SensitiveDataFieldAccessChecker(false, false);
+	}
+
 	public interface RightCheck {
 
 		boolean check(UserRight userRight);

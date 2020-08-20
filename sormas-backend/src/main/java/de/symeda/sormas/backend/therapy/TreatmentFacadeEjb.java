@@ -96,7 +96,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentIndexDto> indexList = em.createQuery(cq).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentIndexDto.class,
 			indexList,
@@ -111,7 +111,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@Override
 	public TreatmentDto getTreatmentByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -145,13 +145,13 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getAllActiveTreatmentsAfter(date, user).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<TreatmentDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return service.getByUuids(uuids).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -201,7 +201,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 		List<TreatmentExportDto> exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(
 			TreatmentExportDto.class,
 			exportList,
@@ -228,7 +228,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	private void restorePseudonymizedDto(TreatmentDto source, Treatment existingTreatment, TreatmentDto existingDto) {
 		if (existingTreatment != null) {
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(
 				TreatmentDto.class,
 				source,

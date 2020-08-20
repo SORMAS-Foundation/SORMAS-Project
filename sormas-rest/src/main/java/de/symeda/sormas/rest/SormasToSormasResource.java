@@ -21,11 +21,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
-@Path("/sormasToSormas")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed({
@@ -33,15 +38,27 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 public class SormasToSormasResource {
 
 	@POST
-	@Path("/case")
-	public void saveSharedCase(SormasToSormasCaseDto sharedCase) {
-		FacadeProvider.getSormasToSormasFacade().saveSharedCase(sharedCase);
+	@Path(SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT)
+	public Response saveSharedCase(SormasToSormasCaseDto sharedCase) {
+		try {
+			FacadeProvider.getSormasToSormasFacade().saveSharedCase(sharedCase);
+		} catch (ValidationRuntimeException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getMessage())).build();
+		}
+
+		return Response.noContent().build();
 	}
 
 	@POST
-	@Path("/contact")
-	public void saveSharedContact(SormasToSormasCaseDto sharedCase) {
-		FacadeProvider.getSormasToSormasFacade().saveSharedCase(sharedCase);
+	@Path(SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT)
+	public Response saveSharedContact(SormasToSormasContactDto sharedContact) {
+		try {
+			FacadeProvider.getSormasToSormasFacade().saveSharedContact(sharedContact);
+		} catch (ValidationRuntimeException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(new SormasToSormasErrorResponse(e.getMessage())).build();
+		}
+
+		return Response.noContent().build();
 	}
 
 }

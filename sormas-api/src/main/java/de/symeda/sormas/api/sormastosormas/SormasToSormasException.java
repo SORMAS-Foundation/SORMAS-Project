@@ -15,16 +15,9 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import javax.ejb.Remote;
+public class SormasToSormasException extends Exception {
 
-@Remote
-public interface SormasToSormasFacade {
-
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
-
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
-
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public SormasToSormasException(String message) {
+		super(message);
+	}
 }
