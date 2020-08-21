@@ -23,6 +23,7 @@ package de.symeda.sormas.backend.campaign.data;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -51,6 +52,8 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -91,6 +94,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
+
+	@EJB
+	private CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal campaignFormMetaFacade;
 
 	@EJB
 	private RegionService regionService;
@@ -290,7 +296,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
-		public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeriesList, CampaignDiagramCriteria campaignDiagramCriteria) {
+	public List<CampaignDiagramDataDto> getDiagramData(
+		List<CampaignDiagramSeries> diagramSeriesList,
+		CampaignDiagramCriteria campaignDiagramCriteria) {
 
 		List<CampaignDiagramDataDto> resultData = new ArrayList<CampaignDiagramDataDto>();
 
@@ -313,7 +321,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
 					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "";
 			Query seriesDataQuery = em.createNativeQuery(
-					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + " as campaignFormUuid," + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
 							+ ", sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME
@@ -329,7 +337,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ regionFilter
 							+ districtFilter
 							+ campaignFilter
-							+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+							+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + "," + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
 							+ jurisdictionGrouping
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME);
@@ -344,11 +352,26 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						(result) -> new CampaignDiagramDataDto(
 							(String) result[0],
 							(String) result[1],
-							(Object) result[2],
-							(String) result[3],
-							(String) result[4]))
+							(String) result[2],
+							(Object) result[3],
+							(String) result[4],
+							(String) result[5]))
 					.collect(Collectors.toList()));
 		}
+
+		// TODO: 21/08/2020 extract caption directly from json with query 
+		resultData.forEach(campaignDiagramDataDto -> {
+			final CampaignFormMetaDto formMeta = campaignFormMetaFacade.getCampaignFormMetaByUuid(campaignDiagramDataDto.getFormMetaUuid());
+			final String fieldId = campaignDiagramDataDto.getFieldId();
+			final Optional<CampaignFormElement> optionalCampaignFormElement =
+				formMeta.getCampaignFormElements().stream().filter(campaignFormElement -> campaignFormElement.getId().equals(fieldId)).findFirst();
+			if (optionalCampaignFormElement.isPresent()) {
+
+				campaignDiagramDataDto.setFieldCaption(optionalCampaignFormElement.get().getCaption());
+			} else {
+				campaignDiagramDataDto.setFieldCaption(fieldId);
+			}
+		});
 		return resultData;
 	}
 

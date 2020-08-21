@@ -31,9 +31,7 @@ public class CampaignDashboardDataProvider {
 				.getDiagramData(
 					campaignDiagramDefinitionDto.getCampaignDiagramSeriesList(),
 					new CampaignDiagramCriteria(campaign, area, region, district));
-			if (diagramData != null && !diagramData.isEmpty()) {
-				campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
-			}
+			campaignFormDataMap.put(campaignDiagramDefinitionDto, diagramData);
 		});
 	}
 

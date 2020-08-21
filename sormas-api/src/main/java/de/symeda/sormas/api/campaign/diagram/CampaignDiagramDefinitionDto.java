@@ -7,6 +7,7 @@ import de.symeda.sormas.api.EntityDto;
 public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	private String diagramId;
+	private String diagramCaption;
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeriesList;
 
@@ -16,6 +17,14 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	public void setDiagramId(String diagramId) {
 		this.diagramId = diagramId;
+	}
+
+	public String getDiagramCaption() {
+		return diagramCaption;
+	}
+
+	public void setDiagramCaption(String diagramCaption) {
+		this.diagramCaption = diagramCaption;
 	}
 
 	public DiagramType getDiagramType() {

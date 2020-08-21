@@ -1,16 +1,22 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.ui.highcharts.HighChart;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
@@ -28,9 +34,24 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		this.diagramDefinition = diagramDefinition;
 		this.diagramDataList = diagramDataList;
 
+		HorizontalLayout headerLayout = new HorizontalLayout();
+		headerLayout.setWidth(100, Unit.PERCENTAGE);
+		headerLayout.setSpacing(true);
+		CssStyles.style(headerLayout, CssStyles.VSPACE_4);
+
+		Label headerLabel = new Label(diagramDefinition.getDiagramCaption());
+		headerLabel.setSizeUndefined();
+		CssStyles.style(headerLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+
+		headerLayout.addComponent(headerLabel);
+		headerLayout.setComponentAlignment(headerLabel, Alignment.BOTTOM_LEFT);
+		headerLayout.setExpandRatio(headerLabel, 1);
+
+		addComponent(headerLayout);
+
+		setWidth(100, Unit.PERCENTAGE);
+
 		campaignColumnChart = new HighChart();
-		campaignColumnChart.setWidth(800, Unit.PIXELS);
-		campaignColumnChart.setHeight(400, Unit.PIXELS);
 
 		addComponent(campaignColumnChart);
 		setExpandRatio(campaignColumnChart, 1);
@@ -81,14 +102,25 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		//@formatter:on
 
 		// series
+		if (diagramDefinition.getCampaignDiagramSeriesList()
+			.stream()
+			.filter(campaignDiagramSeries -> campaignDiagramSeries.getStack() != null)
+			.findAny()
+			.isPresent()) {
+			hcjs.append("plotOptions: {\n" + "    column: {\n" + "      stacking: 'normal'\n" + "    }\n" + "  },");
+		}
 		hcjs.append("series: [");
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeriesList()) {
 			String seriesKey = series.getFieldId(); // TODO
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
 				continue;
-			// TODO use name of field
-			hcjs.append("{ name:'" + series.getFieldId() + "', data: [");
+
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
+			Collection<CampaignDiagramDataDto> values = seriesData.values();
+			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
+			final CampaignDiagramDataDto campaignDiagramDataDto = iterator.next();
+			final String fieldName = iterator.hasNext() ? campaignDiagramDataDto.getFieldCaption() : seriesKey;
+			hcjs.append("{ name:'" + fieldName + "', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
 					hcjs.append(seriesData.get(axisKey).getValueSum().toString()).append(",");
@@ -96,12 +128,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					hcjs.append("0,");
 				}
 			}
-			hcjs.append("]},");
+			if (series.getStack() != null) {
+				hcjs.append("],stack:'" + series.getStack() + "'},");
+			} else {
+				hcjs.append("]},");
+			}
 		}
 		hcjs.append("]");
-
-		// TODO include stacking
-
 		hcjs.append("}");
 
 		campaignColumnChart.setHcjs(hcjs.toString());

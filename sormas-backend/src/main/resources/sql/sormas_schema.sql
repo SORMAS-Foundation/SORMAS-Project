@@ -4932,6 +4932,8 @@ ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE js
 ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
 ALTER TABLE campaignformdata ALTER COLUMN formvalues TYPE json USING formvalues::json;
 ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaigndiagramdefinition ADD COLUMN diagramCaption varchar(255);
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (238, 'Campaign diagram visualization #2526');
 

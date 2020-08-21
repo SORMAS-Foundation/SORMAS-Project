@@ -22,6 +22,7 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 	private static final long serialVersionUID = 7360131476160449930L;
 
 	private String diagramId;
+	private String diagramCaption;
 	private DiagramType diagramType;
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
 
@@ -32,6 +33,15 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	public void setDiagramId(String diagramId) {
 		this.diagramId = diagramId;
+	}
+
+	@Column
+	public String getDiagramCaption() {
+		return diagramCaption;
+	}
+
+	public void setDiagramCaption(String diagramCaption) {
+		this.diagramCaption = diagramCaption;
 	}
 
 	@Enumerated(EnumType.STRING)

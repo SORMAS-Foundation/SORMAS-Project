@@ -6,19 +6,30 @@ public class CampaignDiagramDataDto implements Serializable {
 
 	private static final long serialVersionUID = -8813972727008846360L;
 
+	private String formMetaUuid;
 	private String formId;
 	private String fieldId;
+	private String fieldCaption;
 	private Object valueSum;
 	private Object groupingKey;
 	private String groupingCaption;
 
-	public CampaignDiagramDataDto(String formId, String fieldId, Object valueSum, Object groupingKey, String groupingCaption) {
+	public CampaignDiagramDataDto(String formMetaUuid, String formId, String fieldId, Object valueSum, Object groupingKey, String groupingCaption) {
+		this.formMetaUuid = formMetaUuid;
 		this.formId = formId;
 		this.fieldId = fieldId;
 		this.valueSum = valueSum;
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;
 
+	}
+
+	public String getFormMetaUuid() {
+		return formMetaUuid;
+	}
+
+	public void setFormMetaUuid(String formMetaUuid) {
+		this.formMetaUuid = formMetaUuid;
 	}
 
 	public String getFormId() {
@@ -35,6 +46,14 @@ public class CampaignDiagramDataDto implements Serializable {
 
 	public void setFieldId(String fieldId) {
 		this.fieldId = fieldId;
+	}
+
+	public String getFieldCaption() {
+		return fieldCaption;
+	}
+
+	public void setFieldCaption(String fieldCaption) {
+		this.fieldCaption = fieldCaption;
 	}
 
 	public Object getValueSum() {
