@@ -95,6 +95,7 @@ read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 PEM_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
 P12_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
 CRT_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
+CSV_FILE=${SORMAS2SORMAS_DIR}/server-access-data.csv
 
 # generate private key and self signed certificate
 openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_FILE}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_FILE}"
@@ -103,6 +104,10 @@ openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -ke
 openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -name "${SORMAS_S2S_CERT_CN}" -in "${CRT_FILE}"
 
 rm "${PEM_FILE}"
+
+echo "Generating server access data CSV"
+echo -e "SEP=," > "${CSV_FILE}"
+echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
 sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
