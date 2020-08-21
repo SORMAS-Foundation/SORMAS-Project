@@ -39,13 +39,13 @@ the path to the ``sormas.properties`` file.
    when creating the certificate. <br/>
    **Please fill in on the third column the full URL of the server.** <br/>
    You will also have to set up a user for communicating with other SORMAS instances.
-6. The generated ``.p12`` file should not be shared with third parties. <br/>
+7. The generated ``.p12`` file should not be shared with third parties. <br/>
    The generated ``.crt`` file will be verified and shared with other SORMAS instances, from which this instance
    will be able to request data. Conversely, in order to enable other SORMAS instances to request data from this 
    instance, their certificate files should be obtained and added to the local truststore. The ``server-access-data.csv``
    file will also have to be shared so that the access data of this instance is known to other instances. 
    More details can be found in the next section.
-7. The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
+8. The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
 
 ### Adding a new certificate to the Truststore
 

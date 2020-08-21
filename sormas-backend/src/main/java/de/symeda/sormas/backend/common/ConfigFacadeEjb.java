@@ -67,6 +67,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
+	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
 	public static final String RSCRIPT_EXECUTABLE = "rscript.executable";
 
@@ -243,6 +244,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomFilesPath() {
 		return getProperty(CUSTOM_FILES_PATH, "/opt/sormas/custom/");
+	}
+
+	@Override
+	public String getSormas2sormasFilesPath() {
+		return getProperty(SORMAS2SORMAS_FILES_PATH, "/opt/sormas/sormas2sormas/");
 	}
 
 	@Override

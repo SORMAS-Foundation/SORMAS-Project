@@ -52,6 +52,8 @@ public interface ConfigFacade {
 
 	String getCustomFilesPath();
 
+	String getSormas2sormasFilesPath();
+
 	String getRScriptExecutable();
 
 	char getCsvSeparator();

@@ -106,7 +106,6 @@ openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${S
 rm "${PEM_FILE}"
 
 echo "Generating server access data CSV"
-echo -e "SEP=," > "${CSV_FILE}"
 echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
