@@ -28,6 +28,7 @@ import fish.payara.security.openid.domain.IdentityTokenImpl;
 import fish.payara.security.openid.domain.OpenIdConfiguration;
 import fish.payara.security.openid.domain.OpenIdContextImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.soteria.WrappingCallerPrincipal;
 import org.keycloak.KeycloakPrincipal;
@@ -36,6 +37,8 @@ import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,6 +47,9 @@ import javax.security.enterprise.CallerPrincipal;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +68,8 @@ import static java.util.Objects.nonNull;
 @ApplicationScoped
 public class SormasOpenIdIdentityStore implements IdentityStore {
 
+	private final static Logger logger = LoggerFactory.getLogger(SormasOpenIdIdentityStore.class);
+
 	@Inject
 	private OpenIdContextImpl context;
 
@@ -71,7 +79,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	@Inject
 	private UserInfoController userInfoController;
 
-	public CredentialValidationResult validate(OpenIdCredential credential) {
+	public CredentialValidationResult validate(OpenIdCredential credential) throws InvocationTargetException, IllegalAccessException {
 		HttpMessageContext httpContext = credential.getHttpContext();
 		OpenIdConfiguration configuration = credential.getConfiguration();
 		IdentityTokenImpl idToken = (IdentityTokenImpl) credential.getIdentityToken();
@@ -104,8 +112,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 
 		context.setCallerName(getCallerName(configuration));
 		Set<String> groups = getCallerGroups(context.getCallerName());
-		//TODO: check if the context.setCallerGroups works for newer versions of Payara
-		context.setCallerGroups(StringUtils.join(groups, ","));
+		setGroups(groups);
 
 		try {
 			return new CredentialValidationResult(createPrincipal(accessToken.getToken(), idToken.getToken()), groups);
@@ -146,6 +153,37 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 
 		KeycloakSecurityContext securityContext = new KeycloakSecurityContext(accessToken, keycloakAccessToken, identityToken, keycloakIDToken);
 		return new WrappingCallerPrincipal(new KeycloakPrincipal<>(context.getCallerName(), securityContext));
+	}
+
+	/**
+	 * Due to different API for the {@link OpenIdContextImpl#setCallerGroups} method, we have to check first the parameter type before setting it.
+	 *
+	 * @param groups user groups
+	 */
+	private void setGroups(Set<String> groups) throws InvocationTargetException, IllegalAccessException {
+		for (Method method : context.getClass().getMethods()) {
+			if (StringUtils.equals(method.getName(), "setCallerGroups")) {
+				Parameter[] parameters = method.getParameters();
+				if (ArrayUtils.isEmpty(parameters)) {
+					logger.debug("Unexpected number of parameters. Expected 1, but got 0.");
+					return;
+				}
+
+				if (parameters.length > 1) {
+					logger.debug("Unexpected number of parameters. Expected 1, but got {}", parameters.length);
+					return;
+				}
+
+				if (parameters[0].getType().isAssignableFrom(String.class)) {
+					method.invoke(context, StringUtils.join(groups, ","));
+				} else if (parameters[0].getType().isAssignableFrom(Set.class)) {
+					method.invoke(context, groups);
+				} else {
+					logger.warn("Unexpected parameter type. Expected Set or String, but got {}", parameters[0].getType().getCanonicalName());
+					return;
+				}
+			}
+		}
 	}
 
 }

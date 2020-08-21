@@ -19,13 +19,15 @@
 package de.symeda.sormas.rest.security.config;
 
 import de.symeda.sormas.rest.security.KeycloakFilter;
+import fish.payara.security.annotations.OpenIdAuthenticationDefinition;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.spi.HttpFacade;
 
-import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 
 /**
@@ -39,12 +41,13 @@ import java.io.ByteArrayInputStream;
 @LocalBean
 public class KeycloakConfigResolver implements org.keycloak.adapters.KeycloakConfigResolver {
 
-	@Resource(lookup = "keycloak/json")
-	private String keycloakConfig;
+	@Inject
+	@ConfigProperty(name = "sormas.rest.security.oidc.json")
+	private String oidcJson;
 
 	@Override
 	public KeycloakDeployment resolve(HttpFacade.Request facade) {
-		return KeycloakDeploymentBuilder.build(new ByteArrayInputStream(keycloakConfig.getBytes()));
+		return KeycloakDeploymentBuilder.build(new ByteArrayInputStream(oidcJson.getBytes()));
 	}
 
 }
