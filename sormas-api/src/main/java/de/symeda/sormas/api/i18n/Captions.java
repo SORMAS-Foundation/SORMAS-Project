@@ -1260,14 +1260,18 @@ public interface Captions {
 	String Symptoms_bilateralCataracts = "Symptoms.bilateralCataracts";
 	String Symptoms_blackeningDeathOfTissue = "Symptoms.blackeningDeathOfTissue";
 	String Symptoms_bleedingVagina = "Symptoms.bleedingVagina";
+	String Symptoms_bloodCirculationProblems = "Symptoms.bloodCirculationProblems";
 	String Symptoms_bloodInStool = "Symptoms.bloodInStool";
 	String Symptoms_bloodPressureDiastolic = "Symptoms.bloodPressureDiastolic";
 	String Symptoms_bloodPressureSystolic = "Symptoms.bloodPressureSystolic";
 	String Symptoms_bloodUrine = "Symptoms.bloodUrine";
 	String Symptoms_bloodyBlackStool = "Symptoms.bloodyBlackStool";
+	String Symptoms_blueLips = "Symptoms.blueLips";
+	String Symptoms_breathlessness = "Symptoms.breathlessness";
 	String Symptoms_buboesGroinArmpitNeck = "Symptoms.buboesGroinArmpitNeck";
 	String Symptoms_bulgingFontanelle = "Symptoms.bulgingFontanelle";
 	String Symptoms_chestPain = "Symptoms.chestPain";
+	String Symptoms_chestPressure = "Symptoms.chestPressure";
 	String Symptoms_chillsSweats = "Symptoms.chillsSweats";
 	String Symptoms_coma = "Symptoms.coma";
 	String Symptoms_confusedDisoriented = "Symptoms.confusedDisoriented";
@@ -1281,6 +1285,7 @@ public interface Captions {
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
 	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
+	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
 	String Symptoms_coughWithSputum = "Symptoms.coughWithSputum";
 	String Symptoms_darkUrine = "Symptoms.darkUrine";
 	String Symptoms_dehydration = "Symptoms.dehydration";
@@ -1289,6 +1294,7 @@ public interface Captions {
 	String Symptoms_diarrhea = "Symptoms.diarrhea";
 	String Symptoms_difficultyBreathing = "Symptoms.difficultyBreathing";
 	String Symptoms_digestedBloodVomit = "Symptoms.digestedBloodVomit";
+	String Symptoms_dizzinessStandingUp = "Symptoms.dizzinessStandingUp";
 	String Symptoms_dysphagia = "Symptoms.dysphagia";
 	String Symptoms_erraticBehaviour = "Symptoms.erraticBehaviour";
 	String Symptoms_excessSalivation = "Symptoms.excessSalivation";
@@ -1296,8 +1302,10 @@ public interface Captions {
 	String Symptoms_eyePainLightSensitive = "Symptoms.eyePainLightSensitive";
 	String Symptoms_eyesBleeding = "Symptoms.eyesBleeding";
 	String Symptoms_fastHeartRate = "Symptoms.fastHeartRate";
+	String Symptoms_fatigue = "Symptoms.fatigue";
 	String Symptoms_fatigueWeakness = "Symptoms.fatigueWeakness";
 	String Symptoms_fever = "Symptoms.fever";
+	String Symptoms_feverishFeeling = "Symptoms.feverishFeeling";
 	String Symptoms_firstSymptom = "Symptoms.firstSymptom";
 	String Symptoms_fluidInLungCavity = "Symptoms.fluidInLungCavity";
 	String Symptoms_fluidInLungCavityAuscultation = "Symptoms.fluidInLungCavityAuscultation";
@@ -1311,6 +1319,7 @@ public interface Captions {
 	String Symptoms_height = "Symptoms.height";
 	String Symptoms_hemorrhagicSyndrome = "Symptoms.hemorrhagicSyndrome";
 	String Symptoms_hiccups = "Symptoms.hiccups";
+	String Symptoms_highOrLowBloodPressure = "Symptoms.highOrLowBloodPressure";
 	String Symptoms_hydrophobia = "Symptoms.hydrophobia";
 	String Symptoms_hyperactivity = "Symptoms.hyperactivity";
 	String Symptoms_hyperglycemia = "Symptoms.hyperglycemia";
@@ -1375,6 +1384,7 @@ public interface Captions {
 	String Symptoms_painfulLymphadenitis = "Symptoms.painfulLymphadenitis";
 	String Symptoms_palpableLiver = "Symptoms.palpableLiver";
 	String Symptoms_palpableSpleen = "Symptoms.palpableSpleen";
+	String Symptoms_palpitations = "Symptoms.palpitations";
 	String Symptoms_paralysis = "Symptoms.paralysis";
 	String Symptoms_paresis = "Symptoms.paresis";
 	String Symptoms_paresthesiaAroundWound = "Symptoms.paresthesiaAroundWound";
@@ -1416,7 +1426,9 @@ public interface Captions {
 	String Symptoms_unexplainedBleeding = "Symptoms.unexplainedBleeding";
 	String Symptoms_unilateralCataracts = "Symptoms.unilateralCataracts";
 	String Symptoms_uproariousness = "Symptoms.uproariousness";
+	String Symptoms_urinaryRetention = "Symptoms.urinaryRetention";
 	String Symptoms_vomiting = "Symptoms.vomiting";
+	String Symptoms_weakness = "Symptoms.weakness";
 	String Symptoms_weight = "Symptoms.weight";
 	String Symptoms_wheezing = "Symptoms.wheezing";
 	String symptomsLesionsLocations = "symptomsLesionsLocations";

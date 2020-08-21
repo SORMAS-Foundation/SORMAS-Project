@@ -4950,4 +4950,34 @@ ALTER TABLE person_history ADD COLUMN placeofbirthfacilitytype varchar(255);
 UPDATE person SET placeofbirthfacilitytype = 'HOSPITAL' WHERE placeofbirthfacility_id IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (239, 'Import and use new facility types #1637');
+
+-- 2020-08-20 Adjust Covid-19 Symptoms for Switzerland #2669
+ALTER TABLE symptoms ADD COLUMN feverishFeeling varchar(255);
+ALTER TABLE symptoms ADD COLUMN weakness varchar(255);
+ALTER TABLE symptoms ADD COLUMN fatigue varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughWithoutSputum varchar(255);
+ALTER TABLE symptoms ADD COLUMN breathlessness varchar(255);
+ALTER TABLE symptoms ADD COLUMN chestPressure varchar(255);
+ALTER TABLE symptoms ADD COLUMN blueLips varchar(255);
+ALTER TABLE symptoms ADD COLUMN bloodCirculationProblems varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpitations varchar(255);
+ALTER TABLE symptoms ADD COLUMN dizzinessStandingUp varchar(255);
+ALTER TABLE symptoms ADD COLUMN highOrLowBloodPressure varchar(255);
+ALTER TABLE symptoms ADD COLUMN urinaryRetention varchar(255);
+	
+ALTER TABLE symptoms_history ADD COLUMN feverishFeeling varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN weakness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fatigue varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithoutSputum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN breathlessness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN chestPressure varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN blueLips varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN bloodCirculationProblems varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpitations varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN dizzinessStandingUp varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN highOrLowBloodPressure varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN urinaryRetention varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (240, 'Adjust Covid-19 Symptoms for Switzerland #2669');
+
 -- *** Insert new sql commands BEFORE this line ***
