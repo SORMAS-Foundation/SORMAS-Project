@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
@@ -75,6 +77,8 @@ import de.symeda.sormas.api.visit.VisitDto;
  * class automatically.
  */
 public class DataDictionaryGenerator {
+
+	CellStyle defaultCellStyle;
 
 	@Test
 	public void generateDataDictionary() throws FileNotFoundException, IOException {
@@ -160,7 +164,7 @@ public class DataDictionaryGenerator {
 		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
 
-		CellStyle defaultCellStyle = workbook.createCellStyle();
+		defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
 
 		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
@@ -247,11 +251,72 @@ public class DataDictionaryGenerator {
 		table.setCellReferences(reference);
 		table.getCTTable().addNewAutoFilter();
 
+		// constant facilities
+		if (CaseDataDto.class.equals(entityClass) || PersonDto.class.equals(entityClass)) {
+			rowNumber = createFacilityTable(sheet, rowNumber + 1);
+		}
+
+		// enums
 		for (Class<Enum<?>> usedEnum : usedEnums) {
 			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum);
 		}
 
 		return sheet;
+	}
+
+	private int createFacilityTable(XSSFSheet sheet, int startRow) {
+
+		// Create
+		XSSFTable table = sheet.createTable();
+		String safeTableName = (sheet.getSheetName() + FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", "")).replaceAll("\\s", "_");
+		table.setName(safeTableName);
+		table.setDisplayName(safeTableName);
+		XssfHelper.styleTable(table, 2);
+
+		int columnCount = EnumColumn.values().length - 1;
+		int rowNumber = startRow;
+
+		// header
+		XSSFRow headerRow = sheet.createRow(rowNumber++);
+		for (EnumColumn column : EnumColumn.values()) {
+			if (EnumColumn.SHORT.equals(column)) {
+				continue;
+			}
+			table.addColumn();
+			String columnCaption = column.toString();
+			columnCaption = columnCaption.substring(0, 1) + columnCaption.substring(1).toLowerCase();
+			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
+		}
+
+		List<String> constantFacilities = Arrays.asList(FacilityDto.OTHER_FACILITY, FacilityDto.NO_FACILITY);
+		for (String constantFacility : constantFacilities) {
+			XSSFRow row = sheet.createRow(rowNumber++);
+			XSSFCell cell;
+
+			cell = row.createCell(EnumColumn.TYPE.ordinal());
+			if (constantFacility == constantFacilities.get(0)) {
+				cell.setCellValue(FacilityReferenceDto.class.getSimpleName().replaceAll("Dto", ""));
+			}
+
+			cell = row.createCell(EnumColumn.VALUE.ordinal());
+			cell.setCellValue(constantFacility);
+
+			cell = row.createCell(EnumColumn.CAPTION.ordinal());
+			String caption = I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, constantFacility);
+			cell.setCellValue(caption);
+
+			cell = row.createCell(EnumColumn.DESCRIPTION.ordinal());
+			cell.setCellStyle(defaultCellStyle);
+			String desc = I18nProperties.getPrefixDescription(FacilityDto.I18N_PREFIX, constantFacility);
+			cell.setCellValue(DataHelper.equal(caption, desc) ? "" : desc);
+		}
+
+		AreaReference reference =
+			new AreaReference(new CellReference(startRow, 0), new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
+		table.setCellReferences(reference);
+		table.getCTTable().addNewAutoFilter();
+
+		return rowNumber;
 	}
 
 	private enum EnumColumn {
