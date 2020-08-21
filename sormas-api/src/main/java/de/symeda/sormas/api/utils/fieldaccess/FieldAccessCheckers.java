@@ -26,20 +26,20 @@ public class FieldAccessCheckers {
 	public FieldAccessCheckers() {
 	}
 
-	public boolean isAccessible(Class<?> parentType, String fieldName, boolean inJurisdiction) {
+	public boolean isAccessible(Class<?> parentType, String fieldName, boolean inJurisdiction, boolean withMandatoryFields) {
 
 		Field declaredField = getDeclaredField(parentType, fieldName);
 		if (declaredField == null) {
 			return true;
 		}
 
-		return isAccessible(declaredField, inJurisdiction);
+		return isAccessible(declaredField, inJurisdiction, withMandatoryFields);
 	}
 
-	public boolean isAccessible(Field field, boolean inJurisdiction) {
+	public boolean isAccessible(Field field, boolean inJurisdiction, boolean withMandatoryFields) {
 
 		for (FieldAccessChecker checker : checkers) {
-			if (checker.isConfiguredForCheck(field) && !checker.hasRight(inJurisdiction)) {
+			if (checker.isConfiguredForCheck(field, withMandatoryFields) && !checker.hasRight(inJurisdiction)) {
 				return false;
 			}
 		}
@@ -47,10 +47,10 @@ public class FieldAccessCheckers {
 		return true;
 	}
 
-	public boolean isConfiguredForCheck(Field field) {
+	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
 
 		for (FieldAccessChecker checker : checkers) {
-			if (checker.isConfiguredForCheck(field)) {
+			if (checker.isConfiguredForCheck(field, withMandatory)) {
 				return true;
 			}
 		}

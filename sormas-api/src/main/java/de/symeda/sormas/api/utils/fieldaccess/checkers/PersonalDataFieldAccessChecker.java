@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
+import java.lang.reflect.Field;
+
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -41,6 +43,11 @@ public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker
 
 	public static PersonalDataFieldAccessChecker forcedNoAccess() {
 		return new PersonalDataFieldAccessChecker(false, false);
+	}
+
+	@Override
+	boolean isAnnotatedFieldMandatory(Field annotatedField) {
+		return annotatedField.getAnnotation(PersonalData.class).mandatoryField();
 	}
 
 	public interface RightCheck {

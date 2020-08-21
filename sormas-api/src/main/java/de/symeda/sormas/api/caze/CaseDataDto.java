@@ -55,6 +55,9 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.visit.VisitDto;
 
 public class CaseDataDto extends PseudonymizableDto {
@@ -221,8 +224,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private CommunityReferenceDto community;
 	@Outbreaks
 	@Required
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
@@ -315,8 +318,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private UserReferenceDto caseOfficer;
 	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
 	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
@@ -329,8 +334,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
-	@PersonalData
-	@SensitiveData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
 	@SensitiveData

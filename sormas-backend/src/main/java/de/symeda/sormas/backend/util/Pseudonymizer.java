@@ -31,19 +31,19 @@ import de.symeda.sormas.backend.user.User;
 public class Pseudonymizer extends DtoPseudonymizer {
 
 	public static Pseudonymizer getDefault(RightCheck rightCheck) {
-		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), "");
+		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), "", true);
 	}
 
 	public static Pseudonymizer getDefault(RightCheck rightCheck, String stringValuePlaceholder) {
-		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), stringValuePlaceholder);
+		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), stringValuePlaceholder, true);
 	}
 
-	public static Pseudonymizer empty() {
-		return new Pseudonymizer(new FieldAccessCheckers(), "");
+	public static Pseudonymizer getDefaultNoCheckers(boolean pseudonymizeMandatoryFields) {
+		return new Pseudonymizer(new FieldAccessCheckers(), "", pseudonymizeMandatoryFields);
 	}
 
-	public Pseudonymizer(FieldAccessCheckers fieldAccessCheckers, String stringValuePlaceholder) {
-		super(fieldAccessCheckers, stringValuePlaceholder);
+	public Pseudonymizer(FieldAccessCheckers fieldAccessCheckers, String stringValuePlaceholder, boolean pseudonymizeMandatoryFields) {
+		super(fieldAccessCheckers, stringValuePlaceholder, pseudonymizeMandatoryFields);
 	}
 
 	private SensitiveDataFieldAccessChecker getSensitiveDataFieldAccessChecker() {

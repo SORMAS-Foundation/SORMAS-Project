@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
+import java.lang.reflect.Field;
+
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -39,6 +41,11 @@ public class SensitiveDataFieldAccessChecker extends RightBasedFieldAccessChecke
 
 	public static SensitiveDataFieldAccessChecker forcedNoAccess() {
 		return new SensitiveDataFieldAccessChecker(false, false);
+	}
+
+	@Override
+	boolean isAnnotatedFieldMandatory(Field annotatedField) {
+		return annotatedField.getAnnotation(SensitiveData.class).mandatoryField();
 	}
 
 	public interface RightCheck {

@@ -36,9 +36,17 @@ public abstract class RightBasedFieldAccessChecker implements FieldAccessChecker
 	}
 
 	@Override
-	public boolean isConfiguredForCheck(Field field) {
-		return field.isAnnotationPresent(fieldAnnotation);
+	public boolean isConfiguredForCheck(Field field, boolean withMandatory) {
+		boolean annotationPresent = field.isAnnotationPresent(fieldAnnotation);
+
+		if (!annotationPresent || withMandatory) {
+			return annotationPresent;
+		}
+
+		return !isAnnotatedFieldMandatory(field);
 	}
+
+	abstract boolean isAnnotatedFieldMandatory(Field annotatedField);
 
 	public boolean isEmbedded(Field field) {
 		return field.isAnnotationPresent(embeddedAnnotation);

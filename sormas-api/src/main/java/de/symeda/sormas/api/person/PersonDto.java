@@ -102,24 +102,31 @@ public class PersonDto extends PseudonymizableDto {
 
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String firstName;
 	@Outbreaks
 	@Required
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private String lastName;
 	@PersonalData
+	@SensitiveData
 	private String nickname;
 	@PersonalData
+	@SensitiveData
 	private String mothersName;
 	@PersonalData
+	@SensitiveData
 	private String mothersMaidenName;
 	@PersonalData
+	@SensitiveData
 	private String fathersName;
 	@Outbreaks
 	private Sex sex;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private Integer birthdateDD;
 	@Outbreaks
 	private Integer birthdateMM;

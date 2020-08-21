@@ -46,7 +46,7 @@ public class FieldAccessColumnStyleGenerator<T> implements StyleGenerator<T> {
 
 			return fieldAccessCheckers.isEmbedded(beanType, columnId)
 				? fieldAccessCheckers.hasRights(inJurisdiction)
-				: fieldAccessCheckers.isAccessible(beanType, columnId, inJurisdiction);
+				: fieldAccessCheckers.isAccessible(beanType, columnId, inJurisdiction, true);
 		});
 	}
 

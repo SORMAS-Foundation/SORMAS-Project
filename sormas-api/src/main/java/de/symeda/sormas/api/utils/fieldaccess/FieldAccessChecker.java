@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 
 public interface FieldAccessChecker {
 
-	boolean isConfiguredForCheck(Field field);
+	boolean isConfiguredForCheck(Field field, boolean withMandatory);
 
 	boolean isEmbedded(Field field);
 

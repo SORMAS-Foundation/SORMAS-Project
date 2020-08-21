@@ -29,7 +29,7 @@ public class UiFieldAccessCheckers {
 	}
 
 	public boolean isAccessible(Class<?> parentType, String fieldName) {
-		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction);
+		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction, true);
 	}
 
 	public boolean isEmbedded(Class<?> parentType, String fieldName) {
