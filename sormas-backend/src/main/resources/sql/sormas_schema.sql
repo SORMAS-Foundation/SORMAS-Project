@@ -4925,26 +4925,43 @@ ALTER TABLE visit_history ADD COLUMN caze_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
 
--- 2020-08-13 Store Sormas 2 Sormas sharing information #2624
+-- 2020-08-13 Sormas 2 Sormas sharing information #2624
 
-CREATE TABLE sormastosormasshareinfo (
+CREATE TABLE sormastosormassource (
      id bigint NOT NULL,
      uuid varchar(36) not null unique,
      creationdate timestamp without time zone NOT NULL,
      changedate timestamp not null,
-     senderhealthdepartment character varying(512),
+     healthdepartment character varying(512),
      sendername character varying(512),
      senderemail character varying(512),
      senderphonenumber character varying(512),
      primary key(id)
 );
-ALTER TABLE sormastosormasshareinfo OWNER TO sormas_user;
+ALTER TABLE sormastosormassource OWNER TO sormas_user;
 
-ALTER TABLE cases ADD COLUMN sormasshareinfo_id bigint;
-ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasshareinfo_id FOREIGN KEY (sormasshareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE cases ADD COLUMN sormasToSormasSource_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasToSormasSource_id FOREIGN KEY (sormasToSormasSource_id) REFERENCES sormastosormassource (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-ALTER TABLE contact ADD COLUMN sormasshareinfo_id bigint;
-ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasshareinfo_id FOREIGN KEY (sormasshareinfo_id) REFERENCES sormastosormasshareinfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE contact ADD COLUMN sormasToSormasSource_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasSource_id FOREIGN KEY (sormasToSormasSource_id) REFERENCES sormastosormassource (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+CREATE TABLE sormastosormasshareinfo (
+    id bigint NOT NULL,
+    uuid varchar(36) not null unique,
+    creationdate timestamp without time zone NOT NULL,
+    changedate timestamp not null,
+    caze_id bigint,
+    contact_id bigint,
+    healthdepartment character varying(512),
+    sender_id bigint,
+    primary key(id)
+);
+
+ALTER TABLE sormastosormassource OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (238, 'Store Sormas 2 Sormas sharing information #2624');
 

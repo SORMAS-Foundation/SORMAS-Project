@@ -15,20 +15,35 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.List;
+import de.symeda.sormas.api.BaseCriteria;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 
-import javax.ejb.Remote;
+public class SormasToSormasShareInfoCriteria extends BaseCriteria {
 
-@Remote
-public interface SormasToSormasFacade {
+	private static final long serialVersionUID = 8659993748606564333L;
 
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
+	private CaseReferenceDto caze;
 
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
+	private ContactReferenceDto contact;
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
 
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public SormasToSormasShareInfoCriteria caze(CaseReferenceDto caze) {
+		this.caze = caze;
 
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
+		return this;
+	}
+
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public SormasToSormasShareInfoCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+
+		return this;
+	}
 }

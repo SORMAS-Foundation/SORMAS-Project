@@ -1902,7 +1902,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
-		target.setSormasShareInfo(sormasToSormasFacade.fromDto(source.getSormasShareInfo()));
+		target.setSormasToSormasSource(sormasToSormasFacade.fromDto(source.getSormasToSormasSource()));
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
 		if (source.getFollowUpStatus() != null) {
@@ -2169,7 +2169,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFollowUpStatus(source.getFollowUpStatus());
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
-		target.setSormasShareInfo(SormasToSormasFacadeEjb.toDto(source.getSormasShareInfo()));
+		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toDto(source.getSormasToSormasSource()));
 
 		return target;
 	}

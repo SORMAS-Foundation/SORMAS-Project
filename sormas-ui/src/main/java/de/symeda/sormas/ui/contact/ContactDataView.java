@@ -42,6 +42,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.samples.SampleListComponent;
+import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -63,6 +64,7 @@ public class ContactDataView extends AbstractContactView {
 	public static final String CASE_BUTTONS_LOC = "caseButtons";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
+	public static final String SORMAS_TO_SORMAS_LOC = "sormasToSormas";
 
 	public ContactDataView() {
 		super(VIEW_NAME);
@@ -78,7 +80,8 @@ public class ContactDataView extends AbstractContactView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -97,16 +100,8 @@ public class ContactDataView extends AbstractContactView {
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-
-		VerticalLayout caseLayout = new VerticalLayout();
-		caseLayout.setMargin(false);
-		caseLayout.addStyleNames(CssStyles.MAIN_COMPONENT);
-		caseLayout.addComponent(ButtonHelper.createButton(Captions.caseShareToSormas, (e) -> {
-			ControllerProvider.getSormasToSormasController().shareContactToSormas(getContactRef());
-		}));
-		caseLayout.addComponent(editComponent);
-
-		layout.addComponent(caseLayout, EDIT_LOC);
+		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
+		layout.addComponent(editComponent, EDIT_LOC);
 
 		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 		if (contactDto.getCaze() != null) {
@@ -213,6 +208,16 @@ public class ContactDataView extends AbstractContactView {
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
+
+		VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
+		sormasToSormasLocLayout.setMargin(false);
+		sormasToSormasLocLayout.setSpacing(false);
+
+		SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(contactDto);
+		sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
+		sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
+
+		layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 
 		setContactEditPermission(container);
 	}

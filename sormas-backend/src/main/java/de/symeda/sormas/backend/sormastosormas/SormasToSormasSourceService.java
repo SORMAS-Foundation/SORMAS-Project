@@ -13,22 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas;
 
-import java.util.List;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 
-import javax.ejb.Remote;
+import de.symeda.sormas.backend.common.AbstractAdoService;
 
-@Remote
-public interface SormasToSormasFacade {
+@Stateless
+@LocalBean
+public class SormasToSormasSourceService extends AbstractAdoService<SormasToSormasSource> {
 
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
+	public SormasToSormasSourceService() {
+		super(SormasToSormasSource.class);
+	}
 
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SormasToSormasSource, SormasToSormasSource> from) {
+		return null;
+	}
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
-
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 }

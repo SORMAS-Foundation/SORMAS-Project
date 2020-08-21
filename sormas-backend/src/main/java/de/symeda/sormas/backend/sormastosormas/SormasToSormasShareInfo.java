@@ -19,55 +19,66 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "sormastosormasshareinfo")
 public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8368155805122562791L;
 
-	private String senderHealthDepartment;
+	public static final String CAZE = "caze";
+	public static final String CONTACT = "contact";
 
-	private String senderName;
+	private Case caze;
 
-	private String senderEmail;
+	private Contact contact;
 
-	private String senderPhoneNumber;
+	private String healthDepartment;
+
+	private User sender;
+
+	@ManyToOne
+	@JoinColumn
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
+	}
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
-	public String getSenderHealthDepartment() {
-		return senderHealthDepartment;
+	public String getHealthDepartment() {
+		return healthDepartment;
 	}
 
-	public void setSenderHealthDepartment(String senderHealthDepartment) {
-		this.senderHealthDepartment = senderHealthDepartment;
+	public void setHealthDepartment(String healthDepartment) {
+		this.healthDepartment = healthDepartment;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
-	public String getSenderName() {
-		return senderName;
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	public User getSender() {
+		return sender;
 	}
 
-	public void setSenderName(String senderName) {
-		this.senderName = senderName;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSenderEmail() {
-		return senderEmail;
-	}
-
-	public void setSenderEmail(String senderEmail) {
-		this.senderEmail = senderEmail;
-	}
-
-	@Column(length = COLUMN_LENGTH_DEFAULT)
-	public String getSenderPhoneNumber() {
-		return senderPhoneNumber;
-	}
-
-	public void setSenderPhoneNumber(String senderPhoneNumber) {
-		this.senderPhoneNumber = senderPhoneNumber;
+	public void setSender(User sender) {
+		this.sender = sender;
 	}
 }

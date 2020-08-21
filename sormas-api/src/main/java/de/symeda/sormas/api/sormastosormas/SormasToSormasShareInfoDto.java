@@ -16,55 +16,73 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = -1478467237560439811L;
 
-	private String senderHealthDepartment;
-	private String senderName;
-	private String senderEmail;
-	private String senderPhoneNumber;
+	private CaseReferenceDto caze;
+	private ContactReferenceDto contact;
+	private String healthDepartment;
+	private UserReferenceDto sender;
 
-	public SormasToSormasShareInfoDto() {
+	public CaseReferenceDto getCaze() {
+		return caze;
 	}
 
-	public SormasToSormasShareInfoDto(String senderHealthDepartment, String senderName, String senderEmail, String senderPhoneNumber) {
-		this.senderHealthDepartment = senderHealthDepartment;
-		this.senderName = senderName;
-		this.senderEmail = senderEmail;
-		this.senderPhoneNumber = senderPhoneNumber;
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
 	}
 
-	public String getSenderHealthDepartment() {
-		return senderHealthDepartment;
+	public ContactReferenceDto getContact() {
+		return contact;
 	}
 
-	public void setSenderHealthDepartment(String senderHealthDepartment) {
-		this.senderHealthDepartment = senderHealthDepartment;
+	public void setContact(ContactReferenceDto contact) {
+		this.contact = contact;
 	}
 
-	public String getSenderName() {
-		return senderName;
+	public String getHealthDepartment() {
+		return healthDepartment;
 	}
 
-	public void setSenderName(String senderName) {
-		this.senderName = senderName;
+	public void setHealthDepartment(String healthDepartment) {
+		this.healthDepartment = healthDepartment;
 	}
 
-	public String getSenderEmail() {
-		return senderEmail;
+	public UserReferenceDto getSender() {
+		return sender;
 	}
 
-	public void setSenderEmail(String senderEmail) {
-		this.senderEmail = senderEmail;
+	public void setSender(UserReferenceDto sender) {
+		this.sender = sender;
 	}
 
-	public String getSenderPhoneNumber() {
-		return senderPhoneNumber;
+	public static SormasToSormasShareInfoDto build(CaseReferenceDto caze, String healthDepartment, UserReferenceDto sender) {
+		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
+		shareInfo.setCaze(caze);
+
+		return shareInfo;
 	}
 
-	public void setSenderPhoneNumber(String senderPhoneNumber) {
-		this.senderPhoneNumber = senderPhoneNumber;
+	public static SormasToSormasShareInfoDto build(ContactReferenceDto contact, String healthDepartment, UserReferenceDto sender) {
+		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
+		shareInfo.setContact(contact);
+
+		return shareInfo;
+	}
+
+	private static SormasToSormasShareInfoDto build(String healthDepartment, UserReferenceDto sender) {
+		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
+
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setHealthDepartment(healthDepartment);
+		shareInfo.setSender(sender);
+
+		return shareInfo;
 	}
 }

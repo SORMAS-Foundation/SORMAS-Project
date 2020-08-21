@@ -38,7 +38,7 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -57,7 +57,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setCommunity(rdcf.remoteRdcf.community);
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
 
-		caze.setSormasShareInfo(createShareInfo());
+		caze.setSormasToSormasSource(createSormasToSormasSource());
 
 		getSormasToSormasFacade().saveSharedCase(new SormasToSormasCaseDto(person, caze));
 
@@ -81,8 +81,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getUuid(), is(caze.getClinicalCourse().getUuid()));
 		assertThat(savedCase.getMaternalHistory().getUuid(), is(caze.getMaternalHistory().getUuid()));
 
-		assertThat(savedCase.getSormasShareInfo().getSenderHealthDepartment(), is("Test Department"));
-		assertThat(savedCase.getSormasShareInfo().getSenderName(), is("John doe"));
+		assertThat(savedCase.getSormasToSormasSource().getHealthDepartment(), is("Test Department"));
+		assertThat(savedCase.getSormasToSormasSource().getSenderName(), is("John doe"));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setCommunity(rdcf.remoteRdcf.community);
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
 
-		caze.setSormasShareInfo(createShareInfo());
+		caze.setSormasToSormasSource(createSormasToSormasSource());
 
 		caze.getHospitalization().getPreviousHospitalizations().add(PreviousHospitalizationDto.build(caze));
 		caze.getEpiData().getBurials().add(EpiDataBurialDto.build());
@@ -126,7 +126,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setPointOfEntry(rdcf.remoteRdcf.pointOfEntry);
 		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
 		caze.setPortHealthInfo(portHealthInfo);
-		caze.setSormasShareInfo(createShareInfo());
+		caze.setSormasToSormasSource(createSormasToSormasSource());
 
 		getSormasToSormasFacade().saveSharedCase(new SormasToSormasCaseDto(person, caze));
 
@@ -151,7 +151,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.remoteRdcf.district);
 		contact.setCommunity(rdcf.remoteRdcf.community);
 
-		contact.setSormasShareInfo(createShareInfo());
+		contact.setSormasToSormasSource(createSormasToSormasSource());
 
 		getSormasToSormasFacade().saveSharedContact(new SormasToSormasContactDto(person, contact));
 
@@ -169,8 +169,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedContact.getEpiData().getUuid(), is(contact.getEpiData().getUuid()));
 
-		assertThat(savedContact.getSormasShareInfo().getSenderHealthDepartment(), is("Test Department"));
-		assertThat(savedContact.getSormasShareInfo().getSenderName(), is("John doe"));
+		assertThat(savedContact.getSormasToSormasSource().getHealthDepartment(), is("Test Department"));
+		assertThat(savedContact.getSormasToSormasSource().getSenderName(), is("John doe"));
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.remoteRdcf.district);
 		contact.setCommunity(rdcf.remoteRdcf.community);
 
-		contact.setSormasShareInfo(createShareInfo());
+		contact.setSormasToSormasSource(createSormasToSormasSource());
 
 		getSormasToSormasFacade().saveSharedContact(new SormasToSormasContactDto(person, contact));
 
@@ -206,11 +206,12 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		return person;
 	}
 
-	private SormasToSormasShareInfoDto createShareInfo() {
-		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-		shareInfo.setSenderHealthDepartment("Test Department");
-		shareInfo.setSenderName("John doe");
-		return shareInfo;
+	private SormasToSormasSourceDto createSormasToSormasSource() {
+		SormasToSormasSourceDto source = new SormasToSormasSourceDto();
+		source.setHealthDepartment("Test Department");
+		source.setSenderName("John doe");
+
+		return source;
 	}
 
 	private MappableRdcf createRDCF() {

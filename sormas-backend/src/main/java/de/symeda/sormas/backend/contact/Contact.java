@@ -62,6 +62,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasSource;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
@@ -200,7 +201,8 @@ public class Contact extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 
-	private SormasToSormasShareInfo sormasShareInfo;
+	private SormasToSormasSource sormasToSormasSource;
+	private List<SormasToSormasShareInfo> sormasToSormasShares;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -759,11 +761,20 @@ public class Contact extends CoreAdo {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
-	public SormasToSormasShareInfo getSormasShareInfo() {
-		return sormasShareInfo;
+	public SormasToSormasSource getSormasToSormasSource() {
+		return sormasToSormasSource;
 	}
 
-	public void setSormasShareInfo(SormasToSormasShareInfo sormasShareInfo) {
-		this.sormasShareInfo = sormasShareInfo;
+	public void setSormasToSormasSource(SormasToSormasSource sormasSource) {
+		this.sormasToSormasSource = sormasSource;
+	}
+
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CONTACT, fetch = FetchType.LAZY)
+	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
+		return sormasToSormasShares;
+	}
+
+	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
+		this.sormasToSormasShares = sormasToSormasShares;
 	}
 }

@@ -341,7 +341,6 @@ public interface Captions {
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
-	String caseShareToSormas = "caseShareToSormas";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
 	String city = "city";
@@ -1217,11 +1216,18 @@ public interface Captions {
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String singleDayEventDate = "singleDayEventDate";
+	String sormasToSormasCaseNotShared = "sormasToSormasCaseNotShared";
+	String sormasToSormasContactNotShared = "sormasToSormasContactNotShared";
 	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
+	String sormasToSormasListTitle = "sormasToSormasListTitle";
 	String SormasToSormasOptions_healthDepartment = "SormasToSormasOptions.healthDepartment";
 	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
+	String sormasToSormasSentBy = "sormasToSormasSentBy";
+	String sormasToSormasShare = "sormasToSormasShare";
+	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
+	String sormasToSormasSharedWith = "sormasToSormasSharedWith";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
 	String statisticsAttributeSelect = "statisticsAttributeSelect";

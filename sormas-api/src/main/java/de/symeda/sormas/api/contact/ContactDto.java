@@ -28,7 +28,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -193,7 +193,7 @@ public class ContactDto extends PseudonymizableDto {
 	@SensitiveData
 	private String additionalDetails;
 	private EpiDataDto epiData;
-	private SormasToSormasShareInfoDto sormasShareInfo;
+	private SormasToSormasSourceDto sormasToSormasSource;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -673,11 +673,11 @@ public class ContactDto extends PseudonymizableDto {
 		this.epiData = epiData;
 	}
 
-	public SormasToSormasShareInfoDto getSormasShareInfo() {
-		return sormasShareInfo;
+	public SormasToSormasSourceDto getSormasToSormasSource() {
+		return sormasToSormasSource;
 	}
 
-	public void setSormasShareInfo(SormasToSormasShareInfoDto sormasShareInfo) {
-		this.sormasShareInfo = sormasShareInfo;
+	public void setSormasToSormasSource(SormasToSormasSourceDto sormasToSormasSource) {
+		this.sormasToSormasSource = sormasToSormasSource;
 	}
 }
