@@ -20,6 +20,7 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;

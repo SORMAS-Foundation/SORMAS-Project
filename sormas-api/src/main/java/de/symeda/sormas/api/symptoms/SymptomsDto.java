@@ -2839,6 +2839,82 @@ public class SymptomsDto extends PseudonymizableDto {
 		return otherComplicationsText;
 	}
 
+	@Order(300)
+	public SymptomState getRespiratoryDiseaseVentilation() {
+		return respiratoryDiseaseVentilation;
+	}
+
+	@Order(301)
+	public SymptomState getGeneralSignsOfDisease() {
+		return generalSignsOfDisease;
+	}
+
+	@Order(302)
+	public SymptomState getFastHeartRate() {
+		return fastHeartRate;
+	}
+
+	@Order(303)
+	public SymptomState getOxygenSaturationLower94() {
+		return oxygenSaturationLower94;
+	}
+
+	@Order(310)
+	public SymptomState getFeverishFeeling() {
+		return feverishFeeling;
+	}
+
+	@Order(311)
+	public SymptomState getWeakness() {
+		return weakness;
+	}
+
+	@Order(312)
+	public SymptomState getFatigue() {
+		return fatigue;
+	}
+
+	@Order(313)
+	public SymptomState getCoughWithoutSputum() {
+		return coughWithoutSputum;
+	}
+
+	@Order(314)
+	public SymptomState getBreathlessness() {
+		return breathlessness;
+	}
+
+	@Order(315)
+	public SymptomState getChestPressure() {
+		return chestPressure;
+	}
+
+	@Order(316)
+	public SymptomState getBlueLips() {
+		return blueLips;
+	}
+
+	@Order(317)
+	public SymptomState getBloodCirculationProblems() {
+		return bloodCirculationProblems;
+	}
+
+	@Order(318)
+	public SymptomState getDizzinessStandingUp() {
+		return dizzinessStandingUp;
+	}
+
+	@Order(319)
+	public SymptomState getHighOrLowBloodPressure() {
+		return highOrLowBloodPressure;
+	}
+
+	@Order(320)
+	public SymptomState getUrinaryRetention() {
+		return urinaryRetention;
+	}
+
+	@Order(330)
 	public Integer getWeight() {
 		return weight;
 	}
@@ -3571,100 +3647,48 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.otherComplicationsText = otherComplicationsText;
 	}
 
-	public SymptomState getRespiratoryDiseaseVentilation() {
-		return respiratoryDiseaseVentilation;
-	}
-
 	public void setRespiratoryDiseaseVentilation(SymptomState respiratoryDiseaseVentilation) {
 		this.respiratoryDiseaseVentilation = respiratoryDiseaseVentilation;
-	}
-
-	public SymptomState getGeneralSignsOfDisease() {
-		return generalSignsOfDisease;
 	}
 
 	public void setGeneralSignsOfDisease(SymptomState generalSignsOfDisease) {
 		this.generalSignsOfDisease = generalSignsOfDisease;
 	}
 
-	public SymptomState getFastHeartRate() {
-		return fastHeartRate;
-	}
-
 	public void setFastHeartRate(SymptomState fastHeartRate) {
 		this.fastHeartRate = fastHeartRate;
-	}
-
-	public SymptomState getOxygenSaturationLower94() {
-		return oxygenSaturationLower94;
 	}
 
 	public void setOxygenSaturationLower94(SymptomState oxygenSaturationLower94) {
 		this.oxygenSaturationLower94 = oxygenSaturationLower94;
 	}
 
-	public SymptomState getFeverishFeeling() {
-		return feverishFeeling;
-	}
-
 	public void setFeverishFeeling(SymptomState feverishFeeling) {
 		this.feverishFeeling = feverishFeeling;
-	}
-
-	public SymptomState getWeakness() {
-		return weakness;
 	}
 
 	public void setWeakness(SymptomState weakness) {
 		this.weakness = weakness;
 	}
 
-	public SymptomState getFatigue() {
-		return fatigue;
-	}
-
 	public void setFatigue(SymptomState fatigue) {
 		this.fatigue = fatigue;
-	}
-
-	public SymptomState getCoughWithoutSputum() {
-		return coughWithoutSputum;
 	}
 
 	public void setCoughWithoutSputum(SymptomState coughWithoutSputum) {
 		this.coughWithoutSputum = coughWithoutSputum;
 	}
 
-	public SymptomState getBreathlessness() {
-		return breathlessness;
-	}
-
 	public void setBreathlessness(SymptomState breathlessness) {
 		this.breathlessness = breathlessness;
-	}
-
-	public SymptomState getChestPressure() {
-		return chestPressure;
 	}
 
 	public void setChestPressure(SymptomState chestPressure) {
 		this.chestPressure = chestPressure;
 	}
 
-	public SymptomState getBlueLips() {
-		return blueLips;
-	}
-
 	public void setBlueLips(SymptomState blueLips) {
 		this.blueLips = blueLips;
-	}
-
-	public SymptomState getBloodCirculationProblems() {
-		return bloodCirculationProblems;
-	}
-
-	public void setBloodCirculationProblems(SymptomState bloodCirculationProblems) {
-		this.bloodCirculationProblems = bloodCirculationProblems;
 	}
 
 	public SymptomState getPalpitations() {
@@ -3675,27 +3699,20 @@ public class SymptomsDto extends PseudonymizableDto {
 		this.palpitations = palpitations;
 	}
 
-	public SymptomState getDizzinessStandingUp() {
-		return dizzinessStandingUp;
-	}
-
 	public void setDizzinessStandingUp(SymptomState dizzinessStandingUp) {
 		this.dizzinessStandingUp = dizzinessStandingUp;
-	}
-
-	public SymptomState getHighOrLowBloodPressure() {
-		return highOrLowBloodPressure;
 	}
 
 	public void setHighOrLowBloodPressure(SymptomState highOrLowBloodPressure) {
 		this.highOrLowBloodPressure = highOrLowBloodPressure;
 	}
 
-	public SymptomState getUrinaryRetention() {
-		return urinaryRetention;
-	}
-
 	public void setUrinaryRetention(SymptomState urinaryRetention) {
 		this.urinaryRetention = urinaryRetention;
 	}
+
+	public void setBloodCirculationProblems(SymptomState bloodCirculationProblems) {
+		this.bloodCirculationProblems = bloodCirculationProblems;
+	}
+
 }

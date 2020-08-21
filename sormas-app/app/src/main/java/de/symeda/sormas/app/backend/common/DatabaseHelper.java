@@ -128,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 220;
+	public static final int DATABASE_VERSION = 221;
 
 	private static DatabaseHelper instance = null;
 
@@ -1510,6 +1510,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Person.class).executeRaw("UPDATE person SET occupationFacilityType = 'HOSPITAL' WHERE occupationFacility_id IS NOT NULL;");
 				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthFacilityType varchar(255);");
 				getDao(Person.class).executeRaw("UPDATE person SET placeOfBirthFacilityType = 'HOSPITAL' WHERE placeOfBirthFacility_id IS NOT NULL;");
+
+			case 220:
+				currentVersion = 220;
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN feverishFeeling varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weakness varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fatigue varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughWithoutSputum varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN breathlessness varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN chestPressure varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN blueLips varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bloodCirculationProblems varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN palpitations varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN dizzinessStandingUp varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN highOrLowBloodPressure varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN urinaryRetention varchar(255);");
 
 
 				// ATTENTION: break should only be done after last version
