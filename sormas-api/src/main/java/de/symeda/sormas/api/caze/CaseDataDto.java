@@ -30,6 +30,7 @@ import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -372,6 +373,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	private boolean overwriteFollowUpUntil;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
+		return build(person, disease, null);
+	}
+
+	public static CaseDataDto build(PersonReferenceDto person, Disease disease, HealthConditionsDto healthConditions) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
 		caze.setPerson(person);
@@ -379,7 +384,13 @@ public class CaseDataDto extends PseudonymizableDto {
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
-		caze.setClinicalCourse(ClinicalCourseDto.build());
+
+		if (healthConditions == null) {
+			caze.setClinicalCourse(ClinicalCourseDto.build());
+		} else {
+			caze.setClinicalCourse(ClinicalCourseDto.build(healthConditions));
+		}
+
 		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
@@ -392,7 +403,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
 		migratesAttributes(contact, cazeData, lastVisit);
 		return cazeData;
 	}
