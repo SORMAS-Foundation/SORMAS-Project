@@ -4964,7 +4964,7 @@ ALTER TABLE symptoms ADD COLUMN palpitations varchar(255);
 ALTER TABLE symptoms ADD COLUMN dizzinessStandingUp varchar(255);
 ALTER TABLE symptoms ADD COLUMN highOrLowBloodPressure varchar(255);
 ALTER TABLE symptoms ADD COLUMN urinaryRetention varchar(255);
-	
+
 ALTER TABLE symptoms_history ADD COLUMN feverishFeeling varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN weakness varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN fatigue varchar(255);
@@ -4979,5 +4979,29 @@ ALTER TABLE symptoms_history ADD COLUMN highOrLowBloodPressure varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN urinaryRetention varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (240, 'Adjust Covid-19 Symptoms for Switzerland #2669');
+
+
+-- 2020-08-19 - Add pre-existing conditions to contacts #2564 - update healthconditions table
+ALTER TABLE  contact ADD COLUMN healthconditions_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+DO $$
+    DECLARE rec RECORD;
+    DECLARE new_healthcondition_id INTEGER;
+    BEGIN
+        UPDATE contact SET healthconditions_id = (SELECT hc.id FROM healthconditions hc
+                                                                                inner join clinicalcourse cc on cc.healthconditions_id = hc.id
+                                                                                inner join cases ca on ca.clinicalcourse_id = cc.id
+                                                          where ca.id = resultingcase_id)
+        WHERE resultingcase_id IS NOT NULL AND healthconditions_id IS NULL;
+
+        FOR rec IN SELECT id FROM public.contact where resultingcase_id IS NULL and healthconditions_id IS NULL
+            LOOP
+                INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_healthcondition_id;
+                UPDATE contact SET healthconditions_id = new_healthcondition_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+INSERT INTO schema_version (version_number, comment) VALUES (241, 'update healthconditions table #2564');
 
 -- *** Insert new sql commands BEFORE this line ***
