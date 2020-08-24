@@ -314,6 +314,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			Notification errorNotification = null;
 			for (StatisticsFilterComponent filterComponent : filterComponents) {
 				if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.JURISDICTION
+				    && filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.PLACE_OF_RESIDENCE
 					&& (filterComponent.getSelectedAttribute() == null
 						|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
 							&& filterComponent.getSelectedSubAttribute() == null)) {
@@ -1239,6 +1240,39 @@ public class StatisticsView extends AbstractStatisticsView {
 						facilities.add((FacilityReferenceDto) tokenizableValue.getValue());
 					}
 					caseCriteria.healthFacilities(facilities);
+				}
+				break;
+			case PLACE_OF_RESIDENCE:
+				StatisticsFilterResidenceElement residenceElement = (StatisticsFilterResidenceElement) filterElement;
+				if (residenceElement.getSelectedRegions() != null) {
+					List<RegionReferenceDto> regions = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedRegions()) {
+						regions.add((RegionReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personRegions(regions);
+				}
+				if (residenceElement.getSelectedDistricts() != null) {
+					List<DistrictReferenceDto> districts = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedDistricts()) {
+						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personDistricts(districts);
+				}
+				if (residenceElement.getSelectedCommunities() != null) {
+					List<CommunityReferenceDto> communities = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedCommunities()) {
+						communities.add((CommunityReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personCommunities(communities);
+				}
+				if (residenceElement.getCity() != null) {
+					caseCriteria.setPersonCity(residenceElement.getCity());
+				}
+				if (residenceElement.getPostcode() != null) {
+					caseCriteria.setPersonPostcode(residenceElement.getPostcode());
+				}
+				if (residenceElement.getAddress() != null) {
+					caseCriteria.setPersonAddress(residenceElement.getAddress());
 				}
 				break;
 			case REPORTING_USER_ROLE:
