@@ -5004,6 +5004,12 @@ DO $$
 $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (241, 'update healthconditions table #2564');
 
+-- 2020-08-24 Fix problems caused by #1637
+UPDATE facility SET type = 'HOSPITAL' WHERE type ISNULL AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
+UPDATE cases SET facilitytype = null WHERE healthfacility_id ISNULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (242, 'Fix problems caused by #1637');
+
 -- 2020-07-29 Campaign diagram visualisation
 
 ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
@@ -5013,7 +5019,7 @@ ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING for
 ALTER TABLE campaigndiagramdefinition ADD COLUMN diagramCaption varchar(255);
 ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (242, 'Campaign diagram visualization #2526');
+INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diagram visualization #2526');
 
 
 -- *** Insert new sql commands BEFORE this line ***
