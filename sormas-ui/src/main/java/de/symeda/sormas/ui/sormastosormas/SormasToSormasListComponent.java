@@ -44,28 +44,31 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = -7189942121987530912L;
 
+	private SormasToSormasList sormasToSormasList;
+
 	public SormasToSormasListComponent(CaseDataDto caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 
-		createEventListComponent(
+		sormasToSormasList = new SormasToSormasList(new SormasToSormasShareInfoCriteria().caze(caseRef), Captions.sormasToSormasCaseNotShared);
+
+		initLayout(
 			caze.getSormasToSormasSource(),
-			new SormasToSormasListList(new SormasToSormasShareInfoCriteria().caze(caseRef), Captions.sormasToSormasCaseNotShared),
-			e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef));
+			sormasToSormasList,
+			e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this));
 	}
 
 	public SormasToSormasListComponent(ContactDto contact) {
 		ContactReferenceDto contactRef = contact.toReference();
 
-		createEventListComponent(
+		sormasToSormasList = new SormasToSormasList(new SormasToSormasShareInfoCriteria().contact(contactRef), Captions.sormasToSormasCaseNotShared);
+
+		initLayout(
 			contact.getSormasToSormasSource(),
-			new SormasToSormasListList(new SormasToSormasShareInfoCriteria().contact(contactRef), Captions.sormasToSormasCaseNotShared),
-			e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef));
+			sormasToSormasList,
+			e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this));
 	}
 
-	private void createEventListComponent(
-		SormasToSormasSourceDto sormasSource,
-		SormasToSormasListList sormasToSormasList,
-		Button.ClickListener clickListener) {
+	private void initLayout(SormasToSormasSourceDto sormasSource, SormasToSormasList sormasToSormasList, Button.ClickListener clickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -87,23 +90,25 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		header.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(header);
 
-		Button shareButtonButton = ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, e -> {
-			clickListener.buttonClick(e);
-			sormasToSormasList.reload();
-		}, ValoTheme.BUTTON_PRIMARY);
+		Button shareButtonButton =
+			ButtonHelper.createIconButton(Captions.sormasToSormasShare, VaadinIcons.SHARE, clickListener, ValoTheme.BUTTON_PRIMARY);
 
 		componentHeader.addComponent(shareButtonButton);
 		componentHeader.setComponentAlignment(shareButtonButton, Alignment.MIDDLE_RIGHT);
 	}
 
-	private static class SormasToSormasListList extends PaginationList<SormasToSormasShareInfoDto> {
+	public void reloadList() {
+		sormasToSormasList.reload();
+	}
+
+	private static class SormasToSormasList extends PaginationList<SormasToSormasShareInfoDto> {
 
 		private static final long serialVersionUID = -4659924105492791566L;
 
 		private final SormasToSormasShareInfoCriteria criteria;
 		private final String placeholderCaptionTag;
 
-		public SormasToSormasListList(SormasToSormasShareInfoCriteria criteria, String placeholderCaptionTag) {
+		public SormasToSormasList(SormasToSormasShareInfoCriteria criteria, String placeholderCaptionTag) {
 			super(5);
 
 			this.criteria = criteria;

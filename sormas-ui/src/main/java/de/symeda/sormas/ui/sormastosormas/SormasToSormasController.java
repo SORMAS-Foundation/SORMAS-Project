@@ -36,15 +36,15 @@ public class SormasToSormasController {
 	public SormasToSormasController() {
 	}
 
-	public void shareCaseToSormas(CaseReferenceDto caze) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options));
+	public void shareCaseToSormas(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent);
 	}
 
-	public void shareContactToSormas(ContactReferenceDto contact) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options));
+	public void shareContactToSormas(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent);
 	}
 
-	private void shareToSormas(HandleShareWithOptions handleShareWithOptions) {
+	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent) {
 		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm();
 		optionsForm.setValue(new SormasToSormasOptionsDto());
 
@@ -61,6 +61,7 @@ public class SormasToSormasController {
 				handleShareWithOptions.handle(options);
 
 				optionsPopup.close();
+				listComponent.reloadList();
 			} catch (SormasToSormasException ex) {
 				Label messageLabel = new Label(ex.getMessage(), ContentMode.HTML);
 				messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);

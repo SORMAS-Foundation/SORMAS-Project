@@ -166,7 +166,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
 		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer);
-		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
 
 		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
@@ -182,20 +182,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
 		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer);
-		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+		ContactDto contactDto = getContactDto(contact, pseudonymizer);
 		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
 		saveContactShareInfo(contact.toReference(), options.getHealthDepartment(), currentUser.toReference());
-	}
-
-	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer) {
-		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
-		personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
-		personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
-
-		return personDto;
 	}
 
 	@Override
@@ -217,6 +209,35 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		return resultList.stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer) {
+		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
+		personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
+		personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
+
+		return personDto;
+	}
+
+	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
+		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+
+		cazeDto.setReportingUser(null);
+		cazeDto.setClassificationUser(null);
+		cazeDto.setSurveillanceOfficer(null);
+		cazeDto.setCaseOfficer(null);
+
+		return cazeDto;
+	}
+
+	private ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {
+		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+
+		contactDto.setReportingUser(null);
+		contactDto.setContactOfficer(null);
+		contactDto.setResultingCaseUser(null);
+
+		return contactDto;
 	}
 
 	private void saveCaseShareInfo(CaseReferenceDto caseReference, String healthDepartment, UserReferenceDto sender) {
