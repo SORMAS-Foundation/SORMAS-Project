@@ -29,8 +29,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -107,13 +107,13 @@ public class VisitDao extends AbstractAdoDao<Visit> {
 
 		Date contactStartDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
 		Date contactEndDate = ContactLogic.getEndDate(contact.getLastContactDate(), contact.getReportDateTime(), contact.getFollowUpUntil());
-		Date lowerLimit = DateHelper.subtractDays(contactStartDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+		Date lowerLimit = DateHelper.subtractDays(contactStartDate, FollowUpLogic.ALLOWED_DATE_OFFSET);
 		if (lowerLimit != null) {
 			where.and();
 			where.ge(Visit.VISIT_DATE_TIME, lowerLimit);
 		}
 
-		Date upperLimit = DateHelper.addDays(contactEndDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET);
+		Date upperLimit = DateHelper.addDays(contactEndDate, FollowUpLogic.ALLOWED_DATE_OFFSET);
 		if (upperLimit != null) {
 			where.and();
 			where.le(Visit.VISIT_DATE_TIME, upperLimit);

@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.report;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.EJB;
@@ -36,19 +35,15 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
-import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.facility.Facility;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -119,46 +114,6 @@ public class WeeklyReportService extends AbstractAdoService<WeeklyReport> {
 		} catch (NoResultException e) {
 			return null;
 		}
-	}
-
-	public List<WeeklyReportOfficerSummaryDto> getWeeklyReportSummariesPerOfficer(Region region, EpiWeek epiWeek) {
-
-		WeeklyReportCriteria officerReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek);
-		WeeklyReportCriteria informantsReportCriteria = new WeeklyReportCriteria().epiWeek(epiWeek).officerReport(false);
-
-		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
-		officers = filterWeeklyReportUsers(getCurrentUser(), officers);
-
-		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers.map(officer -> {
-			officerReportCriteria.reportingUser(new UserReferenceDto(officer.getUuid()));
-			List<WeeklyReport> officerReports = queryByCriteria(officerReportCriteria, null, null, true);
-
-			WeeklyReportOfficerSummaryDto summaryDto = new WeeklyReportOfficerSummaryDto();
-			summaryDto.setOfficer(UserFacadeEjb.toReferenceDto(officer));
-			summaryDto.setDistrict(DistrictFacadeEjb.toReferenceDto(officer.getDistrict()));
-
-			if (officerReports.size() > 0) {
-				WeeklyReport officerReport = officerReports.get(0);
-				summaryDto.setOfficerReportDate(officerReport.getReportDateTime());
-				summaryDto.setTotalCaseCount(officerReport.getTotalNumberOfCases());
-			}
-
-			Long informants = userService.countByAssignedOfficer(officer);
-			summaryDto.setInformants(informants.intValue());
-
-			informantsReportCriteria.assignedOfficer(summaryDto.getOfficer());
-			informantsReportCriteria.zeroReport(false);
-			Long informantCaseReports = countByCriteria(informantsReportCriteria, null);
-			summaryDto.setInformantCaseReports(informantCaseReports.intValue());
-
-			informantsReportCriteria.zeroReport(true);
-			Long informantZeroReports = countByCriteria(informantsReportCriteria, null);
-			summaryDto.setInformantZeroReports(informantZeroReports.intValue());
-
-			return summaryDto;
-		}).collect(Collectors.toList());
-
-		return summaryDtos;
 	}
 
 	/**

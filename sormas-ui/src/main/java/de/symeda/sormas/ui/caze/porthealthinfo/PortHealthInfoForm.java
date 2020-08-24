@@ -234,6 +234,9 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
 	@Override
 	protected String createHtmlLayout() {
+		if (pointOfEntry == null) {
+			return "";
+		}
 
 		switch (pointOfEntry.getPointOfEntryType()) {
 		case AIRPORT:

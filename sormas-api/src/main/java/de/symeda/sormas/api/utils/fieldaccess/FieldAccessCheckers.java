@@ -19,26 +19,27 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
-
 public class FieldAccessCheckers {
 
-	private List<Checker> checkers = new ArrayList<>();
+	private List<FieldAccessChecker> checkers = new ArrayList<>();
 
-	public boolean isAccessible(Class<?> parentType, String fieldName) {
+	public FieldAccessCheckers() {
+	}
+
+	public boolean isAccessible(Class<?> parentType, String fieldName, boolean inJurisdiction) {
 
 		Field declaredField = getDeclaredField(parentType, fieldName);
 		if (declaredField == null) {
 			return true;
 		}
 
-		return isAccessible(declaredField);
+		return isAccessible(declaredField, inJurisdiction);
 	}
 
-	public boolean isAccessible(Field field) {
+	public boolean isAccessible(Field field, boolean inJurisdiction) {
 
-		for (Checker checker : checkers) {
-			if (checker.isConfiguredForCheck(field) && !checker.hasRight()) {
+		for (FieldAccessChecker checker : checkers) {
+			if (checker.isConfiguredForCheck(field) && !checker.hasRight(inJurisdiction)) {
 				return false;
 			}
 		}
@@ -48,7 +49,7 @@ public class FieldAccessCheckers {
 
 	public boolean isConfiguredForCheck(Field field) {
 
-		for (Checker checker : checkers) {
+		for (FieldAccessChecker checker : checkers) {
 			if (checker.isConfiguredForCheck(field)) {
 				return true;
 			}
@@ -57,10 +58,31 @@ public class FieldAccessCheckers {
 		return false;
 	}
 
-	public boolean hasRights() {
+	public boolean isEmbedded(Class<?> parentType, String fieldName) {
+		Field declaredField = getDeclaredField(parentType, fieldName);
 
-		for (Checker checker : checkers) {
-			if (!checker.hasRight()) {
+		if (declaredField == null) {
+			return false;
+		}
+
+		return isEmbedded(declaredField);
+	}
+
+	public boolean isEmbedded(Field field) {
+
+		for (FieldAccessChecker checker : checkers) {
+			if (checker.isEmbedded(field)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean hasRights(boolean inJurisdiction) {
+
+		for (FieldAccessChecker checker : checkers) {
+			if (!checker.hasRight(inJurisdiction)) {
 				return false;
 			}
 		}
@@ -68,7 +90,7 @@ public class FieldAccessCheckers {
 		return true;
 	}
 
-	public FieldAccessCheckers add(Checker checker) {
+	public FieldAccessCheckers add(FieldAccessChecker checker) {
 		checkers.add(checker);
 		return this;
 	}
@@ -76,30 +98,25 @@ public class FieldAccessCheckers {
 	private Field getDeclaredField(Class<?> parentType, String propertyId) {
 
 		try {
-			return parentType.getDeclaredField(propertyId);
+			Field declaredField = parentType.getDeclaredField(propertyId);
+
+			return declaredField;
 		} catch (NoSuchFieldException e) {
+			if (parentType.getSuperclass() != null) {
+				return getDeclaredField(parentType.getSuperclass(), propertyId);
+			}
+
 			return null;
 		}
 	}
 
-	public static FieldAccessCheckers withPersonalData(PersonalDataFieldAccessChecker.RightCheck rightCheck, boolean isInJurisdiction) {
-		return withCheckers(new PersonalDataFieldAccessChecker(rightCheck, isInJurisdiction));
-	}
-
-	public static FieldAccessCheckers withCheckers(Checker... checkers) {
+	public static FieldAccessCheckers withCheckers(FieldAccessChecker... checkers) {
 
 		FieldAccessCheckers ret = new FieldAccessCheckers();
-		for (Checker checker : checkers) {
+		for (FieldAccessChecker checker : checkers) {
 			ret.add(checker);
 		}
 
 		return ret;
-	}
-
-	public interface Checker {
-
-		boolean isConfiguredForCheck(Field field);
-
-		boolean hasRight();
 	}
 }

@@ -35,13 +35,13 @@ import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Event.TABLE_NAME)
 @DatabaseTable(tableName = Event.TABLE_NAME)
-public class Event extends AbstractDomainObject {
+public class Event extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = 4964495716032049582L;
 

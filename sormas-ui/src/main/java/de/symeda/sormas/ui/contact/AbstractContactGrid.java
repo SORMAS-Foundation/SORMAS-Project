@@ -32,25 +32,28 @@ import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
-public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> extends FilteredGrid<IndexDTO, ContactCriteria> {
+public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> extends FilteredGrid<IndexDto, ContactCriteria> {
 
 	public static final String NUMBER_OF_VISITS = Captions.Contact_numberOfVisits;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
@@ -59,7 +62,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	@SuppressWarnings("rawtypes")
 	Class viewClass;
 
-	public <V extends View> AbstractContactGrid(Class<IndexDTO> beanType, ContactCriteria criteria, Class<V> viewClass) {
+	public <V extends View> AbstractContactGrid(Class<IndexDto> beanType, ContactCriteria criteria, Class<V> viewClass) {
 		super(beanType);
 
 		this.viewClass = viewClass;
@@ -86,14 +89,14 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	@SuppressWarnings("unchecked")
 	protected void initColumns() {
 
-		Column<IndexDTO, String> diseaseShortColumn = addColumn(entry -> DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
+		Column<IndexDto, String> diseaseShortColumn = addColumn(entry -> DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(ContactIndexDto.DISEASE);
 
-		Column<IndexDTO, String> visitsColumn = addColumn(entry -> {
+		Column<IndexDto, String> visitsColumn = addColumn(entry -> {
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(entry.getDisease())) {
 				int numberOfVisits = entry.getVisitCount();
-				int numberOfRequiredVisits = ContactLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
+				int numberOfRequiredVisits = FollowUpLogic.getNumberOfRequiredVisitsSoFar(entry.getReportDateTime(), entry.getFollowUpUntil());
 				int numberOfMissedVisits = numberOfRequiredVisits - numberOfVisits;
 				// Set number of missed visits to 0 when more visits than expected have been done
 				if (numberOfMissedVisits < 0) {
@@ -108,7 +111,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		visitsColumn.setId(NUMBER_OF_VISITS);
 		visitsColumn.setSortable(false);
 
-		Column<IndexDTO, String> pendingTasksColumn = addColumn(
+		Column<IndexDto, String> pendingTasksColumn = addColumn(
 			entry -> String.format(
 				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
 				FacadeProvider.getTaskFacade().getPendingTaskCountByContact(entry.toReference())));
@@ -123,7 +126,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 		((Column<ContactIndexDto, String>) getColumn(ContactIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactIndexDto, Date>) getColumn(ContactIndexDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
-		for (Column<?, ?> column : getColumns()) {
+		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
 				I18nProperties.findPrefixCaptionWithDefault(
 					column.getId(),
@@ -131,6 +134,14 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 					ContactIndexDto.I18N_PREFIX,
 					PersonDto.I18N_PREFIX,
 					LocationDto.I18N_PREFIX));
+
+			column.setStyleGenerator(
+				FieldAccessColumnStyleGenerator.withCheckers(
+					getBeanType(),
+					column.getId(),
+					ContactJurisdictionHelper::isInJurisdictionOrOwned,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}
 	}
 
@@ -176,7 +187,7 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 
 	public void setLazyDataProvider() {
 
-		DataProvider<IndexDTO, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<IndexDto, ContactCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> getGridData(
 				query.getFilter().orElse(null),
 				query.getOffset(),
@@ -191,10 +202,10 @@ public abstract class AbstractContactGrid<IndexDTO extends ContactIndexDto> exte
 	}
 
 	public void setEagerDataProvider() {
-		ListDataProvider<IndexDTO> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
+		ListDataProvider<IndexDto> dataProvider = DataProvider.fromStream(getGridData(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
 
-	protected abstract List<IndexDTO> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	protected abstract List<IndexDto> getGridData(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 }

@@ -77,6 +77,8 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -113,5 +115,7 @@ public class VisitDtoHelper extends AdoDtoHelper<Visit, VisitDto> {
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 }

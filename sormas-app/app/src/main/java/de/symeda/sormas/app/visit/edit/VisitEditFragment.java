@@ -21,13 +21,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.visit.Visit;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentVisitEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.Bundler;
 
 public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutBinding, Visit, Visit> {
@@ -37,7 +40,12 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
 	private Contact contact;
 
 	public static VisitEditFragment newInstance(Visit activityRootData, String contactUuid) {
-		return newInstance(VisitEditFragment.class, new Bundler().setContactUuid(contactUuid).get(), activityRootData);
+		return newInstanceWithFieldCheckers(
+			VisitEditFragment.class,
+			new Bundler().setContactUuid(contactUuid).get(),
+			activityRootData,
+			null,
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	@Override
@@ -83,6 +91,8 @@ public class VisitEditFragment extends BaseEditFragment<FragmentVisitEditLayoutB
 	@Override
 	public void onAfterLayoutBinding(FragmentVisitEditLayoutBinding contentBinding) {
 		contentBinding.visitVisitDateTime.initializeDateTimeField(getFragmentManager());
+
+		setFieldVisibilitiesAndAccesses(VisitDto.class, contentBinding.mainContent);
 	}
 
 	@Override

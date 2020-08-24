@@ -20,6 +20,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EventExportDto implements Serializable {
@@ -33,22 +34,35 @@ public class EventExportDto implements Serializable {
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
+	@SensitiveData
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private String region;
 	private String district;
+	@SensitiveData
 	private String community;
+	@SensitiveData
 	private String city;
+	@SensitiveData
 	private String address;
 	private EventSourceType srcType;
+	@SensitiveData
 	private String srcFirstName;
+	@SensitiveData
 	private String srcLastName;
+	@SensitiveData
 	private String srcTelNo;
+	@SensitiveData
 	private String srcEmail;
+	@SensitiveData
 	private String srcMediaWebsite;
+	@SensitiveData
 	private String srcMediaName;
+	@SensitiveData
 	private String srcMediaDetails;
 	private Date reportDateTime;
+
+	private EventJurisdictionDto jurisdiction;
 
 	public EventExportDto(
 		String uuid,
@@ -60,8 +74,11 @@ public class EventExportDto implements Serializable {
 		Date endDate,
 		String eventDesc,
 		YesNoUnknown nosocomial,
+		String regionUuid,
 		String region,
+		String districtUuid,
 		String district,
+		String communityUuid,
 		String community,
 		String city,
 		String address,
@@ -73,7 +90,9 @@ public class EventExportDto implements Serializable {
 		String srcMediaWebsite,
 		String srcMediaName,
 		String srcMediaDetails,
-		Date reportDateTime) {
+		Date reportDateTime,
+		String reportingUserUid,
+		String surveillanceOfficerUuid) {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.eventStatus = eventStatus;
@@ -96,6 +115,8 @@ public class EventExportDto implements Serializable {
 		this.srcMediaName = srcMediaName;
 		this.srcMediaDetails = srcMediaDetails;
 		this.reportDateTime = reportDateTime;
+
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
 	}
 
 	@Order(0)
@@ -271,5 +292,9 @@ public class EventExportDto implements Serializable {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	public EventJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

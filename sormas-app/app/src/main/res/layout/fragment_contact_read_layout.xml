@@ -125,6 +125,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_community"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.community}" />
+                
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_caseIdExternalSystem"
                     app:value="@{data.caseIdExternalSystem}"
                     style="@style/ControlSingleColumnStyle" />

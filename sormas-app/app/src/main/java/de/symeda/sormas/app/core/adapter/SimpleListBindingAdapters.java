@@ -34,6 +34,7 @@ import androidx.databinding.adapters.ListenerUtil;
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
+import de.symeda.sormas.app.util.TemplateBindingCallback;
 
 /**
  * Created by Orson on 19/12/2017.
@@ -52,15 +53,18 @@ public class SimpleListBindingAdapters {
 	@BindingAdapter(value = {
 		"entries",
 		"layout",
-		"callback" }, requireAll = false)
+		"callback",
+		"bindCallback" }, requireAll = false)
 	public static <T> void setEntries(
 		ViewGroup viewGroup,
 		List<T> oldEntries,
 		int oldLayoutId,
 		IEntryItemOnClickListener oldCallback,
+		TemplateBindingCallback oldBindCallback,
 		List<T> newEntries,
 		int newLayoutId,
-		IEntryItemOnClickListener newCallback) {
+		IEntryItemOnClickListener newCallback,
+		TemplateBindingCallback newBindCallback) {
 
 		/*
 		 * if (newEntries.size() > 0)
@@ -69,7 +73,7 @@ public class SimpleListBindingAdapters {
 		 * viewGroup.setVisibility(View.GONE);
 		 */
 
-		if (oldEntries == newEntries && oldLayoutId == newLayoutId && oldCallback == newCallback) {
+		if (oldEntries == newEntries && oldLayoutId == newLayoutId && oldCallback == newCallback && oldBindCallback == newBindCallback) {
 			return;
 		}
 
@@ -85,7 +89,7 @@ public class SimpleListBindingAdapters {
 			viewGroup.setVisibility(View.VISIBLE);
 			if (newEntries instanceof ObservableList) {
 				if (listener == null) {
-					listener = new EntryChangeListener(viewGroup, newLayoutId, newCallback);
+					listener = new EntryChangeListener(viewGroup, newLayoutId, newCallback, newBindCallback);
 					ListenerUtil.trackListener(viewGroup, listener, R.id.entryListener);
 				} else {
 					listener.setLayoutId(newLayoutId);
@@ -94,7 +98,7 @@ public class SimpleListBindingAdapters {
 					((ObservableList) newEntries).addOnListChangedCallback(listener);
 				}
 			}
-			resetViews(viewGroup, newLayoutId, newEntries, newCallback);
+			resetViews(viewGroup, newLayoutId, newEntries, newCallback, newBindCallback);
 		}
 	}
 
@@ -104,7 +108,8 @@ public class SimpleListBindingAdapters {
 		int layoutId,
 		Object entry,
 		int entryIndex,
-		Object callback) {
+		Object callback,
+		TemplateBindingCallback bindCallback) {
 		ViewDataBinding binding = DataBindingUtil.inflate(inflater, layoutId, parent, false);
 		String layoutName = parent.getResources().getResourceEntryName(layoutId);
 		View rootView = binding.getRoot();
@@ -125,10 +130,14 @@ public class SimpleListBindingAdapters {
 			}
 		}
 
+		if (bindCallback != null) {
+			bindCallback.onBind(rootView);
+		}
+
 		return binding;
 	}
 
-	private static void resetViews(ViewGroup parent, int layoutId, List entries, Object callback) {
+	private static void resetViews(ViewGroup parent, int layoutId, List entries, Object callback, TemplateBindingCallback bindCallback) {
 		parent.removeAllViews();
 		if (layoutId == 0) {
 			return;
@@ -136,7 +145,7 @@ public class SimpleListBindingAdapters {
 		LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		for (int i = 0; i < entries.size(); i++) {
 			Object entry = entries.get(i);
-			ViewDataBinding binding = bindLayout(inflater, parent, layoutId, entry, i, callback);
+			ViewDataBinding binding = bindLayout(inflater, parent, layoutId, entry, i, callback, bindCallback);
 			parent.addView(binding.getRoot());
 		}
 	}
@@ -152,11 +161,13 @@ public class SimpleListBindingAdapters {
 		private final ViewGroup mTarget;
 		private int mLayoutId;
 		private IEntryItemOnClickListener mCallback;
+		private TemplateBindingCallback mBindCallback;
 
-		public EntryChangeListener(ViewGroup target, int layoutId, IEntryItemOnClickListener callback) {
+		public EntryChangeListener(ViewGroup target, int layoutId, IEntryItemOnClickListener callback, TemplateBindingCallback bindCallback) {
 			mTarget = target;
 			mLayoutId = layoutId;
 			mCallback = callback;
+			mBindCallback = bindCallback;
 		}
 
 		public void setLayoutId(int layoutId) {
@@ -165,7 +176,7 @@ public class SimpleListBindingAdapters {
 
 		@Override
 		public void onChanged(ObservableList observableList) {
-			resetViews(mTarget, mLayoutId, observableList, mCallback);
+			resetViews(mTarget, mLayoutId, observableList, mCallback, mBindCallback);
 		}
 
 		@Override
@@ -178,7 +189,7 @@ public class SimpleListBindingAdapters {
 			final int end = start + count;
 			for (int i = start; i < end; i++) {
 				Object data = observableList.get(i);
-				ViewDataBinding binding = bindLayout(inflater, mTarget, mLayoutId, data, i, mCallback);
+				ViewDataBinding binding = bindLayout(inflater, mTarget, mLayoutId, data, i, mCallback, mBindCallback);
 				binding.setVariable(BR.data, observableList.get(i));
 				mTarget.removeViewAt(i);
 				mTarget.addView(binding.getRoot(), i);
@@ -195,7 +206,7 @@ public class SimpleListBindingAdapters {
 			LayoutInflater inflater = (LayoutInflater) mTarget.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			for (int i = end - 1; i >= start; i--) {
 				Object entry = observableList.get(i);
-				ViewDataBinding binding = bindLayout(inflater, mTarget, mLayoutId, entry, i, mCallback);
+				ViewDataBinding binding = bindLayout(inflater, mTarget, mLayoutId, entry, i, mCallback, mBindCallback);
 				mTarget.addView(binding.getRoot(), start);
 			}
 		}

@@ -24,6 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class MapContactDto implements Serializable {
 
@@ -31,10 +36,21 @@ public class MapContactDto implements Serializable {
 
 	private String uuid;
 	private ContactClassification contactClassification;
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double addressLat;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double addressLon;
+
 	private Date lastVisitDateTime;
 	private Date caseOnsetDate;
 	private Date caseReportDate;

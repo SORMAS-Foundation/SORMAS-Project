@@ -11,7 +11,7 @@ public class SampleEditAuthorization {
 	public static boolean isSampleEditAllowed(Sample sample) {
 		User user = ConfigProvider.getUser();
 
-		return SampleJurisdictionHelper.isInJurisdiction(
+		return SampleJurisdictionHelper.isInJurisdictionOrOwned(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
 			JurisdictionHelper.createSampleJurisdictionDto(sample));

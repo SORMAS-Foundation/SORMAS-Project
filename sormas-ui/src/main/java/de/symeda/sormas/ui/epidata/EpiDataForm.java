@@ -50,7 +50,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
@@ -137,12 +137,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	//@formatter:on
 
 	private final Disease disease;
-	private final ViewMode viewMode;
 
-	public EpiDataForm(Disease disease, ViewMode viewMode) {
-		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, FieldVisibilityCheckers.withDisease(disease));
+	public EpiDataForm(Disease disease, boolean isInJurisdiction) {
+		super(EpiDataDto.class, EpiDataDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease),
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.disease = disease;
-		this.viewMode = viewMode;
 		addFields();
 	}
 
@@ -228,6 +227,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			EpiDataDto.FLEA_BITE);
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

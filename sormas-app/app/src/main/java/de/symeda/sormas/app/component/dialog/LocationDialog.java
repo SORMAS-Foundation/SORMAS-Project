@@ -26,7 +26,6 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -34,36 +33,40 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
-import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
-public class LocationDialog extends AbstractDialog {
+public class LocationDialog extends FormDialog {
 
 	public static final String TAG = LocationDialog.class.getSimpleName();
 
 	private Location data;
 	private DialogLocationLayoutBinding contentBinding;
-	private FieldAccessCheckers fieldAccessCheckers;
 
 	// Constructor
 
-	public LocationDialog(final FragmentActivity activity, Location location, FieldAccessCheckers fieldAccessCheckers) {
+	public LocationDialog(final FragmentActivity activity, Location location, AppFieldAccessCheckers fieldAccessCheckers) {
 		this(activity, location, true, fieldAccessCheckers);
 	}
 
-	public LocationDialog(final FragmentActivity activity, Location location, boolean closeOnPositiveButtonClick, FieldAccessCheckers fieldAccessCheckers) {
+	public LocationDialog(
+		final FragmentActivity activity,
+		Location location,
+		boolean closeOnPositiveButtonClick,
+		AppFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
 			R.layout.dialog_location_layout,
 			R.layout.dialog_root_two_button_panel_layout,
 			R.string.heading_location,
-			-1, closeOnPositiveButtonClick);
+			-1,
+			closeOnPositiveButtonClick,
+			fieldAccessCheckers);
 
 		this.data = location;
-		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
 
 	// Overrides
@@ -93,8 +96,8 @@ public class LocationDialog extends AbstractDialog {
 			initialCommunities,
 			data.getCommunity());
 
-		FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent, null, fieldAccessCheckers);
-		if (!FieldVisibilityAndAccessHelper.isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY, fieldAccessCheckers)) {
+		setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent);
+		if (!isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY)) {
 			this.contentBinding.locationRegion.setEnabled(false);
 			this.contentBinding.locationDistrict.setEnabled(false);
 		}

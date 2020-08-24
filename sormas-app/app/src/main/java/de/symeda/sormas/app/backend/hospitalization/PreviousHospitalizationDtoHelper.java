@@ -95,6 +95,8 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 		a.setAdmissionDate(b.getAdmissionDate());
 		a.setDischargeDate(b.getDischargeDate());
 		a.setDescription(b.getDescription());
+
+		a.setPseudonymized(b.isPseudonymized());
 	}
 
 	@Override
@@ -133,5 +135,7 @@ public class PreviousHospitalizationDtoHelper extends AdoDtoHelper<PreviousHospi
 		a.setAdmissionDate(b.getAdmissionDate());
 		a.setDischargeDate(b.getDischargeDate());
 		a.setDescription(b.getDescription());
+
+		a.setPseudonymized(b.isPseudonymized());
 	}
 }

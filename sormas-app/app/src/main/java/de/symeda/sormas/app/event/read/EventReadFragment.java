@@ -21,18 +21,28 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentEventReadLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutBinding, Event, Event> {
 
 	private Event record;
 
 	public static EventReadFragment newInstance(Event activityRootData) {
-		return newInstance(EventReadFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			EventReadFragment.class,
+			null,
+			activityRootData,
+			new FieldVisibilityCheckers(),
+			AppFieldAccessCheckers
+				.withCheckers(EventEditAuthorization.isEventEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides
@@ -58,6 +68,7 @@ public class EventReadFragment extends BaseReadFragment<FragmentEventReadLayoutB
 
 		contentBinding.eventStartDate.setCaption(startDateCaption);
 
+		setFieldVisibilitiesAndAccesses(EventDto.class, contentBinding.mainContent);
 	}
 
 	@Override

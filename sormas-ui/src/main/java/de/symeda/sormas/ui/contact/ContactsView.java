@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import static de.symeda.sormas.ui.utils.FollowUpUtils.createFollowUpLegend;
+
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,7 +57,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
@@ -525,59 +526,6 @@ public class ContactsView extends AbstractView {
 		((ContactFollowUpGrid) grid).reload();
 		updateStatusButtons();
 		buttonPreviousOrNextClick = false;
-	}
-
-	private HorizontalLayout createFollowUpLegend() {
-		HorizontalLayout legendLayout = new HorizontalLayout();
-		legendLayout.setSpacing(false);
-		CssStyles.style(legendLayout, CssStyles.VSPACE_TOP_4);
-
-		Label notSymptomaticColor = new Label("");
-		styleLegendEntry(notSymptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC, true);
-		legendLayout.addComponent(notSymptomaticColor);
-
-		Label notSymptomaticLabel = new Label(VisitResult.NOT_SYMPTOMATIC.toString());
-		legendLayout.addComponent(notSymptomaticLabel);
-
-		Label symptomaticColor = new Label("");
-		styleLegendEntry(symptomaticColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC, false);
-		legendLayout.addComponent(symptomaticColor);
-
-		Label symptomaticLabel = new Label(VisitResult.SYMPTOMATIC.toString());
-		legendLayout.addComponent(symptomaticLabel);
-
-		Label unavailableColor = new Label("");
-		styleLegendEntry(unavailableColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE, false);
-		legendLayout.addComponent(unavailableColor);
-
-		Label unavailableLabel = new Label(VisitResult.UNAVAILABLE.toString());
-		legendLayout.addComponent(unavailableLabel);
-
-		Label uncooperativeColor = new Label("");
-		styleLegendEntry(uncooperativeColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_UNCOOPERATIVE, false);
-		legendLayout.addComponent(uncooperativeColor);
-
-		Label uncooperativeLabel = new Label(VisitResult.UNCOOPERATIVE.toString());
-		legendLayout.addComponent(uncooperativeLabel);
-
-		Label notPerformedColor = new Label("");
-		styleLegendEntry(notPerformedColor, CssStyles.LABEL_BACKGROUND_FOLLOW_UP_NOT_PERFORMED, false);
-		legendLayout.addComponent(notPerformedColor);
-
-		Label notPerformedLabel = new Label(VisitResult.NOT_PERFORMED.toString());
-		legendLayout.addComponent(notPerformedLabel);
-
-		return legendLayout;
-	}
-
-	private void styleLegendEntry(Label label, String style, boolean first) {
-		label.setHeight(18, Unit.PIXELS);
-		label.setWidth(12, Unit.PIXELS);
-		CssStyles.style(label, style, CssStyles.HSPACE_RIGHT_4);
-
-		if (!first) {
-			CssStyles.style(label, CssStyles.HSPACE_LEFT_3);
-		}
 	}
 
 	public void enter(ViewChangeEvent event) {

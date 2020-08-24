@@ -27,14 +27,17 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 @SuppressWarnings("serial")
-public class EventParticipantInfoLayout extends AbstractInfoLayout {
+public class EventParticipantInfoLayout extends AbstractInfoLayout<EventParticipantDto> {
 
 	private final EventParticipantDto eventParticipantDto;
 	private final EventDto eventDto;
 
-	public EventParticipantInfoLayout(EventParticipantDto eventParticipantDto, EventDto eventDto) {
+	public EventParticipantInfoLayout(EventParticipantDto eventParticipantDto, EventDto eventDto, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(EventParticipantDto.class, fieldAccessCheckers);
+
 		this.eventParticipantDto = eventParticipantDto;
 		this.eventDto = eventDto;
 
@@ -52,11 +55,22 @@ public class EventParticipantInfoLayout extends AbstractInfoLayout {
 		firstColumn.setMargin(false);
 		firstColumn.setSpacing(true);
 
-		addDescLabel(firstColumn, DataHelper.getShortUuid(eventDto.getUuid()), I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.UUID))
-			.setDescription(eventDto.getUuid());
-		addDescLabel(firstColumn, eventDto.getDisease(), I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE));
-		addDescLabel(
+		addCustomDescLabel(
 			firstColumn,
+			EventDto.class,
+			"eventUuid",
+			DataHelper.getShortUuid(eventDto.getUuid()),
+			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.UUID)).setDescription(eventDto.getUuid());
+		addCustomDescLabel(
+			firstColumn,
+			EventDto.class,
+			EventDto.DISEASE,
+			eventDto.getDisease(),
+			I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.DISEASE));
+		addCustomDescLabel(
+			firstColumn,
+			EventDto.class,
+			"eventDate",
 			eventDto.getStartDate() == null
 				? ""
 				: eventDto.getEndDate() == null
@@ -72,19 +86,32 @@ public class EventParticipantInfoLayout extends AbstractInfoLayout {
 		secondColumn.setSpacing(true);
 
 		final PersonDto personDto = eventParticipantDto.getPerson();
-		addDescLabel(
+		addCustomDescLabel(
 			secondColumn,
+			PersonDto.class,
+			"personUuid",
 			DataHelper.getShortUuid(personDto.getUuid()),
 			I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.UUID)).setDescription(personDto.getUuid());
 
-		addDescLabel(secondColumn, personDto, I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.PERSON));
+		addDescLabel(
+			secondColumn,
+			EventParticipantDto.PERSON,
+			personDto,
+			I18nProperties.getPrefixCaption(EventParticipantDto.I18N_PREFIX, EventParticipantDto.PERSON));
 
 		final HorizontalLayout ageSexRow = new HorizontalLayout();
-		addDescLabel(
+		addCustomDescLabel(
 			ageSexRow,
+			PersonDto.class,
+			PersonDto.APPROXIMATE_AGE,
 			ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(personDto.getApproximateAge(), personDto.getApproximateAgeType()),
 			I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-		addDescLabel(ageSexRow, personDto.getSex(), I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+		addCustomDescLabel(
+			ageSexRow,
+			PersonDto.class,
+			PersonDto.SEX,
+			personDto.getSex(),
+			I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 
 		secondColumn.addComponent(ageSexRow);
 

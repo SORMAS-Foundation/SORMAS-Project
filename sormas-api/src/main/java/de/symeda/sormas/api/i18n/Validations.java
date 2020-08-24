@@ -94,8 +94,10 @@ public interface Validations {
 	String validReportingUser = "validReportingUser";
 	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
+	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";
 	String visitBeforeLastContactDate = "visitBeforeLastContactDate";
+	String visitBeforeSymptomsOnSet = "visitBeforeSymptomsOnSet";
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";
