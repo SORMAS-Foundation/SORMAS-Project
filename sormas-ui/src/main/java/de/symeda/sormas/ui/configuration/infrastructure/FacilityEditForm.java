@@ -89,7 +89,7 @@ public class FacilityEditForm extends AbstractEditForm<FacilityDto> {
 		longitude.setConversionError(I18nProperties.getValidationError(Validations.onlyGeoCoordinatesAllowed, longitude.getCaption()));
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
 
-		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT);
+		setRequired(true, FacilityDto.NAME, TYPE_GROUP_LOC, FacilityDto.TYPE, FacilityDto.REGION, FacilityDto.DISTRICT, FacilityDto.COMMUNITY);
 
 		typeGroup.addValueChangeListener(e -> {
 			FieldHelper.updateEnumData(type, FacilityType.getTypes((FacilityTypeGroup) typeGroup.getValue()));
