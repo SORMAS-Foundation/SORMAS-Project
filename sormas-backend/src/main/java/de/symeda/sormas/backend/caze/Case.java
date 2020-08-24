@@ -56,6 +56,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -162,6 +164,7 @@ public class Case extends CoreAdo {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private Person person;
 	private String description;
@@ -192,6 +195,7 @@ public class Case extends CoreAdo {
 	private Region region;
 	private District district;
 	private Community community;
+	private FacilityType facilityType;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 
@@ -277,6 +281,7 @@ public class Case extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+	private Set<EventParticipant> eventParticipants;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -769,6 +774,15 @@ public class Case extends CoreAdo {
 		this.samples = samples;
 	}
 
+	@OneToMany(cascade = {}, mappedBy = EventParticipant.RESULTING_CASE)
+	public Set<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
+	}
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	public InvestigationStatus getInvestigationStatus() {
@@ -1152,5 +1166,14 @@ public class Case extends CoreAdo {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

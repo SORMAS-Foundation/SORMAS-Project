@@ -30,12 +30,14 @@ import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -82,7 +84,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -146,6 +147,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -218,6 +220,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
+	@PersonalData
+	private FacilityType facilityType;
 	@Outbreaks
 	@Required
 	@PersonalData
@@ -369,6 +373,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	private boolean overwriteFollowUpUntil;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
+		return build(person, disease, null);
+	}
+
+	public static CaseDataDto build(PersonReferenceDto person, Disease disease, HealthConditionsDto healthConditions) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
 		caze.setPerson(person);
@@ -376,7 +384,13 @@ public class CaseDataDto extends PseudonymizableDto {
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
-		caze.setClinicalCourse(ClinicalCourseDto.build());
+
+		if (healthConditions == null) {
+			caze.setClinicalCourse(ClinicalCourseDto.build());
+		} else {
+			caze.setClinicalCourse(ClinicalCourseDto.build(healthConditions));
+		}
+
 		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
@@ -389,7 +403,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
 		migratesAttributes(contact, cazeData, lastVisit);
 		return cazeData;
 	}
@@ -1109,5 +1123,13 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

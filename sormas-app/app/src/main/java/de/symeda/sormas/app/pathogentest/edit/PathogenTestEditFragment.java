@@ -130,7 +130,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			@Override
 			public void onChange(ControlPropertyField field) {
 				Facility laboratory = (Facility) field.getValue();
-				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 					contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
 				} else {
 					contentBinding.pathogenTestLabDetails.hideField(true);

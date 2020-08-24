@@ -17,10 +17,24 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze.importer;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -59,18 +73,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import org.apache.commons.lang3.StringUtils;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Data importer that is used to import cases and associated samples.
@@ -106,6 +108,7 @@ public class CaseImporter extends DataImporter {
 	 * it is discarded.
 	 */
 	private boolean currentPathogenTestHasEntries = false;
+	private boolean unexpectedErrorFlag = false;
 
 	private UI currentUI;
 
@@ -446,9 +449,15 @@ public class CaseImporter extends DataImporter {
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImporterPersonHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
-						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
-							.getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), false);
-						if (facility.isEmpty()) {
+						List<FacilityReferenceDto> facilities = FacadeProvider.getFacilityFacade()
+							.getByNameAndType(
+								entry,
+								infrastructureData.getElement0(),
+								infrastructureData.getElement1(),
+								getTypeOfFacility(pd.getName(), currentElement),
+								false);
+
+						if (facilities.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
@@ -462,16 +471,16 @@ public class CaseImporter extends DataImporter {
 										entry,
 										buildEntityProperty(entryHeaderPath)));
 							}
-						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
-						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
-							pd.getWriteMethod().invoke(currentElement, facility.get(0));
+							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
 						List<PointOfEntryReferenceDto> pointOfEntry =
@@ -509,7 +518,12 @@ public class CaseImporter extends DataImporter {
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
-				logger.error("Unexpected error when trying to import a case: " + e.getMessage());
+				if (unexpectedErrorFlag) {
+					logger.warn("Unexpected error when trying to import a case: " + e.getMessage());
+				} else {
+					unexpectedErrorFlag = true;
+					logger.error("Unexpected error when trying to import a case: " + e.getMessage(), e);
+				}
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}

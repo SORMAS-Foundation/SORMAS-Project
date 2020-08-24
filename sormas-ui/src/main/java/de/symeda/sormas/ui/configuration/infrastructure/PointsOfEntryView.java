@@ -265,7 +265,6 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.POINT_OF_ENTRY,
-									null,
 									new Runnable() {
 
 										public void run() {
@@ -279,7 +278,6 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.POINT_OF_ENTRY,
-									null,
 									new Runnable() {
 
 										public void run() {

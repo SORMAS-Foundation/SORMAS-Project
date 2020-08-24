@@ -246,7 +246,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {
 		if (event.getProperty().getValue() != null
-			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			labDetails.setVisible(true);
 			labDetails.setRequired(true);
 		} else {

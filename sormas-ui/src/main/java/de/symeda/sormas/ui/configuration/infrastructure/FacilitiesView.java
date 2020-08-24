@@ -17,8 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Date;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -34,6 +38,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -43,6 +48,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -50,20 +56,25 @@ import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
+public class FacilitiesView extends AbstractConfigurationView {
 
 	private static final long serialVersionUID = -2015225571046243640L;
+
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/facilities";
 
 	private FacilityCriteria criteria;
 	private ViewConfiguration viewConfiguration;
 
 	// Filter
 	private TextField searchField;
+	private ComboBox typeGroupFilter;
+	private ComboBox typeFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -79,27 +90,21 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
 
-	protected AbstractFacilitiesView(String viewName, FacilityType type) {
+	public FacilitiesView() {
 
-		super(viewName);
-		Class<? extends AbstractFacilitiesView> viewClass =
-			FacilityType.LABORATORY.equals(type) ? LaboratoriesView.class : HealthFacilitiesView.class;
+		super(VIEW_NAME);
 
-		viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(viewClass).get(FacilityCriteria.class);
-		criteria.type(type);
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
+		criteria = ViewModelProviders.of(getClass()).get(FacilityCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = new FacilitiesGrid(criteria, viewClass);
+		grid = new FacilitiesGrid(criteria);
 		gridLayout = new VerticalLayout();
 		//		gridLayout.addComponent(createHeaderBar());
 		gridLayout.addComponent(createFilterBar());
-		gridLayout.addComponent(
-			new RowCount(
-				FacilityType.LABORATORY.equals(criteria.getType()) ? Strings.labelNumberOfLaboratories : Strings.labelNumberOfFacilities,
-				grid.getItemCount()));
+		gridLayout.addComponent(new RowCount(Strings.labelNumberOfFacilities, grid.getItemCount()));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -110,11 +115,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.FACILITY));
-				if (FacilityType.LABORATORY.equals(type)) {
-					window.setCaption(I18nProperties.getString(Strings.headingImportLaboratories));
-				} else {
-					window.setCaption(I18nProperties.getString(Strings.headingImportHealthFacilities));
-				}
+				window.setCaption(I18nProperties.getString(Strings.headingImportFacilities));
 				window.addCloseListener(c -> {
 					grid.reload();
 				});
@@ -126,12 +127,24 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
 			exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
-
 			addHeaderComponent(exportButton);
+
+			StreamResource streamResource = new GridExportStreamResource(
+				grid,
+				"sormas_facilities",
+				"sormas_facilities_" + DateHelper.formatDateForExport(new Date()) + ".csv",
+				FacilitiesGrid.EDIT_BTN_ID);
+			FileDownloader fileDownloader = new FileDownloader(streamResource);
+			fileDownloader.extend(exportButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = ButtonHelper.createIconButtonWithCaption("create", null, VaadinIcons.PLUS_CIRCLE, null, ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButtonWithCaption(
+				"create",
+				I18nProperties.getCaption(Captions.actionNewEntry),
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getInfrastructureController().createFacility(),
+				ValoTheme.BUTTON_PRIMARY);
 			addHeaderComponent(createButton);
 		}
 
@@ -195,6 +208,27 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		CssStyles.style(searchField, CssStyles.FORCE_CAPTION);
 		filterLayout.addComponent(searchField);
 
+		typeGroupFilter = new ComboBox();
+		typeGroupFilter.setId("typeGroup");
+		typeGroupFilter.setWidth(220, Unit.PIXELS);
+		typeGroupFilter.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		typeGroupFilter.addItems(FacilityTypeGroup.values());
+		typeGroupFilter.addValueChangeListener(e -> {
+			criteria.typeGroup((FacilityTypeGroup) e.getProperty().getValue());
+			FieldHelper.updateItems(typeFilter, FacilityType.getTypes((FacilityTypeGroup) typeGroupFilter.getValue()));
+		});
+		filterLayout.addComponent(typeGroupFilter);
+
+		typeFilter = new ComboBox();
+		typeFilter.setId(FacilityDto.TYPE);
+		typeFilter.setWidth(220, Unit.PIXELS);
+		typeFilter.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		typeFilter.addValueChangeListener(e -> {
+			criteria.type((FacilityType) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(typeFilter);
+
 		regionFilter = new ComboBox();
 		regionFilter.setId(FacilityDto.REGION);
 		regionFilter.setWidth(140, Unit.PIXELS);
@@ -235,7 +269,7 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 		filterLayout.addComponent(communityFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
-			ViewModelProviders.of(AbstractFacilitiesView.class).remove(FacilityCriteria.class);
+			ViewModelProviders.of(FacilitiesView.class).remove(FacilityCriteria.class);
 			navigateTo(null);
 		}, CssStyles.FORCE_CAPTION);
 		resetButton.setVisible(false);
@@ -253,23 +287,10 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ACTIVE,
-					I18nProperties.getCaption(
-						FacilityType.LABORATORY.equals(criteria.getType())
-							? Captions.facilityActiveLaboratories
-							: Captions.facilityActiveFacilities));
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ARCHIVED,
-					I18nProperties.getCaption(
-						FacilityType.LABORATORY.equals(criteria.getType())
-							? Captions.facilityArchivedLaboratories
-							: Captions.facilityArchivedFacilities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.facilityActiveFacilities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.facilityArchivedFacilities));
 
-				relevanceStatusFilter.setItemCaption(
-					EntityRelevanceStatus.ALL,
-					I18nProperties.getCaption(
-						FacilityType.LABORATORY.equals(criteria.getType()) ? Captions.facilityAllLaboratories : Captions.facilityAllFacilities));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.facilityAllFacilities));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -286,7 +307,6 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.FACILITY,
-									criteria.getType(),
 									new Runnable() {
 
 										public void run() {
@@ -300,7 +320,6 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.FACILITY,
-									criteria.getType(),
 									new Runnable() {
 
 										public void run() {
@@ -344,6 +363,8 @@ public abstract class AbstractFacilitiesView extends AbstractConfigurationView {
 			relevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 		searchField.setValue(criteria.getNameCityLike());
+		typeGroupFilter.setValue(criteria.getTypeGroup());
+		typeFilter.setValue(criteria.getType());
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		communityFilter.setValue(criteria.getCommunity());

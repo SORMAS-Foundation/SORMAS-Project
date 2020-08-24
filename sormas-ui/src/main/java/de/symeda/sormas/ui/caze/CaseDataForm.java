@@ -48,6 +48,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -73,8 +74,11 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -122,8 +126,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
-
-	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
+	private static final String FACILITY_OR_HOME_LOC = "facilityOrHomeLoc";
+	private static final String TYPE_GROUP_LOC = "typeGroupLoc";
 
 	//@formatter:off
 	private static final String MAIN_HTML_LAYOUT =
@@ -152,9 +156,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 							"")
 					+
 					fluidRowLocs(CaseDataDto.CASE_ORIGIN, "") +
-					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT) +
-					fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
-					fluidRowLocs(CaseDataDto.HEALTH_FACILITY_DETAILS) +
+					fluidRowLocs(CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY) +
+					fluidRowLocs(FACILITY_OR_HOME_LOC, TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE) +
+					fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS) +
 					fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS) +
 					locCss(VSPACE_3, CaseDataDto.SHARED_TO_COUNTRY) +
 					fluidRowLocs(4, CaseDataDto.QUARANTINE_HOME_POSSIBLE, 8, CaseDataDto.QUARANTINE_HOME_POSSIBLE_COMMENT) +
@@ -201,6 +205,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private DateField quarantineTo;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
+	private OptionGroup facilityOrHome;
+	private ComboBox facilityTypeGroup;
+	private ComboBox facilityType;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isInJurisdiction) {
 
@@ -388,8 +395,23 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
 		community.addStyleName(SOFT_REQUIRED);
+		facilityOrHome = new OptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.getTypesOfPlaceForCases());
+		facilityOrHome.setId("facilityOrHome");
+		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
+		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		getContent().addComponent(facilityOrHome, FACILITY_OR_HOME_LOC);
+		facilityTypeGroup = new ComboBox();
+		facilityTypeGroup.setId("typeGroup");
+		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
+		facilityTypeGroup.setVisible(false);
+		getContent().addComponent(facilityTypeGroup, TYPE_GROUP_LOC);
+		facilityType = addField(CaseDataDto.FACILITY_TYPE);
+		facilityType.setVisible(false);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
+		facility.setVisible(false);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
@@ -399,36 +421,66 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			if (community.getValue() == null) {
-				FieldHelper.removeItems(facility);
-			}
-			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-			FieldHelper.updateItems(
-				facility,
-				districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
-			FieldHelper.updateItems(
-				surveillanceOfficerField,
-				districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
+			updateFacility(
+				(DistrictReferenceDto) district.getValue(),
+				(CommunityReferenceDto) community.getValue(),
+				(FacilityType) facilityType.getValue(),
+				facility);
 		});
 		community.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
-			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(
-				facility,
-				communityDto != null
-					? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
-					: district.getValue() != null
-						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
-						: null);
+			updateFacility(
+				(DistrictReferenceDto) district.getValue(),
+				(CommunityReferenceDto) community.getValue(),
+				(FacilityType) facilityType.getValue(),
+				facility);
+		});
+		facilityOrHome.addValueChangeListener(e -> {
+			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
+				facilityTypeGroup.setVisible(true);
+				facilityType.setVisible(true);
+				facility.setVisible(true);
+
+				// default values
+				if (facilityTypeGroup.getValue() == null && !facilityTypeGroup.isReadOnly()) {
+					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+				}
+				if (facilityType.getValue() == null
+					&& FacilityTypeGroup.MEDICAL_FACILITY.equals(facilityTypeGroup.getValue())
+					&& !facilityType.isReadOnly()) {
+					facilityType.setValue(FacilityType.HOSPITAL);
+				}
+
+				if (CaseOrigin.IN_COUNTRY.equals(getField(CaseDataDto.CASE_ORIGIN).getValue())) {
+					facility.setRequired(true);
+				}
+			} else {
+
+				facilityTypeGroup.clear();
+				facilityTypeGroup.setVisible(false);
+				facilityType.setVisible(false);
+				facility.setVisible(false);
+				facility.setRequired(false);
+			}
+			updateFacilityDetails(facility, facilityDetails);
+		});
+		facilityTypeGroup.addValueChangeListener(e -> {
+			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+		});
+		facilityType.addValueChangeListener(e -> {
+			updateFacility(
+				(DistrictReferenceDto) district.getValue(),
+				(CommunityReferenceDto) community.getValue(),
+				(FacilityType) facilityType.getValue(),
+				facility);
+		});
+		facility.addValueChangeListener(e -> {
+			updateFacilityDetails(facility, facilityDetails);
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		facility.addValueChangeListener(e -> {
-			updateFacilityFields(facility, facilityDetails);
-		});
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.NATIONAL_CASE_SHARING)) {
 			addField(CaseDataDto.SHARED_TO_COUNTRY, CheckBox.class);
@@ -546,6 +598,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.REGION,
 			CaseDataDto.DISTRICT,
 			CaseDataDto.COMMUNITY,
+			FACILITY_OR_HOME_LOC,
+			TYPE_GROUP_LOC,
+			CaseDataDto.FACILITY_TYPE,
 			CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.HEALTH_FACILITY_DETAILS);
 
@@ -641,11 +696,36 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(HospitalWardType.OTHER),
 				true);
 		}
-		setVisible(
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS),
-			CaseDataDto.CLINICIAN_NAME,
-			CaseDataDto.CLINICIAN_PHONE,
-			CaseDataDto.CLINICIAN_EMAIL);
+
+		/// CLINICIAN FIELDS
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					CaseDataDto.CLINICIAN_NAME,
+					CaseDataDto.FACILITY_TYPE,
+					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
+					true);
+			}
+			if (isVisibleAllowed(CaseDataDto.CLINICIAN_PHONE)) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					CaseDataDto.CLINICIAN_PHONE,
+					CaseDataDto.FACILITY_TYPE,
+					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
+					true);
+			}
+			if (isVisibleAllowed(CaseDataDto.CLINICIAN_EMAIL)) {
+				FieldHelper.setVisibleWhen(
+					getFieldGroup(),
+					CaseDataDto.CLINICIAN_EMAIL,
+					CaseDataDto.FACILITY_TYPE,
+					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
+					true);
+			}
+		} else {
+			setVisible(false, CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
+		}
 
 		// Other initializations
 
@@ -715,20 +795,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (getValue().getHealthFacility() != null) {
 				boolean otherHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-				boolean detailsVisible = otherHealthFacility || noneHealthFacility;
 
-				if (isVisibleAllowed(facilityDetails)) {
-					facilityDetails.setVisible(detailsVisible);
+				FacilityType caseFacilityType = getValue().getFacilityType();
+				if (noneHealthFacility || caseFacilityType == null) {
+					facilityOrHome.setValue(TypeOfPlace.HOME);
+				} else {
+					facilityOrHome.setValue(TypeOfPlace.FACILITY);
+					facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
+					if (!facilityType.isReadOnly()) {
+						facilityType.setValue(caseFacilityType);
+					}
 				}
-
-				if (otherHealthFacility) {
-					facilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
-				}
-				if (noneHealthFacility) {
-					facilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
-				}
-			} else {
-				setVisible(false, CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
 			}
 
 			// Set health facility/point of entry visibility based on case origin
@@ -739,13 +816,27 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				}
 
 				if (getValue().getHealthFacility() == null) {
-					setVisible(false, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS);
+					setVisible(
+						false,
+						CaseDataDto.COMMUNITY,
+						FACILITY_OR_HOME_LOC,
+						TYPE_GROUP_LOC,
+						CaseDataDto.FACILITY_TYPE,
+						CaseDataDto.HEALTH_FACILITY,
+						CaseDataDto.HEALTH_FACILITY_DETAILS);
 					setReadOnly(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY);
 				}
 			} else {
 				setRequired(true, CaseDataDto.HEALTH_FACILITY);
+				facilityOrHome.setRequired(true);
+				facilityTypeGroup.setRequired(true);
+				facilityType.setRequired(true);
 				setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
 			}
+
+			// take over the value that has been set based on access rights
+			facilityTypeGroup.setReadOnly(facilityType.isReadOnly());
+			facilityOrHome.setReadOnly(facilityType.isReadOnly());
 
 			// Hide case origin from port health users
 			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
@@ -850,6 +941,40 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
+	@Override
+	public void setValue(CaseDataDto newFieldValue) throws ReadOnlyException, ConversionException {
+		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to it's correct value
+		discard();
+	}
+
+	private void updateFacility(DistrictReferenceDto district, CommunityReferenceDto community, FacilityType facilityType, ComboBox facility) {
+		if (facilityType != null) {
+			if (community != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(community, facilityType, true, false));
+			} else if (district != null) {
+				FieldHelper.updateItems(
+					facility,
+					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
+			} else {
+				FieldHelper.removeItems(facility);
+
+			}
+		} else {
+			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				facility.addItem(noFacilityRef);
+				facility.setValue(noFacilityRef);
+			} else {
+				FieldHelper.removeItems(facility);
+			}
+		}
+	}
+
 	private void updateQuarantineFields() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		boolean visible;
@@ -876,7 +1001,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			CaseDataDto.QUARANTINE_HELP_NEEDED);
 	}
 
-	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
+	private void updateFacilityDetails(ComboBox cbFacility, TextField tfFacilityDetails) {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
@@ -889,15 +1014,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 			}
 			if (noneHealthFacility) {
-				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, NONE_HEALTH_FACILITY_DETAILS));
+				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
-			if (!visibleAndRequired) {
+			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
 				tfFacilityDetails.clear();
 			}
 		} else {
 			tfFacilityDetails.setVisible(false);
 			tfFacilityDetails.setRequired(false);
-			tfFacilityDetails.clear();
+			if (!tfFacilityDetails.isReadOnly()) {
+				tfFacilityDetails.clear();
+			}
 		}
 	}
 

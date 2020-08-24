@@ -208,6 +208,19 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState fastHeartRate;
 	private SymptomState oxygenSaturationLower94;
 
+	private SymptomState feverishFeeling;
+	private SymptomState weakness;
+	private SymptomState fatigue;
+	private SymptomState coughWithoutSputum;
+	private SymptomState breathlessness;
+	private SymptomState chestPressure;
+	private SymptomState blueLips;
+	private SymptomState bloodCirculationProblems;
+	private SymptomState palpitations;
+	private SymptomState dizzinessStandingUp;
+	private SymptomState highOrLowBloodPressure;
+	private SymptomState urinaryRetention;
+
 	// complications
 	private SymptomState alteredConsciousness;
 	private SymptomState confusedDisoriented;
@@ -1697,6 +1710,114 @@ public class Symptoms extends AbstractDomainObject {
 		this.oxygenSaturationLower94 = oxygenSaturationLower94;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFeverishFeeling() {
+		return feverishFeeling;
+	}
+
+	public void setFeverishFeeling(SymptomState feverishFeeling) {
+		this.feverishFeeling = feverishFeeling;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getWeakness() {
+		return weakness;
+	}
+
+	public void setWeakness(SymptomState weakness) {
+		this.weakness = weakness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getFatigue() {
+		return fatigue;
+	}
+
+	public void setFatigue(SymptomState fatigue) {
+		this.fatigue = fatigue;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getCoughWithoutSputum() {
+		return coughWithoutSputum;
+	}
+
+	public void setCoughWithoutSputum(SymptomState coughWithoutSputum) {
+		this.coughWithoutSputum = coughWithoutSputum;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBreathlessness() {
+		return breathlessness;
+	}
+
+	public void setBreathlessness(SymptomState breathlessness) {
+		this.breathlessness = breathlessness;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getChestPressure() {
+		return chestPressure;
+	}
+
+	public void setChestPressure(SymptomState chestPressure) {
+		this.chestPressure = chestPressure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBlueLips() {
+		return blueLips;
+	}
+
+	public void setBlueLips(SymptomState blueLips) {
+		this.blueLips = blueLips;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getBloodCirculationProblems() {
+		return bloodCirculationProblems;
+	}
+
+	public void setBloodCirculationProblems(SymptomState bloodCirculationProblems) {
+		this.bloodCirculationProblems = bloodCirculationProblems;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getPalpitations() {
+		return palpitations;
+	}
+
+	public void setPalpitations(SymptomState palpitations) {
+		this.palpitations = palpitations;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getDizzinessStandingUp() {
+		return dizzinessStandingUp;
+	}
+
+	public void setDizzinessStandingUp(SymptomState dizzinessStandingUp) {
+		this.dizzinessStandingUp = dizzinessStandingUp;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getHighOrLowBloodPressure() {
+		return highOrLowBloodPressure;
+	}
+
+	public void setHighOrLowBloodPressure(SymptomState highOrLowBloodPressure) {
+		this.highOrLowBloodPressure = highOrLowBloodPressure;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public SymptomState getUrinaryRetention() {
+		return urinaryRetention;
+	}
+
+	public void setUrinaryRetention(SymptomState urinaryRetention) {
+		this.urinaryRetention = urinaryRetention;
+	}
+
 	@Enumerated
 	public SymptomState getOtherComplications() {
 		return otherComplications;
@@ -1870,6 +1991,20 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, generalSignsOfDisease, SymptomsDto.GENERAL_SIGNS_OF_DISEASE);
 		appendYesSymptom(string, fastHeartRate, SymptomsDto.FAST_HEART_RATE);
 		appendYesSymptom(string, oxygenSaturationLower94, SymptomsDto.OXYGEN_SATURATION_LOWER_94);
+
+		appendYesSymptom(string, feverishFeeling, SymptomsDto.FEVERISHFEELING);
+		appendYesSymptom(string, weakness, SymptomsDto.WEAKNESS);
+		appendYesSymptom(string, fatigue, SymptomsDto.FATIGUE);
+		appendYesSymptom(string, coughWithoutSputum, SymptomsDto.COUGH_WITHOUT_SPUTUM);
+		appendYesSymptom(string, breathlessness, SymptomsDto.BREATHLESSNESS);
+		appendYesSymptom(string, chestPressure, SymptomsDto.CHEST_PRESSURE);
+		appendYesSymptom(string, blueLips, SymptomsDto.BLUE_LIPS);
+		appendYesSymptom(string, bloodCirculationProblems, SymptomsDto.BLOOD_CIRCULATION_PROBLEMS);
+		appendYesSymptom(string, palpitations, SymptomsDto.PALPITATIONS);
+		appendYesSymptom(string, dizzinessStandingUp, SymptomsDto.DIZZINESS_STANDING_UP);
+		appendYesSymptom(string, highOrLowBloodPressure, SymptomsDto.HIGH_OR_LOW_BLOOD_PRESSURE);
+		appendYesSymptom(string, urinaryRetention, SymptomsDto.URINARY_RETENTION);
+
 		appendNotNullValue(string, otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
 
 		// symptomsComments;

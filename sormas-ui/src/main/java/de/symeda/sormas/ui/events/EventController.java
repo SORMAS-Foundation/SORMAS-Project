@@ -17,12 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -224,7 +226,13 @@ public class EventController {
 
 		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(() -> {
-				FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+				if (!existEventParticipantsLinkedToEvent(event)) {
+					FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+				} else {
+					VaadinUiUtil.showSimplePopupWindow(
+						I18nProperties.getString(Strings.headingEventNotDeleted),
+						I18nProperties.getString(Strings.messageEventsNotDeletedReason));
+				}
 				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityEvent));
 		}
@@ -356,17 +364,52 @@ public class EventController {
 		} else {
 			VaadinUiUtil
 				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+					List<EventDto> eventDtoList = new ArrayList<>();
+					StringBuilder nonDeletableEvents = new StringBuilder();
+					Integer countNotDeletedEvents = 0;
 					for (EventIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
+						EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(selectedRow.getUuid());
+						if (existEventParticipantsLinkedToEvent(eventDto)) {
+							eventDtoList.add(eventDto);
+							countNotDeletedEvents = countNotDeletedEvents + 1;
+							nonDeletableEvents.append(selectedRow.getUuid().substring(0, 6)).append(", ");
+						} else {
+							FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
+						}
+					}
+					if (nonDeletableEvents.length() > 0) {
+						nonDeletableEvents = new StringBuilder(" " + nonDeletableEvents.substring(0, nonDeletableEvents.length() - 2) + ". ");
+
 					}
 					callback.run();
-					new Notification(
-						I18nProperties.getString(Strings.headingEventsDeleted),
-						I18nProperties.getString(Strings.messageEventsDeleted),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					if (eventDtoList.isEmpty()) {
+						new Notification(
+							I18nProperties.getString(Strings.headingEventsDeleted),
+							I18nProperties.getString(Strings.messageEventsDeleted),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
+					} else {
+						Window response = VaadinUiUtil.showSimplePopupWindow(
+							I18nProperties.getString(Strings.headingSomeEventsNotDeleted),
+							String.format(
+								"%1s <br/> <br/> %2s",
+								String.format(
+									I18nProperties.getString(Strings.messageCountEventsNotDeleted),
+									String.format("<b>%s</b>", countNotDeletedEvents),
+									String.format("<b>%s</b>", nonDeletableEvents)),
+								I18nProperties.getString(Strings.messageEventsNotDeletedReason)),
+							ContentMode.HTML);
+						response.setWidth(600, Sizeable.Unit.PIXELS);
+					}
 				});
 		}
+	}
+
+	private Boolean existEventParticipantsLinkedToEvent(EventDto event) {
+		List<EventParticipantDto> eventParticipantList =
+			FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsByEvent(event.getUuid());
+
+		return !eventParticipantList.isEmpty();
 	}
 
 	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {

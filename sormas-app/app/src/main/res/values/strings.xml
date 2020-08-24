@@ -161,6 +161,7 @@
     <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_tasks">Event Tasks</string>
     <string name="caption_executed_by">Executed by</string>
+    <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Fatalities</string>
     <string name="caption_first_name">First Name</string>
     <string name="caption_sex">Sex</string>
@@ -596,5 +597,7 @@
     <string name="no_camera_permission">No camera permission</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="scan_field_sample_id">Scan field sample id</string>
+    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type">Facility type</string>
 
 </resources>

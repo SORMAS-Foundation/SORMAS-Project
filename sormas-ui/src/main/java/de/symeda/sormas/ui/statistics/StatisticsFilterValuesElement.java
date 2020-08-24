@@ -201,7 +201,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				} else {
 					return new ArrayList<>();
 				}
-			case HEALTH_FACILITY:
+			case FACILITY:
 				if (jurisdictionElement == null) {
 					return new ArrayList<>();
 				}
@@ -212,14 +212,18 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 					List<FacilityReferenceDto> facilities = new ArrayList<>();
 					for (TokenizableValue selectedCommunityTokenizable : selectedCommunityTokenizables) {
 						CommunityReferenceDto selectedCommunity = (CommunityReferenceDto) selectedCommunityTokenizable.getValue();
-						facilities.addAll(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(selectedCommunity, false));
+						facilities.addAll(
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByCommunityAndType(selectedCommunity, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else if (CollectionUtils.isNotEmpty(selectedDistrictTokenizables)) {
 					List<FacilityReferenceDto> facilities = new ArrayList<>();
 					for (TokenizableValue selectedDistrictTokenizable : selectedDistrictTokenizables) {
 						DistrictReferenceDto selectedDistrict = (DistrictReferenceDto) selectedDistrictTokenizable.getValue();
-						facilities.addAll(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(selectedDistrict, false));
+						facilities.addAll(
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(selectedDistrict, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else {

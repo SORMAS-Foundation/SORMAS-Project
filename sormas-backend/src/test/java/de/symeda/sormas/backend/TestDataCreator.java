@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
@@ -331,6 +330,7 @@ public class TestDataCreator {
 		caze.setRegion(rdcf.region);
 		caze.setDistrict(rdcf.district);
 		caze.setCommunity(rdcf.community);
+		caze.setFacilityType(beanTest.getFacilityFacade().getByUuid(rdcf.facility.getUuid()).getType());
 		caze.setHealthFacility(rdcf.facility);
 		caze.setPointOfEntry(rdcf.pointOfEntry);
 
@@ -1067,7 +1067,7 @@ public class TestDataCreator {
 	}
 
 	public Facility createFacility(String facilityName, Region region, District district, Community community) {
-		return createFacility(facilityName, null, region, district, community);
+		return createFacility(facilityName, FacilityType.HOSPITAL, region, district, community);
 	}
 
 	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community) {
@@ -1092,6 +1092,7 @@ public class TestDataCreator {
 
 		FacilityDto facility = FacilityDto.build();
 		facility.setName(facilityName);
+		facility.setType(FacilityType.HOSPITAL);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);

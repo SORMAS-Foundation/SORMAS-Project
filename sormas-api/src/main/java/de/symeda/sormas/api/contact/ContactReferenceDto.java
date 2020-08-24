@@ -53,12 +53,20 @@ public class ContactReferenceDto extends ReferenceDto {
 
 		setUuid(uuid);
 		this.contactName = new PersonName(contactFirstName, contactLastName);
-		this.caseName = new PersonName(caseFirstName, caseLastName);
+
+		if (caseFirstName != null && caseLastName != null) {
+			this.caseName = new PersonName(caseFirstName, caseLastName);
+		}
 	}
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactName.firstName, contactName.lastName, caseName.firstName, caseName.lastName, getUuid());
+		return buildCaption(
+			contactName.firstName,
+			contactName.lastName,
+			caseName != null ? caseName.firstName : null,
+			caseName != null ? caseName.lastName : null,
+			getUuid());
 	}
 
 	public PersonName getContactName() {

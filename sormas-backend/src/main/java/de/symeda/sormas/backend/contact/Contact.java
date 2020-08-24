@@ -52,9 +52,9 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.person.Person;
@@ -131,6 +131,7 @@ public class Contact extends CoreAdo {
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -199,6 +200,7 @@ public class Contact extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+	private HealthConditions healthConditions;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -753,5 +755,15 @@ public class Contact extends CoreAdo {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

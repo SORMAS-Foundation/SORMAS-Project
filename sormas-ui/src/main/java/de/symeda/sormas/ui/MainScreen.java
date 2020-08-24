@@ -46,8 +46,7 @@ import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
-import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
@@ -92,8 +91,7 @@ public class MainScreen extends HorizontalLayout {
 				RegionsView.VIEW_NAME,
 				DistrictsView.VIEW_NAME,
 				CommunitiesView.VIEW_NAME,
-				HealthFacilitiesView.VIEW_NAME,
-				LaboratoriesView.VIEW_NAME,
+				FacilitiesView.VIEW_NAME,
 				PointsOfEntryView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
