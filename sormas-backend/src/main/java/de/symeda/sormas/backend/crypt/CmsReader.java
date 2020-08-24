@@ -48,9 +48,9 @@ public class CmsReader {
 	public static byte[] decryptAndVerify(
 		byte[] encryptedData,
 		List<X509Certificate> expectedSignatureCerts,
-		X509Certificate receipientCertificate,
-		PrivateKey receipientPrivateKey) {
-		byte[] decrypted = decrypt(encryptedData, receipientCertificate, receipientPrivateKey);
+		X509Certificate recipientCertificate,
+		PrivateKey recipientPrivateKey) {
+		byte[] decrypted = decrypt(encryptedData, recipientCertificate, recipientPrivateKey);
 		return verifyAndExtractPayload(decrypted, expectedSignatureCerts);
 	}
 
@@ -73,7 +73,7 @@ public class CmsReader {
 		return (byte[]) s.getSignedContent().getContent();
 	}
 
-	static byte[] decrypt(byte[] encryptedData, X509Certificate receipientCertificate, PrivateKey receipientPrivateKey) {
+	static byte[] decrypt(byte[] encryptedData, X509Certificate recipientCertificate, PrivateKey recipientPrivateKey) {
 
 		try {
 			CMSEnvelopedData m = new CMSEnvelopedData(encryptedData);
@@ -81,11 +81,11 @@ public class CmsReader {
 
 			RecipientInformationStore recipients = m.getRecipientInfos();
 
-			RecipientId recId = new JceKeyTransRecipientId(receipientCertificate);
+			RecipientId recId = new JceKeyTransRecipientId(recipientCertificate);
 			RecipientInformation recipientInfo = recipients.get(recId);
 			checkAlgOID("key encryption", EXPECTED_KEY_ENC_ALG_OID, recipientInfo.getKeyEncryptionAlgOID());
 
-			Recipient recipient = new JceKeyTransEnvelopedRecipient(receipientPrivateKey);
+			Recipient recipient = new JceKeyTransEnvelopedRecipient(recipientPrivateKey);
 
 			return recipientInfo.getContent(recipient);
 
@@ -127,7 +127,7 @@ public class CmsReader {
 			} catch (CertStoreException e) {
 				throw new RuntimeException(e);
 			}
-//
+
 			Iterator<X509Certificate> certIt = certCollection.iterator();
 			if (!certIt.hasNext()) {
 				throw new RuntimeException("Unknown Signer Certificate: " + sid.getIssuer() + "#" + sid.getSerialNumber());

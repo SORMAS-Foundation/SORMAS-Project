@@ -80,7 +80,7 @@ public class CmsCreator {
 	private static final String SIG_ALG = "SHA256WITHRSA";
 
 	static {
-		//make sure BC is inited
+		//make sure BC is initialised
 		CryptInit.getProvider();
 	}
 
@@ -92,18 +92,18 @@ public class CmsCreator {
 		//NOOP
 	}
 
-	static byte[] signAndEncrypt(
+	public static byte[] signAndEncrypt(
 		byte[] plainData,
 		X509Certificate signerCertificate,
 		PrivateKey privateKey,
-		X509Certificate receipientCertificate,
+		X509Certificate recipientCertificate,
 		boolean validateSignature)
 		throws CMSException {
 
 		byte[] signedData = sign(plainData, signerCertificate, privateKey, validateSignature);
 
-		/* Create the encrypter */
-		return encrypt(signedData, receipientCertificate);
+		/* Create the encryptor */
+		return encrypt(signedData, recipientCertificate);
 	}
 
 	static byte[] sign(byte[] plainData, X509Certificate signerCertificate, PrivateKey privateKey, boolean validateSignature) throws CMSException {
@@ -165,18 +165,18 @@ public class CmsCreator {
 		return attributes;
 	}
 
-	static byte[] encrypt(byte[] signedData, X509Certificate receipientCertificate) {
+	public static byte[] encrypt(byte[] signedData, X509Certificate recipientCertificate) {
 
 		BouncyCastleProvider provider = CryptInit.getProvider();
 
 		try {
-			CMSEnvelopedDataGenerator encrypter = new CMSEnvelopedDataGenerator();
-			encrypter.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(receipientCertificate).setProvider(provider));
+			CMSEnvelopedDataGenerator encryptor = new CMSEnvelopedDataGenerator();
+			encryptor.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(recipientCertificate).setProvider(provider));
 
 			/* Encrypt the message */
 			CMSTypedData content = new CMSProcessableByteArray(signedData);
 			OutputEncryptor outputEncryptor = new JceCMSContentEncryptorBuilder(SYMMETRIC_CRYPT_ALG).setProvider(provider).build();
-			CMSEnvelopedData ed = encrypter.generate(content, outputEncryptor);
+			CMSEnvelopedData ed = encryptor.generate(content, outputEncryptor);
 
 			return ed.getEncoded();
 

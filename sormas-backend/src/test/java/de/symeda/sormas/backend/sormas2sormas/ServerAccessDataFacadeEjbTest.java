@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 import java.util.List;
 
+import de.symeda.sormas.api.Sormas2SormasConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -21,29 +22,28 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class ServerAccessDataFacadeEjbTest extends AbstractBeanTest {
 
-	private static final String TEST_SORMAS2SORMAS_PATH = "src/test/resources/sormas2sormas/";
-
-	@InjectMocks
-	private ServerAccessDataFacadeEjb.ServerAccessDataFacadeEjbLocal serverAccessDataFacade;
+    @InjectMocks
+    private ServerAccessDataFacadeEjb.ServerAccessDataFacadeEjbLocal serverAccessDataFacade;
 
 	@Mock
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        Sormas2SormasConfig config = new Sormas2SormasConfig();
+        File file = new File("src/test/resources/sormas2sormas/");
+        String absolutePath = file.getAbsolutePath();
+        config.setFilePath(absolutePath);
+        Mockito.when(configFacade.getSormas2SormasConfig()).thenReturn(config);
+    }
 
 	@Test
 	public void getServerAccessDataListTest() {
-		File file = new File(TEST_SORMAS2SORMAS_PATH);
-		String absolutePath = file.getAbsolutePath();
-		Mockito.when(configFacade.getSormas2sormasFilesPath()).thenReturn(absolutePath);
-
 		ServerAccessDataDto dto1 = new ServerAccessDataDto();
-		dto1.setCommonName("testID");
-		dto1.setHealthDepartment("testName");
-		dto1.setUrl("testURL");
+        dto1.setCommonName("testID");
+        dto1.setHealthDepartment("testName");
+        dto1.setUrl("testURL");
 
 		ServerAccessDataDto dto2 = new ServerAccessDataDto();
 		dto2.setCommonName("testID2");

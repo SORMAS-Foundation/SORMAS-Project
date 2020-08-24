@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.common;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.Sormas2SormasConfig;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -67,7 +68,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String TEMP_FILES_PATH = "temp.path";
 	public static final String GENERATED_FILES_PATH = "generated.path";
 	public static final String CUSTOM_FILES_PATH = "custom.path";
-	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String CSV_SEPARATOR = "csv.separator";
 	public static final String RSCRIPT_EXECUTABLE = "rscript.executable";
 
@@ -89,6 +89,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+
+	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	private static final String SORMAS2SORMAS_KEY_ALIAS = "sormas2sormas.keyAlias";
+	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
+	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -247,11 +254,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getSormas2sormasFilesPath() {
-		return getProperty(SORMAS2SORMAS_FILES_PATH, "/opt/sormas/sormas2sormas/");
-	}
-
-	@Override
 	public String getRScriptExecutable() {
 		return getProperty(RSCRIPT_EXECUTABLE, null);
 	}
@@ -339,6 +341,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSymptomJournalSecret() {
 		return getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null);
+	}
+
+	@Override
+	public Sormas2SormasConfig getSormas2SormasConfig() {
+		Sormas2SormasConfig config = new Sormas2SormasConfig();
+		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, "/opt/sormas/sormas2sormas/"));
+		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
+		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
+		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
+		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
+		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		return config;
 	}
 
 	@Override
