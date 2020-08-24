@@ -128,9 +128,9 @@ In general data access & synchronisation is based on the following rules:
 
 ## Contact follow-up
 * generated every hour if CONTACT_FOLLOW_UP feature enabled 
-* assigned user becomes the contact officer if exists, if not a random officer of the contact district
+* the task assignee is set to the contact officer if specified, otherwise to a random officer in the contact district
 
 ## Case related tasks
-* assigned user becomes the surveillance officer of the case if exists, if not a random surveillance officer of the district
+* the task assignee is set to the surveillance officer of the case if specified, otherwise to a random surveillance officer in the contact district
 
 
