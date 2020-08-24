@@ -40,6 +40,9 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -91,6 +94,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> initialFacilities;
 	private List<Item> quarantineList;
 	private List<Item> reportingTypeList;
+	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeGroupList;
 
 	// Static methods
 
@@ -147,11 +152,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
-			contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 		} else {
 			if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				if (record.getHealthFacility() == null) {
-					contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+					contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+					contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+					contentBinding.caseDataHealthFacility.setVisibility(GONE);
 					contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 				}
 			} else {
@@ -248,7 +258,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
+		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
@@ -303,6 +315,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
 			record.getRegion(),
@@ -312,9 +325,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataCommunity,
 			initialCommunities,
 			record.getCommunity(),
+			contentBinding.facilityOrHome,
+			facilityOrHomeList,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.caseDataFacilityType,
+			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			record.getHealthFacility());
+			record.getHealthFacility(),
+			contentBinding.caseDataHealthFacilityDetails,
+			false);
 
 		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.caseDataHealthFacility.setRequired(false);
@@ -410,6 +431,18 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassificationUser.setVisibility(GONE);
 			contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
+		}
+
+		if (record.getHealthFacility() == null) {
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
+		} else if (FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
+		} else {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
 		}
 	}
 

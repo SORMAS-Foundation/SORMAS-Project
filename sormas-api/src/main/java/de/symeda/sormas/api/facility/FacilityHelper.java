@@ -49,9 +49,6 @@ public final class FacilityHelper {
 			if (facilityUuid.equals(FacilityDto.NONE_FACILITY_UUID)) {
 				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.NO_FACILITY);
 			}
-			if (facilityUuid.equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_LABORATORY);
-			}
 		}
 
 		StringBuilder caption = new StringBuilder();

@@ -21,6 +21,8 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -42,6 +44,7 @@ import retrofit2.Call;
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
+	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -135,6 +138,8 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+
+		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
 
 		target.setPseudonymized(source.isPseudonymized());
 	}
@@ -245,6 +250,13 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
 		} else {
 			target.setEpiData(null);
+		}
+
+		if (source.getHealthConditions() != null) {
+			HealthConditions healthConditions = DatabaseHelper.getHealthConditionsDao().queryForId(source.getHealthConditions().getId());
+			target.setHealthConditions(healthConditionsDtoHelper.adoToDto(healthConditions));
+		} else {
+			target.setHealthConditions(null);
 		}
 
 		target.setPseudonymized(source.isPseudonymized());

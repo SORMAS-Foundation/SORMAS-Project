@@ -26,6 +26,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
@@ -85,7 +86,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
+		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
 
 		setFieldVisibilitiesAndAccesses(PreviousHospitalizationDto.class, contentBinding.mainContent);
 
@@ -98,6 +99,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
 		InfrastructureHelper.initializeFacilityFields(
+			data,
 			contentBinding.casePreviousHospitalizationRegion,
 			initialRegions,
 			data.getRegion(),
@@ -107,9 +109,17 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			contentBinding.casePreviousHospitalizationCommunity,
 			initialCommunities,
 			data.getCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			initialFacilities,
-			data.getHealthFacility());
+			data.getHealthFacility(),
+			contentBinding.casePreviousHospitalizationHealthFacilityDetails,
+			false);
 
 		CaseValidator.initializePreviousHospitalizationValidation(contentBinding);
 	}

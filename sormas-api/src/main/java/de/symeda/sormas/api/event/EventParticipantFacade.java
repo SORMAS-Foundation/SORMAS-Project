@@ -29,6 +29,8 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 
+	List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid);
+
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date);
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
@@ -54,4 +56,6 @@ public interface EventParticipantFacade {
 	boolean exists(String uuid);
 
 	EventParticipantReferenceDto getReferenceByUuid(String uuid);
+
+	List<String> getDeletedUuidsSince(Date date);
 }

@@ -181,7 +181,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
 		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
+		CaseLogic.handleHospitalization(caze, oldCase, true);
 		getCaseFacade().saveCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
