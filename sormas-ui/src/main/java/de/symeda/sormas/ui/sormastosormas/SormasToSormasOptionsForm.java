@@ -17,9 +17,13 @@ package de.symeda.sormas.ui.sormastosormas;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import com.vaadin.v7.ui.CheckBox;
-import com.vaadin.v7.ui.TextField;
+import java.util.List;
 
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
+
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -44,8 +48,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		TextField healthDepartmentField = addField(SormasToSormasOptionsDto.HEALTH_DEPARTMENT);
+		ComboBox healthDepartmentField = addField(SormasToSormasOptionsDto.HEALTH_DEPARTMENT, ComboBox.class);
 		healthDepartmentField.setRequired(true);
+		List<HealthDepartmentServerAccessData> healthDepartments = FacadeProvider.getSormasToSormasFacade().getAvailableHealthDepartments();
+		healthDepartmentField.addItems(healthDepartments);
+		healthDepartments.forEach(hd -> {
+			healthDepartmentField.setItemCaption(hd, hd.getName());
+		});
 
 		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 

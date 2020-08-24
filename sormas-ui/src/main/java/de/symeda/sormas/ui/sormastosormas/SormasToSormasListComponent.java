@@ -159,7 +159,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			setExpandRatio(mainLayout, 1);
 
 			Label healthDepartmentLabel =
-				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getHealthDepartment());
+				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getHealthDepartmentId());
 			healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
 			mainLayout.addComponent(healthDepartmentLabel);
 

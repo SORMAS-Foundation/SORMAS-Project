@@ -27,7 +27,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
-	private String healthDepartment;
+	private String healthDepartmentId;
 	private UserReferenceDto sender;
 
 	public CaseReferenceDto getCaze() {
@@ -46,12 +46,12 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.contact = contact;
 	}
 
-	public String getHealthDepartment() {
-		return healthDepartment;
+	public String getHealthDepartmentId() {
+		return healthDepartmentId;
 	}
 
-	public void setHealthDepartment(String healthDepartment) {
-		this.healthDepartment = healthDepartment;
+	public void setHealthDepartmentId(String healthDepartmentId) {
+		this.healthDepartmentId = healthDepartmentId;
 	}
 
 	public UserReferenceDto getSender() {
@@ -80,7 +80,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
 
 		shareInfo.setUuid(DataHelper.createUuid());
-		shareInfo.setHealthDepartment(healthDepartment);
+		shareInfo.setHealthDepartmentId(healthDepartment);
 		shareInfo.setSender(sender);
 
 		return shareInfo;

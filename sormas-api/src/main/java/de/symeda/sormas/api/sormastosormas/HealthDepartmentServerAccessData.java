@@ -15,22 +15,48 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.List;
+import java.io.Serializable;
 
-import javax.ejb.Remote;
+public class HealthDepartmentServerAccessData implements Serializable {
 
-@Remote
-public interface SormasToSormasFacade {
+	private static final long serialVersionUID = 6340918261432968684L;
 
-	void saveSharedCase(SormasToSormasCaseDto sharedCase);
+	public static String NAME = "name";
 
-	void saveSharedContact(SormasToSormasContactDto sharedContact);
+	private String id;
+	private String name;
+	private String url;
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public HealthDepartmentServerAccessData() {
+	}
 
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public HealthDepartmentServerAccessData(String id, String name, String url) {
+		this.id = id;
+		this.name = name;
+		this.url = url;
+	}
 
-	List<HealthDepartmentServerAccessData> getAvailableHealthDepartments();
+	public String getId() {
+		return id;
+	}
 
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }

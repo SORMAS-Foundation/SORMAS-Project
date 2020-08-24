@@ -18,7 +18,9 @@ package de.symeda.sormas.backend.sormastosormas;
 import static de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -62,6 +65,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
@@ -130,6 +134,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 
+	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
+	static {
+		MOCK_HEALTH_DEPARTMENTS
+			.add(new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://localhost:8080/sormas-rest"));
+		MOCK_HEALTH_DEPARTMENTS
+			.add(new HealthDepartmentServerAccessData("healtsDep2", "Gesundheitsamt Friedrichshain (B)", "http://localhost:8080/sormas-rest"));
+	}
+
 	@Override
 	@Transactional
 	public void saveSharedCase(SormasToSormasCaseDto shareCaseDto) {
@@ -171,7 +183,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
 
-		saveCaseShareInfo(cazeDto.toReference(), options.getHealthDepartment(), currentUser.toReference());
+		saveCaseShareInfo(cazeDto.toReference(), options.getHealthDepartment().getId(), currentUser.toReference());
 	}
 
 	@Override
@@ -187,7 +199,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
-		saveContactShareInfo(contact.toReference(), options.getHealthDepartment(), currentUser.toReference());
+		saveContactShareInfo(contact.toReference(), options.getHealthDepartment().getId(), currentUser.toReference());
+	}
+
+	@Override
+	public List<HealthDepartmentServerAccessData> getAvailableHealthDepartments() {
+		return MOCK_HEALTH_DEPARTMENTS;
 	}
 
 	@Override
@@ -240,8 +257,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return contactDto;
 	}
 
-	private void saveCaseShareInfo(CaseReferenceDto caseReference, String healthDepartment, UserReferenceDto sender) {
-		saveShareInfo(SormasToSormasShareInfoDto.build(caseReference, healthDepartment, sender));
+	private void saveCaseShareInfo(CaseReferenceDto caseReference, String healthDepartmentId, UserReferenceDto sender) {
+		saveShareInfo(SormasToSormasShareInfoDto.build(caseReference, healthDepartmentId, sender));
 	}
 
 	private void saveContactShareInfo(ContactReferenceDto contactReference, String healthDepartment, UserReferenceDto sender) {
@@ -255,7 +272,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setCreationDate(new Timestamp(new Date().getTime()));
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setContact(contactService.getByReferenceDto(source.getContact()));
-		target.setHealthDepartment(source.getHealthDepartment());
+		target.setHealthDepartment(source.getHealthDepartmentId());
 		target.setSender(userService.getByReferenceDto(source.getSender()));
 
 		sormasToSormasShareInfoService.ensurePersisted(target);
@@ -501,17 +518,29 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + "sormas2SORMAS";
 
+		HealthDepartmentServerAccessData target =
+			MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(options.getHealthDepartment().getId())).findFirst().orElse(null);
+
 		Response response;
 		try {
 			response = ClientBuilder.newBuilder()
 				.build()
-				.target("http://localhost:8080/sormas-rest" + endpoint)
+				.target(target.getUrl() + endpoint)
 				.request()
 				.header("Authorization", "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes())))
 				.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
 		} catch (JsonProcessingException e) {
-			LOGGER.error("Unable share data to sormas {}", "http://localhost:8080/sormas-rest", e);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorShareToSormas));
+			LOGGER.error("Unable send data sormas", e);
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
+		} catch (ProcessingException e) {
+			LOGGER.error("Unable send data sormas", e);
+
+			String processingErrorMessage = I18nProperties.getString(Strings.errorSormasToSormasSend);
+			if (ConnectException.class.isAssignableFrom(e.getCause().getClass())) {
+				processingErrorMessage = I18nProperties.getString(Strings.errorSormasToSormasConnection);
+			}
+
+			throw new SormasToSormasException(processingErrorMessage);
 		}
 
 		int statusCode = response.getStatus();
@@ -525,7 +554,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			}
 
 			LOGGER.error("Share case failed: {}; {}", statusCode, errorMessage);
-			throw new SormasToSormasException(errorMessage);
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasResult));
 		}
 	}
 
@@ -582,7 +611,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			target.setContact(source.getContact().toReference());
 		}
 
-		target.setHealthDepartment(source.getHealthDepartment());
+		target.setHealthDepartmentId(source.getHealthDepartment());
 		target.setSender(source.getSender().toReference());
 
 		return target;
