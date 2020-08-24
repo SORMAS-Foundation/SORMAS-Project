@@ -39,6 +39,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -293,7 +295,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		CommunityReferenceDto community = mapCommunity(caze.getCommunity(), district);
 		caze.setCommunity(community);
 
-		caze.setHealthFacility(mapHealthFacility(caze.getHealthFacility(), district, community));
+		caze.setHealthFacility(mapHealthFacility(caze.getHealthFacility(), district, community, caze.getFacilityType()));
 
 		if (caze.getPointOfEntry() != null) {
 			caze.setPointOfEntry(
@@ -317,7 +319,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				CommunityReferenceDto phCommunity = mapCommunity(ph.getCommunity(), phDistrict);
 				ph.setCommunity(phCommunity);
 
-				ph.setHealthFacility(mapHealthFacility(ph.getHealthFacility(), phDistrict, phCommunity));
+				ph.setHealthFacility(mapHealthFacility(ph.getHealthFacility(), phDistrict, phCommunity, FacilityType.HOSPITAL));
 			});
 		}
 
@@ -424,12 +426,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		address.setCommunity(mapCommunity(address.getCommunity(), addressDistrict));
 	}
 
-	private FacilityReferenceDto mapHealthFacility(FacilityReferenceDto facility, DistrictReferenceDto district, CommunityReferenceDto community) {
+	private FacilityReferenceDto mapHealthFacility(
+		FacilityReferenceDto facility,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community,
+		FacilityType facilityType) {
 		if (facility == null) {
 			return null;
 		}
 
-		return facilityFacade.getByName(facility.getCaption(), district, community, false).stream().findFirst().orElse(null);
+		return facilityFacade.getByNameAndType(facility.getCaption(), district, community, facilityType, false).stream().findFirst().orElse(null);
 	}
 
 	private CommunityReferenceDto mapCommunity(CommunityReferenceDto community, DistrictReferenceDto district) {
@@ -530,10 +536,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 				.header("Authorization", "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes())))
 				.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
 		} catch (JsonProcessingException e) {
-			LOGGER.error("Unable send data sormas", e);
+			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
+		} catch (ResponseProcessingException e) {
+			LOGGER.error("Unable to process sormas response", e);
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasResult));
 		} catch (ProcessingException e) {
-			LOGGER.error("Unable send data sormas", e);
+			LOGGER.error("Unable to send data sormas", e);
 
 			String processingErrorMessage = I18nProperties.getString(Strings.errorSormasToSormasSend);
 			if (ConnectException.class.isAssignableFrom(e.getCause().getClass())) {
@@ -554,7 +563,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			}
 
 			LOGGER.error("Share case failed: {}; {}", statusCode, errorMessage);
-			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasResult));
+			throw new SormasToSormasException(errorMessage);
 		}
 	}
 
