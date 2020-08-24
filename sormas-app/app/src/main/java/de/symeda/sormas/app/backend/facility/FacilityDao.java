@@ -26,7 +26,6 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
 import android.util.Log;
-
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -83,7 +82,11 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 		}
 	}
 
-	public List<Facility> getActiveHealthFacilitiesByDistrict(District district, boolean includeOtherFacility, boolean includeOtherPlace) {
+	public List<Facility> getActiveHealthFacilitiesByDistrictAndType(
+		District district,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeOtherPlace) {
 
 		try {
 			QueryBuilder builder = queryBuilder();
@@ -91,8 +94,10 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			where.and(
 				where.eq(Facility.DISTRICT, district),
 				where.eq(InfrastructureAdo.ARCHIVED, false),
-				where.eq(AbstractDomainObject.SNAPSHOT, false),
-				where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
+				where.eq(AbstractDomainObject.SNAPSHOT, false));
+			if (type != null) {
+				where.and().eq(Facility.TYPE, type);
+			}
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
 			if (includeOtherFacility) {
@@ -110,7 +115,11 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 		}
 	}
 
-	public List<Facility> getActiveHealthFacilitiesByCommunity(Community community, boolean includeOtherFacility, boolean includeOtherPlace) {
+	public List<Facility> getActiveHealthFacilitiesByCommunityAndType(
+		Community community,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeOtherPlace) {
 
 		try {
 			QueryBuilder builder = queryBuilder();
@@ -118,8 +127,10 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 			where.and(
 				where.eq(Facility.COMMUNITY, community),
 				where.eq(InfrastructureAdo.ARCHIVED, false),
-				where.eq(AbstractDomainObject.SNAPSHOT, false),
-				where.or(where.ne(Facility.TYPE, FacilityType.LABORATORY), where.isNull(Facility.TYPE)));
+				where.eq(AbstractDomainObject.SNAPSHOT, false));
+			if (type != null) {
+				where.and().eq(Facility.TYPE, type);
+			}
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
 			if (includeOtherFacility) {
@@ -137,19 +148,18 @@ public class FacilityDao extends AbstractInfrastructureAdoDao<Facility> {
 		}
 	}
 
-	public List<Facility> getActiveLaboratories(boolean includeOtherLaboratory) {
+	public List<Facility> getActiveLaboratories(boolean includeOtherFacility) {
 		try {
 			QueryBuilder builder = queryBuilder();
 			Where where = builder.where();
 			where.eq(Facility.TYPE, FacilityType.LABORATORY);
 			where.and().eq(InfrastructureAdo.ARCHIVED, false);
 			where.and().eq(AbstractDomainObject.SNAPSHOT, false);
-			where.and().ne(Facility.UUID, FacilityDto.OTHER_LABORATORY_UUID).query();
-
+			where.and().ne(Facility.UUID, FacilityDto.OTHER_FACILITY_UUID).query();
 			List<Facility> facilities = builder.orderBy(Facility.NAME, true).query();
 
-			if (includeOtherLaboratory) {
-				facilities.add(queryUuid(FacilityDto.OTHER_LABORATORY_UUID));
+			if (includeOtherFacility) {
+				facilities.add(queryUuid(FacilityDto.OTHER_FACILITY_UUID));
 			}
 
 			return facilities;

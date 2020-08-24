@@ -127,7 +127,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 219;
+	public static final int DATABASE_VERSION = 222;
 
 	private static DatabaseHelper instance = null;
 
@@ -1483,7 +1483,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 218:
 				currentVersion = 218;
-
 				Cursor visitDbCursor = db.query(Visit.TABLE_NAME, null, null, null, null, null, null);
 				String[] visitColumnNames = visitDbCursor.getColumnNames();
 				visitDbCursor.close();
@@ -1493,6 +1492,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				TableUtils.createTable(connectionSource, Visit.class);
 				db.execSQL("INSERT INTO visits (" + visitQueryColumns + ") SELECT " + visitQueryColumns + " FROM visits_old;");
 				db.execSQL("DROP TABLE visits_old;");
+
+			case 219:
+				currentVersion = 219;
+				getDao(Sample.class).executeRaw(
+					"UPDATE samples SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');");
+				getDao(PathogenTest.class).executeRaw(
+					"UPDATE pathogenTest SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');");
+				getDao(Facility.class).executeRaw("DELETE FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO';");
+				getDao(Facility.class).executeRaw(
+					"UPDATE facility SET type = 'HOSPITAL' WHERE type = null AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN facilityType varchar(255);");
+				getDao(Case.class).executeRaw(
+					"UPDATE cases SET facilityType = 'HOSPITAL' WHERE healthFacility_id != (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY');");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN occupationFacilityType varchar(255);");
+				getDao(Person.class).executeRaw("UPDATE person SET occupationFacilityType = 'HOSPITAL' WHERE occupationFacility_id IS NOT NULL;");
+				getDao(Person.class).executeRaw("ALTER TABLE person ADD COLUMN placeOfBirthFacilityType varchar(255);");
+				getDao(Person.class).executeRaw("UPDATE person SET placeOfBirthFacilityType = 'HOSPITAL' WHERE placeOfBirthFacility_id IS NOT NULL;");
+
+			case 220:
+				currentVersion = 220;
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN feverishFeeling varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN weakness varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN fatigue varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN coughWithoutSputum varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN breathlessness varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN chestPressure varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN blueLips varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN bloodCirculationProblems varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN palpitations varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN dizzinessStandingUp varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN highOrLowBloodPressure varchar(255);");
+				getDao(Symptoms.class).executeRaw("ALTER TABLE symptoms ADD COLUMN urinaryRetention varchar(255);");
+
+			case 221:
+				currentVersion = 221;
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN healthConditions_id bigint REFERENCES healthConditions(id);");
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:

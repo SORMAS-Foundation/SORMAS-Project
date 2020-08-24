@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -459,6 +460,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setOccupationFacilityType(source.getOccupationFacilityType());
+		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 
 		return target;
 	}
@@ -626,6 +629,8 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setOccupationFacilityType(source.getOccupationFacilityType());
+		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 
 		return target;
 	}

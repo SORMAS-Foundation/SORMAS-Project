@@ -839,11 +839,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				sampleContact.getContactName(),
 				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
 				null);
-			pseudonymizer.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				sampleContact.getCaseName(),
-				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
-				null);
+
+			if (sampleContact.getCaseName() != null) {
+				pseudonymizer.pseudonymizeDto(
+					ContactReferenceDto.PersonName.class,
+					sampleContact.getCaseName(),
+					caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+					null);
+			}
 		}
 
 		if (sampleEventParticipant != null) {

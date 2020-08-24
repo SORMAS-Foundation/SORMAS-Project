@@ -81,9 +81,13 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		Community c = creator.createCommunity("c", d);
 		creator.createFacility("f1", r, d, c);
 		Facility f2 = creator.createFacility("f2", r, d, c);
+		creator.createFacility("f3", FacilityType.OTHER_MEDICAL_FACILITY, r, d, c);
 		getFacilityFacade().archive(f2.getUuid());
 
-		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByCommunity(new CommunityReferenceDto(c.getUuid()), false).size());
+		assertEquals(
+			1,
+			getFacilityFacade().getActiveFacilitiesByCommunityAndType(new CommunityReferenceDto(c.getUuid()), FacilityType.HOSPITAL, false, false)
+				.size());
 	}
 
 	@Test
@@ -94,9 +98,13 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		Community c = creator.createCommunity("c", d);
 		creator.createFacility("f1", r, d, c);
 		Facility f2 = creator.createFacility("f2", r, d, c);
+		creator.createFacility("f3", FacilityType.OTHER_MEDICAL_FACILITY, r, d, c);
 		getFacilityFacade().archive(f2.getUuid());
 
-		assertEquals(1, getFacilityFacade().getActiveHealthFacilitiesByDistrict(new DistrictReferenceDto(d.getUuid()), false).size());
+		assertEquals(
+			1,
+			getFacilityFacade().getActiveFacilitiesByDistrictAndType(new DistrictReferenceDto(d.getUuid()), FacilityType.HOSPITAL, false, false)
+				.size());
 	}
 
 	@Test

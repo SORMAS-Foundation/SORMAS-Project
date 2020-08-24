@@ -110,6 +110,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -188,6 +189,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
+	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 
 	@Override
@@ -253,6 +256,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		return saveContact(dto, true);
 	}
 
+	@Override
 	public ContactDto saveContact(ContactDto dto, boolean handleChanges) {
 		final Contact existingContact = dto.getUuid() != null ? contactService.getByUuid(dto.getUuid()) : null;
 		final ContactDto existingContactDto = toDto(existingContact);
@@ -963,6 +967,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
+		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
 
 		target.setSormasToSormasSource(sormasToSormasFacade.fromDto(source.getSormasToSormasSource()));
 
@@ -1176,6 +1181,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
 
 		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toDto(source.getSormasToSormasSource()));
 

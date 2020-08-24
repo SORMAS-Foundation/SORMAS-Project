@@ -33,6 +33,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -101,6 +102,8 @@ public class Person extends AbstractDomainObject {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
+	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 
 	private String firstName;
 	private String lastName;
@@ -155,6 +158,8 @@ public class Person extends AbstractDomainObject {
 	private String generalPractitionerDetails;
 	private String passportNumber;
 	private String nationalHealthId;
+	private FacilityType occupationFacilityType;
+	private FacilityType placeOfBirthFacilityType;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -558,6 +563,24 @@ public class Person extends AbstractDomainObject {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getOccupationFacilityType() {
+		return occupationFacilityType;
+	}
+
+	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
+		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getPlaceOfBirthFacilityType() {
+		return placeOfBirthFacilityType;
+	}
+
+	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
+		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
 	}
 
 	@Override

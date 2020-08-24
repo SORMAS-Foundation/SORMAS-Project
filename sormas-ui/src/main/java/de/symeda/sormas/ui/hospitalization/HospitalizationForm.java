@@ -37,6 +37,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -111,8 +112,11 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 
 		TextField facilityField = addCustomField(HEALTH_FACILITY, FacilityReferenceDto.class, TextField.class);
 		FacilityReferenceDto healthFacility = caze.getHealthFacility();
-		final boolean noneFacility = healthFacility == null || healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
-		facilityField.setValue(noneFacility ? null : healthFacility.toString());
+		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
+		facilityField.setValue(
+			healthFacility == null
+				|| noneFacility
+				|| !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
@@ -132,7 +136,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		if (noneFacility) {
+		if (!FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			FieldHelper.setEnabled(
 				false,
 				facilityField,

@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.District;
 
@@ -48,8 +49,12 @@ public class FacilityBackendTest {
 		District district = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.DISTRICT_UUID);
 
 		// There should be exactly one health facility in this district - labs are not included
-		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrict(district, false, false).size(), is(1));
+		assertThat(
+			DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, false, false).size(),
+			is(1));
 
-		assertThat(DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrict(district, true, true).size(), is(3));
+		assertThat(
+			DatabaseHelper.getFacilityDao().getActiveHealthFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, true, true).size(),
+			is(3));
 	}
 }

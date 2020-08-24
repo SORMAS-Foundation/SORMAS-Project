@@ -135,8 +135,8 @@ public class UserService extends AbstractAdoService<User> {
 
 	public List<User> getInformantsOfFacility(Facility facility) {
 
-		if (facility == null || facility.getType() == FacilityType.LABORATORY) {
-			throw new IllegalArgumentException("Facility is null or a laboratory");
+		if (facility == null || !FacilityType.HOSPITAL.equals(facility.getType())) {
+			throw new IllegalArgumentException("Facility needs to be a hospital");
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

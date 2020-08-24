@@ -238,12 +238,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(task), t -> {
 			if (source.getCaze() != null) {
 				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
-				pseudonymizer
-					.pseudonymizeDto(
-						CaseReferenceDto.class,
-						target.getCaze(),
-						caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
-						null);
+				pseudonymizer.pseudonymizeDto(
+					CaseReferenceDto.class,
+					target.getCaze(),
+					caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
+					null);
 			}
 
 			if (source.getContact() != null) {
@@ -498,11 +497,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			contactJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
 			null);
 
-		pseudonymizer.pseudonymizeDto(
-			ContactReferenceDto.PersonName.class,
-			contactReference.getCaseName(),
-			caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
-			null);
+		if (contactReference.getCaseName() != null) {
+			pseudonymizer.pseudonymizeDto(
+				ContactReferenceDto.PersonName.class,
+				contactReference.getCaseName(),
+				caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
+				null);
+		}
 	}
 
 	@Override

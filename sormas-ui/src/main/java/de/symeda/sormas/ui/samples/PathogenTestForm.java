@@ -173,7 +173,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		lab.addValueChangeListener(event -> {
 			if (event.getProperty().getValue() != null
-				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				labDetails.setVisible(true);
 				labDetails.setRequired(true);
 			} else {

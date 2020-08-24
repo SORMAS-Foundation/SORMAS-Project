@@ -236,7 +236,6 @@ public class DistrictsView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.DISTRICT,
-									null,
 									new Runnable() {
 
 										public void run() {
@@ -250,7 +249,6 @@ public class DistrictsView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.DISTRICT,
-									null,
 									new Runnable() {
 
 										public void run() {

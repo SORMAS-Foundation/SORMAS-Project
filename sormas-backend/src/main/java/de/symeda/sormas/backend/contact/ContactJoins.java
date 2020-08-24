@@ -20,6 +20,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -58,7 +59,7 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private Join<Contact, Visit> visits;
 	private Join<Visit, Symptoms> visitSymptoms;
-
+	private Join<Contact, HealthConditions> healthConditions;
 
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
@@ -232,5 +233,13 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setVisitSymptoms(Join<Visit, Symptoms> visitSymptoms) {
 		this.visitSymptoms = visitSymptoms;
+	}
+
+	public Join<Contact, HealthConditions> getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(Join<Contact, HealthConditions> healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

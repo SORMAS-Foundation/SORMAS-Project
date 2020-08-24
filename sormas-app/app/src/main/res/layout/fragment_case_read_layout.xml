@@ -242,7 +242,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/health_facility_fields_layout"
+                    android:id="@+id/facility_or_home_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -253,11 +253,34 @@
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
-                        android:id="@+id/caseData_healthFacility"
-                        app:value="@{data.healthFacility}"
-                        style="@style/ControlSecondOfTwoColumnsStyle" />
+                        android:id="@+id/facilityOrHome"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:caption="@string/caption_facility_or_home"/>
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/facility_type_fields_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/facilityTypeGroup"
+                        style="@style/ControlFirstOfTwoColumnsStyle"
+                        app:caption="@string/caption_facility_type_group"/>
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/caseData_facilityType"
+                        style="@style/ControlSecondOfTwoColumnsStyle"
+                        app:value="@{data.facilityType}"/>
+
+                </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/caseData_healthFacility"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.healthFacility}" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/caseData_healthFacilityDetails"
