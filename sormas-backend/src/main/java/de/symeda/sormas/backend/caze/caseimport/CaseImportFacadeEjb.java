@@ -41,6 +41,7 @@ import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.caseimport.ImportLineResultDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -433,9 +434,14 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 					} else if (propertyType.isAssignableFrom(FacilityReferenceDto.class)) {
 						DataHelper.Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImportHelper.getDistrictAndCommunityBasedOnFacility(pd.getName(), caze, person, currentElement);
-						List<FacilityReferenceDto> facility =
-							facilityFacade.getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), false);
-						if (facility.isEmpty()) {
+						List<FacilityReferenceDto> facilities = facilityFacade.getByNameAndType(
+							entry,
+							infrastructureData.getElement0(),
+							infrastructureData.getElement1(),
+							getTypeOfFacility(pd.getName(), currentElement),
+							false);
+
+						if (facilities.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(
@@ -449,16 +455,16 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 										entry,
 										buildEntityProperty(entryHeaderPath)));
 							}
-						} else if (facility.size() > 1 && infrastructureData.getElement1() == null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() == null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInDistrict, entry, buildEntityProperty(entryHeaderPath)));
-						} else if (facility.size() > 1 && infrastructureData.getElement1() != null) {
+						} else if (facilities.size() > 1 && infrastructureData.getElement1() != null) {
 							throw new ImportErrorException(
 								I18nProperties
 									.getValidationError(Validations.importFacilityNotUniqueInCommunity, entry, buildEntityProperty(entryHeaderPath)));
 						} else {
-							pd.getWriteMethod().invoke(currentElement, facility.get(0));
+							pd.getWriteMethod().invoke(currentElement, facilities.get(0));
 						}
 					} else if (propertyType.isAssignableFrom(PointOfEntryReferenceDto.class)) {
 						List<PointOfEntryReferenceDto> pointOfEntry = pointOfEntryFacade.getByName(entry, caze.getDistrict(), false);
@@ -495,7 +501,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			} catch (ImportErrorException e) {
 				throw e;
 			} catch (Exception e) {
-				LOGGER.error("Unexpected error when trying to import a case: " + e.getMessage());
+				LOGGER.error("Unexpected error when trying to import a case: " + e.getMessage(), e);
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}
@@ -554,6 +560,18 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importCasesUnexpectedError));
 			}
 		}
+	}
+
+	protected FacilityType getTypeOfFacility(String propertyName, Object currentElement)
+		throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+		String typeProperty;
+		if (CaseDataDto.class.equals(currentElement.getClass()) && CaseDataDto.HEALTH_FACILITY.equals(propertyName)) {
+			typeProperty = CaseDataDto.FACILITY_TYPE;
+		} else {
+			typeProperty = propertyName + "Type";
+		}
+		PropertyDescriptor pd = new PropertyDescriptor(typeProperty, currentElement.getClass());
+		return (FacilityType) pd.getReadMethod().invoke(currentElement);
 	}
 
 	protected boolean executeDefaultInvokings(PropertyDescriptor pd, Object element, String entry, String[] entryHeaderPath)
