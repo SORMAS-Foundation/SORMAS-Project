@@ -59,4 +59,8 @@ public class HealthDepartmentServerAccessData implements Serializable {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	public HealthDepartmentServerReferenceDto toReferenceDto() {
+		return new HealthDepartmentServerReferenceDto(id, name);
+	}
 }

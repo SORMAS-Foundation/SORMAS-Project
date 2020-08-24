@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -43,6 +44,7 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
@@ -68,6 +71,7 @@ import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
+import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
@@ -139,6 +143,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
 	static {
 		MOCK_HEALTH_DEPARTMENTS
+			.add(new HealthDepartmentServerAccessData("healthDepMain", "Gesundheitsamt Hamburg", "http://localhost:8080/sormas-rest"));
+		MOCK_HEALTH_DEPARTMENTS
 			.add(new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://localhost:8080/sormas-rest"));
 		MOCK_HEALTH_DEPARTMENTS
 			.add(new HealthDepartmentServerAccessData("healtsDep2", "Gesundheitsamt Friedrichshain (B)", "http://localhost:8080/sormas-rest"));
@@ -185,7 +191,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
 
-		saveCaseShareInfo(cazeDto.toReference(), options.getHealthDepartment().getId(), currentUser.toReference());
+		saveCaseShareInfo(cazeDto.toReference(), options.getHealthDepartment().toReferenceDto(), currentUser.toReference());
 	}
 
 	@Override
@@ -201,12 +207,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
-		saveContactShareInfo(contact.toReference(), options.getHealthDepartment().getId(), currentUser.toReference());
+		saveContactShareInfo(contact.toReference(), options.getHealthDepartment().toReferenceDto(), currentUser.toReference());
 	}
 
 	@Override
 	public List<HealthDepartmentServerAccessData> getAvailableHealthDepartments() {
-		return MOCK_HEALTH_DEPARTMENTS;
+		return new ArrayList<>(MOCK_HEALTH_DEPARTMENTS.subList(1, MOCK_HEALTH_DEPARTMENTS.size()));
 	}
 
 	@Override
@@ -259,11 +265,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return contactDto;
 	}
 
-	private void saveCaseShareInfo(CaseReferenceDto caseReference, String healthDepartmentId, UserReferenceDto sender) {
-		saveShareInfo(SormasToSormasShareInfoDto.build(caseReference, healthDepartmentId, sender));
+	private void saveCaseShareInfo(CaseReferenceDto caseReference, HealthDepartmentServerReferenceDto healthDepartment, UserReferenceDto sender) {
+		saveShareInfo(SormasToSormasShareInfoDto.build(caseReference, healthDepartment, sender));
 	}
 
-	private void saveContactShareInfo(ContactReferenceDto contactReference, String healthDepartment, UserReferenceDto sender) {
+	private void saveContactShareInfo(
+		ContactReferenceDto contactReference,
+		HealthDepartmentServerReferenceDto healthDepartment,
+		UserReferenceDto sender) {
 		saveShareInfo(SormasToSormasShareInfoDto.build(contactReference, healthDepartment, sender));
 	}
 
@@ -274,7 +283,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setCreationDate(new Timestamp(new Date().getTime()));
 		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		target.setContact(contactService.getByReferenceDto(source.getContact()));
-		target.setHealthDepartment(source.getHealthDepartmentId());
+		target.setHealthDepartment(source.getHealthDepartment().getUuid());
 		target.setSender(userService.getByReferenceDto(source.getSender()));
 
 		sormasToSormasShareInfoService.ensurePersisted(target);
@@ -339,7 +348,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			caze.getClinicalCourse().setUuid(DataHelper.createUuid());
 
 			if (caze.getClinicalCourse().getHealthConditions() != null) {
-				caze.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
+				processHealthConditions(caze.getClinicalCourse().getHealthConditions());
 			}
 		}
 
@@ -382,6 +391,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		});
 	}
 
+	private void processHealthConditions(HealthConditionsDto healthConditions) {
+		healthConditions.setUuid(DataHelper.createUuid());
+	}
+
 	private void processContactData(ContactDto contact, PersonDto person) {
 		processPerson(person);
 
@@ -402,6 +415,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		if (contact.getEpiData() != null) {
 			processEpiData(contact.getEpiData());
+		}
+
+		if (contact.getHealthConditions() != null) {
+			processHealthConditions(contact.getHealthConditions());
 		}
 	}
 
@@ -482,16 +499,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		validateSource(contact.getSormasToSormasSource());
 	}
 
-	private void validateSource(SormasToSormasSourceDto shareInfo) {
-		if (shareInfo == null) {
+	private void validateSource(SormasToSormasSourceDto source) {
+		if (source == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
 		}
 
-		if (DataHelper.isNullOrEmpty(shareInfo.getHealthDepartment())) {
+		if (source.getHealthDepartment() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasSenderHealthDepartmentMissing));
 		}
 
-		if (DataHelper.isNullOrEmpty(shareInfo.getSenderName())) {
+		if (DataHelper.isNullOrEmpty(source.getSenderName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasSenderNameMissing));
 		}
 	}
@@ -511,7 +528,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	private SormasToSormasSourceDto createSormasToSormasSource(User currentUser) {
 		return new SormasToSormasSourceDto(
-			"Health Dep One",
+			new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"),
 			String.format("%s %s", currentUser.getFirstName(), currentUser),
 			currentUser.getUserEmail(),
 			currentUser.getPhone());
@@ -525,7 +542,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + "sormas2SORMAS";
 
 		HealthDepartmentServerAccessData target =
-			MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(options.getHealthDepartment().getId())).findFirst().orElse(null);
+			getHealthDepartmentServerAccessData(options.getHealthDepartment().getId()).filter(ad -> !StringUtils.isEmpty(ad.getUrl()))
+				.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
 
 		Response response;
 		try {
@@ -567,7 +585,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 	}
 
-	public SormasToSormasSource fromDto(SormasToSormasSourceDto source) {
+	private static Optional<HealthDepartmentServerAccessData> getHealthDepartmentServerAccessData(String id) {
+		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
+	}
+
+	public SormasToSormasSource fromSormasToSormasSourceDto(SormasToSormasSourceDto source) {
 		if (source == null) {
 			return null;
 		}
@@ -582,7 +604,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setHealthDepartment(source.getHealthDepartment());
+		target.setHealthDepartment(source.getHealthDepartment().getUuid());
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
@@ -590,7 +612,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return target;
 	}
 
-	public static SormasToSormasSourceDto toDto(SormasToSormasSource source) {
+	public static SormasToSormasSourceDto toSormasTsoSormasSourceDto(SormasToSormasSource source) {
 		if (source == null) {
 			return null;
 		}
@@ -601,7 +623,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
 
-		target.setHealthDepartment(source.getHealthDepartment());
+		HealthDepartmentServerAccessData serverAccessData = getHealthDepartmentServerAccessData(source.getHealthDepartment())
+			.orElseGet(() -> new HealthDepartmentServerAccessData(source.getHealthDepartment(), source.getHealthDepartment(), null));
+		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
+
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
@@ -620,7 +645,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			target.setContact(source.getContact().toReference());
 		}
 
-		target.setHealthDepartmentId(source.getHealthDepartment());
+		HealthDepartmentServerAccessData serverAccessData = getHealthDepartmentServerAccessData(source.getHealthDepartment())
+			.orElseGet(() -> new HealthDepartmentServerAccessData(source.getHealthDepartment(), source.getHealthDepartment(), null));
+		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
+
 		target.setSender(source.getSender().toReference());
 
 		return target;

@@ -27,7 +27,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
-	private String healthDepartmentId;
+	private HealthDepartmentServerReferenceDto healthDepartment;
 	private UserReferenceDto sender;
 
 	public CaseReferenceDto getCaze() {
@@ -46,12 +46,12 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.contact = contact;
 	}
 
-	public String getHealthDepartmentId() {
-		return healthDepartmentId;
+	public HealthDepartmentServerReferenceDto getHealthDepartment() {
+		return healthDepartment;
 	}
 
-	public void setHealthDepartmentId(String healthDepartmentId) {
-		this.healthDepartmentId = healthDepartmentId;
+	public void setHealthDepartment(HealthDepartmentServerReferenceDto healthDepartment) {
+		this.healthDepartment = healthDepartment;
 	}
 
 	public UserReferenceDto getSender() {
@@ -62,25 +62,31 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.sender = sender;
 	}
 
-	public static SormasToSormasShareInfoDto build(CaseReferenceDto caze, String healthDepartment, UserReferenceDto sender) {
+	public static SormasToSormasShareInfoDto build(
+		CaseReferenceDto caze,
+		HealthDepartmentServerReferenceDto healthDepartment,
+		UserReferenceDto sender) {
 		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
 		shareInfo.setCaze(caze);
 
 		return shareInfo;
 	}
 
-	public static SormasToSormasShareInfoDto build(ContactReferenceDto contact, String healthDepartment, UserReferenceDto sender) {
+	public static SormasToSormasShareInfoDto build(
+		ContactReferenceDto contact,
+		HealthDepartmentServerReferenceDto healthDepartment,
+		UserReferenceDto sender) {
 		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
 		shareInfo.setContact(contact);
 
 		return shareInfo;
 	}
 
-	private static SormasToSormasShareInfoDto build(String healthDepartment, UserReferenceDto sender) {
+	private static SormasToSormasShareInfoDto build(HealthDepartmentServerReferenceDto healthDepartment, UserReferenceDto sender) {
 		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
 
 		shareInfo.setUuid(DataHelper.createUuid());
-		shareInfo.setHealthDepartmentId(healthDepartment);
+		shareInfo.setHealthDepartment(healthDepartment);
 		shareInfo.setSender(sender);
 
 		return shareInfo;

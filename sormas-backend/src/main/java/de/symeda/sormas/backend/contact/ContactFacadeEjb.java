@@ -969,7 +969,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
 
-		target.setSormasToSormasSource(sormasToSormasFacade.fromDto(source.getSormasToSormasSource()));
+		target.setSormasToSormasSource(sormasToSormasFacade.fromSormasToSormasSourceDto(source.getSormasToSormasSource()));
 
 		return target;
 	}
@@ -1183,7 +1183,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
 
-		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toDto(source.getSormasToSormasSource()));
+		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toSormasTsoSormasSourceDto(source.getSormasToSormasSource()));
 
 		return target;
 	}

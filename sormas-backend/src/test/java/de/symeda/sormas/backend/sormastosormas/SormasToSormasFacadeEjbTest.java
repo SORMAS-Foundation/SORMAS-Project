@@ -30,12 +30,14 @@ import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
@@ -56,6 +58,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setDistrict(rdcf.remoteRdcf.district);
 		caze.setCommunity(rdcf.remoteRdcf.community);
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
+		caze.setFacilityType(FacilityType.HOSPITAL);
 
 		caze.setSormasToSormasSource(createSormasToSormasSource());
 
@@ -81,10 +84,15 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getUuid(), is(caze.getClinicalCourse().getUuid()));
 		assertThat(savedCase.getMaternalHistory().getUuid(), is(caze.getMaternalHistory().getUuid()));
 
-		assertThat(savedCase.getSormasToSormasSource().getHealthDepartment(), is("Test Department"));
+		assertThat(savedCase.getSormasToSormasSource().getHealthDepartment().getUuid(), is("testHealthDep"));
 		assertThat(savedCase.getSormasToSormasSource().getSenderName(), is("John doe"));
 	}
 
+	/**
+	 * Test that it doesnt throw de.symeda.sormas.api.utils.OutdatedEntityException
+	 * To fix OutdatedEntityException generate new uuid for the outdated object in
+	 * {@link de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb#processCaseData(CaseDataDto, PersonDto)}
+	 */
 	@Test
 	public void testRecreateEmbeddedUuidsOfCase() {
 		MappableRdcf rdcf = createRDCF();
@@ -96,6 +104,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setDistrict(rdcf.remoteRdcf.district);
 		caze.setCommunity(rdcf.remoteRdcf.community);
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
+		caze.setFacilityType(FacilityType.HOSPITAL);
 
 		caze.setSormasToSormasSource(createSormasToSormasSource());
 
@@ -169,10 +178,15 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedContact.getEpiData().getUuid(), is(contact.getEpiData().getUuid()));
 
-		assertThat(savedContact.getSormasToSormasSource().getHealthDepartment(), is("Test Department"));
+		assertThat(savedContact.getSormasToSormasSource().getHealthDepartment().getUuid(), is("testHealthDep"));
 		assertThat(savedContact.getSormasToSormasSource().getSenderName(), is("John doe"));
 	}
 
+	/**
+	 * Test that it doesnt throw de.symeda.sormas.api.utils.OutdatedEntityException
+	 * To fix OutdatedEntityException generate new uuid for the outdated object in
+	 * {@link de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb#processContactData(ContactDto, PersonDto)}
+	 */
 	@Test
 	public void testRecreateEmbeddedUuidsOfContact() {
 		MappableRdcf rdcf = createRDCF();
@@ -208,7 +222,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	private SormasToSormasSourceDto createSormasToSormasSource() {
 		SormasToSormasSourceDto source = new SormasToSormasSourceDto();
-		source.setHealthDepartment("Test Department");
+		source.setHealthDepartment(new HealthDepartmentServerReferenceDto("testHealthDep", "Test Department"));
 		source.setSenderName("John doe");
 
 		return source;

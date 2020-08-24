@@ -161,6 +161,7 @@ public interface Strings {
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
+	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
