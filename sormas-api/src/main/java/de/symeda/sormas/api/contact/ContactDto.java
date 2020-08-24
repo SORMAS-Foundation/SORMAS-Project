@@ -20,19 +20,24 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
-public class ContactDto extends EntityDto {
+public class ContactDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -43,6 +48,10 @@ public class ContactDto extends EntityDto {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_STATUS = "contactStatus";
@@ -61,11 +70,13 @@ public class ContactDto extends EntityDto {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HIGH_PRIORITY = "highPriority";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
@@ -84,10 +95,14 @@ public class ContactDto extends EntityDto {
 	public static final String QUARANTINE_HOME_POSSIBLE_COMMENT = "quarantineHomePossibleComment";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
+	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
+	@SensitiveData
 	private String caseOrEventInformation;
 	private Disease disease;
 	private String diseaseDetails;
@@ -96,45 +111,70 @@ public class ContactDto extends EntityDto {
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+
 	private Float reportLatLonAccuracy;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	@Required
 	private Date lastContactDate;
+	@HideForCountriesExcept
+	private ContactIdentificationSource contactIdentificationSource;
+	@HideForCountriesExcept
+	@SensitiveData
+	private String contactIdentificationSourceDetails;
+	@HideForCountriesExcept
+	private TracingApp tracingApp;
+	@HideForCountriesExcept
+	@SensitiveData
+	private String tracingAppDetails;
 	private ContactProximity contactProximity;
+	@SensitiveData
 	private String contactProximityDetails;
 	private ContactCategory contactCategory;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
+	@SensitiveData
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	@SensitiveData
 	private String description;
 	private ContactRelation relationToCase;
+	@SensitiveData
 	private String relationDescription;
 	private String externalID;
 
 	private boolean highPriority;
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
+	@SensitiveData
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	@SensitiveData
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
 	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 
+	@SensitiveData
 	private UserReferenceDto contactOfficer;
 
 	private CaseReferenceDto resultingCase; // read-only now, but editable long-term
+	@SensitiveData
 	private UserReferenceDto resultingCaseUser;
 
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -143,12 +183,18 @@ public class ContactDto extends EntityDto {
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
+	private boolean quarantineExtended;
+	@SensitiveData
 	private String additionalDetails;
+	private EpiDataDto epiData;
+	private HealthConditionsDto healthConditions;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -168,6 +214,10 @@ public class ContactDto extends EntityDto {
 		contact.setReportDateTime(new Date());
 		contact.setContactClassification(ContactClassification.UNCONFIRMED);
 		contact.setContactStatus(ContactStatus.ACTIVE);
+
+		contact.setEpiData(EpiDataDto.build());
+
+		contact.setHealthConditions(HealthConditionsDto.build());
 
 		return contact;
 	}
@@ -220,6 +270,38 @@ public class ContactDto extends EntityDto {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public ContactProximity getContactProximity() {
@@ -386,6 +468,14 @@ public class ContactDto extends EntityDto {
 		this.district = district;
 	}
 
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
 	public boolean isHighPriority() {
 		return highPriority;
 	}
@@ -424,6 +514,14 @@ public class ContactDto extends EntityDto {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	public Date getQuarantineFrom() {
@@ -554,11 +652,35 @@ public class ContactDto extends EntityDto {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
+	}
+
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiDataDto getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiDataDto epiData) {
+		this.epiData = epiData;
+	}
+
+	public HealthConditionsDto getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditionsDto healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

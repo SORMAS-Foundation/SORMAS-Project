@@ -39,9 +39,9 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
+import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -139,7 +139,6 @@ public class MemoryDatabaseHelper {
 		RegionGenerator.initialize();
 		DistrictGenerator.initialize();
 		CommunityGenerator.initialize();
-		FacilityGenerator.initialize();
 		LocationGenerator.initialize();
 		UserGenerator.initialize();
 		PersonGenerator.initialize();
@@ -364,16 +363,6 @@ public class MemoryDatabaseHelper {
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			communityList.addAll(CommunityGenerator.get(min));
 			return communityList;
-		}
-	}
-
-	public static class FACILITY {
-
-		public static List<Facility> getFacilities(int number) {
-			facilityList.clear();
-			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
-			facilityList.addAll(FacilityGenerator.get(min));
-			return facilityList;
 		}
 	}
 
@@ -659,12 +648,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getPossibleEvents(int number) {
+		public static List<Event> getSignals(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.POSSIBLE) {
+				if (item.getEventStatus() == EventStatus.SIGNAL) {
 					eventList.add(item);
 				}
 			}
@@ -677,7 +666,7 @@ public class MemoryDatabaseHelper {
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.CONFIRMED) {
+				if (item.getEventStatus() == EventStatus.EVENT) {
 					eventList.add(item);
 				}
 			}
@@ -685,12 +674,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getNoEvents(int number) {
+		public static List<Event> getDroppedEvents(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.NO_EVENT) {
+				if (item.getEventStatus() == EventStatus.DROPPED) {
 					eventList.add(item);
 				}
 			}
@@ -1051,7 +1040,6 @@ class SampleGenerator extends BaseDataGenerator {
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setSampleMaterial(getRandomSampleMaterial());
 			data1.setSampleMaterialText(getRandomString());
-			data1.setLab(FacilityGenerator.getSingle());
 			data1.setShipmentDate(getRandomDate());
 			data1.setShipmentDetails(getRandomString());
 			data1.setReceivedDate(getRandomDate());
@@ -1120,7 +1108,6 @@ class PersonGenerator extends BaseDataGenerator {
 			data1.setBurialPlaceDescription(getRandomSentence());
 			data1.setOccupationType(getRandomOccupationType());
 			data1.setOccupationDetails(getRandomSentence());
-			data1.setOccupationFacility(FacilityGenerator.getSingle());
 
 			pool.add(data1);
 		}
@@ -1154,7 +1141,6 @@ class PreviousHospitalizationGenerator extends BaseDataGenerator {
 			data1.setRegion(RegionGenerator.getSingle());
 			data1.setDistrict(DistrictGenerator.getSingle());
 			data1.setCommunity(CommunityGenerator.getSingle());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			data1.setIsolated(getRandomYesNoUnknown());
 			data1.setDescription(getRandomSentence());
 			//data1.setHospitalization(HospitalizationGenerator.getSingle());
@@ -1529,7 +1515,6 @@ class CaseGenerator extends BaseDataGenerator {
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setReportDate(getRandomDate());
 			data1.setInvestigatedDate(getRandomDate());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			data1.setHealthFacilityDetails(getRandomSentence());
 			data1.setSymptoms(SymptomsGenerator.getSingle());
 			data1.setSurveillanceOfficer(UserGenerator.getSingle());
@@ -1624,11 +1609,12 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
 			data1.setEventDesc(getRandomSentence());
-			data1.setEventDate(getRandomDate());
+			data1.setStartDate(getRandomDate());
 			data1.setReportDateTime(getRandomDate());
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setEventLocation(LocationGenerator.getSingle());
 			data1.setTypeOfPlace(getRandomTypeOfPlace());
+			data1.setSrcType(EventSourceType.HOTLINE_PERSON);
 			data1.setSrcFirstName(getRandomName());
 			data1.setSrcLastName(getRandomName());
 			data1.setSrcTelNo(getRandomPhoneNumber());
@@ -1786,57 +1772,6 @@ class DistrictGenerator extends BaseDataGenerator {
 	}
 }
 
-class FacilityGenerator extends BaseDataGenerator {
-
-	private static final List<Facility> pool = new ArrayList<Facility>();
-
-	public static void initialize() {
-		for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
-			Facility data1 = new Facility();
-			data1.setUuid(getRandomUuid());
-			data1.setName(getRandomFacilityName());
-			data1.setCity(getRandomCityName());
-			data1.setRegion(RegionGenerator.getSingle());
-			data1.setDistrict(DistrictGenerator.getSingle());
-			data1.setCommunity(CommunityGenerator.getSingle());
-			data1.setLatitude(getRandomDouble());
-			data1.setLongitude(getRandomDouble());
-			data1.setType(getFacilityType());
-			data1.setPublicOwnership(getRandomBoolean());
-
-			pool.add(data1);
-		}
-	}
-
-	public static List<Facility> get(int number) {
-		List<Facility> toReturn = new ArrayList<>();
-
-		for (int index = 0; index < number; index++) {
-			toReturn.add(pool.get(index));
-		}
-
-		return toReturn;
-	}
-
-	public static Facility getSingle() {
-		return randomItem(pool);
-	}
-
-	private static FacilityType getFacilityType() {
-		List<FacilityType> list = new ArrayList<FacilityType>() {
-
-			{
-				add(FacilityType.PRIMARY);
-				add(FacilityType.SECONDARY);
-				add(FacilityType.TERTIARY);
-				add(FacilityType.LABORATORY);
-			}
-		};
-
-		return randomItem(list);
-	}
-}
-
 class UserRoleGenerator extends BaseDataGenerator {
 
 	private static final List<UserRole> pool = new ArrayList<UserRole>();
@@ -1888,7 +1823,6 @@ class UserGenerator extends BaseDataGenerator {
 			data1.setAddress(LocationGenerator.getSingle());
 			data1.setRegion(RegionGenerator.getSingle());
 			data1.setDistrict(DistrictGenerator.getSingle());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			//data1.setUserRoles(new HashSet<UserRole>() { UserRoleGenerator.getSingle() });
 			data1.setUserRoles(new HashSet<UserRole>());
 			//data1.setAssociatedOfficer(UserGenerator.getSingle());
@@ -2392,9 +2326,11 @@ abstract class BaseDataGenerator {
 		List<EventStatus> list = new ArrayList<EventStatus>() {
 
 			{
-				add(EventStatus.POSSIBLE);
-				add(EventStatus.CONFIRMED);
-				add(EventStatus.NO_EVENT);
+				add(EventStatus.SIGNAL);
+				add(EventStatus.EVENT);
+				add(EventStatus.SCREENING);
+				add(EventStatus.CLUSTER);
+				add(EventStatus.DROPPED);
 			}
 		};
 

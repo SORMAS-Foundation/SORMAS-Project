@@ -34,7 +34,8 @@ The SORMAS API is the heart of the data schema. Accordingly, this is where you h
    ```
    Symptoms.soreThroat = Sore throat/pharyngitis
    ```
-5. *Very important*: We have now officially made a change to the API which likely means that old versions are no longer fully compatible.
+5. When you made additions/changes on keys in ``captions.properties``, ``strings.properties`` or ``validations.properties`` you have to run ``I18nConstantGenerator`` (run as ... Java Application) to update the corresponding Constants classes.
+6. *Very important*: We have now officially made a change to the API which likely means that old versions are no longer fully compatible.
    When data with the new field is sent to a mobile device with an old version, it will not know about the field and the data is lost on the device.
    When the data is send back to the server the empty field may override any existing data and it's now also lost on the server itself.
    To avoid this the following has to be done:
@@ -81,7 +82,28 @@ Now we need to make sure data in the new field is exchanged between the backend 
     ```
 	target.setSoreThroat(source.getSoreThroat());
     ```
+Now we need to make sure data in the new field is exported by the detailed export.
 
+11. Identify corresponding *ExportDto (e.g. CaseExportDto)
+12. Add the field as a private member of the dto class with a get- and set-method.
+13. Add the @Order annotation on the getter method of the new field
+    ```
+    @Order(33)
+    public SymptomState getSoreThroat() {
+        return soreThroat;
+    }
+    ```
+    > **NOTE**: The @Order numbers should be unique so please increase the order of the getters below if there are any.
+14. Initialize the new field in the constructor
+15. Add the new field in the selection list in the `getExportList` method of the *FacadeEJB
+    ```
+    cq.multiselect(
+        ...,
+        caseRoot.get(Case.SORE_THROAT),
+        ...
+    )
+    ``` 
+    > **NOTE**: Make sure the order of the fields in the selection list corresponds the order of arguments in the constructor of *ExportDto class  
 ### III. Adding the field to the SORMAS UI
 
 The SORMAS UI is the web application that is used by supervisors, laboratory users, national instances and others.

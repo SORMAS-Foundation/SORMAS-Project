@@ -37,6 +37,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -53,6 +54,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
@@ -84,12 +86,14 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 			fluidRowLocs(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS);
 	//@formatter:on
 
-	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode) {
+	public HospitalizationForm(CaseDataDto caze, ViewMode viewMode, boolean isInJurisdiction) {
 
 		super(
 			HospitalizationDto.class,
 			HospitalizationDto.I18N_PREFIX,
-			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)));
+			false,
+			new FieldVisibilityCheckers().add(new OutbreakFieldVisibilityChecker(viewMode)),
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.caze = caze;
 		this.viewMode = viewMode;
 		addFields();
@@ -111,7 +115,8 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		final boolean noneFacility = healthFacility.getUuid().equalsIgnoreCase(FacilityDto.NONE_FACILITY_UUID);
 		facilityField.setValue(
 			healthFacility == null
-					|| noneFacility ? null : healthFacility.toString());
+				|| noneFacility
+				|| !FacilityType.HOSPITAL.equals(caze.getFacilityType()) ? null : healthFacility.toString());
 		facilityField.setReadOnly(true);
 
 		final OptionGroup admittedToHealthFacilityField = addField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY, OptionGroup.class);
@@ -131,7 +136,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		PreviousHospitalizationsField previousHospitalizationsField =
 			addField(HospitalizationDto.PREVIOUS_HOSPITALIZATIONS, PreviousHospitalizationsField.class);
 
-		if (noneFacility) {
+		if (!FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
 			FieldHelper.setEnabled(
 				false,
 				facilityField,
@@ -147,6 +152,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		}
 
 		initializeVisibilitiesAndAllowedVisibilities();
+		initializeAccessAndAllowedAccesses();
 
 		if (isVisibleAllowed(HospitalizationDto.ISOLATION_DATE)) {
 			FieldHelper.setVisibleWhen(

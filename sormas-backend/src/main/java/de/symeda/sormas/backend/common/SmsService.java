@@ -66,7 +66,8 @@ public class SmsService {
 			throw new InvalidPhoneNumberException("Cannot send an SMS to the specified phone number", null);
 		}
 
-		SmsSubmissionResult[] results = client.getSmsClient().submitMessage(new TextMessage("SORMAS", phoneNumber, content));
+		SmsSubmissionResult[] results =
+			client.getSmsClient().submitMessage(new TextMessage(configFacade.getSormasInstanceName(), phoneNumber, content));
 
 		for (SmsSubmissionResult result : results) {
 			if (result.getStatus() == 0) {

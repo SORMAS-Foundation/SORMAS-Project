@@ -208,7 +208,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 
-		Stream<User> officers = userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_OFFICER).stream();
+		Stream<User> officers = userService.getAllByRegionAndUserRolesInJurisdiction(region, UserRole.SURVEILLANCE_OFFICER).stream();
 		officers = weeklyReportService.filterWeeklyReportUsers(userService.getCurrentUser(), officers);
 
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers.sorted(Comparator.comparing(a -> a.getDistrict().getName())).map(officer -> {
@@ -387,7 +387,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			} else {
 				TaskCriteria pendingUserTaskCriteria =
 					new TaskCriteria().taskType(TaskType.WEEKLY_REPORT_GENERATION).assigneeUser(user.toReference()).taskStatus(TaskStatus.PENDING);
-				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria);
+				List<Task> existingTasks = taskService.findBy(pendingUserTaskCriteria, true);
 
 				if (!existingTasks.isEmpty()) {
 					// There is already a task for generating the Weekly Report for last week

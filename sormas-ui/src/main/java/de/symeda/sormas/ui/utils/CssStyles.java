@@ -40,6 +40,9 @@ public final class CssStyles {
 
 	public static final String VR = "vertical-rule";
 
+	public static final String RICH_TEXT_CONTENT_CONTAINER = "rich-text-content-container";
+	public static final String REPLY = "reply";
+
 	// Vertical space
 	public static final String VSPACE_0 = "vspace-0";
 	public static final String VSPACE_1 = "vspace-1";
@@ -79,6 +82,8 @@ public final class CssStyles {
 	public static final String INDENT_LEFT_3 = "indent-left-3";
 
 	public static final String VAADIN_LABEL = "v-label";
+	public static final String FIELD_WRAPPER = "fieldwrapper";
+	public static final String FIELD_EXTRA_INFO = "fieldextrainfo";
 
 	// Font colors
 	public static final String LABEL_PRIMARY = "primary";
@@ -108,6 +113,7 @@ public final class CssStyles {
 	// Font styles
 	public static final String LABEL_BOLD = "bold";
 	public static final String LABEL_UPPERCASE = "uppercase";
+	public static final String LABEL_ITALIC = "italic";
 
 	// Label styles
 	public static final String LABEL_BOTTOM_LINE = "bottom-line";
@@ -115,6 +121,7 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	public static final String LABEL_VERTICAL_ALIGN_SUPER = "vertical-align-super";
+	public static final String LABEL_VERTICAL_ALIGN_TOP = "vertical-align-top";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC = "bg-follow-up-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC = "bg-follow-up-not-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";
@@ -187,6 +194,7 @@ public final class CssStyles {
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";
 	public static final String OPTIONGROUP_HORIZONTAL_SWITCH_CRITICAL = "horizontal-switch-critical";
 	public static final String OPTIONGROUP_CHECKBOXES_HORIZONTAL = "checkboxes-horizontal";
+	public static final String OPTIONGROUP_GRID_LAYOUT = "grid-layout";
 	public static final String OPTIONGROUP_CAPTION_INLINE = "caption-inline";
 	public static final String OPTIONGROUP_CAPTION_AREA_INLINE = "caption-area-inline";
 
@@ -239,13 +247,31 @@ public final class CssStyles {
 	public static final String LOGINSCREEN = "login-screen";
 	public static final String LOGINSCREEN_BACK = "login-screen-back";
 	public static final String LOGINSIDEBAR = "login-sidebar";
+	public static final String LOGINSIDEBAR_CUSTOM_HEADER = "login-sidebar-custom-header";
 	public static final String LOGIN_HEADLINELABEL = "headline-label";
 	public static final String LOGIN_LOGOCONTAINER = "logo-container";
+
+	// MISC
+	public static final String RESIZABLE = "resizable";
+
+	// Grid layout
+	public static final String GRID_LAYOUT_EVEN = "even";
+	public static final String GRID_LAYOUT_ODD = "odd";
+	public static final String GRID_LAYOUT_SECTION = "section";
+
+	public static final String TEXTFIELD_ROW = "row";
+	public static final String TEXTFIELD_CAPTION_INLINE = "caption-inline";
+
+	public static final String FLOAT_RIGHT = "float-right";
 
 	/**
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
+
+	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
+	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
+	public static final String INACCESSIBLE_LABEL = "inaccessible-label";
 
 	@Deprecated
 	public static final String CALLOUT = "callout";

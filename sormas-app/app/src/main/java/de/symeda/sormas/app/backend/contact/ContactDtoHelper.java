@@ -21,10 +21,16 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
@@ -36,6 +42,9 @@ import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
+
+	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
+	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -77,6 +86,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -96,6 +109,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setExternalID(source.getExternalID());
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
 
 		target.setHighPriority(source.isHighPriority());
 		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
@@ -103,6 +117,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -114,12 +129,19 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+
+		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -141,6 +163,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
 		} else {
 			target.setDistrict(null);
+		}
+		if (source.getCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+			target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setCommunity(null);
 		}
 		if (source.getCaseUuid() != null) {
 			target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
@@ -165,6 +193,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setReportDateTime(source.getReportDateTime());
 
 		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
 		target.setContactProximity(source.getContactProximity());
 		target.setContactClassification(source.getContactClassification());
 		target.setContactStatus(source.getContactStatus());
@@ -193,6 +225,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -204,12 +237,29 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		if (source.getEpiData() != null) {
+			EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(source.getEpiData().getId());
+			target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
+		} else {
+			target.setEpiData(null);
+		}
+
+		if (source.getHealthConditions() != null) {
+			HealthConditions healthConditions = DatabaseHelper.getHealthConditionsDao().queryForId(source.getHealthConditions().getId());
+			target.setHealthConditions(healthConditionsDtoHelper.adoToDto(healthConditions));
+		} else {
+			target.setHealthConditions(null);
+		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

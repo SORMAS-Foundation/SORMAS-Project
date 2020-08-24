@@ -25,7 +25,7 @@ Download and install Ant, it can be done from [Ant site](https://ant.apache.org/
 
 ### Postgres Database
 
-See [Installing Postgresql](SERVER_SETUP.md#java-8)
+See [Installing Postgresql](SERVER_SETUP.md#postgres-database)
 
 Alternatively you can use the Docker image available in [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker) repository.
 

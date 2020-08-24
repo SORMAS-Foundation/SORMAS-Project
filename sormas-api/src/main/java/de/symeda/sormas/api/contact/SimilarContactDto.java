@@ -43,7 +43,7 @@ public class SimilarContactDto implements Serializable {
 							 Date lastContactDate, ContactProximity contactProximity, ContactClassification contactClassification,
 							 ContactStatus contactStatus, FollowUpStatus followUpStatus,
 
-							 String reportingUserUuid, String regionUuid, String districtUuid,
+							 String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							 String caseReportingUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid,
 							 String caseHealthFacilityUuid, String casePointOfEntryUuid) {
 		//@formatter:on
@@ -70,7 +70,7 @@ public class SimilarContactDto implements Serializable {
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
 
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public CaseReferenceDto getCaze() {

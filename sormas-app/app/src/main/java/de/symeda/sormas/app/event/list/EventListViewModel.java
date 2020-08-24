@@ -26,6 +26,7 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.paging.PositionalDataSource;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventCriteria;
@@ -34,6 +35,14 @@ public class EventListViewModel extends ViewModel {
 
 	private LiveData<PagedList<Event>> events;
 	private EventDataFactory eventDataFactory;
+
+	public void initializeViewModel(Case caze) {
+		eventDataFactory = new EventDataFactory();
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.caze(caze);
+		eventDataFactory.setEventCriteria(eventCriteria);
+		initializeList();
+	}
 
 	public EventListViewModel() {
 		eventDataFactory = new EventDataFactory();
@@ -116,5 +125,12 @@ public class EventListViewModel extends ViewModel {
 		EventCriteria getEventCriteria() {
 			return eventCriteria;
 		}
+	}
+
+	private void initializeList() {
+		PagedList.Config config = new PagedList.Config.Builder().setEnablePlaceholders(true).setInitialLoadSizeHint(16).setPageSize(8).build();
+
+		LivePagedListBuilder eventListBuilder = new LivePagedListBuilder(eventDataFactory, config);
+		events = eventListBuilder.build();
 	}
 }

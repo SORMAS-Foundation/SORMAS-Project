@@ -20,6 +20,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -27,8 +29,10 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
@@ -46,10 +50,16 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Person, Location> address;
 	private Join<Contact, Region> region;
 	private Join<Contact, District> district;
+	private Join<Contact, Community> community;
 	private Join<Contact, User> reportingUser;
 	private Join<Location, Region> addressRegion;
 	private Join<Location, Region> addressDistrict;
 	private Join<Person, Facility> occupationFacility;
+	private Join<Contact, EpiData> epiData;
+
+	private Join<Contact, Visit> visits;
+	private Join<Visit, Symptoms> visitSymptoms;
+	private Join<Contact, HealthConditions> healthConditions;
 
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
@@ -161,6 +171,14 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 		this.district = district;
 	}
 
+	public Join<Contact, Community> getCommunity() {
+		return getOrCreate(community, Contact.COMMUNITY, JoinType.LEFT, this::setCommunity);
+	}
+
+	private void setCommunity(Join<Contact, Community> community) {
+		this.community = community;
+	}
+
 	public Join<Contact, User> getReportingUser() {
 		return getOrCreate(reportingUser, Contact.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
 	}
@@ -191,5 +209,37 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setOccupationFacility(Join<Person, Facility> occupationFacility) {
 		this.occupationFacility = occupationFacility;
+	}
+
+	public Join<Contact, EpiData> getEpiData() {
+		return getOrCreate(epiData, Contact.EPI_DATA, JoinType.LEFT, this::setEpiData);
+	}
+
+	private void setEpiData(Join<Contact, EpiData> epiData) {
+		this.epiData = epiData;
+	}
+
+	public Join<Contact, Visit> getVisits() {
+		return getOrCreate(visits, Contact.VISITS, JoinType.LEFT, this::setVisits);
+	}
+
+	private void setVisits(Join<Contact, Visit> visits) {
+		this.visits = visits;
+	}
+
+	public Join<Visit, Symptoms> getVisitSymptoms() {
+		return getOrCreate(visitSymptoms, Visit.SYMPTOMS, JoinType.LEFT, getVisits(), this::setVisitSymptoms);
+	}
+
+	private void setVisitSymptoms(Join<Visit, Symptoms> visitSymptoms) {
+		this.visitSymptoms = visitSymptoms;
+	}
+
+	public Join<Contact, HealthConditions> getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(Join<Contact, HealthConditions> healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

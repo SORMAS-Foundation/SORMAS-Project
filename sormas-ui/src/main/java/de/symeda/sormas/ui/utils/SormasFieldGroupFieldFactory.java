@@ -22,7 +22,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.epidata.EpiDataBurialsField;
@@ -38,11 +37,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 	public static final int TEXT_AREA_MAX_LENGTH = EntityDto.COLUMN_LENGTH_BIG;
 	public static final int TEXT_FIELD_MAX_LENGTH = EntityDto.COLUMN_LENGTH_DEFAULT;
 
-
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
-	private final FieldAccessCheckers fieldAccessCheckers;
+	private final UiFieldAccessCheckers fieldAccessCheckers;
 
-	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}
@@ -85,6 +83,11 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			fieldType = CheckBox.class.isAssignableFrom(fieldType) ? (Class<T>) CheckBox.class : (Class<T>) OptionGroup.class;
 
 			return createBooleanField(fieldType);
+		} else if (ComboBox.class.isAssignableFrom(fieldType) || ComboBoxWithPlaceholder.class.isAssignableFrom(fieldType)) {
+			ComboBoxWithPlaceholder combo = new ComboBoxWithPlaceholder();
+			combo.setImmediate(true);
+
+			return (T) combo;
 		} else if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 			AbstractSelect field = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 			field.setNullSelectionAllowed(true);
@@ -92,7 +95,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {
-			return (T) new HealthConditionsForm();
+			return (T) new HealthConditionsForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (DateTimeField.class.isAssignableFrom(fieldType)) {
 			DateTimeField field = new DateTimeField();
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
@@ -104,13 +107,13 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setConverter(new SormasDefaultConverterFactory().createDateConverter(Date.class));
 			return (T) field;
 		} else if (PreviousHospitalizationsField.class.isAssignableFrom(fieldType)) {
-			return (T) new PreviousHospitalizationsField();
+			return (T) new PreviousHospitalizationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataBurialsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataBurialsField();
+			return (T) new EpiDataBurialsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataGatheringsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataGatheringsField();
+			return (T) new EpiDataGatheringsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
-			return (T) new EpiDataTravelsField();
+			return (T) new EpiDataTravelsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {
@@ -123,7 +126,6 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				return (T) new ComboBox();
 			}
 		}
-
 		return super.createField(type, fieldType);
 	}
 

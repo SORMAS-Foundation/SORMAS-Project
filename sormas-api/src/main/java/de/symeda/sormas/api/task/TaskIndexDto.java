@@ -26,11 +26,17 @@ import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class TaskIndexDto implements Serializable {
+public class TaskIndexDto implements WithJurisdiction<TaskJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 2439546041916003653L;
 
@@ -54,8 +60,17 @@ public class TaskIndexDto implements Serializable {
 
 	private String uuid;
 	private TaskContext taskContext;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private CaseReferenceDto caze;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventReferenceDto event;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
+	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private ContactReferenceDto contact;
 
 	private TaskType taskType;
@@ -69,8 +84,7 @@ public class TaskIndexDto implements Serializable {
 	private UserReferenceDto assigneeUser;
 	private String assigneeReply;
 
-	private CaseJurisdictionDto caseJurisdiction;
-	private ContactJurisdictionDto contactJurisdiction;
+	private TaskJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
@@ -80,16 +94,18 @@ public class TaskIndexDto implements Serializable {
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply,
 			String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
-			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid) {
+			String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
+			String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid,
+			String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
 	//@formatter:on
 
 		this.setUuid(uuid);
 		this.taskContext = taskContext;
 
+		CaseJurisdictionDto caseJurisdiction = null;
 		if (caseUuid != null) {
 			this.caze = new CaseReferenceDto(caseUuid, caseFirstName, caseLastName);
-			this.caseJurisdiction = new CaseJurisdictionDto(
+			caseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUuid,
 				caseRegionUuid,
 				caseDistrictUuid,
@@ -98,8 +114,15 @@ public class TaskIndexDto implements Serializable {
 				casePointOfEntryUuid);
 		}
 
-		this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
+		EventJurisdictionDto eventJurisdiction = null;
+		if (eventUuid != null) {
+			eventJurisdiction =
+				new EventJurisdictionDto(eventReportingUserUuid, eventOfficerUuid, eventRegionUuid, eventDistrictUuid, eventCommunityUuid);
 
+			this.event = new EventReferenceDto(eventUuid, eventDisease, eventDiseaseDetails, eventStatus, eventDate);
+		}
+
+		ContactJurisdictionDto contactJurisdiction = null;
 		if (contactUuid != null) {
 			this.contact = new ContactReferenceDto(contactUuid, contactFirstName, contactLastName, contactCaseFirstName, contactCaseLastName);
 
@@ -112,8 +135,12 @@ public class TaskIndexDto implements Serializable {
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			this.contactJurisdiction =
-				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			contactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 		}
 
 		this.taskType = taskType;
@@ -125,6 +152,8 @@ public class TaskIndexDto implements Serializable {
 		this.creatorComment = creatorComment;
 		this.assigneeUser = new UserReferenceDto(assigneeUserUuid, assigneeUserFirstName, assigneeUserLastName, null);
 		this.assigneeReply = assigneeReply;
+
+		this.jurisdiction = new TaskJurisdictionDto(creatorUserUuid, assigneeUserUuid, caseJurisdiction, contactJurisdiction, eventJurisdiction);
 	}
 
 	public TaskContext getTaskContext() {
@@ -254,11 +283,8 @@ public class TaskIndexDto implements Serializable {
 		this.uuid = uuid;
 	}
 
-	public CaseJurisdictionDto getCaseJurisdiction() {
-		return caseJurisdiction;
-	}
-
-	public ContactJurisdictionDto getContactJurisdiction() {
-		return contactJurisdiction;
+	@Override
+	public TaskJurisdictionDto getJurisdiction() {
+		return jurisdiction;
 	}
 }

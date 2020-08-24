@@ -87,25 +87,49 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	private RegionService regionService;
 
 	@Override
-	public List<FacilityReferenceDto> getActiveHealthFacilitiesByCommunity(CommunityReferenceDto communityRef, boolean includeStaticFacilities) {
+	public List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
+		CommunityReferenceDto communityRef,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		Community community = communityService.getByUuid(communityRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveHealthFacilitiesByCommunity(community, includeStaticFacilities);
+		List<Facility> facilities = facilityService.getActiveFacilitiesByCommunityAndType(community, type, includeOtherFacility, includeNoneFacility);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getActiveHealthFacilitiesByDistrict(DistrictReferenceDto districtRef, boolean includeStaticFacilities) {
+	public List<FacilityReferenceDto> getActiveFacilitiesByDistrictAndType(
+		DistrictReferenceDto districtRef,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		District district = districtService.getByUuid(districtRef.getUuid());
-		List<Facility> facilities = facilityService.getActiveHealthFacilitiesByDistrict(district, includeStaticFacilities);
+		List<Facility> facilities = facilityService.getActiveFacilitiesByDistrictAndType(district, type, includeOtherFacility, includeNoneFacility);
 		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherLaboratory) {
+	public List<FacilityReferenceDto> getActiveHospitalsByCommunity(CommunityReferenceDto communityRef, boolean includeOtherFacility) {
+		Community community = communityService.getByUuid(communityRef.getUuid());
+		List<Facility> facilities =
+			facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, includeOtherFacility, false);
+		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
 
-		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherLaboratory);
+	@Override
+	public List<FacilityReferenceDto> getActiveHospitalsByDistrict(DistrictReferenceDto districtRef, boolean includeOtherFacility) {
+		District district = districtService.getByUuid(districtRef.getUuid());
+		List<Facility> facilities =
+			facilityService.getActiveFacilitiesByDistrictAndType(district, FacilityType.HOSPITAL, includeOtherFacility, false);
+		return facilities.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<FacilityReferenceDto> getAllActiveLaboratories(boolean includeOtherFacility) {
+
+		List<Facility> laboratories = facilityService.getAllActiveLaboratories(includeOtherFacility);
 		return laboratories.stream().map(l -> toReferenceDto(l)).collect(Collectors.toList());
 	}
 
@@ -251,17 +275,19 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getByName(
+	public List<FacilityReferenceDto> getByNameAndType(
 		String name,
 		DistrictReferenceDto districtRef,
 		CommunityReferenceDto communityRef,
+		FacilityType type,
 		boolean includeArchivedEntities) {
 
 		return facilityService
-			.getHealthFacilitiesByName(
+			.getFacilitiesByNameAndType(
 				name,
 				districtService.getByReferenceDto(districtRef),
 				communityService.getByReferenceDto(communityRef),
+				type,
 				includeArchivedEntities)
 			.stream()
 			.map(f -> toReferenceDto(f))
@@ -270,7 +296,10 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public List<FacilityReferenceDto> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
-		return facilityService.getLaboratoriesByName(name, includeArchivedEntities).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return facilityService.getFacilitiesByNameAndType(name, null, null, FacilityType.LABORATORY, includeArchivedEntities)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -370,8 +399,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Predicate filter = facilityService.buildCriteriaFilter(facilityCriteria, cb, facility);
 		Predicate excludeFilter = cb.and(
 			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
-			cb.notEqual(facility.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+			cb.notEqual(facility.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
 			filter = AbstractAdoService.and(cb, filter, excludeFilter);
 		} else {
@@ -442,8 +470,7 @@ public class FacilityFacadeEjb implements FacilityFacade {
 		Predicate filter = facilityService.buildCriteriaFilter(criteria, cb, root);
 		Predicate excludeFilter = cb.and(
 			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID),
-			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID),
-			cb.notEqual(root.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID));
+			cb.notEqual(root.get(Facility.UUID), FacilityDto.NONE_FACILITY_UUID));
 		if (filter != null) {
 			filter = AbstractAdoService.and(cb, filter, excludeFilter);
 		} else {
@@ -461,14 +488,16 @@ public class FacilityFacadeEjb implements FacilityFacade {
 	@Override
 	public void saveFacility(FacilityDto dto) throws ValidationRuntimeException {
 
+		if (dto.getType() == null
+			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
+			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validFacilityType));
+		}
+
 		Facility facility = facilityService.getByUuid(dto.getUuid());
 
-		if (facility == null) {
-			if (FacilityType.LABORATORY.equals(dto.getType()) && !getLaboratoriesByName(dto.getName(), true).isEmpty()) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importLaboratoryAlreadyExists));
-			} else if (!getByName(dto.getName(), dto.getDistrict(), dto.getCommunity(), true).isEmpty()) {
-				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
-			}
+		if (facility == null && !getByNameAndType(dto.getName(), dto.getDistrict(), dto.getCommunity(), dto.getType(), true).isEmpty()) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importFacilityAlreadyExists));
 		}
 
 		if (!FacilityType.LABORATORY.equals(dto.getType())) {

@@ -22,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -30,8 +29,6 @@ import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -44,6 +41,10 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 
 	public static void startActivity(Context context, String rootUuid, boolean finishInsteadOfUpNav) {
 		BaseReadActivity.startActivity(context, EventReadActivity.class, buildBundle(rootUuid, finishInsteadOfUpNav));
+	}
+
+	public static void startActivity(Context context, String rootUuid) {
+		BaseReadActivity.startActivity(context, EventReadActivity.class, buildBundle(rootUuid));
 	}
 
 	@Override

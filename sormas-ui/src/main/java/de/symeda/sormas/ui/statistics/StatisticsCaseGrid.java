@@ -140,7 +140,7 @@ public class StatisticsCaseGrid extends Grid {
 			if (addColumnUnknown && columnsAttribute.isUnknownValueAllowed()) {
 				unknowColumnIndex = getColumns().size();
 				Column column = addColumn(UNKNOWN_COLUMN);
-				column.setHeaderCaption(I18nProperties.getCaption(Captions.unknown));
+				column.setHeaderCaption(I18nProperties.getCaption(Captions.notSpecified));
 				column.setSortable(false);
 				column.setMaximumWidth(120);
 			}
@@ -207,7 +207,7 @@ public class StatisticsCaseGrid extends Grid {
 				currentRow = new Object[getColumns().size()];
 				currentRowKey = (StatisticsGroupingKey) cellValue.getRowKey();
 				if (isUnknownRow) {
-					currentRow[0] = I18nProperties.getCaption(Captions.unknown);
+					currentRow[0] = I18nProperties.getCaption(Captions.notSpecified);
 				} else {
 					currentRow[0] = cellValue.getRowKey().toString();
 				}

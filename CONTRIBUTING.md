@@ -86,12 +86,12 @@ The SORMAS sprint board is segmented into the following categories:
 * **Backlog:** Issues that have been selected to be done in the current sprint, but for which work has not yet started.
 * **In Progress:** Issues that have been assigned to a contributor and for which work has started.
 * **Waiting:** Issues for which work has started and that have been put on hold, e.g. because action or feedback by an external contributor is required.
-* **Review:** Issues that have been resolved, but not been reviewed by another contributor yet.
-* **Done:** Issues that have been resolved, reviewed and satisfy the Definition of Done.
+* **Review:** Issues that have been resolved, but not been reviewed by another contributor yet. The ticket status is usually **Open**, but **Closed** is also allowed if no code change or merge is needed.
+* **Done:** Issues that have been resolved, reviewed and satisfy the Definition of Done. The ticket status is supposed to be **Closed**.
 
 The general workflow is that whenever a contributor starts working on an issue, they **assign** themselves to it and manually **move the issue** from **Backlog** to **In Progress**.
 
-The GitHub project has been configured to **automatically** move issues that are closed to **Review** and issues that are reopened back to **In Progress**.
+The GitHub project has been configured to **automatically** move issues that are closed to **Done** and issues that are reopened back to **In Progress**.
 
 ### Eclipse Troubleshooting
 
@@ -107,3 +107,5 @@ There are a couple of things you can do to fix these problems:
 * Re-deploy the server artifacts
 
 If the problem occurred right after you've pulled new code from GitHub, your safest bet is probably to start with the Maven update. For most other problems, a simple re-deployment or, if necessary, server restart should suffice.
+
+When you have problems like this - `An internal error occurred during: "Polling news feeds".  javax/xml/bind/JAXBContext` - then disable setting `Window --> Preferences --> General --> News --> "Enable automatic news polling"` (may happen when running Eclipse with JDK 11).

@@ -21,95 +21,49 @@ import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.databinding.DialogCaseEpidBurialEditLayoutBinding;
-import de.symeda.sormas.app.databinding.DialogCaseEpidTravelEditLayoutBinding;
+import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
+import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.databinding.FragmentCaseEditLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseEditPortHealthInfoLayoutBinding;
 import de.symeda.sormas.app.util.ResultCallback;
 
 final class CaseValidator {
 
-	static void initializeEpiDataBurialValidation(final DialogCaseEpidBurialEditLayoutBinding contentBinding) {
-		ResultCallback<Boolean> burialDateFromCallback = () -> {
-			if (contentBinding.epiDataBurialBurialDateFrom.getValue() != null && contentBinding.epiDataBurialBurialDateTo.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.epiDataBurialBurialDateFrom.getValue(), contentBinding.epiDataBurialBurialDateTo.getValue())
-					> 0) {
-					contentBinding.epiDataBurialBurialDateFrom.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.beforeDate,
-							contentBinding.epiDataBurialBurialDateFrom.getCaption(),
-							contentBinding.epiDataBurialBurialDateTo.getCaption()));
-					return true;
-				}
+	static void initializeGermanCaseClassificationValidation(
+		Case caze,
+		CaseClassification caseClassification,
+		FragmentCaseEditLayoutBinding contentBinding) {
+		if (ConfigProvider.isGermanServer()) {
+			final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
+			final CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
+			final boolean hasPositiveTestResult = DatabaseHelper.getSampleDao().hasPositiveTestResult(caze);
+			final boolean validCaseClassification =
+				GermanCaseClassificationValidator.isValidGermanCaseClassification(caseClassification, caseDataDto, hasPositiveTestResult);
+
+			if (validCaseClassification) {
+				contentBinding.caseDataCaseClassification.disableErrorState();
+			} else {
+				contentBinding.caseDataCaseClassification.enableErrorState(R.string.validation_case_classification);
 			}
 
-			return false;
-		};
-
-		ResultCallback<Boolean> burialDateToCallback = () -> {
-			if (contentBinding.epiDataBurialBurialDateTo.getValue() != null && contentBinding.epiDataBurialBurialDateFrom.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.epiDataBurialBurialDateTo.getValue(), contentBinding.epiDataBurialBurialDateFrom.getValue())
-					< 0) {
-					contentBinding.epiDataBurialBurialDateTo.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.epiDataBurialBurialDateTo.getCaption(),
-							contentBinding.epiDataBurialBurialDateFrom.getCaption()));
-					return true;
+			contentBinding.caseDataCaseClassification.setValidationCallback(() -> {
+				if (validCaseClassification) {
+					return false;
 				}
-			}
-
-			return false;
-		};
-
-		contentBinding.epiDataBurialBurialDateFrom.setValidationCallback(burialDateFromCallback);
-		contentBinding.epiDataBurialBurialDateTo.setValidationCallback(burialDateToCallback);
-	}
-
-	static void initializeEpiDataTravelValidation(final DialogCaseEpidTravelEditLayoutBinding contentBinding) {
-		ResultCallback<Boolean> travelDateFromCallback = () -> {
-			if (contentBinding.epiDataTravelTravelDateFrom.getValue() != null && contentBinding.epiDataTravelTravelDateTo.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.epiDataTravelTravelDateFrom.getValue(), contentBinding.epiDataTravelTravelDateTo.getValue())
-					> 0) {
-					contentBinding.epiDataTravelTravelDateFrom.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.beforeDate,
-							contentBinding.epiDataTravelTravelDateFrom.getCaption(),
-							contentBinding.epiDataTravelTravelDateTo.getCaption()));
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		ResultCallback<Boolean> burialDateToCallback = () -> {
-			if (contentBinding.epiDataTravelTravelDateTo.getValue() != null && contentBinding.epiDataTravelTravelDateFrom.getValue() != null) {
-				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.epiDataTravelTravelDateTo.getValue(), contentBinding.epiDataTravelTravelDateFrom.getValue())
-					< 0) {
-					contentBinding.epiDataTravelTravelDateTo.enableErrorState(
-						I18nProperties.getValidationError(
-							Validations.afterDate,
-							contentBinding.epiDataTravelTravelDateTo.getCaption(),
-							contentBinding.epiDataTravelTravelDateFrom.getCaption()));
-					return true;
-				}
-			}
-
-			return false;
-		};
-
-		contentBinding.epiDataTravelTravelDateFrom.setValidationCallback(travelDateFromCallback);
-		contentBinding.epiDataTravelTravelDateTo.setValidationCallback(burialDateToCallback);
+				return true;
+			});
+		}
 	}
 
 	static void initializePortHealthInfoValidation(final FragmentCaseEditPortHealthInfoLayoutBinding contentBinding, final Case caze) {

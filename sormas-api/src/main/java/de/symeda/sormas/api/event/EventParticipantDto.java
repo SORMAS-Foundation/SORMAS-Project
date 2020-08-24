@@ -17,13 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class EventParticipantDto extends EntityDto {
+public class EventParticipantDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
@@ -37,7 +39,9 @@ public class EventParticipantDto extends EntityDto {
 	@Required
 	private EventReferenceDto event;
 	@Required
+	@EmbeddedPersonalData
 	private PersonDto person;
+	@SensitiveData
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
 
@@ -46,6 +50,15 @@ public class EventParticipantDto extends EntityDto {
 		eventParticipant.setUuid(DataHelper.createUuid());
 		eventParticipant.setEvent(event);
 		return eventParticipant;
+	}
+
+	public static EventParticipantDto buildFromCase(CaseReferenceDto caseReferenceDto, PersonDto person, EventReferenceDto event) {
+		EventParticipantDto eventParticipantDto = new EventParticipantDto();
+		eventParticipantDto.setUuid(DataHelper.createUuid());
+		eventParticipantDto.setEvent(event);
+		eventParticipantDto.setPerson(person);
+		eventParticipantDto.setResultingCase(caseReferenceDto);
+		return eventParticipantDto;
 	}
 
 	public EventReferenceDto getEvent() {

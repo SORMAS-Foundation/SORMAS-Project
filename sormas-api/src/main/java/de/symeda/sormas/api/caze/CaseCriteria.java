@@ -22,7 +22,10 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -45,6 +48,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String MUST_HAVE_CASE_MANAGEMENT_DATA = "mustHaveCaseManagementData";
 	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
+	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
@@ -52,6 +56,12 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
 	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
+	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private UserRole reportingUserRole;
 	private Disease disease;
@@ -77,6 +87,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustBePortHealthCaseWithoutFacility;
 	private Boolean mustHaveCaseManagementData;
 	private Boolean withoutResponsibleOfficer;
+	private Boolean withExtendedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -85,6 +96,15 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
+	private Integer birthdateYYYY;
+	private Integer birthdateMM;
+	private Integer birthdateDD;
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntilTo;
+	private Date followUpUntilFrom;
+	private Date reportDateTo;
+	private FacilityTypeGroup facilityTypeGroup;
+	private FacilityType facilityType;
 
 	@Override
 	public CaseCriteria clone() {
@@ -262,6 +282,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		return this.withoutResponsibleOfficer;
 	}
 
+	public Boolean getWithExtendedQuarantine() {
+		return withExtendedQuarantine;
+	}
+
+	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
+		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -337,6 +365,10 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setNameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
 		this.nameUuidEpidNumberLike = nameUuidEpidNumberLike;
 	}
+	public CaseCriteria nameUuidEpidNumberLike(String nameUuidEpidNumberLike) {
+		setNameUuidEpidNumberLike(nameUuidEpidNumberLike);
+		return this;
+	}
 
 	@IgnoreForUrl
 	public String getNameUuidEpidNumberLike() {
@@ -402,5 +434,88 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public Integer getBirthdateDD() {
+		return birthdateDD;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
+	}
+
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public void setFollowUpUntilTo(Date followUpUntilTo) {
+		this.followUpUntilTo = followUpUntilTo;
+	}
+
+	public CaseCriteria followUpUntilTo(Date followUpUntilTo) {
+		this.followUpUntilTo = followUpUntilTo;
+		return this;
+	}
+
+	public Date getFollowUpUntilTo() {
+		return followUpUntilTo;
+	}
+
+	public CaseCriteria followUpUntilFrom(Date followUpUntilFrom) {
+		this.followUpUntilFrom = followUpUntilFrom;
+		return this;
+	}
+
+	public Date getFollowUpUntilFrom() {
+		return followUpUntilFrom;
+	}
+
+	public CaseCriteria reportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
+		return this;
+	}
+
+	public Date getReportDateTo() {
+		return reportDateTo;
+	}
+
+	public void setReportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
+	}
+
+	public FacilityTypeGroup getFacilityTypeGroup() {
+		return facilityTypeGroup;
+	}
+
+	public void setFacilityTypeGroup(FacilityTypeGroup typeGroup) {
+		this.facilityTypeGroup = typeGroup;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType type) {
+		this.facilityType = type;
 	}
 }

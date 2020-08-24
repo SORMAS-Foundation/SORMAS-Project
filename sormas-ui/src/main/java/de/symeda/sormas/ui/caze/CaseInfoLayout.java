@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -31,15 +30,18 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 @SuppressWarnings("serial")
-public class CaseInfoLayout extends HorizontalLayout {
+public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 
 	private final CaseDataDto caseDto;
 
-	public CaseInfoLayout(CaseDataDto caseDto) {
+	public CaseInfoLayout(CaseDataDto caseDto, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(CaseDataDto.class, fieldAccessCheckers);
 
 		this.caseDto = caseDto;
 		setSpacing(true);
@@ -59,41 +61,56 @@ public class CaseInfoLayout extends HorizontalLayout {
 		leftColumnLayout.setSpacing(true);
 		{
 			final Label caseIdLabel = addDescLabel(
-					leftColumnLayout,
-					DataHelper.getShortUuid(caseDto.getUuid()),
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID));
+				leftColumnLayout,
+				CaseDataDto.UUID,
+				DataHelper.getShortUuid(caseDto.getUuid()),
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID));
 			caseIdLabel.setId("caseIdLabel");
 			caseIdLabel.setDescription(caseDto.getUuid());
 
 			if (FacadeProvider.getConfigFacade().isGermanServer()) {
 				addDescLabel(
 					leftColumnLayout,
+					CaseDataDto.EXTERNAL_ID,
 					caseDto.getExternalID(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EXTERNAL_ID)).setDescription(caseDto.getEpidNumber());
 			} else {
 				addDescLabel(
 					leftColumnLayout,
+					CaseDataDto.EPID_NUMBER,
 					caseDto.getEpidNumber(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)).setDescription(caseDto.getEpidNumber());
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-				addDescLabel(leftColumnLayout, caseDto.getPerson(), I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
+				addDescLabel(
+					leftColumnLayout,
+					CaseDataDto.PERSON,
+					caseDto.getPerson(),
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.PERSON));
 
 				HorizontalLayout ageSexLayout = new HorizontalLayout();
 				ageSexLayout.setMargin(false);
 				ageSexLayout.setSpacing(true);
-				addDescLabel(
+				addCustomDescLabel(
 					ageSexLayout,
+					PersonDto.class,
+					PersonDto.APPROXIMATE_AGE,
 					ApproximateAgeHelper.formatApproximateAge(personDto.getApproximateAge(), personDto.getApproximateAgeType()),
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
-				addDescLabel(ageSexLayout, personDto.getSex(), I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+				addCustomDescLabel(
+					ageSexLayout,
+					PersonDto.class,
+					PersonDto.SEX,
+					personDto.getSex(),
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 				leftColumnLayout.addComponent(ageSexLayout);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
 				addDescLabel(
 					leftColumnLayout,
+					CaseDataDto.CLINICIAN_NAME,
 					caseDto.getClinicianName(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_NAME));
 			}
@@ -106,6 +123,7 @@ public class CaseInfoLayout extends HorizontalLayout {
 		{
 			addDescLabel(
 				rightColumnLayout,
+				CaseDataDto.DISEASE,
 				caseDto.getDisease() != Disease.OTHER
 					? caseDto.getDisease().toShortString()
 					: DataHelper.toStringNullable(caseDto.getDiseaseDetails()),
@@ -114,22 +132,16 @@ public class CaseInfoLayout extends HorizontalLayout {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 				addDescLabel(
 					rightColumnLayout,
+					CaseDataDto.CASE_CLASSIFICATION,
 					caseDto.getCaseClassification(),
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION));
 				addDescLabel(
 					rightColumnLayout,
+					CaseDataDto.SYMPTOMS,
 					DateFormatHelper.formatDate(caseDto.getSymptoms().getOnsetDate()),
 					I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
 			}
 		}
 		this.addComponent(rightColumnLayout);
-	}
-
-	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
-		String contentString = content != null ? content.toString() : "";
-		Label label = new Label(contentString);
-		label.setCaption(caption);
-		layout.addComponent(label);
-		return label;
 	}
 }

@@ -42,15 +42,16 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
 @Entity(name = Sample.TABLE_NAME)
 @DatabaseTable(tableName = Sample.TABLE_NAME)
-public class Sample extends AbstractDomainObject {
+public class Sample extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -7196712070188634978L;
 
@@ -62,6 +63,7 @@ public class Sample extends AbstractDomainObject {
 	public static final String REFERRED_TO_UUID = "referredToUuid";
 	public static final String SHIPPED = "shipped";
 	public static final String RECEIVED = "received";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 
@@ -70,6 +72,9 @@ public class Sample extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Contact associatedContact;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EventParticipant associatedEventParticipant;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String labSampleID;
@@ -179,6 +184,14 @@ public class Sample extends AbstractDomainObject {
 
 	public void setAssociatedContact(Contact associatedContact) {
 		this.associatedContact = associatedContact;
+	}
+
+	public EventParticipant getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
+	public void setAssociatedEventParticipant(EventParticipant associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
 	public String getLabSampleID() {

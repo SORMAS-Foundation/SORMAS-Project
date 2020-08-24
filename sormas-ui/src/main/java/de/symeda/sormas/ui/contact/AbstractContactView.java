@@ -36,6 +36,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
+import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -47,13 +48,14 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	protected AbstractContactView(String viewName) {
 		super(viewName);
 
-		if (FacadeProvider.getConfigFacade().getPIAUrl() != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
+		if (FacadeProvider.getConfigFacade().getSymptomJournalUrl() != null
+			&& UserProvider.getCurrent().hasUserRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
 			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
 			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
 			btnCreatePIAAccount.addClickListener(e -> {
 				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
 				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openPIAAccountCreationWindow(contactPerson);
+				ControllerProvider.getContactController().openSymptomJournalWindow(contactPerson);
 			});
 			getButtonsLayout().addComponent(btnCreatePIAAccount);
 		}
@@ -82,6 +84,7 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		}
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
+		menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
 
 		infoLabel.setValue(getReference().getCaption());
@@ -120,9 +123,13 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		Boolean isContactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+		Boolean isContactEditAllowed = isContactEditAllowed();
 		if (!isContactEditAllowed) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
+	}
+
+	protected boolean isContactEditAllowed() {
+		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
 	}
 }

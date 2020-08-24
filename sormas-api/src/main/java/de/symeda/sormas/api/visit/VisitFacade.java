@@ -17,14 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.Remote;
-
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
+
+import javax.ejb.Remote;
+import java.util.Date;
+import java.util.List;
 
 @Remote
 public interface VisitFacade {
@@ -57,4 +57,6 @@ public interface VisitFacade {
 		ExportConfigurationDto exportConfiguration);
 
 	VisitDto getLastVisitByContact(ContactReferenceDto contactRef);
+
+	VisitDto getLastVisitByCase(CaseReferenceDto caseRef);
 }

@@ -25,6 +25,7 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
@@ -69,6 +70,7 @@ public class ContactListCriteriaBuilder {
 			joins.getReportingUser().get(User.UUID),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
 			joins.getCaseReportingUser().get(User.UUID),
 			joins.getCaseRegion().get(Region.UUID),
 			joins.getCaseDistrict().get(District.UUID),
@@ -90,6 +92,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCasePerson().get(Person.LAST_NAME),
 			joins.getRegion().get(Region.UUID),
 			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
 			contact.get(Contact.LAST_CONTACT_DATE),
 			contact.get(Contact.CONTACT_CATEGORY),
 			contact.get(Contact.CONTACT_PROXIMITY),
@@ -134,10 +137,10 @@ public class ContactListCriteriaBuilder {
 			expressions.add(joins.getCasePerson().get(Person.FIRST_NAME));
 			expressions.add(joins.getCasePerson().get(Person.LAST_NAME));
 			break;
-		case ContactIndexDto.REGION_UUID:
+		case ContactJurisdictionDto.REGION_UUID:
 			expressions.add(joins.getRegion().get(Region.NAME));
 			break;
-		case ContactIndexDto.DISTRICT_UUID:
+		case ContactJurisdictionDto.DISTRICT_UUID:
 			expressions.add(joins.getDistrict().get(District.NAME));
 			break;
 		default:

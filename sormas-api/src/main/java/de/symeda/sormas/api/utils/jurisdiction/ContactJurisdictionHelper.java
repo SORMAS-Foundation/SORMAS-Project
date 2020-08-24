@@ -23,7 +23,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class ContactJurisdictionHelper {
 
-	public static boolean isInJurisdiction(
+	public static boolean isInJurisdictionOrOwned(
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		ContactJurisdictionDto contactJurisdiction) {
@@ -39,13 +39,20 @@ public class ContactJurisdictionHelper {
 		case NATION:
 			return true;
 		case REGION:
-			return contactJurisdiction.getRegionUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			if (contactJurisdiction.getRegionUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getRegionUuid(), userJurisdiction.getRegionUuid());
+			}
+			break;
 		case DISTRICT:
-			return contactJurisdiction.getDistrictUuid() != null
-				&& DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			if (contactJurisdiction.getDistrictUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getDistrictUuid(), userJurisdiction.getDistrictUuid());
+			}
+			break;
 		case COMMUNITY:
-			return false;
+			if (contactJurisdiction.getCommunityUuid() != null) {
+				return DataHelper.equal(contactJurisdiction.getCommunityUuid(), userJurisdiction.getCommunityUuid());
+			}
+			break;
 		case HEALTH_FACILITY:
 			return false;
 		case LABORATORY:
@@ -57,7 +64,7 @@ public class ContactJurisdictionHelper {
 		}
 
 		if (contactJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
+			return CaseJurisdictionHelper.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, contactJurisdiction.getCaseJurisdiction());
 		}
 
 		return false;

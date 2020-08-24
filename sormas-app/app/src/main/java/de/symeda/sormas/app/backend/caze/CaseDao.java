@@ -45,14 +45,17 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.person.PersonHelper;
+import de.symeda.sormas.api.event.EventJurisdictionDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitCriteria;
@@ -63,6 +66,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.sample.Sample;
@@ -76,6 +80,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
+import de.symeda.sormas.app.util.JurisdictionHelper;
 import de.symeda.sormas.app.util.LocationService;
 
 public class CaseDao extends AbstractAdoDao<Case> {
@@ -563,6 +568,30 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			}
 		}
 
+		//Remove events linked to case by removing case_id from event participants - delete event participant and 
+		List<EventParticipant> eventParticipants = DatabaseHelper.getEventParticipantDao().getByCase(caze);
+		for (EventParticipant eventParticipant : eventParticipants) {
+			DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipant);
+		}
+
+		//Remove events outside jurisdiction which were pulled in due to linking with an accessible case
+		User user = ConfigProvider.getUser();
+		UserJurisdiction userJurisdiction = JurisdictionHelper.createUserJurisdiction(user);
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.caze(caze);
+		List<Event> eventList = DatabaseHelper.getEventDao().queryByCriteria(eventCriteria, 0, 0);
+		for (Event event : eventList) {
+			List<EventParticipant> eventParticipantByEventList = DatabaseHelper.getEventParticipantDao().getByEvent(event);
+			if (eventParticipantByEventList.isEmpty()) {
+				EventJurisdictionDto eventJurisdictionDto = JurisdictionHelper.createEventJurisdictionDto(event);
+				Boolean isEventInJurisdiction =
+					EventJurisdictionHelper.isInJurisdictionOrOwned(JurisdictionLevel.REGION, userJurisdiction, eventJurisdictionDto);
+				if (!isEventInJurisdiction) {
+					DatabaseHelper.getEventDao().delete(event);
+				}
+			}
+		}
+
 		// Delete case
 		deleteCascade(caze);
 	}
@@ -570,26 +599,19 @@ public class CaseDao extends AbstractAdoDao<Case> {
 	public List<Case> getSimilarCases(CaseSimilarityCriteria criteria) {
 		try {
 			QueryBuilder<Case, Long> queryBuilder = queryBuilder();
+			QueryBuilder<Person, Long> personQueryBuilder = DatabaseHelper.getPersonDao().queryBuilder();
 
 			Where<Case, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
 			where.and().eq(Case.DISEASE, criteria.getCaseCriteria().getDisease());
 			where.and().eq(Case.REGION + "_id", criteria.getCaseCriteria().getRegion());
+			where.and().raw(Person.TABLE_NAME + "." + Person.UUID + " = '" + criteria.getPersonUuid() + "'");
 			where.and()
 				.between(Case.REPORT_DATE, DateHelper.subtractDays(criteria.getReportDate(), 30), DateHelper.addDays(criteria.getReportDate(), 30));
 
 			queryBuilder.setWhere(where);
-			List<Case> potentiallySimilarCases = queryBuilder.orderBy(Case.CREATION_DATE, false).query();
-			List<Case> similarCases = new ArrayList<>();
+			queryBuilder = queryBuilder.leftJoin(personQueryBuilder);
 
-			for (Case caze : potentiallySimilarCases) {
-				if (PersonHelper.areNamesSimilar(
-					caze.getPerson().getFirstName() + " " + caze.getPerson().getLastName(),
-					criteria.getFirstName() + " " + criteria.getLastName())) {
-					similarCases.add(caze);
-				}
-			}
-
-			return similarCases;
+			return queryBuilder.orderBy(Case.CREATION_DATE, false).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getSimilarCases on Case");
 			throw new RuntimeException(e);

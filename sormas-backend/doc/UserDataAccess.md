@@ -54,7 +54,12 @@ In general data access & synchronisation is based on the following rules:
 * all tasks for the user's cases except the ones assigned to users in other jurisdiction
 * all tasks for the user's contacts except the ones assigned to users in other jurisdiction
 * all tasks for the user's events except the ones assigned to users in other jurisdiction
- 
+
+## Actions
+* only users that are permitted to see action at all
+* whoever created the action is allowed to access it
+* all actions for the user's events
+
 ## Samples
 * only users that are permitted to see samples at all
 * all samples are accessible for national users

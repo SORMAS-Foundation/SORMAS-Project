@@ -27,6 +27,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,6 +53,12 @@ public class SampleListComponent extends VerticalLayout {
 		createSampleListComponent(
 			new SampleList(caseRef),
 			e -> ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView()));
+	}
+
+	public SampleListComponent(EventParticipantReferenceDto eventParticipantRef) {
+		createSampleListComponent(
+			new SampleList(eventParticipantRef),
+			e -> ControllerProvider.getSampleController().create(eventParticipantRef, () -> SormasUI.refreshView()));
 	}
 
 	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {

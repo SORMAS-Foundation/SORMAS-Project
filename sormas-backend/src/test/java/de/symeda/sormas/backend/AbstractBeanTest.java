@@ -31,7 +31,11 @@ import org.junit.Before;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.action.ActionFacade;
+import de.symeda.sormas.api.campaign.CampaignFacade;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -69,13 +73,18 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
-import de.symeda.sormas.backend.campaign.form.CampaignFormFacadeEjb.CampaignFormFacadeEjbLocal;
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb.CampaignFacadeEjbLocal;
+import de.symeda.sormas.backend.campaign.data.CampaignFormDataFacadeEjb.CampaignFormDataFacadeEjbLocal;
+import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseStatisticsFacadeEjb.CaseStatisticsFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -83,9 +92,11 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantService;
+import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -107,12 +118,17 @@ import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
+import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
+import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
@@ -199,8 +215,20 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(EventFacadeEjbLocal.class);
 	}
 
+	public EventService getEventService() {
+		return getBean(EventService.class);
+	}
+
 	public EventParticipantFacade getEventParticipantFacade() {
 		return getBean(EventParticipantFacadeEjbLocal.class);
+	}
+
+	public EventParticipantService getEventParticipantService() {
+		return getBean(EventParticipantService.class);
+	}
+
+	public ActionFacade getActionFacade() {
+		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
 	}
 
 	public VisitFacade getVisitFacade() {
@@ -227,6 +255,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SampleFacadeEjbLocal.class);
 	}
 
+	public SampleService getSampleService() {
+		return getBean(SampleService.class);
+	}
+
 	public PathogenTestFacade getSampleTestFacade() {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
@@ -237,6 +269,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 	public SymptomsFacade getSymptomsFacade() {
 		return getBean(SymptomsFacadeEjbLocal.class);
+	}
+
+	public SymptomsService getSymptomsService() {
+		return getBean(SymptomsService.class);
 	}
 
 	public PointOfEntryFacade getPointOfEntryFacade() {
@@ -276,7 +312,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public EpiDataFacade getEpiDataFacade() {
-		return getBean(EpiDataFacadeEjbLocal.class);
+		return getBean(EpiDataFacadeEjb.EpiDataFacadeEjbLocal.class);
 	}
 
 	public WeeklyReportFacade getWeeklyReportFacade() {
@@ -323,6 +359,10 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ClinicalVisitFacadeEjbLocal.class);
 	}
 
+	public ClinicalVisitService getClinicalVisitService() {
+		return getBean(ClinicalVisitService.class);
+	}
+
 	public TherapyFacade getTherapyFacade() {
 		return getBean(TherapyFacadeEjbLocal.class);
 	}
@@ -331,8 +371,16 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PrescriptionFacadeEjbLocal.class);
 	}
 
+	public PrescriptionService getPrescriptionService() {
+		return getBean(PrescriptionService.class);
+	}
+
 	public TreatmentFacade getTreatmentFacade() {
 		return getBean(TreatmentFacadeEjbLocal.class);
+	}
+
+	public TreatmentService getTreatmentService() {
+		return getBean(TreatmentService.class);
 	}
 
 	public DiseaseConfigurationFacade getDiseaseConfigurationFacade() {
@@ -359,8 +407,8 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestFacadeEjbLocal.class);
 	}
 
-	public CampaignFormFacade getCampaignFormFacade() {
-		return getBean(CampaignFormFacadeEjbLocal.class);
+	public CampaignFormMetaFacade getCampaignFormFacade() {
+		return getBean(CampaignFormMetaFacadeEjbLocal.class);
 	}
 
 	protected UserDto useSurveillanceOfficerLogin(TestDataCreator.RDCF rdcf) {
@@ -374,4 +422,27 @@ public class AbstractBeanTest extends BaseBeanTest {
 
 		return survOff;
 	}
+
+	public CampaignFormDataFacade getCampaignFormDataFacade() {
+		return getBean(CampaignFormDataFacadeEjbLocal.class);
+	}
+
+	public CampaignFacade getCampaignFacade() {
+		return getBean(CampaignFacadeEjbLocal.class);
+	}
+
+	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);}
+
+	protected UserDto useNationalUserLogin() {
+		UserDto natUser =
+			creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
+		return natUser;
+	}
+
+	public PathogenTestService getPathogenTestService() {
+		return getBean(PathogenTestService.class);
+	}
+
 }

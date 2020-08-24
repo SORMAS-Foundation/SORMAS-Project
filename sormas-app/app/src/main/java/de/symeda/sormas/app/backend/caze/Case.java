@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -118,6 +119,13 @@ public class Case extends PseudonymizableAdo {
 	private String classificationComment;
 
 	@Enumerated(EnumType.STRING)
+	private YesNoUnknown clinicalConfirmation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown epidemiologicalConfirmation;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
+
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private InvestigationStatus investigationStatus;
 
@@ -129,6 +137,9 @@ public class Case extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
+
+	@Enumerated(EnumType.STRING)
+	private FacilityType facilityType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
@@ -256,6 +267,8 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG)
@@ -270,6 +283,8 @@ public class Case extends PseudonymizableAdo {
 	private Date quarantineOrderedVerballyDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOrderedOfficialDocumentDate;
+	@DatabaseField
+	private boolean quarantineExtended;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -665,6 +680,30 @@ public class Case extends PseudonymizableAdo {
 		this.classificationComment = classificationComment;
 	}
 
+	public YesNoUnknown getClinicalConfirmation() {
+		return clinicalConfirmation;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	public YesNoUnknown getEpidemiologicalConfirmation() {
+		return epidemiologicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() {
+		return laboratoryDiagnosticConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
+	}
+
 	@Override
 	public boolean isModifiedOrChildModified() {
 		if (person.isModifiedOrChildModified())
@@ -785,6 +824,14 @@ public class Case extends PseudonymizableAdo {
 		this.quarantine = quarantine;
 	}
 
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
@@ -841,6 +888,14 @@ public class Case extends PseudonymizableAdo {
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 	}
 
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
+	}
+
 	public YesNoUnknown getQuarantineHomePossible() {
 		return quarantineHomePossible;
 	}
@@ -895,5 +950,13 @@ public class Case extends PseudonymizableAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

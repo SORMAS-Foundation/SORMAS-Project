@@ -25,6 +25,7 @@ import androidx.databinding.ViewDataBinding;
 
 import de.symeda.sormas.app.BR;
 import de.symeda.sormas.app.util.Callback;
+import de.symeda.sormas.app.util.TemplateBindingCallback;
 
 public class InfoDialog extends AlertDialog.Builder {
 
@@ -32,15 +33,23 @@ public class InfoDialog extends AlertDialog.Builder {
 
 	private int layoutId;
 	private Object data;
+	private TemplateBindingCallback bindCallback;
+
 	private AlertDialog dialog;
 	private Callback dismissCallback;
 	private ViewDataBinding binding;
 
 	public InfoDialog(Context context, int layoutId, Object data) {
+		this(context, layoutId, data, null);
+	}
+
+	public InfoDialog(Context context, int layoutId, Object data, TemplateBindingCallback bindCallback) {
 		super(context);
 
 		this.layoutId = layoutId;
 		this.data = data;
+		this.bindCallback = bindCallback;
+
 		dismissCallback = () -> dialog.dismiss();
 
 		binding = bindLayout(context);
@@ -71,6 +80,10 @@ public class InfoDialog extends AlertDialog.Builder {
 
 		if (!binding.setVariable(BR.dismissCallback, dismissCallback)) {
 			Log.e(TAG, "There is no variable 'callback' in layout " + layoutName);
+		}
+
+		if (bindCallback != null) {
+			bindCallback.onBind(binding.getRoot());
 		}
 
 		return binding;

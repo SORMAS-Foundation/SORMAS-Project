@@ -88,7 +88,7 @@ public class JurisdictionHelper {
 
 		if (contact.getCaseUuid() != null) {
 			Case caseOfContact = DatabaseHelper.getCaseDao().queryUuidBasic(contact.getCaseUuid());
-			JurisdictionHelper.createCaseJurisdictionDto(caseOfContact);
+			dto.setCaseJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caseOfContact));
 		}
 
 		return dto;

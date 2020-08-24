@@ -58,6 +58,7 @@ public abstract class AbstractDialog implements NotificationContext {
 	private int buttonPanelLayoutResourceId;
 	private DialogViewConfig config;
 	private boolean liveValidationDisabled;
+	private boolean closeOnPositiveButtonClick;
 
 	// Button callbacks
 	private boolean suppressNextDismiss;
@@ -67,19 +68,13 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	// Constructor
 
-	public AbstractDialog(
-		final FragmentActivity activity,
-		int rootLayoutId,
-		int contentLayoutResourceId,
-		int buttonPanelLayoutResourceId,
-		int headingResourceId,
-		int subHeadingResourceId) {
-
+	public AbstractDialog(final FragmentActivity activity, int rootLayoutId, int contentLayoutResourceId, int buttonPanelLayoutResourceId, int headingResourceId, int subHeadingResourceId, boolean closeOnPositiveButtonClick) {
 		this.builder = new AlertDialog.Builder(activity);
 		this.activity = activity;
 		this.rootLayoutId = rootLayoutId;
 		this.contentLayoutResourceId = contentLayoutResourceId;
 		this.buttonPanelLayoutResourceId = buttonPanelLayoutResourceId;
+		this.closeOnPositiveButtonClick = closeOnPositiveButtonClick;
 
 		Resources resources = activity.getResources();
 		String heading = null;
@@ -97,6 +92,16 @@ public abstract class AbstractDialog implements NotificationContext {
 		Drawable negativeIcon = resources.getDrawable(getNegativeButtonIconResourceId());
 
 		this.config = new DialogViewConfig(heading, subHeading, positiveLabel, negativeLabel, deleteLabel, positiveIcon, negativeIcon);
+	}
+
+	public AbstractDialog(
+		final FragmentActivity activity,
+		int rootLayoutId,
+		int contentLayoutResourceId,
+		int buttonPanelLayoutResourceId,
+		int headingResourceId,
+		int subHeadingResourceId) {
+		this(activity, rootLayoutId, contentLayoutResourceId, buttonPanelLayoutResourceId, headingResourceId, subHeadingResourceId, true);
 	}
 
 	// Instance methods
@@ -225,7 +230,9 @@ public abstract class AbstractDialog implements NotificationContext {
 			positiveCallback.call();
 		}
 
-		dismiss();
+		if (closeOnPositiveButtonClick) {
+			dismiss();
+		}
 	}
 
 	private void onNegativeClick() {
