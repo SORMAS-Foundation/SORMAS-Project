@@ -5004,4 +5004,10 @@ DO $$
 $$ LANGUAGE plpgsql;
 INSERT INTO schema_version (version_number, comment) VALUES (241, 'update healthconditions table #2564');
 
+-- 2020-08-24 Fix problems caused by #1637
+UPDATE facility SET type = 'HOSPITAL' WHERE type ISNULL AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
+UPDATE cases SET facilitytype = null WHERE healthfacility_id ISNULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (242, 'Fix problems caused by #1637');
+
 -- *** Insert new sql commands BEFORE this line ***
