@@ -182,7 +182,7 @@ public class User extends AbstractDomainObject {
 		this.phone = phone;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public Location getAddress() {
 		if (address == null) {
 			address = new Location();

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
@@ -27,8 +28,11 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -70,10 +74,25 @@ public class EventParticipantsController {
 				ControllerProvider.getPersonController()
 					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
 						if (selectedPerson != null) {
-							dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-							EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
-							Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-							ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+							EventParticipantCriteria criteria = new EventParticipantCriteria();
+							criteria.event(eventRef);
+							List<EventParticipantIndexDto> currentEventParticipants =
+								(List<EventParticipantIndexDto>) FacadeProvider.getEventParticipantFacade().getIndexList(criteria, null, null, null);
+							Boolean alreadyParticipant = false;
+							for (EventParticipantIndexDto participant : currentEventParticipants) {
+								if (selectedPerson.getUuid().equals(participant.getPersonUuid())) {
+									alreadyParticipant = true;
+									break;
+								}
+							}
+							if (alreadyParticipant) {
+								throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
+							} else {
+								dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+								EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+								Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
+								ControllerProvider.getEventParticipantController().createEventParticipant(savedDto.getUuid(), doneConsumer);
+							}
 						}
 					});
 			}
