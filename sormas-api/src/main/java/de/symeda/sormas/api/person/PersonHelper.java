@@ -17,17 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.text.Normalizer;
+import java.util.Date;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.simmetrics.metrics.StringMetrics;
+
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.simmetrics.metrics.StringMetrics;
-
-import java.text.Normalizer;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 public final class PersonHelper {
 
@@ -35,7 +36,7 @@ public final class PersonHelper {
 		// Hide Utility Class Constructor
 	}
 
-	public static final double DEFAULT_NAME_SIMILARITY_THRESHOLD = 0.6D;
+	public static final double DEFAULT_NAME_SIMILARITY_THRESHOLD = 0.65D;
 
 	/**
 	 * Calculates the trigram distance between both names and returns true
