@@ -92,6 +92,7 @@ public interface Captions {
 	String AdditionalTest_urea = "AdditionalTest.urea";
 	String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	String additionalTestNewTest = "additionalTestNewTest";
+	String address = "address";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
 	String AggregateReport_healthFacility = "AggregateReport.healthFacility";
@@ -1062,6 +1063,7 @@ public interface Captions {
 	String PortHealthInfo_transitStopDetails5 = "PortHealthInfo.transitStopDetails5";
 	String PortHealthInfo_vesselDetails = "PortHealthInfo.vesselDetails";
 	String PortHealthInfo_vesselName = "PortHealthInfo.vesselName";
+	String postcode = "postcode";
 	String Prescription_additionalNotes = "Prescription.additionalNotes";
 	String Prescription_dose = "Prescription.dose";
 	String Prescription_drugIntakeDetails = "Prescription.drugIntakeDetails";
