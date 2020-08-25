@@ -1021,6 +1021,7 @@ public interface Captions {
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
+	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";

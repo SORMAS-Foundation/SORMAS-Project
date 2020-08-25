@@ -83,7 +83,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	private static final long serialVersionUID = -1L;
 
-	private static final String PERSON_UUID_LOC = "personUUIDLoc";
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
@@ -187,7 +186,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personInformationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
-		addField(PersonDto.UUID).setEnabled(false);
+		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
