@@ -3,6 +3,7 @@ package de.symeda.sormas.ui;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -110,6 +112,10 @@ public final class FacadeProviderMock extends FacadeProvider {
 		} else if (PointOfEntryFacade.class == clazz) {
 			return (P) bm.getBean(PointOfEntryFacadeEjbLocal.class);
 		}
+		if (CaseImportFacade.class == clazz) {
+			return (P) bm.getBean(CaseImportFacadeEjbLocal.class);
+		}
+
 		return null;
 	}
 }

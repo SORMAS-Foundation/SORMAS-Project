@@ -1,5 +1,24 @@
 package de.symeda.sormas.ui.contact.importer;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
+import org.simmetrics.metrics.StringMetrics;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -9,14 +28,13 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -24,20 +42,6 @@ import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.ContactImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.assertEquals;
 
 public class ContactImporterTest extends AbstractBeanTest {
 
@@ -77,8 +81,12 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 				List<SimilarPersonDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
-					if (PersonHelper
-						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName(), null)) {
+					if (areNamesSimilar(
+						newPerson.getFirstName(),
+						newPerson.getLastName(),
+						person.getFirstName(),
+						person.getLastName(),
+						ConfigFacadeEjb.DEFAULT_NAME_SIMILARITY_THRESHOLD)) {
 						entries.addAll(FacadeProvider.getPersonFacade().getSimilarPersonsByUuids(Collections.singletonList(person.getUuid())));
 					}
 				}
@@ -194,5 +202,41 @@ public class ContactImporterTest extends AbstractBeanTest {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Calculates the trigram distance between both names and returns true
+	 * if the similarity is high enough to consider them a possible match.
+	 */
+	protected static boolean areFullNamesSimilar(final String firstName, final String secondName, Double similarityThreshold) {
+		final String name = normalizeString(firstName);
+		final String otherName = normalizeString(secondName);
+		return StringMetrics.qGramsDistance().compare(name, otherName) >= (similarityThreshold);
+	}
+
+	/**
+	 * Calculates the trigram distance between firstName/lastname (also viceversa lastname/firstname) and otherFirstName/otherLastName,
+	 * returns true if the similarity is high enough to consider them a possible match.
+	 */
+	public static boolean areNamesSimilar(
+		final String firstName,
+		final String lastName,
+		final String otherFirstName,
+		final String otherLastName,
+		Double similarityThreshold) {
+		final String name = createFullName(firstName, lastName);
+		final String nameInverted = createFullName(lastName, firstName);
+		final String otherName = createFullName(otherFirstName, otherLastName);
+		return areFullNamesSimilar(name, otherName, similarityThreshold) || areFullNamesSimilar(nameInverted, otherName, similarityThreshold);
+	}
+
+	private static String createFullName(String firstName, String lastName) {
+		return firstName + StringUtils.SPACE + lastName;
+	}
+
+	public static String normalizeString(String str) {
+		String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD).toLowerCase();
+		Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		return pattern.matcher(nfdNormalizedString).replaceAll("");
 	}
 }

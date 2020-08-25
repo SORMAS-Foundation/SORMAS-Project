@@ -17,12 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -64,9 +68,6 @@ import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visualization.VisualizationFacade;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 public class FacadeProvider {
 
 	private static final String JNDI_PREFIX = "java:global/sormas-ear/sormas-backend/";
@@ -97,6 +98,10 @@ public class FacadeProvider {
 
 	public static CaseStatisticsFacade getCaseStatisticsFacade() {
 		return get().lookupEjbRemote(CaseStatisticsFacade.class);
+	}
+
+	public static CaseImportFacade getCaseImportFacade() {
+		return get().lookupEjbRemote(CaseImportFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {
