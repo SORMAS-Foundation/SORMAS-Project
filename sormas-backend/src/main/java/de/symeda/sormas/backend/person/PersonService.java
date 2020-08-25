@@ -253,11 +253,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Subquery<Long> caseJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<Case> caseRoot = caseJurisdictionSubQuery.from(Case.class);
 		caseJurisdictionSubQuery.select(caseRoot.get(Case.ID));
-		caseJurisdictionSubQuery
-			.where(
-				cb.and(
-					cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId),
-					caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
+		caseJurisdictionSubQuery.where(
+			cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
 		final Predicate isCaseInJurisdiction = cb.exists(caseJurisdictionSubQuery);
 
 		final Subquery<Long> contactJurisdictionSubQuery = cq.subquery(Long.class);
@@ -409,18 +406,13 @@ public class PersonService extends AbstractAdoService<Person> {
 			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
 			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
 
-			Expression<String> nameInvertedExpr = cb.concat(personFrom.get(Person.LAST_NAME), " ");
-			nameInvertedExpr = cb.concat(nameInvertedExpr, personFrom.get(Person.FIRST_NAME));
-
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
-			String nameInverted = criteria.getLastName() + " " + criteria.getFirstName();
 
-			double nameSimilarityThreshold = Math.max(0, configFacade.getNameSimilarityThreshold() - 0.2);
+			double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
 			filter = and(
 				cb,
 				filter,
-				cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold),
-				cb.gt(cb.function("similarity", double.class, nameInvertedExpr, cb.literal(nameInverted)), nameSimilarityThreshold));
+				cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
 		}
 
 		if (criteria.getSex() != null) {

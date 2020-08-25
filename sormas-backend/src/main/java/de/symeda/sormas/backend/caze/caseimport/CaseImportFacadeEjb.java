@@ -49,8 +49,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.region.AreaReferenceDto;
@@ -123,8 +121,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		boolean ignoreEmptyEntries)
 		throws InvalidColumnException {
 
-		Date methodDate = new Date();
-
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			return ImportLineResultDto.errorResult(I18nProperties.getValidationError(Validations.importLineTooLong));
@@ -144,16 +140,11 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 		PersonDto person = entities.getPerson();
 
-		Date currentDate = new Date();
 		if (isPersonSimilarToExisting(person)) {
-			LOGGER.info("Similarity checked {}s", (new Date().getTime() - currentDate.getTime()) / 1000d);
-
 			return ImportLineResultDto.duplicateResult(entities);
 		}
 
 		ImportLineResultDto<CaseImportEntities> result = saveImportedEntities(entities);
-
-		LOGGER.info("Imported in facade {}s", (new Date().getTime() - methodDate.getTime()) / 1000d);
 
 		return result;
 	}
@@ -663,18 +654,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			.passportNumber(referencePerson.getPassportNumber())
 			.nationalHealthId(referencePerson.getNationalHealthId());
 
-		return personFacade.getMatchingNameDtos(userFacade.getCurrentUser().toReference(), criteria)
-			.stream()
-			.filter(
-				dto -> PersonHelper.areNamesSimilar(
-					criteria.getFirstName(),
-					criteria.getLastName(),
-					dto.getFirstName(),
-					dto.getLastName(),
-					configFacade.getNameSimilarityThreshold()))
-			.map(PersonNameDto::getUuid)
-			.findAny()
-			.isPresent();
+		return personFacade.getMatchingNameDtos(userFacade.getCurrentUser().toReference(), criteria).stream().findAny().isPresent();
 	}
 
 	protected String buildEntityProperty(String[] entityPropertyPath) {

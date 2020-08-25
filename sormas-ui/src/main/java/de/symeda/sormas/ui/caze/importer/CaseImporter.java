@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.caze.importer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -107,13 +106,8 @@ public class CaseImporter extends DataImporter {
 		boolean firstLine)
 		throws IOException, InvalidColumnException, InterruptedException {
 
-		LOGGER.info("Start import CSV line");
-		Date methodDate = new Date();
-
-		Date currentDate = new Date();
 		ImportLineResultDto<CaseImportEntities> importResult =
 			caseImportFacade.importCaseData(values, entityClasses, entityProperties, entityPropertyPaths, !firstLine);
-		LOGGER.info("Imported in importer {}s", (new Date().getTime() - currentDate.getTime()) / 1000d);
 
 		if (importResult.isError()) {
 			writeImportError(values, importResult.getMessage());
@@ -227,8 +221,6 @@ public class CaseImporter extends DataImporter {
 				}
 			}
 		}
-
-		LOGGER.info("CSV line imported! {}s", (new Date().getTime() - methodDate.getTime()) / 1000d);
 
 		return ImportLineResult.SUCCESS;
 	}
