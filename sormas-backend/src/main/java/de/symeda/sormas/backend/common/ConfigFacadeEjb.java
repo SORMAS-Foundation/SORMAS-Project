@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -87,8 +88,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
-
-	public static final double DEFAULT_NAME_SIMILARITY_THRESHOLD = 0.65D;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -279,7 +278,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public double getNameSimilarityThreshold() {
-		return getDouble(NAME_SIMILARITY_THRESHOLD, DEFAULT_NAME_SIMILARITY_THRESHOLD);
+		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
 
 	@Override
