@@ -31,8 +31,6 @@ public class StatisticsFilterResidenceElement extends StatisticsFilterElement {
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
-//		HorizontalLayout regionDistrictCommunityLayout = new HorizontalLayout();
-
 		VerticalLayout firstColumnLayout = new VerticalLayout();
 		VerticalLayout secondColumnLayout = new VerticalLayout();
 
@@ -65,18 +63,8 @@ public class StatisticsFilterResidenceElement extends StatisticsFilterElement {
 
 		firstColumnLayout.addComponent(postcodeElement);
 
-//		regionDistrictCommunityLayout.addComponent(firstColumnLayout);
-//		regionDistrictCommunityLayout.addComponent(secondColumnLayout);
-
-//		HorizontalLayout cityPostcodeAddressLayout = new HorizontalLayout();
-//
-//		cityPostcodeAddressLayout.addComponent(new VerticalLayout(cityElement));
-//		cityPostcodeAddressLayout.addComponent(new VerticalLayout(postcodeElement));
-
 		addComponent(firstColumnLayout);
 		addComponent(secondColumnLayout);
-
-//		addComponent(new VerticalLayout(regionDistrictCommunityLayout, cityPostcodeAddressLayout));
 
 		regionElement.setValueChangeListener(e -> {
 			districtElement.updateDropdownContent();
