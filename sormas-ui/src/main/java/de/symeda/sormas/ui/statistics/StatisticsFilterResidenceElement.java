@@ -25,14 +25,13 @@ public class StatisticsFilterResidenceElement extends StatisticsFilterElement {
 	StatisticsFilterValuesElement communityElement;
 	StatisticsFilterSimpleTextElement cityElement;
 	StatisticsFilterSimpleTextElement postcodeElement;
-	StatisticsFilterSimpleTextElement addressElement;
 
 	public StatisticsFilterResidenceElement(int rowIndex) {
 		setSpacing(true);
 		addStyleName(CssStyles.LAYOUT_MINIMAL);
 		setWidth(100, Unit.PERCENTAGE);
 
-		HorizontalLayout regionDistrictCommunityLayout = new HorizontalLayout();
+//		HorizontalLayout regionDistrictCommunityLayout = new HorizontalLayout();
 
 		VerticalLayout firstColumnLayout = new VerticalLayout();
 		VerticalLayout secondColumnLayout = new VerticalLayout();
@@ -57,23 +56,27 @@ public class StatisticsFilterResidenceElement extends StatisticsFilterElement {
 			rowIndex);
 		cityElement = new StatisticsFilterSimpleTextElement(I18nProperties.getCaption(Captions.city), rowIndex);
 		postcodeElement = new StatisticsFilterSimpleTextElement(I18nProperties.getCaption(Captions.postcode), rowIndex);
-		addressElement = new StatisticsFilterSimpleTextElement(I18nProperties.getCaption(Captions.address), rowIndex);
 
 		firstColumnLayout.addComponent(regionElement);
 		secondColumnLayout.addComponent(districtElement);
 
 		firstColumnLayout.addComponent(communityElement);
+		secondColumnLayout.addComponent(cityElement);
 
-		regionDistrictCommunityLayout.addComponent(firstColumnLayout);
-		regionDistrictCommunityLayout.addComponent(secondColumnLayout);
+		firstColumnLayout.addComponent(postcodeElement);
 
-		HorizontalLayout cityPostcodeAddressLayout = new HorizontalLayout();
+//		regionDistrictCommunityLayout.addComponent(firstColumnLayout);
+//		regionDistrictCommunityLayout.addComponent(secondColumnLayout);
 
-		cityPostcodeAddressLayout.addComponent(new VerticalLayout(cityElement));
-		cityPostcodeAddressLayout.addComponent(new VerticalLayout(postcodeElement));
-		cityPostcodeAddressLayout.addComponent(new VerticalLayout(addressElement));
+//		HorizontalLayout cityPostcodeAddressLayout = new HorizontalLayout();
+//
+//		cityPostcodeAddressLayout.addComponent(new VerticalLayout(cityElement));
+//		cityPostcodeAddressLayout.addComponent(new VerticalLayout(postcodeElement));
 
-		addComponent(new VerticalLayout(regionDistrictCommunityLayout, cityPostcodeAddressLayout));
+		addComponent(firstColumnLayout);
+		addComponent(secondColumnLayout);
+
+//		addComponent(new VerticalLayout(regionDistrictCommunityLayout, cityPostcodeAddressLayout));
 
 		regionElement.setValueChangeListener(e -> {
 			districtElement.updateDropdownContent();
@@ -134,10 +137,6 @@ public class StatisticsFilterResidenceElement extends StatisticsFilterElement {
 
 	public String getPostcode() {
 		return postcodeElement.getSelectedValues().get(0).getStringValue();
-	}
-
-	public String getAddress() {
-		return addressElement.getSelectedValues().get(0).getStringValue();
 	}
 
 	@Override

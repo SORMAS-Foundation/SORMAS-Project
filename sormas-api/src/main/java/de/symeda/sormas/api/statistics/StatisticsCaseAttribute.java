@@ -56,12 +56,12 @@ public enum StatisticsCaseAttribute {
 	PLACE_OF_RESIDENCE(StatisticsCaseAttributeGroup.PERSON,
 		true,
 		true,
+		false,
 		StatisticsCaseSubAttribute.PERSON_REGION,
 		StatisticsCaseSubAttribute.PERSON_DISTRICT,
 		StatisticsCaseSubAttribute.PERSON_COMMUNITY,
 		StatisticsCaseSubAttribute.PERSON_CITY,
-		StatisticsCaseSubAttribute.PERSON_POSTCODE,
-		StatisticsCaseSubAttribute.PERSON_ADDRESS),
+		StatisticsCaseSubAttribute.PERSON_POSTCODE),
 
 	SEX(StatisticsCaseAttributeGroup.PERSON, true, true),
 	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false, true),
@@ -78,6 +78,7 @@ public enum StatisticsCaseAttribute {
 	private final StatisticsCaseAttributeGroup attributeGroup;
 	private final boolean sortByCaption;
 	private final boolean unknownValueAllowed;
+	private boolean userForVisualisation = true;
 	private final StatisticsCaseSubAttribute[] subAttributes;
 
 	StatisticsCaseAttribute(
@@ -92,12 +93,30 @@ public enum StatisticsCaseAttribute {
 		this.subAttributes = subAttributes;
 	}
 
+	StatisticsCaseAttribute(
+		StatisticsCaseAttributeGroup attributeGroup,
+		boolean sortByCaption,
+		boolean unknownValueAllowed,
+		boolean userForVisualisation,
+		StatisticsCaseSubAttribute... subAttributes) {
+
+		this.userForVisualisation = userForVisualisation;
+		this.attributeGroup = attributeGroup;
+		this.sortByCaption = sortByCaption;
+		this.unknownValueAllowed = unknownValueAllowed;
+		this.subAttributes = subAttributes;
+	}
+
 	public StatisticsCaseAttributeGroup getAttributeGroup() {
 		return attributeGroup;
 	}
 
 	public boolean isSortByCaption() {
 		return sortByCaption;
+	}
+
+	public boolean isUserForVisualisation() {
+		return userForVisualisation;
 	}
 
 	public boolean isUnknownValueAllowed() {

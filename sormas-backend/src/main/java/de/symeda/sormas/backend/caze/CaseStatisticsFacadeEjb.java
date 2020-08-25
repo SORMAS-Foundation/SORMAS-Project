@@ -347,8 +347,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			|| caseCriteria.getPersonDistricts() != null
 			|| caseCriteria.getPersonCommunities() != null
 			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null
-			|| caseCriteria.getPersonAddress() != null) {
+			|| caseCriteria.getPersonPostcode() != null) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Person.TABLE_NAME)
 				.append(" ON ")
@@ -366,8 +365,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			|| caseCriteria.getPersonDistricts() != null
 			|| caseCriteria.getPersonCommunities() != null
 			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null
-			|| caseCriteria.getPersonAddress() != null) {
+			|| caseCriteria.getPersonPostcode() != null) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Location.TABLE_NAME)
 				.append(" ON ")
@@ -610,9 +608,6 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 		if (StringUtils.isNotEmpty(caseCriteria.getPersonPostcode())) {
 			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.POSTAL_CODE, caseCriteria.getPersonPostcode());
-		}
-		if (StringUtils.isNotEmpty(caseCriteria.getPersonAddress())) {
-			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.ADDRESS, caseCriteria.getPersonAddress());
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getSexes()) || caseCriteria.isSexUnknown() != null) {
