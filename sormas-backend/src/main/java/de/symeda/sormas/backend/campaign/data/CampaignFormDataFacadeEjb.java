@@ -281,17 +281,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			result = em.createQuery(cq).getResultList();
 		}
 
-//		if (criteria.getCampaignFormMeta() != null) {
-//			ObjectMapper mapper = new ObjectMapper();
-//			result.forEach(r -> {
-//				try {
-//					r.setFormValuesList(Arrays.asList(mapper.readValue(r.getFormValues(), CampaignFormDataEntry[].class)));
-//				} catch (IOException e) {
-//					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - UUID: " + r.getUuid());
-//				}
-//			});
-//		}
-
 		return result;
 	}
 
@@ -308,8 +297,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			// - int: as-is
 			// - yes-no/other: CampaignDiagramSeries.fieldValue should be defined -> count the number of form data that match the value
 
-			// TODO use parameters for the WHERE part
-			// TODO add district and community
 			//@formatter:off
 			final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
 			final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();

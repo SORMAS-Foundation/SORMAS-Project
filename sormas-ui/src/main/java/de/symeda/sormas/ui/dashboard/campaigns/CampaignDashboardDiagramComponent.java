@@ -111,15 +111,14 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		hcjs.append("series: [");
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeriesList()) {
-			String seriesKey = series.getFieldId(); // TODO
+			String seriesKey = series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
 				continue;
 
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
 			Iterator<CampaignDiagramDataDto> iterator = values.iterator();
-			final CampaignDiagramDataDto campaignDiagramDataDto = iterator.next();
-			final String fieldName = iterator.hasNext() ? campaignDiagramDataDto.getFieldCaption() : seriesKey;
+			final String fieldName = iterator.hasNext() ? iterator.next().getFieldCaption() : seriesKey;
 			hcjs.append("{ name:'" + fieldName + "', data: [");
 			for (Object axisKey : axisKeys) {
 				if (seriesData.containsKey(axisKey)) {
