@@ -203,7 +203,7 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.LAZY)
 	@Enumerated(EnumType.STRING)
 	@CollectionTable(name = TABLE_NAME_USERROLES,
 		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
