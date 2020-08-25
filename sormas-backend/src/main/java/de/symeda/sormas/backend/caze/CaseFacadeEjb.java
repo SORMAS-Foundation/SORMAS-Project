@@ -492,7 +492,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getPerson().get(Person.BURIAL_CONDUCTOR), joins.getPerson().get(Person.BURIAL_PLACE_DESCRIPTION),
 				// address
 				joins.getPersonAddressRegion().get(Region.NAME), joins.getPersonAddressDistrict().get(District.NAME),
-				joins.getPersonAddress().get(Location.CITY), joins.getPersonAddress().get(Location.ADDRESS), joins.getPersonAddress().get(Location.POSTAL_CODE),
+				joins.getPersonAddress().get(Location.CITY), joins.getPersonAddress().get(Location.STREET), joins.getPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION), joins.getPersonAddress().get(Location.POSTAL_CODE),
 				// phone
 				joins.getPerson().get(Person.PHONE), joins.getPerson().get(Person.PHONE_OWNER), joins.getPerson().get(Person.EDUCATION_TYPE),
 				joins.getPerson().get(Person.EDUCATION_DETAILS), joins.getPerson().get(Person.OCCUPATION_TYPE),

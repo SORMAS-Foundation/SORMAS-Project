@@ -225,7 +225,7 @@ public class UserFacadeEjb implements UserFacade {
 					expression = district.get(District.NAME);
 					break;
 				case UserDto.ADDRESS:
-					expression = address.get(Location.ADDRESS);
+					expression = address.get(Location.REGION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

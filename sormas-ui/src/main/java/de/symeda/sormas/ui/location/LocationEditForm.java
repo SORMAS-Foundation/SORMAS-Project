@@ -18,12 +18,10 @@
 package de.symeda.sormas.ui.location;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -39,7 +37,6 @@ import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -67,10 +64,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private static final String HTML_LAYOUT =
 		//XXX #1620 are the divs needed?
 		divs(
-			fluidRow(
-				loc(LocationDto.ADDRESS),
-				//XXX #1620 are the divs needed?
-				divs(fluidRow(fluidColumn(6, 0, locs(LocationDto.POSTAL_CODE, LocationDto.AREA_TYPE)), fluidColumn(6, 0, loc(LocationDto.CITY))))),
+			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
+			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRow(
 				loc(LocationDto.DETAILS),
@@ -105,9 +100,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	@Override
 	protected void addFields() {
-		TextArea addressField = addField(LocationDto.ADDRESS, TextArea.class);
-		addressField.setRows(5);
 
+		addField(LocationDto.STREET, TextField.class);
+		addField(LocationDto.HOUSE_NUMBER, TextField.class);
+		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
 		addField(LocationDto.DETAILS, TextField.class);
 		addField(LocationDto.CITY, TextField.class);
 		addField(LocationDto.POSTAL_CODE, TextField.class);
@@ -116,12 +112,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
-        TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
+		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
 		tfLongitude.setConverter(new StringToAngularLocationConverter());
-        TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 		tfAccuracy.setConverter(new StringToAngularLocationConverter());
 
-        ComboBox region = addInfrastructureField(LocationDto.REGION);
+		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
@@ -206,11 +202,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private void triggerGeocoding() {
 
-		String address = getConvertedValue(LocationDto.ADDRESS);
+		String street = getConvertedValue(LocationDto.STREET);
+		String houseNumber = getConvertedValue(LocationDto.HOUSE_NUMBER);
 		String postalCode = getConvertedValue(LocationDto.POSTAL_CODE);
 		String city = getConvertedValue(LocationDto.CITY);
 
-		GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(address, postalCode, city);
+		GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(street, houseNumber, postalCode, city);
 
 		if (latLon != null) {
 			setConvertedValue(LocationDto.LATITUDE, latLon.getLat());

@@ -880,14 +880,16 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEventToCase = "linkEventToCase";
 	String Location = "Location";
-	String Location_address = "Location.address";
+	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_areaType = "Location.areaType";
 	String Location_details = "Location.details";
+	String Location_houseNumber = "Location.houseNumber";
 	String Location_latitude = "Location.latitude";
 	String Location_latLon = "Location.latLon";
 	String Location_latLonAccuracy = "Location.latLonAccuracy";
 	String Location_longitude = "Location.longitude";
 	String Location_postalCode = "Location.postalCode";
+	String Location_street = "Location.street";
 	String Login_doLogIn = "Login.doLogIn";
 	String Login_login = "Login.login";
 	String Login_password = "Login.password";

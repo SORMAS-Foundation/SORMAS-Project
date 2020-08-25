@@ -44,9 +44,19 @@
             android:id="@+id/main_content">
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/location_address"
+                android:id="@+id/location_street"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.address}" />
+                app:value="@={data.street}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_houseNumber"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.houseNumber}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_additionalInformation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.additionalInformation}" />
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_details"

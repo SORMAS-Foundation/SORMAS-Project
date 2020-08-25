@@ -611,9 +611,6 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		if (StringUtils.isNotEmpty(caseCriteria.getPersonPostcode())) {
 			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.POSTAL_CODE, caseCriteria.getPersonPostcode());
 		}
-		if (StringUtils.isNotEmpty(caseCriteria.getPersonAddress())) {
-			extendFilterBuilderWithLike(caseFilterBuilder, Location.TABLE_NAME, Location.ADDRESS, caseCriteria.getPersonAddress());
-		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getSexes()) || caseCriteria.isSexUnknown() != null) {
 			if (caseFilterBuilder.length() > 0) {

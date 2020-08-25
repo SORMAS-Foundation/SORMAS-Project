@@ -5010,4 +5010,14 @@ UPDATE cases SET facilitytype = null WHERE healthfacility_id ISNULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (242, 'Fix problems caused by #1637');
 
+-- 2020-08-25 Person address refinement #2562
+ALTER TABLE location RENAME COLUMN address TO street;
+ALTER TABLE location_history RENAME COLUMN address TO street;
+ALTER TABLE location ADD COLUMN housenumber varchar(255);
+ALTER TABLE location_history ADD COLUMN housenumber varchar(255);
+ALTER TABLE location ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE location_history ADD COLUMN additionalinformation varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (243, 'Person address refinement #1637');
+
 -- *** Insert new sql commands BEFORE this line ***

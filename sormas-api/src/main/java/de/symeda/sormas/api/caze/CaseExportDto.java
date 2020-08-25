@@ -151,7 +151,13 @@ public class CaseExportDto implements Serializable {
 	private String city;
 	@PersonalData
 	@SensitiveData
-	private String address;
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
@@ -226,7 +232,7 @@ public class CaseExportDto implements Serializable {
 						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
-						 String addressRegion, String addressDistrict, String city, String address, String postalCode,
+						 String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, String occupationFacility,
 						 String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
@@ -283,7 +289,9 @@ public class CaseExportDto implements Serializable {
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
 		this.city = city;
-		this.address = address;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
@@ -805,13 +813,33 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(LocationDto.ADDRESS)
+	@ExportProperty(LocationDto.STREET)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
 	}
 
 	@Order(60)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(LocationDto.HOUSE_NUMBER)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	@Order(61)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(LocationDto.ADDITIONAL_INFORMATION)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	@Order(62)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -821,7 +849,7 @@ public class CaseExportDto implements Serializable {
 		return postalCode;
 	}
 
-	@Order(61)
+	@Order(63)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -831,7 +859,7 @@ public class CaseExportDto implements Serializable {
 		return addressGpsCoordinates;
 	}
 
-	@Order(62)
+	@Order(64)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -841,7 +869,7 @@ public class CaseExportDto implements Serializable {
 		return phone;
 	}
 
-	@Order(63)
+	@Order(65)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -855,7 +883,7 @@ public class CaseExportDto implements Serializable {
 		this.educationType = educationType;
 	}
 
-	@Order(64)
+	@Order(66)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })

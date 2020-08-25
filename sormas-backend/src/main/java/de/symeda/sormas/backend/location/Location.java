@@ -44,7 +44,6 @@ public class Location extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "location";
 
-	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
@@ -54,8 +53,10 @@ public class Location extends AbstractDomainObject {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String POSTAL_CODE = "postalCode";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 
-	private String address;
 	private String details;
 	private String city;
 	private AreaType areaType;
@@ -69,15 +70,9 @@ public class Location extends AbstractDomainObject {
 	private Float latLonAccuracy;
 
 	private String postalCode;
-
-	@Column(length = COLUMN_LENGTH_BIG)
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	private String street;
+	private String houseNumber;
+	private String additionalInformation;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
@@ -166,6 +161,33 @@ public class Location extends AbstractDomainObject {
 		this.postalCode = postalCode;
 	}
 
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
 	public String buildGpsCoordinatesCaption() {
 		if (latitude == null && longitude == null) {
 			return "";
@@ -185,6 +207,8 @@ public class Location extends AbstractDomainObject {
 			district != null ? district.getName() : null,
 			community != null ? community.getName() : null,
 			city,
-			address);
+			street,
+			houseNumber,
+			additionalInformation);
 	}
 }

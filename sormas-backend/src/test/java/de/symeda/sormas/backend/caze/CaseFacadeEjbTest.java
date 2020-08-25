@@ -806,7 +806,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-		cazePerson.getAddress().setAddress("new Address");
+		cazePerson.getAddress().setStreet("new Street");
+		cazePerson.getAddress().setHouseNumber("new Number");
+		cazePerson.getAddress().setAdditionalInformation("new Information");
 		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());

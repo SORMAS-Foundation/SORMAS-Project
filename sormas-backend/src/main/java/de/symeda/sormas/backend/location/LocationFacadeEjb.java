@@ -61,7 +61,6 @@ public class LocationFacadeEjb implements LocationFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
@@ -75,6 +74,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
 		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
 
 		return target;
 	}
@@ -88,7 +90,6 @@ public class LocationFacadeEjb implements LocationFacade {
 		LocationDto target = new LocationDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
@@ -102,6 +103,9 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
 		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
 
 		return target;
 	}
