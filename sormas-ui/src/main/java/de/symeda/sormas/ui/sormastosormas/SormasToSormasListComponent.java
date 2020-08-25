@@ -174,10 +174,11 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		layout.setStyleName(CssStyles.VSPACE_3);
 
-		Label healthDepartmentLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSentBy) + " " + sormasSource.getHealthDepartment());
+		Label healthDepartmentLabel =
+			new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + sormasSource.getHealthDepartment());
 		healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
 		layout.addComponent(healthDepartmentLabel);
-		layout.addComponent(new Label(sormasSource.getSenderName()));
+		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + sormasSource.getSenderName()));
 
 		if (sormasSource.getSenderEmail() != null) {
 			layout.addComponent(new Label(sormasSource.getSenderEmail()));

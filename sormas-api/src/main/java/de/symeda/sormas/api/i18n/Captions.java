@@ -796,6 +796,7 @@ public interface Captions {
 	String exportSamples = "exportSamples";
 	String exportSelectSormasData = "exportSelectSormasData";
 	String exportSormasData = "exportSormasData";
+	String facility = "facility";
 	String Facility_city = "Facility.city";
 	String Facility_community = "Facility.community";
 	String Facility_district = "Facility.district";
@@ -1025,6 +1026,7 @@ public interface Captions {
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
 	String personSelect = "personSelect";
+	String pointOfEntry = "pointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_externalID = "PointOfEntry.externalID";
 	String PointOfEntry_latitude = "PointOfEntry.latitude";
@@ -1232,7 +1234,7 @@ public interface Captions {
 	String SormasToSormasOptions_healthDepartment = "SormasToSormasOptions.healthDepartment";
 	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
-	String sormasToSormasSentBy = "sormasToSormasSentBy";
+	String sormasToSormasSentFrom = "sormasToSormasSentFrom";
 	String sormasToSormasShare = "sormasToSormasShare";
 	String sormasToSormasSharedBy = "sormasToSormasSharedBy";
 	String sormasToSormasSharedWith = "sormasToSormasSharedWith";

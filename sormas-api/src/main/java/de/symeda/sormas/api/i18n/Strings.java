@@ -159,6 +159,7 @@ public interface Strings {
 	String errorProblemOccurred = "errorProblemOccurred";
 	String errorSetFeverRequired = "errorSetFeverRequired";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasInfrastructure = "errorSormasToSormasInfrastructure";
 	String errorSormasToSormasResult = "errorSormasToSormasResult";
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";

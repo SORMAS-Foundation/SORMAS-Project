@@ -55,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -65,6 +66,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -233,7 +235,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			resultList = em.createQuery(cq).getResultList();
 		}
 
-		return resultList.stream().map(this::toDto).collect(Collectors.toList());
+		return resultList.stream().map(this::toSormasToSormasShareInfoDto).collect(Collectors.toList());
 	}
 
 	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer) {
@@ -295,21 +297,19 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		caze.setPerson(person.toReference());
 		caze.setReportingUser(userService.getCurrentUser().toReference());
 
-		RegionReferenceDto region = mapRegion(caze.getRegion());
-		caze.setRegion(region);
+		InfrastructureData infrastructure = loadLocalInfrastructure(
+			caze.getRegion(),
+			caze.getDistrict(),
+			caze.getCommunity(),
+			caze.getFacilityType(),
+			caze.getHealthFacility(),
+			caze.getPointOfEntry());
 
-		DistrictReferenceDto district = mapDistrict(caze.getDistrict(), region);
-		caze.setDistrict(district);
-
-		CommunityReferenceDto community = mapCommunity(caze.getCommunity(), district);
-		caze.setCommunity(community);
-
-		caze.setHealthFacility(mapHealthFacility(caze.getHealthFacility(), district, community, caze.getFacilityType()));
-
-		if (caze.getPointOfEntry() != null) {
-			caze.setPointOfEntry(
-				pointOfEntryFacade.getByName(caze.getPointOfEntry().getCaption(), district, false).stream().findFirst().orElse(null));
-		}
+		caze.setRegion(infrastructure.region);
+		caze.setDistrict(infrastructure.district);
+		caze.setCommunity(infrastructure.community);
+		caze.setHealthFacility(infrastructure.facility);
+		caze.setPointOfEntry(infrastructure.pointOfEntry);
 
 		// init uuids
 		caze.getSormasToSormasSource().setUuid(DataHelper.createUuid());
@@ -319,16 +319,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
 				ph.setUuid(DataHelper.createUuid());
 
-				RegionReferenceDto phRegion = mapRegion(ph.getRegion());
-				ph.setRegion(phRegion);
+				InfrastructureData phInfrastructure =
+					loadLocalInfrastructure(ph.getRegion(), ph.getDistrict(), ph.getCommunity(), FacilityType.HOSPITAL, ph.getHealthFacility(), null);
 
-				DistrictReferenceDto phDistrict = mapDistrict(ph.getDistrict(), phRegion);
-				ph.setDistrict(phDistrict);
-
-				CommunityReferenceDto phCommunity = mapCommunity(ph.getCommunity(), phDistrict);
-				ph.setCommunity(phCommunity);
-
-				ph.setHealthFacility(mapHealthFacility(ph.getHealthFacility(), phDistrict, phCommunity, FacilityType.HOSPITAL));
+				ph.setRegion(phInfrastructure.region);
+				ph.setDistrict(phInfrastructure.district);
+				ph.setCommunity(phInfrastructure.community);
+				ph.setHealthFacility(phInfrastructure.facility);
 			});
 		}
 
@@ -352,25 +349,21 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			}
 		}
 
-		if (caze.getMaternalHistory() != null) {
-			caze.getMaternalHistory().setUuid(DataHelper.createUuid());
+		MaternalHistoryDto maternalHistory = caze.getMaternalHistory();
+		if (maternalHistory != null) {
+			maternalHistory.setUuid(DataHelper.createUuid());
 
-			RegionReferenceDto rasExposureRegion = null;
-			if (caze.getMaternalHistory().getRashExposureRegion() != null) {
-				rasExposureRegion = mapRegion(caze.getMaternalHistory().getRashExposureRegion());
-				caze.getMaternalHistory().setRashExposureRegion(rasExposureRegion);
-			}
+			InfrastructureData rashExposureInfrastructure = loadLocalInfrastructure(
+				maternalHistory.getRashExposureRegion(),
+				maternalHistory.getRashExposureDistrict(),
+				maternalHistory.getRashExposureCommunity(),
+				null,
+				null,
+				null);
 
-			DistrictReferenceDto rasExposureDistrict = null;
-			if (caze.getMaternalHistory().getRashExposureDistrict() != null) {
-				rasExposureDistrict = mapDistrict(caze.getMaternalHistory().getRashExposureDistrict(), rasExposureRegion);
-				caze.getMaternalHistory().setRashExposureDistrict(rasExposureDistrict);
-			}
-
-			if (caze.getMaternalHistory().getRashExposureCommunity() != null) {
-				CommunityReferenceDto rashExposureCommunity = mapCommunity(caze.getMaternalHistory().getRashExposureCommunity(), rasExposureDistrict);
-				caze.getMaternalHistory().setRashExposureCommunity(rashExposureCommunity);
-			}
+			maternalHistory.setRashExposureRegion(rashExposureInfrastructure.region);
+			maternalHistory.setRashExposureDistrict(rashExposureInfrastructure.district);
+			maternalHistory.setRashExposureCommunity(rashExposureInfrastructure.community);
 		}
 
 		if (caze.getPortHealthInfo() != null) {
@@ -401,14 +394,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		contact.setPerson(person.toReference());
 		contact.setReportingUser(userService.getCurrentUser().toReference());
 
-		RegionReferenceDto region = mapRegion(contact.getRegion());
-		contact.setRegion(region);
+		InfrastructureData infrastructure =
+			loadLocalInfrastructure(contact.getRegion(), contact.getDistrict(), contact.getCommunity(), null, null, null);
 
-		DistrictReferenceDto district = mapDistrict(contact.getDistrict(), region);
-		contact.setDistrict(district);
-
-		CommunityReferenceDto community = mapCommunity(contact.getCommunity(), district);
-		contact.setCommunity(community);
+		contact.setRegion(infrastructure.region);
+		contact.setDistrict(infrastructure.district);
+		contact.setCommunity(infrastructure.community);
 
 		// init uuids
 		contact.getSormasToSormasSource().setUuid(DataHelper.createUuid());
@@ -428,55 +419,90 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		LocationDto address = person.getAddress();
 		address.setUuid(DataHelper.createUuid());
 
-		RegionReferenceDto addressRegion = null;
-		if (address.getRegion() != null) {
-			addressRegion = mapRegion(address.getRegion());
-			address.setRegion(addressRegion);
-		}
+		InfrastructureData infrastructure =
+			loadLocalInfrastructure(address.getRegion(), address.getDistrict(), address.getCommunity(), null, null, null);
 
-		DistrictReferenceDto addressDistrict = null;
-		if (address.getDistrict() != null) {
-			addressDistrict = mapDistrict(address.getDistrict(), addressRegion);
-			address.setDistrict(addressDistrict);
-		}
-
-		address.setCommunity(mapCommunity(address.getCommunity(), addressDistrict));
+		address.setRegion(infrastructure.region);
+		address.setDistrict(infrastructure.district);
+		address.setCommunity(infrastructure.community);
 	}
 
-	private FacilityReferenceDto mapHealthFacility(
-		FacilityReferenceDto facility,
+	private InfrastructureData loadLocalInfrastructure(
+		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community,
-		FacilityType facilityType) {
-		if (facility == null) {
-			return null;
+		FacilityType facilityType,
+		FacilityReferenceDto facility,
+		PointOfEntryReferenceDto pointOfEntry) {
+
+		InfrastructureData infrastructureData = new InfrastructureData();
+		List<String> unmatchedFields = new ArrayList<>();
+
+		RegionReferenceDto localRegion = null;
+		if (region != null) {
+			String regionName = region.getCaption();
+			localRegion = regionFacade.getByName(regionName, false).stream().findFirst().orElse(null);
+
+			if (localRegion == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.region) + ": " + regionName);
+			} else {
+				infrastructureData.region = localRegion;
+			}
 		}
 
-		return facilityFacade.getByNameAndType(facility.getCaption(), district, community, facilityType, false).stream().findFirst().orElse(null);
-	}
-
-	private CommunityReferenceDto mapCommunity(CommunityReferenceDto community, DistrictReferenceDto district) {
-		if (community == null) {
-			return null;
+		DistrictReferenceDto localDistrict = null;
+		if (district != null) {
+			String districtName = district.getCaption();
+			localDistrict = districtFacade.getByName(districtName, localRegion, false).stream().findFirst().orElse(null);
+			if (localDistrict == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.district) + ": " + districtName);
+			} else {
+				infrastructureData.district = localDistrict;
+			}
 		}
 
-		return communityFacade.getByName(community.getCaption(), district, false).stream().findFirst().orElse(null);
-	}
+		CommunityReferenceDto localCommunity = null;
+		if (community != null) {
+			String communityName = community.getCaption();
+			localCommunity = communityFacade.getByName(communityName, localDistrict, false).stream().findFirst().orElse(null);
 
-	private DistrictReferenceDto mapDistrict(DistrictReferenceDto district, RegionReferenceDto region) {
-		if (district == null) {
-			return null;
+			if (localCommunity == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.community) + ": " + communityName);
+			} else {
+				infrastructureData.community = localCommunity;
+			}
 		}
 
-		return districtFacade.getByName(district.getCaption(), region, false).stream().findFirst().orElse(null);
-	}
+		if (facility != null) {
+			String facilityName = facility.getCaption();
+			FacilityReferenceDto localFacility =
+				facilityFacade.getByNameAndType(facilityName, localDistrict, localCommunity, facilityType, false).stream().findFirst().orElse(null);
 
-	private RegionReferenceDto mapRegion(RegionReferenceDto region) {
-		if (region == null) {
-			return null;
+			if (localFacility == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.facility) + ": " + facilityName);
+			} else {
+				infrastructureData.facility = localFacility;
+			}
 		}
 
-		return regionFacade.getByName(region.getCaption(), false).stream().findFirst().orElse(null);
+		if (pointOfEntry != null) {
+			String pointOfEntryName = pointOfEntry.getCaption();
+			PointOfEntryReferenceDto localPointOfEntry =
+				pointOfEntryFacade.getByName(pointOfEntryName, localDistrict, false).stream().findFirst().orElse(null);
+
+			if (localPointOfEntry == null) {
+				unmatchedFields.add(I18nProperties.getCaption(Captions.pointOfEntry) + ": " + pointOfEntryName);
+			} else {
+				infrastructureData.pointOfEntry = localPointOfEntry;
+			}
+		}
+
+		if (unmatchedFields.size() > 0) {
+			throw new ValidationRuntimeException(
+				String.format(I18nProperties.getString(Strings.errorSormasToSormasInfrastructure), String.join(",", unmatchedFields)));
+		}
+
+		return infrastructureData;
 	}
 
 	private void validateCase(CaseDataDto caze) throws ValidationRuntimeException {
@@ -634,7 +660,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return target;
 	}
 
-	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
+	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
 		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
 
 		if (source.getCaze() != null) {
@@ -658,5 +684,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@Stateless
 	public static class SormasToSormasFacadeEjbLocal extends SormasToSormasFacadeEjb {
 
+	}
+
+	private static class InfrastructureData {
+
+		private RegionReferenceDto region;
+		private DistrictReferenceDto district;
+		private CommunityReferenceDto community;
+		private FacilityReferenceDto facility;
+		private PointOfEntryReferenceDto pointOfEntry;
 	}
 }

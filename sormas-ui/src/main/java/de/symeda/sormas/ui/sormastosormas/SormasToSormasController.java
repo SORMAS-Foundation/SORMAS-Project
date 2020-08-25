@@ -50,6 +50,7 @@ public class SormasToSormasController {
 
 		CommitDiscardWrapperComponent<SormasToSormasOptionsForm> optionsCommitDiscard =
 			new CommitDiscardWrapperComponent<>(optionsForm, optionsForm.getFieldGroup());
+		optionsCommitDiscard.getCommitButton().setCaption(I18nProperties.getCaption(Captions.sormasToSormasShare));
 		optionsCommitDiscard.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
 		Window optionsPopup = VaadinUiUtil.showPopupWindow(optionsCommitDiscard, I18nProperties.getCaption(Captions.sormasToSormasDialogTitle));
