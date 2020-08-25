@@ -78,7 +78,7 @@ public enum StatisticsCaseAttribute {
 	private final StatisticsCaseAttributeGroup attributeGroup;
 	private final boolean sortByCaption;
 	private final boolean unknownValueAllowed;
-	private boolean userForVisualisation = true;
+	private boolean usedForVisualisation = true;
 	private final StatisticsCaseSubAttribute[] subAttributes;
 
 	StatisticsCaseAttribute(
@@ -97,10 +97,10 @@ public enum StatisticsCaseAttribute {
 		StatisticsCaseAttributeGroup attributeGroup,
 		boolean sortByCaption,
 		boolean unknownValueAllowed,
-		boolean userForVisualisation,
+		boolean usedForVisualisation,
 		StatisticsCaseSubAttribute... subAttributes) {
 
-		this.userForVisualisation = userForVisualisation;
+		this.usedForVisualisation = usedForVisualisation;
 		this.attributeGroup = attributeGroup;
 		this.sortByCaption = sortByCaption;
 		this.unknownValueAllowed = unknownValueAllowed;
@@ -115,8 +115,8 @@ public enum StatisticsCaseAttribute {
 		return sortByCaption;
 	}
 
-	public boolean isUserForVisualisation() {
-		return userForVisualisation;
+	public boolean isUsedForVisualisation() {
+		return usedForVisualisation;
 	}
 
 	public boolean isUnknownValueAllowed() {

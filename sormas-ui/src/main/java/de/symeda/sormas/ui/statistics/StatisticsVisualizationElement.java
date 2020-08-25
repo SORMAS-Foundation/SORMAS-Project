@@ -82,7 +82,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 
 			// Add attributes belonging to the current group
 			for (StatisticsCaseAttribute attribute : attributeGroup.getAttributes()) {
-				if (attribute.isUserForVisualisation()) {
+				if (attribute.isUsedForVisualisation()) {
 					Command attributeCommand = selectedItem -> {
 						resetSubAttributeDropdown();
 						this.attribute = attribute;
