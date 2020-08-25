@@ -23,6 +23,7 @@ import javax.naming.NamingException;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
@@ -270,6 +271,10 @@ public class FacadeProvider {
 
 	public static CampaignFacade getCampaignFacade() {
 		return get().lookupEjbRemote(CampaignFacade.class);
+	}
+
+	public static CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return get().lookupEjbRemote(CampaignDiagramDefinitionFacade.class);
 	}
 
 	public static CampaignFormMetaFacade getCampaignFormMetaFacade() {

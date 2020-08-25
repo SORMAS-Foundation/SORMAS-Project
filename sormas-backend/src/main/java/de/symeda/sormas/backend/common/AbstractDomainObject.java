@@ -31,9 +31,21 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 
+/**
+ * Note: The hibernate-types article suggests to use JsonBinaryType for Postgres, but doesn't explain why.
+ * Since JsonBinaryType does not work with H2, we are using JsonStringType instead
+ */
+@TypeDefs({
+	@TypeDef(name = "json", typeClass = JsonBinaryType.class),
+	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
