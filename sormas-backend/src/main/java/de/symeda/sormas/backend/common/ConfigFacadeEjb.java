@@ -17,24 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.region.GeoLatLon;
-import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.api.utils.VersionHelper;
+import java.util.Locale;
+import java.util.Properties;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.Locale;
-import java.util.Properties;
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.region.GeoLatLon;
+import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.InfoProvider;
+import de.symeda.sormas.api.utils.VersionHelper;
 
 /**
  * Provides the application configuration settings
@@ -86,6 +87,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+
+	public static final double DEFAULT_NAME_SIMILARITY_THRESHOLD = 0.65D;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -276,7 +279,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public double getNameSimilarityThreshold() {
-		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
+		return getDouble(NAME_SIMILARITY_THRESHOLD, DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
 
 	@Override

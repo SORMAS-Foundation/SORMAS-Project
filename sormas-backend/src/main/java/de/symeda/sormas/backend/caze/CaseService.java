@@ -806,39 +806,39 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
-			filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), currentUser);
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), currentUser));
+			filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
+			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
+			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
 
 			switch (jurisdictionLevel) {
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), region));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), district));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case HEALTH_FACILITY:
 				final Facility healthFacility = currentUser.getHealthFacility();
 				if (healthFacility != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), healthFacility));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), community));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			case POINT_OF_ENTRY:
 				final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 				if (pointOfEntry != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), pointOfEntry));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
 				}
 				break;
 			case LABORATORY:
