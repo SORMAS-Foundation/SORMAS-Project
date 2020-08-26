@@ -135,6 +135,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                             oneOfTwoCol(PersonDto.BURIAL_PLACE_DESCRIPTION)
                     ) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
+					fluidRowLocs(PersonDto.EXTERNAL_ID, "") +
+
 
 
 					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
@@ -261,7 +263,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.PHONE_OWNER,
 			PersonDto.EMAIL_ADDRESS,
 			PersonDto.PASSPORT_NUMBER,
-			PersonDto.NATIONAL_HEALTH_ID);
+			PersonDto.NATIONAL_HEALTH_ID,
+			PersonDto.EXTERNAL_ID);
 
 		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
@@ -326,6 +329,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.CAUSE_OF_DEATH,
 			PersonDto.CAUSE_OF_DEATH_DETAILS,
 			PersonDto.CAUSE_OF_DEATH_DISEASE);
+		setVisible(isGermanServer(), PersonDto.EXTERNAL_ID);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
