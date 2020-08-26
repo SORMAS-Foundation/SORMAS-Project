@@ -17,6 +17,7 @@ package de.symeda.sormas.api.campaign.data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
@@ -24,6 +25,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
+	public static final String FORM = "form";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -33,14 +35,26 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	private String uuid;
 	private String campaign;
+	private String form;
+	private List<CampaignFormDataEntry> formValues;
 	private String region;
 	private String district;
 	private String community;
 	private Date formDate;
 
-	public CampaignFormDataIndexDto(String uuid, String campaign, String region, String district, String community, Date formDate) {
+	public CampaignFormDataIndexDto(
+		String uuid,
+		String campaign,
+		String form,
+		Object formValues,
+		String region,
+		String district,
+		String community,
+		Date formDate) {
 		this.uuid = uuid;
 		this.campaign = campaign;
+		this.form = form;
+		this.formValues = (List<CampaignFormDataEntry>) formValues;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -61,6 +75,22 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setCampaign(String campaign) {
 		this.campaign = campaign;
+	}
+
+	public String getForm() {
+		return form;
+	}
+
+	public void setForm(String form) {
+		this.form = form;
+	}
+
+	public List<CampaignFormDataEntry> getFormValues() {
+		return formValues;
+	}
+
+	public void setFormValues(List<CampaignFormDataEntry> formValues) {
+		this.formValues = formValues;
 	}
 
 	public String getRegion() {

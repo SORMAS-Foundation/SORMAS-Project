@@ -147,6 +147,8 @@ public class FormBindingAdapters {
 			view.setVisibility(GONE);
 		} else if (o instanceof SymptomState && SymptomState.NO.equals(o)) {
 			view.setVisibility(GONE);
+		} else {
+			view.setVisibility(View.VISIBLE);
 		}
 	}
 

@@ -28,18 +28,27 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.AbstractTableField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
 public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 
 	private static final String PERIOD = Captions.EpiDataTravel_travelPeriod;
+
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+
+	public EpiDataTravelsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(fieldAccessCheckers);
+		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
+	}
 
 	@Override
 	public Class<EpiDataTravelDto> getEntryType() {
@@ -56,7 +65,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataTravelDto travel = (EpiDataTravelDto) itemId;
 				if (travel.getTravelDateFrom() == null && travel.getTravelDateTo() == null) {
-					return I18nProperties.getString(Strings.unknown);
+					return I18nProperties.getString(Strings.notSpecified);
 				} else {
 					StringBuilder periodBuilder = new StringBuilder();
 					periodBuilder.append(travel.getTravelDateFrom() != null ? DateFormatHelper.formatDate(travel.getTravelDateFrom()) : "?");
@@ -106,7 +115,7 @@ public class EpiDataTravelsField extends AbstractTableField<EpiDataTravelDto> {
 			entry.setUuid(DataHelper.createUuid());
 		}
 
-		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm();
+		EpiDataTravelEditForm editForm = new EpiDataTravelEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		editForm.setValue(entry);
 
 		final CommitDiscardWrapperComponent<EpiDataTravelEditForm> editView = new CommitDiscardWrapperComponent<EpiDataTravelEditForm>(

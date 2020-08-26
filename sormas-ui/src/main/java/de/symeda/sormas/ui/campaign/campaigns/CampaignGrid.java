@@ -20,9 +20,10 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
+import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
@@ -40,6 +41,8 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteria> {
 
 	private static final long serialVersionUID = -7922340233873282326L;
+
+	private static final String VIEW_FORMS_BTN_ID = "viewForms";
 
 	@SuppressWarnings("unchecked")
 	public CampaignGrid(CampaignCriteria criteria) {
@@ -63,7 +66,18 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			ControllerProvider.getCampaignController().createOrEditCampaign(e.getUuid());
 		});
 
-		setColumns(EDIT_BTN_ID, CampaignIndexDto.UUID, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		Column<CampaignIndexDto, String> viewFormsColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
+		viewFormsColumn.setId(VIEW_FORMS_BTN_ID);
+		viewFormsColumn.setSortable(false);
+		viewFormsColumn.setWidth(25);
+
+		setColumns(
+			EDIT_BTN_ID,
+			VIEW_FORMS_BTN_ID,
+			CampaignIndexDto.UUID,
+			CampaignIndexDto.NAME,
+			CampaignIndexDto.START_DATE,
+			CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, String>) getColumn(CampaignIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
@@ -76,7 +90,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		}
 
 		addItemClickListener(
-			new ShowDetailsListener<>(CampaignIndexDto.UUID, e -> ControllerProvider.getCampaignController().navigateToCampaignData(e.getUuid())));
+			new ShowDetailsListener<>(VIEW_FORMS_BTN_ID, e -> ControllerProvider.getCampaignController().navigateToCampaignData(e.getUuid())));
 	}
 
 	public void setLazyDataProvider() {

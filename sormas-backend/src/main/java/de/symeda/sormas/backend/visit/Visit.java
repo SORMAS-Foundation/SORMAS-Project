@@ -41,6 +41,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.person.Person;
@@ -66,10 +67,12 @@ public class Visit extends AbstractDomainObject {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String CONTACTS = "contacts";
+	public static final String CAZE = "caze";
 
 	private Person person;
 	private Disease disease;
 	private Set<Contact> contacts = new HashSet<>();
+	private Case caze;
 	private Date visitDateTime;
 	private User visitUser;
 	private VisitStatus visitStatus;
@@ -99,6 +102,15 @@ public class Visit extends AbstractDomainObject {
 
 	public void setContacts(Set<Contact> contacts) {
 		this.contacts = contacts;
+	}
+
+	@ManyToOne
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

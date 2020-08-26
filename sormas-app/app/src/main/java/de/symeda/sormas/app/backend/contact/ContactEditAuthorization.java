@@ -11,7 +11,7 @@ public class ContactEditAuthorization {
 	public static boolean isContactEditAllowed(Contact contact) {
 		User user = ConfigProvider.getUser();
 
-		return ContactJurisdictionHelper.isInJurisdiction(
+		return ContactJurisdictionHelper.isInJurisdictionOrOwned(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
 			JurisdictionHelper.createContactJurisdictionDto(contact));

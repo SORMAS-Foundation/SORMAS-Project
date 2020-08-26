@@ -51,9 +51,15 @@
 
 * Get the latest SORMAS build by downloading the ZIP archive from the latest release on GitHub: https://github.com/hzi-braunschweig/SORMAS-Open/releases/latest 
 * **Linux**:
-  * Unzip the archive and copy/upload its contents to **/root/deploy/sormas/$(date +%F)**
-  * ``cd /root/deploy/sormas/$(date +%F)``
-  * Make the setup script executable with ``chmod +x server-setup.sh``
+  * Unzip the archive, copy/upload its contents to **/root/deploy/sormas/$(date +%F)** and make the setup script executable.
+        
+		cd /root/deploy/sormas
+		SORMAS_VERSION=1.y.z
+		wget https://github.com/hzi-braunschweig/SORMAS-Project/releases/download/v${SORMAS_VERSION}/sormas_${SORMAS_VERSION}.zip
+		unzip sormas_${SORMAS_VERSION}.zip
+		mv deploy/ $(date +%F)
+		rm sormas_${SORMAS_VERSION}.zip
+		chmod +x $(date +%F)/server-setup.sh
 * **Windows**:
   * Download & install Git for Windows. This will provide a bash emulation that you can use to run the setup script: https://gitforwindows.org/
   * Unzip the ZIP archive (e.g. into you download directory)
@@ -230,6 +236,12 @@ This can be conveniently accomplished by executing the R setup script from the S
 	
 * Follow the instructions of the script.
 
+## SORMAS to SORMAS Certificate Setup
+
+To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
+up the certificate and the truststore. Please see the [related guide](GUIDE_CREATE_CERTIFICATE.md) for detailed instructions regarding
+SORMAS to SORMAS setup.
+<br/>
 
 ## Troubleshooting
 

@@ -132,7 +132,7 @@ public class DashboardMapComponent extends VerticalLayout {
 
 	// Others
 	private CaseMeasure caseMeasure = CaseMeasure.CASE_COUNT;
-	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS;
+	private MapCaseDisplayMode mapCaseDisplayMode = MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS;
 	private BigDecimal districtValuesLowerQuartile;
 	private BigDecimal districtValuesMedian;
 	private BigDecimal districtValuesUpperQuartile;
@@ -682,9 +682,8 @@ public class DashboardMapComponent extends VerticalLayout {
 
 		// Cases
 		if (showCases) {
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
-				|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
-				Label facilitiesKeyLabel = new Label(I18nProperties.getCaption(Captions.dashboardHealthFacilities));
+			if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY || mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
+				Label facilitiesKeyLabel = new Label(I18nProperties.getCaption(Captions.dashboardFacilities));
 				CssStyles.style(facilitiesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
 				legendLayout.addComponent(facilitiesKeyLabel);
 
@@ -710,8 +709,7 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			Label casesKeyLabel = new Label(I18nProperties.getString(Strings.entityCases));
-			if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY
-				|| mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
+			if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY || mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_3);
 			} else {
 				CssStyles.style(casesKeyLabel, CssStyles.H4, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
@@ -1157,7 +1155,7 @@ public class DashboardMapComponent extends VerticalLayout {
 				if (FacilityDto.NONE_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
 					|| FacilityDto.OTHER_FACILITY_UUID.equals(caze.getHealthFacilityUuid())
 					|| !hasFacilityGps) {
-					if (mapCaseDisplayMode == MapCaseDisplayMode.HEALTH_FACILITY_OR_CASE_ADDRESS) {
+					if (mapCaseDisplayMode == MapCaseDisplayMode.FACILITY_OR_CASE_ADDRESS) {
 						if (!hasCaseGps) {
 							continue;
 						}

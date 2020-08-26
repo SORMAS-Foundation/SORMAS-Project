@@ -38,9 +38,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldAccessHelper;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -107,8 +111,16 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
-		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		for (Column<EventIndexDto, ?> column : getColumns()) {
+			String columnId = column.getId();
+			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, columnId.toString(), column.getCaption()));
+			column.setStyleGenerator(
+				FieldAccessColumnStyleGenerator.withCheckers(
+					getBeanType(),
+					INFORMATION_SOURCE.equals(columnId) ? EventIndexDto.SRC_FIRST_NAME : columnId,
+					EventJurisdictionHelper::isInJurisdictionOrOwned,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(EventIndexDto.UUID, e -> ControllerProvider.getEventController().navigateToData(e.getUuid())));
@@ -136,13 +148,27 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 	}
 
 	private String buildSourcePersonText(EventIndexDto event) {
-		return (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " " + (event.getSrcLastName() != null ? event.getSrcLastName() : "")
-			+ (event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : "");
+		String srcFirstName = event.getSrcFirstName();
+		String srcLastName = event.getSrcLastName();
+		String srcTelNo = event.getSrcTelNo();
+
+		if (FieldAccessHelper.isAllInaccessible(srcFirstName, srcLastName, srcTelNo)) {
+			return I18nProperties.getCaption(Captions.inaccessibleValue);
+		}
+
+		return (srcFirstName != null ? srcFirstName : "") + " " + (srcLastName != null ? srcLastName : "")
+			+ (srcTelNo != null && !srcTelNo.isEmpty() ? " (" + srcTelNo + ")" : "");
 	}
 
 	private String buildSourceMediaText(EventIndexDto event) {
-		return (event.getSrcMediaWebsite() != null ? event.getSrcMediaWebsite() : "") + " "
-			+ (event.getSrcMediaName() != null ? "(" + event.getSrcMediaName() + ")" : "");
+		String srcMediaWebsite = event.getSrcMediaWebsite();
+		String srcMediaName = event.getSrcMediaName();
+
+		if (FieldAccessHelper.isAllInaccessible(srcMediaWebsite, srcMediaName)) {
+			return I18nProperties.getCaption(Captions.inaccessibleValue);
+		}
+
+		return (srcMediaWebsite != null ? srcMediaWebsite : "") + " " + (srcMediaName != null ? "(" + srcMediaName + ")" : "");
 	}
 
 	public void reload() {

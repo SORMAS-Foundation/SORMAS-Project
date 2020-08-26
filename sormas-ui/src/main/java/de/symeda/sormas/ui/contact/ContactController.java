@@ -253,11 +253,11 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode) {
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode, boolean isInJurisdiction) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode);
+		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isInJurisdiction);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
@@ -477,6 +477,13 @@ public class ContactController {
 		VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectSourceCase));
 	}
 
+	/**
+	 * Opens a window that contains an iFrame with the symptom journal website specified in the properties.
+	 * The steps to build that iFrame are:
+	 * 1. Request an authentication token based on the stored client ID and secret
+	 * 2. Build an HTML page containing a form with the auth token and some personal details as parameters
+	 * 3. The form is automatically submitted and replaced by the iFrame
+	 */
 	public void openSymptomJournalWindow(PersonDto person) {
 		String authToken = getSymptomJournalAuthToken();
 		BrowserFrame frame = new BrowserFrame(null, new StreamResource(() -> {
@@ -536,6 +543,9 @@ public class ContactController {
 		}
 	}
 
+	/**
+	 * @return An HTML page containing a form that is automatically submitted in order to display the symptom journal iFrame
+	 */
 	private byte[] createSymptomJournalForm(String formUrl, Map<String, String> inputs) {
 		Document document;
 		try (InputStream in = getClass().getResourceAsStream("/symptomJournal.html")) {
@@ -552,10 +562,10 @@ public class ContactController {
 		return document.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
-	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, ViewMode viewMode) {
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, boolean inJuridiction) {
 
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
-		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), viewMode);
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), inJuridiction);
 		epiDataForm.setValue(contact.getEpiData());
 
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(

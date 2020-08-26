@@ -17,6 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.util.Locale;
+import java.util.Properties;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.person.PersonHelper;
@@ -25,16 +37,6 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.Locale;
-import java.util.Properties;
 
 /**
  * Provides the application configuration settings

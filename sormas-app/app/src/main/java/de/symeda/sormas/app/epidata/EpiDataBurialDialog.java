@@ -27,19 +27,22 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.AbstractDialog;
+import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogEpidBurialEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
-public class EpiDataBurialDialog extends AbstractDialog {
+public class EpiDataBurialDialog extends FormDialog {
 
 	public static final String TAG = EpiDataBurialDialog.class.getSimpleName();
 
@@ -55,7 +58,8 @@ public class EpiDataBurialDialog extends AbstractDialog {
 			R.layout.dialog_epid_burial_edit_layout,
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_burial,
-			-1);
+			-1,
+			AppFieldAccessCheckers.withCheckers(!epiDataBurial.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		this.data = epiDataBurial;
 	}
@@ -94,6 +98,7 @@ public class EpiDataBurialDialog extends AbstractDialog {
 		this.contentBinding.epiDataBurialBurialDateFrom.initializeDateField(getFragmentManager());
 		this.contentBinding.epiDataBurialBurialDateTo.initializeDateField(getFragmentManager());
 
+		setFieldVisibilitiesAndAccesses(EpiDataBurialDto.class, contentBinding.mainContent);
 		EpiDataValidator.initializeEpiDataBurialValidation(contentBinding);
 
 		setUpControlListeners();

@@ -34,6 +34,7 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
 	private String nameCityLike;
+	private FacilityTypeGroup typeGroup;
 	private FacilityType type;
 	private EntityRelevanceStatus relevanceStatus;
 
@@ -62,6 +63,16 @@ public class FacilityCriteria extends BaseCriteria implements Serializable, Clon
 
 	public CommunityReferenceDto getCommunity() {
 		return community;
+	}
+
+	public FacilityCriteria typeGroup(FacilityTypeGroup typeGroup) {
+		this.typeGroup = typeGroup;
+		return this;
+	}
+
+	@IgnoreForUrl
+	public FacilityTypeGroup getTypeGroup() {
+		return typeGroup;
 	}
 
 	public FacilityCriteria type(FacilityType type) {

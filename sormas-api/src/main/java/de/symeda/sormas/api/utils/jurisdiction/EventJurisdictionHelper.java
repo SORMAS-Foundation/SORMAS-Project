@@ -6,7 +6,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventJurisdictionHelper {
 
-	public static boolean isInJurisdiction(
+	public static boolean isInJurisdictionOrOwned(
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		EventJurisdictionDto eventJurisdiction) {

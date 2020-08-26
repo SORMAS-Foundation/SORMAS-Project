@@ -6,7 +6,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class SampleJurisdictionHelper {
 
-	public static boolean isInJurisdiction(
+	public static boolean isInJurisdictionOrOwned(
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		SampleJurisdictionDto sampleJurisdiction) {
@@ -27,11 +27,12 @@ public class SampleJurisdictionHelper {
 		}
 
 		if (sampleJurisdiction.getCaseJurisdiction() != null) {
-			return CaseJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getCaseJurisdiction());
+			return CaseJurisdictionHelper.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getCaseJurisdiction());
 		}
 
 		if (sampleJurisdiction.getContactJurisdiction() != null) {
-			return ContactJurisdictionHelper.isInJurisdiction(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getContactJurisdiction());
+			return ContactJurisdictionHelper
+				.isInJurisdictionOrOwned(jurisdictionLevel, userJurisdiction, sampleJurisdiction.getContactJurisdiction());
 		}
 
 		return false;

@@ -74,6 +74,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -100,6 +102,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		}
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {

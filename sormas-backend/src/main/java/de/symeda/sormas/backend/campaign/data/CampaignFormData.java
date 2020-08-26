@@ -20,33 +20,29 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
-import de.symeda.sormas.api.campaign.data.CampaignFormValue;
-import de.symeda.sormas.backend.campaign.Campaign;
-import de.symeda.sormas.backend.campaign.form.CampaignForm;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Type;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+
+import org.hibernate.annotations.Type;
+
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.backend.campaign.Campaign;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "campaignFormData")
 @Audited
@@ -54,8 +50,9 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignFormData";
 
+	public static final String FORM_VALUES = "formValues";
 	public static final String CAMPAIGN = "campaign";
-	public static final String CAMPAIGN_FORM = "campaignForm";
+	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
@@ -64,56 +61,25 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
-	private List<CampaignFormValue> formValuesList;
-	private String formValues;
+	private List<CampaignFormDataEntry> formValues;
 	private Campaign campaign;
-	private CampaignForm campaignForm;
+	private CampaignFormMeta campaignFormMeta;
 	private Date formDate;
 	private Region region;
 	private District district;
 	private Community community;
+	private User creatingUser;
 	private boolean archived;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	public String getFormValues() {
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignFormDataEntry> getFormValues() {
 		return formValues;
 	}
 
-	public void setFormValues(String formValues) {
+	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
-	}
-
-	@Transient
-	public List<CampaignFormValue> getFormValuesList() {
-		if (formValuesList == null) {
-			if (StringUtils.isBlank(formValues)) {
-				formValuesList = new ArrayList<>();
-			} else {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormValue[].class));
-				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormValue> - ID: " + getId());
-				}
-			}
-		}
-		return formValuesList;
-	}
-
-	public void setFormValuesList(List<CampaignFormValue> formValuesList) {
-		this.formValuesList = formValuesList;
-
-		if (this.formValuesList == null) {
-			formValues = null;
-		}
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			formValues = mapper.writeValueAsString(formValuesList);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Content of formValuesList could not be parsed to JSON String - ID: " + getId());
-		}
 	}
 
 	@ManyToOne()
@@ -128,12 +94,12 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	@ManyToOne()
 	@JoinColumn(nullable = false)
-	public CampaignForm getCampaignForm() {
-		return campaignForm;
+	public CampaignFormMeta getCampaignFormMeta() {
+		return campaignFormMeta;
 	}
 
-	public void setCampaignForm(CampaignForm campaignForm) {
-		this.campaignForm = campaignForm;
+	public void setCampaignFormMeta(CampaignFormMeta campaignFormMeta) {
+		this.campaignFormMeta = campaignFormMeta;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -170,6 +136,16 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public void setCommunity(Community community) {
 		this.community = community;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public User getCreatingUser() {
+		return creatingUser;
+	}
+
+	public void setCreatingUser(User creatingUser) {
+		this.creatingUser = creatingUser;
 	}
 
 	@Column

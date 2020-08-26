@@ -1,7 +1,7 @@
-CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData
-disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,region,district,community,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.directContactConfirmedCase
-EVD,,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-30,20.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES
-,Import Test,Two,MALE,19,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-31,21.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES
-EVD,Import Test,Three,ERROR,20,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-32,22.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES
-EVD,Import Test,Four,FEMALE,21,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-33,23.11.2018,Abia,,Urban Ward 2,Anelechi Hospital,NO,YES,YES
-EVD,Import Test,Five,FEMALE,22,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-34,24.11.2018,Abia,Non-existing District,Urban Ward 2,Anelechi Hospital,NO,YES,YES
+CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData,CaseData
+disease,person.firstName,person.lastName,person.sex,person.approximateAge,person.approximateAgeType,person.presentCondition,person.phone,person.address.city,epidNumber,reportDate,region,district,community,healthFacility,hospitalization.admittedToHealthFacility,symptoms.fever,epiData.directContactConfirmedCase,followUpStatus,followUpComment,followUpUntil
+EVD,,One,MALE,18,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-30,20.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,,,
+,Import Test,Two,MALE,19,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-31,21.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,,,
+EVD,Import Test,Three,ERROR,20,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-32,22.11.2018,Abia,Umuahia North,Urban Ward 2,Anelechi Hospital,NO,YES,YES,,,
+EVD,Import Test,Four,FEMALE,21,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-33,23.11.2018,Abia,,Urban Ward 2,Anelechi Hospital,NO,YES,YES,,,
+EVD,Import Test,Five,FEMALE,22,YEARS,ALIVE,12345,One City,ABC-DEF-GHI-19-34,24.11.2018,Abia,Non-existing District,Urban Ward 2,Anelechi Hospital,NO,YES,YES,,,

@@ -19,8 +19,10 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
@@ -46,8 +48,9 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 			fluidRowLocs(MaternalHistoryDto.RASH_EXPOSURE_REGION, MaternalHistoryDto.RASH_EXPOSURE_DISTRICT, MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
 	//@formatter:on
 
-	public MaternalHistoryForm(ViewMode viewMode) {
-		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX);
+	public MaternalHistoryForm(ViewMode viewMode, boolean isInJurisdiction) {
+		super(MaternalHistoryDto.class, MaternalHistoryDto.I18N_PREFIX, true, new FieldVisibilityCheckers(),
+			UiFieldAccessCheckers.withCheckers(isInJurisdiction, FieldHelper.createSensitiveDataFieldAccessChecker()));
 		this.viewMode = viewMode;
 	}
 
@@ -60,34 +63,26 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 
 		TextField tfChildrenNumber = addField(MaternalHistoryDto.CHILDREN_NUMBER, TextField.class);
 		tfChildrenNumber.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfChildrenNumber.getCaption()));
-		removeMaxLengthValidators(tfChildrenNumber);
-		TextField tfAgeAtBirth = addField(MaternalHistoryDto.AGE_AT_BIRTH, TextField.class);
+        TextField tfAgeAtBirth = addField(MaternalHistoryDto.AGE_AT_BIRTH, TextField.class);
 		tfAgeAtBirth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfAgeAtBirth.getCaption()));
-		removeMaxLengthValidators(tfAgeAtBirth);
-		TextField tfConjunctivitisMonth = addField(MaternalHistoryDto.CONJUNCTIVITIS_MONTH, TextField.class);
+        TextField tfConjunctivitisMonth = addField(MaternalHistoryDto.CONJUNCTIVITIS_MONTH, TextField.class);
 		tfConjunctivitisMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfConjunctivitisMonth.getCaption()));
-		removeMaxLengthValidators(tfConjunctivitisMonth);
-		TextField tfMaculopapularRashMonth = addField(MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH, TextField.class);
+        TextField tfMaculopapularRashMonth = addField(MaternalHistoryDto.MACULOPAPULAR_RASH_MONTH, TextField.class);
 		tfMaculopapularRashMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfMaculopapularRashMonth.getCaption()));
-		removeMaxLengthValidators(tfMaculopapularRashMonth);
-		TextField tfSwollenLymphsMonth = addField(MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH, TextField.class);
+        TextField tfSwollenLymphsMonth = addField(MaternalHistoryDto.SWOLLEN_LYMPHS_MONTH, TextField.class);
 		tfSwollenLymphsMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfSwollenLymphsMonth.getCaption()));
-		removeMaxLengthValidators(tfSwollenLymphsMonth);
-		TextField tfArthralgiaArthritisMonth = addField(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH, TextField.class);
+        TextField tfArthralgiaArthritisMonth = addField(MaternalHistoryDto.ARTHRALGIA_ARTHRITIS_MONTH, TextField.class);
 		tfArthralgiaArthritisMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, tfArthralgiaArthritisMonth.getCaption()));
-		removeMaxLengthValidators(tfArthralgiaArthritisMonth);
-		TextField otherComplicationsMonth = addField(MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, TextField.class);
+        TextField otherComplicationsMonth = addField(MaternalHistoryDto.OTHER_COMPLICATIONS_MONTH, TextField.class);
 		otherComplicationsMonth
 			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, otherComplicationsMonth.getCaption()));
-		removeMaxLengthValidators(otherComplicationsMonth);
-		TextField rashExposureMonth = addField(MaternalHistoryDto.RASH_EXPOSURE_MONTH, TextField.class);
+        TextField rashExposureMonth = addField(MaternalHistoryDto.RASH_EXPOSURE_MONTH, TextField.class);
 		rashExposureMonth.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, rashExposureMonth.getCaption()));
-		removeMaxLengthValidators(rashExposureMonth);
 
-		addFields(
+        addFields(
 			MaternalHistoryDto.CONJUNCTIVITIS_ONSET,
 			MaternalHistoryDto.MACULOPAPULAR_RASH_ONSET,
 			MaternalHistoryDto.SWOLLEN_LYMPHS_ONSET,
@@ -108,6 +103,8 @@ public class MaternalHistoryForm extends AbstractEditForm<MaternalHistoryDto> {
 		ComboBox cbRashExposureRegion = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_REGION);
 		ComboBox cbRashExposureDistrict = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_DISTRICT);
 		ComboBox cbRashExposureCommunity = addInfrastructureField(MaternalHistoryDto.RASH_EXPOSURE_COMMUNITY);
+
+		initializeAccessAndAllowedAccesses();
 
 		cbRashExposureRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();

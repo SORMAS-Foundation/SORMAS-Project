@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.backend.event;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import com.j256.ormlite.stmt.Where;
 import android.util.Log;
 
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -139,13 +141,54 @@ public class EventDao extends AbstractAdoDao<Event> {
 
 	private QueryBuilder<Event, Long> buildQueryBuilder(EventCriteria criteria) throws SQLException {
 		QueryBuilder<Event, Long> queryBuilder = queryBuilder();
-		Where<Event, Long> where = queryBuilder.where().eq(AbstractDomainObject.SNAPSHOT, false);
+		List<Where<Event, Long>> whereStatements = new ArrayList<>();
+		Where<Event, Long> where = queryBuilder.where();
+		whereStatements.add(where.eq(AbstractDomainObject.SNAPSHOT, false));
 
-		if (criteria.getEventStatus() != null) {
-			where.and().eq(Event.EVENT_STATUS, criteria.getEventStatus());
+		if (criteria.getDisease() != null) {
+
+			queryBuilder.distinct();
+			QueryBuilder<EventParticipant, Long> eventParticipantQueryBuilder = DatabaseHelper.getEventParticipantDao().queryBuilder();
+
+			QueryBuilder<Case, Long> caseLongQueryBuilder = DatabaseHelper.getCaseDao().queryBuilder();
+			eventParticipantQueryBuilder = eventParticipantQueryBuilder.join(
+				EventParticipant.RESULTING_CASE_UUID,
+				Case.UUID,
+				caseLongQueryBuilder,
+				QueryBuilder.JoinType.LEFT,
+				QueryBuilder.JoinWhereOperation.AND);
+			queryBuilder.leftJoin(eventParticipantQueryBuilder);
+
+			whereStatements.add(
+				where.or(
+					where.and(
+						where.eq(Event.DISEASE, criteria.getDisease()),
+						where.raw(Case.TABLE_NAME + "." + Case.UUID + "!= '" + criteria.getCaze().getUuid() + "'")),
+					where.and(where.raw(Case.TABLE_NAME + "." + Case.UUID + " IS NULL"), where.eq(Event.DISEASE, criteria.getDisease()))));
+
+		} else {
+			if (criteria.getCaze() != null) {
+				QueryBuilder<EventParticipant, Long> eventParticipantQueryBuilder = DatabaseHelper.getEventParticipantDao().queryBuilder();
+
+				QueryBuilder<Case, Long> caseLongQueryBuilder = DatabaseHelper.getCaseDao().queryBuilder();
+				eventParticipantQueryBuilder =
+					eventParticipantQueryBuilder.join(EventParticipant.RESULTING_CASE_UUID, Case.UUID, caseLongQueryBuilder);
+				queryBuilder.leftJoin(eventParticipantQueryBuilder);
+
+				whereStatements.add(where.raw(Case.TABLE_NAME + "." + Case.UUID + "= '" + criteria.getCaze().getUuid() + "'"));
+
+			} else {
+
+				if (criteria.getEventStatus() != null) {
+					whereStatements.add(where.eq(Event.EVENT_STATUS, criteria.getEventStatus()));
+				}
+			}
 		}
 
-		queryBuilder.setWhere(where);
+		if (!whereStatements.isEmpty()) {
+			Where<Event, Long> whereStatement = where.and(whereStatements.size());
+			queryBuilder.setWhere(whereStatement);
+		}
 		return queryBuilder;
 	}
 }

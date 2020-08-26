@@ -22,15 +22,19 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class PersonDto extends PseudonymizableDto {
 
@@ -94,6 +98,8 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String NATIONAL_HEALTH_ID = "nationalHealthId";
 	public static final String EMAIL_ADDRESS = "emailAddress";
+	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
+	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -136,12 +142,18 @@ public class PersonDto extends PseudonymizableDto {
 	private DistrictReferenceDto placeOfBirthDistrict;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private CommunityReferenceDto placeOfBirthCommunity;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	private FacilityType placeOfBirthFacilityType;
+	@Diseases({
+		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private FacilityReferenceDto placeOfBirthFacility;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private String placeOfBirthFacilityDetails;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -155,6 +167,7 @@ public class PersonDto extends PseudonymizableDto {
 	private Date deathDate;
 	private CauseOfDeath causeOfDeath;
 	private Disease causeOfDeathDisease;
+	@SensitiveData
 	private String causeOfDeathDetails;
 	@Diseases({
 		Disease.AFP,
@@ -175,6 +188,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.CORONAVIRUS,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String deathPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -197,6 +211,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@SensitiveData
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -209,23 +224,38 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	private BurialConductor burialConductor;
+	@SensitiveData
 	private String phone;
+	@SensitiveData
 	private String phoneOwner;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private LocationDto address;
+	@SensitiveData
 	private String emailAddress;
 
 	private EducationType educationType;
+	@SensitiveData
 	private String educationDetails;
 
 	private OccupationType occupationType;
+	@SensitiveData
 	private String occupationDetails;
 	private RegionReferenceDto occupationRegion;
 	private DistrictReferenceDto occupationDistrict;
+	@SensitiveData
 	private CommunityReferenceDto occupationCommunity;
+	@SensitiveData
+	private FacilityType occupationFacilityType;
+	@SensitiveData
 	private FacilityReferenceDto occupationFacility;
+	@SensitiveData
 	private String occupationFacilityDetails;
+	@SensitiveData
 	private String generalPractitionerDetails;
+	@SensitiveData
 	private String passportNumber;
+	@SensitiveData
 	private String nationalHealthId;
 
 	public Integer getBirthdateDD() {
@@ -594,6 +624,22 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setNationalHealthId(String nationalHealthId) {
 		this.nationalHealthId = nationalHealthId;
+	}
+
+	public FacilityType getOccupationFacilityType() {
+		return occupationFacilityType;
+	}
+
+	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
+		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	public FacilityType getPlaceOfBirthFacilityType() {
+		return placeOfBirthFacilityType;
+	}
+
+	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
+		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
 	}
 
 	@Override

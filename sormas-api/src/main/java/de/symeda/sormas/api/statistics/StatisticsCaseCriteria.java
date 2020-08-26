@@ -73,6 +73,12 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<DistrictReferenceDto> districts;
 	private List<CommunityReferenceDto> communities;
 	private List<FacilityReferenceDto> healthFacilities;
+	private List<RegionReferenceDto> personRegions;
+	private List<DistrictReferenceDto> personDistricts;
+	private List<CommunityReferenceDto> personCommunities;
+	private String personCity;
+	private String personPostcode;
+	private String personAddress;
 	private List<UserRole> reportingUserRoles;
 
 	public List<Year> getOnsetYears() {
@@ -189,6 +195,30 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public List<FacilityReferenceDto> getHealthFacilities() {
 		return healthFacilities;
+	}
+
+	public List<RegionReferenceDto> getPersonRegions() {
+		return personRegions;
+	}
+
+	public List<DistrictReferenceDto> getPersonDistricts() {
+		return personDistricts;
+	}
+
+	public List<CommunityReferenceDto> getPersonCommunities() {
+		return personCommunities;
+	}
+
+	public String getPersonCity() {
+		return personCity;
+	}
+
+	public String getPersonPostcode() {
+		return personPostcode;
+	}
+
+	public String getPersonAddress() {
+		return personAddress;
 	}
 
 	public List<UserRole> getReportingUserRoles() {
@@ -380,6 +410,36 @@ public class StatisticsCaseCriteria implements Serializable {
 		return this;
 	}
 
+	public StatisticsCaseCriteria personRegions(List<RegionReferenceDto> personRegions) {
+		this.personRegions = personRegions;
+		return this;
+	}
+
+	public StatisticsCaseCriteria personDistricts(List<DistrictReferenceDto> personDistricts) {
+		this.personDistricts = personDistricts;
+		return this;
+	}
+
+	public StatisticsCaseCriteria personCommunities(List<CommunityReferenceDto> personCommunities) {
+		this.personCommunities = personCommunities;
+		return this;
+	}
+
+	public StatisticsCaseCriteria setPersonCity(String personCity) {
+		this.personCity = personCity;
+		return this;
+	}
+
+	public StatisticsCaseCriteria setPersonPostcode(String personPostcode) {
+		this.personPostcode = personPostcode;
+		return this;
+	}
+
+	public StatisticsCaseCriteria setPersonAddress(String personAddress) {
+		this.personAddress = personAddress;
+		return this;
+	}
+
 	public StatisticsCaseCriteria reportingUserRoles(List<UserRole> reportingUserRoles) {
 		this.reportingUserRoles = reportingUserRoles;
 		return this;
@@ -397,7 +457,7 @@ public class StatisticsCaseCriteria implements Serializable {
 				return districts;
 			case COMMUNITY:
 				return communities;
-			case HEALTH_FACILITY:
+			case FACILITY:
 				return healthFacilities;
 			case YEAR:
 				switch (attribute) {

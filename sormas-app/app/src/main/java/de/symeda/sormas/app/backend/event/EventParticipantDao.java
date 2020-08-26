@@ -22,6 +22,7 @@ import com.j256.ormlite.dao.Dao;
 
 import android.util.Log;
 
+import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
@@ -53,6 +54,39 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 			Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<EventParticipant> getByCase(Case caze) {
+
+		if (caze.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+
+		try {
+			return queryBuilder().where()
+				.eq(EventParticipant.RESULTING_CASE_UUID + "_id", caze)
+				.and()
+				.eq(AbstractDomainObject.SNAPSHOT, false)
+				.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void deleteEventParticipant(String eventParticipantUuid) throws SQLException {
+		deleteEventParticipant(queryUuidWithEmbedded(eventParticipantUuid));
+	}
+
+	public void deleteEventParticipant(EventParticipant eventParticipant) throws SQLException {
+
+		// Cancel if not in local database
+		if (eventParticipant == null) {
+			return;
+		}
+
+		// Delete eventParticipant
+		deleteCascade(eventParticipant);
 	}
 
 	// TODO #704

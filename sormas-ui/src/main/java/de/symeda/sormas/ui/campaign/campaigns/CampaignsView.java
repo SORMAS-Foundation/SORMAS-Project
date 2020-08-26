@@ -20,10 +20,14 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.TextField;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -45,6 +49,7 @@ public class CampaignsView extends AbstractCampaignView {
 	private VerticalLayout gridLayout;
 	private CampaignGrid grid;
 	private Button createButton;
+	private Button validateFormsButton;
 
 	// Filter
 	private TextField searchField;
@@ -74,6 +79,13 @@ public class CampaignsView extends AbstractCampaignView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT)) {
+			validateFormsButton = ButtonHelper.createIconButton(Captions.campaignValidateForms, VaadinIcons.CHECK_CIRCLE, e -> {
+				FacadeProvider.getCampaignFormMetaFacade().validateAllFormMetas();
+				Notification.show(I18nProperties.getString(Strings.messageAllCampaignFormsValid), Type.TRAY_NOTIFICATION);
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(validateFormsButton);
+
 			createButton = ButtonHelper.createIconButton(
 				Captions.campaignNewCampaign,
 				VaadinIcons.PLUS_CIRCLE,

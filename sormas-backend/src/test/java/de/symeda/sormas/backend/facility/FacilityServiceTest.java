@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -46,8 +45,6 @@ public class FacilityServiceTest extends AbstractBeanTest {
 		assertNotNull(otherFacility);
 		Facility noneFacility = facilityService.getByUuid(FacilityDto.NONE_FACILITY_UUID);
 		assertNotNull(noneFacility);
-		Facility otherLaboratory = facilityService.getByUuid(FacilityDto.OTHER_LABORATORY_UUID);
-		assertNotNull(otherLaboratory);
 	}
 
 	@Test
@@ -60,26 +57,11 @@ public class FacilityServiceTest extends AbstractBeanTest {
 		Community otherCommunity = creator.createCommunity("Other Community", otherDistrict);
 		creator.createFacility("Facility", region, district, community);
 
-		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", district, community, true), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName(" Facility ", district, community, true), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("facility", district, null, true), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("FACILITY", district, null, true), hasSize(1));
-		assertThat(getFacilityService().getHealthFacilitiesByName("Facility", otherDistrict, otherCommunity, true), empty());
-		assertThat(getFacilityService().getHealthFacilitiesByName("Redcliffe Church", district, community, true), empty());
-	}
-
-	@Test
-	public void testGetLaboratoriesByName() {
-
-		Region region = creator.createRegion("Region");
-		District district = creator.createDistrict("District", region);
-		Community community = creator.createCommunity("Community", district);
-		creator.createFacility("Laboratory", FacilityType.LABORATORY, region, district, community);
-
-		assertThat(getFacilityService().getLaboratoriesByName("Laboratory", true), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName(" Laboratory ", true), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("laboratory", true), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("LABORATORY", true), hasSize(1));
-		assertThat(getFacilityService().getLaboratoriesByName("Jowan's Chamber", true), empty());
+		assertThat(getFacilityService().getFacilitiesByNameAndType("Facility", district, community, null, true), hasSize(1));
+		assertThat(getFacilityService().getFacilitiesByNameAndType(" Facility ", district, community, null, true), hasSize(1));
+		assertThat(getFacilityService().getFacilitiesByNameAndType("facility", district, null, null, true), hasSize(1));
+		assertThat(getFacilityService().getFacilitiesByNameAndType("FACILITY", district, null, null, true), hasSize(1));
+		assertThat(getFacilityService().getFacilitiesByNameAndType("Facility", otherDistrict, otherCommunity, null, true), empty());
+		assertThat(getFacilityService().getFacilitiesByNameAndType("Redcliffe Church", district, community, null, true), empty());
 	}
 }

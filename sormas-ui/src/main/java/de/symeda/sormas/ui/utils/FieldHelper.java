@@ -41,6 +41,9 @@ import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
+import de.symeda.sormas.ui.UserProvider;
 
 public final class FieldHelper {
 
@@ -397,7 +400,7 @@ public final class FieldHelper {
 		});
 	}
 
-	public static void setEnabled(boolean enabled, Field ... fields){
+	public static void setEnabled(boolean enabled, Field... fields) {
 		Arrays.asList(fields).forEach(field -> field.setEnabled(enabled));
 	}
 
@@ -454,11 +457,20 @@ public final class FieldHelper {
 		"rawtypes" })
 	public static void updateEnumData(AbstractSelect select, Iterable<? extends Enum> enumData) {
 
+		boolean readOnly = select.isReadOnly();
+		select.setReadOnly(false);
+		Object value = select.getValue();
 		select.removeAllItems();
-		for (Object r : enumData) {
-			Item newItem = select.addItem(r);
-			newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+		select.addContainerProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID, String.class, "");
+		select.setItemCaptionPropertyId((SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID));
+		if (enumData != null) {
+			for (Object r : enumData) {
+				Item newItem = select.addItem(r);
+				newItem.getItemProperty(DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(r.toString());
+			}
 		}
+		select.setValue(value);
+		select.setReadOnly(readOnly);
 	}
 
 	public static void removeItems(AbstractSelect select) {
@@ -580,5 +592,13 @@ public final class FieldHelper {
 	@SuppressWarnings("rawtypes")
 	public static Stream<Field> streamFields(Component parent) {
 		return FieldHelper.stream(parent).filter(c -> c instanceof Field).map(c -> (Field) c);
+	}
+
+	public static PersonalDataFieldAccessChecker createPersonalDataFieldAccessChecker() {
+		return PersonalDataFieldAccessChecker.create(r -> UserProvider.getCurrent().hasUserRight(r));
+	}
+
+	public static SensitiveDataFieldAccessChecker createSensitiveDataFieldAccessChecker() {
+		return SensitiveDataFieldAccessChecker.create(r -> UserProvider.getCurrent().hasUserRight(r));
 	}
 }

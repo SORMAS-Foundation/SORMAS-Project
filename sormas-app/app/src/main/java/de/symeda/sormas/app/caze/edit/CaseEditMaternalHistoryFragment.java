@@ -19,12 +19,17 @@ import java.util.List;
 
 import android.content.res.Resources;
 
+import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentCaseEditMaternalHistoryLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCaseEditMaternalHistoryLayoutBinding, MaternalHistory, Case> {
@@ -36,7 +41,13 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 	// Static methods
 
 	public static CaseEditMaternalHistoryFragment newInstance(Case activityRootData) {
-		return newInstance(CaseEditMaternalHistoryFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			CaseEditMaternalHistoryFragment.class,
+			null,
+			activityRootData,
+			null,
+				AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides
@@ -73,6 +84,8 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 		contentBinding.maternalHistoryRubellaOnset.initializeDateField(getFragmentManager());
 		contentBinding.maternalHistorySwollenLymphsOnset.initializeDateField(getFragmentManager());
 		contentBinding.maternalHistoryRashExposureDate.initializeDateField(getFragmentManager());
+
+		setFieldVisibilitiesAndAccesses(MaternalHistoryDto.class, contentBinding.mainContent);
 
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(record.getRashExposureRegion());

@@ -34,7 +34,7 @@ public class TherapyController {
 	}
 
 	public void openPrescriptionCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		PrescriptionForm form = new PrescriptionForm(true, false);
+		PrescriptionForm form = new PrescriptionForm(true, false, true);
 		form.setValue(PrescriptionDto.buildPrescription(therapy));
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PRESCRIPTION_CREATE), form.getFieldGroup());
@@ -55,9 +55,9 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewPrescription));
 	}
 
-	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly) {
+	public void openPrescriptionEditForm(PrescriptionReferenceDto prescriptionReference, Runnable callback, boolean readOnly, boolean isInJurisdiction) {
 		PrescriptionDto prescription = FacadeProvider.getPrescriptionFacade().getPrescriptionByUuid(prescriptionReference.getUuid());
-		PrescriptionForm form = new PrescriptionForm(false, readOnly);
+		PrescriptionForm form = new PrescriptionForm(false, readOnly, isInJurisdiction);
 		form.setValue(prescription);
 
 		final CommitDiscardWrapperComponent<PrescriptionForm> view =
@@ -98,12 +98,12 @@ public class TherapyController {
 		}
 	}
 
-	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {
-		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly);
+	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly, boolean isInJurisdiction) {
+		openPrescriptionEditForm(new PrescriptionReferenceDto(prescriptionIndex.getUuid()), callback, readOnly, isInJurisdiction);
 	}
 
 	public void openTreatmentCreateForm(TherapyReferenceDto therapy, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true);
+		TreatmentForm form = new TreatmentForm(true, true);
 		form.setValue(TreatmentDto.build(therapy));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -125,7 +125,7 @@ public class TherapyController {
 	}
 
 	public void openTreatmentCreateForm(PrescriptionDto prescription, Runnable callback) {
-		TreatmentForm form = new TreatmentForm(true);
+		TreatmentForm form = new TreatmentForm(true, true);
 		form.setValue(TreatmentDto.build(prescription));
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.TREATMENT_CREATE), form.getFieldGroup());
@@ -146,9 +146,9 @@ public class TherapyController {
 		VaadinUiUtil.showModalPopupWindow(view, I18nProperties.getString(Strings.headingCreateNewTreatment));
 	}
 
-	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback) {
+	public void openTreatmentEditForm(TreatmentIndexDto treatmentIndex, Runnable callback, boolean isInJurisdiction) {
 		TreatmentDto treatment = FacadeProvider.getTreatmentFacade().getTreatmentByUuid(treatmentIndex.getUuid());
-		TreatmentForm form = new TreatmentForm(false);
+		TreatmentForm form = new TreatmentForm(false, isInJurisdiction);
 		form.setValue(treatment);
 
 		final CommitDiscardWrapperComponent<TreatmentForm> view =
@@ -185,7 +185,7 @@ public class TherapyController {
 
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
-				openPrescriptionEditForm(treatment.getPrescription(), null, true);
+				openPrescriptionEditForm(treatment.getPrescription(), null, true, isInJurisdiction);
 			});
 
 			view.getButtonsPanel().addComponent(openPrescriptionButton, view.getButtonsPanel().getComponentIndex(view.getDiscardButton()));

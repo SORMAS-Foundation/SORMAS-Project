@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -136,6 +137,9 @@ public class Case extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
+
+	@Enumerated(EnumType.STRING)
+	private FacilityType facilityType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
@@ -279,6 +283,8 @@ public class Case extends PseudonymizableAdo {
 	private Date quarantineOrderedVerballyDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOrderedOfficialDocumentDate;
+	@DatabaseField
+	private boolean quarantineExtended;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -882,6 +888,14 @@ public class Case extends PseudonymizableAdo {
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 	}
 
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
+	}
+
 	public YesNoUnknown getQuarantineHomePossible() {
 		return quarantineHomePossible;
 	}
@@ -936,5 +950,13 @@ public class Case extends PseudonymizableAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.facility;
 
 import java.util.List;
+import java.util.function.BiFunction;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -39,6 +40,7 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -47,18 +49,27 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	@EJB
 	private RegionService regionService;
 
+	@EJB
+	private UserService userService;
+
 	public FacilityService() {
 		super(Facility.class);
 	}
 
-	public List<Facility> getActiveHealthFacilitiesByCommunity(Community community, boolean includeStaticFacilities) {
+	public List<Facility> getActiveFacilitiesByCommunityAndType(
+		Community community,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = createBasicFilter(cb, from);
-		filter = cb.and(filter, cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE))));
+		if (type != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		}
 		filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 		cq.where(filter);
 		cq.distinct(true);
@@ -66,22 +77,30 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 
-		if (includeStaticFacilities) {
+		if (includeOtherFacility) {
 			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+		}
+		if (includeNoneFacility) {
 			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 
 		return facilities;
 	}
 
-	public List<Facility> getActiveHealthFacilitiesByDistrict(District district, boolean includeStaticFacilities) {
+	public List<Facility> getActiveFacilitiesByDistrictAndType(
+		District district,
+		FacilityType type,
+		boolean includeOtherFacility,
+		boolean includeNoneFacility) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = createBasicFilter(cb, from);
-		filter = cb.and(filter, cb.or(cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY), cb.isNull(from.get(Facility.TYPE))));
+		if (type != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		}
 		filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
 		cq.where(filter);
 		cq.distinct(true);
@@ -89,37 +108,57 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 
-		if (includeStaticFacilities) {
+		if (includeOtherFacility) {
 			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
+		}
+		if (includeNoneFacility) {
 			facilities.add(getByUuid(FacilityDto.NONE_FACILITY_UUID));
 		}
 
 		return facilities;
 	}
 
-	public List<Facility> getAllActiveLaboratories(boolean includeOtherLaboratory) {
+	public List<Facility> getAllActiveLaboratories(boolean includeOtherFacility) {
+		return getAllActiveLaboratories(includeOtherFacility, null);
+	}
+
+	private List<Facility> getAllActiveLaboratories(
+		boolean includeOtherFacility,
+		BiFunction<CriteriaBuilder, Root<Facility>, Predicate> createExtraFilters) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
-		cq.where(
-			cb.and(
-				createBasicFilter(cb, from),
-				cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
-				cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_LABORATORY_UUID)));
+		Predicate filter = cb.and(
+			createBasicFilter(cb, from),
+			cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY),
+			cb.notEqual(from.get(Facility.UUID), FacilityDto.OTHER_FACILITY_UUID)
+
+		);
+
+		if (createExtraFilters != null) {
+			filter = and(cb, filter, createExtraFilters.apply(cb, from));
+		}
+
+		cq.where(filter);
 		cq.orderBy(cb.asc(from.get(Facility.NAME)));
 
 		List<Facility> facilities = em.createQuery(cq).getResultList();
 
-		if (includeOtherLaboratory) {
-			facilities.add(getByUuid(FacilityDto.OTHER_LABORATORY_UUID));
+		if (includeOtherFacility) {
+			facilities.add(getByUuid(FacilityDto.OTHER_FACILITY_UUID));
 		}
 
 		return facilities;
 	}
 
-	public List<Facility> getHealthFacilitiesByName(String name, District district, Community community, boolean includeArchivedEntities) {
+	public List<Facility> getFacilitiesByNameAndType(
+		String name,
+		District district,
+		Community community,
+		FacilityType type,
+		boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
@@ -128,9 +167,9 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Predicate filter = cb.or(
 			cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase()));
-		// Additional null check is required because notEqual returns true if one of the
-		// values is null
-		filter = cb.and(filter, cb.or(cb.isNull(from.get(Facility.TYPE)), cb.notEqual(from.get(Facility.TYPE), FacilityType.LABORATORY)));
+		if (type != null) {
+			filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
+		}
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -149,25 +188,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Facility> getLaboratoriesByName(String name, boolean includeArchivedEntities) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
-		Root<Facility> from = cq.from(getElementClass());
-
-		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase()));
-		filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), FacilityType.LABORATORY));
-		if (!includeArchivedEntities) {
-			filter = cb.and(filter, createBasicFilter(cb, from));
-		}
-
-		cq.where(filter);
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Facility, Facility> from) {
@@ -176,7 +196,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	}
 
 	public Predicate buildCriteriaFilter(FacilityCriteria facilityCriteria, CriteriaBuilder cb, Root<Facility> from) {
-
 		Predicate filter = null;
 		if (facilityCriteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Facility.REGION, JoinType.LEFT).get(Region.UUID), facilityCriteria.getRegion().getUuid()));
@@ -203,7 +222,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		if (facilityCriteria.getType() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Facility.TYPE), facilityCriteria.getType()));
 		} else {
-			filter = and(cb, filter, cb.isNull(from.get(Facility.TYPE)));
+			filter = and(cb, filter, cb.isNotNull(from.get(Facility.TYPE)));
 		}
 		if (facilityCriteria.getRelevanceStatus() != null) {
 			if (facilityCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
@@ -228,13 +247,6 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 			noneFacility.setName(FacilityDto.NO_FACILITY);
 			noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 			persist(noneFacility);
-		}
-		if (getByUuid(FacilityDto.OTHER_LABORATORY_UUID) == null) {
-			Facility otherLaboratory = new Facility();
-			otherLaboratory.setName(FacilityDto.OTHER_LABORATORY);
-			otherLaboratory.setType(FacilityType.LABORATORY);
-			otherLaboratory.setUuid(FacilityDto.OTHER_LABORATORY_UUID);
-			persist(otherLaboratory);
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class CaseSymptomsView extends AbstractCaseView {
 	protected void initView(String params) {
 
 		CommitDiscardWrapperComponent<SymptomsForm> caseSymptomsComponent =
-			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode());
+			ControllerProvider.getCaseController().getSymptomsEditComponent(getCaseRef().getUuid(), getViewMode(), isCaseEditAllowed());
 		setSubComponent(caseSymptomsComponent);
 		setCaseEditPermission(caseSymptomsComponent);
 	}

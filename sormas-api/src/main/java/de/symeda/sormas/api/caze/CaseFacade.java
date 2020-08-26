@@ -43,9 +43,10 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
-	//Created for the SurvNet interface in order to track additional change dates.
-	//additional change dates filters for: sample, pathogenTests, patient and location.
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
+	/**
+	 * Additional change dates filters for: sample, pathogenTests, patient and location.
+	 */
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
 
 	long count(CaseCriteria caseCriteria);
 
@@ -142,4 +143,12 @@ public interface CaseFacade {
 	boolean exists(String uuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
+
+	List<CaseFollowUpDto> getCaseFollowUpList(
+		CaseCriteria caseCriteria,
+		Date referenceDate,
+		int interval,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
 }

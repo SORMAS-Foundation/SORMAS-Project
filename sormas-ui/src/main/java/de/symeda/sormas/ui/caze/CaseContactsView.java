@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -126,7 +127,7 @@ public class CaseContactsView extends AbstractCaseView {
 		regionFilter = new ComboBox();
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(240, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID));
+			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -143,7 +144,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID));
+		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID));
 		districtFilter.addValueChangeListener(e -> {
 			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);

@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.Disease;
-
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import de.symeda.sormas.api.Disease;
 
 public final class CssStyles {
 
@@ -38,6 +39,9 @@ public final class CssStyles {
 	public static final String H5 = "h5";
 
 	public static final String VR = "vertical-rule";
+
+	public static final String RICH_TEXT_CONTENT_CONTAINER = "rich-text-content-container";
+	public static final String REPLY = "reply";
 
 	// Vertical space
 	public static final String VSPACE_0 = "vspace-0";
@@ -117,6 +121,7 @@ public final class CssStyles {
 	public static final String LABEL_ROUNDED_CORNERS_SLIM = "rounded-corners-slim";
 	public static final String LABEL_BACKGROUND_FOCUS_LIGHT = "background-focus-light";
 	public static final String LABEL_VERTICAL_ALIGN_SUPER = "vertical-align-super";
+	public static final String LABEL_VERTICAL_ALIGN_TOP = "vertical-align-top";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_SYMPTOMATIC = "bg-follow-up-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_NOT_SYMPTOMATIC = "bg-follow-up-not-symptomatic";
 	public static final String LABEL_BACKGROUND_FOLLOW_UP_UNAVAILABLE = "bg-follow-up-unavailable";
@@ -263,6 +268,10 @@ public final class CssStyles {
 	 * Example: <code>LayoutUtil.fluidColumnLocCss(CssStyles.LAYOUT_COL_HIDE_INVSIBLE, 3, 0, PersonDto.CAUSE_OF_DEATH_DISEASE)</code>
 	 */
 	public static final String LAYOUT_COL_HIDE_INVSIBLE = "hide-invisble";
+
+	public static final String INACCESSIBLE_FIELD = "inaccessible-field";
+	public static final String INACCESSIBLE_COLUMN = "inaccessible-column";
+	public static final String INACCESSIBLE_LABEL = "inaccessible-label";
 
 	@Deprecated
 	public static final String CALLOUT = "callout";

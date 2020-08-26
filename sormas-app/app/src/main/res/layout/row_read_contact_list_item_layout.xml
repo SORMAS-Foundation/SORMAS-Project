@@ -28,10 +28,12 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_gravity="fill"
-        android:paddingStart="@dimen/rowListItemHorizontalMargin"
-        android:paddingEnd="@dimen/rowListItemHorizontalMargin"
-        android:background="@drawable/selector_list_activity_row_background">
+        android:paddingLeft="@dimen/rowListItemHorizontalMargin"
+        android:paddingRight="@dimen/rowListItemHorizontalMargin"
+        android:background="@drawable/selector_list_activity_row_background"
+        >
 
         <LinearLayout
             android:id="@+id/row_item"

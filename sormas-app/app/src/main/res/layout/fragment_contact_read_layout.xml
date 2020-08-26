@@ -125,6 +125,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    android:id="@+id/contact_community"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@{data.community}" />
+                
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/contact_caseIdExternalSystem"
                     app:value="@{data.caseIdExternalSystem}"
                     style="@style/ControlSingleColumnStyle" />
@@ -211,6 +216,14 @@
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlTextImageField
+                    android:id="@+id/caseData_quarantineExtended"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.HOME}"
+                    app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                    app:value="@{data.quarantineExtended}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextImageField
                     android:id="@+id/contact_quarantineOrderedVerbally"

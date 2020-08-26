@@ -19,6 +19,7 @@ public interface Validations {
 	String campaignFormElementDuplicateId = "campaignFormElementDuplicateId";
 	String campaignFormElementIdRequired = "campaignFormElementIdRequired";
 	String campaignFormElementTypeRequired = "campaignFormElementTypeRequired";
+	String campaignFormInvalidIdInListElements = "campaignFormInvalidIdInListElements";
 	String campaignFormTranslationCaptionRequired = "campaignFormTranslationCaptionRequired";
 	String campaignFormTranslationIdInvalid = "campaignFormTranslationIdInvalid";
 	String campaignFormTranslationIdRequired = "campaignFormTranslationIdRequired";
@@ -26,6 +27,7 @@ public interface Validations {
 	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String caseClassificationInvalid = "caseClassificationInvalid";
 	String contactFollowUpUntilDate = "contactFollowUpUntilDate";
 	String contactWithoutInfrastructureData = "contactWithoutInfrastructureData";
 	String duplicateEpidNumber = "duplicateEpidNumber";
@@ -61,13 +63,13 @@ public interface Validations {
 	String importRegionNotUnique = "importRegionNotUnique";
 	String importUnexpectedError = "importUnexpectedError";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
-	String caseClassificationInvalid = "caseClassificationInvalid";
 	String noCommunityInDistrict = "noCommunityInDistrict";
 	String noDistrictInRegion = "noDistrictInRegion";
 	String noFacilityDetails = "noFacilityDetails";
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";
+	String noFacilityType = "noFacilityType";
 	String noPastDateAllowed = "noPastDateAllowed";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
@@ -86,6 +88,7 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validFacility = "validFacility";
+	String validFacilityType = "validFacilityType";
 	String validPerson = "validPerson";
 	String validPointOfEntry = "validPointOfEntry";
 	String validRegion = "validRegion";
@@ -93,8 +96,10 @@ public interface Validations {
 	String validReportingUser = "validReportingUser";
 	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
+	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";
 	String visitBeforeLastContactDate = "visitBeforeLastContactDate";
+	String visitBeforeSymptomsOnSet = "visitBeforeSymptomsOnSet";
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";

@@ -39,4 +39,6 @@ public interface EventParticipantFacadeRetro {
 	@GET("eventparticipants/uuids")
 	Call<List<String>> pullUuids();
 
+	@GET("eventparticipants/deleted/{since}")
+	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
 }

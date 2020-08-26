@@ -25,13 +25,20 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
+import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private PersonName contactName;
+	@EmbeddedPersonalData
+	@EmbeddedSensitiveData
 	private PersonName caseName;
 
 	public ContactReferenceDto() {
@@ -46,12 +53,20 @@ public class ContactReferenceDto extends ReferenceDto {
 
 		setUuid(uuid);
 		this.contactName = new PersonName(contactFirstName, contactLastName);
-		this.caseName = new PersonName(caseFirstName, caseLastName);
+
+		if (caseFirstName != null && caseLastName != null) {
+			this.caseName = new PersonName(caseFirstName, caseLastName);
+		}
 	}
 
 	@Override
 	public String getCaption() {
-		return buildCaption(contactName.firstName, contactName.lastName, caseName.firstName, caseName.lastName, getUuid());
+		return buildCaption(
+			contactName.firstName,
+			contactName.lastName,
+			caseName != null ? caseName.firstName : null,
+			caseName != null ? caseName.lastName : null,
+			getUuid());
 	}
 
 	public PersonName getContactName() {
@@ -95,8 +110,10 @@ public class ContactReferenceDto extends ReferenceDto {
 		private static final long serialVersionUID = 3655299579771996044L;
 
 		@PersonalData
+		@SensitiveData
 		private String firstName;
 		@PersonalData
+		@SensitiveData
 		private String lastName;
 
 		public PersonName(String firstName, String lastName) {

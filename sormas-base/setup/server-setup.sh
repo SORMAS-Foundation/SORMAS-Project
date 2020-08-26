@@ -1,7 +1,7 @@
 
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2018 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2020 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,7 +52,12 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.2020.2
+# Temporal workaround: Do not use newer version than 5.194 for developers to avoid redeployment issue, see https://github.com/hzi-braunschweig/SORMAS-Project/issues/2511
+if [[ ${DEV_SYSTEM} != true ]]; then
+	PAYARA_VERSION=5.2020.2
+else
+	PAYARA_VERSION=5.194
+fi
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -75,6 +80,7 @@ GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
 CUSTOM_DIR=${ROOT_PREFIX}/opt/sormas/custom
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
+SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas/sormas2sormas
 
 DOMAIN_NAME=sormas
 PORT_BASE=6000
@@ -111,6 +117,7 @@ echo "Directory for generated files: ${GENERATED_DIR}"
 echo "Directory for custom files: ${CUSTOM_DIR}"
 echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
+echo "SORMAS to SORMAS directory:" ${SORMAS2SORMAS_DIR}
 echo "Base port: ${PORT_BASE}"
 echo "Admin port: ${PORT_ADMIN}"
 echo "---"
@@ -129,6 +136,7 @@ mkdir -p "${DOMAINS_HOME}"
 mkdir -p "${TEMP_DIR}"
 mkdir -p "${GENERATED_DIR}"
 mkdir -p "${CUSTOM_DIR}"
+mkdir -p "${SORMAS2SORMAS_DIR}"
 
 if [[ ${LINUX} = true ]]; then
 	mkdir -p "${DOWNLOAD_DIR}"
@@ -138,6 +146,7 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:${USER_NAME}:rwx "${TEMP_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${GENERATED_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${CUSTOM_DIR}"
+	setfacl -m u:${USER_NAME}:rwx "${SORMAS2SORMAS_DIR}"
 
 	setfacl -m u:postgres:rwx "${TEMP_DIR}"
 	setfacl -m u:postgres:rwx "${GENERATED_DIR}"
@@ -315,7 +324,7 @@ ${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-rel
 
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
-${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/sormasDataPool
 
 # Pool for audit log
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool

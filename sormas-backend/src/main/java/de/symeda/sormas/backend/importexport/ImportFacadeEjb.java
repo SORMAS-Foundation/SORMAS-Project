@@ -44,7 +44,6 @@ import com.opencsv.CSVWriter;
 
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -78,6 +77,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -133,6 +133,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	private HospitalizationService hospitalizationService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
@@ -143,8 +145,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String REGION_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_region_template.csv";
 	private static final String DISTRICT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_district_template.csv";
 	private static final String COMMUNITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_community_template.csv";
-	private static final String FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME =
-		ImportExportUtils.FILE_PREFIX + "_import_facility_laboratory_template.csv";
+	private static final String FACILITY_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_facility_template.csv";
 	private static final String CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_contact_template.csv";
 
 	@Override
@@ -228,6 +229,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.REGION);
 		columnNames.add(CaseDataDto.DISTRICT);
 		columnNames.add(CaseDataDto.COMMUNITY);
+		columnNames.add(CaseDataDto.FACILITY_TYPE);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY);
 		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
 		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
@@ -258,10 +260,12 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add("TOTAL");
 		columnNames.add("MALE_TOTAL");
 		columnNames.add("FEMALE_TOTAL");
+		columnNames.add("OTHER_TOTAL");
 		for (AgeGroup ageGroup : AgeGroup.values()) {
 			columnNames.add("TOTAL_" + ageGroup.name());
 			columnNames.add("MALE_" + ageGroup.name());
 			columnNames.add("FEMALE_" + ageGroup.name());
+			columnNames.add("OTHER_" + ageGroup.name());
 		}
 		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
@@ -301,8 +305,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateFacilityLaboratoryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityLaboratoryImportTemplateFilePath()));
+	public void generateFacilityImportTemplateFile() throws IOException {
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
 	}
 
 	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
@@ -391,10 +395,10 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public String getFacilityLaboratoryImportTemplateFilePath() {
+	public String getFacilityImportTemplateFilePath() {
 
 		Path exportDirectory = Paths.get(configFacade.getGeneratedFilesPath());
-		Path filePath = exportDirectory.resolve(FACILITY_LABORATORY_IMPORT_TEMPLATE_FILE_NAME);
+		Path filePath = exportDirectory.resolve(FACILITY_IMPORT_TEMPLATE_FILE_NAME);
 		return filePath.toString();
 	}
 
@@ -440,7 +444,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			// Fields that are depending on a certain feature type to be active may be ignored
 			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
-				List<FeatureType> activeServerFeatures = FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes();
+				List<FeatureType> activeServerFeatures = featureConfigurationFacade.getActiveServerFeatureTypes();
 				if (!activeServerFeatures.isEmpty()
 					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
 					continue;

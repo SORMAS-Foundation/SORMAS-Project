@@ -25,10 +25,11 @@ import android.webkit.WebView;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.Vaccination;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseReadFragment;
@@ -40,8 +41,10 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.dialog.InfoDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.DialogClassificationRulesLayoutBinding;
 import de.symeda.sormas.app.databinding.FragmentCaseReadLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBinding, Case, Case> {
@@ -55,7 +58,10 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
+			AppFieldAccessCheckers.withCheckers(
+				CaseEditAuthorization.isCaseEditAllowed(activityRootData),
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpFieldVisibilities(FragmentCaseReadLayoutBinding contentBinding) {
@@ -82,11 +88,16 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
-			contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 		} else {
 			if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				if (record.getHealthFacility() == null) {
-					contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+					contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+					contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+					contentBinding.caseDataHealthFacility.setVisibility(GONE);
 					contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 				}
 			} else {
@@ -156,6 +167,19 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseDataClassificationUser.setVisibility(GONE);
 			contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
+		}
+
+		if (record.getHealthFacility() == null) {
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
+		} else if (FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+		} else {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
 		}
 	}
 

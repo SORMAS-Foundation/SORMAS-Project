@@ -5,11 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.45.0-SNAPSHOT</version>
-
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
+	<version>1.47.0-SNAPSHOT</version>
 
 	<properties>
 		<slf4j.version>1.7.30</slf4j.version>
@@ -32,7 +28,7 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- Baseline for tests, so that in all projects in any case the test 
+			<!-- Baseline for tests, so that in all projects in any case the test
 				libs are available -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -70,7 +66,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>6.1.5.Final</version>
 				<scope>test</scope>
@@ -188,25 +184,25 @@
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
@@ -218,7 +214,7 @@
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<!-- serverlibs -->
 
 			<dependency>
@@ -335,7 +331,7 @@
 				<artifactId>opencsv</artifactId>
 				<version>4.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
@@ -407,9 +403,10 @@
 
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
 					<configuration>
 						<!-- Deactivate javadoc validation (active by default since Java 1.8) -->
-						<additionalparam>-Xdoclint:none</additionalparam>
+						<additionalJOption>-Xdoclint:none</additionalJOption>
 					</configuration>
 				</plugin>
 
@@ -548,7 +545,9 @@
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
 							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
+						<!--suppress MavenModelInspection -->
 						<username>${github.sormas.user}</username>
+						<!--suppress MavenModelInspection -->
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
@@ -617,7 +616,7 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-	</repositories>	
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>

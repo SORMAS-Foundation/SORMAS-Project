@@ -30,6 +30,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -40,6 +41,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 import java.util.Arrays;
 
@@ -102,8 +104,8 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		super(type, propertyI18nPrefix);
 	}
 
-	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, boolean addFields) {
-		super(type, propertyI18nPrefix, addFields);
+	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(type, propertyI18nPrefix, true, null, fieldAccessCheckers);
 	}
 
 	protected void addCommonFields() {
@@ -176,8 +178,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
 		}
 
+		UserReferenceDto reportingUser = getValue().getReportingUser();
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-			|| UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid())) {
+			|| (reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()))) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				Arrays.asList(SampleDto.SHIPMENT_DATE, SampleDto.SHIPMENT_DETAILS),
@@ -210,10 +213,13 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		// Initialize referral and report information
 		VerticalLayout reportInfoLayout = new VerticalLayout();
-		String reportInfoText =
-			I18nProperties.getString(Strings.reportedOn) + " " + DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()) + " "
-				+ I18nProperties.getString(Strings.by) + " " + getValue().getReportingUser().toString();
-		Label reportInfoLabel = new Label(reportInfoText);
+		StringBuilder reportInfoText = new StringBuilder().append(I18nProperties.getString(Strings.reportedOn))
+			.append(" ")
+			.append(DateFormatHelper.formatLocalDateTime(getValue().getReportDateTime()));
+		if (reportingUser != null) {
+			reportInfoText.append(" ").append(I18nProperties.getString(Strings.by)).append(" ").append(reportingUser.toString());
+		}
+		Label reportInfoLabel = new Label(reportInfoText.toString());
 		reportInfoLabel.setEnabled(false);
 		reportInfoLayout.addComponent(reportInfoLabel);
 
@@ -240,7 +246,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	protected void updateLabDetailsVisibility(TextField labDetails, Property.ValueChangeEvent event) {
 		if (event.getProperty().getValue() != null
-			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 			labDetails.setVisible(true);
 			labDetails.setRequired(true);
 		} else {
@@ -378,9 +384,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 	private void updateRequestedTestFields() {
 
 		boolean showRequestFields = getField(SampleDto.SAMPLE_PURPOSE).getValue() != SamplePurpose.INTERNAL;
+		UserReferenceDto reportingUser = getValue() != null ? getValue().getReportingUser() : null;
 		boolean canEditRequest = showRequestFields
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT_NOT_OWNED)
-				|| getValue() != null && UserProvider.getCurrent().getUuid().equals(getValue().getReportingUser().getUuid()));
+				|| reportingUser != null && UserProvider.getCurrent().getUuid().equals(reportingUser.getUuid()));
 		boolean canOnlyReadRequests = !canEditRequest && showRequestFields;
 		boolean canUseAdditionalTests = UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW);
 

@@ -42,7 +42,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -51,6 +50,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class UserEditForm extends AbstractEditForm<UserDto> {
 
@@ -83,7 +83,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
     public UserEditForm(boolean create) {
 
-        super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), new FieldAccessCheckers());
+        super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), new UiFieldAccessCheckers(true));
 
 
         setWidth(640, Unit.PIXELS);
@@ -159,7 +159,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
             FieldHelper.updateItems(
                     healthFacility,
-                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, false) : null);
+                    districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
             FieldHelper.updateItems(
                     associatedOfficer,
                     districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);

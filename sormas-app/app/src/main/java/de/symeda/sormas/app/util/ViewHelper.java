@@ -17,8 +17,14 @@ package de.symeda.sormas.app.util;
 
 import java.util.ArrayList;
 
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.app.R;
 
 /**
  * Created by Orson on 30/12/2017.
@@ -47,5 +53,16 @@ public class ViewHelper {
 
 		}
 		return views;
+	}
+
+	public static void formatInaccessibleTextView(TextView textField) {
+		textField.setText(I18nProperties.getCaption(Captions.inaccessibleValue));
+		textField.setTextColor(textField.getContext().getResources().getColor(R.color.disabled));
+		textField.setTypeface(null, Typeface.ITALIC);
+	}
+
+	public static void removeInaccessibleTextViewFormat(TextView textField) {
+		textField.setTextColor(textField.getContext().getResources().getColor(R.color.listActivityRowPrimaryText));
+		textField.setTypeface(null, Typeface.NORMAL);
 	}
 }

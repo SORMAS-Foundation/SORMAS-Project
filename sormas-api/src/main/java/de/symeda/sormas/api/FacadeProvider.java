@@ -20,11 +20,14 @@ package de.symeda.sormas.api;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
-import de.symeda.sormas.api.campaign.form.CampaignFormFacade;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -98,6 +101,10 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CaseStatisticsFacade.class);
 	}
 
+	public static CaseImportFacade getCaseImportFacade() {
+		return get().lookupEjbRemote(CaseImportFacade.class);
+	}
+
 	public static ContactFacade getContactFacade() {
 		return get().lookupEjbRemote(ContactFacade.class);
 	}
@@ -120,6 +127,10 @@ public class FacadeProvider {
 
 	public static TaskFacade getTaskFacade() {
 		return get().lookupEjbRemote(TaskFacade.class);
+	}
+
+	public static ActionFacade getActionFacade() {
+		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
 	public static SampleFacade getSampleFacade() {
@@ -262,8 +273,12 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(CampaignFacade.class);
 	}
 
-	public static CampaignFormFacade getCampaignFormFacade() {
-		return get().lookupEjbRemote(CampaignFormFacade.class);
+	public static CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return get().lookupEjbRemote(CampaignDiagramDefinitionFacade.class);
+	}
+
+	public static CampaignFormMetaFacade getCampaignFormMetaFacade() {
+		return get().lookupEjbRemote(CampaignFormMetaFacade.class);
 	}
 
 	public static CampaignFormDataFacade getCampaignFormDataFacade() {
