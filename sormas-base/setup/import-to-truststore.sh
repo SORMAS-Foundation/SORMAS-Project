@@ -20,7 +20,7 @@
 #!/bin/bash
 
 echo "# SORMAS TO SORMAS CERTIFICATE IMPORT"
-echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS and SurvNet communication"
+echo "# This script imports a certificate into the local truststore, to be used for SORMAS2SORMAS communication"
 echo "# If anything goes wrong, please consult the sormas to sormas import guide or get in touch with the developers."
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
@@ -35,7 +35,7 @@ if [[ ${LINUX} = true ]]; then
 else
 	ROOT_PREFIX=/c
 fi
-if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+if [[ -z "${SORMAS2SORMAS_DIR}" ]]; then
   DEFAULT_SORMAS2SORMAS_DIR="${ROOT_PREFIX}/opt/sormas2sormas"
   if [[ -d "${DEFAULT_SORMAS2SORMAS_DIR}" ]]; then
     SORMAS2SORMAS_DIR="${DEFAULT_SORMAS2SORMAS_DIR}"
@@ -45,7 +45,13 @@ if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
 	  done
 	  export SORMAS2SORMAS_DIR
   fi
+else
+  if [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+    echo "sormas2sormas directory is invalid: ${SORMAS2SORMAS_DIR}"
+    exit 1
+  fi
 fi
+
 TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
@@ -55,16 +61,16 @@ if [ ! -f "${TRUSTSTORE_FILE}" ]; then
   echo "${TRUSTSTORE_FILE_NAME} not found. A new truststore file will be created."
 fi
 
-while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]]; do
-  read -sp "Please provide the password for the truststore: " SORMAS_S2S_TRUSTSTORE_PASS
+while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 4 ]]; do
+  read -sp "Please provide the password for the truststore (at least 4 characters): " SORMAS_S2S_TRUSTSTORE_PASS
   echo
 done
 
-read -p "Please provide the file name of the certificate to import. It should be located inside the /sormas2sormas folder: " CRT_FILE_NAME
+read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
 CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
 while [[ -z "${CRT_FILE_NAME}" ]] || [ ! -f "${CRT_FILE}" ]; do
-  echo "File not found in /sormas2sormas folder."
-  read -p "Please provide the file name of the certificate to import. It should be located inside the /sormas2sormas folder: " CRT_FILE_NAME
+  echo "File not found in ${SORMAS2SORMAS_DIR} folder."
+  read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
 done
 
 # import crt
@@ -90,7 +96,7 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
       echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}";
       echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
     } >> "${SORMAS_PROPERTIES}"
-fi
+  fi
 else
   # export existing certificates to temporary file
   TEMP_FILE=${SORMAS2SORMAS_DIR}/tempcert.pem

@@ -36,7 +36,7 @@ else
 	ROOT_PREFIX=/c
 fi
 
-if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+if [[ -z "${SORMAS2SORMAS_DIR}" ]]; then
   DEFAULT_SORMAS2SORMAS_DIR="${ROOT_PREFIX}/opt/sormas2sormas"
   if [[ -d "${DEFAULT_SORMAS2SORMAS_DIR}" ]]; then
     SORMAS2SORMAS_DIR="${DEFAULT_SORMAS2SORMAS_DIR}"
@@ -46,10 +46,15 @@ if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
 	  done
 	  export SORMAS2SORMAS_DIR
   fi
+else
+  if [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+    echo "sormas2sormas directory is invalid: ${SORMAS2SORMAS_DIR}"
+    exit 1
+  fi
 fi
 
-while [[ -z "${SORMAS_S2S_CERT_PASS}" ]]; do
-  read -sp "Please provide a password for the certificate: " SORMAS_S2S_CERT_PASS
+while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 4 ]]; do
+  read -sp "Please provide a password for the certificate (at least 4 characters): " SORMAS_S2S_CERT_PASS
   echo
 done
 
