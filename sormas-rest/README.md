@@ -7,7 +7,7 @@ REST role attached to it. Use the username and password of the REST user as cred
 The SORMAS REST API is documented automatically. The OpenAPI specification files are generated during the build process 
 and can be found at `${Project Root}/sormas-rest/target/swagger.{json,yaml}`.
 
-You can render the OpenAPI specification with tools like [editor.swagger.io/](https://editor.swagger.io/). This allows 
+You can render the OpenAPI specification with tools like [editor.swagger.io](https://editor.swagger.io/). This allows 
 you to inspect endpoints and example payloads, generate a matching API client for many languages, and to easily interact 
 with the API of a live instance.
 
