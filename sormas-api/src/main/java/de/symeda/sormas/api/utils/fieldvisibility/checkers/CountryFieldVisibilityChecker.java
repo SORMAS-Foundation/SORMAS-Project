@@ -17,15 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
-import java.lang.reflect.AccessibleObject;
-
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
+import java.lang.reflect.AccessibleObject;
+import java.util.regex.Pattern;
+
 public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
 	private final String countryLocale;
+
+	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	public CountryFieldVisibilityChecker(String countryLocale) {
 		this.countryLocale = countryLocale;
@@ -36,8 +39,16 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 		if (accessibleObject.isAnnotationPresent(HideForCountries.class)) {
 			String[] countries = accessibleObject.getAnnotation(HideForCountries.class).countries();
 			for (String country : countries) {
-				if (countryLocale.startsWith(country)) {
-					return false;
+				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
+				// otherwise check the first (language) part
+				if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
+						return false;
+					}
+				} else {
+					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
+						return false;
+					}
 				}
 			}
 
@@ -47,8 +58,16 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 		if (accessibleObject.isAnnotationPresent(HideForCountriesExcept.class)) {
 			String[] countries = accessibleObject.getAnnotation(HideForCountriesExcept.class).countries();
 			for (String country : countries) {
-				if (countryLocale.startsWith(country)) {
-					return true;
+				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
+				// otherwise check the first (language) part
+				if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
+						return true;
+					}
+				} else {
+					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
+						return true;
+					}
 				}
 			}
 
