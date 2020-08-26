@@ -511,7 +511,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
 		List<CaseExportDto> resultList =
-			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
+			em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 
 		if (!resultList.isEmpty()) {
@@ -523,7 +523,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
 				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
 				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
@@ -537,7 +537,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
 				personAddressesCq
 					.where(personAddressesIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonAddressId).collect(Collectors.toList())));
-				personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				personAddressesList = em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
 			}
 
@@ -568,7 +568,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					Expression<String> healthConditionsIdsExpr = healthConditionsRoot.get(HealthConditions.ID);
 					healthConditionsCq.where(
 						healthConditionsIdsExpr.in(resultList.stream().map(CaseExportDto::getHealthConditionsId).collect(Collectors.toList())));
-					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 					healthConditions = healthConditionsList.stream().collect(Collectors.toMap(HealthConditions::getId, Function.identity()));
 				}
 			}
@@ -584,7 +584,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				prevHospsCq
 					.where(hospitalizationIdsExpr.in(resultList.stream().map(CaseExportDto::getHospitalizationId).collect(Collectors.toList())));
 				prevHospsCq.orderBy(cb.asc(prevHospsRoot.get(PreviousHospitalization.ADMISSION_DATE)));
-				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				firstPreviousHospitalizations =
 					prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> {
 						return id1;
@@ -613,7 +613,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
 				travelsCq.where(epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())));
 				travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
-				travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				travels = travelsList.stream().collect(Collectors.groupingBy(t -> t.getEpiData().getId()));
 			}
 
@@ -626,7 +626,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				Join<Sample, Case> samplesCaseJoin = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
 				samplesCq.where(caseIdsExpr.in(resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList())));
-				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
 
