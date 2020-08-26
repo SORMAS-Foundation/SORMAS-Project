@@ -761,6 +761,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}, ValoTheme.BUTTON_LINK);
 
+
 		Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
 				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
@@ -788,6 +789,35 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}, ValoTheme.BUTTON_LINK);
 
+
+		//setting symptoms to unknown button
+		Button setEmptyToUnknownButton = ButtonHelper.createButton(Captions.symptomsSetClearedToUnknown, event -> {
+			for (Object symptomId : unconditionalSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.UNKNOWN);
+				}
+			}
+			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.UNKNOWN);
+				}
+			}
+			for (Object symptomId : lesionsFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.UNKNOWN);
+				}
+			}
+			for (Object symptomId : monkeypoxImageFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(SymptomState.UNKNOWN);
+				}
+			}
+		}, ValoTheme.BUTTON_LINK);
+
 		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
 		CssStyles.style(complicationsHeading, CssStyles.H3);
@@ -798,7 +828,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
 		buttonsLayout.addComponent(clearAllButton);
 		buttonsLayout.addComponent(setEmptyToNoButton);
+		buttonsLayout.addComponent(setEmptyToUnknownButton);
 		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+		buttonsLayout.setWidth(100,Unit.PERCENTAGE);
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
 

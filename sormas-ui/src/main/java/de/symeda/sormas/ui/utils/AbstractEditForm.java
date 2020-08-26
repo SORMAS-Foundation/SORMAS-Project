@@ -79,7 +79,8 @@ public abstract class AbstractEditForm<DTO extends EntityDto> extends AbstractFo
 		this.fieldAccessCheckers = fieldAccessCheckers;
 
 		getFieldGroup().addCommitHandler(this);
-		setWidth(900, Unit.PIXELS);
+		setWidth(1100, Unit.PIXELS);
+
 
 		if (addFields) {
 			addFields();
