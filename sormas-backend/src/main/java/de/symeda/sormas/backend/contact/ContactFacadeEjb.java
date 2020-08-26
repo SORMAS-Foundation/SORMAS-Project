@@ -498,7 +498,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
 			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
 			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
-			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_READ_ONLY, true).getResultList();
 			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
 
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
