@@ -1039,6 +1039,7 @@ public interface Captions {
 	String Person_educationDetails = "Person.educationDetails";
 	String Person_educationType = "Person.educationType";
 	String Person_emailAddress = "Person.emailAddress";
+	String Person_externalId = "Person.externalId";
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
