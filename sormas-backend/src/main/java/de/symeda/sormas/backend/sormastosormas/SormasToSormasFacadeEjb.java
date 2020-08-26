@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,10 +39,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
@@ -141,6 +139,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
+	@Inject
+	private SormasToSormasClient sormasToSormasClient;
 
 	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
 	static {
@@ -187,7 +187,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
-		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer);
+		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer, options);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
 
@@ -203,7 +203,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		Pseudonymizer pseudonymizer = createPseudonymizer(options);
 
-		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer);
+		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
 		ContactDto contactDto = getContactDto(contact, pseudonymizer);
 		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
 
@@ -238,10 +238,13 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return resultList.stream().map(this::toSormasToSormasShareInfoDto).collect(Collectors.toList());
 	}
 
-	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer) {
+	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
-		personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
-		personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
+
+		if (options.isPseudonymizePersonalData() || options.isPseudonymizeSensitiveData()) {
+			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
+			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
+		}
 
 		return personDto;
 	}
@@ -573,12 +576,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		Response response;
 		try {
-			response = ClientBuilder.newBuilder()
-				.build()
-				.target(target.getUrl() + endpoint)
-				.request()
-				.header("Authorization", "Basic " + new String(Base64.getEncoder().encode(userCredentials.getBytes())))
-				.post(Entity.entity(mapper.writeValueAsString(entity), MediaType.APPLICATION_JSON_TYPE));
+			response =
+				sormasToSormasClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
@@ -586,7 +585,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			LOGGER.error("Unable to process sormas response", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasResult));
 		} catch (ProcessingException e) {
-			LOGGER.error("Unable to send data sormas", e);
+			LOGGER.error("Unable to send data to sormas", e);
 
 			String processingErrorMessage = I18nProperties.getString(Strings.errorSormasToSormasSend);
 			if (ConnectException.class.isAssignableFrom(e.getCause().getClass())) {
@@ -615,29 +614,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
 	}
 
-	public SormasToSormasSource fromSormasToSormasSourceDto(SormasToSormasSourceDto source) {
-		if (source == null) {
-			return null;
-		}
-
-		SormasToSormasSource target = sormasToSormasSourceService.getByUuid(source.getUuid());
-		if (target == null) {
-			target = new SormasToSormasSource();
-			target.setUuid(source.getUuid());
-			if (source.getCreationDate() != null) {
-				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
-			}
-		}
-		DtoHelper.validateDto(source, target);
-
-		target.setHealthDepartment(source.getHealthDepartment().getUuid());
-		target.setSenderName(source.getSenderName());
-		target.setSenderEmail(source.getSenderEmail());
-		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
-
-		return target;
-	}
-
 	public static SormasToSormasSourceDto toSormasTsoSormasSourceDto(SormasToSormasSource source) {
 		if (source == null) {
 			return null;
@@ -645,9 +621,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		SormasToSormasSourceDto target = new SormasToSormasSourceDto();
 
-		target.setCreationDate(source.getCreationDate());
-		target.setChangeDate(source.getChangeDate());
-		target.setUuid(source.getUuid());
+		DtoHelper.fillDto(target, source);
 
 		HealthDepartmentServerAccessData serverAccessData = getHealthDepartmentServerAccessData(source.getHealthDepartment())
 			.orElseGet(() -> new HealthDepartmentServerAccessData(source.getHealthDepartment(), source.getHealthDepartment(), null));
@@ -662,6 +636,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	public SormasToSormasShareInfoDto toSormasToSormasShareInfoDto(SormasToSormasShareInfo source) {
 		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
+
+		DtoHelper.fillDto(target, source);
 
 		if (source.getCaze() != null) {
 			target.setCaze(source.getCaze().toReference());

@@ -38,6 +38,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 public class SormasToSormasListComponent extends VerticalLayout {
@@ -49,7 +50,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	public SormasToSormasListComponent(CaseDataDto caze) {
 		CaseReferenceDto caseRef = caze.toReference();
 
-		sormasToSormasList = new SormasToSormasList(new SormasToSormasShareInfoCriteria().caze(caseRef), Captions.sormasToSormasCaseNotShared);
+		sormasToSormasList = new SormasToSormasList(
+			new SormasToSormasShareInfoCriteria().caze(caseRef),
+			caze.getSormasToSormasSource() == null,
+			Captions.sormasToSormasCaseNotShared);
 
 		initLayout(
 			caze.getSormasToSormasSource(),
@@ -60,7 +64,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 	public SormasToSormasListComponent(ContactDto contact) {
 		ContactReferenceDto contactRef = contact.toReference();
 
-		sormasToSormasList = new SormasToSormasList(new SormasToSormasShareInfoCriteria().contact(contactRef), Captions.sormasToSormasCaseNotShared);
+		sormasToSormasList = new SormasToSormasList(
+			new SormasToSormasShareInfoCriteria().contact(contactRef),
+			contact.getSormasToSormasSource() == null,
+			Captions.sormasToSormasCaseNotShared);
 
 		initLayout(
 			contact.getSormasToSormasSource(),
@@ -106,13 +113,15 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		private static final long serialVersionUID = -4659924105492791566L;
 
 		private final SormasToSormasShareInfoCriteria criteria;
-		private final String placeholderCaptionTag;
+		private final Label placeholderLabel;
 
-		public SormasToSormasList(SormasToSormasShareInfoCriteria criteria, String placeholderCaptionTag) {
+		public SormasToSormasList(SormasToSormasShareInfoCriteria criteria, boolean showPlaceholder, String placeholderCaptionTag) {
 			super(5);
 
 			this.criteria = criteria;
-			this.placeholderCaptionTag = placeholderCaptionTag;
+
+			this.placeholderLabel = new Label(placeholderCaptionTag != null ? I18nProperties.getCaption(placeholderCaptionTag) : null);
+			this.placeholderLabel.setVisible(showPlaceholder);
 		}
 
 		@Override
@@ -121,12 +130,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 				FacadeProvider.getSormasToSormasFacade().getShareInfoIndexList(criteria, 0, maxDisplayedEntries * 20);
 
 			setEntries(shareInfos);
-			if (!shareInfos.isEmpty()) {
-				showPage(1);
-			} else {
+			if (shareInfos.isEmpty()) {
 				updatePaginationLayout();
-				Label noEventLabel = new Label(I18nProperties.getCaption(placeholderCaptionTag));
-				listLayout.addComponent(noEventLabel);
+				listLayout.addComponent(placeholderLabel);
+			} else {
+				listLayout.removeComponent(placeholderLabel);
+				showPage(1);
 			}
 		}
 
@@ -163,8 +172,12 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
 			mainLayout.addComponent(healthDepartmentLabel);
 
-			Label materialLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
-			mainLayout.addComponent(materialLabel);
+			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
+			mainLayout.addComponent(senderLabel);
+
+			Label shareDateLabel = new Label(
+				I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
+			mainLayout.addComponent(shareDateLabel);
 		}
 	}
 
@@ -187,6 +200,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		if (sormasSource.getSenderPhoneNumber() != null) {
 			layout.addComponent(new Label(sormasSource.getSenderPhoneNumber()));
 		}
+
+		Label shareDateLabel = new Label(
+			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(sormasSource.getCreationDate()));
+		layout.addComponent(shareDateLabel);
 
 		return layout;
 	}

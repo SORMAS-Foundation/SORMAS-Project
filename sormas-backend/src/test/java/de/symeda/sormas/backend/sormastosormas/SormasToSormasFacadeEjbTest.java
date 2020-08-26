@@ -17,9 +17,23 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+
+import java.util.Base64;
+import java.util.Date;
+
+import javax.ws.rs.core.Response;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -37,14 +51,23 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
 import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import de.symeda.sormas.backend.common.StartupShutdownService;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
@@ -189,6 +212,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	 */
 	@Test
 	public void testRecreateEmbeddedUuidsOfContact() {
+		useNationalUserLogin();
 		MappableRdcf rdcf = createRDCF();
 
 		PersonDto person = createPersonDto(rdcf);
@@ -206,6 +230,179 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setUuid(DataHelper.createUuid());
 
 		getSormasToSormasFacade().saveSharedContact(new SormasToSormasContactDto(person, contact));
+	}
+
+	@Test
+	public void testShareCase() throws SormasToSormasException, JsonProcessingException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setHealthDepartment(
+			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(
+					invocation.getArgumentAt(0, String.class),
+					is("http://localhost:8080/sormas-rest" + SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
+
+				assertThat(
+					new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class))),
+					startsWith(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME));
+
+				SormasToSormasCaseDto sharedCase = invocation.getArgumentAt(2, SormasToSormasCaseDto.class);
+
+				assertThat(sharedCase.getPerson().getFirstName(), is(person.getFirstName()));
+				assertThat(sharedCase.getPerson().getLastName(), is(person.getLastName()));
+
+				assertThat(sharedCase.getCaze().getUuid(), is(caze.getUuid()));
+				// users should be cleaned up
+				assertThat(sharedCase.getCaze().getReportingUser(), is(nullValue()));
+				assertThat(sharedCase.getCaze().getSurveillanceOfficer(), is(nullValue()));
+				assertThat(sharedCase.getCaze().getClassificationUser(), is(nullValue()));
+
+				return Response.ok().build();
+			});
+
+		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
+	}
+
+	@Test
+	public void testShareContact() throws SormasToSormasException, JsonProcessingException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		ContactDto contact = creator.createContact(officer, officer, person.toReference(), null, new Date(), null, null, rdcf, dto -> {
+			dto.setResultingCaseUser(officer);
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setHealthDepartment(
+			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(
+					invocation.getArgumentAt(0, String.class),
+					is("http://localhost:8080/sormas-rest" + SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT));
+
+				assertThat(
+					new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class))),
+					startsWith(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME));
+
+				SormasToSormasContactDto sharedContact = invocation.getArgumentAt(2, SormasToSormasContactDto.class);
+
+				assertThat(sharedContact.getPerson().getFirstName(), is(person.getFirstName()));
+				assertThat(sharedContact.getPerson().getLastName(), is(person.getLastName()));
+
+				assertThat(sharedContact.getContact().getUuid(), is(contact.getUuid()));
+				// users should be cleaned up
+				assertThat(sharedContact.getContact().getReportingUser(), is(nullValue()));
+				assertThat(sharedContact.getContact().getContactOfficer(), is(nullValue()));
+				assertThat(sharedContact.getContact().getResultingCaseUser(), is(nullValue()));
+
+				return Response.ok().build();
+			});
+
+		getSormasToSormasFacade().shareContact(contact.getUuid(), options);
+	}
+
+	@Test
+	public void testShareCaseWithPseudonymizePersonalData() throws SormasToSormasException, JsonProcessingException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+			dto.setAdditionalDetails("Test additional details");
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setHealthDepartment(
+			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+		options.setPseudonymizePersonalData(true);
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(
+					invocation.getArgumentAt(0, String.class),
+					is("http://localhost:8080/sormas-rest" + SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
+
+				assertThat(
+					new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class))),
+					startsWith(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME));
+
+				SormasToSormasCaseDto sharedCase = invocation.getArgumentAt(2, SormasToSormasCaseDto.class);
+
+				assertThat(sharedCase.getPerson().getFirstName(), is("Confidential"));
+				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
+				assertThat(sharedCase.getCaze().getAdditionalDetails(), is("Test additional details"));
+
+				return Response.ok().build();
+			});
+
+		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
+	}
+
+	@Test
+	public void testShareCaseWithPseudonymizeSensitiveData() throws SormasToSormasException, JsonProcessingException {
+		RDCF rdcf = creator.createRDCF();
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		PersonDto person = creator.createPerson();
+		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
+			dto.setPerson(person.toReference());
+			dto.setSurveillanceOfficer(officer);
+			dto.setClassificationUser(officer);
+
+			dto.setAdditionalDetails("Test additional details");
+		});
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setHealthDepartment(
+			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+		options.setPseudonymizeSensitiveData(true);
+
+		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
+			.thenAnswer(invocation -> {
+				assertThat(
+					invocation.getArgumentAt(0, String.class),
+					is("http://localhost:8080/sormas-rest" + SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT));
+
+				assertThat(
+					new String(Base64.getDecoder().decode(invocation.getArgumentAt(1, String.class))),
+					startsWith(StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME));
+
+				SormasToSormasCaseDto sharedCase = invocation.getArgumentAt(2, SormasToSormasCaseDto.class);
+
+				assertThat(sharedCase.getPerson().getFirstName(), is("Confidential"));
+				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
+				assertThat(sharedCase.getCaze().getAdditionalDetails(), isEmptyString());
+
+				return Response.ok().build();
+			});
+
+		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
 	}
 
 	private PersonDto createPersonDto(MappableRdcf rdcf) {
@@ -236,7 +433,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		String pointOfEntryName = "Point of Entry";
 
 		MappableRdcf rdcf = new MappableRdcf();
-		rdcf.remoteRdcf = new TestDataCreator.RDCF(
+		rdcf.remoteRdcf = new RDCF(
 			new RegionReferenceDto(DataHelper.createUuid(), regionName),
 			new DistrictReferenceDto(DataHelper.createUuid(), districtName),
 			new CommunityReferenceDto(DataHelper.createUuid(), communityName),
@@ -249,7 +446,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 	private static class MappableRdcf {
 
-		private TestDataCreator.RDCF remoteRdcf;
-		private TestDataCreator.RDCF localRdcf;
+		private RDCF remoteRdcf;
+		private RDCF localRdcf;
 	}
 }

@@ -14,7 +14,7 @@ public class AppFieldAccessCheckers {
 	}
 
 	public boolean isAccessible(Class<?> parentType, String fieldName) {
-		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction);
+		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction, true);
 	}
 
 	public AppFieldAccessCheckers add(FieldAccessChecker accessChecker) {
