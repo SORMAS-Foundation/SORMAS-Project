@@ -126,6 +126,7 @@
     <string name="caption_case_prescriptions">Prescriptions</string>
     <string name="caption_case_samples">Case Samples</string>
     <string name="caption_case_tasks">Case Tasks</string>
+    <string name="caption_case_events">Case Events</string>
     <string name="caption_case_treatments">Treatments</string>
     <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
@@ -148,10 +149,14 @@
     <string name="caption_drawer_open">Open navigation drawer</string>
     <string name="caption_dropped">Dropped</string>
     <string name="caption_epi_week">Epi Week</string>
+    <string name="caption_event_description">Description</string>
+    <string name="caption_event_location">Location</string>
+    <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Event Information</string>
     <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_tasks">Event Tasks</string>
     <string name="caption_executed_by">Executed by</string>
+    <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Fatalities</string>
     <string name="caption_first_name">First Name</string>
     <string name="caption_sex">Sex</string>
@@ -223,6 +228,7 @@
     <string name="confirmation_action">Are you sure you want to do this?</string>
     <string name="confirmation_delete">Are you sure you want to delete this record?</string>
     <string name="confirmation_pick_gps">Are you in this place right now?</string>
+    <string name="confirmation_extend_quarantine">Are you sure you want to extend the quarantine?</string>
     <string name="description_epi_week">Epi Week</string>
     <string name="description_first_name">First Name</string>
     <string name="description_last_name">Last Name</string>
@@ -290,6 +296,7 @@
     <string name="heading_events_list">Event Listing</string>
     <string name="heading_existing_persons">Existing Persons</string>
     <string name="heading_existing_cases">Existing Cases</string>
+    <string name="heading_existing_events">Existing Events</string>
     <string name="heading_gathering">Gathering</string>
     <string name="heading_gps_activation">Turn On GPS</string>
     <string name="heading_gps_permission">Allow GPS Access</string>
@@ -309,6 +316,7 @@
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Pick or Create a Case</string>
+    <string name="heading_pick_or_create_event">Pick or Create a Event</string>
     <string name="heading_prescription">Prescription</string>
     <string name="heading_prescription_edit">Edit Prescription</string>
     <string name="heading_prescription_new">New Prescription</string>
@@ -350,6 +358,7 @@
     <string name="heading_user_report">Report a problem</string>
     <string name="heading_change_laboratory_result">Change Laboratory Result</string>
     <string name="heading_change_case_disease">Change case disease</string>
+    <string name="heading_extend_quarantine">Extend quarantine</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
     <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
@@ -390,6 +399,7 @@
     <string name="info_add_cases_before_report_submit">Are you sure you want to submit these case numbers for the selected epi week?</string>
     <string name="info_app_download">Downloading new SORMAS version... Depending on your internet connection, this may take a while.</string>
     <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
+    <string name="info_create_event">If you could <b>not</b> find the Event in the list above, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Please indicate if any of the following is relevant for the patient during the incubation period or illness.</string>
     <string name="info_initial_synchronization">Initial synchronizing with SORMAS server.\nPulling infrastructure data will take a few minutes.</string>
     <string name="info_no_additional_test">No additional tests performed on this sample yet</string>
@@ -404,7 +414,9 @@
     <string name="info_synchronizing">Synchronizing with SORMAS server...</string>
     <string name="info_user_report">Please briefly describe the problem you have experienced. Don\'t enter any personal or otherwise sensitive data!</string>
     <string name="info_pick_or_create_case">There is at least one existing case in the database that seems very similar to the one you are about to create. Please do one of the following:\n\n\u2022 Tap on a case that you <b>are sure</b> is the same case that you were about to create\n\u2022 Scroll to the bottom of this window and check the check box if you <b>are sure</b> that your case is a new case\n\nClick on the button in the bottom right to confirm your choice.</string>
+    <string name="info_pick_or_create_event">The list below contains all existing events having the same disease as the current case from your Region. Please check whether the event this case belongs to is already on this list or create a new one if it is not.</string>
     <string name="info_case_creation_mark_check_box">This case is a <b>new case</b> and <b>not a duplicate</b> of one of the cases above</string>
+    <string name="info_event_creation_mark_check_box">This event is a <b>new event</b> and <b>not a duplicate</b> of one of the events above</string>
     <string name="main_menu_cases">Cases</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_dashboard">Dashboard</string>
@@ -463,6 +475,8 @@
     <string name="message_change_case_disease">Really change case disease?</string>
     <string name="action_change_case_disease">Yes, change disease</string>
     <string name="message_language_change_unsuccessful">The language could not be changed due to an internal error.</string>
+    <string name="message_Event_and_Case_disease_mismatch">The new event to be linked to case has a different disease than case disease </string>
+    <string name="message_Event_already_linked_to_Case">The event has already been linked to this case </string>
     <string name="notification_channel_tasks_name">New or Updated Tasks</string>
     <string name="notification_channel_tasks_description">Receive a notification when a new task is assigned to you or a task assigned to you has been edited</string>
     <string name="notification_channel_case_changes_name">Important Case Changes</string>
@@ -470,6 +484,7 @@
     <string name="synclog_server">Server: </string>
     <string name="synclog_yours">Yours: </string>
     <string name="tag_row_item_select_or_create_person">rowItemSelectOrCreatePerson</string>
+    <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">rowItemPickOrCreatePerson</string>
     <string name="time_future_almost_two_years">within almost two years</string>
     <string name="time_future_one_day">tomorrow</string>
@@ -521,6 +536,7 @@
     <string name="value_date_unknown">Date N/A</string>
     <string name="value_description_unknown">Description N/A</string>
     <string name="value_disease_unknown">Disease N/A</string>
+    <string name="value_event_unknown">Event N/A</string>
     <string name="value_executing_clinician_unknown">Executing Clinician N/A</string>
     <string name="value_facility_unknown">Health Facility N/A</string>
     <string name="value_frequency_unknown">Frequency N/A</string>
@@ -560,4 +576,6 @@
     <string name="no_camera_permission">No camera permission</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
     <string name="scan_field_sample_id">Scan field sample id</string>
+    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type">Facility type</string>
 </resources>
