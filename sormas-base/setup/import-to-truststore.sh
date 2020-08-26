@@ -52,8 +52,24 @@ else
   fi
 fi
 
-TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
+if [[ -z "${SORMAS_PROPERTIES}" ]]; then
+  DEFAULT_SORMAS_PROPERTIES_PATH="${ROOT_PREFIX}/opt/domains/sormas/sormas.properties"
+  if [[ -f "${DEFAULT_SORMAS_PROPERTIES_PATH}" ]]; then
+    SORMAS_PROPERTIES="${DEFAULT_SORMAS_PROPERTIES_PATH}"
+  else
+    while [[ ! -f "${SORMAS_PROPERTIES}" ]]; do
+		  read -r -p "Please specify a valid sormas properties path: " SORMAS_PROPERTIES
+	  done
+	  export SORMAS_PROPERTIES
+  fi
+else
+  if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
+    echo "sormas properties file is invalid: ${SORMAS_PROPERTIES}"
+    exit 1
+  fi
+fi
 
+TRUSTSTORE_FILE_NAME=sormas2sormas.truststore.p12
 TRUSTSTORE_FILE=${SORMAS2SORMAS_DIR}/${TRUSTSTORE_FILE_NAME}
 NEW_TRUSTSTORE=false
 if [ ! -f "${TRUSTSTORE_FILE}" ]; then
@@ -61,8 +77,12 @@ if [ ! -f "${TRUSTSTORE_FILE}" ]; then
   echo "${TRUSTSTORE_FILE_NAME} not found. A new truststore file will be created."
 fi
 
-while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 4 ]]; do
-  read -sp "Please provide the password for the truststore (at least 4 characters): " SORMAS_S2S_TRUSTSTORE_PASS
+while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 6 ]]; do
+  if [[ ${NEW_TRUSTSTORE} = true ]]; then
+    read -sp "Please provide the password for the new truststore (at least 6 characters): " SORMAS_S2S_TRUSTSTORE_PASS
+  else
+    read -sp "Please provide the password for the truststore: " SORMAS_S2S_TRUSTSTORE_PASS
+  fi
   echo
 done
 
@@ -71,12 +91,17 @@ CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
 while [[ -z "${CRT_FILE_NAME}" ]] || [ ! -f "${CRT_FILE}" ]; do
   echo "File not found in ${SORMAS2SORMAS_DIR} folder."
   read -p "Please provide the file name of the certificate to import. It should be located inside the sormas2sormas folder: " CRT_FILE_NAME
+  CRT_FILE=${SORMAS2SORMAS_DIR}/${CRT_FILE_NAME}
 done
+
+# get new certificate alias, which is the same as the Common Name (CN)
+ALIAS=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *commonName *= //p')
 
 # import crt
 echo "Importing certificate into truststore..."
+keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${ALIAS} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
+
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
-  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}"
   #update properties
   if [[ -z ${SORMAS_PROPERTIES} ]]; then
 	  echo "sormas.properties file was not found."
@@ -97,14 +122,6 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
       echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
     } >> "${SORMAS_PROPERTIES}"
   fi
-else
-  # export existing certificates to temporary file
-  TEMP_FILE=${SORMAS2SORMAS_DIR}/tempcert.pem
-  openssl pkcs12 -in "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -out ${TEMP_FILE}
-
-  # create new truststore with the new certificate and the certificates from the temporary file
-  openssl pkcs12 -export -nokeys -out "${TRUSTSTORE_FILE}" -password pass:"${SORMAS_S2S_TRUSTSTORE_PASS}" -in "${CRT_FILE}" -certfile ${TEMP_FILE}
-  rm ${TEMP_FILE}
 fi
 
 echo "The script finished executing. Please check for any errors."

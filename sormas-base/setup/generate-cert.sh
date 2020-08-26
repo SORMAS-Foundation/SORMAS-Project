@@ -53,8 +53,25 @@ else
   fi
 fi
 
-while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 4 ]]; do
-  read -sp "Please provide a password for the certificate (at least 4 characters): " SORMAS_S2S_CERT_PASS
+if [[ -z "${SORMAS_PROPERTIES}" ]]; then
+  DEFAULT_SORMAS_PROPERTIES_PATH="${ROOT_PREFIX}/opt/domains/sormas/sormas.properties"
+  if [[ -f "${DEFAULT_SORMAS_PROPERTIES_PATH}" ]]; then
+    SORMAS_PROPERTIES="${DEFAULT_SORMAS_PROPERTIES_PATH}"
+  else
+    while [[ ! -f "${SORMAS_PROPERTIES}" ]]; do
+		  read -r -p "Please specify a valid sormas properties path: " SORMAS_PROPERTIES
+	  done
+	  export SORMAS_PROPERTIES
+  fi
+else
+  if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
+    echo "sormas properties file is invalid: ${SORMAS_PROPERTIES}"
+    exit 1
+  fi
+fi
+
+while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 6 ]]; do
+  read -sp "Please provide a password for the certificate (at least 6 characters): " SORMAS_S2S_CERT_PASS
   echo
 done
 

@@ -4,6 +4,11 @@ This guide explains how to:
  * create a new self-signed certificate, used for SORMAS to SORMAS communication
  * add certificates of other SORMAS instances to the local truststore
 
+### Prerequisites
+
+Java is needed, because the keytool is used for certificate import. <br/>
+See [Installing Java](SERVER_SETUP.md#java-11)
+
 ### Using the certificate generation script
 
 1. Run ``bash ./generate-cert.sh``
@@ -11,7 +16,8 @@ This guide explains how to:
 3. For the generation of the certificate, the following data is needed: a password, a *Common Name* (CN) 
     and an *Organization* (O). These may be set in environment variables (recommended), or provided 
     manually as the script executes.
-    * The password environment variable should be named ``SORMAS_S2S_CERT_PASS``.
+    * The password environment variable should be named ``SORMAS_S2S_CERT_PASS``. Please note that the password has to be 
+    at least 6 characters, or you will be prompted for a new one.
     * the *Common Name* environment variable should be named ``SORMAS_S2S_CERT_CN``.<br/>
     **Important**: for Germany, this value should be the SurvNet Code Site. <br/>
     E.g. *2.03.1.01.*
@@ -51,7 +57,7 @@ follow the next steps:
     The truststore password may be provided in an environment variable ``SORMAS_S2S_TRUSTSTORE_PASS`` (recommended), 
     or manually as the script executes.
     * If the ``SORMAS_PROPERTIES`` environment variable is available, the relevant properties will be 
-      automatically set by the script.
+      automatically set by the script. Please note that the password has to be at least 6 characters, or you will be prompted for a new one.
     * Else, the properties which need to be added will be displayed in the console after the script finishes executing.
     * Please note these properties and add them to the ``sormas.properties`` file. This should be located in the 
         ``/domains/sormas`` folder.
