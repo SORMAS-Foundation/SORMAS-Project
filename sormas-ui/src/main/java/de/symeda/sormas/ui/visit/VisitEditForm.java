@@ -51,7 +51,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private static final long serialVersionUID = 4265377973842591202L;
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+		fluidRowLocs(VisitDto.VISIT_STATUS, PersonDto.PHONE) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -109,6 +109,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			// workaround to stop initialization until disease is set 
 			return;
 		}
+
+		TextField textFieldPhone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
+		textFieldPhone.setCaption(PersonDto.PHONE);
+		textFieldPhone.setValue(this.person.getPhone());
+		textFieldPhone.setReadOnly(true);
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
