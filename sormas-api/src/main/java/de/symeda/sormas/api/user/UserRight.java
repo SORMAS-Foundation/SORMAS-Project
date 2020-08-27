@@ -1067,6 +1067,9 @@ public enum UserRight {
 	),
 	CAMPAIGN_FORM_DATA_DELETE(
 			ADMIN
+	),
+	CAMPAIGN_FORM_DATA_EXPORT(
+			ADMIN, NATIONAL_USER
 	);
 	//@formatter:on
 
