@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -38,6 +39,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.diagram.AbstractEpiCurveComponent;
 import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
@@ -51,6 +54,9 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 
 	private static final int ROW_HEIGHT = 555;
+
+	protected DashboardDataProvider dashboardDataProvider;
+	protected DashboardFilterLayout filterLayout;
 
 	protected AbstractDashboardStatisticsComponent statisticsComponent;
 	protected AbstractEpiCurveComponent epiCurveComponent;
@@ -73,7 +79,24 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private Label sourceCasesLabel = new Label();
 
 	public ContactsDashboardView() {
-		super(VIEW_NAME, DashboardType.CONTACTS);
+		super(VIEW_NAME);
+
+		dashboardDataProvider = new DashboardDataProvider();
+		if (dashboardDataProvider.getDashboardType() == null) {
+			dashboardDataProvider.setDashboardType(DashboardType.CONTACTS);
+		}
+		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
+			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+		}
+
+		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		dashboardLayout.addComponent(filterLayout);
+
+		dashboardSwitcher.setValue(DashboardType.CONTACTS);
+		dashboardSwitcher.addValueChangeListener(e -> {
+			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
+			navigateToDashboardView(e);
+		});
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoContactDashboard));
 
@@ -117,6 +140,11 @@ public class ContactsDashboardView extends AbstractDashboardView {
 				diseaseFilterChangeCallback.accept(null != dashboardDataProvider.getDisease());
 			});
 		}
+	}
+
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		refreshDashboard();
 	}
 
 	private HorizontalLayout createCaseStatisticsLayout() {
@@ -360,7 +388,7 @@ public class ContactsDashboardView extends AbstractDashboardView {
 
 	public void refreshDashboard() {
 
-		super.refreshDashboard();
+		dashboardDataProvider.refreshData();
 
 		// Updates statistics
 		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());

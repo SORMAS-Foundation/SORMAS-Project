@@ -1,37 +1,30 @@
 package de.symeda.sormas.backend.campaign.diagram;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Lob;
-import javax.persistence.Transient;
 
-import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
-import de.symeda.sormas.api.campaign.diagram.DiagramType;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
+import de.symeda.sormas.api.campaign.diagram.DiagramType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-@Entity(name = "campaignDiagramDefinition")
+@Entity
 @Audited
 public class CampaignDiagramDefinition extends AbstractDomainObject {
 
+	private static final long serialVersionUID = 7360131476160449930L;
+
 	private String diagramId;
+	private String diagramCaption;
 	private DiagramType diagramType;
-	private String campaignDiagramSeries;
-	private List<CampaignDiagramSeries> campaignDiagramSeriesList;
+	private List<CampaignDiagramSeries> campaignDiagramSeries;
 
 	@Column
 	public String getDiagramId() {
@@ -40,6 +33,15 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 
 	public void setDiagramId(String diagramId) {
 		this.diagramId = diagramId;
+	}
+
+	@Column
+	public String getDiagramCaption() {
+		return diagramCaption;
+	}
+
+	public void setDiagramCaption(String diagramCaption) {
+		this.diagramCaption = diagramCaption;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -51,48 +53,14 @@ public class CampaignDiagramDefinition extends AbstractDomainObject {
 		this.diagramType = diagramType;
 	}
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	public String getCampaignDiagramSeries() {
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignDiagramSeries> getCampaignDiagramSeries() {
 		return campaignDiagramSeries;
 	}
 
-	public void setCampaignDiagramSeries(String campaignDiagramSeries) {
+	public void setCampaignDiagramSeries(List<CampaignDiagramSeries> campaignDiagramSeries) {
 		this.campaignDiagramSeries = campaignDiagramSeries;
-		campaignDiagramSeriesList = null;
-	}
-
-	@Transient
-	public List<CampaignDiagramSeries> getCampaignDiagramSeriesList() {
-		if (campaignDiagramSeriesList == null) {
-			if (StringUtils.isBlank(campaignDiagramSeries)) {
-				campaignDiagramSeriesList = new ArrayList<>();
-			} else {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					campaignDiagramSeriesList = Arrays.asList(mapper.readValue(campaignDiagramSeries, CampaignDiagramSeries[].class));
-				} catch (IOException e) {
-					throw new ValidationRuntimeException(
-						"Content of campaignDiagramSeries could not be parsed to List<CampaignDiagramSeries> - ID: " + getId());
-				}
-			}
-		}
-		return campaignDiagramSeriesList;
-	}
-
-	public void setCampaignDiagramSeriesList(List<CampaignDiagramSeries> campaignDiagramSeriesList) {
-		this.campaignDiagramSeriesList = campaignDiagramSeriesList;
-
-		if (this.campaignDiagramSeriesList == null) {
-			campaignDiagramSeries = null;
-			return;
-		}
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			campaignDiagramSeries = mapper.writeValueAsString(campaignDiagramSeriesList);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Content of campaignDiagramSeriesList could not be parsed to JSON String - ID: " + getId());
-		}
 	}
 }

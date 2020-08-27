@@ -5009,6 +5009,18 @@ UPDATE cases SET facilitytype = null WHERE healthfacility_id ISNULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (242, 'Fix problems caused by #1637');
 
+-- 2020-07-29 Campaign diagram visualisation
+
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaignformdata ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaigndiagramdefinition ADD COLUMN diagramCaption varchar(255);
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diagram visualization #2526');
+
+
 -- 2020-08-13 Sormas 2 Sormas sharing information #2624
 CREATE TABLE sormastosormassource (
     id bigint NOT NULL,
@@ -5046,6 +5058,6 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_ca
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-INSERT INTO schema_version (version_number, comment) VALUES (243, 'Store Sormas 2 Sormas sharing information #2624');
+INSERT INTO schema_version (version_number, comment) VALUES (244, 'Store Sormas 2 Sormas sharing information #2624');
 
 -- *** Insert new sql commands BEFORE this line ***

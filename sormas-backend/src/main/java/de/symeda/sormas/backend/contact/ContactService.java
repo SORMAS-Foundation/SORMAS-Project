@@ -867,7 +867,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		case DISTRICT:
 			final District district = currentUser.getDistrict();
 			if (district != null) {
-				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT).get(District.ID), currentUser.getDistrict().getId()));
 			}
 			break;
 		case COMMUNITY:

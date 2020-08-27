@@ -53,6 +53,16 @@ public enum StatisticsCaseAttribute {
 		StatisticsCaseSubAttribute.COMMUNITY,
 		StatisticsCaseSubAttribute.FACILITY),
 
+	PLACE_OF_RESIDENCE(StatisticsCaseAttributeGroup.PERSON,
+		true,
+		true,
+		StatisticsCaseSubAttribute.PERSON_REGION,
+		StatisticsCaseSubAttribute.PERSON_DISTRICT,
+		StatisticsCaseSubAttribute.PERSON_COMMUNITY,
+		StatisticsCaseSubAttribute.PERSON_CITY,
+		StatisticsCaseSubAttribute.PERSON_POSTCODE,
+		StatisticsCaseSubAttribute.PERSON_ADDRESS),
+
 	SEX(StatisticsCaseAttributeGroup.PERSON, true, true),
 	AGE_INTERVAL_1_YEAR(StatisticsCaseAttributeGroup.PERSON, false, true),
 	AGE_INTERVAL_5_YEARS(StatisticsCaseAttributeGroup.PERSON, false, true),

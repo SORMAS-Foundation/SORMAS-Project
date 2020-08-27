@@ -23,9 +23,11 @@ import javax.naming.NamingException;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
+import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
+import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.caze.classification.CaseClassificationFacade;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryFacade;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseFacade;
@@ -98,6 +100,10 @@ public class FacadeProvider {
 
 	public static CaseStatisticsFacade getCaseStatisticsFacade() {
 		return get().lookupEjbRemote(CaseStatisticsFacade.class);
+	}
+
+	public static CaseImportFacade getCaseImportFacade() {
+		return get().lookupEjbRemote(CaseImportFacade.class);
 	}
 
 	public static ContactFacade getContactFacade() {
@@ -266,6 +272,10 @@ public class FacadeProvider {
 
 	public static CampaignFacade getCampaignFacade() {
 		return get().lookupEjbRemote(CampaignFacade.class);
+	}
+
+	public static CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return get().lookupEjbRemote(CampaignDiagramDefinitionFacade.class);
 	}
 
 	public static CampaignFormMetaFacade getCampaignFormMetaFacade() {

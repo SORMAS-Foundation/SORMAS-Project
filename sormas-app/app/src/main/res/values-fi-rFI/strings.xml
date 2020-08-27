@@ -126,6 +126,7 @@
     <string name="caption_case_prescriptions">Lääkemääräykset</string>
     <string name="caption_case_samples">Potilaan näytteet</string>
     <string name="caption_case_tasks">Potilastehtävät</string>
+    <string name="caption_case_events">Case Events</string>
     <string name="caption_case_treatments">Hoidot</string>
     <string name="caption_case_similarity_create">Lisää uusi potilas</string>
     <string name="caption_changed_data_lost">Muutetut tiedot hävinneet uudelleensynkronoinnin aikana.</string>
@@ -148,10 +149,14 @@
     <string name="caption_drawer_open">Avaa navigointipalkki</string>
     <string name="caption_dropped">Poistettu</string>
     <string name="caption_epi_week">Epidemiaviikko</string>
+    <string name="caption_event_description">Description</string>
+    <string name="caption_event_location">Location</string>
+    <string name="caption_event_period">Date of event</string>
     <string name="caption_event_information">Tapahtuman tiedot</string>
     <string name="caption_event_participants">Osallisia henkilöitä</string>
     <string name="caption_event_tasks">Tapahtumatehtävät</string>
     <string name="caption_executed_by">Suorittaja</string>
+    <string name="caption_facility_or_home">Place of stay</string>
     <string name="caption_fatalities">Kuolleita</string>
     <string name="caption_first_name">Etunimi</string>
     <string name="caption_sex">Sukupuoli</string>
@@ -223,6 +228,7 @@
     <string name="confirmation_action">Haluatko varmasti tehdä tämän?</string>
     <string name="confirmation_delete">Oletko varma, että haluat poistaa tämän tietueen?</string>
     <string name="confirmation_pick_gps">Oletteko tässä paikassa juuri nyt?</string>
+    <string name="confirmation_extend_quarantine">Are you sure you want to extend the quarantine?</string>
     <string name="description_epi_week">Epidemiaviikko</string>
     <string name="description_first_name">Etunimi</string>
     <string name="description_last_name">Sukunimi</string>
@@ -290,6 +296,7 @@
     <string name="heading_events_list">Tapahtumalistaus</string>
     <string name="heading_existing_persons">Nykyiset henkilöt</string>
     <string name="heading_existing_cases">Nykyiset potilaat</string>
+    <string name="heading_existing_events">Existing Events</string>
     <string name="heading_gathering">Kokoontuminen</string>
     <string name="heading_gps_activation">Käynnistä GPS</string>
     <string name="heading_gps_permission">Salli GPS pääsy</string>
@@ -309,6 +316,7 @@
     <string name="heading_person_involved_new">Uusi osallinen henkilö</string>
     <string name="heading_pick_or_create_person">Valitse tai lisää henkilö</string>
     <string name="heading_pick_or_create_case">Valitse tai lisää potilas</string>
+    <string name="heading_pick_or_create_event">Pick or Create a Event</string>
     <string name="heading_prescription">Lääkemääräys</string>
     <string name="heading_prescription_edit">Muokkaa lääkemääräystä</string>
     <string name="heading_prescription_new">Uusi lääkemääräys</string>
@@ -350,6 +358,7 @@
     <string name="heading_user_report">Raportoi ongelmasta</string>
     <string name="heading_change_laboratory_result">Muuta laboratoriotulosta</string>
     <string name="heading_change_case_disease">Vaihda potilaan sairaus</string>
+    <string name="heading_extend_quarantine">Extend quarantine</string>
     <string name="hint_add_to_empty_list">Lisää uusi merkintä painamalla \"+\" symbolia oikeassa yläkulmassa.</string>
     <string name="hint_clear">Tyhjennä</string>
     <string name="hint_create_pin">Valitse neljänumeroinen PIN jota käytät vahvistamaan itsesi, kun avaat SORMAS-sovelluksen.</string>
@@ -390,6 +399,7 @@
     <string name="info_add_cases_before_report_submit">Haluatko varmasti lähettää nämä potilasmäärät koskien valittua epidemiaviikkoa?</string>
     <string name="info_app_download">Ladataan uutta SORMAS-versiota... Tämä voi viedä jonkin aikaa riippuen internetyhteydestäsi.</string>
     <string name="info_create_person">Jos <b>et löytänyt</b> henkilöä, joka vastaisi syöttämiäsi henkilötietoja, klikkaa \"Lisää\"-nappia.</string>
+    <string name="info_create_event">If you could <b>not</b> find the Event in the list above, click the \"Create\" button.</string>
     <string name="info_epidemiological_info">Merkitse, jos mikään seuraavista piti paikkansa potilaan osalta sairauden tai sen itämisen aikana.</string>
     <string name="info_initial_synchronization">Alkusynkronointi SORMAS-palvelimen kanssa.\nPerusrakenteen tietojen siirto vie muutaman minuutin.</string>
     <string name="info_no_additional_test">Tälle näytteelle ei ole vielä tehty lisätestejä</string>
@@ -404,7 +414,9 @@
     <string name="info_synchronizing">Synkronoidaan SORMAS-palvelimen kanssa...</string>
     <string name="info_user_report">Kuvaile lyhyesti ongelma, jonka olet kokenut. Älä syötä henkilökohtaisia tai muuten arkaluontoisia tietoja!</string>
     <string name="info_pick_or_create_case">Tietokannassa on ainakin yksi potilas, joka vaikuttaa hyvin samanlaiselta kuin potilas, jota olet lisäämässä. Tee jotain seuraavista:\n\n\u2022 Napauta potilasta jonka <b>tiedät</b> olevan sama potilas, kuin mitä olit lisäämässä\n\u2022 Skrollaa tämän ikkunan alareunaan ja valitse valintalaatikko jos <b>tiedät</b>, että potilaasi on uusi potilas\n\nClikkaa nappia alaoikella vahvistaaksesi valintasi.</string>
+    <string name="info_pick_or_create_event">The list below contains all existing events having the same disease as the current case from your Region. Please check whether the event this case belongs to is already on this list or create a new one if it is not.</string>
     <string name="info_case_creation_mark_check_box">Tämä potilas on <b>uusi potilas</b> ja <b>ei kaksoiskappale</b> yhdestä yllä olevista potilaista</string>
+    <string name="info_event_creation_mark_check_box">This event is a <b>new event</b> and <b>not a duplicate</b> of one of the events above</string>
     <string name="main_menu_cases">Potilaat</string>
     <string name="main_menu_contacts">Kontaktit</string>
     <string name="main_menu_dashboard">Hallintatyöpöytä</string>
@@ -463,6 +475,8 @@
     <string name="message_change_case_disease">Haluatko varmasti vaihtaa potilaan sairautta?</string>
     <string name="action_change_case_disease">Kyllä, vaihda sairaus</string>
     <string name="message_language_change_unsuccessful">Kieltä ei voitu vaihtaa sisäisen virheen takia.</string>
+    <string name="message_Event_and_Case_disease_mismatch">The new event to be linked to case has a different disease than case disease </string>
+    <string name="message_Event_already_linked_to_Case">The event has already been linked to this case </string>
     <string name="notification_channel_tasks_name">Uusi tai päivitetty tehtävä</string>
     <string name="notification_channel_tasks_description">Saa ilmoitus kun sinulle on annettu uusi tehtävä tai sinulle annettua tehtävää on muokattu</string>
     <string name="notification_channel_case_changes_name">Tärkeät potilasmuutokset</string>
@@ -470,6 +484,7 @@
     <string name="synclog_server">Palvelin: </string>
     <string name="synclog_yours">Laitteesi: </string>
     <string name="tag_row_item_select_or_create_person">Valitse tai lisää henkilö</string>
+    <string name="tag_row_item_select_or_create_event">rowItemSelectOrCreateEvent</string>
     <string name="tag_row_item_case_pick_or_create">Valitse tai lisää potilas</string>
     <string name="time_future_almost_two_years">lähes kahden vuoden sisällä</string>
     <string name="time_future_one_day">huomenna</string>
@@ -521,6 +536,7 @@
     <string name="value_date_unknown">Päivämäärä puuttuu</string>
     <string name="value_description_unknown">Kuvaus puuttuu</string>
     <string name="value_disease_unknown">Sairaus puuttuu</string>
+    <string name="value_event_unknown">Event N/A</string>
     <string name="value_executing_clinician_unknown">Suorittava kliinikko puuttuu</string>
     <string name="value_facility_unknown">Hoitolaitos puuttuu</string>
     <string name="value_frequency_unknown">Taajuus puuttuu</string>
@@ -560,4 +576,6 @@
     <string name="no_camera_permission">Ei lupaa kameran käyttöön</string>
     <string name="permission_camera_rationale">Tunnistaminen vaatii käyttöoikeuden kameraan</string>
     <string name="scan_field_sample_id">Skannaa kenttänäytteen ID</string>
+    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type">Facility type</string>
 </resources>

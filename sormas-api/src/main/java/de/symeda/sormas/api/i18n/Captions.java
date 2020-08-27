@@ -92,6 +92,7 @@ public interface Captions {
 	String AdditionalTest_urea = "AdditionalTest.urea";
 	String AdditionalTest_wbcCount = "AdditionalTest.wbcCount";
 	String additionalTestNewTest = "additionalTestNewTest";
+	String address = "address";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
 	String AggregateReport_healthFacility = "AggregateReport.healthFacility";
@@ -1064,6 +1065,7 @@ public interface Captions {
 	String PortHealthInfo_transitStopDetails5 = "PortHealthInfo.transitStopDetails5";
 	String PortHealthInfo_vesselDetails = "PortHealthInfo.vesselDetails";
 	String PortHealthInfo_vesselName = "PortHealthInfo.vesselName";
+	String postcode = "postcode";
 	String Prescription_additionalNotes = "Prescription.additionalNotes";
 	String Prescription_dose = "Prescription.dose";
 	String Prescription_drugIntakeDetails = "Prescription.drugIntakeDetails";
@@ -1562,6 +1564,7 @@ public interface Captions {
 	String View_contacts_person = "View.contacts.person";
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";
+	String View_dashboard_campaigns = "View.dashboard.campaigns";
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_events = "View.events";
