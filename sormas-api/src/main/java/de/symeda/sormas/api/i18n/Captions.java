@@ -1233,6 +1233,7 @@ public interface Captions {
 	String sormasToSormasDialogTitle = "sormasToSormasDialogTitle";
 	String sormasToSormasErrorDialogTitle = "sormasToSormasErrorDialogTitle";
 	String sormasToSormasListTitle = "sormasToSormasListTitle";
+	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_healthDepartment = "SormasToSormasOptions.healthDepartment";
 	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
 	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";

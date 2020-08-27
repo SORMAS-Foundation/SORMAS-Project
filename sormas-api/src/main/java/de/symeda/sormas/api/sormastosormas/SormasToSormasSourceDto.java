@@ -25,19 +25,9 @@ public class SormasToSormasSourceDto extends EntityDto {
 	private String senderName;
 	private String senderEmail;
 	private String senderPhoneNumber;
+	private String comment;
 
 	public SormasToSormasSourceDto() {
-	}
-
-	public SormasToSormasSourceDto(
-		HealthDepartmentServerReferenceDto healthDepartment,
-		String senderName,
-		String senderEmail,
-		String senderPhoneNumber) {
-		this.healthDepartment = healthDepartment;
-		this.senderName = senderName;
-		this.senderEmail = senderEmail;
-		this.senderPhoneNumber = senderPhoneNumber;
 	}
 
 	public HealthDepartmentServerReferenceDto getHealthDepartment() {
@@ -70,5 +60,13 @@ public class SormasToSormasSourceDto extends EntityDto {
 
 	public void setSenderPhoneNumber(String senderPhoneNumber) {
 		this.senderPhoneNumber = senderPhoneNumber;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

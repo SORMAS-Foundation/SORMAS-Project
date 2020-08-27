@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
@@ -34,6 +35,8 @@ public class SormasToSormasSource extends AbstractDomainObject {
 	private String senderEmail;
 
 	private String senderPhoneNumber;
+
+	private String comment;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getHealthDepartment() {
@@ -69,5 +72,14 @@ public class SormasToSormasSource extends AbstractDomainObject {
 
 	public void setSenderPhoneNumber(String senderPhoneNumber) {
 		this.senderPhoneNumber = senderPhoneNumber;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

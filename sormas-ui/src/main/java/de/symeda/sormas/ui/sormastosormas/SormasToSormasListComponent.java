@@ -35,6 +35,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -160,24 +161,28 @@ public class SormasToSormasListComponent extends VerticalLayout {
 			setWidth(100, Unit.PERCENTAGE);
 			addStyleName(CssStyles.SORMAS_LIST_ENTRY);
 
-			VerticalLayout mainLayout = new VerticalLayout();
-			mainLayout.setWidth(100, Unit.PERCENTAGE);
-			mainLayout.setMargin(false);
-			mainLayout.setSpacing(false);
-			addComponent(mainLayout);
-			setExpandRatio(mainLayout, 1);
+			VerticalLayout layout = new VerticalLayout();
+			layout.setWidth(100, Unit.PERCENTAGE);
+			layout.setMargin(false);
+			layout.setSpacing(false);
+			addComponent(layout);
+			setExpandRatio(layout, 1);
 
 			Label healthDepartmentLabel =
 				new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedWith) + " " + shareInfo.getHealthDepartment());
 			healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
-			mainLayout.addComponent(healthDepartmentLabel);
+			layout.addComponent(healthDepartmentLabel);
 
 			Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
-			mainLayout.addComponent(senderLabel);
+			layout.addComponent(senderLabel);
 
 			Label shareDateLabel = new Label(
 				I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(shareInfo.getCreationDate()));
-			mainLayout.addComponent(shareDateLabel);
+			layout.addComponent(shareDateLabel);
+
+			if (!DataHelper.isNullOrEmpty(shareInfo.getComment())) {
+				layout.addComponent(new Label(shareInfo.getComment()));
+			}
 		}
 	}
 
@@ -204,6 +209,10 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		Label shareDateLabel = new Label(
 			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(sormasSource.getCreationDate()));
 		layout.addComponent(shareDateLabel);
+
+		if (!DataHelper.isNullOrEmpty(sormasSource.getComment())) {
+			layout.addComponent(new Label(sormasSource.getComment()));
+		}
 
 		return layout;
 	}

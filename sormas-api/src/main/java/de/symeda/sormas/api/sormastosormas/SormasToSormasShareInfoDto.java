@@ -29,6 +29,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private ContactReferenceDto contact;
 	private HealthDepartmentServerReferenceDto healthDepartment;
 	private UserReferenceDto sender;
+	private String comment;
 
 	public CaseReferenceDto getCaze() {
 		return caze;
@@ -62,32 +63,26 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.sender = sender;
 	}
 
-	public static SormasToSormasShareInfoDto build(
-		CaseReferenceDto caze,
-		HealthDepartmentServerReferenceDto healthDepartment,
-		UserReferenceDto sender) {
-		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public static SormasToSormasShareInfoDto forCase(CaseReferenceDto caze) {
+		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
+		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setCaze(caze);
 
 		return shareInfo;
 	}
 
-	public static SormasToSormasShareInfoDto build(
-		ContactReferenceDto contact,
-		HealthDepartmentServerReferenceDto healthDepartment,
-		UserReferenceDto sender) {
-		SormasToSormasShareInfoDto shareInfo = build(healthDepartment, sender);
-		shareInfo.setContact(contact);
-
-		return shareInfo;
-	}
-
-	private static SormasToSormasShareInfoDto build(HealthDepartmentServerReferenceDto healthDepartment, UserReferenceDto sender) {
+	public static SormasToSormasShareInfoDto forContact(ContactReferenceDto contact) {
 		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-
 		shareInfo.setUuid(DataHelper.createUuid());
-		shareInfo.setHealthDepartment(healthDepartment);
-		shareInfo.setSender(sender);
+		shareInfo.setContact(contact);
 
 		return shareInfo;
 	}

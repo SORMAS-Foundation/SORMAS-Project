@@ -24,12 +24,15 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String HEALTH_DEPARTMENT = "healthDepartment";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
 	public static final String PSEUDONYMIZE_SENSITIVE_DATA = "pseudonymizeSensitiveData";
+	public static final String COMMENT = "comment";
 
 	private HealthDepartmentServerAccessData healthDepartment;
 
 	private boolean pseudonymizePersonalData;
 
 	private boolean pseudonymizeSensitiveData;
+
+	private String comment;
 
 	public HealthDepartmentServerAccessData getHealthDepartment() {
 		return healthDepartment;
@@ -53,5 +56,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setPseudonymizeSensitiveData(boolean pseudonymizeSensitiveData) {
 		this.pseudonymizeSensitiveData = pseudonymizeSensitiveData;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

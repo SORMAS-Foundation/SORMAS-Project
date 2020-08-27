@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import javax.persistence.Column;
@@ -42,6 +43,8 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 	private String healthDepartment;
 
 	private User sender;
+
+	private String comment;
 
 	@ManyToOne
 	@JoinColumn
@@ -80,5 +83,14 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setSender(User sender) {
 		this.sender = sender;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 }

@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.startsWith;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -58,6 +59,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -249,6 +252,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setHealthDepartment(
 			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
@@ -271,10 +275,23 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getCaze().getSurveillanceOfficer(), is(nullValue()));
 				assertThat(sharedCase.getCaze().getClassificationUser(), is(nullValue()));
 
+				// share information
+				assertThat(sharedCase.getCaze().getSormasToSormasSource().getHealthDepartment().getUuid(), is("healthDepMain"));
+				assertThat(sharedCase.getCaze().getSormasToSormasSource().getSenderName(), is("Surv Off"));
+				assertThat(sharedCase.getCaze().getSormasToSormasSource().getComment(), is("Test comment"));
+
 				return Response.ok().build();
 			});
 
 		getSormasToSormasFacade().shareCase(caze.getUuid(), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), 0, 100);
+
+		assertThat(shareInfoList.size(), is(1));
+		assertThat(shareInfoList.get(0).getHealthDepartment().getUuid(), is("healtsDep1"));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
 	@Test
@@ -292,6 +309,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setHealthDepartment(
 			new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://mock-sormas/sormas-rest"));
+		options.setComment("Test comment");
 
 		Mockito.when(MockProducer.getSormasToSormasClient().post(Matchers.anyString(), Matchers.anyString(), Matchers.any()))
 			.thenAnswer(invocation -> {
@@ -314,10 +332,22 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedContact.getContact().getContactOfficer(), is(nullValue()));
 				assertThat(sharedContact.getContact().getResultingCaseUser(), is(nullValue()));
 
+				// share information
+				assertThat(sharedContact.getContact().getSormasToSormasSource().getHealthDepartment().getUuid(), is("healthDepMain"));
+				assertThat(sharedContact.getContact().getSormasToSormasSource().getSenderName(), is("Surv Off"));
+				assertThat(sharedContact.getContact().getSormasToSormasSource().getComment(), is("Test comment"));
+
 				return Response.ok().build();
 			});
 
 		getSormasToSormasFacade().shareContact(contact.getUuid(), options);
+
+		List<SormasToSormasShareInfoDto> shareInfoList =
+			getSormasToSormasFacade().getShareInfoIndexList(new SormasToSormasShareInfoCriteria().contact(contact.toReference()), 0, 100);
+		assertThat(shareInfoList.size(), is(1));
+		assertThat(shareInfoList.get(0).getHealthDepartment().getUuid(), is("healtsDep1"));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
 	@Test

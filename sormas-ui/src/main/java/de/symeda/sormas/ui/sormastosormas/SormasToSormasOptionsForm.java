@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
@@ -30,9 +31,10 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
-	private static String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.HEALTH_DEPARTMENT)
+	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.HEALTH_DEPARTMENT)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
-		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
+		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
+		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
 	public SormasToSormasOptionsForm() {
 		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX);
@@ -60,5 +62,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
 		pseudonymizeSensitiveData.addStyleNames(CssStyles.FORCE_CAPTION, CssStyles.VSPACE_2);
+
+		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
+		comment.setRows(3);
 	}
 }

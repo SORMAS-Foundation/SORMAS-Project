@@ -52,11 +52,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -189,11 +187,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer, options);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
-		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
+		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
 
 		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
 
-		saveCaseShareInfo(cazeDto.toReference(), options.getHealthDepartment().toReferenceDto(), currentUser.toReference());
+		saveNewShareInfo(currentUser.toReference(), options, caze, null);
 	}
 
 	@Override
@@ -205,11 +203,11 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
 		ContactDto contactDto = getContactDto(contact, pseudonymizer);
-		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser));
+		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
-		saveContactShareInfo(contact.toReference(), options.getHealthDepartment().toReferenceDto(), currentUser.toReference());
+		saveNewShareInfo(currentUser.toReference(), options, null, contact);
 	}
 
 	@Override
@@ -268,30 +266,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		contactDto.setResultingCaseUser(null);
 
 		return contactDto;
-	}
-
-	private void saveCaseShareInfo(CaseReferenceDto caseReference, HealthDepartmentServerReferenceDto healthDepartment, UserReferenceDto sender) {
-		saveShareInfo(SormasToSormasShareInfoDto.build(caseReference, healthDepartment, sender));
-	}
-
-	private void saveContactShareInfo(
-		ContactReferenceDto contactReference,
-		HealthDepartmentServerReferenceDto healthDepartment,
-		UserReferenceDto sender) {
-		saveShareInfo(SormasToSormasShareInfoDto.build(contactReference, healthDepartment, sender));
-	}
-
-	private void saveShareInfo(SormasToSormasShareInfoDto source) {
-		SormasToSormasShareInfo target = new SormasToSormasShareInfo();
-
-		target.setUuid(source.getUuid());
-		target.setCreationDate(new Timestamp(new Date().getTime()));
-		target.setCaze(caseService.getByReferenceDto(source.getCaze()));
-		target.setContact(contactService.getByReferenceDto(source.getContact()));
-		target.setHealthDepartment(source.getHealthDepartment().getUuid());
-		target.setSender(userService.getByReferenceDto(source.getSender()));
-
-		sormasToSormasShareInfoService.ensurePersisted(target);
 	}
 
 	private void processCaseData(CaseDataDto caze, PersonDto person) {
@@ -555,12 +529,31 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return pseudonymizer;
 	}
 
-	private SormasToSormasSourceDto createSormasToSormasSource(User currentUser) {
-		return new SormasToSormasSourceDto(
-			new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"),
-			String.format("%s %s", currentUser.getFirstName(), currentUser),
-			currentUser.getUserEmail(),
-			currentUser.getPhone());
+	private SormasToSormasSourceDto createSormasToSormasSource(User currentUser, SormasToSormasOptionsDto options) {
+		SormasToSormasSourceDto sormasToSormasSource = new SormasToSormasSourceDto();
+
+		sormasToSormasSource.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
+		sormasToSormasSource.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
+		sormasToSormasSource.setSenderEmail(currentUser.getUserEmail());
+		sormasToSormasSource.setSenderPhoneNumber(currentUser.getPhone());
+		sormasToSormasSource.setComment(options.getComment());
+
+		return sormasToSormasSource;
+	}
+
+	private void saveNewShareInfo(UserReferenceDto sender, SormasToSormasOptionsDto options, Case caze, Contact contact) {
+		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
+
+		shareInfo.setUuid(DataHelper.createUuid());
+		shareInfo.setCreationDate(new Timestamp(new Date().getTime()));
+		shareInfo.setHealthDepartment(options.getHealthDepartment().getId());
+		shareInfo.setSender(userService.getByReferenceDto(sender));
+		shareInfo.setComment(options.getComment());
+
+		shareInfo.setCaze(caze);
+		shareInfo.setContact(contact);
+
+		sormasToSormasShareInfoService.ensurePersisted(shareInfo);
 	}
 
 	private void sendEntityToSormas(Object entity, String endpoint, SormasToSormasOptionsDto options) throws SormasToSormasException {
@@ -633,6 +626,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setComment(source.getComment());
 
 		return target;
 	}
@@ -653,6 +647,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setComment(source.getComment());
 
 		return target;
 	}
@@ -675,6 +670,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
 
 		target.setSender(source.getSender().toReference());
+		target.setComment(source.getComment());
 
 		return target;
 	}

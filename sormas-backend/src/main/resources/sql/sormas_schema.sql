@@ -5027,10 +5027,11 @@ CREATE TABLE sormastosormassource (
     uuid varchar(36) not null unique,
     creationdate timestamp without time zone NOT NULL,
     changedate timestamp not null,
-    healthdepartment character varying(512),
-    sendername character varying(512),
-    senderemail character varying(512),
-    senderphonenumber character varying(512),
+    healthdepartment varchar(512),
+    sendername varchar(512),
+    senderemail varchar(512),
+    senderphonenumber varchar(512),
+    comment varchar(4096),
     primary key(id)
 );
 ALTER TABLE sormastosormassource OWNER TO sormas_user;
@@ -5048,12 +5049,13 @@ CREATE TABLE sormastosormasshareinfo (
     changedate timestamp not null,
     caze_id bigint,
     contact_id bigint,
-    healthdepartment character varying(512),
+    healthdepartment varchar(512),
     sender_id bigint,
+    comment varchar(4096),
     primary key(id)
 );
 
-ALTER TABLE sormastosormassource OWNER TO sormas_user;
+ALTER TABLE sormastosormasshareinfo OWNER TO sormas_user;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
