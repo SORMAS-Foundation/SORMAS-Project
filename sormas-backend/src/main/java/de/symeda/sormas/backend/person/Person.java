@@ -40,6 +40,7 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -105,6 +106,8 @@ public class Person extends AbstractDomainObject {
 	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+
 	private String firstName;
 	private String lastName;
 	private String nickname;
@@ -160,6 +163,8 @@ public class Person extends AbstractDomainObject {
 	private String nationalHealthId;
 	private FacilityType occupationFacilityType;
 	private FacilityType placeOfBirthFacilityType;
+
+	private SymptomJournalStatus symptomJournalStatus;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -583,8 +588,18 @@ public class Person extends AbstractDomainObject {
 		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
 	}
 
+	@Enumerated(EnumType.STRING)
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
 	@Override
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
+
 }

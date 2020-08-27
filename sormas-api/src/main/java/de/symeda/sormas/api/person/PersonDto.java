@@ -101,6 +101,8 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+
 	// Fields are declared in the order they should appear in the import template
 
 	@Outbreaks
@@ -257,6 +259,8 @@ public class PersonDto extends PseudonymizableDto {
 	private String passportNumber;
 	@SensitiveData
 	private String nationalHealthId;
+
+	private SymptomJournalStatus symptomJournalStatus;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -642,6 +646,14 @@ public class PersonDto extends PseudonymizableDto {
 		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
 	}
 
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
 	@Override
 	public String toString() {
 		return buildCaption(firstName, lastName);
@@ -662,4 +674,5 @@ public class PersonDto extends PseudonymizableDto {
 		person.setAddress(LocationDto.build());
 		return person;
 	}
+
 }

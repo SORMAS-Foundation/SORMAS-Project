@@ -125,6 +125,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setPseudonymized(source.isPseudonymized());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 	}
 
 	@Override
@@ -190,6 +191,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		}
 
 		target.setOccupationFacilityDetails(source.getOccupationFacilityDetails());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
 		target.setMothersName(source.getMothersName());
 		target.setFathersName(source.getFathersName());

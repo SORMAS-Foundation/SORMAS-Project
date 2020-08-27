@@ -462,6 +462,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
 		return target;
 	}
@@ -631,6 +632,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
 		return target;
 	}

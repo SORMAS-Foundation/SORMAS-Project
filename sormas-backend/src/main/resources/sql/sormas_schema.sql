@@ -5022,4 +5022,11 @@ ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(
 INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diagram visualization #2526');
 
 
+-- 2020-08-24 - Store the status of the PIA account for a person
+ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
+ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (244, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
+
+
 -- *** Insert new sql commands BEFORE this line ***
