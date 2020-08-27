@@ -26,9 +26,4 @@ public class HealthConditionsService extends AbstractAdoService<HealthConditions
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, HealthConditions> from, Timestamp date) {
-		return greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
-	}
 }
