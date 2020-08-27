@@ -285,6 +285,11 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			date = epiDataDate;
 		}
 
+		Date healthConditionsDate = DatabaseHelper.getHealthConditionsDao().getLatestChangeDate();
+		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
+			date = healthConditionsDate;
+		}
+
 		return date;
 	}
 }

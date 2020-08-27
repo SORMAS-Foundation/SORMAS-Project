@@ -1529,6 +1529,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 221;
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN healthConditions_id bigint REFERENCES healthConditions(id);");
 
+			case 222:
+				// Re-synchronize all contacts
+				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Therapy.class).executeRaw("UPDATE therapy SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(ClinicalCourse.class).executeRaw("UPDATE clinicalCourse SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(HealthConditions.class).executeRaw("UPDATE healthConditions SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Symptoms.class).executeRaw("UPDATE symptoms SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Hospitalization.class).executeRaw("UPDATE hospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PreviousHospitalization.class).executeRaw("UPDATE previoushospitalizations SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiData.class).executeRaw("UPDATE epidata SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataBurial.class).executeRaw("UPDATE epidataburial SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataTravel.class).executeRaw("UPDATE epidatatravel SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(EpiDataGathering.class).executeRaw("UPDATE epidatagathering SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Event.class).executeRaw(
+					"UPDATE events set srcType='HOTLINE_PERSON' where length(ifnull(srcFirstName,'')||ifnull(srcLastName,'')||ifnull(srcTelNo,'')||ifnull(srcEmail,'')) > 0;");
+
 				// ATTENTION: break should only be done after last version
 				break;
 			default:

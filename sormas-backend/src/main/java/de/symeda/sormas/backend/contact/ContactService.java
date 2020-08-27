@@ -43,6 +43,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -104,6 +105,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private SampleService sampleService;
 	@EJB
 	private EpiDataService epiDataService;
+	@EJB
+	private HealthConditionsService healthConditionsService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -163,7 +166,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
 
 		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
-		return cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
+		Predicate epiDataDateFilter = epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date);
+		Predicate healthConditionsDateFilter = healthConditionsService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date);
+		return cb.or(dateFilter, epiDataDateFilter, healthConditionsDateFilter);
 	}
 
 	public List<String> getAllActiveUuids(User user) {
