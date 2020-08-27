@@ -17,9 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -100,6 +103,7 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
+	public static final String ADDRESSES = "addresses";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -257,6 +261,7 @@ public class PersonDto extends PseudonymizableDto {
 	private String passportNumber;
 	@SensitiveData
 	private String nationalHealthId;
+	private List<LocationDto> addresses = new ArrayList<>();
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -640,6 +645,15 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
 		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
+	}
+
+	@ImportIgnore
+	public List<LocationDto> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<LocationDto> addresses) {
+		this.addresses = addresses;
 	}
 
 	@Override

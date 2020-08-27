@@ -21,9 +21,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -52,7 +54,6 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -61,6 +62,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -73,8 +75,10 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
@@ -87,7 +91,6 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -113,6 +116,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	private CommunityService communityService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
+	@EJB
+	private LocationService locationService;
 	@EJB
 	private UserService userService;
 
@@ -252,6 +257,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
 
 		Person person = personService.getByUuid(source.getUuid());
+		Set<Location> existingAddresses = new HashSet<>();
+		if (person != null) {
+			existingAddresses = person.getAddresses();
+		}
 		PersonDto existingPerson = toDto(person);
 
 		restorePseudonymizedDto(source, person, existingPerson);
@@ -259,6 +268,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		validate(source);
 
 		person = fillOrBuildEntity(source, person);
+
 		personService.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person);
@@ -389,13 +399,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		cleanUp(newPerson);
 	}
 
-	@Override
-	public PersonIndexDto getIndexDto(String uuid) {
-
-		Person person = personService.getByUuid(uuid);
-		return toIndexDto(person);
-	}
-
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
 
 		if (target == null) {
@@ -434,6 +437,17 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		List<Location> locations = new ArrayList<>();
+		for (LocationDto locationDto : source.getAddresses()) {
+			Location location = locationFacade.fromDto(locationDto);
+			location.setPerson(target);
+			locations.add(location);
+		}
+		if (!DataHelper.equal(target.getAddresses(), locations)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
+		target.getAddresses().clear();
+		target.getAddresses().addAll(locations);
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
@@ -482,11 +496,10 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private void pseudonymizeDto(boolean isInJurisdiction, PersonDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			pseudonymizer.pseudonymizeDto(
-				PersonDto.class,
-				dto,
-				isInJurisdiction,
-				p -> pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null));
+			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
+			});
 		}
 	}
 
@@ -496,6 +509,13 @@ public class PersonFacadeEjb implements PersonFacade {
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+			source.getAddresses()
+				.forEach(
+					l -> pseudonymizer.restorePseudonymizedValues(
+						LocationDto.class,
+						l,
+						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+						isInJurisdiction));
 		}
 	}
 
@@ -509,28 +529,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			return null;
 		}
 		PersonReferenceDto dto = new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
-		return dto;
-	}
-
-	public static PersonIndexDto toIndexDto(Person entity) {
-
-		PersonIndexDto dto = new PersonIndexDto(
-			entity.getUuid(),
-			entity.getSex(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getPresentCondition(),
-			entity.getBirthdateDD(),
-			entity.getBirthdateMM(),
-			entity.getBirthdateYYYY(),
-			entity.getApproximateAge(),
-			entity.getApproximateAgeType(),
-			entity.getDeathDate(),
-			entity.getNickname(),
-			entity.getAddress().getRegion() != null ? entity.getAddress().getRegion().getName() : null,
-			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
-			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity());
 		return dto;
 	}
 
@@ -603,6 +601,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		List<LocationDto> locations = new ArrayList<>();
+		for (Location location : source.getAddresses()) {
+			LocationDto locationDto = LocationFacadeEjb.toDto(location);
+			locations.add(locationDto);
+		}
+		target.setAddresses(locations);
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());

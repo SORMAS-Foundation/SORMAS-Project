@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.location;
 
 import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -46,6 +47,8 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String STREET = "street";
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
+	public static final String ADDRESS_TYPE = "addressType";
+	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -81,6 +84,8 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private String additionalInformation;
+	private PersonAddressType addressType;
+	private String addressTypeDetails;
 
 	public String getDetails() {
 		return details;
@@ -184,6 +189,22 @@ public class LocationDto extends PseudonymizableDto {
 
 	public void setAdditionalInformation(String additionalInformation) {
 		this.additionalInformation = additionalInformation;
+	}
+
+	public PersonAddressType getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(PersonAddressType addressType) {
+		this.addressType = addressType;
+	}
+
+	public String getAddressTypeDetails() {
+		return addressTypeDetails;
+	}
+
+	public void setAddressTypeDetails(String addressTypeDetails) {
+		this.addressTypeDetails = addressTypeDetails;
 	}
 
 	@Override

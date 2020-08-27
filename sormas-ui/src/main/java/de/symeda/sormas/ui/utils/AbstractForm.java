@@ -332,6 +332,10 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return FacadeProvider.getConfigFacade().isGermanServer();
 	}
 
+	protected boolean isSwissServer() {
+		return FacadeProvider.getConfigFacade().isSwissServer();
+	}
+
 	private static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {
 
 		private static final long serialVersionUID = 7271384537227612872L;

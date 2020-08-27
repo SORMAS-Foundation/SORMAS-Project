@@ -881,6 +881,8 @@ public interface Captions {
 	String linkEventToCase = "linkEventToCase";
 	String Location = "Location";
 	String Location_additionalInformation = "Location.additionalInformation";
+	String Location_addressType = "Location.addressType";
+	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
 	String Location_details = "Location.details";
 	String Location_houseNumber = "Location.houseNumber";
@@ -969,6 +971,7 @@ public interface Captions {
 	String PathogenTests = "PathogenTests";
 	String Person = "Person";
 	String Person_address = "Person.address";
+	String Person_addresses = "Person.addresses";
 	String Person_ageAndBirthDate = "Person.ageAndBirthDate";
 	String Person_approximateAge = "Person.approximateAge";
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";

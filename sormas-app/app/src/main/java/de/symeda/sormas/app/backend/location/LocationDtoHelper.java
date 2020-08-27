@@ -77,6 +77,8 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setStreet(source.getStreet());
 		target.setHouseNumber(source.getHouseNumber());
 		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 	}
 
 	@Override
@@ -111,5 +113,7 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setStreet(source.getStreet());
 		target.setHouseNumber(source.getHouseNumber());
 		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 	}
 }

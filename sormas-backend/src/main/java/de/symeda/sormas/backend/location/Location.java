@@ -24,6 +24,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
@@ -31,7 +32,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -56,6 +59,9 @@ public class Location extends AbstractDomainObject {
 	public static final String STREET = "street";
 	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
+	public static final String ADDRESS_TYPE = "addressType";
+	public static final String PERSON = "person";
+	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
 
 	private String details;
 	private String city;
@@ -73,6 +79,9 @@ public class Location extends AbstractDomainObject {
 	private String street;
 	private String houseNumber;
 	private String additionalInformation;
+	private PersonAddressType addressType;
+	private Person person;
+	private String addressTypeDetails;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
@@ -186,6 +195,34 @@ public class Location extends AbstractDomainObject {
 
 	public void setAdditionalInformation(String additionalInformation) {
 		this.additionalInformation = additionalInformation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PersonAddressType getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(PersonAddressType addressType) {
+		this.addressType = addressType;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getAddressTypeDetails() {
+		return addressTypeDetails;
+	}
+
+	public void setAddressTypeDetails(String addressTypeDetails) {
+		this.addressTypeDetails = addressTypeDetails;
 	}
 
 	public String buildGpsCoordinatesCaption() {

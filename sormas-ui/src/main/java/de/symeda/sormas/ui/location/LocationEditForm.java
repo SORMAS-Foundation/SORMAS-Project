@@ -23,7 +23,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,6 +44,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -64,9 +67,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private static final String HTML_LAYOUT =
 		//XXX #1620 are the divs needed?
 		divs(
+			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
 			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
-			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
 			fluidRow(
 				loc(LocationDto.DETAILS),
 				fluidRow(
@@ -76,6 +80,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY))));
 
 	private MapPopupView leafletMapPopup;
+	private ComboBox addressType;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -101,6 +106,24 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	@Override
 	protected void addFields() {
 
+		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
+		addressType.setVisible(false);
+		if (!isSwissServer()) {
+			addressType.removeAllItems();
+			List<PersonAddressType> types = Arrays.asList(PersonAddressType.values());
+			types.removeAll(
+				Arrays.asList(PersonAddressType.EVENT_LOCATION, PersonAddressType.PLACE_OF_EXPOSURE, PersonAddressType.PLACE_OF_RESIDENCE));
+			addressType.addItems(types);
+		}
+		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
+		addressTypeDetails.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType, Arrays.asList(PersonAddressType.OTHER_ADDRESS), true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			addressType,
+			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
+			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
 		addField(LocationDto.STREET, TextField.class);
 		addField(LocationDto.HOUSE_NUMBER, TextField.class);
 		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
@@ -213,6 +236,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			setConvertedValue(LocationDto.LATITUDE, latLon.getLat());
 			setConvertedValue(LocationDto.LONGITUDE, latLon.getLon());
 		}
+	}
+
+	public void showAddressType() {
+		addressType.setVisible(true);
+		addressType.setRequired(true);
 	}
 
 	@Override

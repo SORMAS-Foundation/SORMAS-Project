@@ -29,6 +29,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import androidx.databinding.Bindable;
 
 import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
@@ -76,6 +77,10 @@ public class Location extends PseudonymizableAdo {
 	private String houseNumber;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String additionalInformation;
+	@Column
+	private PersonAddressType addressType;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String addressTypeDetails;
 
 	@Bindable
 	public String getDetails() {
@@ -176,6 +181,22 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAdditionalInformation(String additionalInformation) {
 		this.additionalInformation = additionalInformation;
+	}
+
+	public PersonAddressType getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(PersonAddressType addressType) {
+		this.addressType = addressType;
+	}
+
+	public String getAddressTypeDetails() {
+		return addressTypeDetails;
+	}
+
+	public void setAddressTypeDetails(String addressTypeDetails) {
+		this.addressTypeDetails = addressTypeDetails;
 	}
 
 	public String getCompleteString() {

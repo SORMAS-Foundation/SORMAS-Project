@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -44,6 +45,8 @@ public class LocationFacadeEjb implements LocationFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private PersonService personService;
 
 	public Location fromDto(LocationDto source) {
 
@@ -77,6 +80,8 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setStreet(source.getStreet());
 		target.setHouseNumber(source.getHouseNumber());
 		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 
 		return target;
 	}
@@ -106,6 +111,8 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setStreet(source.getStreet());
 		target.setHouseNumber(source.getHouseNumber());
 		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 
 		return target;
 	}
