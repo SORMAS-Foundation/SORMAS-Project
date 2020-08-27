@@ -1,0 +1,164 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.symeda.sormas</groupId>
+        <artifactId>sormas-base</artifactId>
+        <version>1.47.0-SNAPSHOT</version>
+        <relativePath>../sormas-base</relativePath>
+    </parent>
+
+    <artifactId>sormas-devserver</artifactId>
+    <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <payara.version>5.201</payara.version>
+        <!-- <payara.version>5.192</payara.version> -->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.symeda.sormas</groupId>
+            <artifactId>sormas-serverlibs</artifactId>
+            <version>${project.version}</version>
+            <classifier>serverlibsjar</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>de.symeda.sormas</groupId>
+            <artifactId>sormas-ear</artifactId>
+            <version>${project.version}</version>
+            <type>ear</type>
+        </dependency>
+        <dependency>
+            <groupId>de.symeda.sormas</groupId>
+            <artifactId>sormas-ui</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>de.symeda.sormas</groupId>
+            <artifactId>sormas-rest</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/properties</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/layout</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <target>
+                                <concat destfile="${project.build.directory}/sormas.properties">
+                                    <fileset file="${basedir}/../sormas-base/setup/sormas.properties" />
+                                    <fileset file="${project.build.directory}/cargoserver.properties" />
+                                </concat>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.7.16</version>
+                <configuration>
+                    <container>
+                        <containerId>payara</containerId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>de.symeda.sormas</groupId>
+                                <artifactId>sormas-serverlibs</artifactId>
+                                <classifier>serverlibsjar</classifier>
+                            </dependency>
+                        </dependencies>
+                        <zipUrlInstaller>
+                            <url>https://repo.maven.apache.org/maven2/fish/payara/distributions/payara/${payara.version}/payara-${payara.version}.zip</url>
+                        </zipUrlInstaller>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <!-- <cargo.slf4j.version>${slf4j.version}</cargo.slf4j.version> -->
+                            <cargo.glassfish.domain.name>sormas</cargo.glassfish.domain.name>
+                            <cargo.glassfish.admin.port>6048</cargo.glassfish.admin.port>
+                            <cargo.servlet.port>6080</cargo.servlet.port>
+                        </properties>
+                        <configfiles>
+                            <configfile>
+                                <file>${project.build.directory}/sormas.properties</file>
+                                <todir>sormas</todir>
+                            </configfile>
+                            <configfile>
+                                <file>${basedir}/domain.xml</file>
+                                <todir>sormas/config/</todir>
+                            </configfile>
+                        </configfiles>
+                    </configuration>
+                    <deployables>
+                        <deployable>
+                            <groupId>de.symeda.sormas</groupId>
+                            <artifactId>sormas-ear</artifactId>
+                            <type>ear</type>
+                            <properties>
+                                <name>sormas-ear</name>
+                            </properties>
+                        </deployable>
+                        <deployable>
+                            <groupId>de.symeda.sormas</groupId>
+                            <artifactId>sormas-rest</artifactId>
+                            <type>war</type>
+                            <properties>
+                                <context>/sormas-rest</context>
+                            </properties>
+                        </deployable>
+                        <deployable>
+                            <groupId>de.symeda.sormas</groupId>
+                            <artifactId>sormas-ui</artifactId>
+                            <type>war</type>
+                            <properties>
+                                <context>/sormas-ui</context>
+                            </properties>
+                        </deployable>
+                    </deployables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

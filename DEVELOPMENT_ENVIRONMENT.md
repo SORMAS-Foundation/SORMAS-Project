@@ -2,7 +2,8 @@
 # SORMAS Development Environment
 
 ## Server
-- Install [your local server](SERVER_SETUP.md).
+- Install [your local server](SERVER_SETUP.md)
+- Or install your local development server using [maven cargo](sormas-devserver/README.md)
 - Alternatively [SERVER_DEV_SETUP.md](SERVER_DEV_SETUP.md) could be used (at this time not recommended)
 
 ## Git

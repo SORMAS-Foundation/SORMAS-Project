@@ -1,0 +1,17 @@
+version: '2.3'
+services:
+
+  postgres:
+    image: hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION:-2.7.2}
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
+    environment:
+      - POSTGRES_PASSWORD=sormas
+      - DB_NAME=sormas_db
+      - DB_NAME_AUDIT=sormas_audit_db
+      - SORMAS_POSTGRES_PASSWORD=sormas
+      - SORMAS_POSTGRES_USER=sormas_user
+      - TZ=Europe/Berlin
+    volumes:
+      - ./target/psql-payara-dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"

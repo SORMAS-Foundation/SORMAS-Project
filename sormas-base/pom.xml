@@ -675,5 +675,7 @@
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
+		<module>../sormas-serverlibs</module>
+		<module>../sormas-devserver</module>
 	</modules>
 </project>
