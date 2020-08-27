@@ -651,20 +651,20 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		Date followUpUntil = followUpUntilField.getValue();
 		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
 			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingExtendQuarantine),
-				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				confirmed -> {
-					if (confirmed) {
-						quarantineChangedByFollowUpUntilChange = true;
-						quarantineTo.setValue(followUpUntil);
-						if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
-							quarantineExtendedCheckBox.setValue(true);
+					I18nProperties.getString(Strings.headingExtendQuarantine),
+					new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							quarantineChangedByFollowUpUntilChange = true;
+							quarantineTo.setValue(followUpUntil);
+							if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
+								quarantineExtendedCheckBox.setValue(true);
+							}
 						}
-					}
-				});
+					});
 		}
 	}
 
@@ -677,24 +677,48 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			ContactDto originalContact = getInternalValue();
 			Date oldQuarantineEnd = originalContact.getQuarantineTo();
 			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
-				VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingExtendQuarantine),
-					new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					640,
-					confirmed -> {
-						if (confirmed) {
-							if (!originalContact.isQuarantineExtended()) {
-								quarantineExtendedCheckbox.setValue(true);
-							}
-						} else {
-							quarantineEndField.setValue(oldQuarantineEnd);
-						}
-					});
-			} else if (!originalContact.isQuarantineExtended()) {
-				quarantineExtendedCheckbox.setValue(false);
+				confirmQuarantineEndExtended(quarantinePeriodModifiedCheckbox, quarantineEndField, originalContact, oldQuarantineEnd);
+			} else if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
+				confirmQuarantineEndReduced(quarantinePeriodModifiedCheckbox, quarantineEndField, originalContact, oldQuarantineEnd);
+			} else if (!originalContact.isQuarantineExtended() && !originalContact.isQuarantineReduced()) {
+				quarantinePeriodModifiedCheckbox.setValue(false);
 			}
 		}
+	}
+
+	private void confirmQuarantineEndExtended(CheckBox quarantinePeriodModifiedCheckbox, Property<Date> quarantineEndField, ContactDto originalContact, Date oldQuarantineEnd) {
+		VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingExtendQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (!originalContact.isQuarantineExtended()) {
+							quarantinePeriodModifiedCheckbox.setValue(true);
+						}
+					} else {
+						quarantineEndField.setValue(oldQuarantineEnd);
+					}
+				});
+	}
+
+	private void confirmQuarantineEndReduced(CheckBox quarantinePeriodModifiedCheckbox, Property<Date> quarantineEndField, ContactDto originalContact, Date oldQuarantineEnd) {
+		VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingReduceQuarantine),
+				new Label(I18nProperties.getString(Strings.confirmationReduceQuarantine)),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				confirmed -> {
+					if (confirmed) {
+						if (!originalContact.isQuarantineReduced()) {
+							quarantinePeriodModifiedCheckbox.setValue(true);
+						}
+					} else {
+						quarantineEndField.setValue(oldQuarantineEnd);
+					}
+				});
 	}
 }

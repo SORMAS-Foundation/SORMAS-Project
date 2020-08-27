@@ -123,6 +123,7 @@ public class ContactExportDto implements Serializable {
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
 	private boolean quarantineExtended;
+	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 
@@ -135,7 +136,7 @@ public class ContactExportDto implements Serializable {
 							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource, String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
 							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
 							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
-							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
+							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended, boolean quarantineReduced,
 							boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 							PresentCondition presentCondition, Date deathDate,
 							String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
@@ -181,6 +182,7 @@ public class ContactExportDto implements Serializable {
 		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 		this.quarantineExtended = quarantineExtended;
+		this.quarantineReduced = quarantineReduced;
 		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 		this.presentCondition = presentCondition;
@@ -555,6 +557,11 @@ public class ContactExportDto implements Serializable {
 	@Order(60)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
+	}
+
+	@Order(61)
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
 	}
 
 	public void setContactWithRodent(YesNoUnknown contactWithRodent) {

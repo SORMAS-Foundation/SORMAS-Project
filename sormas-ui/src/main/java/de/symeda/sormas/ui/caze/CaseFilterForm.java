@@ -252,6 +252,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithExtendedQuarantine),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.WITH_REDUCED_QUARANTINE,
+				I18nProperties.getCaption(Captions.caseFilterWithReducedQuarantine),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithReducedQuarantine),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
 

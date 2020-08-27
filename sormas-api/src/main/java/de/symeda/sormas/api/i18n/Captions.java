@@ -304,6 +304,7 @@ public interface Captions {
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
+	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
@@ -483,6 +484,7 @@ public interface Captions {
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
+	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";

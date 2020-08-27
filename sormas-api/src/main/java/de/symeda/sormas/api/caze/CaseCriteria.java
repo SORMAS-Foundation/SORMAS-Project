@@ -49,6 +49,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String EXCLUDE_SHARED_CASES = "excludeSharedCases";
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
+	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
@@ -88,6 +89,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean mustHaveCaseManagementData;
 	private Boolean withoutResponsibleOfficer;
 	private Boolean withExtendedQuarantine;
+	private Boolean withReducedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
 	private String reportingUserLike;
@@ -288,6 +290,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
 		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
+	public Boolean getWithReducedQuarantine() {
+		return withReducedQuarantine;
+	}
+
+	public void setWithReducedQuarantine(Boolean withReducedQuarantine) {
+		this.withReducedQuarantine = withReducedQuarantine;
 	}
 
 	public CaseClassification getCaseClassification() {
