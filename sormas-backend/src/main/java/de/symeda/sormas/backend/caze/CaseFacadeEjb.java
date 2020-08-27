@@ -1908,6 +1908,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
+		if (source.getSormasToSormasSource() != null) {
+			target.setSormasToSormasSource(sormasToSormasFacade.fromSormasToSormasSourceDto(source.getSormasToSormasSource()));
+		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
 		if (source.getFollowUpStatus() != null) {

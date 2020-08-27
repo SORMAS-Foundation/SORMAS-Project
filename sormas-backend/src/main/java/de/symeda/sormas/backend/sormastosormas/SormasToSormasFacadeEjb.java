@@ -614,6 +614,29 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
 	}
 
+	public SormasToSormasSource fromSormasToSormasSourceDto(SormasToSormasSourceDto source) {
+		if (source == null) {
+			return null;
+		}
+
+		SormasToSormasSource target = sormasToSormasSourceService.getByUuid(source.getUuid());
+		if (target == null) {
+			target = new SormasToSormasSource();
+			target.setUuid(source.getUuid());
+			if (source.getCreationDate() != null) {
+				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
+			}
+		}
+		DtoHelper.validateDto(source, target);
+
+		target.setHealthDepartment(source.getHealthDepartment().getUuid());
+		target.setSenderName(source.getSenderName());
+		target.setSenderEmail(source.getSenderEmail());
+		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+
+		return target;
+	}
+
 	public static SormasToSormasSourceDto toSormasTsoSormasSourceDto(SormasToSormasSource source) {
 		if (source == null) {
 			return null;

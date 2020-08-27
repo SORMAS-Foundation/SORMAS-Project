@@ -969,6 +969,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions()));
 
+		if (source.getSormasToSormasSource() != null) {
+			target.setSormasToSormasSource(sormasToSormasFacade.fromSormasToSormasSourceDto(source.getSormasToSormasSource()));
+		}
+
 		return target;
 	}
 
