@@ -216,6 +216,7 @@ public interface Captions {
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
 	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
+	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
 	String CaseData_quarantineHomePossible = "CaseData.quarantineHomePossible";
@@ -421,6 +422,7 @@ public interface Captions {
 	String Contact_person = "Contact.person";
 	String Contact_quarantine = "Contact.quarantine";
 	String Contact_quarantineExtended = "Contact.quarantineExtended";
+	String Contact_quarantineReduced = "Contact.quarantineReduced";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
 	String Contact_quarantineHomePossible = "Contact.quarantineHomePossible";
@@ -485,6 +487,7 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
+	String contactQuarantineModified = "quarantineModified";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";

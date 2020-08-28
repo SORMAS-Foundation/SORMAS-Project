@@ -117,6 +117,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(4, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, 8, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT) +
                     fluidRowLocs(6, ContactDto.QUARANTINE, 3, ContactDto.QUARANTINE_FROM, 3, ContactDto.QUARANTINE_TO) +
 					fluidRowLocs(ContactDto.QUARANTINE_EXTENDED) +
+					fluidRowLocs(ContactDto.QUARANTINE_REDUCED) +
 					fluidRowLocs(ContactDto.QUARANTINE_TYPE_DETAILS) +
 					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 					fluidRowLocs(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
@@ -668,7 +669,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantinePeriodModifiedCheckbox) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -686,7 +687,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void confirmQuarantineEndExtended(CheckBox quarantinePeriodModifiedCheckbox, Property<Date> quarantineEndField, ContactDto originalContact, Date oldQuarantineEnd) {
+	private void confirmQuarantineEndExtended(
+		CheckBox quarantinePeriodModifiedCheckbox,
+		Property<Date> quarantineEndField,
+		ContactDto originalContact,
+		Date oldQuarantineEnd) {
 		VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendQuarantine),
 				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
@@ -704,7 +709,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				});
 	}
 
-	private void confirmQuarantineEndReduced(CheckBox quarantinePeriodModifiedCheckbox, Property<Date> quarantineEndField, ContactDto originalContact, Date oldQuarantineEnd) {
+	private void confirmQuarantineEndReduced(
+		CheckBox quarantinePeriodModifiedCheckbox,
+		Property<Date> quarantineEndField,
+		ContactDto originalContact,
+		Date oldQuarantineEnd) {
 		VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingReduceQuarantine),
 				new Label(I18nProperties.getString(Strings.confirmationReduceQuarantine)),
