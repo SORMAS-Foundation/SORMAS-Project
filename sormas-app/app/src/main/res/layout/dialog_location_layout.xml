@@ -43,16 +43,6 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:id="@+id/main_content">
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/location_address"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@={data.address}" />
-
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
-                android:id="@+id/location_details"
-                style="@style/ControlSingleColumnStyle"
-                app:value="@={data.details}" />
-
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/location_region"
                 style="@style/ControlSingleColumnStyle"
@@ -78,10 +68,30 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.city}" />
 
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_street"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.street}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_houseNumber"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.houseNumber}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_additionalInformation"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.additionalInformation}" />
+
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/location_areaType"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.areaType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_details"
+                style="@style/ControlSingleColumnStyle"
+                app:value="@={data.details}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle" />
 

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -52,7 +53,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   String districtName, String city, String address, String postalCode, String phone,
+								   String districtName, String city, String street, String houseNumber, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName,
 								   int visitCount) {
 	//@formatter:on
@@ -68,7 +69,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;
 		this.city = city;
-		this.address = address;
+		this.address = LocationDto.buildStreetAndHouseNumberCaption(street, houseNumber);
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);

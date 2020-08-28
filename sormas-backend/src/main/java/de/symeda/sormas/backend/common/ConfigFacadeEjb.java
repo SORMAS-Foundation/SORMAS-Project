@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.common;
 import java.util.Locale;
 import java.util.Properties;
 
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -46,6 +48,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
+	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
@@ -169,6 +172,20 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isGermanServer() {
 		return getCountryLocale().startsWith("de");
+	}
+
+	@Override
+	public boolean isSwissServer() {
+		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
+			if (getCountryLocale().toLowerCase().endsWith("ch")) {
+				return true;
+			}
+		} else {
+			if (getCountryLocale().toLowerCase().startsWith("ch")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

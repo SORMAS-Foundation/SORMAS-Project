@@ -88,7 +88,9 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		String communityUuid,
 		String communityName,
 		String city,
-		String address,
+		String street,
+		String houseNumber,
+		String additionalInformation,
 		EventSourceType srcType,
 		String srcFirstName,
 		String srcLastName,
@@ -106,7 +108,7 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.eventDesc = eventDesc;
-		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, address);
+		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
@@ -270,19 +272,32 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 		@SensitiveData
 		private String city;
 		@SensitiveData
-		private String address;
+		private String street;
+		@SensitiveData
+		private String houseNumber;
+		@SensitiveData
+		private String additionalInformation;
 
-		public EventIndexLocation(String regionName, String districtName, String communityName, String city, String address) {
+		public EventIndexLocation(
+			String regionName,
+			String districtName,
+			String communityName,
+			String city,
+			String street,
+			String houseNumber,
+			String additionalInformation) {
 			this.regionName = regionName;
 			this.districtName = districtName;
 			this.communityName = communityName;
 			this.city = city;
-			this.address = address;
+			this.street = street;
+			this.houseNumber = houseNumber;
+			this.additionalInformation = additionalInformation;
 		}
 
 		@Override
 		public String toString() {
-			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, address);
+			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		}
 	}
 }

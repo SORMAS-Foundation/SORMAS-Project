@@ -127,8 +127,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 223;
 
+	public static final int DATABASE_VERSION = 224;
+  
 	private static DatabaseHelper instance = null;
 
 	public static void init(Context context) {
@@ -1530,6 +1531,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN healthConditions_id bigint REFERENCES healthConditions(id);");
 
 			case 222:
+        currentversion = 222;
 				// Re-synchronize all contacts
 				getDao(Case.class).executeRaw("UPDATE cases SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Contact.class).executeRaw("UPDATE contacts SET changeDate = 0 WHERE changeDate IS NOT NULL;");
@@ -1546,13 +1548,33 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(MaternalHistory.class).executeRaw("UPDATE maternalHistory SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(PortHealthInfo.class).executeRaw("UPDATE portHealthInfo SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+      
+      case 223:     
+        currentVersion = 223;
+				getDao(Location.class).executeRaw("ALTER TABLE location RENAME TO tmp_location;");
+				getDao(Location.class).executeRaw(
+					"CREATE TABLE location(street	VARCHAR, areaType VARCHAR, city VARCHAR, community_id BIGINT, details VARCHAR, district_id BIGINT, latLonAccuracy FLOAT, "
+						+ "latitude DOUBLE PRECISION, longitude DOUBLE PRECISION, postalCode VARCHAR, region_id BIGINT, pseudonymized SMALLINT, changeDate BIGINT NOT NULL, creationDate BIGINT NOT NULL, id	INTEGER, "
+						+ "lastOpenedDate BIGINT, localChangeDate BIGINT NOT NULL, modified SMALLINT, snapshot SMALLINT, uuid VARCHAR NOT NULL, PRIMARY KEY(id AUTOINCREMENT), UNIQUE(snapshot, uuid));");
+				getDao(Location.class).executeRaw(
+					"INSERT INTO location(street, areaType, city, community_id, details, district_id, latLonAccuracy, latitude, longitude, postalCode, region_id, pseudonymized, changeDate, creationDate, id, "
+						+ "lastOpenedDate, localChangeDate, modified, snapshot, uuid) SELECT address, areaType, city, community_id, details, district_id, latLonAccuracy, latitude, longitude, postalCode, region_id, "
+						+ "pseudonymized, changeDate, creationDate, id, lastOpenedDate, localChangeDate, modified, snapshot, uuid FROM tmp_location;");
+				getDao(Location.class).executeRaw("DROP TABLE tmp_location;");
 
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN houseNumber varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN additionalInformation varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN addressType varchar(255);");
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN addressTypeDetails varchar(255);");  
+          
 				// ATTENTION: break should only be done after last version
 				break;
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}
-		} catch (Exception ex) {
+		} catch (
+
+		Exception ex) {
 			throw new RuntimeException("Database upgrade failed for version " + currentVersion + ": " + ex.getMessage(), ex);
 		}
 	}
