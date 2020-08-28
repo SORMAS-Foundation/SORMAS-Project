@@ -13,7 +13,10 @@ See [Installing Java](SERVER_SETUP.md#java-11)
 
 1. Run ``bash ./generate-cert.sh``
 2. If the ``sormas2sormas`` directory is not found, you will be prompted to provide its path.
-3. For the generation of the certificate, the following data is needed: a password, a *Common Name* (CN) 
+3. If the ``SORMAS_PROPERTIES`` environment variable is not available, the script will search for the ``sormas.properties`` 
+file in ``/opt/domains/sormas/sormas.properties`` by default. If it is not found there, you will be prompted to provide 
+the path to the ``sormas.properties`` file.
+4. For the generation of the certificate, the following data is needed: a password, a *Common Name* (CN) 
     and an *Organization* (O). These may be set in environment variables (recommended), or provided 
     manually as the script executes.
     * The password environment variable should be named ``SORMAS_S2S_CERT_PASS``. Please note that the password has to be 
@@ -25,26 +28,15 @@ See [Installing Java](SERVER_SETUP.md#java-11)
     **Important**: for Germany, this value should be the name of the Health Department (Gesundheitsamt) 
     to which the SORMAS instance will be assigned. <br/>
     E.g. *GA Braunschweig*
-4. After providing the requested data, the certificate files will be generated. <br/>
+5. After providing the requested data, the certificate files will be generated. <br/>
    The generated certificate has a validity of 3 years. 
    The certificate files will be available in the root SORMAS directory, in the folder ``/sormas2sormas``.
-5. The generated ``.p12`` file should not be shared with third parties. <br/>
+6. The generated ``.p12`` file should not be shared with third parties. <br/>
    The generated ``.crt`` file will be verified and shared with other SORMAS instances, from which this instance
    will be able to request data. Conversely, in order to enable other SORMAS instances to request data from this 
    instance, their certificate files should be obtained and added to the local truststore. More details can be found
    in the next section.
-6. If the ``SORMAS_PROPERTIES`` environment variable is available, the relevant properties will be 
-    automatically set by the script.
-    * Else, the properties which need to be added will be displayed in the console after the script finishes executing.
-    * Please note these properties and add them to the ``sormas.properties`` file. This should be located in the 
-    ``/domains/sormas`` folder.
-    * Example output:
-    ```
-    sormas.properties file was not found. 
-    Please add the following properties to the sormas.properties file:
-    sormas2sormas.keyAlias=mycertificate
-    sormas2sormas.keyPassword=changeit
-    ```
+7. The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
 
 ### Adding a new certificate to the Truststore
 
@@ -53,23 +45,15 @@ truststore of this instance. After obtaining their certificate file, which shoul
 follow the next steps:
 1. Run ``bash ./import-to-truststore.sh``
 2. If the ``sormas2sormas`` directory is not found, you will be prompted to provide its path.
-3. If ``sormas2sormas.truststore.p12`` is not found in the folder ``/sormas2sormas``, it will be created. 
-    The truststore password may be provided in an environment variable ``SORMAS_S2S_TRUSTSTORE_PASS`` (recommended), 
-    or manually as the script executes.
-    * If the ``SORMAS_PROPERTIES`` environment variable is available, the relevant properties will be 
-      automatically set by the script. Please note that the password has to be at least 6 characters, or you will be prompted for a new one.
-    * Else, the properties which need to be added will be displayed in the console after the script finishes executing.
-    * Please note these properties and add them to the ``sormas.properties`` file. This should be located in the 
-        ``/domains/sormas`` folder.
-     * Example output:
-     ```
-     sormas.properties file was not found. 
-     Please add the following properties to the sormas.properties file:
-     sormas2sormas.truststoreName=name
-     sormas2sormas.truststorePass=pass
-     ```
-4. If the environment variable ``SORMAS_S2S_TRUSTSTORE_PASS`` is not available, you will be prompted to 
-   provide the password for the truststore.
+3. If the ``SORMAS_PROPERTIES`` environment variable is not available, the script will search for the ``sormas.properties`` 
+   file in ``/opt/domains/sormas/sormas.properties`` by default. If it is not found there, you will be prompted to provide 
+   the path to the ``sormas.properties`` file.
+4. If ``sormas2sormas.truststore.p12`` is not found in the folder ``/sormas2sormas``, it will be created. 
+    The truststore password may be provided in an environment variable ``SORMAS_S2S_TRUSTSTORE_PASS``.
+    * If the aforementioned environment variable is not available, the truststore password will be searched in the 
+    ``sormas.properties`` file.
+    * If it is not found there, you will be prompted to provide the truststore password.
+    * The relevant properties will be automatically set by the script in the ``sormas.properties`` file.
 5. You will be prompted to provide the file name of the certificate to be imported. This certificate should be located
 in the ``/sormas2sormas`` folder. Please provide the name including the extension. E.g ``mycert.crt``
 6. After providing the requested data, the certificate will be imported to the truststore.

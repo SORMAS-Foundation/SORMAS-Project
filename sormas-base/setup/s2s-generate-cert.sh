@@ -48,7 +48,7 @@ if [[ -z "${SORMAS2SORMAS_DIR}" ]]; then
   fi
 else
   if [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
-    echo "sormas2sormas directory is invalid: ${SORMAS2SORMAS_DIR}"
+    echo "sormas2sormas directory not found: ${SORMAS2SORMAS_DIR}"
     exit 1
   fi
 fi
@@ -65,7 +65,7 @@ if [[ -z "${SORMAS_PROPERTIES}" ]]; then
   fi
 else
   if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
-    echo "sormas properties file is invalid: ${SORMAS_PROPERTIES}"
+    echo "sormas properties file not found: ${SORMAS_PROPERTIES}"
     exit 1
   fi
 fi
@@ -104,28 +104,19 @@ openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${S
 
 rm "${PEM_FILE}"
 
-#update properties
-if [[ -z ${SORMAS_PROPERTIES} ]]; then
-	echo "sormas.properties file was not found."
-  echo "Please add the following properties to the sormas.properties file:"
+# remove existing properties and empty spaces at end of file
+sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
+sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
+# add new properties
+{
+  echo;
+  echo "# Key data for the generated SORMAS to SORMAS certificate";
   echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
   echo "sormas2sormas.keystoreName=${P12_FILE}"
   echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
-else
-  # remove existing properties and empty spaces at end of file
-  sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
-  sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
-  sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
-  sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
-  sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
-  # add new properties
-  {
-    echo;
-    echo "# Key data for the generated SORMAS to SORMAS certificate";
-    echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
-    echo "sormas2sormas.keystoreName=${P12_FILE}"
-    echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
-  } >> "${SORMAS_PROPERTIES}"
-fi
+} >> "${SORMAS_PROPERTIES}"
 
 echo "The script finished executing. Please check for any errors."

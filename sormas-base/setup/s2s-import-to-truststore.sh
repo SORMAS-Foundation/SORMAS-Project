@@ -47,7 +47,7 @@ if [[ -z "${SORMAS2SORMAS_DIR}" ]]; then
   fi
 else
   if [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
-    echo "sormas2sormas directory is invalid: ${SORMAS2SORMAS_DIR}"
+    echo "sormas2sormas directory not found: ${SORMAS2SORMAS_DIR}"
     exit 1
   fi
 fi
@@ -64,7 +64,7 @@ if [[ -z "${SORMAS_PROPERTIES}" ]]; then
   fi
 else
   if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
-    echo "sormas properties file is invalid: ${SORMAS_PROPERTIES}"
+    echo "sormas properties file not found: ${SORMAS_PROPERTIES}"
     exit 1
   fi
 fi
@@ -81,7 +81,10 @@ while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PA
   if [[ ${NEW_TRUSTSTORE} = true ]]; then
     read -sp "Please provide the password for the new truststore (at least 6 characters): " SORMAS_S2S_TRUSTSTORE_PASS
   else
-    read -sp "Please provide the password for the truststore: " SORMAS_S2S_TRUSTSTORE_PASS
+    SORMAS_S2S_TRUSTSTORE_PASS=$(sed -n 's/^sormas2sormas\.truststorePass=//p' "${SORMAS_PROPERTIES}")
+    while [[ -z "${SORMAS_S2S_TRUSTSTORE_PASS}" ]] || [[ ${#SORMAS_S2S_TRUSTSTORE_PASS} -lt 6 ]]; do
+      read -sp "Please provide the password for the truststore: " SORMAS_S2S_TRUSTSTORE_PASS
+    done
   fi
   echo
 done
@@ -102,26 +105,18 @@ echo "Importing certificate into truststore..."
 keytool -importcert -trustcacerts -noprompt -keystore "${TRUSTSTORE_FILE}" -storetype pkcs12 -alias ${ALIAS} -storepass "${SORMAS_S2S_TRUSTSTORE_PASS}" -file "${CRT_FILE}"
 
 if [[ ${NEW_TRUSTSTORE} = true ]]; then
-  #update properties
-  if [[ -z ${SORMAS_PROPERTIES} ]]; then
-	  echo "sormas.properties file was not found."
-    echo "Please add the following properties to the sormas.properties file:"
-    echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}"
-    echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}"
-  else
-    # remove existing properties and empty spaces at end of file
-    sed -i "/^# SORMAS to SORMAS truststore data/d" "${SORMAS_PROPERTIES}"
-    sed -i "/^sormas2sormas\.truststoreName/d" "${SORMAS_PROPERTIES}"
-    sed -i "/^sormas2sormas\.truststorePass/d" "${SORMAS_PROPERTIES}"
-    sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
-    # add new properties
-    {
-      echo;
-      echo "# SORMAS to SORMAS truststore data";
-      echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}";
-      echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
-    } >> "${SORMAS_PROPERTIES}"
-  fi
+  # remove existing properties and empty spaces at end of file
+  sed -i "/^# SORMAS to SORMAS truststore data/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.truststoreName/d" "${SORMAS_PROPERTIES}"
+  sed -i "/^sormas2sormas\.truststorePass/d" "${SORMAS_PROPERTIES}"
+  sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
+  # add new properties
+  {
+    echo;
+    echo "# SORMAS to SORMAS truststore data";
+    echo "sormas2sormas.truststoreName=${TRUSTSTORE_FILE_NAME}";
+    echo "sormas2sormas.truststorePass=${SORMAS_S2S_TRUSTSTORE_PASS}";
+  } >> "${SORMAS_PROPERTIES}"
 fi
 
 echo "The script finished executing. Please check for any errors."
