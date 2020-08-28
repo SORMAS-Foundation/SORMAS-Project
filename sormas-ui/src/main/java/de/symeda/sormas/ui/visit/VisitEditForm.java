@@ -33,6 +33,7 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.followup.FollowUpLogic;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -51,7 +52,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 	private static final long serialVersionUID = 4265377973842591202L;
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS, PersonDto.PHONE) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+		fluidRowLocs(VisitDto.VISIT_STATUS, VisitDto.PERSON) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -110,8 +111,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
-		TextField textFieldPhone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
-		textFieldPhone.setCaption(PersonDto.PHONE);
+		TextField textFieldPhone = addCustomField(VisitDto.PERSON, String.class, TextField.class);
+		textFieldPhone.setCaption(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
 		textFieldPhone.setValue(this.person.getPhone());
 		textFieldPhone.setReadOnly(true);
 
