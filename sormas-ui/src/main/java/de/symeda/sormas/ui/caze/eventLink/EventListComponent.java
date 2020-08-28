@@ -21,14 +21,13 @@
 package de.symeda.sormas.ui.caze.eventLink;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.Notification.Type;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -37,6 +36,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 
+import java.util.List;
+
 public class EventListComponent extends VerticalLayout {
 
 	private EventList list;
@@ -44,7 +45,20 @@ public class EventListComponent extends VerticalLayout {
 
 	public EventListComponent(CaseReferenceDto caseRef) {
 
-		createEventListComponent(new EventList(caseRef), e -> ControllerProvider.getEventController().selectOrCreateEvent(caseRef));
+		createEventListComponent(new EventList(caseRef), e -> {
+
+			//check if there are active events in the database
+			List<String> events = FacadeProvider.getEventFacade().getAllActiveUuids();
+			if (!events.isEmpty()) {
+				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
+			} else {
+				Notification.show(I18nProperties.getString(Strings.messageEventDatabaseEmpty), Type.WARNING_MESSAGE);
+				ControllerProvider.getEventController().create(caseRef);
+
+			}
+
+		});
+
 	}
 
 	private void createEventListComponent(EventList eventList, Button.ClickListener clickListener) {
@@ -70,6 +84,7 @@ public class EventListComponent extends VerticalLayout {
 			createButton = new Button(I18nProperties.getCaption(Captions.linkEventToCase));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
+			createButton.addClickListener(clickListener);
 			createButton.addClickListener(clickListener);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

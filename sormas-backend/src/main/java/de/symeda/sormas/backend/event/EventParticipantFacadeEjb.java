@@ -104,7 +104,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
-	public List<String> getAllActiveUuids() {
+	public List<String>  getAllActiveUuids() {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
