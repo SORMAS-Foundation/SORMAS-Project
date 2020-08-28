@@ -2,6 +2,7 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
@@ -23,6 +24,29 @@ import java.util.List;
 public class ExternalVisitsResource extends EntityDtoResource {
 
 	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
+
+	@GET
+	@Path("/person/{personUuid}")
+	public PersonDto getPersonByUuid(@PathParam("personUuid") String personUuid) {
+		PersonDto detailedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+		//only specific attributes of the person shall be returned:
+		if (detailedPerson != null) {
+			PersonDto exportPerson = new PersonDto();
+			exportPerson.setUuid(detailedPerson.getUuid());
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
+			exportPerson.setPhone(detailedPerson.getPhone());
+			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
+			exportPerson.setFirstName(detailedPerson.getFirstName());
+			exportPerson.setLastName(detailedPerson.getLastName());
+			exportPerson.setBirthdateYYYY(detailedPerson.getBirthdateYYYY());
+			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
+			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
+			exportPerson.setSex(detailedPerson.getSex());
+			return exportPerson;
+		} else {
+			return null;
+		}
+	};
 
 	@GET
 	@Path("/person/{personUuid}/isValid")

@@ -16,39 +16,23 @@
 package de.symeda.sormas.api.visit;
 
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 
-public class VisitContactJurisdiction extends ContactJurisdictionDto {
+public class VisitCaseJurisdictionDto extends CaseJurisdictionDto {
+
+	private static final long serialVersionUID = 2479938031487832845L;
 
 	private long visitId;
 
-	public VisitContactJurisdiction(
+	public VisitCaseJurisdictionDto(
 		long visitId,
 		String reportingUserUuid,
 		String regionUuid,
 		String districtUuid,
 		String communityUuid,
-		String caseReportingUserUuid,
-		String caseRegionUui,
-		String caseDistrictUud,
-		String caseCommunityUuid,
-		String caseHealthFacilityUuid,
-		String casePointOfEntryUuid) {
+		String healthFacilityUuid,
+		String pointOfEntryUuid) {
 
-		super(
-			reportingUserUuid,
-			regionUuid,
-			districtUuid,
-			communityUuid,
-			caseReportingUserUuid != null
-				? new CaseJurisdictionDto(
-					caseReportingUserUuid,
-					caseRegionUui,
-					caseDistrictUud,
-					caseCommunityUuid,
-					caseHealthFacilityUuid,
-					casePointOfEntryUuid)
-				: null);
+		super(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 		this.visitId = visitId;
 	}
 

@@ -253,7 +253,10 @@ public class ContactController {
 		resultConsumer.accept(savedContact.getUuid());
 	}
 
-	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(String contactUuid, final ViewMode viewMode, boolean isInJurisdiction) {
+	public CommitDiscardWrapperComponent<ContactDataForm> getContactDataEditComponent(
+		String contactUuid,
+		final ViewMode viewMode,
+		boolean isInJurisdiction) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
@@ -508,6 +511,16 @@ public class ContactController {
 		window.setHeight(80, Unit.PERCENTAGE);
 
 		UI.getCurrent().addWindow(window);
+	}
+
+	/**
+	 * Opens a new tab addressing the climedo server specified in the sormas.properties.
+	 * The current person is specified in the url, it is left to climedo to decide what to do with that information.
+	 */
+	public void openDiaryTab(PersonDto person) {
+		String url = FacadeProvider.getConfigFacade().getPatientDiaryUrl();
+		url += "/enroll?personUuid=" + person.getUuid();
+		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
 	private String getSymptomJournalAuthToken() {

@@ -15,21 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.api.contact;
+package de.symeda.sormas.api.followup;
 
 import java.util.Date;
 
-public final class ContactLogic {
+import de.symeda.sormas.api.utils.DateHelper;
 
-	private ContactLogic() {
+public final class FollowUpLogic {
+
+	public static final int ALLOWED_DATE_OFFSET = 30;
+
+	private FollowUpLogic() {
 		// Hide Utility Class Constructor
 	}
 
-	public static Date getStartDate(Date lastContactDate, Date reportDate) {
-		return lastContactDate != null ? lastContactDate : reportDate;
-	}
+	public static int getNumberOfRequiredVisitsSoFar(Date reportDate, Date followUpUntil) {
 
-	public static Date getEndDate(Date lastContactDate, Date reportDate, Date followUpUntil) {
-		return followUpUntil != null ? followUpUntil : lastContactDate != null ? lastContactDate : reportDate;
+		if (followUpUntil == null) {
+			return 0;
+		}
+
+		Date now = new Date();
+		if (now.before(followUpUntil)) {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), now);
+		} else {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), followUpUntil);
+		}
 	}
 }
