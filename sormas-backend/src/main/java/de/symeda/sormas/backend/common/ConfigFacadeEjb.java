@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.common;
 
 import java.util.Locale;
 import java.util.Properties;
+
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;

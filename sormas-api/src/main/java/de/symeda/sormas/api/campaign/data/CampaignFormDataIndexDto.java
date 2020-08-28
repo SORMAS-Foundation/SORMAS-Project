@@ -36,8 +36,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String uuid;
 	private String campaign;
 	private String form;
-	private String formValues;
-	private List<CampaignFormDataEntry> formValuesList;
+	private List<CampaignFormDataEntry> formValues;
 	private String region;
 	private String district;
 	private String community;
@@ -47,7 +46,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String uuid,
 		String campaign,
 		String form,
-		String formValues,
+		Object formValues,
 		String region,
 		String district,
 		String community,
@@ -55,7 +54,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.uuid = uuid;
 		this.campaign = campaign;
 		this.form = form;
-		this.formValues = formValues;
+		this.formValues = (List<CampaignFormDataEntry>) formValues;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -86,11 +85,11 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.form = form;
 	}
 
-	public String getFormValues() {
+	public List<CampaignFormDataEntry> getFormValues() {
 		return formValues;
 	}
 
-	public void setFormValues(String formValues) {
+	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
 	}
 
@@ -125,13 +124,4 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setFormDate(Date formDate) {
 		this.formDate = formDate;
 	}
-
-	public List<CampaignFormDataEntry> getFormValuesList() {
-		return formValuesList;
-	}
-
-	public void setFormValuesList(List<CampaignFormDataEntry> formValuesList) {
-		this.formValuesList = formValuesList;
-	}
-
 }

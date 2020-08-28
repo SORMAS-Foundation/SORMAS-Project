@@ -126,6 +126,7 @@
     <string name="caption_case_prescriptions">Ordonnances</string>
     <string name="caption_case_samples">Échantillons de cas</string>
     <string name="caption_case_tasks">Tâches de cas</string>
+    <string name="caption_case_events">Événements de cas</string>
     <string name="caption_case_treatments">Traitements</string>
     <string name="caption_case_similarity_create">Créer un nouveau cas</string>
     <string name="caption_changed_data_lost">Données modifiées perdues lors de la re-synchronisation.</string>
@@ -139,19 +140,23 @@
     <string name="caption_confirmed_events">Événements confirmés</string>
     <string name="caption_contact_information">Informations de contact</string>
     <string name="caption_contact_tasks">Tâches de contact</string>
-    <string name="caption_contact_epidemiological_data">Epidemiological info</string>
+    <string name="caption_contact_epidemiological_data">Information épidémiologique</string>
     <string name="caption_contact_visits">Informations de suivi</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
     <string name="caption_date_of_sampling">Date de prélèvement de l\'échantillon</string>
     <string name="caption_drawer_close">Fermer le panneau de navigation</string>
     <string name="caption_drawer_open">Ouvrir le panneau de navigation</string>
-    <string name="caption_dropped">Abandonné</string>
+    <string name="caption_dropped">Rejeté</string>
     <string name="caption_epi_week">Semaine Epidemiologique</string>
+    <string name="caption_event_description">Description</string>
+    <string name="caption_event_location">Lieu</string>
+    <string name="caption_event_period">Date de l\'événement</string>
     <string name="caption_event_information">Informations sur l\'événement</string>
     <string name="caption_event_participants">Personnes impliquées</string>
     <string name="caption_event_tasks">Tâches d\'événement</string>
     <string name="caption_executed_by">Exécuté par</string>
+    <string name="caption_facility_or_home">Lieu de résidence</string>
     <string name="caption_fatalities">Fatalité</string>
     <string name="caption_first_name">Prénom</string>
     <string name="caption_sex">Sexe</string>
@@ -223,6 +228,7 @@
     <string name="confirmation_action">Êtes-vous sûr de vouloir faire cela ?</string>
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
+    <string name="confirmation_extend_quarantine">Êtes-vous sûr de vouloir prolonger l\'isolement ?</string>
     <string name="description_epi_week">Semaine Epidemiologique</string>
     <string name="description_first_name">Prénom</string>
     <string name="description_last_name">Nom De Famille</string>
@@ -290,6 +296,7 @@
     <string name="heading_events_list">Liste des événements</string>
     <string name="heading_existing_persons">Personnes existantes</string>
     <string name="heading_existing_cases">Cas existants</string>
+    <string name="heading_existing_events">Événements existants</string>
     <string name="heading_gathering">Regroupement</string>
     <string name="heading_gps_activation">Activez le GPS</string>
     <string name="heading_gps_permission">Autoriser l\'accès GPS</string>
@@ -309,6 +316,7 @@
     <string name="heading_person_involved_new">Nouvelle personne impliquée</string>
     <string name="heading_pick_or_create_person">Pick or Create Person</string>
     <string name="heading_pick_or_create_case">Choisir ou créer un Cas</string>
+    <string name="heading_pick_or_create_event">Choisir ou créer un événement</string>
     <string name="heading_prescription">Ordonnance</string>
     <string name="heading_prescription_edit">Modifier l\'ordonnance</string>
     <string name="heading_prescription_new">Nouvelle prescription</string>
@@ -350,6 +358,7 @@
     <string name="heading_user_report">Signaler un problème</string>
     <string name="heading_change_laboratory_result">Modifier le résultat du laboratoire</string>
     <string name="heading_change_case_disease">Changer la maladie de cas</string>
+    <string name="heading_extend_quarantine">Prolonger l\'isolement</string>
     <string name="hint_add_to_empty_list">Ajouter une nouvelle entrée en appuyant sur \"+\" en haut à droite.</string>
     <string name="hint_clear">Supprimer</string>
     <string name="hint_create_pin">Veuillez choisir un code PIN à quatre chiffres que vous utiliserez pour vous authentifier à chaque fois que vous ouvrirez l\'application SORMAS.</string>
@@ -390,6 +399,7 @@
     <string name="info_add_cases_before_report_submit">Êtes-vous sûr de vouloir soumettre ces numéros de cas pour la semaine épi sélectionnée ?</string>
     <string name="info_app_download">Téléchargement de la nouvelle version SORMAS... En fonction de votre connexion Internet, cela peut prendre un certain temps.</string>
     <string name="info_create_person">If you could <b>not</b> find a person that matches the personal details you have entered, click the \"Create\" button.</string>
+    <string name="info_create_event">Si vous ne trouvez<b>pas</b> l\'événement dans la liste ci-dessus, cliquez sur le bouton \"Créer\".</string>
     <string name="info_epidemiological_info">Veuillez indiquer si l\'un des éléments suivants est pertinent pour le patient pendant la période d\'incubation ou la maladie.</string>
     <string name="info_initial_synchronization">Synchronisation initiale avec le serveur SORMAS.\nL\'extraction des données d\'infrastructure prendra quelques minutes.</string>
     <string name="info_no_additional_test">Aucun test supplémentaire n\'a encore été effectué sur cet échantillon</string>
@@ -404,7 +414,9 @@
     <string name="info_synchronizing">Synchronisation avec le serveur SORMAS...</string>
     <string name="info_user_report">Veuillez décrire brièvement le problème que vous avez rencontré. N\'entrez pas de données personnelles ou sensibles !</string>
     <string name="info_pick_or_create_case">Il y a au moins un cas existant dans la base de données qui semble très similaire à celui que vous êtes sur le point de créer. Veuillez faire l\'une des choses suivantes:\n\n\u2022Tapez sur un cas dont vous <b>êtes sûr</b> est le même cas que celui que vous étiez sur le point de créer\n\u2022 Faites défiler jusqu\'au bas de cette fenêtre et cochez la case si vous <b>êtes sûr</b>que votre cas est un nouveau cas\n\nCliquez sur le bouton en bas à droite pour confirmer votre choix.</string>
+    <string name="info_pick_or_create_event">La liste ci-dessous contient tous les événements existants ayant la même maladie que le cas actuel de votre Canton. Veuillez vérifier si l\'événement associé à votre cas figure déjà dans cette liste ou créez un nouveau le cas échéant.</string>
     <string name="info_case_creation_mark_check_box">Ce cas est un <b>nouveau cas</b> et <b>pas un double</b> d\'un des cas ci-dessus</string>
+    <string name="info_event_creation_mark_check_box">Cet événement est un <b>nouvel événement</b> et non<b> un double</b> d\'un des événements ci-dessus</string>
     <string name="main_menu_cases">Cas</string>
     <string name="main_menu_contacts">Contacts</string>
     <string name="main_menu_dashboard">Tableau de bord</string>
@@ -463,6 +475,8 @@
     <string name="message_change_case_disease">Vraiment changer la maladie du cas?</string>
     <string name="action_change_case_disease">Oui, changer la maladie</string>
     <string name="message_language_change_unsuccessful">La langue n\'a pas pu être modifiée en raison d\'une erreur interne.</string>
+    <string name="message_Event_and_Case_disease_mismatch">Le nouvel événement à associer au cas a une maladie différente de la maladie du cas </string>
+    <string name="message_Event_already_linked_to_Case">L\'événement a déjà été lié à ce cas </string>
     <string name="notification_channel_tasks_name">Tâches nouvelles ou mises à jour</string>
     <string name="notification_channel_tasks_description">Recevoir une notification lorsqu\'une nouvelle tâche vous est attribuée ou lorsqu\'une tâche qui vous a été attribuée a été modifiée</string>
     <string name="notification_channel_case_changes_name">Changements importants de cas</string>
@@ -470,6 +484,7 @@
     <string name="synclog_server">Serveur: </string>
     <string name="synclog_yours">Votre: </string>
     <string name="tag_row_item_select_or_create_person">ligneÉlémentSélectionnerOucréerunepersonne</string>
+    <string name="tag_row_item_select_or_create_event">ligneSélectionnerÉlémentOuCréerÉvénement</string>
     <string name="tag_row_item_case_pick_or_create">ligneChoisirOuCréerunepersonne</string>
     <string name="time_future_almost_two_years">dans presque deux ans</string>
     <string name="time_future_one_day">demain</string>
@@ -505,7 +520,7 @@
     <string name="validation_error_required">Une valeur est requise pour ce champ. Veuillez vous assurer de saisir ou de sélectionner une valeur avant de continuer.</string>
     <string name="validation_soft_add_list_entry">Veuillez ajouter une entrée à la liste si vous disposez de données.</string>
     <string name="validation_soft_case_classification">Ce cas devrait être classé dès que les renseignements requis seront disponibles.</string>
-    <string name="validation_case_classification">Case classification does not correspond to lab results and symptoms of the case.</string>
+    <string name="validation_case_classification">La classification du cas ne correspond pas aux résultats du test de laboratoire et aux symptômes du cas.</string>
     <string name="validation_soft_case_epid_number">Le numéro EPID ne correspond pas au modèle requis. Vous pouvez toujours enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_soft_case_epid_number_empty">Un numéro EPID doit être fourni. Vous pouvez encore enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_symptoms_fever">La température se situe dans la marge de la fièvre. La fièvre doit être réglée sur \"Oui\".</string>
@@ -521,6 +536,7 @@
     <string name="value_date_unknown">Date N/A</string>
     <string name="value_description_unknown">Description N/A</string>
     <string name="value_disease_unknown">Maladie N/A</string>
+    <string name="value_event_unknown">Événement N/A</string>
     <string name="value_executing_clinician_unknown">Clinicien Exécutant N/A</string>
     <string name="value_facility_unknown">Etablissement de santé N/A</string>
     <string name="value_frequency_unknown">Fréquence N/A</string>
@@ -555,9 +571,11 @@
     <string name="value_visit_remarks_unknown">Remarques N/A</string>
     <string name="value_visit_time_unknown">Date de visite N/A</string>
     <string name="value_visiting_person_unknown">Clinicien traitant N/A</string>
-    <string name="value_investigation_status_unknown">Statut d\'Investigation N/A</string>
+    <string name="value_investigation_status_unknown">Statut d\'enquête N/A</string>
     <string name="sample_not_found">Échantillon introuvable</string>
     <string name="no_camera_permission">Pas de permission caméra</string>
     <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour la détection</string>
     <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
+    <string name="caption_facility_type_group">Groupe de type d\'établissement</string>
+    <string name="caption_facility_type">Type d\'établissement</string>
 </resources>

@@ -1455,10 +1455,10 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
-		if (existingCase == null
-			|| newCase.getDisease() != existingCase.getDisease()
-			|| newCase.getReportDate() != existingCase.getReportDate()
-			|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate()) {
+		if (existingCase != null
+			&& (newCase.getDisease() != existingCase.getDisease()
+				|| newCase.getReportDate() != existingCase.getReportDate()
+				|| newCase.getSymptoms().getOnsetDate() != existingCase.getSymptoms().getOnsetDate())) {
 
 			// Update follow-up until and status of all contacts
 			for (Contact contact : contactService.findBy(new ContactCriteria().caze(newCase.toReference()), null)) {
@@ -1672,7 +1672,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(caze.getReportDate());
 			String year = String.valueOf(calendar.get(Calendar.YEAR)).substring(2);
-			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict().getUuid()) + "-" + year + "-";
+			newEpidNumber = districtFacade.getFullEpidCodeForDistrict(caze.getDistrict()) + "-" + year + "-";
 		}
 
 		// Generate a suffix number
@@ -2189,25 +2189,27 @@ public class CaseFacadeEjb implements CaseFacade {
 
 			// Set the task status of all investigation tasks to "Removed" because
 			// the case status has been updated manually
-			List<Task> pendingTasks =
-				taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING), true);
-			for (Task task : pendingTasks) {
-				task.setTaskStatus(TaskStatus.REMOVED);
-				task.setStatusChangeDate(new Date());
+			if (existingCase != null) {
+				List<Task> pendingTasks =
+					taskService.findBy(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING), true);
+				for (Task task : pendingTasks) {
+					task.setTaskStatus(TaskStatus.REMOVED);
+					task.setStatusChangeDate(new Date());
+				}
+
+				if (caze.getInvestigationStatus() == InvestigationStatus.DONE && existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
+					sendInvestigationDoneNotifications(caze);
+				}
 			}
 
-			if (caze.getInvestigationStatus() == InvestigationStatus.DONE
-				&& existingCase != null
-				&& existingCase.getInvestigationStatus() != InvestigationStatus.DONE) {
-				sendInvestigationDoneNotifications(caze);
-			}
 		} else {
 			// Remove the investigation date
 			caze.setInvestigatedDate(null);
 
 			// Create a new investigation task if none is present
-			long pendingCount =
-				taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING));
+			long pendingCount = existingCase != null
+				? taskService.getCount(new TaskCriteria().taskType(TaskType.CASE_INVESTIGATION).caze(caseRef).taskStatus(TaskStatus.PENDING))
+				: 0;
 
 			if (pendingCount == 0 && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CASE_INVESTIGATION)) {
 				createInvestigationTask(caze);
