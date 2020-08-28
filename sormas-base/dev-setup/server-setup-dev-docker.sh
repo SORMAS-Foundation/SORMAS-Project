@@ -30,7 +30,7 @@ echo "# If anything goes wrong, please consult the server setup guide or get in 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
-#AS_JAVA_NATIVE=/usr/lib/jvm/zulu-11-amd64/
+#AS_JAVA_NATIVE=/usr/lib/jvm/zulu11/
 
 PAYARA_VERSION=5.192
 

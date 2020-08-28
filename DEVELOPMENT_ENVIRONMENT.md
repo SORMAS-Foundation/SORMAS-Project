@@ -14,9 +14,9 @@
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+		sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
 		sudo apt-get update
-		sudo apt-get install zulu-11
+		sudo apt-get install zulu11
   - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 
 ## Eclipse
