@@ -120,7 +120,14 @@
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
-		<!-- Open ID -->
+		<!-- Keycloak -->
+		<dependency>
+			<groupId>org.keycloak</groupId>
+			<artifactId>keycloak-core</artifactId>
+			<version>${keycloak.version}</version>
+		</dependency>
+
+		<!-- OpenID -->
 		<dependency>
 			<groupId>fish.payara.api</groupId>
 			<artifactId>payara-api</artifactId>
@@ -135,13 +142,6 @@
 			<groupId>org.eclipse.microprofile.config</groupId>
 			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-core</artifactId>
-			<version>${keycloak.version}</version>
-		</dependency>
-
 
 	</dependencies>
 

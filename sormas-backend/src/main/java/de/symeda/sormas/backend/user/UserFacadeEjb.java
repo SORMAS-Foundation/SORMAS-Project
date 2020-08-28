@@ -76,10 +76,11 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
+import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PasswordHelper;
-import fish.payara.security.openid.api.OpenIdContext;
+import org.apache.commons.beanutils.BeanUtils;
 
 @Stateless(name = "UserFacade")
 public class UserFacadeEjb implements UserFacade {
@@ -111,6 +112,8 @@ public class UserFacadeEjb implements UserFacade {
 	private PointOfEntryService pointOfEntryService;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
+	@Inject
+	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
@@ -179,6 +182,15 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public UserDto saveUser(UserDto dto) {
 
+		User oldUser = null;
+		if (dto.getCreationDate() != null) {
+			try {
+				oldUser = (User) BeanUtils.cloneBean(userService.getByUuid(dto.getUuid()));
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Invalid bean access", e);
+			}
+		}
+
 		User user = fromDto(dto);
 
 		try {
@@ -189,7 +201,11 @@ public class UserFacadeEjb implements UserFacade {
 
 		userService.ensurePersisted(user);
 
-		userCreateEvent.fire(new UserCreateEvent(user));
+		if (oldUser == null) {
+			userCreateEvent.fire(new UserCreateEvent(user));
+		} else {
+			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
+		}
 
 		return toDto(user);
 	}

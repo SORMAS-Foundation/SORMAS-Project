@@ -133,9 +133,15 @@
 			<artifactId>payara-api</artifactId>
 		</dependency>
 
+		<!-- OpenID -->
 		<dependency>
 			<groupId>fish.payara.security.connectors</groupId>
 			<artifactId>security-connector-oidc-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.microprofile.config</groupId>
+			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
 
 

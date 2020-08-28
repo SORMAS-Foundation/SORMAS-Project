@@ -73,15 +73,17 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	private HttpAuthenticationMechanism authenticationMechanism;
 
+	private static final String UNDEFINED = "undefined";
+
 	@Inject
 	private OpenIdContext openIdContext;
 
 	@Inject
-	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_ID)
+	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_ID, defaultValue = UNDEFINED)
 	private String clientId;
 
 	@Inject
-	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_SECRET)
+	@ConfigProperty(name = OpenIdAuthenticationDefinition.OPENID_MP_CLIENT_SECRET, defaultValue = UNDEFINED)
 	private String clientSecret;
 
 	@Inject
@@ -90,8 +92,13 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 		authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
-			openIdAuthenticationMechanism.setConfiguration(new DefaultOpenIdAuthenticationDefinition());
-			authenticationMechanism = openIdAuthenticationMechanism;
+			try {
+				openIdAuthenticationMechanism.setConfiguration(new DefaultOpenIdAuthenticationDefinition());
+				authenticationMechanism = openIdAuthenticationMechanism;
+			} catch (IllegalArgumentException e) {
+				logger.warn("Undefined KEYCLOAK configuration. Configure the properties or disable the KEYCLOAK authentication provider.");
+				throw e;
+			}
 		} else {
 			customFormAuthenticationMechanism.setLoginToContinue(new LoginToContinueAnnotationLiteral("/login", false, "", "/login-error"));
 			authenticationMechanism = customFormAuthenticationMechanism;

@@ -52,13 +52,14 @@
 			<artifactId>swagger-jaxrs2</artifactId>
 		</dependency>
 
-		<!-- Open ID -->
+		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-servlet-filter-adapter</artifactId>
 			<version>${keycloak.version}</version>
 		</dependency>
 
+		<!-- OpenID -->
 		<dependency>
 			<groupId>fish.payara.api</groupId>
 			<artifactId>payara-api</artifactId>
