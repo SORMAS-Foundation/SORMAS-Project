@@ -100,6 +100,7 @@ public interface Strings {
 	String confirmationEnterBulkEditMode = "confirmationEnterBulkEditMode";
 	String confirmationExtendQuarantine = "confirmationExtendQuarantine";
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
+	String confirmationExtendFollowUp = "confirmationExtendFollowUp";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
@@ -264,6 +265,7 @@ public interface Strings {
 	String headingExportFailed = "headingExportFailed";
 	String headingExtendQuarantine = "headingExtendQuarantine";
 	String headingReduceQuarantine = "headingReduceQuarantine";
+	String headingExtendFollowUp = "headingExtendFollowUp";
 	String headingFilters = "headingFilters";
 	String headingFollowUpCanceled = "headingFollowUpCanceled";
 	String headingFollowUpStatus = "headingFollowUpStatus";
