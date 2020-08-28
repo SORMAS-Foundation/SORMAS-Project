@@ -36,11 +36,17 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -280,12 +286,27 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			return null;
 		}
 
-		Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+		Date epiDataDate = getLatestChangeDateJoin(EpiData.TABLE_NAME, Contact.EPI_DATA);
 		if (epiDataDate != null && epiDataDate.after(date)) {
 			date = epiDataDate;
 		}
 
-		Date healthConditionsDate = DatabaseHelper.getHealthConditionsDao().getLatestChangeDate();
+		Date epiDataBurialDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataBurial.TABLE_NAME);
+		if (epiDataBurialDate != null && epiDataBurialDate.after(date)) {
+			date = epiDataBurialDate;
+		}
+
+		Date epiDataGatheringDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataGathering.TABLE_NAME);
+		if (epiDataGatheringDate != null && epiDataGatheringDate.after(date)) {
+			date = epiDataGatheringDate;
+		}
+
+		Date epiDataTravelDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataTravel.TABLE_NAME);
+		if (epiDataTravelDate != null && epiDataTravelDate.after(date)) {
+			date = epiDataTravelDate;
+		}
+
+		Date healthConditionsDate = getLatestChangeDateJoin(HealthConditions.TABLE_NAME, Contact.HEALTH_CONDITIONS);
 		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
 			date = healthConditionsDate;
 		}

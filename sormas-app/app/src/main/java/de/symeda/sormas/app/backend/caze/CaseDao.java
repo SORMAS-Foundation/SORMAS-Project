@@ -57,14 +57,20 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.app.R;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventCriteria;
 import de.symeda.sormas.app.backend.event.EventParticipant;
@@ -129,9 +135,24 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			date = hospitalizationDate;
 		}
 
-		Date epiDataDate = DatabaseHelper.getEpiDataDao().getLatestChangeDate();
+		Date epiDataDate = getLatestChangeDateJoin(EpiData.TABLE_NAME, Case.EPI_DATA);
 		if (epiDataDate != null && epiDataDate.after(date)) {
 			date = epiDataDate;
+		}
+
+		Date epiDataBurialDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataBurial.TABLE_NAME);
+		if (epiDataBurialDate != null && epiDataBurialDate.after(date)) {
+			date = epiDataBurialDate;
+		}
+
+		Date epiDataGatheringDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataGathering.TABLE_NAME);
+		if (epiDataGatheringDate != null && epiDataGatheringDate.after(date)) {
+			date = epiDataGatheringDate;
+		}
+
+		Date epiDataTravelDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Case.EPI_DATA, EpiDataTravel.TABLE_NAME);
+		if (epiDataTravelDate != null && epiDataTravelDate.after(date)) {
+			date = epiDataTravelDate;
 		}
 
 		Date therapyDate = DatabaseHelper.getTherapyDao().getLatestChangeDate();
@@ -139,9 +160,18 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			date = therapyDate;
 		}
 
-		Date clinicalCourseDate = DatabaseHelper.getClinicalCourseDao().getLatestChangeDate();
+		Date clinicalCourseDate = getLatestChangeDateJoin(ClinicalCourse.TABLE_NAME, Case.CLINICAL_COURSE);
 		if (clinicalCourseDate != null && clinicalCourseDate.after(date)) {
 			date = clinicalCourseDate;
+		}
+
+		Date healthConditionsDate = getLatestChangeDateSubJoinReverse(
+			ClinicalCourse.TABLE_NAME,
+			Case.CLINICAL_COURSE,
+			HealthConditions.TABLE_NAME,
+			ClinicalCourse.HEALTH_CONDITIONS);
+		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
+			date = healthConditionsDate;
 		}
 
 		Date maternalHistoryDate = DatabaseHelper.getMaternalHistoryDao().getLatestChangeDate();

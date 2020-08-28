@@ -282,10 +282,36 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 		return null;
 	}
 
+	/**
+	 * Retrieves the latest change date from a table that references this table.
+	 */
 	protected Date getLatestChangeDateJoin(String joinTableName, String joinColumnName) {
-
 		String query = "SELECT MAX(jo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
 			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_ID";
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	/**
+	 * Retrieves the latest change date from a table that references another table that references this table.
+	 */
+	protected Date getLatestChangeDateSubJoin(String joinTableName, String joinColumnName, String subJoinTableName) {
+		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
+			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+			+ AbstractDomainObject.ID + " = sjo." + joinColumnName + "_id";
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	/**
+	 * Retrieves the latest change date from a table that is referenced by another table that references this table.
+	 */
+	protected Date getLatestChangeDateSubJoinReverse(String joinTableName, String joinColumnName, String subJoinTableName, String subJoinColumnName) {
+		String query = "SELECT MAX(sjo." + AbstractDomainObject.CHANGE_DATE + ") FROM " + getTableName() + " AS ta" + " LEFT JOIN " + joinTableName
+			+ " AS jo ON jo." + AbstractDomainObject.ID + " = ta." + joinColumnName + "_id" + " LEFT JOIN " + subJoinTableName + " AS sjo ON jo."
+			+ subJoinColumnName + "_id = sjo." + AbstractDomainObject.ID;
+		return getLatestChangeDateJoinFromQuery(query);
+	}
+
+	private Date getLatestChangeDateJoinFromQuery(String query) {
 		GenericRawResults<Object[]> maxChangeDateResult = queryRaw(
 			query,
 			new DataType[] {
