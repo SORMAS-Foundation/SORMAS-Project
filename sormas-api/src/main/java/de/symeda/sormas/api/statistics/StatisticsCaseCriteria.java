@@ -78,7 +78,6 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<CommunityReferenceDto> personCommunities;
 	private String personCity;
 	private String personPostcode;
-	private String personAddress;
 	private List<UserRole> reportingUserRoles;
 
 	public List<Year> getOnsetYears() {
@@ -215,10 +214,6 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public String getPersonPostcode() {
 		return personPostcode;
-	}
-
-	public String getPersonAddress() {
-		return personAddress;
 	}
 
 	public List<UserRole> getReportingUserRoles() {
@@ -432,11 +427,6 @@ public class StatisticsCaseCriteria implements Serializable {
 
 	public StatisticsCaseCriteria setPersonPostcode(String personPostcode) {
 		this.personPostcode = personPostcode;
-		return this;
-	}
-
-	public StatisticsCaseCriteria setPersonAddress(String personAddress) {
-		this.personAddress = personAddress;
 		return this;
 	}
 

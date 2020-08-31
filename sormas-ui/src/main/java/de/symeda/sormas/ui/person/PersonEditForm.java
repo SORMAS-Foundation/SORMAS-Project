@@ -259,6 +259,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
 		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
 		FieldHelper.removeItems(placeOfBirthFacilityType);
+		placeOfBirthFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
@@ -278,6 +279,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
 		FieldHelper.removeItems(occupationFacilityType);
+		occupationFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
