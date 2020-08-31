@@ -20,11 +20,11 @@ import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.vaadin.ui.Alignment;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -74,11 +74,19 @@ public class CampaignDataView extends AbstractCampaignView {
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
-		filtersLayout.addComponent(createFilterBar());
-		final HorizontalLayout importanceFilterLayout = createImportanceFilterLayout();
-		filtersLayout.addComponent(importanceFilterLayout);
+		filtersLayout.setWidthFull();
+		filtersLayout.setMargin(false);
+		filtersLayout.setSpacing(true);
 
-		filtersLayout.setComponentAlignment(importanceFilterLayout, Alignment.MIDDLE_RIGHT);
+		CampaignFormDataFilterForm filterBar = createFilterBar();
+		filtersLayout.addComponent(filterBar);
+		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
+		filtersLayout.setExpandRatio(filterBar, 0.8f);
+
+		OptionGroup importanceFilterLayout = createImportanceFilterSwitch();
+		filtersLayout.addComponent(importanceFilterLayout);
+		filtersLayout.setComponentAlignment(importanceFilterLayout, Alignment.TOP_RIGHT);
+		filtersLayout.setExpandRatio(importanceFilterLayout, 0.2f);
 
 		mainLayout.addComponent(filtersLayout);
 
@@ -148,33 +156,26 @@ public class CampaignDataView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	private HorizontalLayout createImportanceFilterLayout() {
-
-		final HorizontalLayout importanceFilterLayout = new HorizontalLayout();
-		importanceFilterLayout.setSpacing(true);
+	private OptionGroup createImportanceFilterSwitch() {
 
 		campaignFormElementImportance = new OptionGroup();
 		CssStyles.style(
 			campaignFormElementImportance,
-			CssStyles.FORCE_CAPTION,
 			ValoTheme.OPTIONGROUP_HORIZONTAL,
 			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
-		campaignFormElementImportance
-			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
+		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
 		campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
 		campaignFormElementImportance
 			.setItemCaption(CampaignFormElementImportance.IMPORTANT, I18nProperties.getEnumCaption(CampaignFormElementImportance.IMPORTANT));
-		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
-		campaignFormElementImportance.setWidth(140, Unit.PIXELS);
+		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
+		campaignFormElementImportance
+			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 		campaignFormElementImportance.setNullSelectionAllowed(false);
 
-		importanceFilterLayout.addComponent(campaignFormElementImportance);
-		importanceFilterLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
-
 		campaignFormElementImportance.setEnabled(false);
+		campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 
-		return importanceFilterLayout;
+		return campaignFormElementImportance;
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
