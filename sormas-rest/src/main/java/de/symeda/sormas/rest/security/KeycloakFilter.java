@@ -15,12 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package de.symeda.sormas.rest.security;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
 import org.keycloak.adapters.servlet.KeycloakOIDCFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -41,17 +43,24 @@ import java.io.IOException;
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
 public class KeycloakFilter extends KeycloakOIDCFilter {
 
-	private final boolean enabled;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private boolean enabled = false;
 
 	@Inject
 	private KeycloakFilter(KeycloakConfigResolver keycloakConfigResolver) {
 		super(keycloakConfigResolver);
-		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
-		enabled = authenticationProvider.equalsIgnoreCase("KEYCLOAK");
 	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		try {
+			String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
+			enabled = authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK);
+		} catch (Exception e) {
+			logger.warn("Cannot determine authentication provider from settings. {}", e.getMessage());
+			throw new ServletException(e);
+		}
 		if (enabled) {
 			super.init(filterConfig);
 		}
