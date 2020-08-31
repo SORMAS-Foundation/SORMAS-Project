@@ -12,10 +12,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package de.symeda.sormas.api.utils.pseudonymization;
 
-package de.symeda.sormas.api.utils.jurisdiction;
+import de.symeda.sormas.api.EntityDto;
 
-public interface WithJurisdiction<T> {
+public abstract class PseudonymizableDto extends EntityDto implements Pseudonymizable {
 
-	T getJurisdiction();
+	private static final long serialVersionUID = 4181307802683421947L;
+
+	private boolean pseudonymized;
+
+	public boolean isPseudonymized() {
+		return pseudonymized;
+	}
+
+	public void setPseudonymized(boolean pseudonymized) {
+		this.pseudonymized = pseudonymized;
+	}
 }

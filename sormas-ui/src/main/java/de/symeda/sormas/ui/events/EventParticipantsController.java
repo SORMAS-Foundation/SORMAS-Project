@@ -27,9 +27,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.fieldgroup.FieldGroup;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -113,7 +112,7 @@ public class EventParticipantsController {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm =
-			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), true);
+			new EventParticipantEditForm(FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid()), false);
 		editForm.setValue(eventParticipant);
 
 		CommitDiscardWrapperComponent<EventParticipantEditForm> createView = createEventParticipantEditCommitWrapper(editForm, doneConsumer);
@@ -159,9 +158,8 @@ public class EventParticipantsController {
 	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
 		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-		final boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(eventParticipant.getEvent().getUuid());
 
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, isEventEditAllowed);
+		final EventParticipantEditForm editForm = new EventParticipantEditForm(event, eventParticipant.isPseudonymized());
 		editForm.setValue(eventParticipant);
 		editForm.setWidth(100, Unit.PERCENTAGE);
 

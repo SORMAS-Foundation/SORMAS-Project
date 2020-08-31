@@ -15,37 +15,33 @@
 
 package de.symeda.sormas.api.utils.fieldaccess.checkers;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
-public class SensitiveDataFieldAccessChecker extends AnnotationBasedFieldAccessChecker {
+public class PseudonymizedFieldAccessChecker extends AnnotationBasedFieldAccessChecker {
 
-	private SensitiveDataFieldAccessChecker(final boolean hasRight) {
-		super(SensitiveData.class, EmbeddedSensitiveData.class, hasRight);
-	}
-
-	public static SensitiveDataFieldAccessChecker inJurisdiction(RightCheck rightCheck) {
-		return new SensitiveDataFieldAccessChecker(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION));
-	}
-
-	public static SensitiveDataFieldAccessChecker outsideJurisdiction(RightCheck rightCheck) {
-		return new SensitiveDataFieldAccessChecker(rightCheck.check(UserRight.SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION));
-	}
-
-	public static SensitiveDataFieldAccessChecker forcedNoAccess() {
-		return new SensitiveDataFieldAccessChecker(false);
+	private PseudonymizedFieldAccessChecker(
+		Class<? extends Annotation> annotation,
+		Class<? extends Annotation> embeddedAnnotation,
+		boolean isPseudonymized) {
+		super(annotation, embeddedAnnotation, !isPseudonymized);
 	}
 
 	@Override
 	protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
-		return annotatedField.getAnnotation(SensitiveData.class).mandatoryField();
+		return false;
 	}
 
-	public interface RightCheck {
+	public static PseudonymizedFieldAccessChecker forPersonalData(boolean isPseudonymized) {
+		return new PseudonymizedFieldAccessChecker(PersonalData.class, EmbeddedPersonalData.class, isPseudonymized);
+	}
 
-		boolean check(UserRight userRight);
+	public static PseudonymizedFieldAccessChecker forSensitiveData(boolean isPseudonymized) {
+		return new PseudonymizedFieldAccessChecker(SensitiveData.class, EmbeddedSensitiveData.class, isPseudonymized);
 	}
 }

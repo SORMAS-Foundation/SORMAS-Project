@@ -85,13 +85,12 @@ public class CaseDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		Boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
 		CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 		//		if (getViewMode() == ViewMode.SIMPLE) {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);
 		//		} else {
-		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
 		//		}
 
 		// setSubComponent(editComponent);

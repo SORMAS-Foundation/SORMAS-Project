@@ -29,16 +29,15 @@ import androidx.fragment.app.FragmentActivity;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class PreviousHospitalizationDialog extends FormDialog {
@@ -58,7 +57,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_previous_hospitalization,
 			-1,
-			AppFieldAccessCheckers.withCheckers(!previousHospitalization.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(previousHospitalization.isPseudonymized()));
 
 		this.data = previousHospitalization;
 	}

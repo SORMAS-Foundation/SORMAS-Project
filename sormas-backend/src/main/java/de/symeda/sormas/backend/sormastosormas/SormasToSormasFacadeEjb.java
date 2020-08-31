@@ -520,10 +520,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
 
 		if (options.isPseudonymizePersonalData()) {
-			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess());
+			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess(), PersonalDataFieldAccessChecker.forcedNoAccess());
 		}
 		if (options.isPseudonymizeSensitiveData()) {
-			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess());
+			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess(), SensitiveDataFieldAccessChecker.forcedNoAccess());
 		}
 
 		return pseudonymizer;

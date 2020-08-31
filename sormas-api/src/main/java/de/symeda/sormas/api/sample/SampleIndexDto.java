@@ -32,11 +32,11 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
-public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, Serializable {
+public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = -6298614717044087479L;
 
@@ -179,13 +179,12 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			associatedContactJurisdiction =
-				new ContactJurisdictionDto(
-					contactReportingUserUuid,
-					contactRegionUuid,
-					contactDistrictUuid,
-					contactCommunityUuid,
-					contactCaseJurisdiction);
+			associatedContactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 		}
 
 		EventJurisdictionDto eventJurisdiction = null;

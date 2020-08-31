@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.app.epidata;
 
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
+import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,14 +39,13 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
@@ -55,16 +57,11 @@ import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentEditEpidLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getEpiDataOfCaseOrContact;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.isEditAllowed;
-
-public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, AbstractDomainObject> {
+public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEditEpidLayoutBinding, EpiData, PseudonymizableAdo> {
 
 	public static final String TAG = EpidemiologicalDataEditFragment.class.getSimpleName();
 
@@ -80,13 +77,13 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	// Static methods
 
-	public static EpidemiologicalDataEditFragment newInstance(AbstractDomainObject activityRootData) {
+	public static EpidemiologicalDataEditFragment newInstance(PseudonymizableAdo activityRootData) {
 		return newInstanceWithFieldCheckers(
 			EpidemiologicalDataEditFragment.class,
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)),
-			AppFieldAccessCheckers.withCheckers(isEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
 	}
 
 	// Instance methods
@@ -330,7 +327,6 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 			setFieldAccesses(EpiDataTravelDto.class, v);
 		});
 
-
 		contentBinding.epiDataBurialAttended.addValueChangedListener(new ValueChangeListener() {
 
 			@Override
@@ -449,7 +445,7 @@ public class EpidemiologicalDataEditFragment extends BaseEditFragment<FragmentEd
 
 	private void setFieldAccesses(Class<?> dtoClass, View view) {
 		FieldVisibilityAndAccessHelper
-				.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
+			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
 
 	}
 }

@@ -217,9 +217,7 @@ public class TherapyView extends AbstractCaseView {
 		return treatmentsHeader;
 	}
 
-	private void update() {
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-
+	private void update(CaseDataDto caze) {
 		// TODO: Remove this once a proper ViewModel system has been introduced
 		if (caze.getTherapy() == null) {
 			TherapyDto therapy = TherapyDto.build();
@@ -251,6 +249,7 @@ public class TherapyView extends AbstractCaseView {
 
 	@Override
 	protected void initView(String params) {
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		VerticalLayout container = new VerticalLayout();
 		container.setSpacing(false);
@@ -259,9 +258,7 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createPrescriptionsHeader());
 
-		Boolean caseEditAllowed = isCaseEditAllowed();
-
-		prescriptionGrid = new PrescriptionGrid(this, caseEditAllowed);
+		prescriptionGrid = new PrescriptionGrid(this, caze.isPseudonymized());
 		prescriptionGrid.setCriteria(prescriptionCriteria);
 		prescriptionGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(prescriptionGrid, CssStyles.VSPACE_2);
@@ -269,14 +266,14 @@ public class TherapyView extends AbstractCaseView {
 
 		container.addComponent(createTreatmentsHeader());
 
-		treatmentGrid = new TreatmentGrid(caseEditAllowed);
+		treatmentGrid = new TreatmentGrid(caze.isPseudonymized());
 		treatmentGrid.setCriteria(treatmentCriteria);
 		container.addComponent(treatmentGrid);
 		container.setExpandRatio(treatmentGrid, 1);
 
 		setSubComponent(container);
 
-		update();
+		update(caze);
 		reloadPrescriptionGrid();
 		reloadTreatmentGrid();
 

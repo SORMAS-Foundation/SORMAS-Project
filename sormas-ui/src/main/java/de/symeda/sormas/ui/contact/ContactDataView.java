@@ -47,9 +47,7 @@ import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -94,16 +92,16 @@ public class ContactDataView extends AbstractContactView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
-		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
-		CommitDiscardWrapperComponent<?> editComponent =
-			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
+		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
+
+		CommitDiscardWrapperComponent<?> editComponent = ControllerProvider.getContactController()
+			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid());
 		if (contactDto.getCaze() != null) {
 			layout.addComponent(createCaseInfoLayout(contactDto.getCaze().getUuid()), CASE_LOC);
 		}
@@ -225,14 +223,9 @@ public class ContactDataView extends AbstractContactView {
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(caseUuid);
-		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
-			caseDto,
-			UiFieldAccessCheckers.withCheckers(
-				isInJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+
 		return caseInfoLayout;
 	}
 }

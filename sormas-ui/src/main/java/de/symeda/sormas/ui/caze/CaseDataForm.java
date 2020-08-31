@@ -94,6 +94,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -106,7 +107,6 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
-import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -209,7 +209,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
 
-	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isInJurisdiction) {
+	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isPseudonymized) {
 
 		super(
 			CaseDataDto.class,
@@ -218,10 +218,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
 				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
-			UiFieldAccessCheckers.withCheckers(
-				isInJurisdiction,
-				FieldHelper.createPersonalDataFieldAccessChecker(),
-				FieldHelper.createSensitiveDataFieldAccessChecker()));
+			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
 		this.caseUuid = caseUuid;
 		this.person = person;
@@ -506,22 +503,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
 
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					CaseDataDto.FOLLOW_UP_STATUS,
-					Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
-					Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+				getFieldGroup(),
+				CaseDataDto.FOLLOW_UP_STATUS,
+				Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
+				Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 			FieldHelper.setReadOnlyWhen(
-					getFieldGroup(),
-					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-					Arrays.asList(Boolean.FALSE),
-					false,
-					true);
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+				Arrays.asList(Boolean.FALSE),
+				false,
+				true);
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-					Arrays.asList(Boolean.TRUE));
+				getFieldGroup(),
+				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+				Arrays.asList(Boolean.TRUE));
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
 
@@ -852,14 +849,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
-						CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
+					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
 				finalFollowUpUntil.addValidator(
-						new DateRangeValidator(
-								I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-								minimumFollowUpUntilDate,
-								null,
-								Resolution.DAY));
+					new DateRangeValidator(
+						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+						minimumFollowUpUntilDate,
+						null,
+						Resolution.DAY));
 			}
 		});
 	}

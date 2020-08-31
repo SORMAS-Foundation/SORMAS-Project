@@ -13,23 +13,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.utils;
+package de.symeda.sormas.api.utils.fieldaccess;
 
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.PseudonymizedFieldAccessChecker;
 
 public class UiFieldAccessCheckers {
 
-	private final boolean isInJurisdiction;
 	private final FieldAccessCheckers fieldAccessCheckers;
 
-	public UiFieldAccessCheckers(boolean isInJurisdiction) {
-		this.isInJurisdiction = isInJurisdiction;
+	private UiFieldAccessCheckers() {
 		fieldAccessCheckers = new FieldAccessCheckers();
 	}
 
 	public boolean isAccessible(Class<?> parentType, String fieldName) {
-		return fieldAccessCheckers.isAccessible(parentType, fieldName, isInJurisdiction, true);
+		return fieldAccessCheckers.isAccessible(parentType, fieldName, true);
 	}
 
 	public boolean isEmbedded(Class<?> parentType, String fieldName) {
@@ -37,7 +34,7 @@ public class UiFieldAccessCheckers {
 	}
 
 	public boolean hasRight() {
-		return fieldAccessCheckers.hasRights(isInJurisdiction);
+		return fieldAccessCheckers.hasRights();
 	}
 
 	public UiFieldAccessCheckers add(FieldAccessChecker accessChecker) {
@@ -46,12 +43,23 @@ public class UiFieldAccessCheckers {
 		return this;
 	}
 
-	public static UiFieldAccessCheckers withCheckers(boolean isInJurisdiction, FieldAccessChecker... checkers) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers(isInJurisdiction);
+	public static UiFieldAccessCheckers getNoop() {
+		return new UiFieldAccessCheckers();
+	}
 
-		for (FieldAccessChecker checker : checkers) {
-			fieldAccessCheckers.add(checker);
-		}
+	public static UiFieldAccessCheckers getDefault(boolean isPseudonymized) {
+		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
+
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forPersonalData(isPseudonymized));
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
+
+		return fieldAccessCheckers;
+	}
+
+	public static UiFieldAccessCheckers forSensitiveData(boolean isPseudonymized) {
+		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers();
+
+		fieldAccessCheckers.add(PseudonymizedFieldAccessChecker.forSensitiveData(isPseudonymized));
 
 		return fieldAccessCheckers;
 	}

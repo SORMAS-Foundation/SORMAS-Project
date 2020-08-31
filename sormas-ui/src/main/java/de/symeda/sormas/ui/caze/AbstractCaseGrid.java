@@ -47,14 +47,12 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.CaseJurisdictionHelper;
 import de.symeda.sormas.api.utils.jurisdiction.UserJurisdiction;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -97,12 +95,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 					PersonDto.I18N_PREFIX,
 					LocationDto.I18N_PREFIX));
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					CaseJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 
 		addItemClickListener(new ShowDetailsListener<>(CaseIndexDto.UUID, e -> ControllerProvider.getCaseController().navigateToCase(e.getUuid())));
@@ -169,7 +162,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 		if (caseFollowUpEnabled) {
 			((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.FOLLOW_UP_UNTIL))
-					.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
+				.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
@@ -199,12 +192,8 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 				CaseIndexDto.REPORT_DATE,
 				CaseIndexDto.QUARANTINE_TO,
 				CaseIndexDto.CREATION_DATE),
-		caseFollowUpEnabled ? Stream.of(
-				CaseIndexDto.FOLLOW_UP_STATUS,
-				CaseIndexDto.FOLLOW_UP_UNTIL,
-				NUMBER_OF_VISITS) : Stream.<String>empty(),
-				Stream.of(COLUMN_COMPLETENESS))
-			.flatMap(s -> s);
+			caseFollowUpEnabled ? Stream.of(CaseIndexDto.FOLLOW_UP_STATUS, CaseIndexDto.FOLLOW_UP_UNTIL, NUMBER_OF_VISITS) : Stream.<String> empty(),
+			Stream.of(COLUMN_COMPLETENESS)).flatMap(s -> s);
 	}
 
 	protected Stream<String> getPersonColumns() {
