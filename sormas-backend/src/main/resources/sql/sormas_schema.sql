@@ -34,7 +34,7 @@ SET default_with_oids = false;
 
 --
 -- TOC entry 142 (class 1259 OID 341910)
--- Name: cases; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE cases (
@@ -70,7 +70,7 @@ ALTER TABLE cases OWNER TO sormas_user;
 
 --
 -- TOC entry 148 (class 1259 OID 341964)
--- Name: community; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE community (
@@ -87,7 +87,7 @@ ALTER TABLE community OWNER TO sormas_user;
 
 --
 -- TOC entry 147 (class 1259 OID 341957)
--- Name: district; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE district (
@@ -119,7 +119,7 @@ ALTER TABLE entity_seq OWNER TO sormas_user;
 
 --
 -- TOC entry 149 (class 1259 OID 341971)
--- Name: facility; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE facility (
@@ -138,7 +138,7 @@ ALTER TABLE facility OWNER TO sormas_user;
 
 --
 -- TOC entry 144 (class 1259 OID 341930)
--- Name: location; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE location (
@@ -161,7 +161,7 @@ ALTER TABLE location OWNER TO sormas_user;
 
 --
 -- TOC entry 143 (class 1259 OID 341920)
--- Name: person; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE person (
@@ -194,7 +194,7 @@ ALTER TABLE person OWNER TO sormas_user;
 
 --
 -- TOC entry 146 (class 1259 OID 341950)
--- Name: region; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE region (
@@ -210,7 +210,7 @@ ALTER TABLE region OWNER TO sormas_user;
 
 --
 -- TOC entry 150 (class 1259 OID 341981)
--- Name: userroles; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: userroles; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE userroles (
@@ -223,7 +223,7 @@ ALTER TABLE userroles OWNER TO sormas_user;
 
 --
 -- TOC entry 145 (class 1259 OID 341940)
--- Name: users; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE users (
@@ -249,7 +249,7 @@ ALTER TABLE users OWNER TO sormas_user;
 
 --
 -- TOC entry 1732 (class 2606 OID 341917)
--- Name: cases_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY cases
@@ -258,7 +258,7 @@ ALTER TABLE ONLY cases
 
 --
 -- TOC entry 1734 (class 2606 OID 341919)
--- Name: cases_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY cases
@@ -267,7 +267,7 @@ ALTER TABLE ONLY cases
 
 --
 -- TOC entry 1756 (class 2606 OID 341968)
--- Name: community_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY community
@@ -276,7 +276,7 @@ ALTER TABLE ONLY community
 
 --
 -- TOC entry 1758 (class 2606 OID 341970)
--- Name: community_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY community
@@ -285,7 +285,7 @@ ALTER TABLE ONLY community
 
 --
 -- TOC entry 1752 (class 2606 OID 341961)
--- Name: district_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY district
@@ -294,7 +294,7 @@ ALTER TABLE ONLY district
 
 --
 -- TOC entry 1754 (class 2606 OID 341963)
--- Name: district_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY district
@@ -303,7 +303,7 @@ ALTER TABLE ONLY district
 
 --
 -- TOC entry 1760 (class 2606 OID 341978)
--- Name: facility_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY facility
@@ -312,7 +312,7 @@ ALTER TABLE ONLY facility
 
 --
 -- TOC entry 1762 (class 2606 OID 341980)
--- Name: facility_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY facility
@@ -321,7 +321,7 @@ ALTER TABLE ONLY facility
 
 --
 -- TOC entry 1740 (class 2606 OID 341937)
--- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY location
@@ -330,7 +330,7 @@ ALTER TABLE ONLY location
 
 --
 -- TOC entry 1742 (class 2606 OID 341939)
--- Name: location_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY location
@@ -339,7 +339,7 @@ ALTER TABLE ONLY location
 
 --
 -- TOC entry 1736 (class 2606 OID 341927)
--- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY person
@@ -348,7 +348,7 @@ ALTER TABLE ONLY person
 
 --
 -- TOC entry 1738 (class 2606 OID 341929)
--- Name: person_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY person
@@ -357,7 +357,7 @@ ALTER TABLE ONLY person
 
 --
 -- TOC entry 1748 (class 2606 OID 341954)
--- Name: region_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY region
@@ -366,7 +366,7 @@ ALTER TABLE ONLY region
 
 --
 -- TOC entry 1750 (class 2606 OID 341956)
--- Name: region_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY region
@@ -375,7 +375,7 @@ ALTER TABLE ONLY region
 
 --
 -- TOC entry 1764 (class 2606 OID 341985)
--- Name: unq_userroles_0; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: unq_userroles_0; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY userroles
@@ -384,7 +384,7 @@ ALTER TABLE ONLY userroles
 
 --
 -- TOC entry 1744 (class 2606 OID 341947)
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -393,7 +393,7 @@ ALTER TABLE ONLY users
 
 --
 -- TOC entry 1746 (class 2606 OID 341949)
--- Name: users_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -623,7 +623,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE person ADD COLUMN phoneowner character varying(255);
-  
+
 INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 
@@ -638,7 +638,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (2, 'Split person bi
 
 -- 2016-10-04; #58
 CREATE TABLE symptoms (
-id bigint not null, 
+id bigint not null,
 abdominalpain varchar(255),
 anorexiaappetiteloss varchar(255),
 bleedingvagina varchar(255),
@@ -674,7 +674,7 @@ othernonhemorrhagic varchar(255),
 othernonhemorrhagicsymptoms varchar(255),
 petechiae varchar(255),
 skinrash varchar(255),
-sorethroat varchar(255), 
+sorethroat varchar(255),
 onsetdate timestamp without time zone,
 temperature real,
 temperaturesource varchar(255),
@@ -696,20 +696,20 @@ INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 
 CREATE TABLE task (
 id bigint not null,
-assigneereply varchar(512), 
-changedate timestamp not null, 
-creationdate timestamp not null, 
-creatorcomment varchar(512), 
-duedate timestamp, 
-perceivedstart timestamp, 
-statuschangedate timestamp, 
-taskcontext varchar(255), 
-taskstatus varchar(255), 
-tasktype varchar(255), 
-uuid varchar(36) not null unique, 
-assigneeuser_id bigint, 
-caze_id bigint, 
-creatoruser_id bigint, 
+assigneereply varchar(512),
+changedate timestamp not null,
+creationdate timestamp not null,
+creatorcomment varchar(512),
+duedate timestamp,
+perceivedstart timestamp,
+statuschangedate timestamp,
+taskcontext varchar(255),
+taskstatus varchar(255),
+tasktype varchar(255),
+uuid varchar(36) not null unique,
+assigneeuser_id bigint,
+caze_id bigint,
+creatoruser_id bigint,
 PRIMARY KEY (id));
 
 ALTER TABLE task OWNER TO sormas_user;
@@ -724,7 +724,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (4, 'Task');
 
 ALTER TABLE task ADD COLUMN priority varchar(255);
 ALTER TABLE task ADD COLUMN suggestedstart timestamp;
-DELETE FROM task; 
+DELETE FROM task;
 
 INSERT INTO schema_version (version_number, comment) VALUES (5, 'Task priority & suggested start');
 
@@ -782,17 +782,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (7, 'Case + User: re
 -- 2016-11-10; Contact #85
 
 CREATE TABLE contact (
-id bigint not null, 
-changedate timestamp not null, 
-contactproximity varchar(255), 
-contactstatus varchar(255), 
-creationdate timestamp not null, 
-lastcontactdate timestamp, 
-reportdatetime timestamp not null, 
-uuid varchar(36) not null unique, 
+id bigint not null,
+changedate timestamp not null,
+contactproximity varchar(255),
+contactstatus varchar(255),
+creationdate timestamp not null,
+lastcontactdate timestamp,
+reportdatetime timestamp not null,
+uuid varchar(36) not null unique,
 caze_id bigint not null,
-person_id bigint not null, 
-reportinguser_id bigint not null, 
+person_id bigint not null,
+reportinguser_id bigint not null,
 primary key (id));
 
 ALTER TABLE contact ADD CONSTRAINT fk_contact_person_id FOREIGN KEY (person_id) REFERENCES person (id);
@@ -807,7 +807,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (8, 'Contact; Cases 
 -- 2016-11-15; Contact #85
 
 ALTER TABLE contact ADD COLUMN description varchar(512);
- 
+
 INSERT INTO schema_version (version_number, comment) VALUES (9, 'Contact.description');
 
 -- 2016-11-16; Contact #85
@@ -826,12 +826,12 @@ ALTER TABLE contact ADD COLUMN followupstatus varchar(255);
 ALTER TABLE contact ADD COLUMN followupuntil timestamp;
 
 CREATE TABLE visit (
-	id bigint not null, 
-	uuid varchar(36) not null unique, 
-	changedate timestamp not null, 
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
 	creationdate timestamp not null,
-	person_id bigint not null, 
-	visituser_id bigint not null, 
+	person_id bigint not null,
+	visituser_id bigint not null,
     visitremarks character varying(512),
     disease character varying(255),
 	visitdatetime timestamp not null,
@@ -1024,10 +1024,10 @@ CREATE TABLE sampletest(
 	testresulttext varchar(512) not null,
 	testresultverified boolean not null,
 	primary key(id));
-	
+
 ALTER TABLE samples OWNER TO sormas_user;
 ALTER TABLE sampletest OWNER TO sormas_user;
-	
+
 INSERT INTO schema_version (version_number, comment) VALUES (24, 'Sample and SampleTest backend');
 
 -- 2017-02-03 Foreign keys for samples and sampletests #106
@@ -1249,7 +1249,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiologica
 
 
 CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
-INSERT INTO epidata (id, changedate, creationdate, uuid) 
+INSERT INTO epidata (id, changedate, creationdate, uuid)
 	SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
 UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
 DROP TABLE tmp_caseids;
@@ -2062,9 +2062,9 @@ CREATE FUNCTION export_database(table_name text, path text, file_name text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(path || file_name) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -2081,16 +2081,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(path || file_name) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(path || file_name) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -2112,7 +2112,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case
 
 CREATE OR REPLACE FUNCTION add_health_facility(_name character varying(512), _islaboratory boolean, _regionname character varying(512), _districtname character varying(512), _communityname character varying(512), _city character varying(512), _latitude double precision, _longitude double precision)
 RETURNS bigint AS $resultid$
-DECLARE 
+DECLARE
 	_type character varying(512);
 	_id bigint;
 	_uuid character varying(36);
@@ -2152,11 +2152,11 @@ BEGIN
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
 	END IF;
-	
+
 	INSERT INTO facility(
-            id, changedate, creationdate, name, publicownership, type, uuid, 
+            id, changedate, creationdate, name, publicownership, type, uuid,
             region_id, district_id, community_id, city, latitude, longitude)
-	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid, 
+	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid,
             _region_id, _district_id, _community_id, _city, _latitude, _longitude);
 
         RETURN _id;
@@ -2189,9 +2189,9 @@ CREATE FUNCTION export_database(table_name text, file_path text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -2208,16 +2208,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -2259,7 +2259,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age fiel
 -- week starts monday
 -- 1st of january is always in week 1
 CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
-RETURNS integer AS 
+RETURNS integer AS
 $result$
 DECLARE year integer;
 	doy integer;
@@ -2288,7 +2288,7 @@ BEGIN
 	isodow_start := date_part('isodow', date (year || '-01-01'));
 	epi_week := ceil((doy + isodow_start - 1) / 7.0);
    END if;
-   
+
    RETURN epi_week;
 END;
 $result$
@@ -2296,7 +2296,7 @@ LANGUAGE plpgsql;
 
 -- see epi_week
 CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
-RETURNS integer AS 
+RETURNS integer AS
 $result$
 DECLARE year integer;
 	doy integer;
@@ -2315,10 +2315,10 @@ BEGIN
    ELSE
 	epi_year := year;
    END if;
-   
+
    RETURN epi_year;
 END;
-$result$ 
+$result$
 LANGUAGE plpgsql;
 
 -- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
@@ -2670,7 +2670,7 @@ CREATE TABLE prescription(
 	dose varchar(512),
 	route varchar(255),
 	routedetails varchar(512),
-	additionalnotes varchar(512),	
+	additionalnotes varchar(512),
 	sys_period tstzrange not null,
 	primary key(id)
 );
@@ -2917,11 +2917,11 @@ CREATE TABLE additionaltest(
 	conjbilirubin integer,
 	wbccount integer,
 	platelets integer,
-	prothrombintime integer,	
-	othertestresults varchar(512), 
+	prothrombintime integer,
+	othertestresults varchar(512),
 	sys_period tstzrange not null,
 	primary key(id));
-	
+
 ALTER TABLE additionaltest OWNER TO sormas_user;
 ALTER TABLE additionaltest ADD CONSTRAINT fk_additionaltest_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
 
@@ -3098,16 +3098,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 			EXECUTE '
 				COPY (SELECT
 					' || quote_ident(table_name) || '
-				.* FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				.* FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -3145,7 +3145,7 @@ CREATE TABLE diseaseconfiguration(
 	followupduration integer,
 	sys_period tstzrange not null,
 	primary key(id));
-	
+
 ALTER TABLE diseaseconfiguration OWNER TO sormas_user;
 
 CREATE TABLE diseaseconfiguration_history (LIKE diseaseconfiguration);
@@ -3387,7 +3387,7 @@ CREATE TABLE pointofentry(
 	district_id bigint,
 	latitude double precision,
 	longitude double precision,
-	active boolean, 
+	active boolean,
 	primary key(id)
 );
 ALTER TABLE pointofentry OWNER TO sormas_user;
@@ -3510,9 +3510,9 @@ CREATE FUNCTION export_database(table_name text, file_path text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -3530,16 +3530,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -4289,7 +4289,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (211, 'Add samples t
 UPDATE contact SET contactproximity = 'MEDICAL_UNSAFE' WHERE contactproximity = 'MEDICAL_UNSAVE';
 UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'MEDICAL_SAVE';
 
-INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');                                                                                                                        
+INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');
 
 -- 2020-05-25 Add campaigns #1984
 CREATE TABLE campaigns(
@@ -4980,7 +4980,6 @@ ALTER TABLE symptoms_history ADD COLUMN urinaryRetention varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (240, 'Adjust Covid-19 Symptoms for Switzerland #2669');
 
-
 -- 2020-08-19 - Add pre-existing conditions to contacts #2564 - update healthconditions table
 ALTER TABLE  contact ADD COLUMN healthconditions_id bigint;
 ALTER TABLE contact ADD CONSTRAINT fk_contact_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
@@ -5039,4 +5038,641 @@ ALTER TABLE location ADD CONSTRAINT fk_location_person_id FOREIGN KEY (person_id
 ALTER TABLE person ADD COLUMN changedateofembeddedlists timestamp without time zone;
 
 INSERT INTO schema_version (version_number, comment) VALUES (244, 'Person address refinement #2562');
+
+-- 2020-08-28 Clone symptoms, epi data and health conditions when converting contacts to cases
+
+CREATE TABLE tmp_symptoms (LIKE symptoms);
+ALTER TABLE tmp_symptoms OWNER TO sormas_user;
+ALTER TABLE tmp_symptoms ADD COLUMN cases_id bigint;
+ALTER TABLE tmp_symptoms ADD COLUMN new_symptoms_id bigint;
+ALTER TABLE tmp_symptoms ADD COLUMN old_symptoms_id bigint;
+
+INSERT INTO tmp_symptoms
+(id, uuid, cases_id, new_symptoms_id, old_symptoms_id, abdominalpain, anorexiaappetiteloss, bleedingvagina, changedate, chestpain,
+ confuseddisoriented, conjunctivitis, cough, creationdate, diarrhea, difficultybreathing,
+ digestedbloodvomit, eyepainlightsensitive, fever, gumsbleeding, headache, hemoptysis, hiccups,
+ injectionsitebleeding, jointpain, musclepain, otherhemorrhagicsymptoms,
+ otherhemorrhagicsymptomstext, othernonhemorrhagicsymptoms, othernonhemorrhagicsymptomstext,
+ skinrash, sorethroat, onsetdate, temperature, temperaturesource, unexplainedbleeding, vomiting,
+ dehydration, fatigueweakness, kopliksspots, nausea, neckstiffness, onsetsymptom, otitismedia,
+ refusalfeedordrink, runnynose, seizures, symptomatic, bloodinstool, nosebleeding,
+ bloodyblackstool, redbloodvomit, coughingblood, skinbruising, bloodurine, alteredconsciousness,
+ throbocytopenia, hearingloss, shock, symptomscomments, sys_period, backache, eyesbleeding,
+ jaundice, darkurine, stomachbleeding, rapidbreathing, swollenglands, lesions, lesionssamestate,
+ lesionssamesize, lesionsdeepprofound, lesionsface, lesionslegs, lesionssolesfeet,
+ lesionspalmshands, lesionsthorax, lesionsarms, lesionsgenitals, lesionsalloverbody,
+ lesionsresembleimg1, lesionsresembleimg2, lesionsresembleimg3, lesionsresembleimg4,
+ lymphadenopathyinguinal, lymphadenopathyaxillary, lymphadenopathycervical, chillssweats,
+ lesionsthatitch, bedridden, oralulcers, patientilllocation, painfullymphadenitis,
+ buboesgroinarmpitneck, blackeningdeathoftissue, bulgingfontanelle, lesionsonsetdate,
+ meningealsigns, bloodpressuresystolic, bloodpressurediastolic, heartrate, pharyngealerythema,
+ pharyngealexudate, oedemafaceneck, oedemalowerextremity, lossskinturgor, palpableliver,
+ palpablespleen, malaise, sunkeneyesfontanelle, sidepain, fluidinlungcavity, tremor,
+ hemorrhagicsyndrome, hyperglycemia, hypoglycemia, sepsis, midupperarmcircumference,
+ respiratoryrate, weight, height, glasgowcomascale, bilateralcataracts, unilateralcataracts,
+ congenitalglaucoma, pigmentaryretinopathy, purpuricrash, microcephaly, developmentaldelay,
+ splenomegaly, meningoencephalitis, radiolucentbonedisease, congenitalheartdisease,
+ congenitalheartdiseasetype, congenitalheartdiseasedetails, jaundicewithin24hoursofbirth,
+ hydrophobia, opisthotonus, anxietystates, delirium, uproariousness, paresthesiaaroundwound,
+ excesssalivation, insomnia, paralysis, excitation, dysphagia, aerophobia, hyperactivity, paresis,
+ agitation, ascendingflaccidparalysis, erraticbehaviour, coma, convulsion,
+ fluidinlungcavityauscultation, fluidinlungcavityxray, abnormallungxrayfindings,
+ conjunctivalinjection, acuterespiratorydistresssyndrome, pneumoniaclinicalorradiologic,
+ lossoftaste, lossofsmell, coughwithsputum, coughwithheamoptysis, lymphadenopathy, wheezing,
+ skinulcers, inabilitytowalk, indrawingofchestwall, othercomplications, othercomplicationstext,
+ respiratorydiseaseventilation, generalsignsofdisease, fastheartrate, oxygensaturationlower94,
+ feverishfeeling, weakness, fatigue, coughwithoutsputum, breathlessness, chestpressure, bluelips,
+ bloodcirculationproblems, palpitations, dizzinessstandingup, highorlowbloodpressure,
+ urinaryretention)
+SELECT nextval('entity_seq'),
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
+                       29)),
+       c.id,
+       nextval('entity_seq'),
+       s.id,
+       s.abdominalpain,
+       s.anorexiaappetiteloss,
+       s.bleedingvagina,
+       s.changedate,
+       s.chestpain,
+       s.confuseddisoriented,
+       s.conjunctivitis,
+       s.cough,
+       s.creationdate,
+       s.diarrhea,
+       s.difficultybreathing,
+       s.digestedbloodvomit,
+       s.eyepainlightsensitive,
+       s.fever,
+       s.gumsbleeding,
+       s.headache,
+       s.hemoptysis,
+       s.hiccups,
+       s.injectionsitebleeding,
+       s.jointpain,
+       s.musclepain,
+       s.otherhemorrhagicsymptoms,
+       s.otherhemorrhagicsymptomstext,
+       s.othernonhemorrhagicsymptoms,
+       s.othernonhemorrhagicsymptomstext,
+       s.skinrash,
+       s.sorethroat,
+       s.onsetdate,
+       s.temperature,
+       s.temperaturesource,
+       s.unexplainedbleeding,
+       s.vomiting,
+       s.dehydration,
+       s.fatigueweakness,
+       s.kopliksspots,
+       s.nausea,
+       s.neckstiffness,
+       s.onsetsymptom,
+       s.otitismedia,
+       s.refusalfeedordrink,
+       s.runnynose,
+       s.seizures,
+       s.symptomatic,
+       s.bloodinstool,
+       s.nosebleeding,
+       s.bloodyblackstool,
+       s.redbloodvomit,
+       s.coughingblood,
+       s.skinbruising,
+       s.bloodurine,
+       s.alteredconsciousness,
+       s.throbocytopenia,
+       s.hearingloss,
+       s.shock,
+       s.symptomscomments,
+       s.sys_period,
+       s.backache,
+       s.eyesbleeding,
+       s.jaundice,
+       s.darkurine,
+       s.stomachbleeding,
+       s.rapidbreathing,
+       s.swollenglands,
+       s.lesions,
+       s.lesionssamestate,
+       s.lesionssamesize,
+       s.lesionsdeepprofound,
+       s.lesionsface,
+       s.lesionslegs,
+       s.lesionssolesfeet,
+       s.lesionspalmshands,
+       s.lesionsthorax,
+       s.lesionsarms,
+       s.lesionsgenitals,
+       s.lesionsalloverbody,
+       s.lesionsresembleimg1,
+       s.lesionsresembleimg2,
+       s.lesionsresembleimg3,
+       s.lesionsresembleimg4,
+       s.lymphadenopathyinguinal,
+       s.lymphadenopathyaxillary,
+       s.lymphadenopathycervical,
+       s.chillssweats,
+       s.lesionsthatitch,
+       s.bedridden,
+       s.oralulcers,
+       s.patientilllocation,
+       s.painfullymphadenitis,
+       s.buboesgroinarmpitneck,
+       s.blackeningdeathoftissue,
+       s.bulgingfontanelle,
+       s.lesionsonsetdate,
+       s.meningealsigns,
+       s.bloodpressuresystolic,
+       s.bloodpressurediastolic,
+       s.heartrate,
+       s.pharyngealerythema,
+       s.pharyngealexudate,
+       s.oedemafaceneck,
+       s.oedemalowerextremity,
+       s.lossskinturgor,
+       s.palpableliver,
+       s.palpablespleen,
+       s.malaise,
+       s.sunkeneyesfontanelle,
+       s.sidepain,
+       s.fluidinlungcavity,
+       s.tremor,
+       s.hemorrhagicsyndrome,
+       s.hyperglycemia,
+       s.hypoglycemia,
+       s.sepsis,
+       s.midupperarmcircumference,
+       s.respiratoryrate,
+       s.weight,
+       s.height,
+       s.glasgowcomascale,
+       s.bilateralcataracts,
+       s.unilateralcataracts,
+       s.congenitalglaucoma,
+       s.pigmentaryretinopathy,
+       s.purpuricrash,
+       s.microcephaly,
+       s.developmentaldelay,
+       s.splenomegaly,
+       s.meningoencephalitis,
+       s.radiolucentbonedisease,
+       s.congenitalheartdisease,
+       s.congenitalheartdiseasetype,
+       s.congenitalheartdiseasedetails,
+       s.jaundicewithin24hoursofbirth,
+       s.hydrophobia,
+       s.opisthotonus,
+       s.anxietystates,
+       s.delirium,
+       s.uproariousness,
+       s.paresthesiaaroundwound,
+       s.excesssalivation,
+       s.insomnia,
+       s.paralysis,
+       s.excitation,
+       s.dysphagia,
+       s.aerophobia,
+       s.hyperactivity,
+       s.paresis,
+       s.agitation,
+       s.ascendingflaccidparalysis,
+       s.erraticbehaviour,
+       s.coma,
+       s.convulsion,
+       s.fluidinlungcavityauscultation,
+       s.fluidinlungcavityxray,
+       s.abnormallungxrayfindings,
+       s.conjunctivalinjection,
+       s.acuterespiratorydistresssyndrome,
+       s.pneumoniaclinicalorradiologic,
+       s.lossoftaste,
+       s.lossofsmell,
+       s.coughwithsputum,
+       s.coughwithheamoptysis,
+       s.lymphadenopathy,
+       s.wheezing,
+       s.skinulcers,
+       s.inabilitytowalk,
+       s.indrawingofchestwall,
+       s.othercomplications,
+       s.othercomplicationstext,
+       s.respiratorydiseaseventilation,
+       s.generalsignsofdisease,
+       s.fastheartrate,
+       s.oxygensaturationlower94,
+       s.feverishfeeling,
+       s.weakness,
+       s.fatigue,
+       s.coughwithoutsputum,
+       s.breathlessness,
+       s.chestpressure,
+       s.bluelips,
+       s.bloodcirculationproblems,
+       s.palpitations,
+       s.dizzinessstandingup,
+       s.highorlowbloodpressure,
+       s.urinaryretention
+FROM cases c left join symptoms s on c.symptoms_id = s.id, contact co
+WHERE co.resultingcase_id = c.id;
+
+INSERT INTO symptoms
+(id, uuid, abdominalpain, anorexiaappetiteloss, bleedingvagina, changedate, chestpain,
+ confuseddisoriented, conjunctivitis, cough, creationdate, diarrhea, difficultybreathing,
+ digestedbloodvomit, eyepainlightsensitive, fever, gumsbleeding, headache, hemoptysis, hiccups,
+ injectionsitebleeding, jointpain, musclepain, otherhemorrhagicsymptoms,
+ otherhemorrhagicsymptomstext, othernonhemorrhagicsymptoms, othernonhemorrhagicsymptomstext,
+ skinrash, sorethroat, onsetdate, temperature, temperaturesource, unexplainedbleeding, vomiting,
+ dehydration, fatigueweakness, kopliksspots, nausea, neckstiffness, onsetsymptom, otitismedia,
+ refusalfeedordrink, runnynose, seizures, symptomatic, bloodinstool, nosebleeding,
+ bloodyblackstool, redbloodvomit, coughingblood, skinbruising, bloodurine, alteredconsciousness,
+ throbocytopenia, hearingloss, shock, symptomscomments, sys_period, backache, eyesbleeding,
+ jaundice, darkurine, stomachbleeding, rapidbreathing, swollenglands, lesions, lesionssamestate,
+ lesionssamesize, lesionsdeepprofound, lesionsface, lesionslegs, lesionssolesfeet,
+ lesionspalmshands, lesionsthorax, lesionsarms, lesionsgenitals, lesionsalloverbody,
+ lesionsresembleimg1, lesionsresembleimg2, lesionsresembleimg3, lesionsresembleimg4,
+ lymphadenopathyinguinal, lymphadenopathyaxillary, lymphadenopathycervical, chillssweats,
+ lesionsthatitch, bedridden, oralulcers, patientilllocation, painfullymphadenitis,
+ buboesgroinarmpitneck, blackeningdeathoftissue, bulgingfontanelle, lesionsonsetdate,
+ meningealsigns, bloodpressuresystolic, bloodpressurediastolic, heartrate, pharyngealerythema,
+ pharyngealexudate, oedemafaceneck, oedemalowerextremity, lossskinturgor, palpableliver,
+ palpablespleen, malaise, sunkeneyesfontanelle, sidepain, fluidinlungcavity, tremor,
+ hemorrhagicsyndrome, hyperglycemia, hypoglycemia, sepsis, midupperarmcircumference,
+ respiratoryrate, weight, height, glasgowcomascale, bilateralcataracts, unilateralcataracts,
+ congenitalglaucoma, pigmentaryretinopathy, purpuricrash, microcephaly, developmentaldelay,
+ splenomegaly, meningoencephalitis, radiolucentbonedisease, congenitalheartdisease,
+ congenitalheartdiseasetype, congenitalheartdiseasedetails, jaundicewithin24hoursofbirth,
+ hydrophobia, opisthotonus, anxietystates, delirium, uproariousness, paresthesiaaroundwound,
+ excesssalivation, insomnia, paralysis, excitation, dysphagia, aerophobia, hyperactivity, paresis,
+ agitation, ascendingflaccidparalysis, erraticbehaviour, coma, convulsion,
+ fluidinlungcavityauscultation, fluidinlungcavityxray, abnormallungxrayfindings,
+ conjunctivalinjection, acuterespiratorydistresssyndrome, pneumoniaclinicalorradiologic,
+ lossoftaste, lossofsmell, coughwithsputum, coughwithheamoptysis, lymphadenopathy, wheezing,
+ skinulcers, inabilitytowalk, indrawingofchestwall, othercomplications, othercomplicationstext,
+ respiratorydiseaseventilation, generalsignsofdisease, fastheartrate, oxygensaturationlower94,
+ feverishfeeling, weakness, fatigue, coughwithoutsputum, breathlessness, chestpressure, bluelips,
+ bloodcirculationproblems, palpitations, dizzinessstandingup, highorlowbloodpressure,
+ urinaryretention)
+SELECT ts.new_symptoms_id,
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
+                       29)),
+       ts.abdominalpain,
+       ts.anorexiaappetiteloss,
+       ts.bleedingvagina,
+       ts.changedate,
+       ts.chestpain,
+       ts.confuseddisoriented,
+       ts.conjunctivitis,
+       ts.cough,
+       ts.creationdate,
+       ts.diarrhea,
+       ts.difficultybreathing,
+       ts.digestedbloodvomit,
+       ts.eyepainlightsensitive,
+       ts.fever,
+       ts.gumsbleeding,
+       ts.headache,
+       ts.hemoptysis,
+       ts.hiccups,
+       ts.injectionsitebleeding,
+       ts.jointpain,
+       ts.musclepain,
+       ts.otherhemorrhagicsymptoms,
+       ts.otherhemorrhagicsymptomstext,
+       ts.othernonhemorrhagicsymptoms,
+       ts.othernonhemorrhagicsymptomstext,
+       ts.skinrash,
+       ts.sorethroat,
+       ts.onsetdate,
+       ts.temperature,
+       ts.temperaturesource,
+       ts.unexplainedbleeding,
+       ts.vomiting,
+       ts.dehydration,
+       ts.fatigueweakness,
+       ts.kopliksspots,
+       ts.nausea,
+       ts.neckstiffness,
+       ts.onsetsymptom,
+       ts.otitismedia,
+       ts.refusalfeedordrink,
+       ts.runnynose,
+       ts.seizures,
+       ts.symptomatic,
+       ts.bloodinstool,
+       ts.nosebleeding,
+       ts.bloodyblackstool,
+       ts.redbloodvomit,
+       ts.coughingblood,
+       ts.skinbruising,
+       ts.bloodurine,
+       ts.alteredconsciousness,
+       ts.throbocytopenia,
+       ts.hearingloss,
+       ts.shock,
+       ts.symptomscomments,
+       ts.sys_period,
+       ts.backache,
+       ts.eyesbleeding,
+       ts.jaundice,
+       ts.darkurine,
+       ts.stomachbleeding,
+       ts.rapidbreathing,
+       ts.swollenglands,
+       ts.lesions,
+       ts.lesionssamestate,
+       ts.lesionssamesize,
+       ts.lesionsdeepprofound,
+       ts.lesionsface,
+       ts.lesionslegs,
+       ts.lesionssolesfeet,
+       ts.lesionspalmshands,
+       ts.lesionsthorax,
+       ts.lesionsarms,
+       ts.lesionsgenitals,
+       ts.lesionsalloverbody,
+       ts.lesionsresembleimg1,
+       ts.lesionsresembleimg2,
+       ts.lesionsresembleimg3,
+       ts.lesionsresembleimg4,
+       ts.lymphadenopathyinguinal,
+       ts.lymphadenopathyaxillary,
+       ts.lymphadenopathycervical,
+       ts.chillssweats,
+       ts.lesionsthatitch,
+       ts.bedridden,
+       ts.oralulcers,
+       ts.patientilllocation,
+       ts.painfullymphadenitis,
+       ts.buboesgroinarmpitneck,
+       ts.blackeningdeathoftissue,
+       ts.bulgingfontanelle,
+       ts.lesionsonsetdate,
+       ts.meningealsigns,
+       ts.bloodpressuresystolic,
+       ts.bloodpressurediastolic,
+       ts.heartrate,
+       ts.pharyngealerythema,
+       ts.pharyngealexudate,
+       ts.oedemafaceneck,
+       ts.oedemalowerextremity,
+       ts.lossskinturgor,
+       ts.palpableliver,
+       ts.palpablespleen,
+       ts.malaise,
+       ts.sunkeneyesfontanelle,
+       ts.sidepain,
+       ts.fluidinlungcavity,
+       ts.tremor,
+       ts.hemorrhagicsyndrome,
+       ts.hyperglycemia,
+       ts.hypoglycemia,
+       ts.sepsis,
+       ts.midupperarmcircumference,
+       ts.respiratoryrate,
+       ts.weight,
+       ts.height,
+       ts.glasgowcomascale,
+       ts.bilateralcataracts,
+       ts.unilateralcataracts,
+       ts.congenitalglaucoma,
+       ts.pigmentaryretinopathy,
+       ts.purpuricrash,
+       ts.microcephaly,
+       ts.developmentaldelay,
+       ts.splenomegaly,
+       ts.meningoencephalitis,
+       ts.radiolucentbonedisease,
+       ts.congenitalheartdisease,
+       ts.congenitalheartdiseasetype,
+       ts.congenitalheartdiseasedetails,
+       ts.jaundicewithin24hoursofbirth,
+       ts.hydrophobia,
+       ts.opisthotonus,
+       ts.anxietystates,
+       ts.delirium,
+       ts.uproariousness,
+       ts.paresthesiaaroundwound,
+       ts.excesssalivation,
+       ts.insomnia,
+       ts.paralysis,
+       ts.excitation,
+       ts.dysphagia,
+       ts.aerophobia,
+       ts.hyperactivity,
+       ts.paresis,
+       ts.agitation,
+       ts.ascendingflaccidparalysis,
+       ts.erraticbehaviour,
+       ts.coma,
+       ts.convulsion,
+       ts.fluidinlungcavityauscultation,
+       ts.fluidinlungcavityxray,
+       ts.abnormallungxrayfindings,
+       ts.conjunctivalinjection,
+       ts.acuterespiratorydistresssyndrome,
+       ts.pneumoniaclinicalorradiologic,
+       ts.lossoftaste,
+       ts.lossofsmell,
+       ts.coughwithsputum,
+       ts.coughwithheamoptysis,
+       ts.lymphadenopathy,
+       ts.wheezing,
+       ts.skinulcers,
+       ts.inabilitytowalk,
+       ts.indrawingofchestwall,
+       ts.othercomplications,
+       ts.othercomplicationstext,
+       ts.respiratorydiseaseventilation,
+       ts.generalsignsofdisease,
+       ts.fastheartrate,
+       ts.oxygensaturationlower94,
+       ts.feverishfeeling,
+       ts.weakness,
+       ts.fatigue,
+       ts.coughwithoutsputum,
+       ts.breathlessness,
+       ts.chestpressure,
+       ts.bluelips,
+       ts.bloodcirculationproblems,
+       ts.palpitations,
+       ts.dizzinessstandingup,
+       ts.highorlowbloodpressure,
+       ts.urinaryretention
+FROM tmp_symptoms ts;
+
+UPDATE cases c set symptoms_id = (select ts.new_symptoms_id from tmp_symptoms ts where c.id = ts.cases_id) where c.symptoms_id = (select ts.old_symptoms_id from tmp_symptoms ts where c.id = ts.cases_id);
+
+TRUNCATE TABLE tmp_symptoms;
+DROP TABLE tmp_symptoms;
+
+CREATE TABLE tmp_epidata (LIKE epidata);
+ALTER TABLE tmp_epidata OWNER TO sormas_user;
+ALTER TABLE tmp_epidata ADD COLUMN cases_id bigint;
+ALTER TABLE tmp_epidata ADD COLUMN new_epidata_id bigint;
+ALTER TABLE tmp_epidata ADD COLUMN old_epidata_id bigint;
+
+INSERT INTO tmp_epidata
+(id, uuid, cases_id, new_epidata_id, old_epidata_id, changedate, creationdate, rodents, bats, primates, swine, birds, eatingrawanimals, sickdeadanimals,
+ sickdeadanimalsdetails, sickdeadanimalsdate, sickdeadanimalslocation, cattle, otheranimals, otheranimalsdetails,
+ watersource, watersourceother, waterbody, waterbodydetails, tickbite, burialattended, gatheringattended, traveled,
+ changedateofembeddedlists, sys_period, dateoflastexposure, placeoflastexposure, animalcondition, fleabite,
+ directcontactconfirmedcase, directcontactprobablecase, closecontactprobablecase, areaconfirmedcases,
+ processingconfirmedcasefluidunsafe, percutaneouscaseblood, directcontactdeadunsafe,
+ processingsuspectedcasesampleunsafe, areainfectedanimals, eatingrawanimalsininfectedarea, eatingrawanimalsdetails,
+ kindofexposurebite, kindofexposuretouch, kindofexposurescratch, kindofexposurelick, kindofexposureother,
+ kindofexposuredetails, animalvaccinationstatus, dogs, cats, canidae, rabbits, prophylaxisstatus, dateofprophylaxis,
+ visitedhealthfacility, contactwithsourcerespiratorycase, visitedanimalmarket, camels, snakes)
+SELECT nextval('entity_seq'),
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
+                       29)),
+       c.id,
+       nextval('entity_seq'),
+       oepi.id,
+       oepi.changedate,
+       oepi.creationdate,
+       oepi.rodents,
+       oepi.bats,
+       oepi.primates,
+       oepi.swine,
+       oepi.birds,
+       oepi.eatingrawanimals,
+       oepi.sickdeadanimals,
+       oepi.sickdeadanimalsdetails,
+       oepi.sickdeadanimalsdate,
+       oepi.sickdeadanimalslocation,
+       oepi.cattle,
+       oepi.otheranimals,
+       oepi.otheranimalsdetails,
+       oepi.watersource,
+       oepi.watersourceother,
+       oepi.waterbody,
+       oepi.waterbodydetails,
+       oepi.tickbite,
+       oepi.burialattended,
+       oepi.gatheringattended,
+       oepi.traveled,
+       oepi.changedateofembeddedlists,
+       oepi.sys_period,
+       oepi.dateoflastexposure,
+       oepi.placeoflastexposure,
+       oepi.animalcondition,
+       oepi.fleabite,
+       oepi.directcontactconfirmedcase,
+       oepi.directcontactprobablecase,
+       oepi.closecontactprobablecase,
+       oepi.areaconfirmedcases,
+       oepi.processingconfirmedcasefluidunsafe,
+       oepi.percutaneouscaseblood,
+       oepi.directcontactdeadunsafe,
+       oepi.processingsuspectedcasesampleunsafe,
+       oepi.areainfectedanimals,
+       oepi.eatingrawanimalsininfectedarea,
+       oepi.eatingrawanimalsdetails,
+       oepi.kindofexposurebite,
+       oepi.kindofexposuretouch,
+       oepi.kindofexposurescratch,
+       oepi.kindofexposurelick,
+       oepi.kindofexposureother,
+       oepi.kindofexposuredetails,
+       oepi.animalvaccinationstatus,
+       oepi.dogs,
+       oepi.cats,
+       oepi.canidae,
+       oepi.rabbits,
+       oepi.prophylaxisstatus,
+       oepi.dateofprophylaxis,
+       oepi.visitedhealthfacility,
+       oepi.contactwithsourcerespiratorycase,
+       oepi.visitedanimalmarket,
+       oepi.camels,
+       oepi.snakes
+FROM cases c
+         left join epidata oepi on c.epidata_id = oepi.id,
+     contact co
+WHERE co.resultingcase_id = c.id;
+
+INSERT INTO epidata
+(id, uuid, changedate, creationdate, rodents, bats, primates, swine, birds, eatingrawanimals, sickdeadanimals,
+ sickdeadanimalsdetails, sickdeadanimalsdate, sickdeadanimalslocation, cattle, otheranimals, otheranimalsdetails,
+ watersource, watersourceother, waterbody, waterbodydetails, tickbite, burialattended, gatheringattended, traveled,
+ changedateofembeddedlists, sys_period, dateoflastexposure, placeoflastexposure, animalcondition, fleabite,
+ directcontactconfirmedcase, directcontactprobablecase, closecontactprobablecase, areaconfirmedcases,
+ processingconfirmedcasefluidunsafe, percutaneouscaseblood, directcontactdeadunsafe,
+ processingsuspectedcasesampleunsafe, areainfectedanimals, eatingrawanimalsininfectedarea, eatingrawanimalsdetails,
+ kindofexposurebite, kindofexposuretouch, kindofexposurescratch, kindofexposurelick, kindofexposureother,
+ kindofexposuredetails, animalvaccinationstatus, dogs, cats, canidae, rabbits, prophylaxisstatus, dateofprophylaxis,
+ visitedhealthfacility, contactwithsourcerespiratorycase, visitedanimalmarket, camels, snakes)
+SELECT tepi.new_epidata_id,
+       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
+                       29)),
+       tepi.changedate,
+       tepi.creationdate,
+       tepi.rodents,
+       tepi.bats,
+       tepi.primates,
+       tepi.swine,
+       tepi.birds,
+       tepi.eatingrawanimals,
+       tepi.sickdeadanimals,
+       tepi.sickdeadanimalsdetails,
+       tepi.sickdeadanimalsdate,
+       tepi.sickdeadanimalslocation,
+       tepi.cattle,
+       tepi.otheranimals,
+       tepi.otheranimalsdetails,
+       tepi.watersource,
+       tepi.watersourceother,
+       tepi.waterbody,
+       tepi.waterbodydetails,
+       tepi.tickbite,
+       tepi.burialattended,
+       tepi.gatheringattended,
+       tepi.traveled,
+       tepi.changedateofembeddedlists,
+       tepi.sys_period,
+       tepi.dateoflastexposure,
+       tepi.placeoflastexposure,
+       tepi.animalcondition,
+       tepi.fleabite,
+       tepi.directcontactconfirmedcase,
+       tepi.directcontactprobablecase,
+       tepi.closecontactprobablecase,
+       tepi.areaconfirmedcases,
+       tepi.processingconfirmedcasefluidunsafe,
+       tepi.percutaneouscaseblood,
+       tepi.directcontactdeadunsafe,
+       tepi.processingsuspectedcasesampleunsafe,
+       tepi.areainfectedanimals,
+       tepi.eatingrawanimalsininfectedarea,
+       tepi.eatingrawanimalsdetails,
+       tepi.kindofexposurebite,
+       tepi.kindofexposuretouch,
+       tepi.kindofexposurescratch,
+       tepi.kindofexposurelick,
+       tepi.kindofexposureother,
+       tepi.kindofexposuredetails,
+       tepi.animalvaccinationstatus,
+       tepi.dogs,
+       tepi.cats,
+       tepi.canidae,
+       tepi.rabbits,
+       tepi.prophylaxisstatus,
+       tepi.dateofprophylaxis,
+       tepi.visitedhealthfacility,
+       tepi.contactwithsourcerespiratorycase,
+       tepi.visitedanimalmarket,
+       tepi.camels,
+       tepi.snakes
+FROM tmp_epidata tepi;
+
+UPDATE cases c set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where c.id = tepi.cases_id) where c.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where c.id = tepi.cases_id);
+UPDATE epidataburial edb set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edb.epidata_id = tepi.old_epidata_id) where edb.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edb.epidata_id = tepi.old_epidata_id);
+UPDATE epidatatravel edt set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edt.epidata_id = tepi.old_epidata_id) where edt.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edt.epidata_id = tepi.old_epidata_id);
+UPDATE epidatagathering edg set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edg.epidata_id = tepi.old_epidata_id) where edg.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edg.epidata_id = tepi.old_epidata_id);
+
+TRUNCATE TABLE tmp_epidata;
+DROP TABLE tmp_epidata;
+
+INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms, epi data and health conditions when converting contacts to cases #2735');
 -- *** Insert new sql commands BEFORE this line ***
