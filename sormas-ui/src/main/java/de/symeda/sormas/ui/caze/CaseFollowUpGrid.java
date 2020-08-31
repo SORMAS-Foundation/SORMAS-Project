@@ -105,7 +105,7 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 				return getVisitResultCssStyle(
 					visitResult,
 					date,
-					CaseLogic.getStartDate(item.getSymptomsOnsetDate(), item.getReportDate()),
+					item.getReportDate(),
 					item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<CaseFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
