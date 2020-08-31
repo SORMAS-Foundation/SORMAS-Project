@@ -60,7 +60,6 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 	@Override
 	public void fillInnerFromDto(Location target, LocationDto source) {
 
-		target.setAddress(source.getAddress());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 		target.setDetails(source.getDetails());
@@ -75,12 +74,16 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setPostalCode(source.getPostalCode());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 	}
 
 	@Override
 	public void fillInnerFromAdo(LocationDto target, Location source) {
 
-		target.setAddress(source.getAddress());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
 		target.setDetails(source.getDetails());
@@ -107,5 +110,10 @@ public class LocationDtoHelper extends AdoDtoHelper<Location, LocationDto> {
 		target.setPostalCode(source.getPostalCode());
 
 		target.setPseudonymized(source.isPseudonymized());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 	}
 }

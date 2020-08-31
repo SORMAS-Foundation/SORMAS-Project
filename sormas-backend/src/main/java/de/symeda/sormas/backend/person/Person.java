@@ -20,6 +20,8 @@ package de.symeda.sormas.backend.person;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -104,6 +107,7 @@ public class Person extends AbstractDomainObject {
 	public static final String EMAIL_ADDRESS = "emailAddress";
 	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
+	public static final String ADDRESSES = "addresses";
 
 	private String firstName;
 	private String lastName;
@@ -160,6 +164,8 @@ public class Person extends AbstractDomainObject {
 	private String nationalHealthId;
 	private FacilityType occupationFacilityType;
 	private FacilityType placeOfBirthFacilityType;
+	private Set<Location> addresses = new HashSet<>();
+	private Date changeDateOfEmbeddedLists;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -581,6 +587,28 @@ public class Person extends AbstractDomainObject {
 
 	public void setPlaceOfBirthFacilityType(FacilityType placeOfBirthFacilityType) {
 		this.placeOfBirthFacilityType = placeOfBirthFacilityType;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = Location.PERSON)
+	public Set<Location> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(Set<Location> addresses) {
+		this.addresses = addresses;
+	}
+
+	/**
+	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
+	 *
+	 * @return
+	 */
+	public Date getChangeDateOfEmbeddedLists() {
+		return changeDateOfEmbeddedLists;
+	}
+
+	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
+		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
 	}
 
 	@Override

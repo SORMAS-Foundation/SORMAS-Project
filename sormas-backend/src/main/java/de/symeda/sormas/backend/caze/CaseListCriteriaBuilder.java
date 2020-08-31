@@ -25,12 +25,9 @@ import javax.persistence.criteria.Subquery;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -207,7 +204,9 @@ public class CaseListCriteriaBuilder {
 		selections.addAll(
 			Arrays.asList(
 				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.ADDRESS),
+				joins.getAddress().get(Location.STREET),
+				joins.getAddress().get(Location.HOUSE_NUMBER),
+				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
 				joins.getPerson().get(Person.PHONE),
 				joins.getReportingUser().get(User.FIRST_NAME),
@@ -235,12 +234,12 @@ public class CaseListCriteriaBuilder {
 	public Stream<Selection<?>> getJurisdictionSelections(CaseJoins joins) {
 
 		return Stream.of(
-				joins.getReportingUser().get(User.UUID),
-				joins.getRegion().get(Region.UUID),
-				joins.getDistrict().get(District.UUID),
-				joins.getCommunity().get(Community.UUID),
-				joins.getFacility().get(Facility.UUID),
-				joins.getPointOfEntry().get(PointOfEntry.UUID));
+			joins.getReportingUser().get(User.UUID),
+			joins.getRegion().get(Region.UUID),
+			joins.getDistrict().get(District.UUID),
+			joins.getCommunity().get(Community.UUID),
+			joins.getFacility().get(Facility.UUID),
+			joins.getPointOfEntry().get(PointOfEntry.UUID));
 	}
 
 	private interface OrderExpressionProvider {

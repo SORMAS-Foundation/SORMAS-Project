@@ -13,7 +13,7 @@ import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 
 public class ContactSelectionGrid extends Grid {
 
@@ -49,7 +49,7 @@ public class ContactSelectionGrid extends Grid {
 			column.setHeaderCaption(
 				I18nProperties.findPrefixCaption(
 					column.getPropertyId().toString(),
-					PersonIndexDto.I18N_PREFIX,
+					SimilarPersonDto.I18N_PREFIX,
 					ContactIndexDto.I18N_PREFIX,
 					ContactDto.I18N_PREFIX));
 		}

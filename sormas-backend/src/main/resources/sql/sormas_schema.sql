@@ -5021,5 +5021,22 @@ ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(
 
 INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diagram visualization #2526');
 
+-- 2020-08-25 Person address refinement #2562
+ALTER TABLE location RENAME COLUMN address TO street;
+ALTER TABLE location_history RENAME COLUMN address TO street;
+ALTER TABLE location ADD COLUMN housenumber varchar(255);
+ALTER TABLE location_history ADD COLUMN housenumber varchar(255);
+ALTER TABLE location ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE location_history ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE location ADD COLUMN addresstype varchar(255);
+ALTER TABLE location_history ADD COLUMN addresstype varchar(255);
+ALTER TABLE location ADD COLUMN addresstypedetails varchar(255);
+ALTER TABLE location_history ADD COLUMN addresstypedetails varchar(255);
+ALTER TABLE location ADD COLUMN person_id bigint;
+ALTER TABLE location_history ADD COLUMN person_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_person_id FOREIGN KEY (person_id) REFERENCES person (id);
 
+ALTER TABLE person ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (244, 'Person address refinement #2562');
 -- *** Insert new sql commands BEFORE this line ***

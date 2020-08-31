@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.importer;
 
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 
 public class CaseImportSimilarityResult {

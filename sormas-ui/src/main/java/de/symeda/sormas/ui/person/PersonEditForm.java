@@ -86,10 +86,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
+	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
 	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
 	private Disease disease;
@@ -143,6 +145,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     loc(ADDRESS_HEADER) +
                     divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
 
+					loc(ADDRESSES_HEADER) +
+					fluidRowLocs(PersonDto.ADDRESSES) +
+
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
                             VSPACE_3,
@@ -168,11 +173,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;
 
-		occupationHeader.addStyleName(CssStyles.H3);
-		addressHeader.addStyleName(CssStyles.H3);
-		contactInformationHeader.addStyleName(CssStyles.H3);
+		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
 		addFields();
@@ -237,6 +241,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -328,6 +333,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
+		if (!getField(PersonDto.ADDRESSES).isVisible())
+			addressesHeader.setVisible(false);
 
 		// Add listeners
 
