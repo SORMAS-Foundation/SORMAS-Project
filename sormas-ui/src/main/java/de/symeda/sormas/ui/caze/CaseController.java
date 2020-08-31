@@ -379,9 +379,15 @@ public class CaseController {
 					dto.getSymptoms().setUuid(DataHelper.createUuid());
 					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
 					dto.getEpiData().setUuid(DataHelper.createUuid());
-					dto.getEpiData().getBurials().forEach(epiDataBurialDto -> epiDataBurialDto.setUuid(DataHelper.createUuid()));
+					dto.getEpiData().getBurials().forEach(epiDataBurialDto -> {
+						epiDataBurialDto.setUuid(DataHelper.createUuid());
+						epiDataBurialDto.getBurialAddress().setUuid(DataHelper.createUuid());
+					});
 					dto.getEpiData().getTravels().forEach(travelDto -> travelDto.setUuid(DataHelper.createUuid()));
-					dto.getEpiData().getGatherings().forEach(gatheringDto -> gatheringDto.setUuid(DataHelper.createUuid()));
+					dto.getEpiData().getGatherings().forEach(gatheringDto -> {
+						gatheringDto.setUuid(DataHelper.createUuid());
+						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
+					});
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());

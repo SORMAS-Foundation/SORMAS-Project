@@ -5039,640 +5039,181 @@ ALTER TABLE person ADD COLUMN changedateofembeddedlists timestamp without time z
 
 INSERT INTO schema_version (version_number, comment) VALUES (244, 'Person address refinement #2562');
 
--- 2020-08-28 Clone symptoms, epi data and health conditions when converting contacts to cases
+-- 2020-08-28 Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735
 
-CREATE TABLE tmp_symptoms (LIKE symptoms);
-ALTER TABLE tmp_symptoms OWNER TO sormas_user;
-ALTER TABLE tmp_symptoms ADD COLUMN cases_id bigint;
-ALTER TABLE tmp_symptoms ADD COLUMN new_symptoms_id bigint;
-ALTER TABLE tmp_symptoms ADD COLUMN old_symptoms_id bigint;
+CREATE OR REPLACE FUNCTION create_new_uuid(uuid varchar) RETURNS varchar
+AS 'SELECT LEFT(uuid, 21) ||
+CASE SUBSTRING(uuid FROM 22 FOR 1)
+WHEN ''9'' THEN ''A''
+WHEN ''Z'' THEN ''0''
+ELSE chr(ascii(SUBSTRING(uuid FROM 22 FOR 1)) + 1)
+END ||
+SUBSTRING(uuid FROM 23)
+AS new_uuid;'
+LANGUAGE SQL;
 
-INSERT INTO tmp_symptoms
-(id, uuid, cases_id, new_symptoms_id, old_symptoms_id, abdominalpain, anorexiaappetiteloss, bleedingvagina, changedate, chestpain,
- confuseddisoriented, conjunctivitis, cough, creationdate, diarrhea, difficultybreathing,
- digestedbloodvomit, eyepainlightsensitive, fever, gumsbleeding, headache, hemoptysis, hiccups,
- injectionsitebleeding, jointpain, musclepain, otherhemorrhagicsymptoms,
- otherhemorrhagicsymptomstext, othernonhemorrhagicsymptoms, othernonhemorrhagicsymptomstext,
- skinrash, sorethroat, onsetdate, temperature, temperaturesource, unexplainedbleeding, vomiting,
- dehydration, fatigueweakness, kopliksspots, nausea, neckstiffness, onsetsymptom, otitismedia,
- refusalfeedordrink, runnynose, seizures, symptomatic, bloodinstool, nosebleeding,
- bloodyblackstool, redbloodvomit, coughingblood, skinbruising, bloodurine, alteredconsciousness,
- throbocytopenia, hearingloss, shock, symptomscomments, sys_period, backache, eyesbleeding,
- jaundice, darkurine, stomachbleeding, rapidbreathing, swollenglands, lesions, lesionssamestate,
- lesionssamesize, lesionsdeepprofound, lesionsface, lesionslegs, lesionssolesfeet,
- lesionspalmshands, lesionsthorax, lesionsarms, lesionsgenitals, lesionsalloverbody,
- lesionsresembleimg1, lesionsresembleimg2, lesionsresembleimg3, lesionsresembleimg4,
- lymphadenopathyinguinal, lymphadenopathyaxillary, lymphadenopathycervical, chillssweats,
- lesionsthatitch, bedridden, oralulcers, patientilllocation, painfullymphadenitis,
- buboesgroinarmpitneck, blackeningdeathoftissue, bulgingfontanelle, lesionsonsetdate,
- meningealsigns, bloodpressuresystolic, bloodpressurediastolic, heartrate, pharyngealerythema,
- pharyngealexudate, oedemafaceneck, oedemalowerextremity, lossskinturgor, palpableliver,
- palpablespleen, malaise, sunkeneyesfontanelle, sidepain, fluidinlungcavity, tremor,
- hemorrhagicsyndrome, hyperglycemia, hypoglycemia, sepsis, midupperarmcircumference,
- respiratoryrate, weight, height, glasgowcomascale, bilateralcataracts, unilateralcataracts,
- congenitalglaucoma, pigmentaryretinopathy, purpuricrash, microcephaly, developmentaldelay,
- splenomegaly, meningoencephalitis, radiolucentbonedisease, congenitalheartdisease,
- congenitalheartdiseasetype, congenitalheartdiseasedetails, jaundicewithin24hoursofbirth,
- hydrophobia, opisthotonus, anxietystates, delirium, uproariousness, paresthesiaaroundwound,
- excesssalivation, insomnia, paralysis, excitation, dysphagia, aerophobia, hyperactivity, paresis,
- agitation, ascendingflaccidparalysis, erraticbehaviour, coma, convulsion,
- fluidinlungcavityauscultation, fluidinlungcavityxray, abnormallungxrayfindings,
- conjunctivalinjection, acuterespiratorydistresssyndrome, pneumoniaclinicalorradiologic,
- lossoftaste, lossofsmell, coughwithsputum, coughwithheamoptysis, lymphadenopathy, wheezing,
- skinulcers, inabilitytowalk, indrawingofchestwall, othercomplications, othercomplicationstext,
- respiratorydiseaseventilation, generalsignsofdisease, fastheartrate, oxygensaturationlower94,
- feverishfeeling, weakness, fatigue, coughwithoutsputum, breathlessness, chestpressure, bluelips,
- bloodcirculationproblems, palpitations, dizzinessstandingup, highorlowbloodpressure,
- urinaryretention)
-SELECT nextval('entity_seq'),
-       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
-                       29)),
-       c.id,
-       nextval('entity_seq'),
-       s.id,
-       s.abdominalpain,
-       s.anorexiaappetiteloss,
-       s.bleedingvagina,
-       s.changedate,
-       s.chestpain,
-       s.confuseddisoriented,
-       s.conjunctivitis,
-       s.cough,
-       s.creationdate,
-       s.diarrhea,
-       s.difficultybreathing,
-       s.digestedbloodvomit,
-       s.eyepainlightsensitive,
-       s.fever,
-       s.gumsbleeding,
-       s.headache,
-       s.hemoptysis,
-       s.hiccups,
-       s.injectionsitebleeding,
-       s.jointpain,
-       s.musclepain,
-       s.otherhemorrhagicsymptoms,
-       s.otherhemorrhagicsymptomstext,
-       s.othernonhemorrhagicsymptoms,
-       s.othernonhemorrhagicsymptomstext,
-       s.skinrash,
-       s.sorethroat,
-       s.onsetdate,
-       s.temperature,
-       s.temperaturesource,
-       s.unexplainedbleeding,
-       s.vomiting,
-       s.dehydration,
-       s.fatigueweakness,
-       s.kopliksspots,
-       s.nausea,
-       s.neckstiffness,
-       s.onsetsymptom,
-       s.otitismedia,
-       s.refusalfeedordrink,
-       s.runnynose,
-       s.seizures,
-       s.symptomatic,
-       s.bloodinstool,
-       s.nosebleeding,
-       s.bloodyblackstool,
-       s.redbloodvomit,
-       s.coughingblood,
-       s.skinbruising,
-       s.bloodurine,
-       s.alteredconsciousness,
-       s.throbocytopenia,
-       s.hearingloss,
-       s.shock,
-       s.symptomscomments,
-       s.sys_period,
-       s.backache,
-       s.eyesbleeding,
-       s.jaundice,
-       s.darkurine,
-       s.stomachbleeding,
-       s.rapidbreathing,
-       s.swollenglands,
-       s.lesions,
-       s.lesionssamestate,
-       s.lesionssamesize,
-       s.lesionsdeepprofound,
-       s.lesionsface,
-       s.lesionslegs,
-       s.lesionssolesfeet,
-       s.lesionspalmshands,
-       s.lesionsthorax,
-       s.lesionsarms,
-       s.lesionsgenitals,
-       s.lesionsalloverbody,
-       s.lesionsresembleimg1,
-       s.lesionsresembleimg2,
-       s.lesionsresembleimg3,
-       s.lesionsresembleimg4,
-       s.lymphadenopathyinguinal,
-       s.lymphadenopathyaxillary,
-       s.lymphadenopathycervical,
-       s.chillssweats,
-       s.lesionsthatitch,
-       s.bedridden,
-       s.oralulcers,
-       s.patientilllocation,
-       s.painfullymphadenitis,
-       s.buboesgroinarmpitneck,
-       s.blackeningdeathoftissue,
-       s.bulgingfontanelle,
-       s.lesionsonsetdate,
-       s.meningealsigns,
-       s.bloodpressuresystolic,
-       s.bloodpressurediastolic,
-       s.heartrate,
-       s.pharyngealerythema,
-       s.pharyngealexudate,
-       s.oedemafaceneck,
-       s.oedemalowerextremity,
-       s.lossskinturgor,
-       s.palpableliver,
-       s.palpablespleen,
-       s.malaise,
-       s.sunkeneyesfontanelle,
-       s.sidepain,
-       s.fluidinlungcavity,
-       s.tremor,
-       s.hemorrhagicsyndrome,
-       s.hyperglycemia,
-       s.hypoglycemia,
-       s.sepsis,
-       s.midupperarmcircumference,
-       s.respiratoryrate,
-       s.weight,
-       s.height,
-       s.glasgowcomascale,
-       s.bilateralcataracts,
-       s.unilateralcataracts,
-       s.congenitalglaucoma,
-       s.pigmentaryretinopathy,
-       s.purpuricrash,
-       s.microcephaly,
-       s.developmentaldelay,
-       s.splenomegaly,
-       s.meningoencephalitis,
-       s.radiolucentbonedisease,
-       s.congenitalheartdisease,
-       s.congenitalheartdiseasetype,
-       s.congenitalheartdiseasedetails,
-       s.jaundicewithin24hoursofbirth,
-       s.hydrophobia,
-       s.opisthotonus,
-       s.anxietystates,
-       s.delirium,
-       s.uproariousness,
-       s.paresthesiaaroundwound,
-       s.excesssalivation,
-       s.insomnia,
-       s.paralysis,
-       s.excitation,
-       s.dysphagia,
-       s.aerophobia,
-       s.hyperactivity,
-       s.paresis,
-       s.agitation,
-       s.ascendingflaccidparalysis,
-       s.erraticbehaviour,
-       s.coma,
-       s.convulsion,
-       s.fluidinlungcavityauscultation,
-       s.fluidinlungcavityxray,
-       s.abnormallungxrayfindings,
-       s.conjunctivalinjection,
-       s.acuterespiratorydistresssyndrome,
-       s.pneumoniaclinicalorradiologic,
-       s.lossoftaste,
-       s.lossofsmell,
-       s.coughwithsputum,
-       s.coughwithheamoptysis,
-       s.lymphadenopathy,
-       s.wheezing,
-       s.skinulcers,
-       s.inabilitytowalk,
-       s.indrawingofchestwall,
-       s.othercomplications,
-       s.othercomplicationstext,
-       s.respiratorydiseaseventilation,
-       s.generalsignsofdisease,
-       s.fastheartrate,
-       s.oxygensaturationlower94,
-       s.feverishfeeling,
-       s.weakness,
-       s.fatigue,
-       s.coughwithoutsputum,
-       s.breathlessness,
-       s.chestpressure,
-       s.bluelips,
-       s.bloodcirculationproblems,
-       s.palpitations,
-       s.dizzinessstandingup,
-       s.highorlowbloodpressure,
-       s.urinaryretention
-FROM cases c left join symptoms s on c.symptoms_id = s.id, contact co
-WHERE co.resultingcase_id = c.id;
+ALTER FUNCTION create_new_uuid(varchar) OWNER TO sormas_user;
 
-INSERT INTO symptoms
-(id, uuid, abdominalpain, anorexiaappetiteloss, bleedingvagina, changedate, chestpain,
- confuseddisoriented, conjunctivitis, cough, creationdate, diarrhea, difficultybreathing,
- digestedbloodvomit, eyepainlightsensitive, fever, gumsbleeding, headache, hemoptysis, hiccups,
- injectionsitebleeding, jointpain, musclepain, otherhemorrhagicsymptoms,
- otherhemorrhagicsymptomstext, othernonhemorrhagicsymptoms, othernonhemorrhagicsymptomstext,
- skinrash, sorethroat, onsetdate, temperature, temperaturesource, unexplainedbleeding, vomiting,
- dehydration, fatigueweakness, kopliksspots, nausea, neckstiffness, onsetsymptom, otitismedia,
- refusalfeedordrink, runnynose, seizures, symptomatic, bloodinstool, nosebleeding,
- bloodyblackstool, redbloodvomit, coughingblood, skinbruising, bloodurine, alteredconsciousness,
- throbocytopenia, hearingloss, shock, symptomscomments, sys_period, backache, eyesbleeding,
- jaundice, darkurine, stomachbleeding, rapidbreathing, swollenglands, lesions, lesionssamestate,
- lesionssamesize, lesionsdeepprofound, lesionsface, lesionslegs, lesionssolesfeet,
- lesionspalmshands, lesionsthorax, lesionsarms, lesionsgenitals, lesionsalloverbody,
- lesionsresembleimg1, lesionsresembleimg2, lesionsresembleimg3, lesionsresembleimg4,
- lymphadenopathyinguinal, lymphadenopathyaxillary, lymphadenopathycervical, chillssweats,
- lesionsthatitch, bedridden, oralulcers, patientilllocation, painfullymphadenitis,
- buboesgroinarmpitneck, blackeningdeathoftissue, bulgingfontanelle, lesionsonsetdate,
- meningealsigns, bloodpressuresystolic, bloodpressurediastolic, heartrate, pharyngealerythema,
- pharyngealexudate, oedemafaceneck, oedemalowerextremity, lossskinturgor, palpableliver,
- palpablespleen, malaise, sunkeneyesfontanelle, sidepain, fluidinlungcavity, tremor,
- hemorrhagicsyndrome, hyperglycemia, hypoglycemia, sepsis, midupperarmcircumference,
- respiratoryrate, weight, height, glasgowcomascale, bilateralcataracts, unilateralcataracts,
- congenitalglaucoma, pigmentaryretinopathy, purpuricrash, microcephaly, developmentaldelay,
- splenomegaly, meningoencephalitis, radiolucentbonedisease, congenitalheartdisease,
- congenitalheartdiseasetype, congenitalheartdiseasedetails, jaundicewithin24hoursofbirth,
- hydrophobia, opisthotonus, anxietystates, delirium, uproariousness, paresthesiaaroundwound,
- excesssalivation, insomnia, paralysis, excitation, dysphagia, aerophobia, hyperactivity, paresis,
- agitation, ascendingflaccidparalysis, erraticbehaviour, coma, convulsion,
- fluidinlungcavityauscultation, fluidinlungcavityxray, abnormallungxrayfindings,
- conjunctivalinjection, acuterespiratorydistresssyndrome, pneumoniaclinicalorradiologic,
- lossoftaste, lossofsmell, coughwithsputum, coughwithheamoptysis, lymphadenopathy, wheezing,
- skinulcers, inabilitytowalk, indrawingofchestwall, othercomplications, othercomplicationstext,
- respiratorydiseaseventilation, generalsignsofdisease, fastheartrate, oxygensaturationlower94,
- feverishfeeling, weakness, fatigue, coughwithoutsputum, breathlessness, chestpressure, bluelips,
- bloodcirculationproblems, palpitations, dizzinessstandingup, highorlowbloodpressure,
- urinaryretention)
-SELECT ts.new_symptoms_id,
-       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
-                       29)),
-       ts.abdominalpain,
-       ts.anorexiaappetiteloss,
-       ts.bleedingvagina,
-       ts.changedate,
-       ts.chestpain,
-       ts.confuseddisoriented,
-       ts.conjunctivitis,
-       ts.cough,
-       ts.creationdate,
-       ts.diarrhea,
-       ts.difficultybreathing,
-       ts.digestedbloodvomit,
-       ts.eyepainlightsensitive,
-       ts.fever,
-       ts.gumsbleeding,
-       ts.headache,
-       ts.hemoptysis,
-       ts.hiccups,
-       ts.injectionsitebleeding,
-       ts.jointpain,
-       ts.musclepain,
-       ts.otherhemorrhagicsymptoms,
-       ts.otherhemorrhagicsymptomstext,
-       ts.othernonhemorrhagicsymptoms,
-       ts.othernonhemorrhagicsymptomstext,
-       ts.skinrash,
-       ts.sorethroat,
-       ts.onsetdate,
-       ts.temperature,
-       ts.temperaturesource,
-       ts.unexplainedbleeding,
-       ts.vomiting,
-       ts.dehydration,
-       ts.fatigueweakness,
-       ts.kopliksspots,
-       ts.nausea,
-       ts.neckstiffness,
-       ts.onsetsymptom,
-       ts.otitismedia,
-       ts.refusalfeedordrink,
-       ts.runnynose,
-       ts.seizures,
-       ts.symptomatic,
-       ts.bloodinstool,
-       ts.nosebleeding,
-       ts.bloodyblackstool,
-       ts.redbloodvomit,
-       ts.coughingblood,
-       ts.skinbruising,
-       ts.bloodurine,
-       ts.alteredconsciousness,
-       ts.throbocytopenia,
-       ts.hearingloss,
-       ts.shock,
-       ts.symptomscomments,
-       ts.sys_period,
-       ts.backache,
-       ts.eyesbleeding,
-       ts.jaundice,
-       ts.darkurine,
-       ts.stomachbleeding,
-       ts.rapidbreathing,
-       ts.swollenglands,
-       ts.lesions,
-       ts.lesionssamestate,
-       ts.lesionssamesize,
-       ts.lesionsdeepprofound,
-       ts.lesionsface,
-       ts.lesionslegs,
-       ts.lesionssolesfeet,
-       ts.lesionspalmshands,
-       ts.lesionsthorax,
-       ts.lesionsarms,
-       ts.lesionsgenitals,
-       ts.lesionsalloverbody,
-       ts.lesionsresembleimg1,
-       ts.lesionsresembleimg2,
-       ts.lesionsresembleimg3,
-       ts.lesionsresembleimg4,
-       ts.lymphadenopathyinguinal,
-       ts.lymphadenopathyaxillary,
-       ts.lymphadenopathycervical,
-       ts.chillssweats,
-       ts.lesionsthatitch,
-       ts.bedridden,
-       ts.oralulcers,
-       ts.patientilllocation,
-       ts.painfullymphadenitis,
-       ts.buboesgroinarmpitneck,
-       ts.blackeningdeathoftissue,
-       ts.bulgingfontanelle,
-       ts.lesionsonsetdate,
-       ts.meningealsigns,
-       ts.bloodpressuresystolic,
-       ts.bloodpressurediastolic,
-       ts.heartrate,
-       ts.pharyngealerythema,
-       ts.pharyngealexudate,
-       ts.oedemafaceneck,
-       ts.oedemalowerextremity,
-       ts.lossskinturgor,
-       ts.palpableliver,
-       ts.palpablespleen,
-       ts.malaise,
-       ts.sunkeneyesfontanelle,
-       ts.sidepain,
-       ts.fluidinlungcavity,
-       ts.tremor,
-       ts.hemorrhagicsyndrome,
-       ts.hyperglycemia,
-       ts.hypoglycemia,
-       ts.sepsis,
-       ts.midupperarmcircumference,
-       ts.respiratoryrate,
-       ts.weight,
-       ts.height,
-       ts.glasgowcomascale,
-       ts.bilateralcataracts,
-       ts.unilateralcataracts,
-       ts.congenitalglaucoma,
-       ts.pigmentaryretinopathy,
-       ts.purpuricrash,
-       ts.microcephaly,
-       ts.developmentaldelay,
-       ts.splenomegaly,
-       ts.meningoencephalitis,
-       ts.radiolucentbonedisease,
-       ts.congenitalheartdisease,
-       ts.congenitalheartdiseasetype,
-       ts.congenitalheartdiseasedetails,
-       ts.jaundicewithin24hoursofbirth,
-       ts.hydrophobia,
-       ts.opisthotonus,
-       ts.anxietystates,
-       ts.delirium,
-       ts.uproariousness,
-       ts.paresthesiaaroundwound,
-       ts.excesssalivation,
-       ts.insomnia,
-       ts.paralysis,
-       ts.excitation,
-       ts.dysphagia,
-       ts.aerophobia,
-       ts.hyperactivity,
-       ts.paresis,
-       ts.agitation,
-       ts.ascendingflaccidparalysis,
-       ts.erraticbehaviour,
-       ts.coma,
-       ts.convulsion,
-       ts.fluidinlungcavityauscultation,
-       ts.fluidinlungcavityxray,
-       ts.abnormallungxrayfindings,
-       ts.conjunctivalinjection,
-       ts.acuterespiratorydistresssyndrome,
-       ts.pneumoniaclinicalorradiologic,
-       ts.lossoftaste,
-       ts.lossofsmell,
-       ts.coughwithsputum,
-       ts.coughwithheamoptysis,
-       ts.lymphadenopathy,
-       ts.wheezing,
-       ts.skinulcers,
-       ts.inabilitytowalk,
-       ts.indrawingofchestwall,
-       ts.othercomplications,
-       ts.othercomplicationstext,
-       ts.respiratorydiseaseventilation,
-       ts.generalsignsofdisease,
-       ts.fastheartrate,
-       ts.oxygensaturationlower94,
-       ts.feverishfeeling,
-       ts.weakness,
-       ts.fatigue,
-       ts.coughwithoutsputum,
-       ts.breathlessness,
-       ts.chestpressure,
-       ts.bluelips,
-       ts.bloodcirculationproblems,
-       ts.palpitations,
-       ts.dizzinessstandingup,
-       ts.highorlowbloodpressure,
-       ts.urinaryretention
-FROM tmp_symptoms ts;
+-- EPI DATA
 
-UPDATE cases c set symptoms_id = (select ts.new_symptoms_id from tmp_symptoms ts where c.id = ts.cases_id) where c.symptoms_id = (select ts.old_symptoms_id from tmp_symptoms ts where c.id = ts.cases_id);
+DROP TABLE IF EXISTS t_epidata;
+DROP TABLE IF EXISTS t_epidataburial;
+DROP TABLE IF EXISTS t_epidatagathering;
+DROP TABLE IF EXISTS t_epidatatravel;
+DROP TABLE IF EXISTS t_id_map;
+DROP TABLE IF EXISTS t_edb_id_map;
+DROP TABLE IF EXISTS t_edg_id_map;
+DROP TABLE IF EXISTS t_edt_id_map;
+DROP TABLE IF EXISTS t_epidataburial_location;
+DROP TABLE IF EXISTS t_epidatagathering_location;
+DROP TABLE IF EXISTS t_edbl_id_map;
+DROP TABLE IF EXISTS t_edgl_id_map;
 
-TRUNCATE TABLE tmp_symptoms;
-DROP TABLE tmp_symptoms;
+CREATE temp table t_epidata
+AS SELECT e.* FROM epidata e WHERE e.id IN (SELECT ca.epidata_id FROM cases ca) AND e.id IN (SELECT co.epidata_id FROM contact co);
 
-CREATE TABLE tmp_epidata (LIKE epidata);
-ALTER TABLE tmp_epidata OWNER TO sormas_user;
-ALTER TABLE tmp_epidata ADD COLUMN cases_id bigint;
-ALTER TABLE tmp_epidata ADD COLUMN new_epidata_id bigint;
-ALTER TABLE tmp_epidata ADD COLUMN old_epidata_id bigint;
+CREATE temp table t_id_map
+AS SELECT id AS old_id,
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_epidata;
 
-INSERT INTO tmp_epidata
-(id, uuid, cases_id, new_epidata_id, old_epidata_id, changedate, creationdate, rodents, bats, primates, swine, birds, eatingrawanimals, sickdeadanimals,
- sickdeadanimalsdetails, sickdeadanimalsdate, sickdeadanimalslocation, cattle, otheranimals, otheranimalsdetails,
- watersource, watersourceother, waterbody, waterbodydetails, tickbite, burialattended, gatheringattended, traveled,
- changedateofembeddedlists, sys_period, dateoflastexposure, placeoflastexposure, animalcondition, fleabite,
- directcontactconfirmedcase, directcontactprobablecase, closecontactprobablecase, areaconfirmedcases,
- processingconfirmedcasefluidunsafe, percutaneouscaseblood, directcontactdeadunsafe,
- processingsuspectedcasesampleunsafe, areainfectedanimals, eatingrawanimalsininfectedarea, eatingrawanimalsdetails,
- kindofexposurebite, kindofexposuretouch, kindofexposurescratch, kindofexposurelick, kindofexposureother,
- kindofexposuredetails, animalvaccinationstatus, dogs, cats, canidae, rabbits, prophylaxisstatus, dateofprophylaxis,
- visitedhealthfacility, contactwithsourcerespiratorycase, visitedanimalmarket, camels, snakes)
-SELECT nextval('entity_seq'),
-       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
-                       29)),
-       c.id,
-       nextval('entity_seq'),
-       oepi.id,
-       oepi.changedate,
-       oepi.creationdate,
-       oepi.rodents,
-       oepi.bats,
-       oepi.primates,
-       oepi.swine,
-       oepi.birds,
-       oepi.eatingrawanimals,
-       oepi.sickdeadanimals,
-       oepi.sickdeadanimalsdetails,
-       oepi.sickdeadanimalsdate,
-       oepi.sickdeadanimalslocation,
-       oepi.cattle,
-       oepi.otheranimals,
-       oepi.otheranimalsdetails,
-       oepi.watersource,
-       oepi.watersourceother,
-       oepi.waterbody,
-       oepi.waterbodydetails,
-       oepi.tickbite,
-       oepi.burialattended,
-       oepi.gatheringattended,
-       oepi.traveled,
-       oepi.changedateofembeddedlists,
-       oepi.sys_period,
-       oepi.dateoflastexposure,
-       oepi.placeoflastexposure,
-       oepi.animalcondition,
-       oepi.fleabite,
-       oepi.directcontactconfirmedcase,
-       oepi.directcontactprobablecase,
-       oepi.closecontactprobablecase,
-       oepi.areaconfirmedcases,
-       oepi.processingconfirmedcasefluidunsafe,
-       oepi.percutaneouscaseblood,
-       oepi.directcontactdeadunsafe,
-       oepi.processingsuspectedcasesampleunsafe,
-       oepi.areainfectedanimals,
-       oepi.eatingrawanimalsininfectedarea,
-       oepi.eatingrawanimalsdetails,
-       oepi.kindofexposurebite,
-       oepi.kindofexposuretouch,
-       oepi.kindofexposurescratch,
-       oepi.kindofexposurelick,
-       oepi.kindofexposureother,
-       oepi.kindofexposuredetails,
-       oepi.animalvaccinationstatus,
-       oepi.dogs,
-       oepi.cats,
-       oepi.canidae,
-       oepi.rabbits,
-       oepi.prophylaxisstatus,
-       oepi.dateofprophylaxis,
-       oepi.visitedhealthfacility,
-       oepi.contactwithsourcerespiratorycase,
-       oepi.visitedanimalmarket,
-       oepi.camels,
-       oepi.snakes
-FROM cases c
-         left join epidata oepi on c.epidata_id = oepi.id,
-     contact co
-WHERE co.resultingcase_id = c.id;
+UPDATE t_epidata te SET
+id = (SELECT new_id FROM t_id_map WHERE te.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE te.id = old_id);
 
-INSERT INTO epidata
-(id, uuid, changedate, creationdate, rodents, bats, primates, swine, birds, eatingrawanimals, sickdeadanimals,
- sickdeadanimalsdetails, sickdeadanimalsdate, sickdeadanimalslocation, cattle, otheranimals, otheranimalsdetails,
- watersource, watersourceother, waterbody, waterbodydetails, tickbite, burialattended, gatheringattended, traveled,
- changedateofembeddedlists, sys_period, dateoflastexposure, placeoflastexposure, animalcondition, fleabite,
- directcontactconfirmedcase, directcontactprobablecase, closecontactprobablecase, areaconfirmedcases,
- processingconfirmedcasefluidunsafe, percutaneouscaseblood, directcontactdeadunsafe,
- processingsuspectedcasesampleunsafe, areainfectedanimals, eatingrawanimalsininfectedarea, eatingrawanimalsdetails,
- kindofexposurebite, kindofexposuretouch, kindofexposurescratch, kindofexposurelick, kindofexposureother,
- kindofexposuredetails, animalvaccinationstatus, dogs, cats, canidae, rabbits, prophylaxisstatus, dateofprophylaxis,
- visitedhealthfacility, contactwithsourcerespiratorycase, visitedanimalmarket, camels, snakes)
-SELECT tepi.new_epidata_id,
-       upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3,
-                       29)),
-       tepi.changedate,
-       tepi.creationdate,
-       tepi.rodents,
-       tepi.bats,
-       tepi.primates,
-       tepi.swine,
-       tepi.birds,
-       tepi.eatingrawanimals,
-       tepi.sickdeadanimals,
-       tepi.sickdeadanimalsdetails,
-       tepi.sickdeadanimalsdate,
-       tepi.sickdeadanimalslocation,
-       tepi.cattle,
-       tepi.otheranimals,
-       tepi.otheranimalsdetails,
-       tepi.watersource,
-       tepi.watersourceother,
-       tepi.waterbody,
-       tepi.waterbodydetails,
-       tepi.tickbite,
-       tepi.burialattended,
-       tepi.gatheringattended,
-       tepi.traveled,
-       tepi.changedateofembeddedlists,
-       tepi.sys_period,
-       tepi.dateoflastexposure,
-       tepi.placeoflastexposure,
-       tepi.animalcondition,
-       tepi.fleabite,
-       tepi.directcontactconfirmedcase,
-       tepi.directcontactprobablecase,
-       tepi.closecontactprobablecase,
-       tepi.areaconfirmedcases,
-       tepi.processingconfirmedcasefluidunsafe,
-       tepi.percutaneouscaseblood,
-       tepi.directcontactdeadunsafe,
-       tepi.processingsuspectedcasesampleunsafe,
-       tepi.areainfectedanimals,
-       tepi.eatingrawanimalsininfectedarea,
-       tepi.eatingrawanimalsdetails,
-       tepi.kindofexposurebite,
-       tepi.kindofexposuretouch,
-       tepi.kindofexposurescratch,
-       tepi.kindofexposurelick,
-       tepi.kindofexposureother,
-       tepi.kindofexposuredetails,
-       tepi.animalvaccinationstatus,
-       tepi.dogs,
-       tepi.cats,
-       tepi.canidae,
-       tepi.rabbits,
-       tepi.prophylaxisstatus,
-       tepi.dateofprophylaxis,
-       tepi.visitedhealthfacility,
-       tepi.contactwithsourcerespiratorycase,
-       tepi.visitedanimalmarket,
-       tepi.camels,
-       tepi.snakes
-FROM tmp_epidata tepi;
+-- BURIALS
 
-UPDATE cases c set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where c.id = tepi.cases_id) where c.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where c.id = tepi.cases_id);
-UPDATE epidataburial edb set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edb.epidata_id = tepi.old_epidata_id) where edb.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edb.epidata_id = tepi.old_epidata_id);
-UPDATE epidatatravel edt set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edt.epidata_id = tepi.old_epidata_id) where edt.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edt.epidata_id = tepi.old_epidata_id);
-UPDATE epidatagathering edg set epidata_id = (select tepi.new_epidata_id from tmp_epidata tepi where edg.epidata_id = tepi.old_epidata_id) where edg.epidata_id = (select tepi.old_epidata_id from tmp_epidata tepi where edg.epidata_id = tepi.old_epidata_id);
+CREATE temp table t_epidataburial
+AS SELECT edb.* FROM epidataburial edb, t_id_map WHERE edb.epidata_id = t_id_map.old_id;
 
-TRUNCATE TABLE tmp_epidata;
-DROP TABLE tmp_epidata;
+CREATE temp table t_edb_id_map
+AS SELECT id AS edb_old_id,
+nextval('entity_seq') AS edb_new_id,
+create_new_uuid(uuid) AS edb_new_uuid
+FROM t_epidataburial;
 
-INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms, epi data and health conditions when converting contacts to cases #2735');
+CREATE temp table t_epidataburial_location
+AS SELECT edbl.* FROM location edbl, t_epidataburial edb WHERE edb.burialaddress_id = edbl.id;
+
+CREATE temp table t_edbl_id_map
+AS SELECT id AS edbl_old_id,
+nextval('entity_seq') AS edbl_new_id,
+create_new_uuid(uuid) AS edbl_new_uuid
+FROM t_epidataburial_location;
+
+UPDATE t_epidataburial_location tedbl SET
+id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id),
+uuid = (SELECT edbl_new_uuid FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id);
+
+INSERT INTO location (SELECT * FROM t_epidataburial_location);
+
+UPDATE t_epidataburial tedb SET
+id = (SELECT edb_new_id FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+uuid = (SELECT edb_new_uuid FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedb.epidata_id = old_id),
+burialaddress_id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedb.burialaddress_id = edbl_old_id);
+
+-- BURIALS END
+
+-- GATHERINGS
+
+CREATE temp table t_epidatagathering
+AS SELECT edg.* FROM epidatagathering edg, t_id_map WHERE edg.epidata_id = t_id_map.old_id;
+
+CREATE temp table t_edg_id_map
+AS SELECT id AS edg_old_id,
+nextval('entity_seq') AS edg_new_id,
+create_new_uuid(uuid) AS edg_new_uuid
+FROM t_epidatagathering;
+
+CREATE temp table t_epidatagathering_location
+AS SELECT edgl.* FROM location edgl, t_epidatagathering edg WHERE edg.gatheringaddress_id = edgl.id;
+
+CREATE temp table t_edgl_id_map
+AS SELECT id AS edgl_old_id,
+nextval('entity_seq') AS edgl_new_id,
+create_new_uuid(uuid) AS edgl_new_uuid
+FROM t_epidatagathering_location;
+
+UPDATE t_epidatagathering_location tedgl SET
+id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id),
+uuid = (SELECT edgl_new_uuid FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id);
+
+INSERT INTO location (SELECT * FROM t_epidatagathering_location);
+
+UPDATE t_epidatagathering tedg SET
+id = (SELECT edg_new_id FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+uuid = (SELECT edg_new_uuid FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedg.epidata_id = old_id),
+gatheringaddress_id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedg.gatheringaddress_id = edgl_old_id);
+
+-- GATHERINGS END
+
+-- TRAVELS
+
+CREATE temp table t_epidatatravel
+AS SELECT edt.* FROM epidatatravel edt, t_id_map WHERE edt.epidata_id = t_id_map.old_id;
+
+CREATE temp table t_edt_id_map
+AS SELECT id AS edt_old_id,
+nextval('entity_seq') AS edt_new_id,
+create_new_uuid(uuid) AS edt_new_uuid
+FROM t_epidatatravel;
+
+UPDATE t_epidatatravel tedt SET
+id = (SELECT edt_new_id FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+uuid = (SELECT edt_new_uuid FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedt.epidata_id = old_id);
+
+-- TRAVELS END
+
+INSERT INTO epidata (SELECT * FROM t_epidata);
+INSERT INTO epidataburial (SELECT * FROM t_epidataburial);
+INSERT INTO epidatagathering (SELECT * FROM t_epidatagathering);
+INSERT INTO epidatatravel (SELECT * FROM t_epidatatravel);
+
+UPDATE cases SET epidata_id = (SELECT new_id FROM t_id_map WHERE cases.epidata_id = old_id);
+
+-- EPI DATA END
+
+-- SYMPTOMS
+
+DROP TABLE IF EXISTS t_symptoms;
+DROP TABLE IF EXISTS t_id_map;
+
+CREATE temp table t_symptoms
+AS SELECT s.* FROM symptoms s WHERE s.id IN (SELECT ca.symptoms_id FROM cases ca) AND s.id IN (SELECT vi.symptoms_id FROM visit vi);
+
+CREATE temp table t_id_map
+AS SELECT id AS old_id,
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_symptoms;
+
+UPDATE t_symptoms ts SET
+id = (SELECT new_id FROM t_id_map WHERE ts.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
+
+INSERT INTO symptoms (SELECT * FROM t_symptoms);
+
+UPDATE cases SET symptoms_id = (SELECT new_id FROM t_id_map WHERE cases.symptoms_id = old_id);
+
+-- SYMPTOMS END
+
+DROP TABLE IF EXISTS t_epidata;
+DROP TABLE IF EXISTS t_epidataburial;
+DROP TABLE IF EXISTS t_epidatagathering;
+DROP TABLE IF EXISTS t_epidatatravel;
+DROP TABLE IF EXISTS t_id_map;
+DROP TABLE IF EXISTS t_edb_id_map;
+DROP TABLE IF EXISTS t_edg_id_map;
+DROP TABLE IF EXISTS t_edt_id_map;
+DROP TABLE IF EXISTS t_epidataburial_location;
+DROP TABLE IF EXISTS t_epidatagathering_location;
+DROP TABLE IF EXISTS t_edbl_id_map;
+DROP TABLE IF EXISTS t_edgl_id_map;
+
+INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
+
 -- *** Insert new sql commands BEFORE this line ***
