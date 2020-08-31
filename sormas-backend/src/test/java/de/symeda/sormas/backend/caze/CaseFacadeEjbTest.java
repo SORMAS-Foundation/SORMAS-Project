@@ -181,7 +181,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(new FacilityReferenceDto(newRDCF.facility.getUuid()));
 		caze.setSurveillanceOfficer(caseOfficer.toReference());
 		CaseDataDto oldCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		CaseLogic.createPreviousHospitalizationAndUpdateHospitalization(caze, oldCase);
+		CaseLogic.handleHospitalization(caze, oldCase, true);
 		getCaseFacade().saveCase(caze);
 
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
@@ -338,11 +338,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
-		PersonDto person1 = creator.createPerson("FirstName1", "LastName1");
-		person1.getAddress().setPostalCode("10115");
-		person1.getAddress().setCity("Berlin");
-		person1.setPhone("+4930-90-1820");
-		getPersonFacade().savePerson(person1);
+		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
+			p.getAddress().setPostalCode("10115");
+			p.getAddress().setCity("Berlin");
+			p.setPhone("+4930-90-1820");
+		});
 		creator.createCase(
 			user.toReference(),
 			person1.toReference(),
@@ -352,11 +352,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		PersonDto person2 = creator.createPerson("FirstName2", "LastName2");
-		person2.getAddress().setPostalCode("20095");
-		person2.getAddress().setCity("Hamburg");
-		person2.setPhone("+49-30-901822");
-		getPersonFacade().savePerson(person2);
+		PersonDto person2 = creator.createPerson("FirstName2", "LastName2", p -> {
+			p.getAddress().setPostalCode("20095");
+			p.getAddress().setCity("Hamburg");
+			p.setPhone("+49-30-901822");
+		});
 		creator.createCase(
 			user.toReference(),
 			person2.toReference(),
@@ -366,11 +366,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		PersonDto person3 = creator.createPerson("FirstName3", "LastName3");
-		person3.getAddress().setPostalCode("80331");
-		person3.getAddress().setCity("Munich");
-		person3.setPhone("+49 31 9018 20");
-		getPersonFacade().savePerson(person3);
+		PersonDto person3 = creator.createPerson("FirstName3", "LastName3", p -> {
+			p.getAddress().setPostalCode("80331");
+			p.getAddress().setCity("Munich");
+			p.setPhone("+49 31 9018 20");
+		});
 		creator.createCase(
 			user.toReference(),
 			person3.toReference(),
@@ -806,7 +806,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-		cazePerson.getAddress().setAddress("new Address");
+		cazePerson.getAddress().setStreet("new Street");
+		cazePerson.getAddress().setHouseNumber("new Number");
+		cazePerson.getAddress().setAdditionalInformation("new Information");
 		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
@@ -869,7 +871,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMergeCase() {
 
-		useSurveillanceOfficerLogin(null);
+		useNationalUserLogin();
 		// 1. Create
 
 		// Create leadCase
@@ -955,10 +957,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNull(mergedPerson.getBirthdateDD());
 
 		// Check 'lead and other have different values'
-		assertEquals(leadPerson.getFirstName(), mergedPerson.getFirstName());
+		assertEquals(leadCase.getPerson().getFirstName(), mergedPerson.getFirstName());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadPerson.getLastName(), mergedPerson.getLastName());
+		assertEquals(leadCase.getPerson().getLastName(), mergedPerson.getLastName());
 
 		// Check 'lead has no value, other has'
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());

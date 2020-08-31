@@ -17,11 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -51,6 +58,10 @@ public final class CaseLogic {
 		}
 	}
 
+	public static Date getEndDate(Date onsetDate, Date reportDate, Date followUpUntil) {
+		return followUpUntil != null ? followUpUntil : onsetDate != null ? onsetDate: reportDate;
+	}
+
 	public static boolean isEpidNumberPrefix(String s) {
 
 		if (StringUtils.isEmpty(s)) {
@@ -69,13 +80,45 @@ public final class CaseLogic {
 		return Pattern.matches(EPID_PATTERN_COMPLETE, s);
 	}
 
-	public static void createPreviousHospitalizationAndUpdateHospitalization(CaseDataDto caze, CaseDataDto oldCase) {
+	/**
+	 * Should be called if the facility of a case is changed
+	 * 
+	 * @param caze
+	 * @param oldCase
+	 * @param isTransfer
+	 */
+	public static void handleHospitalization(CaseDataDto caze, CaseDataDto oldCase, boolean isTransfer) {
 
-		PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
-		caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
-		caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
-		caze.getHospitalization().setAdmissionDate(new Date());
-		caze.getHospitalization().setDischargeDate(null);
-		caze.getHospitalization().setIsolated(null);
+		if (isTransfer && FacilityType.HOSPITAL.equals(oldCase.getFacilityType())) {
+			PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
+			caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
+			caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
+		}
+
+		if (isTransfer || !FacilityType.HOSPITAL.equals(caze.getFacilityType())) {
+			// set everything but previous hospitalization to null
+			try {
+				PropertyDescriptor[] pds = Introspector.getBeanInfo(HospitalizationDto.class, EntityDto.class).getPropertyDescriptors();
+
+				for (PropertyDescriptor pd : pds) {
+					// Skip properties without a read or write method
+					if (pd.getWriteMethod() == null
+						|| HospitalizationDto.HOSPITALIZED_PREVIOUSLY.equals(pd.getName())
+						|| HospitalizationDto.PREVIOUS_HOSPITALIZATIONS.equals(pd.getName())) {
+						continue;
+					}
+
+					pd.getWriteMethod().invoke(caze.getHospitalization(), (Object) null);
+				}
+			} catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
+				throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
+			}
+		}
+
+		if (isTransfer && FacilityType.HOSPITAL.equals(caze.getFacilityType()))
+
+		{
+			caze.getHospitalization().setAdmissionDate(new Date());
+		}
 	}
 }

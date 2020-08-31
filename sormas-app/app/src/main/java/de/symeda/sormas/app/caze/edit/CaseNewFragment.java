@@ -27,6 +27,8 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
@@ -63,6 +65,8 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 	private List<Item> initialCommunities;
 	private List<Item> initialFacilities;
 	private List<Item> initialPointsOfEntry;
+	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeGroupList;
 
 	public static CaseNewFragment newInstance(Case activityRootData) {
 		return newInstance(CaseNewFragment.class, CaseNewActivity.buildBundle().get(), activityRootData);
@@ -108,8 +112,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
+		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
 		initialPointsOfEntry = InfrastructureHelper.loadPointsOfEntry(record.getDistrict());
+
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
@@ -121,6 +128,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDengueFeverType.initializeSpinner(dengueFeverTypeList);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
 			record.getRegion(),
@@ -130,12 +138,20 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataCommunity,
 			initialCommunities,
 			record.getCommunity(),
+			contentBinding.facilityOrHome,
+			facilityOrHomeList,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.caseDataFacilityType,
+			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
 			record.getHealthFacility(),
+			contentBinding.caseDataHealthFacilityDetails,
 			contentBinding.caseDataPointOfEntry,
 			initialPointsOfEntry,
-			record.getPointOfEntry());
+			record.getPointOfEntry(),
+			false);
 
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.caseDataDisease.addValueChangedListener(e -> {
@@ -169,6 +185,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.personSex.initializeSpinner(sexList);
 
 		contentBinding.personPresentCondition.initializeSpinner(presentConditionList);
+
+		contentBinding.facilityOrHome.initializeSpinner(facilityOrHomeList);
+		contentBinding.facilityTypeGroup.initializeSpinner(facilityTypeGroupList);
 	}
 
 	@Override
@@ -224,7 +243,11 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.caseDataDisease.setVisibility(GONE);
-			contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.facilityTypeGroup.setRequired(false);
+			contentBinding.caseDataFacilityType.setRequired(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
 			contentBinding.caseDataHealthFacilityDetails.setRequired(false);
 		} else if (DatabaseHelper.getPointOfEntryDao().hasActiveEntriesInDistrict()) {

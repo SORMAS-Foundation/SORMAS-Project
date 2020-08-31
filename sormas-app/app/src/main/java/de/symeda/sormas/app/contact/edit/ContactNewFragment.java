@@ -52,6 +52,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	private List<Item> relationshipList;
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
+	private List<Item> initialCommunities;
 	private List<Item> diseaseList;
 	private List<Item> sexList;
 	private List<Item> categoryList;
@@ -79,6 +80,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
@@ -95,9 +97,9 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			contentBinding.contactDistrict,
 			initialDistricts,
 			record.getDistrict(),
-			null,
-			null,
-			null);
+			contentBinding.contactCommunity,
+			initialCommunities,
+			record.getCommunity());
 
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {

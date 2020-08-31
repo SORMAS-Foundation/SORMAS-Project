@@ -21,14 +21,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class CaseIndexDto implements Serializable, Cloneable {
+public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -59,14 +62,18 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	public static final String AGE_AND_BIRTH_DATE = "ageAndBirthDate";
 	public static final String COMPLETENESS = "completeness";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 
 	private long id;
 	private String uuid;
 	private String epidNumber;
 	private String externalID;
 	@PersonalData
+	@SensitiveData
 	private String personFirstName;
 	@PersonalData
+	@SensitiveData
 	private String personLastName;
 	private Disease disease;
 	private String diseaseDetails;
@@ -77,8 +84,10 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private Date creationDate;
 	private String districtName;
 	@PersonalData
+	@SensitiveData
 	private String healthFacilityName;
 	@PersonalData
+	@SensitiveData
 	private String pointOfEntryName;
 	private String surveillanceOfficerUuid;
 	private CaseOutcome outcome;
@@ -86,16 +95,38 @@ public class CaseIndexDto implements Serializable, Cloneable {
 	private AgeAndBirthDateDto ageAndBirthDate;
 	private Float completeness;
 	private Date quarantineTo;
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntil;
+	private Integer visitCount;
 
 	private CaseJurisdictionDto jurisdiction;
 
+	//@formatter:off
+	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
+			String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
+			PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
+			String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
+			String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
+			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
+			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
+		//@formatter:on
+		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
+				diseaseDetails, caseClassification, investigationStatus,
+				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
+				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
+				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
+				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
+				completeness, followUpStatus, followUpUntil, null
+				);
+	}
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,
 						PresentCondition presentCondition, Date reportDate, String reportingUserUuid, Date creationDate, String regionUuid,
 						String districtUuid, String districtName, String communityUuid, String healthFacilityUuid, String healthFacilityName, String healthFacilityDetails,
 						String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
-						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo, Float completeness) {
+						Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
+						Float completeness, FollowUpStatus followUpStatus, Date followUpUntil, Integer visitCount) {
 	//@formatter:on
 
 		this.id = id;
@@ -112,6 +143,7 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.reportDate = reportDate;
 		this.creationDate = creationDate;
 		this.districtName = districtName;
+		this.visitCount = visitCount;
 		this.healthFacilityName = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacilityName, healthFacilityDetails);
 		this.pointOfEntryName = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails);
 		this.surveillanceOfficerUuid = surveillanceOfficerUuid;
@@ -120,6 +152,8 @@ public class CaseIndexDto implements Serializable, Cloneable {
 		this.sex = sex;
 		this.quarantineTo = quarantineTo;
 		this.completeness = completeness;
+		this.followUpStatus = followUpStatus;
+		this.followUpUntil = followUpUntil;
 
 		this.jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -324,5 +358,29 @@ public class CaseIndexDto implements Serializable, Cloneable {
 
 	public CaseJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+	public Integer getVisitCount() {
+		return visitCount;
+	}
+
+	public void setVisitCount(Integer visitCount) {
+		this.visitCount = visitCount;
 	}
 }

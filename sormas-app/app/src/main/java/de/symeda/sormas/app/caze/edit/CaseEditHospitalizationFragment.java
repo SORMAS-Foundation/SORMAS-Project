@@ -17,20 +17,26 @@ package de.symeda.sormas.app.caze.edit;
 
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.databinding.ObservableArrayList;
 
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
 import de.symeda.sormas.app.databinding.FragmentCaseEditHospitalizationLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCaseEditHospitalizationLayoutBinding, Hospitalization, Case> {
@@ -43,7 +49,13 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 	// Static methods
 
 	public static CaseEditHospitalizationFragment newInstance(Case activityRootData) {
-		return newInstance(CaseEditHospitalizationFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			CaseEditHospitalizationFragment.class,
+			null,
+			activityRootData,
+			new FieldVisibilityCheckers(),
+			AppFieldAccessCheckers
+				.withCheckers(CaseEditAuthorization.isCaseEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Instance methods
@@ -97,6 +109,8 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 
 	private void updatePreviousHospitalizations() {
 		getContentBinding().setPreviousHospitalizationList(getPreviousHospitalizations());
+		getContentBinding().setPreviousHospitalizationBindCallback(this::setFieldVisibilitiesAndAccesses);
+
 		verifyPrevHospitalizationStatus();
 	}
 
@@ -157,6 +171,7 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 		contentBinding.setCaze(caze);
 		contentBinding.setPreviousHospitalizationList(getPreviousHospitalizations());
 		contentBinding.setPrevHosItemClickCallback(onPrevHosItemClickListener);
+		getContentBinding().setPreviousHospitalizationBindCallback(this::setFieldVisibilitiesAndAccesses);
 	}
 
 	@Override
@@ -177,5 +192,9 @@ public class CaseEditHospitalizationFragment extends BaseEditFragment<FragmentCa
 	@Override
 	public int getEditLayout() {
 		return R.layout.fragment_case_edit_hospitalization_layout;
+	}
+
+	private void setFieldVisibilitiesAndAccesses(View view) {
+		setFieldVisibilitiesAndAccesses(PreviousHospitalizationDto.class, (ViewGroup) view);
 	}
 }

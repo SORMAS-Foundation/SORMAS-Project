@@ -236,6 +236,12 @@ This can be conveniently accomplished by executing the R setup script from the S
 	
 * Follow the instructions of the script.
 
+## SORMAS to SORMAS Certificate Setup
+
+To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
+up the certificate and the truststore. Please see the [related guide](GUIDE_CREATE_CERTIFICATE.md) for detailed instructions regarding
+SORMAS to SORMAS setup.
+<br/>
 
 ## Troubleshooting
 

@@ -4,10 +4,14 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
 public class ContactIndexDetailedDto extends ContactIndexDto {
 
@@ -26,17 +30,22 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private String approximateAge;
 	private String districtName;
 	@PersonalData
+	@SensitiveData
 	private String city;
 	@PersonalData
+	@SensitiveData
 	private String address;
 	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@SensitiveData
 	private String phone;
 	private UserReferenceDto reportingUser;
 
 	//@formatter:off
 	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
-								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
+								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid, String communityUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
@@ -44,13 +53,13 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
 								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
-								   String districtName, String city, String address, String postalCode, String phone,
+								   String districtName, String city, String street, String houseNumber, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName,
 								   int visitCount) {
 	//@formatter:on
 
 		//@formatter:off
-		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid, communityUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
 				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
@@ -60,7 +69,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;
 		this.city = city;
-		this.address = address;
+		this.address = LocationDto.buildStreetAndHouseNumberCaption(street, houseNumber);
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
@@ -96,5 +105,9 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 }

@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.campaign.campaigns;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -34,9 +37,6 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
-
-import java.util.Date;
-import java.util.stream.Collectors;
 
 public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteria> {
 

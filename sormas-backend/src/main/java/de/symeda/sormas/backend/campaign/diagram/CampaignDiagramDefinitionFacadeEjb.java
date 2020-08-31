@@ -11,17 +11,13 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
-@Stateless(name = "CampaignFormMetaFacade")
+@Stateless(name = "CampaignDiagramDefinitionFacade")
 public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefinitionFacade {
 
 	@EJB
 	private CampaignDiagramDefinitionService service;
-
-	@EJB
-	private UserService userService;
 
 	@Override
 	public CampaignDiagramDefinitionDto save(CampaignDiagramDefinitionDto campaignDiagramDefinitionDto) {
@@ -29,6 +25,11 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		CampaignDiagramDefinition campaignDiagramDefinition = fromDto(campaignDiagramDefinitionDto);
 		service.ensurePersisted(campaignDiagramDefinition);
 		return toDto(campaignDiagramDefinition);
+	}
+
+	@Override
+	public List<CampaignDiagramDefinitionDto> getAll() {
+		return service.getAll().stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -49,7 +50,8 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());
-		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+		target.setDiagramCaption(source.getDiagramCaption());
+		target.setCampaignDiagramSeries(source.getCampaignDiagramSeriesList());
 
 		return target;
 	}
@@ -64,7 +66,8 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 
 		target.setDiagramId(source.getDiagramId());
 		target.setDiagramType(source.getDiagramType());
-		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeriesList());
+		target.setDiagramCaption(source.getDiagramCaption());
+		target.setCampaignDiagramSeriesList(source.getCampaignDiagramSeries());
 
 		return target;
 	}

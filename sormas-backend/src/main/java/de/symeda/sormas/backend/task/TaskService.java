@@ -46,6 +46,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
 @LocalBean
@@ -57,6 +58,8 @@ public class TaskService extends AbstractAdoService<Task> {
 	private ContactService contactService;
 	@EJB
 	private EventService eventService;
+	@EJB
+	private UserService userService;
 
 	public TaskService() {
 		super(Task.class);
@@ -113,18 +116,22 @@ public class TaskService extends AbstractAdoService<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<Task, Task> taskPath) {
 
-		// National users can access all tasks in the system
+		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
+
+		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (currentUser == null
-				|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
-			return null;
+			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			return assigneeFilter;
 		}
 
 		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.join(Task.CREATOR_USER, JoinType.LEFT), currentUser);
-		filter = cb.or(filter, cb.equal(taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT), currentUser));
+		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
 		if (caseFilter != null) {
@@ -139,7 +146,11 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = cb.or(filter, eventFilter);
 		}
 
-		return filter;
+		return and(cb, filter, assigneeFilter);
+	}
+
+	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
+		return or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUserJoin));
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {
@@ -159,13 +170,17 @@ public class TaskService extends AbstractAdoService<Task> {
 		return count;
 	}
 
-	public List<Task> findBy(TaskCriteria taskCriteria) {
+	public List<Task> findBy(TaskCriteria taskCriteria, boolean ignoreUserFilter) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
 
 		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
+		if (!ignoreUserFilter) {
+			filter = and(cb, filter, createUserFilter(cb, cq, from));
+		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -182,6 +197,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
 		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
 		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
+		Join<Task, User> assigneeUser = from.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
 		if (taskCriteria.getTaskStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_STATUS), taskCriteria.getTaskStatus()));
@@ -190,13 +206,10 @@ public class TaskService extends AbstractAdoService<Task> {
 			filter = and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), taskCriteria.getTaskType()));
 		}
 		if (taskCriteria.getAssigneeUser() != null) {
-			filter = and(cb, filter, cb.equal(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
+			filter = and(cb, filter, cb.equal(assigneeUser.get(User.UUID), taskCriteria.getAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getExcludeAssigneeUser() != null) {
-			filter = and(
-				cb,
-				filter,
-				cb.notEqual(from.join(Task.ASSIGNEE_USER, JoinType.LEFT).get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
+			filter = and(cb, filter, cb.notEqual(assigneeUser.get(User.UUID), taskCriteria.getExcludeAssigneeUser().getUuid()));
 		}
 		if (taskCriteria.getCaze() != null) {
 			filter = and(cb, filter, cb.equal(from.join(Task.CAZE, JoinType.LEFT).get(Case.UUID), taskCriteria.getCaze().getUuid()));
@@ -240,6 +253,7 @@ public class TaskService extends AbstractAdoService<Task> {
 						cb.and(cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT), cb.equal(event.get(Event.ARCHIVED), true))));
 			}
 		}
+
 		return filter;
 	}
 

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.awt.geom.Area;
 import java.util.Set;
 
 import de.symeda.sormas.api.Disease;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -70,6 +72,7 @@ public class UserDto extends EntityDto {
 
 	private Set<UserRole> userRoles;
 
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	// community of community informant
@@ -173,6 +176,14 @@ public class UserDto extends EntityDto {
 
 	public void setAssociatedOfficer(UserReferenceDto associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
+	}
+
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
 	}
 
 	public RegionReferenceDto getRegion() {

@@ -11,6 +11,7 @@ public enum ExportGroupType {
 	EPIDEMIOLOGICAL,
 	VACCINATION,
 	CASE_MANAGEMENT,
+	FOLLOW_UP,
 	ADDITIONAL;
 
 	public String toString() {

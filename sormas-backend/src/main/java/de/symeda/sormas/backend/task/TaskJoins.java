@@ -26,6 +26,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
@@ -38,6 +39,12 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Task, Case> caze;
 	private Join<Case, Person> casePerson;
 	private Join<Task, Event> event;
+	private Join<Event, User> eventReportingUser;
+	private Join<Event, User> eventSurveillanceOfficer;
+	private Join<Event, Location> eventLocation;
+	private Join<Location, Region> eventRegion;
+	private Join<Location, District> eventDistrict;
+	private Join<Location, Community> eventCommunity;
 	private Join<Task, Contact> contact;
 	private Join<Contact, Person> contactPerson;
 	private Join<Contact, Case> contactCase;
@@ -53,6 +60,7 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private Join<Contact, User> contactReportingUser;
 	private Join<Contact, Region> contactRegion;
 	private Join<Contact, District> contactDistrict;
+	private Join<Contact, Community> contactCommunity;
 	private Join<Case, User> contactCaseReportingUser;
 	private Join<Case, Region> contactCaseRegion;
 	private Join<Case, District> contactCaseDistrict;
@@ -86,6 +94,54 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 
 	private void setEvent(Join<Task, Event> event) {
 		this.event = event;
+	}
+
+	public Join<Event, User> getEventReportingUser() {
+		return getOrCreate(eventReportingUser, Event.REPORTING_USER, JoinType.LEFT, getEvent(), this::setEventReportingUser);
+	}
+
+	private void setEventReportingUser(Join<Event, User> eventReportingUser) {
+		this.eventReportingUser = eventReportingUser;
+	}
+
+	public Join<Event, User> getEventSurveillanceOfficer() {
+		return getOrCreate(eventSurveillanceOfficer, Event.SURVEILLANCE_OFFICER, JoinType.LEFT, getEvent(), this::setEventSurveillanceOfficer);
+	}
+
+	private void setEventSurveillanceOfficer(Join<Event, User> eventSurveillanceOfficer) {
+		this.eventSurveillanceOfficer = eventSurveillanceOfficer;
+	}
+
+	public Join<Event, Location> getEventLocation() {
+		return getOrCreate(eventLocation, Event.EVENT_LOCATION, JoinType.LEFT, getEvent(), this::setEventLocation);
+	}
+
+	private void setEventLocation(Join<Event, Location> eventLocation) {
+		this.eventLocation = eventLocation;
+	}
+
+	public Join<Location, Region> getEventRegion() {
+		return getOrCreate(eventRegion, Location.REGION, JoinType.LEFT, getEventLocation(), this::setEventRegion);
+	}
+
+	private void setEventRegion(Join<Location, Region> eventRegion) {
+		this.eventRegion = eventRegion;
+	}
+
+	public Join<Location, District> getEventDistrict() {
+		return getOrCreate(eventDistrict, Location.DISTRICT, JoinType.LEFT, getEventLocation(), this::setEventDistrict);
+	}
+
+	private void setEventDistrict(Join<Location, District> eventDistrict) {
+		this.eventDistrict = eventDistrict;
+	}
+
+	public Join<Location, Community> getEventCommunity() {
+		return getOrCreate(eventCommunity, Location.COMMUNITY, JoinType.LEFT, getEventLocation(), this::setEventCommunity);
+	}
+
+	private void setEventCommunity(Join<Location, Community> eventCommunity) {
+		this.eventCommunity = eventCommunity;
 	}
 
 	public Join<Task, Contact> getContact() {
@@ -208,6 +264,14 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 		this.contactDistrict = contactDistrict;
 	}
 
+	public Join<Contact, Community> getContactCommunity() {
+		return getOrCreate(contactCommunity, Contact.COMMUNITY, JoinType.LEFT, getContact(), this::setContactCommunity);
+	}
+
+	public void setContactCommunity(Join<Contact, Community> contactCommunity) {
+		this.contactCommunity = contactCommunity;
+	}
+
 	public Join<Case, User> getContactCaseReportingUser() {
 		return getOrCreate(contactCaseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getContactCase(), this::setContactCaseReportingUser);
 	}
@@ -255,4 +319,5 @@ public class TaskJoins extends AbstractDomainObjectJoins<Task, Task> {
 	private void setContactCasePointOfEntry(Join<Case, PointOfEntry> contactCasePointOfEntry) {
 		this.contactCasePointOfEntry = contactCasePointOfEntry;
 	}
+
 }

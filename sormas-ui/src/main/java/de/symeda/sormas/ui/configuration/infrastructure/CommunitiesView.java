@@ -254,7 +254,6 @@ public class CommunitiesView extends AbstractConfigurationView {
 									true,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.COMMUNITY,
-									null,
 									new Runnable() {
 
 										public void run() {
@@ -268,7 +267,6 @@ public class CommunitiesView extends AbstractConfigurationView {
 									false,
 									grid.asMultiSelect().getSelectedItems(),
 									InfrastructureType.COMMUNITY,
-									null,
 									new Runnable() {
 
 										public void run() {

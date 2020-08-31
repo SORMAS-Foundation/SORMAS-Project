@@ -60,6 +60,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.Region;
@@ -167,14 +168,15 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				event.get(Event.REPORT_LON),
 				eventLocation.get(Location.LATITUDE),
 				eventLocation.get(Location.LONGITUDE),
-				eventDistrict.get(District.UUID));
+				event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+				event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID),
+				eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
+				eventDistrict.get(District.NAME),
+				eventDistrict.get(District.UUID),
+				eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
 
 			result = em.createQuery(cq).getResultList();
-			for (DashboardEventDto dashboardEventDto : result) {
-				if (dashboardEventDto.getDistrictUuid() != null) {
-					dashboardEventDto.setDistrict(districtFacade.getDistrictReferenceByUuid(dashboardEventDto.getDistrictUuid()));
-				}
-			}
+
 		} else {
 			result = Collections.emptyList();
 		}
@@ -390,7 +392,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		// Delete all tasks associated with this event
-		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -505,6 +507,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			Join<EventParticipant, Case> caseJoin = eventParticipantJoin.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 
 			filter = and(cb, filter, cb.equal(caseJoin.get(Case.UUID), eventCriteria.getCaze().getUuid()));
+
+			filter = and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 		}
 
 		return filter;

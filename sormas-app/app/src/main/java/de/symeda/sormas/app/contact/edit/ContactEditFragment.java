@@ -42,13 +42,16 @@ import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentContactEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureHelper;
@@ -65,6 +68,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	private List<Item> quarantineList;
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
+	private List<Item> initialCommunities;
 	private List<Item> diseaseList;
 	private List<Item> categoryList;
 	private List<Item> contactIdentificationSources;
@@ -79,7 +83,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
 				.add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
-			null);
+			AppFieldAccessCheckers
+				.withCheckers(ContactEditAuthorization.isContactEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
@@ -174,6 +179,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		quarantineList = DataUtils.getEnumItems(QuarantineType.class, true);
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
@@ -194,9 +200,9 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.contactDistrict,
 			initialDistricts,
 			record.getDistrict(),
-			null,
-			null,
-			null);
+			contentBinding.contactCommunity,
+			initialCommunities,
+			record.getCommunity());
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);

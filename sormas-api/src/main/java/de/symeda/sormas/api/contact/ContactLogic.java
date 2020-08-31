@@ -19,28 +19,10 @@ package de.symeda.sormas.api.contact;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.utils.DateHelper;
-
 public final class ContactLogic {
-
-	public static final int ALLOWED_CONTACT_DATE_OFFSET = 30;
 
 	private ContactLogic() {
 		// Hide Utility Class Constructor
-	}
-
-	public static int getNumberOfRequiredVisitsSoFar(Date contactReportDate, Date contactFollowUpUntil) {
-
-		if (contactFollowUpUntil == null) {
-			return 0;
-		}
-
-		Date now = new Date();
-		if (now.before(contactFollowUpUntil)) {
-			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), now);
-		} else {
-			return DateHelper.getDaysBetween(DateHelper.addDays(contactReportDate, 1), contactFollowUpUntil);
-		}
 	}
 
 	public static Date getStartDate(Date lastContactDate, Date reportDate) {

@@ -19,9 +19,41 @@ import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-public abstract class AbstractInfoLayout extends HorizontalLayout {
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
-	protected static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
+public abstract class AbstractInfoLayout<T> extends HorizontalLayout {
+
+	private Class<T> dataType;
+
+	private UiFieldAccessCheckers fieldAccessCheckers;
+
+	public AbstractInfoLayout(Class<T> dataType, UiFieldAccessCheckers fieldAccessCheckers) {
+		this.dataType = dataType;
+		this.fieldAccessCheckers = fieldAccessCheckers;
+	}
+
+	protected Label addDescLabel(AbstractLayout layout, String fieldId, Object value, String caption) {
+		return addCustomDescLabel(layout, dataType, fieldId, value, caption);
+	}
+
+	protected Label addCustomDescLabel(AbstractLayout layout, Class<?> dataType, String fieldId, Object value, String caption) {
+		if (!fieldAccessCheckers.isAccessible(dataType, fieldId)
+			|| (fieldAccessCheckers.isEmbedded(dataType, fieldId) && !fieldAccessCheckers.hasRight())) {
+
+			Label label = addDescLabel(layout, I18nProperties.getCaption(Captions.inaccessibleValue), caption);
+			label.addStyleName(CssStyles.INACCESSIBLE_LABEL);
+			label.setId("infoLayout_" + dataType.getSimpleName() + "_" + fieldId);
+
+			return label;
+		}
+
+		return addDescLabel(layout, value, caption);
+	}
+
+	private Label addDescLabel(AbstractLayout layout, Object content, String caption) {
 
 		String contentString = content != null ? content.toString() : "";
 		Label label = new Label(contentString);

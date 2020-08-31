@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
@@ -40,9 +35,16 @@ import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
+import static de.symeda.sormas.api.user.UserRole.REST_USER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 public enum UserRight {
 
@@ -831,6 +833,18 @@ public enum UserRight {
 			STATE_OBSERVER,
 			DISTRICT_OBSERVER,
 			CONTACT_SUPERVISOR
+	),
+	DASHBOARD_CAMPAIGNS_ACCESS(
+		ADMIN,
+		NATIONAL_USER,
+		SURVEILLANCE_SUPERVISOR,
+		SURVEILLANCE_OFFICER,
+		CASE_SUPERVISOR,
+		CASE_OFFICER,
+		CONTACT_SUPERVISOR,
+		CONTACT_OFFICER,
+		EVENT_OFFICER,
+		POE_SUPERVISOR
 	),
 	CASE_MANAGEMENT_ACCESS(
 			ADMIN,

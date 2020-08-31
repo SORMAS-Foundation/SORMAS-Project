@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.time.Month;
 import java.util.Arrays;
 
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import org.joda.time.LocalDate;
 
 import com.vaadin.shared.ui.ContentMode;
@@ -84,6 +85,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					LayoutUtil.fluidRowLocs(ContactDto.LAST_CONTACT_DATE, ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
 					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
 					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+					LayoutUtil.fluidRowLocs(ContactDto.COMMUNITY) +
 					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY)
 					+
@@ -131,6 +133,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
+		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
 
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
@@ -179,6 +182,12 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+		district.addValueChangeListener(e -> {
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				community,
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+		});
 
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, ContactDto.REPORT_DATE_TIME);
 		FieldHelper.setVisibleWhen(

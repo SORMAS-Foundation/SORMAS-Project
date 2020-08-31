@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
@@ -46,10 +47,13 @@ import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleEditAuthorization;
 import de.symeda.sormas.app.barcode.BarcodeActivity;
 import de.symeda.sormas.app.component.Item;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentSampleEditLayoutBinding;
 import de.symeda.sormas.app.sample.read.SampleReadActivity;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 
 public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayoutBinding, Sample, Sample> {
@@ -69,7 +73,13 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 	private List<String> requestedAdditionalTests = new ArrayList<>();
 
 	public static SampleEditFragment newInstance(Sample activityRootData) {
-		return newInstance(SampleEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			SampleEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			AppFieldAccessCheckers
+				.withCheckers(SampleEditAuthorization.isSampleEditAllowed(activityRootData), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {
@@ -181,6 +191,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentSampleEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(SampleDto.class, contentBinding.mainContent);
 		setUpFieldVisibilities(contentBinding);
 
 		// Initialize ControlSpinnerFields
@@ -189,7 +200,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 		contentBinding.samplePurpose.setEnabled(referredSample == null || record.getSamplePurpose() != SamplePurpose.EXTERNAL);
 		contentBinding.sampleLab.initializeSpinner(DataUtils.toItems(labList), field -> {
 			Facility laboratory = (Facility) field.getValue();
-			if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+			if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				contentBinding.sampleLabDetails.setVisibility(View.VISIBLE);
 			} else {
 				contentBinding.sampleLabDetails.hideField(true);

@@ -55,7 +55,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
@@ -64,6 +63,7 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelDto;
 import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -548,7 +548,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		contactPerson.getAddress().setCity("City");
-		contactPerson.getAddress().setAddress("Street Address");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
 		getPersonFacade().savePerson(contactPerson);
 
@@ -566,7 +568,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
 		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
 		assertEquals("City", exportDto.getCity());
-		assertEquals("Street Address", exportDto.getAddress());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
@@ -777,7 +781,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
 
 		// Changing the report date to a value beyond the threshold should remove the association
-		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 20));
+		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 20));
 		getContactFacade().saveContact(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), empty());
@@ -797,7 +801,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(
 			user.toReference(),
 			person.toReference(),
-			DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+			DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
 

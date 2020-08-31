@@ -33,7 +33,9 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -52,7 +54,12 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	// Instance methods
 
 	public static PathogenTestEditFragment newInstance(PathogenTest activityRootData) {
-		return newInstance(PathogenTestEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			PathogenTestEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides
@@ -84,6 +91,8 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
 	@Override
 	public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
+
 		// Initialize ControlSpinnerFields
 		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
 
@@ -121,7 +130,7 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 			@Override
 			public void onChange(ControlPropertyField field) {
 				Facility laboratory = (Facility) field.getValue();
-				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 					contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
 				} else {
 					contentBinding.pathogenTestLabDetails.hideField(true);

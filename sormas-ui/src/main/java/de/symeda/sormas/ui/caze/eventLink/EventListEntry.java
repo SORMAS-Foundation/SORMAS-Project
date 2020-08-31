@@ -73,7 +73,7 @@ public class EventListEntry extends HorizontalLayout {
 
 			topLeftLayout.addComponent(eventDescriptionLabel);
 
-			Label materialLabel = new Label(DataHelper.toStringNullable(event.getEventLocation().getCaption()));
+			Label materialLabel = new Label(DataHelper.toStringNullable(event.getEventLocation()));
 			CssStyles.style(materialLabel);
 			topLeftLayout.addComponent(materialLabel);
 

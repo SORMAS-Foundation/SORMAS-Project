@@ -54,9 +54,11 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
@@ -99,6 +101,7 @@ public class Contact extends CoreAdo {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String HIGH_PRIORITY = "highPriority";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE = "immunosuppressiveTherapyBasicDisease";
 	public static final String IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS = "immunosuppressiveTherapyBasicDiseaseDetails";
@@ -128,6 +131,7 @@ public class Contact extends CoreAdo {
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -137,6 +141,7 @@ public class Contact extends CoreAdo {
 
 	private Region region;
 	private District district;
+	private Community community;
 
 	private Person person;
 	private Case caze;
@@ -195,6 +200,7 @@ public class Contact extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+	private HealthConditions healthConditions;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -510,6 +516,15 @@ public class Contact extends CoreAdo {
 		this.district = district;
 	}
 
+	@ManyToOne(cascade = {})
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+
 	@Column
 	public boolean isHighPriority() {
 		return highPriority;
@@ -740,5 +755,15 @@ public class Contact extends CoreAdo {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

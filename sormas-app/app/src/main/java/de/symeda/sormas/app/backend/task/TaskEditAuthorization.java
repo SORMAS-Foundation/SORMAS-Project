@@ -11,7 +11,7 @@ public class TaskEditAuthorization {
 	public static boolean isEventEditAllowed(Task task) {
 		User user = ConfigProvider.getUser();
 
-		return TaskJurisdictionHelper.isInJurisdiction(
+		return TaskJurisdictionHelper.isInJurisdictionOrOwned(
 			UserRole.getJurisdictionLevel(user.getUserRoles()),
 			JurisdictionHelper.createUserJurisdiction(user),
 			JurisdictionHelper.createTaskJurisdictionDto(task));

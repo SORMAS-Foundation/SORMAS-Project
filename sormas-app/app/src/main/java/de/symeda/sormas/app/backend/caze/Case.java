@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
@@ -77,6 +78,8 @@ public class Case extends PseudonymizableAdo {
 	public static final String PERSON = "person_id";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String EPI_DATA = "epiData";
+	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String REPORTING_USER = "reportingUser_id";
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 	public static final String OUTCOME = "outcome";
@@ -136,6 +139,9 @@ public class Case extends PseudonymizableAdo {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Community community;
+
+	@Enumerated(EnumType.STRING)
+	private FacilityType facilityType;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
 	private Facility healthFacility;
@@ -946,5 +952,13 @@ public class Case extends PseudonymizableAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

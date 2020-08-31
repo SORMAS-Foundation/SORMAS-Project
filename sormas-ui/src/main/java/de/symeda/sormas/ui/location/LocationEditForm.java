@@ -18,13 +18,12 @@
 package de.symeda.sormas.ui.location;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.divs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -38,17 +37,17 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
@@ -57,6 +56,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.StringToAngularLocationConverter;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
@@ -67,11 +67,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private static final String HTML_LAYOUT =
 		//XXX #1620 are the divs needed?
 		divs(
-			fluidRow(
-				loc(LocationDto.ADDRESS),
-				//XXX #1620 are the divs needed?
-				divs(fluidRow(fluidColumn(6, 0, locs(LocationDto.POSTAL_CODE, LocationDto.AREA_TYPE)), fluidColumn(6, 0, loc(LocationDto.CITY))))),
+			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
 			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
+			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
+			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
 			fluidRow(
 				loc(LocationDto.DETAILS),
 				fluidRow(
@@ -81,8 +80,9 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 					fluidColumnLoc(4, 0, LocationDto.LAT_LON_ACCURACY))));
 
 	private MapPopupView leafletMapPopup;
+	private ComboBox addressType;
 
-	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
 		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
@@ -105,9 +105,26 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	@Override
 	protected void addFields() {
-		TextArea addressField = addField(LocationDto.ADDRESS, TextArea.class);
-		addressField.setRows(5);
 
+		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
+		addressType.setVisible(false);
+		if (!isSwissServer()) {
+			addressType.removeAllItems();
+			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
+			addressType.addItems(PersonAddressType.getValues());
+		}
+		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
+		addressTypeDetails.setVisible(false);
+		FieldHelper
+			.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType, Arrays.asList(PersonAddressType.OTHER_ADDRESS), true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			addressType,
+			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
+			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
+		addField(LocationDto.STREET, TextField.class);
+		addField(LocationDto.HOUSE_NUMBER, TextField.class);
+		addField(LocationDto.ADDITIONAL_INFORMATION, TextField.class);
 		addField(LocationDto.DETAILS, TextField.class);
 		addField(LocationDto.CITY, TextField.class);
 		addField(LocationDto.POSTAL_CODE, TextField.class);
@@ -116,12 +133,12 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		TextField tfLatitude = addField(LocationDto.LATITUDE, TextField.class);
 		tfLatitude.setConverter(new StringToAngularLocationConverter());
-        TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
+		TextField tfLongitude = addField(LocationDto.LONGITUDE, TextField.class);
 		tfLongitude.setConverter(new StringToAngularLocationConverter());
-        TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
+		TextField tfAccuracy = addField(LocationDto.LAT_LON_ACCURACY, TextField.class);
 		tfAccuracy.setConverter(new StringToAngularLocationConverter());
 
-        ComboBox region = addInfrastructureField(LocationDto.REGION);
+		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
@@ -129,7 +146,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setReadOnly(true, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
 		region.addValueChangeListener(e -> {
@@ -149,7 +166,6 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
 			.map(this::getField)
 			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
-
 	}
 
 	private HorizontalLayout createGeoButton() {
@@ -206,16 +222,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private void triggerGeocoding() {
 
-		String address = getConvertedValue(LocationDto.ADDRESS);
+		String street = getConvertedValue(LocationDto.STREET);
+		String houseNumber = getConvertedValue(LocationDto.HOUSE_NUMBER);
 		String postalCode = getConvertedValue(LocationDto.POSTAL_CODE);
 		String city = getConvertedValue(LocationDto.CITY);
 
-		GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(address, postalCode, city);
+		GeoLatLon latLon = FacadeProvider.getGeocodingFacade().getLatLon(street, houseNumber, postalCode, city);
 
 		if (latLon != null) {
 			setConvertedValue(LocationDto.LATITUDE, latLon.getLat());
 			setConvertedValue(LocationDto.LONGITUDE, latLon.getLon());
 		}
+	}
+
+	public void showAddressType() {
+		addressType.setVisible(true);
+		addressType.setRequired(true);
 	}
 
 	@Override

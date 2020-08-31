@@ -23,7 +23,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 
 public class CaseJurisdictionHelper {
 
-	public static Boolean isInJurisdiction(
+	public static Boolean isInJurisdictionOrOwned(
 		JurisdictionLevel jurisdictionLevel,
 		UserJurisdiction userJurisdiction,
 		CaseJurisdictionDto caseJurisdictionDto) {

@@ -46,7 +46,9 @@ import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -89,8 +91,9 @@ public class ContactDataView extends AbstractContactView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
+		Boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
 		CommitDiscardWrapperComponent<?> editComponent =
-			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL);
+			ControllerProvider.getContactController().getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
 		editComponent.setMargin(false);
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -209,7 +212,13 @@ public class ContactDataView extends AbstractContactView {
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {
 
 		CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+		boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(caseUuid);
+		CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
+			caseDto,
+			UiFieldAccessCheckers.withCheckers(
+				isInJurisdiction,
+				FieldHelper.createPersonalDataFieldAccessChecker(),
+				FieldHelper.createSensitiveDataFieldAccessChecker()));
 		caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 		return caseInfoLayout;
 	}

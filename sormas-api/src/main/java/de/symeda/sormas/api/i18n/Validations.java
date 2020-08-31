@@ -69,6 +69,7 @@ public interface Validations {
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";
+	String noFacilityType = "noFacilityType";
 	String noPastDateAllowed = "noPastDateAllowed";
 	String onlyDecimalNumbersAllowed = "onlyDecimalNumbersAllowed";
 	String onlyGeoCoordinatesAllowed = "onlyGeoCoordinatesAllowed";
@@ -87,6 +88,7 @@ public interface Validations {
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";
 	String validFacility = "validFacility";
+	String validFacilityType = "validFacilityType";
 	String validPerson = "validPerson";
 	String validPointOfEntry = "validPointOfEntry";
 	String validRegion = "validRegion";
@@ -94,8 +96,10 @@ public interface Validations {
 	String validReportingUser = "validReportingUser";
 	String validSample = "validSample";
 	String visitAfterFollowUp = "visitAfterFollowUp";
+	String visitBeforeCaseReport = "visitBeforeCaseReport";
 	String visitBeforeContactReport = "visitBeforeContactReport";
 	String visitBeforeLastContactDate = "visitBeforeLastContactDate";
+	String visitBeforeSymptomsOnSet = "visitBeforeSymptomsOnSet";
 	String visitDate = "visitDate";
 	String visitStatus = "visitStatus";
 	String visitSymptoms = "visitSymptoms";

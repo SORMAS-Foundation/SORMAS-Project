@@ -20,6 +20,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
@@ -69,7 +70,7 @@ public class DownloadUtilTest extends AbstractBeanTest {
 		VisitDto visit23 = creator.createVisit(
 			caze.getDisease(),
 			contactPerson2.toReference(),
-			DateHelper.subtractDays(new Date(), VisitDto.ALLOWED_CONTACT_DATE_OFFSET + 1),
+			DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1),
 			VisitStatus.COOPERATIVE);
 		visit23.getSymptoms().setAgitation(SymptomState.YES);
 		FacadeProvider.getVisitFacade().saveVisit(visit23);

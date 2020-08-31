@@ -177,6 +177,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+
+		target.setPseudonymized(source.isPseudonymized());
+		target.setFacilityType(source.getFacilityType());
 	}
 
 	@Override
@@ -359,6 +362,9 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+
+		target.setPseudonymized(source.isPseudonymized());
+		target.setFacilityType(source.getFacilityType());
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

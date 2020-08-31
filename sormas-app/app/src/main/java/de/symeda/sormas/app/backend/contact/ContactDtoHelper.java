@@ -21,12 +21,16 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.region.Community;
+import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.Region;
@@ -40,6 +44,7 @@ import retrofit2.Call;
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
 	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
+	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	public ContactDtoHelper() {
 	}
@@ -104,6 +109,7 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setExternalID(source.getExternalID());
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
 		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+		target.setCommunity(DatabaseHelper.getCommunityDao().getByReferenceDto(source.getCommunity()));
 
 		target.setHighPriority(source.isHighPriority());
 		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
@@ -132,6 +138,10 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+
+		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
@@ -153,6 +163,12 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
 		} else {
 			target.setDistrict(null);
+		}
+		if (source.getCommunity() != null) {
+			Community community = DatabaseHelper.getCommunityDao().queryForId(source.getCommunity().getId());
+			target.setCommunity(CommunityDtoHelper.toReferenceDto(community));
+		} else {
+			target.setCommunity(null);
 		}
 		if (source.getCaseUuid() != null) {
 			target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
@@ -235,6 +251,15 @@ public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 		} else {
 			target.setEpiData(null);
 		}
+
+		if (source.getHealthConditions() != null) {
+			HealthConditions healthConditions = DatabaseHelper.getHealthConditionsDao().queryForId(source.getHealthConditions().getId());
+			target.setHealthConditions(healthConditionsDtoHelper.adoToDto(healthConditions));
+		} else {
+			target.setHealthConditions(null);
+		}
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static ContactReferenceDto toReferenceDto(Contact ado) {

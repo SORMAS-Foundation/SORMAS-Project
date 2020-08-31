@@ -109,17 +109,25 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
-		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return userService.getAllByRegionAndUserRolesInJurisdiction(region, assignableRoles)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
 
 		District district = districtService.getByReferenceDto(districtRef);
-		return userService.getAllByDistrict(district, includeSupervisors, userRoles)
+		return userService.getAllByDistrictInJurisdiction(district, includeSupervisors, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getAllUserRefs() {
+		return userService.getAllInJurisdiction().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -130,12 +138,6 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserDto> getAll(UserRole... roles) {
-
-		return userService.getAllByRegionAndUserRoles(null, roles).stream().map(f -> toDto(f)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<UserDto> getAllAfter(Date date) {
 		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -143,11 +145,6 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserDto> getByUuids(List<String> uuids) {
 		return userService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<UserReferenceDto> getAllAfterAsReference(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -168,11 +165,6 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public UserDto getByUserName(String userName) {
 		return toDto(userService.getByUserName(userName));
-	}
-
-	@Override
-	public UserReferenceDto getByUserNameAsReference(String userName) {
-		return toReferenceDto(userService.getByUserName(userName));
 	}
 
 	@Override
@@ -233,7 +225,7 @@ public class UserFacadeEjb implements UserFacade {
 					expression = district.get(District.NAME);
 					break;
 				case UserDto.ADDRESS:
-					expression = address.get(Location.ADDRESS);
+					expression = address.get(Location.REGION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

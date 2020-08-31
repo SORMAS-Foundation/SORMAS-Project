@@ -34,7 +34,7 @@ SET default_with_oids = false;
 
 --
 -- TOC entry 142 (class 1259 OID 341910)
--- Name: cases; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE cases (
@@ -70,7 +70,7 @@ ALTER TABLE cases OWNER TO sormas_user;
 
 --
 -- TOC entry 148 (class 1259 OID 341964)
--- Name: community; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE community (
@@ -87,7 +87,7 @@ ALTER TABLE community OWNER TO sormas_user;
 
 --
 -- TOC entry 147 (class 1259 OID 341957)
--- Name: district; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE district (
@@ -119,7 +119,7 @@ ALTER TABLE entity_seq OWNER TO sormas_user;
 
 --
 -- TOC entry 149 (class 1259 OID 341971)
--- Name: facility; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE facility (
@@ -138,7 +138,7 @@ ALTER TABLE facility OWNER TO sormas_user;
 
 --
 -- TOC entry 144 (class 1259 OID 341930)
--- Name: location; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE location (
@@ -161,7 +161,7 @@ ALTER TABLE location OWNER TO sormas_user;
 
 --
 -- TOC entry 143 (class 1259 OID 341920)
--- Name: person; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE person (
@@ -194,7 +194,7 @@ ALTER TABLE person OWNER TO sormas_user;
 
 --
 -- TOC entry 146 (class 1259 OID 341950)
--- Name: region; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE region (
@@ -210,7 +210,7 @@ ALTER TABLE region OWNER TO sormas_user;
 
 --
 -- TOC entry 150 (class 1259 OID 341981)
--- Name: userroles; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: userroles; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE userroles (
@@ -223,7 +223,7 @@ ALTER TABLE userroles OWNER TO sormas_user;
 
 --
 -- TOC entry 145 (class 1259 OID 341940)
--- Name: users; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 CREATE TABLE users (
@@ -249,7 +249,7 @@ ALTER TABLE users OWNER TO sormas_user;
 
 --
 -- TOC entry 1732 (class 2606 OID 341917)
--- Name: cases_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY cases
@@ -258,7 +258,7 @@ ALTER TABLE ONLY cases
 
 --
 -- TOC entry 1734 (class 2606 OID 341919)
--- Name: cases_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: cases_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY cases
@@ -267,7 +267,7 @@ ALTER TABLE ONLY cases
 
 --
 -- TOC entry 1756 (class 2606 OID 341968)
--- Name: community_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY community
@@ -276,7 +276,7 @@ ALTER TABLE ONLY community
 
 --
 -- TOC entry 1758 (class 2606 OID 341970)
--- Name: community_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: community_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY community
@@ -285,7 +285,7 @@ ALTER TABLE ONLY community
 
 --
 -- TOC entry 1752 (class 2606 OID 341961)
--- Name: district_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY district
@@ -294,7 +294,7 @@ ALTER TABLE ONLY district
 
 --
 -- TOC entry 1754 (class 2606 OID 341963)
--- Name: district_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: district_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY district
@@ -303,7 +303,7 @@ ALTER TABLE ONLY district
 
 --
 -- TOC entry 1760 (class 2606 OID 341978)
--- Name: facility_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY facility
@@ -312,7 +312,7 @@ ALTER TABLE ONLY facility
 
 --
 -- TOC entry 1762 (class 2606 OID 341980)
--- Name: facility_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: facility_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY facility
@@ -321,7 +321,7 @@ ALTER TABLE ONLY facility
 
 --
 -- TOC entry 1740 (class 2606 OID 341937)
--- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY location
@@ -330,7 +330,7 @@ ALTER TABLE ONLY location
 
 --
 -- TOC entry 1742 (class 2606 OID 341939)
--- Name: location_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: location_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY location
@@ -339,7 +339,7 @@ ALTER TABLE ONLY location
 
 --
 -- TOC entry 1736 (class 2606 OID 341927)
--- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY person
@@ -348,7 +348,7 @@ ALTER TABLE ONLY person
 
 --
 -- TOC entry 1738 (class 2606 OID 341929)
--- Name: person_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: person_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY person
@@ -357,7 +357,7 @@ ALTER TABLE ONLY person
 
 --
 -- TOC entry 1748 (class 2606 OID 341954)
--- Name: region_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY region
@@ -366,7 +366,7 @@ ALTER TABLE ONLY region
 
 --
 -- TOC entry 1750 (class 2606 OID 341956)
--- Name: region_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: region_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY region
@@ -375,7 +375,7 @@ ALTER TABLE ONLY region
 
 --
 -- TOC entry 1764 (class 2606 OID 341985)
--- Name: unq_userroles_0; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: unq_userroles_0; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY userroles
@@ -384,7 +384,7 @@ ALTER TABLE ONLY userroles
 
 --
 -- TOC entry 1744 (class 2606 OID 341947)
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -393,7 +393,7 @@ ALTER TABLE ONLY users
 
 --
 -- TOC entry 1746 (class 2606 OID 341949)
--- Name: users_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace: 
+-- Name: users_uuid_key; Type: CONSTRAINT; Schema: public; Owner: sormas_user; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -623,7 +623,7 @@ ALTER TABLE ONLY users
 --
 
 ALTER TABLE person ADD COLUMN phoneowner character varying(255);
-  
+
 INSERT INTO schema_version (version_number, comment) VALUES (1, 'Init database');
 
 
@@ -638,7 +638,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (2, 'Split person bi
 
 -- 2016-10-04; #58
 CREATE TABLE symptoms (
-id bigint not null, 
+id bigint not null,
 abdominalpain varchar(255),
 anorexiaappetiteloss varchar(255),
 bleedingvagina varchar(255),
@@ -674,7 +674,7 @@ othernonhemorrhagic varchar(255),
 othernonhemorrhagicsymptoms varchar(255),
 petechiae varchar(255),
 skinrash varchar(255),
-sorethroat varchar(255), 
+sorethroat varchar(255),
 onsetdate timestamp without time zone,
 temperature real,
 temperaturesource varchar(255),
@@ -696,20 +696,20 @@ INSERT INTO schema_version (version_number, comment) VALUES (3, 'Symptoms');
 
 CREATE TABLE task (
 id bigint not null,
-assigneereply varchar(512), 
-changedate timestamp not null, 
-creationdate timestamp not null, 
-creatorcomment varchar(512), 
-duedate timestamp, 
-perceivedstart timestamp, 
-statuschangedate timestamp, 
-taskcontext varchar(255), 
-taskstatus varchar(255), 
-tasktype varchar(255), 
-uuid varchar(36) not null unique, 
-assigneeuser_id bigint, 
-caze_id bigint, 
-creatoruser_id bigint, 
+assigneereply varchar(512),
+changedate timestamp not null,
+creationdate timestamp not null,
+creatorcomment varchar(512),
+duedate timestamp,
+perceivedstart timestamp,
+statuschangedate timestamp,
+taskcontext varchar(255),
+taskstatus varchar(255),
+tasktype varchar(255),
+uuid varchar(36) not null unique,
+assigneeuser_id bigint,
+caze_id bigint,
+creatoruser_id bigint,
 PRIMARY KEY (id));
 
 ALTER TABLE task OWNER TO sormas_user;
@@ -724,7 +724,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (4, 'Task');
 
 ALTER TABLE task ADD COLUMN priority varchar(255);
 ALTER TABLE task ADD COLUMN suggestedstart timestamp;
-DELETE FROM task; 
+DELETE FROM task;
 
 INSERT INTO schema_version (version_number, comment) VALUES (5, 'Task priority & suggested start');
 
@@ -782,17 +782,17 @@ INSERT INTO schema_version (version_number, comment) VALUES (7, 'Case + User: re
 -- 2016-11-10; Contact #85
 
 CREATE TABLE contact (
-id bigint not null, 
-changedate timestamp not null, 
-contactproximity varchar(255), 
-contactstatus varchar(255), 
-creationdate timestamp not null, 
-lastcontactdate timestamp, 
-reportdatetime timestamp not null, 
-uuid varchar(36) not null unique, 
+id bigint not null,
+changedate timestamp not null,
+contactproximity varchar(255),
+contactstatus varchar(255),
+creationdate timestamp not null,
+lastcontactdate timestamp,
+reportdatetime timestamp not null,
+uuid varchar(36) not null unique,
 caze_id bigint not null,
-person_id bigint not null, 
-reportinguser_id bigint not null, 
+person_id bigint not null,
+reportinguser_id bigint not null,
 primary key (id));
 
 ALTER TABLE contact ADD CONSTRAINT fk_contact_person_id FOREIGN KEY (person_id) REFERENCES person (id);
@@ -807,7 +807,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (8, 'Contact; Cases 
 -- 2016-11-15; Contact #85
 
 ALTER TABLE contact ADD COLUMN description varchar(512);
- 
+
 INSERT INTO schema_version (version_number, comment) VALUES (9, 'Contact.description');
 
 -- 2016-11-16; Contact #85
@@ -826,12 +826,12 @@ ALTER TABLE contact ADD COLUMN followupstatus varchar(255);
 ALTER TABLE contact ADD COLUMN followupuntil timestamp;
 
 CREATE TABLE visit (
-	id bigint not null, 
-	uuid varchar(36) not null unique, 
-	changedate timestamp not null, 
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
 	creationdate timestamp not null,
-	person_id bigint not null, 
-	visituser_id bigint not null, 
+	person_id bigint not null,
+	visituser_id bigint not null,
     visitremarks character varying(512),
     disease character varying(255),
 	visitdatetime timestamp not null,
@@ -1024,10 +1024,10 @@ CREATE TABLE sampletest(
 	testresulttext varchar(512) not null,
 	testresultverified boolean not null,
 	primary key(id));
-	
+
 ALTER TABLE samples OWNER TO sormas_user;
 ALTER TABLE sampletest OWNER TO sormas_user;
-	
+
 INSERT INTO schema_version (version_number, comment) VALUES (24, 'Sample and SampleTest backend');
 
 -- 2017-02-03 Foreign keys for samples and sampletests #106
@@ -1249,7 +1249,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (36, 'Epidemiologica
 
 
 CREATE TEMP TABLE tmp_caseids AS SELECT cases.id AS caseid, nextval('entity_seq') AS epiid FROM cases WHERE cases.epidata_id IS NULL;
-INSERT INTO epidata (id, changedate, creationdate, uuid) 
+INSERT INTO epidata (id, changedate, creationdate, uuid)
 	SELECT epiid, now(), now(), uuid_in(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS cstring)) FROM tmp_caseids;
 UPDATE cases SET epidata_id = epiid FROM tmp_caseids t where cases.id = t.caseid;
 DROP TABLE tmp_caseids;
@@ -2062,9 +2062,9 @@ CREATE FUNCTION export_database(table_name text, path text, file_name text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(path || file_name) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -2081,16 +2081,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(path || file_name) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(path || file_name) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -2112,7 +2112,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (95, 'Resulting case
 
 CREATE OR REPLACE FUNCTION add_health_facility(_name character varying(512), _islaboratory boolean, _regionname character varying(512), _districtname character varying(512), _communityname character varying(512), _city character varying(512), _latitude double precision, _longitude double precision)
 RETURNS bigint AS $resultid$
-DECLARE 
+DECLARE
 	_type character varying(512);
 	_id bigint;
 	_uuid character varying(36);
@@ -2152,11 +2152,11 @@ BEGIN
 	IF ((SELECT facility.id FROM facility WHERE facility.name = _name AND facility.region_id = _region_id AND facility.district_id = _district_id) IS NOT NULL) THEN
 		RAISE EXCEPTION 'facility % allready exists in district', _name;
 	END IF;
-	
+
 	INSERT INTO facility(
-            id, changedate, creationdate, name, publicownership, type, uuid, 
+            id, changedate, creationdate, name, publicownership, type, uuid,
             region_id, district_id, community_id, city, latitude, longitude)
-	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid, 
+	VALUES (_id, now(), now(), _name, FALSE, _type, _uuid,
             _region_id, _district_id, _community_id, _city, _latitude, _longitude);
 
         RETURN _id;
@@ -2189,9 +2189,9 @@ CREATE FUNCTION export_database(table_name text, file_path text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -2208,16 +2208,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -2259,7 +2259,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (102, 'Case age fiel
 -- week starts monday
 -- 1st of january is always in week 1
 CREATE OR REPLACE FUNCTION epi_week (indate timestamp)
-RETURNS integer AS 
+RETURNS integer AS
 $result$
 DECLARE year integer;
 	doy integer;
@@ -2288,7 +2288,7 @@ BEGIN
 	isodow_start := date_part('isodow', date (year || '-01-01'));
 	epi_week := ceil((doy + isodow_start - 1) / 7.0);
    END if;
-   
+
    RETURN epi_week;
 END;
 $result$
@@ -2296,7 +2296,7 @@ LANGUAGE plpgsql;
 
 -- see epi_week
 CREATE OR REPLACE FUNCTION epi_year (indate timestamp)
-RETURNS integer AS 
+RETURNS integer AS
 $result$
 DECLARE year integer;
 	doy integer;
@@ -2315,10 +2315,10 @@ BEGIN
    ELSE
 	epi_year := year;
    END if;
-   
+
    RETURN epi_year;
 END;
-$result$ 
+$result$
 LANGUAGE plpgsql;
 
 -- e.g. SELECT epi_week('2015-12-27'), epi_year('2015-12-27'); -- 52-2015
@@ -2670,7 +2670,7 @@ CREATE TABLE prescription(
 	dose varchar(512),
 	route varchar(255),
 	routedetails varchar(512),
-	additionalnotes varchar(512),	
+	additionalnotes varchar(512),
 	sys_period tstzrange not null,
 	primary key(id)
 );
@@ -2917,11 +2917,11 @@ CREATE TABLE additionaltest(
 	conjbilirubin integer,
 	wbccount integer,
 	platelets integer,
-	prothrombintime integer,	
-	othertestresults varchar(512), 
+	prothrombintime integer,
+	othertestresults varchar(512),
 	sys_period tstzrange not null,
 	primary key(id));
-	
+
 ALTER TABLE additionaltest OWNER TO sormas_user;
 ALTER TABLE additionaltest ADD CONSTRAINT fk_additionaltest_sample_id FOREIGN KEY (sample_id) REFERENCES samples (id);
 
@@ -3098,16 +3098,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 			EXECUTE '
 				COPY (SELECT
 					' || quote_ident(table_name) || '
-				.* FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				.* FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -3145,7 +3145,7 @@ CREATE TABLE diseaseconfiguration(
 	followupduration integer,
 	sys_period tstzrange not null,
 	primary key(id));
-	
+
 ALTER TABLE diseaseconfiguration OWNER TO sormas_user;
 
 CREATE TABLE diseaseconfiguration_history (LIKE diseaseconfiguration);
@@ -3387,7 +3387,7 @@ CREATE TABLE pointofentry(
 	district_id bigint,
 	latitude double precision,
 	longitude double precision,
-	active boolean, 
+	active boolean,
 	primary key(id)
 );
 ALTER TABLE pointofentry OWNER TO sormas_user;
@@ -3510,9 +3510,9 @@ CREATE FUNCTION export_database(table_name text, file_path text)
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
+				COPY (SELECT * FROM
 					' || quote_ident(table_name) || '
-				) TO 
+				) TO
 					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
@@ -3530,16 +3530,16 @@ CREATE FUNCTION export_database_join(table_name text, join_table_name text, colu
 	AS $BODY$
 		BEGIN
 			EXECUTE '
-				COPY (SELECT * FROM 
-					' || quote_ident(table_name) || ' 
-				INNER JOIN 
-					' || quote_ident(join_table_name) || ' 
-				ON 
-					' || column_name || ' 
-				= 
-					' || join_column_name || ' 
-				) TO 
-					' || quote_literal(file_path) || ' 
+				COPY (SELECT * FROM
+					' || quote_ident(table_name) || '
+				INNER JOIN
+					' || quote_ident(join_table_name) || '
+				ON
+					' || column_name || '
+				=
+					' || join_column_name || '
+				) TO
+					' || quote_literal(file_path) || '
 				WITH (
 					FORMAT CSV, DELIMITER '';'', HEADER
 				);
@@ -4289,7 +4289,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (211, 'Add samples t
 UPDATE contact SET contactproximity = 'MEDICAL_UNSAFE' WHERE contactproximity = 'MEDICAL_UNSAVE';
 UPDATE contact SET contactproximity = 'MEDICAL_SAFE' WHERE contactproximity = 'MEDICAL_SAVE';
 
-INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');                                                                                                                        
+INSERT INTO schema_version (version_number, comment) VALUES (212, 'Rename misspelled enum values #2094');
 
 -- 2020-05-25 Add campaigns #1984
 CREATE TABLE campaigns(
@@ -4896,5 +4896,324 @@ ALTER TABLE cases_history ADD COLUMN quarantineextended boolean DEFAULT false;
 ALTER TABLE contact_history ADD COLUMN quarantineextended boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (235, 'Store if quarantine period has been extended #2264');
+
+-- 2020-08-10 Add responsible community to contact #2104
+ALTER TABLE contact ADD COLUMN community_id bigint;
+ALTER TABLE contact_history ADD COLUMN community_id bigint;
+ALTER TABLE contact ADD CONSTRAINT community_id FOREIGN KEY (community_id) REFERENCES community (id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (236, 'Add responsible community to contact #2104');
+
+-- 2020-08-13 Adds visit to cases
+
+ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE cases SET followupstatus = 'CANCELED';
+UPDATE cases SET followupcomment = '-';
+UPDATE cases SET overwritefollowupuntil = false;
+
+ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
+
+ALTER TABLE visit ADD COLUMN caze_id bigint;
+ALTER TABLE visit_history ADD COLUMN caze_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (237, 'Adds visit to cases');
+
+
+-- 2020-08-10 - Update app synchronization related to event participants #2596
+ALTER TABLE  eventparticipant ADD COLUMN deleted boolean;
+ALTER TABLE  eventparticipant_history ADD COLUMN deleted boolean;
+UPDATE eventparticipant SET deleted = false;
+UPDATE eventparticipant_history SET deleted = false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (238, 'Update app synchronization related to event participants #2596');
+
+-- 2020-06-23 Import and use new facility types #1637
+UPDATE samples SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
+UPDATE pathogentest SET lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-FACILITY') WHERE lab_id = (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO');
+DELETE FROM facility WHERE uuid = 'SORMAS-CONSTID-OTHERS-LABORATO';
+UPDATE facility SET type = 'HOSPITAL' WHERE NOT type = 'LABORATORY' AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
+ALTER TABLE cases ADD COLUMN facilitytype varchar(255);
+ALTER TABLE cases_history ADD COLUMN facilitytype varchar(255);
+UPDATE cases SET facilitytype = 'HOSPITAL' WHERE healthfacility_id != (SELECT id FROM facility WHERE uuid = 'SORMAS-CONSTID-ISNONE-FACILITY');
+ALTER TABLE person ADD COLUMN occupationfacilitytype varchar(255);
+ALTER TABLE person_history ADD COLUMN occupationfacilitytype varchar(255);
+UPDATE person SET occupationfacilitytype = 'HOSPITAL' WHERE occupationfacility_id IS NOT NULL;
+ALTER TABLE person ADD COLUMN placeofbirthfacilitytype varchar(255);
+ALTER TABLE person_history ADD COLUMN placeofbirthfacilitytype varchar(255);
+UPDATE person SET placeofbirthfacilitytype = 'HOSPITAL' WHERE placeofbirthfacility_id IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (239, 'Import and use new facility types #1637');
+
+-- 2020-08-20 Adjust Covid-19 Symptoms for Switzerland #2669
+ALTER TABLE symptoms ADD COLUMN feverishFeeling varchar(255);
+ALTER TABLE symptoms ADD COLUMN weakness varchar(255);
+ALTER TABLE symptoms ADD COLUMN fatigue varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughWithoutSputum varchar(255);
+ALTER TABLE symptoms ADD COLUMN breathlessness varchar(255);
+ALTER TABLE symptoms ADD COLUMN chestPressure varchar(255);
+ALTER TABLE symptoms ADD COLUMN blueLips varchar(255);
+ALTER TABLE symptoms ADD COLUMN bloodCirculationProblems varchar(255);
+ALTER TABLE symptoms ADD COLUMN palpitations varchar(255);
+ALTER TABLE symptoms ADD COLUMN dizzinessStandingUp varchar(255);
+ALTER TABLE symptoms ADD COLUMN highOrLowBloodPressure varchar(255);
+ALTER TABLE symptoms ADD COLUMN urinaryRetention varchar(255);
+
+ALTER TABLE symptoms_history ADD COLUMN feverishFeeling varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN weakness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN fatigue varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithoutSputum varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN breathlessness varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN chestPressure varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN blueLips varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN bloodCirculationProblems varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN palpitations varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN dizzinessStandingUp varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN highOrLowBloodPressure varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN urinaryRetention varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (240, 'Adjust Covid-19 Symptoms for Switzerland #2669');
+
+-- 2020-08-19 - Add pre-existing conditions to contacts #2564 - update healthconditions table
+ALTER TABLE  contact ADD COLUMN healthconditions_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+DO $$
+    DECLARE rec RECORD;
+    DECLARE new_healthcondition_id INTEGER;
+    BEGIN
+        UPDATE contact SET healthconditions_id = (SELECT hc.id FROM healthconditions hc
+                                                                                inner join clinicalcourse cc on cc.healthconditions_id = hc.id
+                                                                                inner join cases ca on ca.clinicalcourse_id = cc.id
+                                                          where ca.id = resultingcase_id)
+        WHERE resultingcase_id IS NOT NULL AND healthconditions_id IS NULL;
+
+        FOR rec IN SELECT id FROM public.contact where resultingcase_id IS NULL and healthconditions_id IS NULL
+            LOOP
+                INSERT INTO healthconditions(id, uuid, creationdate, changedate) VALUES (nextval('entity_seq'), upper(substring(CAST(CAST(md5(CAST(random() AS text) || CAST(clock_timestamp() AS text)) AS uuid) AS text), 3, 29)), now(), now()) RETURNING id INTO new_healthcondition_id;
+                UPDATE contact SET healthconditions_id = new_healthcondition_id WHERE id = rec.id;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+INSERT INTO schema_version (version_number, comment) VALUES (241, 'update healthconditions table #2564');
+
+-- 2020-08-24 Fix problems caused by #1637
+UPDATE facility SET type = 'HOSPITAL' WHERE type ISNULL AND uuid NOT IN ('SORMAS-CONSTID-OTHERS-FACILITY','SORMAS-CONSTID-ISNONE-FACILITY');
+UPDATE cases SET facilitytype = null WHERE healthfacility_id ISNULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (242, 'Fix problems caused by #1637');
+
+-- 2020-07-29 Campaign diagram visualisation
+
+ALTER TABLE campaigndiagramdefinition ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaigndiagramdefinition_history ALTER COLUMN campaignDiagramSeries TYPE json USING campaignDiagramSeries::json;
+ALTER TABLE campaignformdata ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaignformdata_history ALTER COLUMN formvalues TYPE json USING formvalues::json;
+ALTER TABLE campaigndiagramdefinition ADD COLUMN diagramCaption varchar(255);
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN diagramCaption varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diagram visualization #2526');
+
+-- 2020-08-25 Person address refinement #2562
+ALTER TABLE location RENAME COLUMN address TO street;
+ALTER TABLE location_history RENAME COLUMN address TO street;
+ALTER TABLE location ADD COLUMN housenumber varchar(255);
+ALTER TABLE location_history ADD COLUMN housenumber varchar(255);
+ALTER TABLE location ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE location_history ADD COLUMN additionalinformation varchar(255);
+ALTER TABLE location ADD COLUMN addresstype varchar(255);
+ALTER TABLE location_history ADD COLUMN addresstype varchar(255);
+ALTER TABLE location ADD COLUMN addresstypedetails varchar(255);
+ALTER TABLE location_history ADD COLUMN addresstypedetails varchar(255);
+ALTER TABLE location ADD COLUMN person_id bigint;
+ALTER TABLE location_history ADD COLUMN person_id bigint;
+ALTER TABLE location ADD CONSTRAINT fk_location_person_id FOREIGN KEY (person_id) REFERENCES person (id);
+
+ALTER TABLE person ADD COLUMN changedateofembeddedlists timestamp without time zone;
+
+INSERT INTO schema_version (version_number, comment) VALUES (244, 'Person address refinement #2562');
+
+-- 2020-08-28 Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735
+
+CREATE OR REPLACE FUNCTION create_new_uuid(uuid varchar) RETURNS varchar
+AS 'SELECT LEFT(uuid, 21) ||
+CASE SUBSTRING(uuid FROM 22 FOR 1)
+WHEN ''9'' THEN ''A''
+WHEN ''Z'' THEN ''0''
+ELSE chr(ascii(SUBSTRING(uuid FROM 22 FOR 1)) + 1)
+END ||
+SUBSTRING(uuid FROM 23)
+AS new_uuid;'
+LANGUAGE SQL;
+
+ALTER FUNCTION create_new_uuid(varchar) OWNER TO sormas_user;
+
+-- EPI DATA
+
+DROP TABLE IF EXISTS t_epidata;
+DROP TABLE IF EXISTS t_epidataburial;
+DROP TABLE IF EXISTS t_epidatagathering;
+DROP TABLE IF EXISTS t_epidatatravel;
+DROP TABLE IF EXISTS t_id_map;
+DROP TABLE IF EXISTS t_edb_id_map;
+DROP TABLE IF EXISTS t_edg_id_map;
+DROP TABLE IF EXISTS t_edt_id_map;
+DROP TABLE IF EXISTS t_epidataburial_location;
+DROP TABLE IF EXISTS t_epidatagathering_location;
+DROP TABLE IF EXISTS t_edbl_id_map;
+DROP TABLE IF EXISTS t_edgl_id_map;
+
+CREATE temp table t_epidata
+AS SELECT e.* FROM epidata e WHERE e.id IN (SELECT ca.epidata_id FROM cases ca) AND e.id IN (SELECT co.epidata_id FROM contact co);
+
+CREATE temp table t_id_map
+AS SELECT id AS old_id,
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_epidata;
+
+UPDATE t_epidata te SET
+id = (SELECT new_id FROM t_id_map WHERE te.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE te.id = old_id);
+
+-- BURIALS
+
+CREATE temp table t_epidataburial
+AS SELECT edb.* FROM epidataburial edb, t_id_map WHERE edb.epidata_id = t_id_map.old_id;
+
+CREATE temp table t_edb_id_map
+AS SELECT id AS edb_old_id,
+nextval('entity_seq') AS edb_new_id,
+create_new_uuid(uuid) AS edb_new_uuid
+FROM t_epidataburial;
+
+CREATE temp table t_epidataburial_location
+AS SELECT edbl.* FROM location edbl, t_epidataburial edb WHERE edb.burialaddress_id = edbl.id;
+
+CREATE temp table t_edbl_id_map
+AS SELECT id AS edbl_old_id,
+nextval('entity_seq') AS edbl_new_id,
+create_new_uuid(uuid) AS edbl_new_uuid
+FROM t_epidataburial_location;
+
+UPDATE t_epidataburial_location tedbl SET
+id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id),
+uuid = (SELECT edbl_new_uuid FROM t_edbl_id_map WHERE tedbl.id = edbl_old_id);
+
+INSERT INTO location (SELECT * FROM t_epidataburial_location);
+
+UPDATE t_epidataburial tedb SET
+id = (SELECT edb_new_id FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+uuid = (SELECT edb_new_uuid FROM t_edb_id_map WHERE tedb.id = edb_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedb.epidata_id = old_id),
+burialaddress_id = (SELECT edbl_new_id FROM t_edbl_id_map WHERE tedb.burialaddress_id = edbl_old_id);
+
+-- BURIALS END
+
+-- GATHERINGS
+
+CREATE temp table t_epidatagathering
+AS SELECT edg.* FROM epidatagathering edg, t_id_map WHERE edg.epidata_id = t_id_map.old_id;
+
+CREATE temp table t_edg_id_map
+AS SELECT id AS edg_old_id,
+nextval('entity_seq') AS edg_new_id,
+create_new_uuid(uuid) AS edg_new_uuid
+FROM t_epidatagathering;
+
+CREATE temp table t_epidatagathering_location
+AS SELECT edgl.* FROM location edgl, t_epidatagathering edg WHERE edg.gatheringaddress_id = edgl.id;
+
+CREATE temp table t_edgl_id_map
+AS SELECT id AS edgl_old_id,
+nextval('entity_seq') AS edgl_new_id,
+create_new_uuid(uuid) AS edgl_new_uuid
+FROM t_epidatagathering_location;
+
+UPDATE t_epidatagathering_location tedgl SET
+id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id),
+uuid = (SELECT edgl_new_uuid FROM t_edgl_id_map WHERE tedgl.id = edgl_old_id);
+
+INSERT INTO location (SELECT * FROM t_epidatagathering_location);
+
+UPDATE t_epidatagathering tedg SET
+id = (SELECT edg_new_id FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+uuid = (SELECT edg_new_uuid FROM t_edg_id_map WHERE tedg.id = edg_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedg.epidata_id = old_id),
+gatheringaddress_id = (SELECT edgl_new_id FROM t_edgl_id_map WHERE tedg.gatheringaddress_id = edgl_old_id);
+
+-- GATHERINGS END
+
+-- TRAVELS
+
+CREATE temp table t_epidatatravel
+AS SELECT edt.* FROM epidatatravel edt, t_id_map WHERE edt.epidata_id = t_id_map.old_id;
+
+CREATE temp table t_edt_id_map
+AS SELECT id AS edt_old_id,
+nextval('entity_seq') AS edt_new_id,
+create_new_uuid(uuid) AS edt_new_uuid
+FROM t_epidatatravel;
+
+UPDATE t_epidatatravel tedt SET
+id = (SELECT edt_new_id FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+uuid = (SELECT edt_new_uuid FROM t_edt_id_map WHERE tedt.id = edt_old_id),
+epidata_id = (SELECT new_id FROM t_id_map WHERE tedt.epidata_id = old_id);
+
+-- TRAVELS END
+
+INSERT INTO epidata (SELECT * FROM t_epidata);
+INSERT INTO epidataburial (SELECT * FROM t_epidataburial);
+INSERT INTO epidatagathering (SELECT * FROM t_epidatagathering);
+INSERT INTO epidatatravel (SELECT * FROM t_epidatatravel);
+
+UPDATE cases SET epidata_id = (SELECT new_id FROM t_id_map WHERE cases.epidata_id = old_id);
+
+-- EPI DATA END
+
+-- SYMPTOMS
+
+DROP TABLE IF EXISTS t_symptoms;
+DROP TABLE IF EXISTS t_id_map;
+
+CREATE temp table t_symptoms
+AS SELECT s.* FROM symptoms s WHERE s.id IN (SELECT ca.symptoms_id FROM cases ca) AND s.id IN (SELECT vi.symptoms_id FROM visit vi);
+
+CREATE temp table t_id_map
+AS SELECT id AS old_id,
+nextval('entity_seq') AS new_id,
+create_new_uuid(uuid) AS new_uuid
+FROM t_symptoms;
+
+UPDATE t_symptoms ts SET
+id = (SELECT new_id FROM t_id_map WHERE ts.id = old_id),
+uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
+
+INSERT INTO symptoms (SELECT * FROM t_symptoms);
+
+UPDATE cases SET symptoms_id = (SELECT new_id FROM t_id_map WHERE cases.symptoms_id = old_id);
+
+-- SYMPTOMS END
+
+DROP TABLE IF EXISTS t_epidata;
+DROP TABLE IF EXISTS t_epidataburial;
+DROP TABLE IF EXISTS t_epidatagathering;
+DROP TABLE IF EXISTS t_epidatatravel;
+DROP TABLE IF EXISTS t_id_map;
+DROP TABLE IF EXISTS t_edb_id_map;
+DROP TABLE IF EXISTS t_edg_id_map;
+DROP TABLE IF EXISTS t_edt_id_map;
+DROP TABLE IF EXISTS t_epidataburial_location;
+DROP TABLE IF EXISTS t_epidatagathering_location;
+DROP TABLE IF EXISTS t_edbl_id_map;
+DROP TABLE IF EXISTS t_edgl_id_map;
+
+INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
 -- *** Insert new sql commands BEFORE this line ***

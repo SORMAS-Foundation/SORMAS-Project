@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +54,9 @@ import de.symeda.sormas.api.caze.ReportingType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -61,6 +64,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -73,6 +77,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Entity(name = "cases")
 @Audited
@@ -154,6 +159,12 @@ public class Case extends CoreAdo {
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
 	public static final String SAMPLES = "samples";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
+	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private Person person;
 	private String description;
@@ -184,6 +195,7 @@ public class Case extends CoreAdo {
 	private Region region;
 	private District district;
 	private Community community;
+	private FacilityType facilityType;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 
@@ -258,11 +270,18 @@ public class Case extends CoreAdo {
 	private boolean quarantineExtended;
 	private ReportingType reportingType;
 
+	private FollowUpStatus followUpStatus;
+	private String followUpComment;
+	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
+
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
+	private Set<Visit> visits = new HashSet<>();
+	private Set<EventParticipant> eventParticipants;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -735,6 +754,17 @@ public class Case extends CoreAdo {
 		this.tasks = tasks;
 	}
 
+
+	@AuditedIgnore
+	@OneToMany(mappedBy = Visit.CAZE, fetch = FetchType.LAZY)
+	public Set<Visit> getVisits() {
+		return visits;
+	}
+
+	public void setVisits(Set<Visit> visits) {
+		this.visits = visits;
+	}
+
 	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)
 	public Set<Sample> getSamples() {
 		return samples;
@@ -742,6 +772,15 @@ public class Case extends CoreAdo {
 
 	public void setSamples(Set<Sample> samples) {
 		this.samples = samples;
+	}
+
+	@OneToMany(cascade = {}, mappedBy = EventParticipant.RESULTING_CASE)
+	public Set<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1091,5 +1130,50 @@ public class Case extends CoreAdo {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	@Column(length = COLUMN_LENGTH_BIG)
+	public String getFollowUpComment() {
+		return followUpComment;
+	}
+
+	public void setFollowUpComment(String followUpComment) {
+		this.followUpComment = followUpComment;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+	@Column
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

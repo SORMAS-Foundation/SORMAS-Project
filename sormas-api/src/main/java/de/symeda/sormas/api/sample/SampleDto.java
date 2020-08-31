@@ -20,8 +20,8 @@ package de.symeda.sormas.api.sample;
 import java.util.Date;
 import java.util.Set;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -29,8 +29,9 @@ import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class SampleDto extends EntityDto {
+public class SampleDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;
 
@@ -77,23 +78,31 @@ public class SampleDto extends EntityDto {
 	private Date reportDateTime;
 	@Required
 	private UserReferenceDto reportingUser;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
+
 	private Float reportLatLonAccuracy;
 
 	@Required
 	private SampleMaterial sampleMaterial;
+	@SensitiveData
 	private String sampleMaterialText;
 	@Required
 	private SamplePurpose samplePurpose;
 	@Required
 	private FacilityReferenceDto lab;
+	@SensitiveData
 	private String labDetails;
 	private Date shipmentDate;
+	@SensitiveData
 	private String shipmentDetails;
 	private Date receivedDate;
 	private SpecimenCondition specimenCondition;
+	@SensitiveData
 	private String noTestPossibleReason;
+	@SensitiveData
 	private String comment;
 	private SampleSource sampleSource;
 	private SampleReferenceDto referredTo;

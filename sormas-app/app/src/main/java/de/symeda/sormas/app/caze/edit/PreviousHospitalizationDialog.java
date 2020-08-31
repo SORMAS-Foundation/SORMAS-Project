@@ -26,18 +26,22 @@ import androidx.databinding.ViewDataBinding;
 import androidx.databinding.library.baseAdapters.BR;
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlButtonType;
-import de.symeda.sormas.app.component.dialog.AbstractDialog;
+import de.symeda.sormas.app.component.dialog.FormDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogPreviousHospitalizationLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 
-public class PreviousHospitalizationDialog extends AbstractDialog {
+public class PreviousHospitalizationDialog extends FormDialog {
 
 	public static final String TAG = PreviousHospitalizationDialog.class.getSimpleName();
 
@@ -53,7 +57,8 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 			R.layout.dialog_previous_hospitalization_layout,
 			R.layout.dialog_root_three_button_panel_layout,
 			R.string.heading_previous_hospitalization,
-			-1);
+			-1,
+			AppFieldAccessCheckers.withCheckers(!previousHospitalization.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 
 		this.data = previousHospitalization;
 	}
@@ -81,12 +86,20 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 		List<Item> initialRegions = InfrastructureHelper.loadRegions();
 		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(data.getRegion());
 		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(data.getDistrict());
-		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity());
+		List<Item> initialFacilities = InfrastructureHelper.loadFacilities(data.getDistrict(), data.getCommunity(), FacilityType.HOSPITAL);
+
+		setFieldVisibilitiesAndAccesses(PreviousHospitalizationDto.class, contentBinding.mainContent);
+
+		if (!isFieldAccessible(PreviousHospitalizationDto.class, PreviousHospitalizationDto.HEALTH_FACILITY)) {
+			this.contentBinding.casePreviousHospitalizationRegion.setEnabled(false);
+			this.contentBinding.casePreviousHospitalizationDistrict.setEnabled(false);
+		}
 
 		InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			contentBinding.casePreviousHospitalizationHealthFacilityDetails);
 		InfrastructureHelper.initializeFacilityFields(
+			data,
 			contentBinding.casePreviousHospitalizationRegion,
 			initialRegions,
 			data.getRegion(),
@@ -96,9 +109,17 @@ public class PreviousHospitalizationDialog extends AbstractDialog {
 			contentBinding.casePreviousHospitalizationCommunity,
 			initialCommunities,
 			data.getCommunity(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
 			contentBinding.casePreviousHospitalizationHealthFacility,
 			initialFacilities,
-			data.getHealthFacility());
+			data.getHealthFacility(),
+			contentBinding.casePreviousHospitalizationHealthFacilityDetails,
+			false);
 
 		CaseValidator.initializePreviousHospitalizationValidation(contentBinding);
 	}

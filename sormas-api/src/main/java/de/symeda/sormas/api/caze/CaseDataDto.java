@@ -30,11 +30,14 @@ import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -46,10 +49,12 @@ import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
 
@@ -79,7 +84,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String HEALTH_FACILITY_DETAILS = "healthFacilityDetails";
-	public static final String NONE_HEALTH_FACILITY_DETAILS = "noneHealthFacilityDetails";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String INVESTIGATED_DATE = "investigatedDate";
@@ -138,6 +142,12 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
+	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
+	public static final String FOLLOW_UP_STATUS = "followUpStatus";
+	public static final String FOLLOW_UP_COMMENT = "followUpComment";
+	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
+	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -159,6 +169,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private RabiesType rabiesType;
 	@Required
+	@EmbeddedPersonalData
 	private PersonReferenceDto person;
 	@Outbreaks
 	private String epidNumber;
@@ -180,6 +191,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date classificationDate;
 	@Outbreaks
+	@SensitiveData
 	private String classificationComment;
 
 	private YesNoUnknown clinicalConfirmation;
@@ -196,6 +208,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	@Outbreaks
 	private Date outcomeDate;
 	private YesNoUnknown sequelae;
+	@SensitiveData
 	private String sequelaeDetails;
 	@Outbreaks
 	@Required
@@ -205,13 +218,18 @@ public class CaseDataDto extends PseudonymizableDto {
 	private DistrictReferenceDto district;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private CommunityReferenceDto community;
+	@PersonalData
+	private FacilityType facilityType;
 	@Outbreaks
 	@Required
 	@PersonalData
+	@SensitiveData
 	private FacilityReferenceDto healthFacility;
 	@Outbreaks
 	@PersonalData
+	@SensitiveData
 	private String healthFacilityDetails;
 	private YesNoUnknown pregnant;
 	@Diseases({
@@ -281,19 +299,27 @@ public class CaseDataDto extends PseudonymizableDto {
 		Disease.MONKEYPOX })
 	private YesNoUnknown smallpoxVaccinationReceived;
 	@Outbreaks
+	@SensitiveData
 	private UserReferenceDto surveillanceOfficer;
+	@SensitiveData
 	private String clinicianName;
+	@SensitiveData
 	private String clinicianPhone;
+	@SensitiveData
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
 	private HospitalWardType notifyingClinic;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
+	@SensitiveData
 	private String notifyingClinicDetails;
 	@Deprecated
+	@SensitiveData
 	private UserReferenceDto caseOfficer;
+	@SensitiveData
 	private Double reportLat;
+	@SensitiveData
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
 	private HospitalizationDto hospitalization;
@@ -303,19 +329,25 @@ public class CaseDataDto extends PseudonymizableDto {
 	private ClinicalCourseDto clinicalCourse;
 	private MaternalHistoryDto maternalHistory;
 	private String creationVersion;
+	@SensitiveData
 	private PortHealthInfoDto portHealthInfo;
 	private CaseOrigin caseOrigin;
 	@PersonalData
+	@SensitiveData
 	private PointOfEntryReferenceDto pointOfEntry;
 	@PersonalData
+	@SensitiveData
 	private String pointOfEntryDetails;
+	@SensitiveData
 	private String additionalDetails;
 	private String externalID;
 	private boolean sharedToCountry;
 	private QuarantineType quarantine;
+	@SensitiveData
 	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
 	private boolean quarantineOrderedVerbally;
 	private boolean quarantineOrderedOfficialDocument;
@@ -324,17 +356,27 @@ public class CaseDataDto extends PseudonymizableDto {
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomePossibleComment;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@HideForCountriesExcept
+	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
 	private ReportingType reportingType;
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
+	private FollowUpStatus followUpStatus;
+	private String followUpComment;
+	private Date followUpUntil;
+	private boolean overwriteFollowUpUntil;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
+		return build(person, disease, null);
+	}
+
+	public static CaseDataDto build(PersonReferenceDto person, Disease disease, HealthConditionsDto healthConditions) {
 		CaseDataDto caze = new CaseDataDto();
 		caze.setUuid(DataHelper.createUuid());
 		caze.setPerson(person);
@@ -342,7 +384,13 @@ public class CaseDataDto extends PseudonymizableDto {
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
-		caze.setClinicalCourse(ClinicalCourseDto.build());
+
+		if (healthConditions == null) {
+			caze.setClinicalCourse(ClinicalCourseDto.build());
+		} else {
+			caze.setClinicalCourse(ClinicalCourseDto.build(healthConditions));
+		}
+
 		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
@@ -355,7 +403,7 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public static CaseDataDto buildFromContact(ContactDto contact, VisitDto lastVisit) {
 
-		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease());
+		CaseDataDto cazeData = CaseDataDto.build(contact.getPerson(), contact.getDisease(), contact.getHealthConditions());
 		migratesAttributes(contact, cazeData, lastVisit);
 		return cazeData;
 	}
@@ -1043,5 +1091,45 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
+	}
+
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public String getFollowUpComment() {
+		return followUpComment;
+	}
+
+	public void setFollowUpComment(String followUpComment) {
+		this.followUpComment = followUpComment;
+	}
+
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+	public boolean isOverwriteFollowUpUntil() {
+		return overwriteFollowUpUntil;
+	}
+
+	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
+		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

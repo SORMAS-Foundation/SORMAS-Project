@@ -34,8 +34,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.infrastructure.AreasView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
-import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.PopulationDataView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
@@ -86,13 +85,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				null,
 				false);
 			menu.addView(
-				HealthFacilitiesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				null,
-				false);
-			menu.addView(
-				LaboratoriesView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				FacilitiesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", FacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
 				null,
 				false);
 			menu.addView(
@@ -142,8 +136,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(RegionsView.VIEW_NAME, RegionsView.class);
 			navigator.addView(DistrictsView.VIEW_NAME, DistrictsView.class);
 			navigator.addView(CommunitiesView.VIEW_NAME, CommunitiesView.class);
-			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
-			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
+			navigator.addView(FacilitiesView.VIEW_NAME, FacilitiesView.class);
 			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {

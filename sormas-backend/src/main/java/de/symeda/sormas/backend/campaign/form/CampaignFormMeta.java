@@ -1,23 +1,26 @@
 package de.symeda.sormas.backend.campaign.form;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Type;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity
 @Audited
@@ -27,6 +30,7 @@ public class CampaignFormMeta extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "campaignformmeta";
 
+	public static final String FORM_ID = "formId";
 	public static final String FORM_NAME = "formName";
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";

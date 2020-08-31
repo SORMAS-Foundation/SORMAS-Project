@@ -20,11 +20,22 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Type;
+
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -32,22 +43,6 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 @Entity(name = "campaignFormData")
 @Audited
@@ -66,8 +61,7 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
-	private List<CampaignFormDataEntry> formValuesList;
-	private String formValues;
+	private List<CampaignFormDataEntry> formValues;
 	private Campaign campaign;
 	private CampaignFormMeta campaignFormMeta;
 	private Date formDate;
@@ -77,47 +71,15 @@ public class CampaignFormData extends AbstractDomainObject {
 	private User creatingUser;
 	private boolean archived;
 
-	@Lob
-	@Type(type = "org.hibernate.type.TextType")
-	public String getFormValues() {
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignFormDataEntry> getFormValues() {
 		return formValues;
 	}
 
-	public void setFormValues(String formValues) {
+	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
-	}
-
-	@Transient
-	public List<CampaignFormDataEntry> getFormValuesList() {
-		if (formValuesList == null) {
-			if (StringUtils.isBlank(formValues)) {
-				formValuesList = new ArrayList<>();
-			} else {
-				try {
-					ObjectMapper mapper = new ObjectMapper();
-					formValuesList = Arrays.asList(mapper.readValue(formValues, CampaignFormDataEntry[].class));
-				} catch (IOException e) {
-					throw new RuntimeException("Content of formValues could not be parsed to List<CampaignFormDataEntry> - ID: " + getId());
-				}
-			}
-		}
-		return formValuesList;
-	}
-
-	public void setFormValuesList(List<CampaignFormDataEntry> formValuesList) {
-		this.formValuesList = formValuesList;
-
-		if (this.formValuesList == null) {
-			formValues = null;
-			return;
-		}
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			formValues = mapper.writeValueAsString(formValuesList);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Content of formValuesList could not be parsed to JSON String - ID: " + getId());
-		}
 	}
 
 	@ManyToOne()
