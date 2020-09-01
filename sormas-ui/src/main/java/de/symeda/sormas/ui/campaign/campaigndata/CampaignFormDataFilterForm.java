@@ -42,6 +42,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	protected CampaignFormDataFilterForm() {
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
+		getContent().removeComponent(APPLY_BUTTON_ID);
 	}
 
 	@Override

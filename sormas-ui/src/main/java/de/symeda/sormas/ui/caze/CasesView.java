@@ -553,18 +553,22 @@ public class CasesView extends AbstractView {
 
 		filterForm = new CaseFilterForm();
 		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
+			}
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
+			navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
 			if (!navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
 				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((CaseFollowUpGrid) grid).reload();
 				} else {
 					((AbstractCaseGrid<?>) grid).reload();
 				}
 			}
-		});
-		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
-			navigateTo(null, true);
 		});
 		filterLayout.addComponent(filterForm);
 

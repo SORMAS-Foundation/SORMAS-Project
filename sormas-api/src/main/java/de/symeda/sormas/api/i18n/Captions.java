@@ -27,6 +27,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
+	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
 	String actionBackToNationOverview = "actionBackToNationOverview";

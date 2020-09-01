@@ -92,7 +92,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
 			if (!navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
 				grid.reload();
 			}
 		});
