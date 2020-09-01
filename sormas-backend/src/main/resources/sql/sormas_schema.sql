@@ -5040,3 +5040,25 @@ ALTER TABLE person ADD COLUMN changedateofembeddedlists timestamp without time z
 
 INSERT INTO schema_version (version_number, comment) VALUES (244, 'Person address refinement #2562');
 -- *** Insert new sql commands BEFORE this line ***
+
+-- 2020-08-31 Added phone number and email to case #2743
+ALTER TABLE cases ADD COLUMN casePhoneNumber varchar(255);
+ALTER TABLE cases ADD COLUMN caseEmail varchar(255);
+
+ALTER TABLE cases_history  ADD COLUMN casePhoneNumber varchar(255);
+ALTER TABLE cases_history ADD COLUMN caseEmail varchar(255);
+
+
+/*ALTER TABLE contact ADD COLUMN contactPhoneNumber varchar(255);
+ALTER TABLE contact ADD COLUMN contactEmail varchar(255);
+
+ALTER TABLE contact_history  ADD COLUMN contactPhoneNumber varchar(255);
+ALTER TABLE contact_history ADD COLUMN contactEmail varchar(255);
+*/
+ALTER TABLE eventparticipant ADD COLUMN participantPhoneNumber varchar(255);
+ALTER TABLE eventparticipant ADD COLUMN participantEmail varchar(255);
+
+ALTER TABLE eventparticipant_history  ADD COLUMN participantPhoneNumber varchar(255);
+ALTER TABLE eventparticipant_history ADD COLUMN participantEmail varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (245, 'added email and phoneNumber to case, contact and event participant #2743');

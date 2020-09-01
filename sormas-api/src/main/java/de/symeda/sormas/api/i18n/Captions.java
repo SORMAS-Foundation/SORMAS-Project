@@ -159,8 +159,10 @@ public interface Captions {
 	String CaseData = "CaseData";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_caseClassification = "CaseData.caseClassification";
+	String caseData_caseEmail = "caseData.caseEmail";
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
+	String caseData_casePhoneNumber = "caseData.casePhoneNumber";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -388,10 +390,12 @@ public interface Captions {
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
 	String Contact_contactClassification = "Contact.contactClassification";
+	String Contact_contactEmail = "Contact.contactEmail";
 	String Contact_contactIdentificationSource = "Contact.contactIdentificationSource";
 	String Contact_contactIdentificationSourceDetails = "Contact.contactIdentificationSourceDetails";
 	String Contact_contactOfficer = "Contact.contactOfficer";
 	String Contact_contactOfficerUuid = "Contact.contactOfficerUuid";
+	String Contact_contactPhoneNumber = "Contact.contactPhoneNumber";
 	String Contact_contactProximity = "Contact.contactProximity";
 	String Contact_contactProximityDetails = "Contact.contactProximityDetails";
 	String Contact_contactStatus = "Contact.contactStatus";
@@ -775,6 +779,8 @@ public interface Captions {
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
 	String EventParticipant_event = "EventParticipant.event";
+	String EventParticipant_eventParticipantEmail = "EventParticipant.eventParticipantEmail";
+	String EventParticipant_eventParticipantPhoneNumber = "EventParticipant.eventParticipantPhoneNumber";
 	String EventParticipant_involvementDescription = "EventParticipant.involvementDescription";
 	String EventParticipant_name = "EventParticipant.name";
 	String EventParticipant_person = "EventParticipant.person";

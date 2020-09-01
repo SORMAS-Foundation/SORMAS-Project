@@ -17,14 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
+@SuppressWarnings("deprecation")
 public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -32,7 +34,9 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 	private static final String FIRST_NAME = PersonDto.FIRST_NAME;
 	private static final String LAST_NAME = PersonDto.LAST_NAME;
 
-	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION) + fluidRowLocs(FIRST_NAME, LAST_NAME);
+	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)+
+			                                 fluidRowLocs(FIRST_NAME, LAST_NAME)+
+			     fluidRowLocs(EventParticipantDto.EVENT_PARTICIPANT_EMAIL,EventParticipantDto.EVENT_PARTICIPANT_PHONE_NUMBER);
 
 	public EventParticipantCreateForm() {
 
@@ -48,7 +52,17 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
+
 		setRequired(true, EventParticipantDto.INVOLVEMENT_DESCRIPTION, FIRST_NAME, LAST_NAME);
+
+		TextField eventParticipantEmail = addField(EventParticipantDto.EVENT_PARTICIPANT_EMAIL, TextField.class);
+		eventParticipantEmail.setCaption(I18nProperties.getCaption(Captions.EventParticipant_eventParticipantEmail));
+
+		TextField eventParticipantPhoneNumber = addField(EventParticipantDto.EVENT_PARTICIPANT_PHONE_NUMBER, TextField.class);
+		eventParticipantPhoneNumber.setCaption(I18nProperties.getCaption(Captions.EventParticipant_eventParticipantPhoneNumber));
+
+		eventParticipantEmail.addValueChangeListener(e->{this.getValue().setEventParticipantEmail(eventParticipantEmail.getValue());});
+		eventParticipantPhoneNumber.addValueChangeListener(e->{this.getValue().setEventParticipantPhoneNumber(eventParticipantPhoneNumber.getValue());});
 	}
 
 	public String getPersonFirstName() {

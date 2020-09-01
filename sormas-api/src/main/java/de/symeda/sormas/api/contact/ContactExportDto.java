@@ -17,28 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
-import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class ContactExportDto implements Serializable {
 
@@ -126,6 +118,8 @@ public class ContactExportDto implements Serializable {
 
 	private ContactJurisdictionDto jurisdiction;
 
+	private String contactEmail;
+	private String contactPhoneNumber;
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
@@ -141,7 +135,8 @@ public class ContactExportDto implements Serializable {
 							String region, String district, String community,
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+							String contactEmail,String contactPhoneNumber
 	) {
 	//@formatter:on
 
@@ -212,7 +207,10 @@ public class ContactExportDto implements Serializable {
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+		this.contactEmail=contactEmail;
+		this.contactPhoneNumber=contactPhoneNumber;
 	}
+
 
 	public ContactReferenceDto toReference() {
 		return new ContactReferenceDto(uuid);
@@ -528,6 +526,7 @@ public class ContactExportDto implements Serializable {
 		return contactWithRodent;
 	}
 
+
 	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
 		this.contactWithRodent = contactWithRodent;
 	}
@@ -664,23 +663,24 @@ public class ContactExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 	}
 
-	public String getReportingUserUuid() {
-		return jurisdiction.getReportingUserUuid();
-	}
+	public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
 
-	public String getRegionUuid() {
-		return jurisdiction.getRegionUuid();
-	}
 
-	public String getDistrictUuid() {
-		return jurisdiction.getDistrictUuid();
-	}
+	public void setContactPhoneNumber(String contactPhoneNumber) { this.contactPhoneNumber = contactPhoneNumber; }
 
-	public String getCommunityUuid() {
-		return jurisdiction.getCommunityUuid();
-	}
 
-	public ContactJurisdictionDto getJurisdiction() {
-		return jurisdiction;
-	}
+	public String getReportingUserUuid() { return jurisdiction.getReportingUserUuid(); }
+
+	public String getRegionUuid() { return jurisdiction.getRegionUuid(); }
+
+	public String getDistrictUuid() { return jurisdiction.getDistrictUuid(); }
+
+	public String getCommunityUuid() { return jurisdiction.getCommunityUuid(); }
+
+	public ContactJurisdictionDto getJurisdiction() { return jurisdiction; }
+
+
+	public String getContactEmail() { return contactEmail; }
+
+	public String getContactPhoneNumber() { return contactPhoneNumber; }
 }

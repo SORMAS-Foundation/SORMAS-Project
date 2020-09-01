@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -39,25 +34,18 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
-import de.symeda.sormas.api.person.BurialConductor;
-import de.symeda.sormas.api.person.EducationType;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A DTO class that contains the properties that are exported during a detailed case export. These
@@ -215,6 +203,12 @@ public class CaseExportDto implements Serializable {
 
 	private CaseJurisdictionDto jurisdiction;
 
+	@SensitiveData
+	private String casePhoneNumber;
+	@SensitiveData
+	private String caseEmail;
+
+
 	//@formatter:off
 	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
 						 long hospitalizationId, long districtId, long healthConditionsId, String uuid, String epidNumber,
@@ -239,7 +233,8 @@ public class CaseExportDto implements Serializable {
 						 YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
 						 //Date onsetDate,
 						 Vaccination vaccination, String vaccinationDoses, Date vaccinationDate,
-						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester) {
+						 VaccinationInfoSource vaccinationInfoSource, YesNoUnknown postpartum, Trimester trimester,
+	                      String casePhoneNumber, String caseEmail) {
 		//@formatter:on
 
 		this.id = id;
@@ -315,6 +310,8 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
+		this.caseEmail=caseEmail;
+		this.casePhoneNumber=casePhoneNumber;
 	}
 
 	public CaseReferenceDto toReference() {
@@ -1174,6 +1171,25 @@ public class CaseExportDto implements Serializable {
 		return followUpUntil;
 	}
 
+	@Order(133)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CASE_PHONE_NUMBER)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getCasePhoneNumber() {
+		return casePhoneNumber;
+	}
+
+	@Order(134)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(CaseDataDto.CASE_EMAIL)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getCaseEmail() {
+		return caseEmail;
+	}
+
+
 //	@Order(133)
 //	@ExportTarget(caseExportTypes = {
 //			CaseExportType.CASE_SURVEILLANCE })
@@ -1490,6 +1506,10 @@ public class CaseExportDto implements Serializable {
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
+
+	public void setCasePhoneNumber(String casePhoneNumber) { this.casePhoneNumber = casePhoneNumber; }
+
+	public void setCaseEmail(String caseEmail) { this.caseEmail = caseEmail; }
 
 //	public void setNumberOfVisits(int numberOfVisits) {
 //		this.numberOfVisits = numberOfVisits;

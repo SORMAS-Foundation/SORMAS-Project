@@ -17,15 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
-import java.time.Month;
-import java.util.Arrays;
-
-import de.symeda.sormas.api.region.DistrictReferenceDto;
-import org.joda.time.LocalDate;
-
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -33,15 +24,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
-import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.*;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextArea;
-import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -55,16 +39,21 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.*;
+import org.joda.time.LocalDate;
 
+import java.time.Month;
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+
+@SuppressWarnings("deprecation")
 public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -91,7 +80,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 					+
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
 					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION)+
+					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_EMAIL,ContactDto.CONTACT_PHONE_NUMBER);
 	//@formatter:on
 
 	private OptionGroup contactProximity;
@@ -264,6 +254,14 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 			updateContactProximity();
 		});
+		TextField contactPhoneNumber = addField(ContactDto.CONTACT_PHONE_NUMBER, TextField.class);
+		contactPhoneNumber.setCaption(I18nProperties.getCaption(Captions.Contact_contactPhoneNumber));
+
+		TextField contactEmail = addField(ContactDto.CONTACT_EMAIL, TextField.class);
+		contactEmail.setCaption(I18nProperties.getCaption(Captions.Contact_contactEmail));
+
+		contactEmail.addValueChangeListener(e->{this.getValue().setContactEmail(contactEmail.getValue());});
+		contactPhoneNumber.addValueChangeListener(e->{this.getValue().setContactPhoneNumber(contactPhoneNumber.getValue());});
 	}
 
 	/*
