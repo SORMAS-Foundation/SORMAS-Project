@@ -2,8 +2,12 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -15,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Path("/visits-external")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -28,6 +33,23 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/person/{personUuid}/isValid")
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
+	}
+
+	@POST
+	@Path("/person/{personUuid}/status")
+	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, Map<String, Object> body) {
+		try {
+			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+			SymptomJournalStatus statusValue = SymptomJournalStatus.valueOf(body.get("status").toString());
+			person.setSymptomJournalStatus(statusValue);
+			FacadeProvider.getPersonFacade().savePerson(person);
+			return true;
+		} catch (Exception e) {
+			Logger logger = LoggerFactory.getLogger(ExternalVisitsResource.class);
+			// log the error or warning
+			logger.error(e.getMessage(), e);
+			return false;
+		}
 	}
 
 	@POST

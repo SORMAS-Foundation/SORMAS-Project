@@ -40,6 +40,7 @@ import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
@@ -173,6 +174,8 @@ public class Person extends PseudonymizableAdo {
 	private String passportNumber;
 	@Column
 	private String nationalHealthId;
+	@Enumerated(EnumType.STRING)
+	private SymptomJournalStatus symptomJournalStatus;
 
 	public Person() {
 	}
@@ -575,5 +578,13 @@ public class Person extends PseudonymizableAdo {
 
 	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
 		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
 	}
 }
