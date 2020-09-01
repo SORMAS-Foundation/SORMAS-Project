@@ -14,7 +14,7 @@ public enum PersonAddressType {
 
 	public static PersonAddressType[] getValues() {
 
-		if (!FacadeProvider.getConfigFacade().isSwissServer()) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry("ch")) {
 			return new PersonAddressType[] {
 				HOME,
 				PLACE_OF_WORK,

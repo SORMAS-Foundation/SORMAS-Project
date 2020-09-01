@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.i18n;
 
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.ResourceBundle;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -29,12 +33,9 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle.Control;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.ResourceBundle;
-
 public final class I18nProperties {
+
+	public static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	private static Map<Language, I18nProperties> instances = new HashMap<>();
 	private static ThreadLocal<Language> userLanguage = new ThreadLocal<>();

@@ -104,7 +104,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
 
-		if (isGermanServer()) {
+		if (os()) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
 		} else {
 			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -163,11 +163,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
-					moreFiltersContainer,
-					FieldConfiguration.withCaptionAndPixelSized(
-							CaseCriteria.FOLLOW_UP_UNTIL_TO,
-							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
-							200));
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					CaseCriteria.FOLLOW_UP_UNTIL_TO,
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
+					200));
 			followUpUntilTo.removeAllValidators();
 		}
 
