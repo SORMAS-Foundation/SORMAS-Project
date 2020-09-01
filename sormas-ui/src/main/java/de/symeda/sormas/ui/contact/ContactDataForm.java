@@ -251,6 +251,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
 
+		CheckBox quarantineReduced = addField(ContactDto.QUARANTINE_REDUCED, CheckBox.class);
+		quarantineReduced.setEnabled(false);
+		quarantineReduced.setVisible(false);
+		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
+
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 		TextField quarantineTypeDetails = addField(ContactDto.QUARANTINE_TYPE_DETAILS, TextField.class);
@@ -322,7 +327,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_STATUS, ComboBox.class);
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
 		DateField dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
-		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, dfFollowUpUntil));
+		quarantineTo.addValueChangeListener(e -> onQuarantineEndChange(e, quarantineExtended, quarantineReduced, dfFollowUpUntil));
+		this.addValueChangeListener(e -> onValueChange());
 
 		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 		contactOfficerField.setNullSelectionAllowed(true);
@@ -669,7 +675,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantinePeriodModifiedCheckbox, DateField followUpUntil) {
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckBox, CheckBox quarantineReducedCheckBox, DateField followUpUntilField) {
 		if (quarantineChangedByFollowUpUntilChange) {
 			quarantineChangedByFollowUpUntilChange = false;
 		} else {
@@ -677,18 +683,32 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Date newQuarantineEnd = quarantineEndField.getValue();
 			ContactDto originalContact = getInternalValue();
 			Date oldQuarantineEnd = originalContact.getQuarantineTo();
-			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
-				confirmQuarantineEndExtended(quarantinePeriodModifiedCheckbox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntil);
-			} else if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
-				confirmQuarantineEndReduced(quarantinePeriodModifiedCheckbox, quarantineEndField, originalContact, oldQuarantineEnd);
+			Date followUpDate = originalContact.getFollowUpUntil();
+			if (newQuarantineEnd != null) {
+				if (oldQuarantineEnd != null) {
+					if (newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntilField);
+					} else if (newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd);
+					}
+				} else if (followUpDate != null) {
+					if (newQuarantineEnd.compareTo(followUpDate) > 0) {
+						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, followUpDate, followUpUntilField);
+					} else if (newQuarantineEnd.compareTo(followUpDate) < 0) {
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, followUpDate);
+					}
+				}
 			} else if (!originalContact.isQuarantineExtended() && !originalContact.isQuarantineReduced()) {
-				quarantinePeriodModifiedCheckbox.setValue(false);
+				setVisible(false, quarantineExtendedCheckBox.getId(), quarantineReducedCheckBox.getId());
+				quarantineExtendedCheckBox.setValue(false);
+				quarantineReducedCheckBox.setValue(false);
 			}
 		}
 	}
 
 	private void confirmQuarantineEndExtended(
-		CheckBox quarantinePeriodModifiedCheckbox,
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
 		Property<Date> quarantineEndField,
 		ContactDto originalContact,
 		Date oldQuarantineEnd,
@@ -703,8 +723,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				if (confirmed) {
 					originalContact.setQuarantineExtended(true);
 					originalContact.setQuarantineReduced(false);
-					quarantinePeriodModifiedCheckbox.setValue(true);
-					confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil);
+					quarantineExtendedCheckbox.setValue(true);
+					quarantineReducedCheckbox.setValue(false);
+					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
+					setVisible(false, ContactDto.QUARANTINE_REDUCED);
+					if (originalContact.getFollowUpUntil() != null) {
+						confirmExtendFollowUpPeriod(originalContact, quarantineEndField.getValue(), followUpUntil);
+					}
 				} else {
 					quarantineEndField.setValue(oldQuarantineEnd);
 				}
@@ -731,7 +756,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	private void confirmQuarantineEndReduced(
-		CheckBox quarantinePeriodModifiedCheckbox,
+		CheckBox quarantineExtendedCheckbox,
+		CheckBox quarantineReducedCheckbox,
 		Property<Date> quarantineEndField,
 		ContactDto originalContact,
 		Date oldQuarantineEnd) {
@@ -745,10 +771,28 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				if (confirmed) {
 					originalContact.setQuarantineExtended(false);
 					originalContact.setQuarantineReduced(true);
-					quarantinePeriodModifiedCheckbox.setValue(true);
+					quarantineExtendedCheckbox.setValue(false);
+					quarantineReducedCheckbox.setValue(true);
+					setVisible(false, ContactDto.QUARANTINE_EXTENDED);
+					setVisible(true, ContactDto.QUARANTINE_REDUCED);
 				} else {
 					quarantineEndField.setValue(oldQuarantineEnd);
 				}
 			});
+	}
+
+	private void onValueChange() {
+		ContactDto contact = this.getValue();
+		if (contact != null) {
+			if (contact.getQuarantineTo() == null) {
+				quarantineTo.setValue(contact.getFollowUpUntil());
+			}
+			if (contact.isQuarantineExtended()) {
+				setVisible(true, ContactDto.QUARANTINE_EXTENDED);
+			}
+			if (contact.isQuarantineReduced()) {
+				setVisible(true, ContactDto.QUARANTINE_REDUCED);
+			}
+		}
 	}
 }
