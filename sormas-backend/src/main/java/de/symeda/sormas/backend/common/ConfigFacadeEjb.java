@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.common;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -45,7 +46,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
-	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
@@ -167,20 +167,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isGermanServer() {
-		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
-			return getCountryLocale().toLowerCase().endsWith("de");
+	public boolean isConfiguredCountry(String countryCode) {
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
+			return getCountryLocale().toLowerCase().endsWith(countryCode.toLowerCase());
 		} else {
-			return getCountryLocale().toLowerCase().startsWith("de");
-		}
-	}
-
-	@Override
-	public boolean isSwissServer() {
-		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
-			return getCountryLocale().toLowerCase().endsWith("ch");
-		} else {
-			return getCountryLocale().toLowerCase().startsWith("ch");
+			return getCountryLocale().toLowerCase().startsWith(countryCode.toLowerCase());
 		}
 	}
 

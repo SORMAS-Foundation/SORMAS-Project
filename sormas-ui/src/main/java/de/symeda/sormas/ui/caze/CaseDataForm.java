@@ -287,7 +287,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.INVESTIGATION_STATUS, OptionGroup.class);
 		addField(CaseDataDto.OUTCOME, OptionGroup.class);
 		addField(CaseDataDto.SEQUELAE, OptionGroup.class);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(CaseDataDto.REPORTING_TYPE);
 		}
 		addFields(CaseDataDto.INVESTIGATED_DATE, CaseDataDto.OUTCOME_DATE, CaseDataDto.SEQUELAE_DETAILS);
@@ -305,7 +305,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			final ComboBox cbCaseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
 			cbCaseClassification.addValidator(
 				new GermanCaseClassificationValidator(caseUuid, I18nProperties.getValidationError(Validations.caseClassificationInvalid)));
@@ -373,7 +373,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), CaseDataDto.QUARANTINE_TYPE_DETAILS, CaseDataDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				CaseDataDto.QUARANTINE_ORDERED_VERBALLY_DATE,
@@ -506,22 +506,22 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
 
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					CaseDataDto.FOLLOW_UP_STATUS,
-					Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
-					Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+				getFieldGroup(),
+				CaseDataDto.FOLLOW_UP_STATUS,
+				Arrays.asList(CaseDataDto.FOLLOW_UP_COMMENT),
+				Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
 			FieldHelper.setReadOnlyWhen(
-					getFieldGroup(),
-					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-					Arrays.asList(Boolean.FALSE),
-					false,
-					true);
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+				Arrays.asList(Boolean.FALSE),
+				false,
+				true);
 			FieldHelper.setRequiredWhen(
-					getFieldGroup(),
-					CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
-					Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
-					Arrays.asList(Boolean.TRUE));
+				getFieldGroup(),
+				CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL,
+				Arrays.asList(CaseDataDto.FOLLOW_UP_UNTIL),
+				Arrays.asList(Boolean.TRUE));
 		}
 		final DateField finalFollowUpUntil = dfFollowUpUntil;
 
@@ -843,7 +843,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(false, CaseDataDto.CASE_ORIGIN);
 			}
 
-			if (isGermanServer()) {
+			if (isConfiguredServer("de")) {
 				setVisible(false, CaseDataDto.EPID_NUMBER);
 			} else {
 				setVisible(false, CaseDataDto.EXTERNAL_ID);
@@ -852,14 +852,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
 				Date minimumFollowUpUntilDate = DateHelper.addDays(
-						CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
-						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
+					CaseLogic.getStartDate(symptoms.getOnsetDate(), reportDate.getValue()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) diseaseField.getValue()));
 				finalFollowUpUntil.addValidator(
-						new DateRangeValidator(
-								I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-								minimumFollowUpUntilDate,
-								null,
-								Resolution.DAY));
+					new DateRangeValidator(
+						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+						minimumFollowUpUntilDate,
+						null,
+						Resolution.DAY));
 			}
 		});
 	}
@@ -984,13 +984,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			visible = false;
 			quarantineFrom.clear();
 			quarantineTo.clear();
-			if (isGermanServer()) {
+			if (isConfiguredServer("de")) {
 				quarantineOrderedVerbally.clear();
 				quarantineOrderedOfficialDocument.clear();
 			}
 		}
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			setVisible(visible, CaseDataDto.QUARANTINE_ORDERED_VERBALLY, CaseDataDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
 		setVisible(
@@ -1034,7 +1034,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
-		if (!isGermanServer() && FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(), getValue().getDisease())) {
+		if (!isConfiguredServer("de")
+			&& FacadeProvider.getCaseFacade().doesEpidNumberExist(fieldValue, getValue().getUuid(), getValue().getDisease())) {
 			epidField.setComponentError(new UserError(I18nProperties.getValidationError(Validations.duplicateEpidNumber)));
 			assignNewEpidNumberButton.setVisible(true);
 			getContent().addComponent(epidNumberWarningLabel, EPID_NUMBER_WARNING_LOC);
@@ -1042,7 +1043,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			epidField.setComponentError(null);
 			getContent().removeComponent(epidNumberWarningLabel);
 			assignNewEpidNumberButton
-				.setVisible(!isGermanServer() && !CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
+				.setVisible(!isConfiguredServer("de") && !CaseLogic.isEpidNumberPrefix(fieldValue) && !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
 	}
 

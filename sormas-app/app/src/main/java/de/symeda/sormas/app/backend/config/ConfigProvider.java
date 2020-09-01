@@ -647,11 +647,11 @@ public final class ConfigProvider {
 		return instance.serverLocale;
 	}
 
-	public static boolean isGermanServer() {
+	public static boolean isConfiguredServer(String countryCode) {
 		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getServerLocale())) {
-			return getServerLocale().toLowerCase().endsWith("de");
+			return getServerLocale().toLowerCase().endsWith(countryCode.toLowerCase());
 		} else {
-			return getServerLocale().toLowerCase().startsWith("de");
+			return getServerLocale().toLowerCase().startsWith(countryCode.toLowerCase());
 		}
 	}
 

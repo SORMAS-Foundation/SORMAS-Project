@@ -78,8 +78,6 @@ import de.symeda.sormas.api.visit.VisitDto;
  */
 public class DataDictionaryGenerator {
 
-	CellStyle defaultCellStyle;
-
 	@Test
 	public void generateDataDictionary() throws FileNotFoundException, IOException {
 
@@ -164,7 +162,7 @@ public class DataDictionaryGenerator {
 		sheet.setColumnWidth(EntityColumn.DISEASES.ordinal(), 256 * 45);
 		sheet.setColumnWidth(EntityColumn.OUTBREAKS.ordinal(), 256 * 10);
 
-		defaultCellStyle = workbook.createCellStyle();
+		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
 
 		List<Class<Enum<?>>> usedEnums = new ArrayList<Class<Enum<?>>>();
@@ -253,7 +251,7 @@ public class DataDictionaryGenerator {
 
 		// constant facilities
 		if (CaseDataDto.class.equals(entityClass) || PersonDto.class.equals(entityClass)) {
-			rowNumber = createFacilityTable(sheet, rowNumber + 1);
+			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
 		}
 
 		// enums
@@ -264,7 +262,7 @@ public class DataDictionaryGenerator {
 		return sheet;
 	}
 
-	private int createFacilityTable(XSSFSheet sheet, int startRow) {
+	private int createFacilityTable(XSSFSheet sheet, int startRow, CellStyle defaultCellStyle) {
 
 		// Create
 		XSSFTable table = sheet.createTable();
