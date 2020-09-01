@@ -17,94 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
-import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
-import de.symeda.sormas.api.caze.BirthDateDto;
-import de.symeda.sormas.api.caze.BurialInfoDto;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseExportDto;
-import de.symeda.sormas.api.caze.CaseExportType;
-import de.symeda.sormas.api.caze.CaseFacade;
-import de.symeda.sormas.api.caze.CaseFollowUpDto;
-import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
-import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
-import de.symeda.sormas.api.caze.DashboardCaseDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.*;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
-import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
-import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.clinicalcourse.*;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.epidata.EpiDataBurialDto;
-import de.symeda.sormas.api.epidata.EpiDataDto;
-import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelDto;
-import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.epidata.*;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -118,11 +42,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.ApproximateAgeType;
-import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.*;
 import de.symeda.sormas.api.region.DistrictDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -132,28 +52,21 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
-import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskCriteria;
-import de.symeda.sormas.api.task.TaskHelper;
-import de.symeda.sormas.api.task.TaskPriority;
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.therapy.PrescriptionCriteria;
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TherapyDto;
-import de.symeda.sormas.api.therapy.TherapyReferenceDto;
-import de.symeda.sormas.api.therapy.TreatmentCriteria;
-import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.task.*;
+import de.symeda.sormas.api.therapy.*;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
+<<<<<<< HEAD
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
+=======
+>>>>>>> added email and phone number to entity creation forms for contact,case and event participant #2743
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -161,19 +74,11 @@ import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.PortHealthInfoFacadeEjbLocal;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.*;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.*;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.common.MessageType;
-import de.symeda.sormas.backend.common.MessagingService;
-import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -204,39 +109,21 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb;
+import de.symeda.sormas.backend.region.*;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.region.RegionFacadeEjb;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.*;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.PathogenTestService;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
-import de.symeda.sormas.backend.therapy.Prescription;
-import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
+import de.symeda.sormas.backend.therapy.*;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
-import de.symeda.sormas.backend.therapy.PrescriptionService;
-import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
-import de.symeda.sormas.backend.therapy.Treatment;
-import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
-import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -249,6 +136,28 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.*;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -509,7 +418,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE), joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
 				joins.getEpiData().get(EpiData.RODENTS), caseRoot.get(Case.VACCINATION), caseRoot.get(Case.VACCINATION_DOSES),
 				caseRoot.get(Case.VACCINATION_DATE), caseRoot.get(Case.VACCINATION_INFO_SOURCE),
-				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER)
+				caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
+				caseRoot.get(Case.CASE_PHONE_NUMBER), caseRoot.get(Case.CASE_EMAIL)
 				);
 		//@formatter:on
 
@@ -1946,6 +1856,9 @@ public class CaseFacadeEjb implements CaseFacade {
 			target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		}
 
+		target.setCaseEmail(source.getCaseEmail());
+		target.setCasePhoneNumber(source.getCasePhoneNumber());
+
 		return target;
 	}
 
@@ -2086,6 +1999,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return dto;
 	}
 
+
 	public static CaseReferenceDto toReferenceDto(Case entity) {
 
 		if (entity == null) {
@@ -2204,6 +2118,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		target.setFacilityType(source.getFacilityType());
+		target.setCasePhoneNumber(source.getCasePhoneNumber());
+		target.setCaseEmail(source.getCaseEmail());
 
 		return target;
 	}

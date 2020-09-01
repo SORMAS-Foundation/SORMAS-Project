@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+<<<<<<< HEAD
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
 import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
@@ -31,14 +32,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+=======
+>>>>>>> added email and phone number to entity creation forms for contact,case and event participant #2743
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.*;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
-import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.OptionGroup;
-import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -65,6 +63,13 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+
+import java.time.Month;
+import java.util.Arrays;
+import java.util.Date;
+
+import static de.symeda.sormas.ui.utils.CssStyles.*;
+import static de.symeda.sormas.ui.utils.LayoutUtil.*;
 
 public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
@@ -93,7 +98,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 			fluidRowLocs(PersonDto.SEX))
 			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
+			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
+			+ fluidRowLocs(CaseDataDto.CASE_PHONE_NUMBER, CaseDataDto.CASE_EMAIL)
+			;
+
 	//@formatter:on
 
 	public CaseCreateForm() {
@@ -105,6 +113,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		hideValidationUntilNextCommit();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -186,6 +195,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		cbPointOfEntry.setImmediate(true);
 		TextField tfPointOfEntryDetails = addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 		tfPointOfEntryDetails.setVisible(false);
+
+		TextField caseEmail = addField(CaseDataDto.CASE_EMAIL, TextField.class);
+		caseEmail.setCaption(I18nProperties.getCaption(Captions.caseData_caseEmail));
+
+		TextField casePhoneNumber = addField(CaseDataDto.CASE_PHONE_NUMBER, TextField.class);
+		casePhoneNumber.setCaption(I18nProperties.getCaption(Captions.caseData_casePhoneNumber));
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -365,6 +380,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
 		});
+
+		caseEmail.addValueChangeListener(e->{this.getValue().setCaseEmail(caseEmail.getValue());});
+		casePhoneNumber.addValueChangeListener(e->{this.getValue().setCasePhoneNumber(casePhoneNumber.getValue());});
 	}
 
 	private void updateFacility(DistrictReferenceDto district, CommunityReferenceDto community, ComboBox facility) {

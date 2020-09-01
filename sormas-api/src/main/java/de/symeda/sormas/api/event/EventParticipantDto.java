@@ -35,6 +35,8 @@ public class EventParticipantDto extends PseudonymizableDto {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
+	public static final String EVENT_PARTICIPANT_EMAIL="eventParticipantEmail";
+	public static final String EVENT_PARTICIPANT_PHONE_NUMBER="eventParticipantPhoneNumber";
 
 	@Required
 	private EventReferenceDto event;
@@ -44,6 +46,11 @@ public class EventParticipantDto extends PseudonymizableDto {
 	@SensitiveData
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
+
+	@SensitiveData
+	private String eventParticipantEmail;
+	@SensitiveData
+	private String eventParticipantPhoneNumber;
 
 	public static EventParticipantDto build(EventReferenceDto event) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -99,4 +106,15 @@ public class EventParticipantDto extends PseudonymizableDto {
 	public void setResultingCase(CaseReferenceDto resultingCase) {
 		this.resultingCase = resultingCase;
 	}
+
+	public String getEventParticipantEmail() { return eventParticipantEmail; }
+
+	public void setEventParticipantEmail(String eventParticipantEmail) { this.eventParticipantEmail = eventParticipantEmail; }
+
+	public String getEventParticipantPhoneNumber() { return eventParticipantPhoneNumber; }
+
+	public void setEventParticipantPhoneNumber(String eventParticipantPhoneNumber) {
+		this.eventParticipantPhoneNumber = eventParticipantPhoneNumber;
+	}
+
 }

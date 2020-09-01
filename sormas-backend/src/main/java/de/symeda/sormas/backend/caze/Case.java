@@ -17,43 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseOrigin;
-import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.caze.DengueFeverType;
-import de.symeda.sormas.api.caze.HospitalWardType;
-import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.PlagueType;
-import de.symeda.sormas.api.caze.RabiesType;
-import de.symeda.sormas.api.caze.ReportingType;
-import de.symeda.sormas.api.caze.Trimester;
-import de.symeda.sormas.api.caze.Vaccination;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.caze.*;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -78,6 +45,15 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = "cases")
 @Audited
@@ -165,6 +141,9 @@ public class Case extends CoreAdo {
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String CASE_PHONE_NUMBER="casePhoneNumber";
+	public static final String CASE_EMAIL="caseEmail";
+
 
 	private Person person;
 	private String description;
@@ -282,6 +261,11 @@ public class Case extends CoreAdo {
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
+
+	private String casePhoneNumber;
+	private String caseEmail;
+
+
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1176,4 +1160,14 @@ public class Case extends CoreAdo {
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
 	}
+
+	@Column
+	public String getCasePhoneNumber() { return casePhoneNumber;}
+
+	public void setCasePhoneNumber(String casePhoneNumber) { this.casePhoneNumber = casePhoneNumber; }
+
+	@Column
+	public String getCaseEmail() { return caseEmail; }
+
+	public void setCaseEmail(String caseEmail) { this.caseEmail = caseEmail; }
 }

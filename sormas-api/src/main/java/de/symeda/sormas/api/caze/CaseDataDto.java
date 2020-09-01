@@ -17,12 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
@@ -47,16 +41,15 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.Diseases;
-import de.symeda.sormas.api.utils.EmbeddedPersonalData;
-import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.PersonalData;
-import de.symeda.sormas.api.utils.Required;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.*;
 import de.symeda.sormas.api.visit.VisitDto;
+
+import javax.validation.constraints.Email;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 public class CaseDataDto extends PseudonymizableDto {
 
@@ -148,6 +141,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String CASE_PHONE_NUMBER="casePhoneNumber";
+	public static final String CASE_EMAIL="caseEmail";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -371,6 +366,10 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+	private String casePhoneNumber;
+	@Email
+	private String caseEmail;
+
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1132,4 +1131,13 @@ public class CaseDataDto extends PseudonymizableDto {
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
 	}
+
+
+	public String getCasePhoneNumber() { return casePhoneNumber; }
+
+	public void setCasePhoneNumber(String casePhoneNumber) { this.casePhoneNumber = casePhoneNumber; }
+
+	public String getCaseEmail() { return caseEmail; }
+
+	public void setCaseEmail(String caseEmail) { this.caseEmail = caseEmail; }
 }

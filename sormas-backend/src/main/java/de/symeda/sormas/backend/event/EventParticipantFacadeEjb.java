@@ -17,33 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import de.symeda.sormas.api.event.EventParticipantCriteria;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantFacade;
-import de.symeda.sormas.api.event.EventParticipantIndexDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.event.*;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -66,6 +40,21 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@SuppressWarnings("EjbClassBasicInspection")
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
@@ -321,6 +310,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		target.setEventParticipantEmail(source.getEventParticipantEmail());
+		target.setEventParticipantPhoneNumber(source.getEventParticipantPhoneNumber());
 
 		return target;
 	}
@@ -379,6 +370,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+		target.setEventParticipantEmail(source.getEventParticipantEmail());
+		target.setEventParticipantPhoneNumber(source.getEventParticipantPhoneNumber());
 
 		return target;
 	}
