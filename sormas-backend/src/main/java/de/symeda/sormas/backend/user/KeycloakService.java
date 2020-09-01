@@ -133,6 +133,10 @@ public class KeycloakService {
 
 		User user = passwordResetEvent.getUser();
 		Optional<UserRepresentation> userRepresentation = getUserByUsername(keycloak.get(), user.getUserName());
+		if (!userRepresentation.isPresent()) {
+			logger.warn("Cannot find user to update for username {}", user.getUserName());
+			return;
+		}
 		userRepresentation.ifPresent(existing -> sendPasswordResetEmail(keycloak.get(), existing.getId()));
 	}
 
