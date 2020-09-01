@@ -187,7 +187,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		tracingAppDetails.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
 //		tracingApp.setVisible(false);
 //		tracingAppDetails.setVisible(false);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS,
@@ -205,7 +205,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 
@@ -226,7 +226,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			quarantineOrderedVerbally = addField(ContactDto.QUARANTINE_ORDERED_VERBALLY, CheckBox.class);
 			CssStyles.style(quarantineOrderedVerbally, CssStyles.FORCE_CAPTION);
 			addField(ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, DateField.class);
@@ -283,7 +283,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			true);
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_TYPE_DETAILS, ContactDto.QUARANTINE, Arrays.asList(QuarantineType.OTHER), true);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			FieldHelper.setVisibleWhen(
 				getFieldGroup(),
 				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
@@ -441,7 +441,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					}
 				}
 
-				if (!isGermanServer()) {
+				if (!isConfiguredServer("de")) {
 					setVisible(
 						false,
 						ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE,
@@ -510,13 +510,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			visible = false;
 			quarantineFrom.clear();
 			quarantineTo.clear();
-			if (isGermanServer()) {
+			if (isConfiguredServer("de")) {
 				quarantineOrderedVerbally.clear();
 				quarantineOrderedOfficialDocument.clear();
 			}
 		}
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			setVisible(visible, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT);
 		}
 		setVisible(visible, ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_EXTENDED, ContactDto.QUARANTINE_HELP_NEEDED);

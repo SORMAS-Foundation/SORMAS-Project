@@ -17,30 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -61,6 +37,30 @@ import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.user.User;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless
 @LocalBean
@@ -402,17 +402,14 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		Predicate filter = null;
 
-		if (criteria.getFirstName() != null && criteria.getLastName() != null) {
+		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
 			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
 			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
 
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
 			double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
-			filter = and(
-				cb,
-				filter,
-				cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
+			filter = and(cb, filter, cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
 		}
 
 		if (criteria.getSex() != null) {
@@ -438,7 +435,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
-		if (criteria.getNationalHealthId() != null) {
+		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
 			filter = and(
 				cb,
 				filter,
@@ -446,7 +443,7 @@ public class PersonService extends AbstractAdoService<Person> {
 					cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)),
 					cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId())));
 		}
-		if (criteria.getPassportNumber() != null) {
+		if (!StringUtils.isBlank(criteria.getPassportNumber())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 

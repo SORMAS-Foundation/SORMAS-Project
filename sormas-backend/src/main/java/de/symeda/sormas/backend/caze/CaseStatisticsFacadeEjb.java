@@ -347,8 +347,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			|| caseCriteria.getPersonDistricts() != null
 			|| caseCriteria.getPersonCommunities() != null
 			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null
-			|| caseCriteria.getPersonAddress() != null) {
+			|| caseCriteria.getPersonPostcode() != null) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Person.TABLE_NAME)
 				.append(" ON ")
@@ -366,8 +365,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			|| caseCriteria.getPersonDistricts() != null
 			|| caseCriteria.getPersonCommunities() != null
 			|| caseCriteria.getPersonCity() != null
-			|| caseCriteria.getPersonPostcode() != null
-			|| caseCriteria.getPersonAddress() != null) {
+			|| caseCriteria.getPersonPostcode() != null) {
 			caseJoinBuilder.append(" LEFT JOIN ")
 				.append(Location.TABLE_NAME)
 				.append(" ON ")

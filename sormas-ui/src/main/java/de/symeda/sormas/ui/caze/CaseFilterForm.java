@@ -1,12 +1,5 @@
 package de.symeda.sormas.ui.caze;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.Date;
-import java.util.stream.Stream;
-
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
@@ -21,7 +14,6 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -54,6 +46,13 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
+
+import java.util.Date;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
@@ -104,7 +103,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
 		} else {
 			final ComboBox caseClassification = addField(CaseDataDto.CASE_CLASSIFICATION, ComboBox.class);
@@ -163,11 +162,11 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
-					moreFiltersContainer,
-					FieldConfiguration.withCaptionAndPixelSized(
-							CaseCriteria.FOLLOW_UP_UNTIL_TO,
-							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
-							200));
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+					CaseCriteria.FOLLOW_UP_UNTIL_TO,
+					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
+					200));
 			followUpUntilTo.removeAllValidators();
 		}
 

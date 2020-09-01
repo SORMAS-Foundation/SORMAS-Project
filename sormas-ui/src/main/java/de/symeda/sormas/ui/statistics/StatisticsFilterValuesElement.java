@@ -233,7 +233,6 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				return createCommunityTokens(residenceElement.getSelectedDistricts());
 			case PERSON_CITY:
 			case PERSON_POSTCODE:
-			case PERSON_ADDRESS:
 				return new ArrayList<>();
 			default:
 				throw new IllegalArgumentException(this.toString());

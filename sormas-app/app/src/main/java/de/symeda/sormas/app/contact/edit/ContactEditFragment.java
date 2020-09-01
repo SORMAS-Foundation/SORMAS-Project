@@ -136,7 +136,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.createCase.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer("de")) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
@@ -218,7 +218,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue())
 				|| QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
 			if (visible) {
-				if (ConfigProvider.isGermanServer()) {
+				if (ConfigProvider.isConfiguredServer("de")) {
 					contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
@@ -273,7 +273,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				contentBinding.contactTracingAppDetails.setValue("");
 			}
 		});
-		if (ConfigProvider.isGermanServer()) {
+		if (ConfigProvider.isConfiguredServer("de")) {
 			contentBinding.contactContactProximity.addValueChangedListener(
 				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
 		} else {

@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
@@ -40,7 +35,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
 import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -98,11 +92,16 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CaseController {
 
@@ -377,6 +376,18 @@ public class CaseController {
 
 				if (convertedContact != null) {
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+					dto.getSymptoms().setUuid(DataHelper.createUuid());
+					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
+					dto.getEpiData().setUuid(DataHelper.createUuid());
+					dto.getEpiData().getBurials().forEach(epiDataBurialDto -> {
+						epiDataBurialDto.setUuid(DataHelper.createUuid());
+						epiDataBurialDto.getBurialAddress().setUuid(DataHelper.createUuid());
+					});
+					dto.getEpiData().getTravels().forEach(travelDto -> travelDto.setUuid(DataHelper.createUuid()));
+					dto.getEpiData().getGatherings().forEach(gatheringDto -> {
+						gatheringDto.setUuid(DataHelper.createUuid());
+						gatheringDto.getGatheringAddress().setUuid(DataHelper.createUuid());
+					});
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());

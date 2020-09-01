@@ -108,6 +108,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
+					fluidRowLocs(PersonDto.UUID, "")+
                     fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
                     fluidRow(
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -189,6 +190,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personInformationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
+		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
@@ -259,6 +261,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
 		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
 		FieldHelper.removeItems(placeOfBirthFacilityType);
+		placeOfBirthFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
@@ -278,6 +281,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
 		FieldHelper.removeItems(occupationFacilityType);
+		occupationFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);

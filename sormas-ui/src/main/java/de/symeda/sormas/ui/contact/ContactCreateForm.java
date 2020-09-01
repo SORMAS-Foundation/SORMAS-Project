@@ -128,7 +128,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			contactProximityDetails = addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
@@ -192,7 +192,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
 			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
-			if (isGermanServer()) {
+			if (isConfiguredServer("de")) {
 				contactCategory.setVisible(disease != null);
 				contactProximityDetails.setVisible(disease != null);
 			}
@@ -246,7 +246,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			updateFieldVisibilitiesByCase(hasCaseRelation);
 			if (!hasCaseRelation && disease == null) {
 				setVisible(false, ContactDto.CONTACT_PROXIMITY);
-				if (isGermanServer()) {
+				if (isConfiguredServer("de")) {
 					contactCategory.setVisible(false);
 					contactProximityDetails.setVisible(false);
 				}
