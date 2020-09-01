@@ -25,7 +25,7 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import net.minidev.json.JSONObject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -38,7 +38,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
@@ -68,29 +67,25 @@ public class KeycloakService {
 
 	private static final String REALM_NAME = "SORMAS";
 
-	private static final String UNDEFINED = "undefined";
-
-	@Inject
-	@ConfigProperty(name = "sormas.backend.security.oidc.json", defaultValue = UNDEFINED)
-	private String oidcJson;
-
 	private Keycloak keycloak = null;
 
 	@PostConstruct
 	public void init() {
-		if (UNDEFINED.equals(oidcJson)) {
+		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.backend.security.oidc.json", String.class);
+
+		if (!oidcJson.isPresent()) {
 			logger.warn("Undefined KEYCLOAK configuration for sormas.backend.security.oidc.json. Configure the property or disable the KEYCLOAK authentication provider.");
 			return;
 		}
 
 		try {
-			JSONObject oidc = JSONObjectUtils.parse(oidcJson);
+			JSONObject json = JSONObjectUtils.parse(oidcJson.get());
 
 			keycloak = KeycloakBuilder.builder()
-				.realm(oidc.getAsString(OIDC_REALM))
-				.serverUrl(oidc.getAsString(OIDC_SERVER_URL))
+				.realm(json.getAsString(OIDC_REALM))
+				.serverUrl(json.getAsString(OIDC_SERVER_URL))
 				.clientId("sormas-backend")
-				.clientSecret(JSONObjectUtils.getJSONObject(oidc, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
+				.clientSecret(JSONObjectUtils.getJSONObject(json, OIDC_CREDENTIALS).getAsString(OIDC_SECRET))
 				.grantType(OAuth2Constants.CLIENT_CREDENTIALS)
 				.build();
 

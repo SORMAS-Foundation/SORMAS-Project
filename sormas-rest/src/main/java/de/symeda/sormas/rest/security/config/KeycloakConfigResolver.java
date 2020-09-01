@@ -19,6 +19,7 @@
 package de.symeda.sormas.rest.security.config;
 
 import de.symeda.sormas.rest.security.KeycloakFilter;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
@@ -30,6 +31,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
+import java.util.Optional;
 
 /**
  * Loads the Keycloak configuration using JNDI.
@@ -44,19 +46,16 @@ public class KeycloakConfigResolver implements org.keycloak.adapters.KeycloakCon
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static final String UNDEFINED = "undefined";
-
-	@Inject
-	@ConfigProperty(name = "sormas.rest.security.oidc.json", defaultValue = UNDEFINED)
-	private String oidcJson;
-
 	@Override
 	public KeycloakDeployment resolve(HttpFacade.Request facade) {
-		if (UNDEFINED.equals(oidcJson)) {
-			logger.warn("Undefined KEYCLOAK configuration for sormas.rest.security.oidc.json. Configure the property or deactivate the KEYCLOAK authentication provider before proceeding");
+		Optional<String> oidcJson = ConfigProvider.getConfig().getOptionalValue("sormas.rest.security.oidc.json", String.class);
+
+		if (!oidcJson.isPresent()) {
+			logger.warn(
+				"Undefined KEYCLOAK configuration for sormas.rest.security.oidc.json. Configure the property or deactivate the KEYCLOAK authentication provider before proceeding");
 			return new KeycloakDeployment();
 		}
-		return KeycloakDeploymentBuilder.build(new ByteArrayInputStream(oidcJson.getBytes()));
+		return KeycloakDeploymentBuilder.build(new ByteArrayInputStream(oidcJson.get().getBytes()));
 	}
 
 }

@@ -121,6 +121,11 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.geronimo.config</groupId>
+			<artifactId>geronimo-config-impl</artifactId>
+		</dependency>
+
 		<!-- Keycloak -->
 		<dependency>
 			<groupId>org.keycloak</groupId>
