@@ -19,12 +19,10 @@ import java.util.function.Consumer;
 
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -139,12 +137,6 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				getField(CaseDataDto.COMMUNITY).setValue(null);
 			}
 
-			break;
-		case CampaignFormMetaDto.FORM_ID:
-			Object value = event.getProperty().getValue();
-			if (value == null) {
-
-			}
 			break;
 		}
 	}

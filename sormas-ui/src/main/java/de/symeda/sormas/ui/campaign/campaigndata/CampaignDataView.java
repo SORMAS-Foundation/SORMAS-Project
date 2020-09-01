@@ -16,15 +16,16 @@
 package de.symeda.sormas.ui.campaign.campaigndata;
 
 import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Alignment;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -83,21 +84,21 @@ public class CampaignDataView extends AbstractCampaignView {
 		filtersLayout.setComponentAlignment(filterBar, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterBar, 0.8f);
 
-		OptionGroup importanceFilterLayout = createImportanceFilterSwitch();
-		filtersLayout.addComponent(importanceFilterLayout);
-		filtersLayout.setComponentAlignment(importanceFilterLayout, Alignment.TOP_RIGHT);
-		filtersLayout.setExpandRatio(importanceFilterLayout, 0.2f);
+		createImportanceFilterSwitch();
+		filtersLayout.addComponent(campaignFormElementImportance);
+		filtersLayout.setComponentAlignment(campaignFormElementImportance, Alignment.TOP_RIGHT);
+		filtersLayout.setExpandRatio(campaignFormElementImportance, 0.2f);
 
 		mainLayout.addComponent(filtersLayout);
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
 			if (value == null) {
-				campaignFormElementImportance.setEnabled(false);
-				campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
+				campaignFormElementImportance.setVisible(false);
+				campaignFormElementImportance.clear();
 			} else {
+				campaignFormElementImportance.setVisible(true);
 				campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
-				campaignFormElementImportance.setEnabled(true);
 			}
 		});
 
@@ -127,9 +128,12 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource =
-					new GridExportStreamResource(grid, "sormas_campaign_data", createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"));
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+				StreamResource streamResource = new GridExportStreamResource(
+					grid,
+					"sormas_campaign_data",
+					createFileNameWithCurrentDate("sormas_campaign_data_", ".csv"),
+					EDIT_BTN_ID);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
 			}
 		}
 
@@ -156,13 +160,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		addComponent(mainLayout);
 	}
 
-	private OptionGroup createImportanceFilterSwitch() {
+	private void createImportanceFilterSwitch() {
 
 		campaignFormElementImportance = new OptionGroup();
-		CssStyles.style(
-			campaignFormElementImportance,
-			ValoTheme.OPTIONGROUP_HORIZONTAL,
-			CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		CssStyles.style(campaignFormElementImportance, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		campaignFormElementImportance.setId(ONLY_IMPORTANT_FORM_ELEMENTS);
 		campaignFormElementImportance.addItem(CampaignFormElementImportance.IMPORTANT);
 		campaignFormElementImportance
@@ -170,12 +171,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignFormElementImportance.addItem(CampaignFormElementImportance.ALL);
 		campaignFormElementImportance
 			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
-		campaignFormElementImportance.setNullSelectionAllowed(false);
 
-		campaignFormElementImportance.setEnabled(false);
+		campaignFormElementImportance.setEnabled(true);
 		campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
-
-		return campaignFormElementImportance;
+		campaignFormElementImportance.setVisible(false);
 	}
 
 	public CampaignFormDataFilterForm createFilterBar() {
@@ -215,7 +214,7 @@ public class CampaignDataView extends AbstractCampaignView {
 				final boolean onlyImportantFormElements = CampaignFormElementImportance.IMPORTANT.equals(campaignFormElementImportance.getValue());
 				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
 				for (CampaignFormElement element : campaignFormElements) {
-					if ((onlyImportantFormElements && element.isImportant()) || !onlyImportantFormElements) {
+					if (element.isImportant() || !onlyImportantFormElements) {
 						String caption = null;
 						if (translations != null) {
 							caption = translations.getTranslations()
