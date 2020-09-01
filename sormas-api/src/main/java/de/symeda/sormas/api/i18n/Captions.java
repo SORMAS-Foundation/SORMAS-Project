@@ -216,7 +216,6 @@ public interface Captions {
 	String CaseData_pregnant = "CaseData.pregnant";
 	String CaseData_quarantine = "CaseData.quarantine";
 	String CaseData_quarantineExtended = "CaseData.quarantineExtended";
-	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineFrom = "CaseData.quarantineFrom";
 	String CaseData_quarantineHelpNeeded = "CaseData.quarantineHelpNeeded";
 	String CaseData_quarantineHomePossible = "CaseData.quarantineHomePossible";
@@ -229,6 +228,7 @@ public interface Captions {
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
 	String CaseData_quarantineOrderedVerballyDate = "CaseData.quarantineOrderedVerballyDate";
+	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
@@ -305,9 +305,9 @@ public interface Captions {
 	String caseFilterPortHealthWithoutFacility = "caseFilterPortHealthWithoutFacility";
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
-	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -422,7 +422,6 @@ public interface Captions {
 	String Contact_person = "Contact.person";
 	String Contact_quarantine = "Contact.quarantine";
 	String Contact_quarantineExtended = "Contact.quarantineExtended";
-	String Contact_quarantineReduced = "Contact.quarantineReduced";
 	String Contact_quarantineFrom = "Contact.quarantineFrom";
 	String Contact_quarantineHelpNeeded = "Contact.quarantineHelpNeeded";
 	String Contact_quarantineHomePossible = "Contact.quarantineHomePossible";
@@ -435,6 +434,7 @@ public interface Captions {
 	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
 	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
 	String Contact_quarantineOrderedVerballyDate = "Contact.quarantineOrderedVerballyDate";
+	String Contact_quarantineReduced = "Contact.quarantineReduced";
 	String Contact_quarantineTo = "Contact.quarantineTo";
 	String Contact_quarantineTypeDetails = "Contact.quarantineTypeDetails";
 	String Contact_region = "Contact.region";
@@ -487,7 +487,6 @@ public interface Captions {
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
 	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
-	String contactQuarantineModified = "quarantineModified";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
