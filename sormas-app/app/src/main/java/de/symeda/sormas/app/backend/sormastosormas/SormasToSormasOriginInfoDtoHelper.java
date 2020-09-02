@@ -4,12 +4,12 @@ import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
-public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSormasOriginInfo, SormasToSormasSourceDto> {
+public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSormasOriginInfo, SormasToSormasOriginInfoDto> {
 
 	@Override
 	protected Class<SormasToSormasOriginInfo> getAdoClass() {
@@ -17,27 +17,27 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	}
 
 	@Override
-	protected Class<SormasToSormasSourceDto> getDtoClass() {
-		return SormasToSormasSourceDto.class;
+	protected Class<SormasToSormasOriginInfoDto> getDtoClass() {
+		return SormasToSormasOriginInfoDto.class;
 	}
 
 	@Override
-	protected Call<List<SormasToSormasSourceDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<SormasToSormasOriginInfoDto>> pullAllSince(long since) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected Call<List<SormasToSormasSourceDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+	protected Call<List<SormasToSormasOriginInfoDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected Call<List<PushResult>> pushAll(List<SormasToSormasSourceDto> sormasToSormasSourceDtos) throws NoConnectionException {
+	protected Call<List<PushResult>> pushAll(List<SormasToSormasOriginInfoDto> sormasToSormasSourceDtos) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
 	@Override
-	protected void fillInnerFromDto(SormasToSormasOriginInfo sormasToSormasOriginInfo, SormasToSormasSourceDto dto) {
+	protected void fillInnerFromDto(SormasToSormasOriginInfo sormasToSormasOriginInfo, SormasToSormasOriginInfoDto dto) {
 		sormasToSormasOriginInfo.setHealthDepartment(dto.getHealthDepartment().getUuid());
 		sormasToSormasOriginInfo.setOwnershipHandedOver(dto.isOwnershipHandedOver());
 		sormasToSormasOriginInfo.setSenderName(dto.getSenderName());
@@ -47,7 +47,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	}
 
 	@Override
-	protected void fillInnerFromAdo(SormasToSormasSourceDto dto, SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+	protected void fillInnerFromAdo(SormasToSormasOriginInfoDto dto, SormasToSormasOriginInfo sormasToSormasOriginInfo) {
 		dto.setHealthDepartment(new HealthDepartmentServerReferenceDto(sormasToSormasOriginInfo.getHealthDepartment()));
 		dto.setOwnershipHandedOver(sormasToSormasOriginInfo.isOwnershipHandedOver());
 		dto.setSenderName(sormasToSormasOriginInfo.getSenderName());
