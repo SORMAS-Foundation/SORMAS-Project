@@ -34,12 +34,11 @@ public class RegionFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveAsReference() throws Exception {
+	public void testGetAllActiveAsReference() {
 		creator.createRegion("r1");
 		Region r2 = creator.createRegion("r2");
 		getRegionFacade().archive(r2.getUuid());
-		
+
 		assertEquals(1, getRegionFacade().getAllActiveAsReference().size());
 	}
-
 }

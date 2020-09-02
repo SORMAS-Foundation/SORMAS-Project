@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
@@ -41,8 +41,9 @@ public final class DtoHelper {
 	public static final int CHANGE_DATE_TOLERANCE_MS = 1000;
 
 	public static void validateDto(EntityDto dto, AbstractDomainObject entity) {
-		if (entity.getChangeDate() != null && (dto.getChangeDate() == null
-				|| dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
+
+		if (entity.getChangeDate() != null
+			&& (dto.getChangeDate() == null || dto.getChangeDate().getTime() + CHANGE_DATE_TOLERANCE_MS < entity.getChangeDate().getTime())) {
 			throw new OutdatedEntityException(dto.getUuid(), dto.getClass());
 		}
 	}
@@ -54,9 +55,12 @@ public final class DtoHelper {
 	}
 
 	/**
-	 * @param overrideValues Note: Existing references are NOT overridden
+	 * @param overrideValues
+	 *            Note: Existing references are NOT overridden
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes" })
 	public static <T extends EntityDto> void fillDto(T target, T source, boolean overrideValues) {
 
 		try {
@@ -72,62 +76,64 @@ public final class DtoHelper {
 				Object sourceValue = pd.getReadMethod().invoke(source);
 
 				if (EntityDto.class.isAssignableFrom(pd.getPropertyType())) {
-					
+
 					if (targetValue == null) {
 						targetValue = sourceValue.getClass().newInstance();
 						pd.getWriteMethod().invoke(target, targetValue);
 					}
-					
+
 					// entity: just fill the existing one with the source
 					fillDto((EntityDto) targetValue, (EntityDto) sourceValue, overrideValues);
-				}
-				else {
-					boolean targetIsEmpty = targetValue == null 
-							|| (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
+				} else {
+					boolean targetIsEmpty =
+						targetValue == null || (Collection.class.isAssignableFrom(pd.getPropertyType()) && ((Collection<?>) targetValue).isEmpty());
 					boolean override = overrideValues && !ReferenceDto.class.isAssignableFrom(pd.getPropertyType());
 					// should we write into the target property?
 					if (targetIsEmpty || override) {
-						
+
 						if (Collection.class.isAssignableFrom(pd.getPropertyType()) && sourceValue != null) {
-							
+
 							if (targetValue == null) {
 								targetValue = sourceValue.getClass().newInstance();
 								pd.getWriteMethod().invoke(target, targetValue);
 							}
 
-							Collection targetCollection = (Collection)targetValue;
+							Collection targetCollection = (Collection) targetValue;
 							targetCollection.clear();
-							
+
 							for (Object sourceEntry : (Collection) sourceValue) {
-								
+
 								if (sourceEntry instanceof EntityDto) {
-									EntityDto newEntry = ((EntityDto)sourceEntry).clone();
+									EntityDto newEntry = ((EntityDto) sourceEntry).clone();
 									newEntry.setUuid(DataHelper.createUuid());
 									newEntry.setCreationDate(null);
-									fillDto(newEntry, (EntityDto)sourceEntry, true);
+									fillDto(newEntry, (EntityDto) sourceEntry, true);
 									targetCollection.add(newEntry);
-								} else if (DataHelper.isValueType(sourceEntry.getClass())
-										|| sourceEntry instanceof ReferenceDto) {
+								} else if (DataHelper.isValueType(sourceEntry.getClass()) || sourceEntry instanceof ReferenceDto) {
 									targetCollection.add(sourceEntry);
 								} else {
-				                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
+									throw new UnsupportedOperationException(
+										pd.getPropertyType().getName() + " is not supported as a list entry type.");
 								}
 							}
-							
-						} else if (DataHelper.isValueType(pd.getPropertyType())
-								|| ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
+
+						} else if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 
 							pd.getWriteMethod().invoke(target, sourceValue);
-							
+
 						} else {
 
 							// Other objects are not supported
-		                    throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
-		                }
+							throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a property type.");
+						}
 					}
 				}
 			}
-		} catch (IntrospectionException | InvocationTargetException | IllegalAccessException | CloneNotSupportedException | InstantiationException e) {
+		} catch (IntrospectionException
+			| InvocationTargetException
+			| IllegalAccessException
+			| CloneNotSupportedException
+			| InstantiationException e) {
 			throw new RuntimeException("Exception when trying to fill dto: " + e.getMessage(), e.getCause());
 		}
 	}

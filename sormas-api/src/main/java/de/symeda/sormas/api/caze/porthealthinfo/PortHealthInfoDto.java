@@ -11,7 +11,7 @@ public class PortHealthInfoDto extends EntityDto {
 	private static final long serialVersionUID = 3289289799891965437L;
 
 	public static final String I18N_PREFIX = "PortHealthInfo";
-	
+
 	public static final String AIRLINE_NAME = "airlineName";
 	public static final String FLIGHT_NUMBER = "flightNumber";
 	public static final String DEPARTURE_DATE_TIME = "departureDateTime";
@@ -34,7 +34,7 @@ public class PortHealthInfoDto extends EntityDto {
 	public static final String DEPARTURE_LOCATION = "departureLocation";
 	public static final String FINAL_DESTINATION = "finalDestination";
 	public static final String DETAILS = "details";
-	
+
 	// Airport
 	private String airlineName;
 	private String flightNumber;
@@ -49,19 +49,19 @@ public class PortHealthInfoDto extends EntityDto {
 	private String transitStopDetails3;
 	private String transitStopDetails4;
 	private String transitStopDetails5;
-	
+
 	// Seaport
 	private String vesselName;
 	private String vesselDetails;
 	private String portOfDeparture;
 	private String lastPortOfCall;
-	
+
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
 	private String conveyanceTypeDetails;
 	private String departureLocation;
 	private String finalDestination;
-	
+
 	// Other
 	private String details;
 
@@ -70,7 +70,7 @@ public class PortHealthInfoDto extends EntityDto {
 		portHealthInfo.setUuid(DataHelper.createUuid());
 		return portHealthInfo;
 	}
-	
+
 	public String getAirlineName() {
 		return airlineName;
 	}
@@ -246,5 +246,4 @@ public class PortHealthInfoDto extends EntityDto {
 	public void setDetails(String details) {
 		this.details = details;
 	}
-	
 }

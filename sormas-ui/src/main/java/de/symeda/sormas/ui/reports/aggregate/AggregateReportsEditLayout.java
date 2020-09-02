@@ -74,7 +74,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		setSpacing(false);
 
 		this.window = window;
-		
+
 		epiweekOptions = new OptionGroup();
 		epiweekOptions.addItems(EpiWeekFilterOption.values());
 		epiweekOptions.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
@@ -97,8 +97,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		comboBoxRegion = new ComboBox<>();
 		comboBoxRegion.setWidth(250, Unit.PIXELS);
-		comboBoxRegion
-				.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.REGION));
+		comboBoxRegion.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.REGION));
 		comboBoxRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		comboBoxRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
@@ -113,8 +112,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		comboBoxDistrict = new ComboBox<>();
 		comboBoxDistrict.setWidth(250, Unit.PIXELS);
-		comboBoxDistrict.setCaption(
-				I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.DISTRICT));
+		comboBoxDistrict.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.DISTRICT));
 		comboBoxDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = e.getValue();
 			if (comboBoxFacility != null) {
@@ -125,13 +123,11 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			}
 			if (district != null) {
 				if (comboBoxFacility != null) {
-					comboBoxFacility.setItems(
-							FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, false));
+					comboBoxFacility.setItems(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(district, false));
 					comboBoxFacility.setEnabled(true);
 				}
 				if (comboBoxPoe != null) {
-					comboBoxPoe.setItems(
-							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(district.getUuid(), false));
+					comboBoxPoe.setItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(district.getUuid(), false));
 					comboBoxPoe.setEnabled(true);
 				}
 			} else {
@@ -145,9 +141,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		comboBoxFacility = new ComboBox<>();
 		comboBoxFacility.setWidth(250, Unit.PIXELS);
-		comboBoxFacility
-				.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX,
-						AggregateReportDto.HEALTH_FACILITY));
+		comboBoxFacility.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.HEALTH_FACILITY));
 		comboBoxFacility.setEnabled(false);
 		comboBoxFacility.addValueChangeListener(e -> {
 			if (comboBoxFacility.getValue() != null) {
@@ -160,9 +154,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		comboBoxPoe = new ComboBox<>();
 		comboBoxPoe.setWidth(250, Unit.PIXELS);
-		comboBoxPoe
-				.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX,
-						AggregateReportDto.POINT_OF_ENTRY));
+		comboBoxPoe.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.POINT_OF_ENTRY));
 		comboBoxPoe.setEnabled(false);
 		comboBoxPoe.addValueChangeListener(e -> {
 			if (comboBoxPoe.getValue() != null) {
@@ -188,13 +180,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			comboBoxPoe.setValue(criteria.getPointOfEntry());
 			comboBoxPoe.setEnabled(false);
 			reports = FacadeProvider.getAggregateReportFacade()
-					.getList(criteria).stream()
-					.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
+				.getList(criteria)
+				.stream()
+				.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
 		}
 
 		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
-		diseaseMap = diseaseList.stream()
-				.collect(Collectors.toMap(Disease::toString, disease -> disease));
+		diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		diseasesWithoutReport = new HashMap<String, Disease>(diseaseMap);
 		if (reports != null) {
 			for (AggregateReportDto report : reports.values()) {
@@ -214,7 +206,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			editForms.add(editForm);
 		}
 
-		Label legend = new Label(String.format(I18nProperties.getString(Strings.aggregateReportLegend),
+		Label legend = new Label(
+			String.format(
+				I18nProperties.getString(Strings.aggregateReportLegend),
 				I18nProperties.getCaption(Captions.aggregateReportNewCasesShort),
 				I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.NEW_CASES),
 				I18nProperties.getCaption(Captions.aggregateReportLabConfirmationsShort),
@@ -260,8 +254,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	}
 
 	private void checkForExistingData() {
-		if (comboBoxEpiweek.getValue() != null
-				&& (comboBoxFacility.getValue() != null || comboBoxPoe.getValue() != null) && !popUpIsShown) {
+		if (comboBoxEpiweek.getValue() != null && (comboBoxFacility.getValue() != null || comboBoxPoe.getValue() != null) && !popUpIsShown) {
 			AggregateReportCriteria criteria = new AggregateReportCriteria();
 			criteria.setDistrict(comboBoxDistrict.getValue());
 			criteria.setEpiWeekFrom(comboBoxEpiweek.getValue());
@@ -270,11 +263,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
 			reports = FacadeProvider.getAggregateReportFacade()
-					.getList(criteria).stream()
-					.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
+				.getList(criteria)
+				.stream()
+				.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
 				Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
+
 					@Override
 					public void accept(Boolean edit) {
 						if (edit) {
@@ -286,11 +281,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 						popUpIsShown = false;
 					}
 				};
-				VaadinUiUtil.showChooseOptionPopup(I18nProperties.getCaption(Captions.aggregateReportReportFound),
-						new Label(I18nProperties.getString(Strings.messageAggregateReportFound)),
-						I18nProperties.getCaption(Captions.aggregateReportEditReport),
-						I18nProperties.getCaption(Captions.aggregateReportDiscardSelection), new Integer(480),
-						resultConsumer);
+				VaadinUiUtil.showChooseOptionPopup(
+					I18nProperties.getCaption(Captions.aggregateReportReportFound),
+					new Label(I18nProperties.getString(Strings.messageAggregateReportFound)),
+					I18nProperties.getCaption(Captions.aggregateReportEditReport),
+					I18nProperties.getCaption(Captions.aggregateReportDiscardSelection),
+					new Integer(480),
+					resultConsumer);
 			}
 		}
 	}
@@ -324,38 +321,37 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 	private void save() {
 		if (!isValid()) {
-			Notification.show(I18nProperties.getString(Strings.errorIntegerFieldValidationFailed), "",
-					Type.ERROR_MESSAGE);
+			Notification.show(I18nProperties.getString(Strings.errorIntegerFieldValidationFailed), "", Type.ERROR_MESSAGE);
 			return;
 		}
 
 		for (AggregateReportEditForm editForm : editForms) {
-			
+
 			String deathsFieldValue = (String) editForm.getField(AggregateReportDto.DEATHS).getValue();
 			String labFieldValue = (String) editForm.getField(AggregateReportDto.LAB_CONFIRMATIONS).getValue();
 			String caseFieldValue = (String) editForm.getField(AggregateReportDto.NEW_CASES).getValue();
-			
+
 			int deaths;
 			if (!deathsFieldValue.isEmpty()) {
 				deaths = Integer.parseInt(deathsFieldValue);
 			} else {
 				deaths = 0;
 			}
-			
+
 			int labConfirmations;
 			if (!labFieldValue.isEmpty()) {
 				labConfirmations = Integer.parseInt(labFieldValue);
 			} else {
 				labConfirmations = 0;
 			}
-			
+
 			int newCases;
 			if (!caseFieldValue.isEmpty()) {
 				newCases = Integer.parseInt(caseFieldValue);
 			} else {
 				newCases = 0;
 			}
-			
+
 			AggregateReportDto report = null;
 			if (reports != null) {
 				report = reports.get(diseaseMap.get(editForm.getDisease()));

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
@@ -24,9 +24,9 @@ public class DashboardVisitDto implements Serializable {
 	private static final long serialVersionUID = 3659266276391189213L;
 
 	public static final String I18N_PREFIX = "Visit";
-	
+
 	private VisitStatus visitStatus;
-	
+
 	public DashboardVisitDto(VisitStatus visitStatus) {
 		this.visitStatus = visitStatus;
 	}
@@ -38,5 +38,4 @@ public class DashboardVisitDto implements Serializable {
 	public void setVisitStatus(VisitStatus visitStatus) {
 		this.visitStatus = visitStatus;
 	}
-	
 }

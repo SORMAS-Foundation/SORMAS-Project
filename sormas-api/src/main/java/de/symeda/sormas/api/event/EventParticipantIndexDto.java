@@ -11,7 +11,7 @@ public class EventParticipantIndexDto implements Serializable {
 	private static final long serialVersionUID = 1136399297437006739L;
 
 	public static final String I18N_PREFIX = "EventParticipant";
-	
+
 	public static final String UUID = "uuid";
 	public static final String PERSON_UUID = "personUuid";
 	public static final String CASE_UUID = "caseUuid";
@@ -20,7 +20,7 @@ public class EventParticipantIndexDto implements Serializable {
 	public static final String SEX = "sex";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
-	
+
 	private String uuid;
 	private String personUuid;
 	private String caseUuid;
@@ -29,10 +29,19 @@ public class EventParticipantIndexDto implements Serializable {
 	private Sex sex;
 	private String approximateAge;
 	private String involvementDescription;
-	
-	public EventParticipantIndexDto(String uuid, String personUuid, String caseUuid, String eventUuid, String firstName,
-			String lastName, Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType, 
-			String involvementDescription) {
+
+	public EventParticipantIndexDto(
+		String uuid,
+		String personUuid,
+		String caseUuid,
+		String eventUuid,
+		String firstName,
+		String lastName,
+		Sex sex,
+		Integer approximateAge,
+		ApproximateAgeType approximateAgeType,
+		String involvementDescription) {
+
 		this.uuid = uuid;
 		this.personUuid = personUuid;
 		this.caseUuid = caseUuid;
@@ -106,5 +115,4 @@ public class EventParticipantIndexDto implements Serializable {
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
 	}
-	
 }

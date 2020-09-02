@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.epidata;
 
@@ -29,20 +29,25 @@ public final class EpiDataTravelHelper {
 		// Hide Utility Class Constructor
 	}
 
-	public static String buildTravelString(TravelType travelType,  String travelDestination, Date travelDateFrom, Date travelDateTo, Language language) {
+	public static String buildTravelString(
+		TravelType travelType,
+		String travelDestination,
+		Date travelDateFrom,
+		Date travelDateTo,
+		Language language) {
 		StringBuilder resultString = new StringBuilder();
-		
+
 		if (!DataHelper.isNullOrEmpty(travelDestination)) {
 			resultString.append(travelDestination);
 		}
-		
+
 		if (travelType != null) {
 			if (resultString.length() > 0) {
 				resultString.append(" ");
 			}
 			resultString.append(travelType);
 		}
-		
+
 		if (travelDateFrom != null) {
 			if (resultString.length() > 0) {
 				resultString.append(" ");
@@ -58,8 +63,7 @@ public final class EpiDataTravelHelper {
 			}
 			resultString.append(DateHelper.formatLocalDate(travelDateTo, language));
 		}
-		
+
 		return resultString.toString();
 	}
-
 }

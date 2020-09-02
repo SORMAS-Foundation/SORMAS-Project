@@ -26,8 +26,10 @@ public class TransactionWrapper {
 	/**
 	 * Calls the passed function in a new JTA transaction.
 	 * 
-	 * @param function The business logic to be executed.
-	 * @param data The data to be processed.
+	 * @param function
+	 *            The business logic to be executed.
+	 * @param data
+	 *            The data to be processed.
 	 * @return The return value of the processing defined by {@code function} (typically a result/report).
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

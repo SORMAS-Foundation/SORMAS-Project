@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -37,21 +37,22 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryDto;
  *
  */
 @Path("/pointsofentry")
-@Produces({
-	MediaType.APPLICATION_JSON + "; charset=UTF-8"
-	})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class PointOfEntryResource {
 
-	@GET @Path("/all/{since}")
+	@GET
+	@Path("/all/{since}")
 	public List<PointOfEntryDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getPointOfEntryFacade().getAllAfter(new Date(since));
-	}	
-	
+	}
+
 	@POST
 	@Path("/query")
 	public List<PointOfEntryDto> getByUuids(List<String> uuids) {
-		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids); 
+		List<PointOfEntryDto> result = FacadeProvider.getPointOfEntryFacade().getByUuids(uuids);
 		return result;
 	}
 
@@ -60,5 +61,4 @@ public class PointOfEntryResource {
 	public List<String> getAllUuids() {
 		return FacadeProvider.getPointOfEntryFacade().getAllUuids();
 	}
-	
 }

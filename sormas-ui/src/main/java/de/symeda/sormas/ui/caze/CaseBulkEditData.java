@@ -17,7 +17,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 /**
  * @author Christopher Riedel
  */
-public class CaseBulkEditData extends EntityDto{
+public class CaseBulkEditData extends EntityDto {
 
 	private static final long serialVersionUID = -4670022133882295863L;
 

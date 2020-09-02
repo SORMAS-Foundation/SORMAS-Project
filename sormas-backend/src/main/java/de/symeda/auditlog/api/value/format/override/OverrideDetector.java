@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format.override;
 
@@ -27,10 +27,9 @@ public interface OverrideDetector<T> {
 	 * Returns a {@link ValueFormatter} that is adjusted to the entity property.
 	 * 
 	 * @param m
-	 * 			The method that describes the entity property.
-	 * @return	Returns <code>null</code> if no reasonable derivation can be found. Returns a respective {@link ValueFormatter}
-	 * 			if a derivation is possible, e.g. according to the annotations.
+	 *            The method that describes the entity property.
+	 * @return Returns <code>null</code> if no reasonable derivation can be found. Returns a respective {@link ValueFormatter}
+	 *         if a derivation is possible, e.g. according to the annotations.
 	 */
 	ValueFormatter<T> override(Method m);
-
 }

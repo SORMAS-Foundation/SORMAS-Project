@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -30,23 +30,18 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
-import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -113,7 +108,8 @@ public class EventsView extends AbstractView {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
 			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
-			StreamResource streamResource = new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+			StreamResource streamResource =
+				new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 
@@ -126,7 +122,8 @@ public class EventsView extends AbstractView {
 
 			addHeaderComponent(btnEnterBulkEditMode);
 
-			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnLeaveBulkEditMode =
+				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 
 			addHeaderComponent(btnLeaveBulkEditMode);
@@ -149,8 +146,11 @@ public class EventsView extends AbstractView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = ButtonHelper.createIconButton(Captions.eventNewEvent, VaadinIcons.PLUS_CIRCLE,
-					e -> ControllerProvider.getEventController().create(), ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(
+				Captions.eventNewEvent,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getEventController().create(),
+				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
@@ -177,6 +177,7 @@ public class EventsView extends AbstractView {
 	}
 
 	public HorizontalLayout createStatusFilterBar() {
+
 		HorizontalLayout statusFilterLayout = new HorizontalLayout();
 		statusFilterLayout.setSpacing(true);
 		statusFilterLayout.setMargin(false);
@@ -196,7 +197,7 @@ public class EventsView extends AbstractView {
 		statusButtons.put(statusAll, I18nProperties.getCaption(Captions.all));
 		activeStatusButton = statusAll;
 
-		for(EventStatus status : EventStatus.values()) {
+		for (EventStatus status : EventStatus.values()) {
 			Button statusButton = ButtonHelper.createButtonWithCaption("status-" + status, status.toString(), e -> {
 				criteria.eventStatus(status);
 				navigateTo(criteria);
@@ -217,9 +218,9 @@ public class EventsView extends AbstractView {
 				int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
 				if (daysAfterEventGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
-							VaadinIcons.INFO_CIRCLE.getHtml() + " " + String.format(
-									I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
-							ContentMode.HTML);
+						VaadinIcons.INFO_CIRCLE.getHtml() + " "
+							+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
+						ContentMode.HTML);
 					relevanceStatusInfoLabel.setVisible(false);
 					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
 					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
@@ -234,8 +235,7 @@ public class EventsView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.eventArchivedEvents));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.eventAllEvents));
 				relevanceStatusFilter.addValueChangeListener(e -> {
-					relevanceStatusInfoLabel
-							.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -244,32 +244,23 @@ public class EventsView extends AbstractView {
 
 			// Bulk operation dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
-							ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.asMultiSelect().getSelectedItems());
-						}),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getEventController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-								public void run() {
-									navigateTo(criteria);
-								}
-							});
-						}),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getEventController().archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-								public void run() {
-									navigateTo(criteria);
-								}
-							});
-						}),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getEventController().dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-								public void run() {
-									navigateTo(criteria);
-								}
-							});
-						}, false)
-				);
+				bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkEdit), VaadinIcons.ELLIPSIS_H, selectedItem -> {
+						ControllerProvider.getEventController().showBulkEventDataEditComponent(grid.asMultiSelect().getSelectedItems());
+					}),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getEventController()
+							.deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+						ControllerProvider.getEventController()
+							.archiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}),
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+						ControllerProvider.getEventController()
+							.dearchiveAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
+					}, false));
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
 				actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -294,6 +285,7 @@ public class EventsView extends AbstractView {
 	}
 
 	public void updateFilterComponents() {
+
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
@@ -308,6 +300,7 @@ public class EventsView extends AbstractView {
 	}
 
 	private void updateStatusButtons() {
+
 		statusButtons.keySet().forEach(b -> {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
@@ -317,9 +310,8 @@ public class EventsView extends AbstractView {
 		});
 		CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeStatusButton != null) {
-			activeStatusButton.setCaption(statusButtons.get(activeStatusButton)
-					+ LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+			activeStatusButton
+				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
 	}
-
 }

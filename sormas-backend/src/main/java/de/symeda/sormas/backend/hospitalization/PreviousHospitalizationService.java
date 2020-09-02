@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
@@ -43,31 +43,30 @@ public class PreviousHospitalizationService extends AbstractAdoService<PreviousH
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq,
-                                      From<PreviousHospitalization, PreviousHospitalization> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PreviousHospitalization, PreviousHospitalization> from) {
 		// A user should not directly query for this
 		throw new UnsupportedOperationException();
 	}
 
 	public List<Object[]> getFirstPreviousHospitalizations(List<Long> caseIds) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<PreviousHospitalization> prevHospRoot = cq.from(getElementClass());
-		Join<PreviousHospitalization, Hospitalization> hospitalizationJoin = prevHospRoot.join(PreviousHospitalization.HOSPITALIZATION, JoinType.LEFT);
+		Join<PreviousHospitalization, Hospitalization> hospitalizationJoin =
+			prevHospRoot.join(PreviousHospitalization.HOSPITALIZATION, JoinType.LEFT);
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Hospitalization> caseHospitalizationJoin = caseRoot.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		
-		cq.multiselect(
-				caseRoot.get(Case.ID),
-				prevHospRoot.get(PreviousHospitalization.ID));
-		
+
+		cq.multiselect(caseRoot.get(Case.ID), prevHospRoot.get(PreviousHospitalization.ID));
+
 		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(cb.and(
+		cq.where(
+			cb.and(
 				caseIdsExpression.in(caseIds),
 				cb.equal(hospitalizationJoin.get(Hospitalization.ID), caseHospitalizationJoin.get(Hospitalization.ID))));
 		cq.orderBy(cb.asc(caseRoot.get(Case.ID)), cb.asc(prevHospRoot.get(PreviousHospitalization.ADMISSION_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
-
 }

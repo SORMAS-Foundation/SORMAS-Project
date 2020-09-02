@@ -30,6 +30,7 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 	private ClinicalVisitCriteria clinicalVisitCriteria = new ClinicalVisitCriteria();
 
 	public ClinicalVisitGrid(CaseReferenceDto caseRef) {
+
 		setSizeFull();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -43,8 +44,14 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		VaadinUiUtil.addIconColumn(generatedContainer, EDIT_BTN_ID, VaadinIcons.EDIT);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(EDIT_BTN_ID, ClinicalVisitIndexDto.VISIT_DATE_TIME, ClinicalVisitIndexDto.VISITING_PERSON, ClinicalVisitIndexDto.TEMPERATURE,
-				ClinicalVisitIndexDto.BLOOD_PRESSURE, ClinicalVisitIndexDto.HEART_RATE, ClinicalVisitIndexDto.VISIT_REMARKS);
+		setColumns(
+			EDIT_BTN_ID,
+			ClinicalVisitIndexDto.VISIT_DATE_TIME,
+			ClinicalVisitIndexDto.VISITING_PERSON,
+			ClinicalVisitIndexDto.TEMPERATURE,
+			ClinicalVisitIndexDto.BLOOD_PRESSURE,
+			ClinicalVisitIndexDto.HEART_RATE,
+			ClinicalVisitIndexDto.VISIT_REMARKS);
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
@@ -52,13 +59,14 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 		getColumn(ClinicalVisitIndexDto.VISIT_DATE_TIME).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(
-					ClinicalVisitIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
+			column.setHeaderCaption(
+				I18nProperties.getPrefixCaption(ClinicalVisitIndexDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
 		addItemClickListener(e -> {
 			if (EDIT_BTN_ID.equals(e.getPropertyId()) || e.isDoubleClick()) {
-				ControllerProvider.getClinicalCourseController().openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
+				ControllerProvider.getClinicalCourseController()
+					.openClinicalVisitEditForm((ClinicalVisitIndexDto) e.getItemId(), caseRef.getUuid(), this::reload);
 			}
 		});
 	}
@@ -89,5 +97,4 @@ public class ClinicalVisitGrid extends Grid implements V7AbstractGrid<ClinicalVi
 	public ClinicalVisitCriteria getCriteria() {
 		return clinicalVisitCriteria;
 	}
-
 }

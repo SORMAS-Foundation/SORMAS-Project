@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.caze.importer;
 
@@ -37,29 +37,38 @@ import de.symeda.sormas.ui.importer.ImportReceiver;
 public class CaseImportLayout extends AbstractImportLayout {
 
 	public CaseImportLayout() {
+
 		super();
-		
+
 		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2, FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString(), "sormas_import_case_template.csv");
+		addDownloadImportTemplateComponent(
+			2,
+			FacadeProvider.getImportFacade().getCaseImportTemplateFilePath().toString(),
+			"sormas_import_case_template.csv");
 		addImportCsvComponent(3, new ImportReceiver("_case_import_", new Consumer<File>() {
+
 			@Override
 			public void accept(File file) {
 				resetDownloadErrorReportButton();
-				
+
 				try {
 					CaseImporter importer = new CaseImporter(file, true, currentUser);
 					importer.startImport(new Consumer<StreamResource>() {
+
 						@Override
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
 					}, currentUI, true);
 				} catch (IOException e) {
-					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 				}
 			}
 		}));
 		addDownloadErrorReportComponent(4);
 	}
-
 }

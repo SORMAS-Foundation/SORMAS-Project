@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.symptoms;
 
@@ -1810,10 +1810,10 @@ public class Symptoms extends AbstractDomainObject {
 		appendTrue(string, lesionsGenitals, SymptomsDto.LESIONS_GENITALS);
 		appendTrue(string, lesionsAllOverBody, SymptomsDto.LESIONS_ALL_OVER_BODY);
 		// TODO images should have more specific caption to be included here
-		//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
-		//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
-		//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
-		//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
+//		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
+//		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
+//		appendYesSymptom(string, lesionsResembleImg3, SymptomsDto.LESIONS_RESEMBLE_IMG3);
+//		appendYesSymptom(string, lesionsResembleImg4, SymptomsDto.LESIONS_RESEMBLE_IMG4);
 		appendNotNullDateValue(string, lesionsOnsetDate, SymptomsDto.LESIONS_ONSET_DATE, language);
 		appendYesSymptom(string, lymphadenopathy, SymptomsDto.LYMPHADENOPATHY);
 		appendYesSymptom(string, lymphadenopathyInguinal, SymptomsDto.LYMPHADENOPATHY_INGUINAL);
@@ -1883,8 +1883,7 @@ public class Symptoms extends AbstractDomainObject {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null))
-					.append(": ");
+			stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, dtoPropertyId, null)).append(": ");
 
 			stringBuilder.append(value);
 		}

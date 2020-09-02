@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BeanProviderHelper;
 
 public final class FacadeProviderMock extends FacadeProvider {
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <P> P lookupEjbRemote(Class<P> clazz) {

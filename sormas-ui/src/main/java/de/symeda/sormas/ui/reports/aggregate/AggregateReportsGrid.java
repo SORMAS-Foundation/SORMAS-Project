@@ -11,29 +11,32 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 
 @SuppressWarnings("serial")
 public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, AggregateReportCriteria> {
-	
+
 	public AggregateReportsGrid() {
+
 		super(AggregatedCaseCountDto.class);
 		setSizeFull();
 		setSelectionMode(SelectionMode.NONE);
 		setInEagerMode(true);
-		
-		setColumns(AggregatedCaseCountDto.DISEASE, AggregatedCaseCountDto.NEW_CASES,
-				AggregatedCaseCountDto.LAB_CONFIRMATIONS, AggregatedCaseCountDto.DEATHS);
+
+		setColumns(
+			AggregatedCaseCountDto.DISEASE,
+			AggregatedCaseCountDto.NEW_CASES,
+			AggregatedCaseCountDto.LAB_CONFIRMATIONS,
+			AggregatedCaseCountDto.DEATHS);
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					AggregatedCaseCountDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(AggregatedCaseCountDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-		
+
 		reload();
 	}
-	
+
 	public void reload() {
-		ListDataProvider<AggregatedCaseCountDto> dataProvider = DataProvider.fromStream(
-				FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream());
+
+		ListDataProvider<AggregatedCaseCountDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream());
 		setDataProvider(dataProvider);
 		dataProvider.refreshAll();
 	}
-
 }

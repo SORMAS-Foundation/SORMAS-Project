@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.auditlog;
 
@@ -39,18 +39,17 @@ public final class AuditLogDateHelper {
 	 * From this year on the conversion via Time API works without the shift of 6:32 minutes or 2 days.
 	 */
 	private static final int CONSISTENT_YEARS_START = 1894;
- 
 
 	/**
 	 * Pattern used to parse {@link LocalDate} to {@link Date}.
 	 */
 	private static final String LOCAL_DATE_STRING_PATTERN = "yyyy-MM-dd";
-	
+
 	/**
 	 * Pattern used to parse {@link LocalDateTime} to {@link Date}.
 	 */
 	private static final String LOCAL_DATE_TIME_STRING_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-	
+
 	/**
 	 * Transforms a {@link LocalDateTime} to a {@link Date}.
 	 * 
@@ -61,19 +60,19 @@ public final class AuditLogDateHelper {
 		if (localDateTime == null) {
 			return null;
 		}
- 
+
 		final Date utilDate;
 		if (localDateTime.getYear() >= CONSISTENT_YEARS_START) {
 			Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
 			utilDate = Date.from(instant);
 		} else {
- 
+
 			utilDate = parse(localDateTime, LOCAL_DATE_TIME_STRING_PATTERN);
 		}
- 
+
 		return utilDate;
 	}
-	
+
 	/**
 	 * Transforms a {@link LocalDate} to a {@link Date} at 00:00h.
 	 * 
@@ -84,7 +83,7 @@ public final class AuditLogDateHelper {
 		if (localDate == null) {
 			return null;
 		}
- 
+
 		final Date utilDate;
 		if (localDate.getYear() >= CONSISTENT_YEARS_START) {
 			Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -92,16 +91,15 @@ public final class AuditLogDateHelper {
 		} else {
 			utilDate = parse(localDate, LOCAL_DATE_STRING_PATTERN);
 		}
- 
+
 		return utilDate;
 	}
-	
+
 	public static Date of(int year, Month month, int dayOfMonth) {
 		LocalDate localDate = LocalDate.of(year, month, dayOfMonth);
 		return from(localDate);
 	}
-	
-	
+
 	private static Date parse(Temporal temporal, final String pattern) {
 		try {
 			String temporalFormatted = DateTimeFormatter.ofPattern(pattern).format(temporal);
@@ -111,5 +109,4 @@ public final class AuditLogDateHelper {
 			throw new DateTimeException(String.format("Unexpected error while trying to parse %s to Date", temporal.getClass().getSimpleName()), e);
 		}
 	}
-	
 }

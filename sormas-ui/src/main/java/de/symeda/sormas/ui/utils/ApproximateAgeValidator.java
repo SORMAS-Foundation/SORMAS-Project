@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -27,34 +27,33 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 
 @SuppressWarnings("serial")
 public class ApproximateAgeValidator extends AbstractValidator<Integer> {
-	
-	TextField ageField;
-	Supplier<ApproximateAgeType> ageTypeSupplier;
-	
+
+	private TextField ageField;
+	private Supplier<ApproximateAgeType> ageTypeSupplier;
+
 	public ApproximateAgeValidator(TextField ageField, Supplier<ApproximateAgeType> ageTypeSupplier, String errorMessage) {
 		super(errorMessage);
 		this.ageField = ageField;
 		this.ageTypeSupplier = ageTypeSupplier;
 	}
-	
+
 	public ApproximateAgeValidator(TextField ageField, ComboBox ageTypeField, String errorMessage) {
 		this(ageField, () -> (ApproximateAgeType) ageTypeField.getValue(), errorMessage);
 	}
-	
+
 	@Override
 	protected boolean isValidValue(Integer age) {
 		ApproximateAgeType ageType = ageTypeSupplier.get();
-		
+
 		if (!ApproximateAgeType.YEARS.equals(ageType) || age == null) {
 			return true;
 		} else {
 			return age <= 150;
 		}
 	}
-	
+
 	@Override
 	public Class<Integer> getType() {
 		return Integer.class;
 	}
-
 }

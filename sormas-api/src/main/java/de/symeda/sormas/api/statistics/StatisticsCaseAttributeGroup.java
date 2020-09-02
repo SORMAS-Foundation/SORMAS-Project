@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.statistics;
 
@@ -23,15 +23,16 @@ import java.util.List;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum StatisticsCaseAttributeGroup {
-	
+
 	TIME,
 	PLACE,
 	PERSON,
 	CASE;
-	
+
 	private List<StatisticsCaseAttribute> attributes;
-	
+
 	public List<StatisticsCaseAttribute> getAttributes() {
+
 		if (attributes == null) {
 			attributes = new ArrayList<>();
 			for (StatisticsCaseAttribute attribute : StatisticsCaseAttribute.values()) {
@@ -43,9 +44,8 @@ public enum StatisticsCaseAttributeGroup {
 
 		return attributes;
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

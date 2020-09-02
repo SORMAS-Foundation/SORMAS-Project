@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -21,13 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 /**
@@ -37,31 +34,31 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
  */
 @SuppressWarnings("serial")
 public abstract class ConfirmationComponent extends HorizontalLayout {
-	
+
 	private transient List<DoneListener> doneListeners = new ArrayList<DoneListener>();
 
 	private Button confirmButton;
 	private Button cancelButton;
-	
+
 	public ConfirmationComponent() {
 		this(false);
 	}
-	
+
 	public ConfirmationComponent(boolean inverseOrder) {
 		setSpacing(true);
 		setSizeUndefined();
-		
+
 		Button discardButton = getCancelButton();
 		if (!inverseOrder)
 			addComponent(discardButton);
-		
+
 		Button commitButton = getConfirmButton();
 		addComponent(commitButton);
 
 		if (inverseOrder)
 			addComponent(discardButton);
 	}
-	
+
 	public Button getConfirmButton() {
 		if (confirmButton == null) {
 			confirmButton = ButtonHelper.createButton(Captions.actionConfirm, event -> {
@@ -72,7 +69,7 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 
 		return confirmButton;
 	}
-	
+
 	public Button getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = ButtonHelper.createButton(Captions.actionCancel, event -> {
@@ -99,6 +96,8 @@ public abstract class ConfirmationComponent extends HorizontalLayout {
 	}
 
 	protected abstract void onConfirm();
-	
-	protected void onCancel() {};
+
+	protected void onCancel() {
+
+	};
 }

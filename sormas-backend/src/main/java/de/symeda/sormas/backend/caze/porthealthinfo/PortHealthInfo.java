@@ -19,9 +19,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class PortHealthInfo extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 3289289799891965437L;
-	
+
 	public static final String TABLE_NAME = "porthealthinfo";
-	
+
 	// Airport
 	private String airlineName;
 	private String flightNumber;
@@ -36,19 +36,19 @@ public class PortHealthInfo extends AbstractDomainObject {
 	private String transitStopDetails3;
 	private String transitStopDetails4;
 	private String transitStopDetails5;
-	
+
 	// Seaport
 	private String vesselName;
 	private String vesselDetails;
 	private String portOfDeparture;
 	private String lastPortOfCall;
-	
+
 	// Ground Crossing
 	private ConveyanceType conveyanceType;
 	private String conveyanceTypeDetails;
 	private String departureLocation;
 	private String finalDestination;
-	
+
 	// Other
 	private String details;
 
@@ -248,5 +248,4 @@ public class PortHealthInfo extends AbstractDomainObject {
 	public void setDetails(String details) {
 		this.details = details;
 	}
-		
 }

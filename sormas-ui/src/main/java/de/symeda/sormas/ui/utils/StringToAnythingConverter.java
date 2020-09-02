@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -23,18 +23,18 @@ import com.vaadin.v7.data.util.converter.Converter;
 
 @SuppressWarnings("serial")
 public class StringToAnythingConverter<T> implements Converter<String, T> {
-	
+
 	private Class<T> modelType;
-	
+
 	public StringToAnythingConverter(Class<T> modelType) {
 		this.modelType = modelType;
 	}
-	
+
 	@Override
 	public T convertToModel(String value, Class<? extends T> targetType, Locale locale) throws ConversionException {
 		return null;
 	}
-	
+
 	@Override
 	public String convertToPresentation(T value, Class<? extends String> targetType, Locale locale) throws ConversionException {
 		return value == null ? null : value.toString();
@@ -44,9 +44,8 @@ public class StringToAnythingConverter<T> implements Converter<String, T> {
 	public Class<T> getModelType() {
 		return modelType;
 	}
-	
+
 	public Class<String> getPresentationType() {
 		return String.class;
 	}
-	
 }

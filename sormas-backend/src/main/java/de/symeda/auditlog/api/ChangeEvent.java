@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
@@ -43,7 +43,7 @@ public class ChangeEvent {
 		this.changeDate = null;
 		this.userId = null;
 		this.transactionId = null;
-	} 
+	}
 
 	public ChangeEvent(ChangeEvent changeEvent, EntityId oid, LocalDateTime changeDate, UserId userId, TransactionId transactionId) {
 
@@ -55,7 +55,12 @@ public class ChangeEvent {
 		this.transactionId = transactionId.getTransactionId();
 	}
 
-	public ChangeEvent(EntityId oid, Map<String, String> newValues, ChangeType changeType, LocalDateTime changeDate, UserId userId,
+	public ChangeEvent(
+		EntityId oid,
+		Map<String, String> newValues,
+		ChangeType changeType,
+		LocalDateTime changeDate,
+		UserId userId,
 		TransactionId transactionId) {
 
 		this.oid = oid;
@@ -68,6 +73,7 @@ public class ChangeEvent {
 
 	/**
 	 * Returns the {@link TransactionId} to describe the current transaction (user + transaction).
+	 * 
 	 * @return
 	 */
 	public String getTransactionId() {
@@ -76,6 +82,7 @@ public class ChangeEvent {
 
 	/**
 	 * Returns the {@link EntityId} to describe the changes entity.
+	 * 
 	 * @return
 	 */
 	public EntityId getOid() {
@@ -97,10 +104,10 @@ public class ChangeEvent {
 	/**
 	 * Returns the list of all changed attributes with the <code>key</code> of the map being the name of the changed attribute
 	 * and the <code>value</code> being its new value.
+	 * 
 	 * @return
 	 */
 	public Map<String, String> getNewValues() {
 		return newValues;
 	}
-
 }

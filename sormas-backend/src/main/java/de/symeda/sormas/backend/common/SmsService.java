@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -50,11 +50,12 @@ public class SmsService {
 
 	@Asynchronous
 	public void sendSms(String phoneNumber, String subject, String content) throws IOException, NexmoClientException, InvalidPhoneNumberException {
+
 		// Remove the initial + that indicates the beginning of the country code to match the Nexmo specification of allowed number formats
 		if (phoneNumber.startsWith("+")) {
 			phoneNumber = phoneNumber.substring(1);
 		}
-		
+
 		AuthMethod auth = new TokenAuthMethod(configFacade.getSmsAuthKey(), configFacade.getSmsAuthSecret());
 		NexmoClient client = new NexmoClient(auth);
 
@@ -62,22 +63,17 @@ public class SmsService {
 		InsightClient insightClient = client.getInsightClient();
 		StandardInsightResponse insightResponse = insightClient.getStandardNumberInsight(phoneNumber);
 		if (insightResponse.getStatus() != 0 || insightResponse.getCurrentCarrier().getNetworkType() != NetworkType.MOBILE) {
-			throw new InvalidPhoneNumberException("Cannot send an SMS to the specified phone number" , null);
+			throw new InvalidPhoneNumberException("Cannot send an SMS to the specified phone number", null);
 		}
 
-		SmsSubmissionResult[] results = client.getSmsClient().submitMessage(new TextMessage(
-				"SORMAS",
-				phoneNumber,
-				content));
-		
+		SmsSubmissionResult[] results = client.getSmsClient().submitMessage(new TextMessage("SORMAS", phoneNumber, content));
+
 		for (SmsSubmissionResult result : results) {
 			if (result.getStatus() == 0) {
 				logger.info("SMS successfully sent to {}.", phoneNumber);
-			} else  if (result.getErrorText() != null) {
+			} else if (result.getErrorText() != null) {
 				logger.info("Error sending SMS to {} with following error: {}.", phoneNumber, result.getErrorText());
 			}
 		}
-		
 	}
-
 }

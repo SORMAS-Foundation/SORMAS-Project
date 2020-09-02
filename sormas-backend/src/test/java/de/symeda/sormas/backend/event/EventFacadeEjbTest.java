@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
@@ -53,12 +53,27 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testDashboardEventListCreation() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE, 
-				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 
-		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(new EventCriteria().region(event.getEventLocation().getRegion())
-				.district(event.getEventLocation().getDistrict()).disease(event.getDisease()).reportedBetween(DateHelper.subtractDays(new Date(),  1), DateHelper.addDays(new Date(), 1)));
+		List<DashboardEventDto> dashboardEventDtos = getEventFacade().getNewEventsForDashboard(
+			new EventCriteria().region(event.getEventLocation().getRegion())
+				.district(event.getEventLocation().getDistrict())
+				.disease(event.getDisease())
+				.reportedBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1)));
 
 		// List should have one entry
 		assertEquals(1, dashboardEventDtos.size());
@@ -66,13 +81,26 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testEventDeletion() {
+
 		Date since = new Date();
-		
+
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
-				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
+		EventDto event = creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
 
@@ -86,14 +114,26 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 	}
-	
+
 	@Test
 	public void testGetIndexList() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
-				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 
 		EventCriteria eventCriteria = new EventCriteria();
 		eventCriteria.eventStatus(EventStatus.POSSIBLE);
@@ -105,22 +145,34 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testArchiveOrDearchiveEvent() {
-		 RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		EventDto event = creator.createEvent(EventStatus.POSSIBLE, "Description", "First", "Name", "12345", TypeOfPlace.PUBLIC_PLACE,
-				DateHelper.subtractDays(new Date(), 1), new Date(), user.toReference(), user.toReference(), Disease.EVD, rdcf.district);
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		creator.createEventParticipant(event.toReference(), eventPerson, "Description");
 		Date testStartDate = new Date();
-		
+
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
-		
+
 		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
-		
+
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllActiveEventsAfter(null).size());
 		assertEquals(0, getEventFacade().getAllActiveUuids().size());
@@ -144,21 +196,43 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testArchiveAllArchivableEvents() {
-		
+
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcfEntities).toReference();
 
 		// One archived event
-		EventDto event1 = creator.createEvent(EventStatus.CONFIRMED, "", "", "", "", TypeOfPlace.MEANS_OF_TRANSPORT,
-				new Date(), new Date(), user, user, Disease.ANTHRAX, rdcf.district);
+		EventDto event1 = creator.createEvent(
+			EventStatus.CONFIRMED,
+			"",
+			"",
+			"",
+			"",
+			TypeOfPlace.MEANS_OF_TRANSPORT,
+			new Date(),
+			new Date(),
+			user,
+			user,
+			Disease.ANTHRAX,
+			rdcf.district);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
 		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
 
 		// One other event
-		EventDto event2 = creator.createEvent(EventStatus.POSSIBLE, "", "", "", "", TypeOfPlace.HOSPITAL, new Date(),
-				new Date(), user, user, Disease.DENGUE, rdcf.district);
-		
+		EventDto event2 = creator.createEvent(
+			EventStatus.POSSIBLE,
+			"",
+			"",
+			"",
+			"",
+			TypeOfPlace.HOSPITAL,
+			new Date(),
+			new Date(),
+			user,
+			user,
+			Disease.DENGUE,
+			rdcf.district);
+
 		assertTrue(cut.isArchived(event1.getUuid()));
 		assertFalse(cut.isArchived(event2.getUuid()));
 
@@ -172,5 +246,4 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(cut.isArchived(event1.getUuid()));
 		assertTrue(cut.isArchived(event2.getUuid()));
 	}
-
 }

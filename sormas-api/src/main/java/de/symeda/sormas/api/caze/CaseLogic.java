@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
@@ -36,12 +36,14 @@ public final class CaseLogic {
 	private static final String EPID_PATTERN_PREFIX = "([A-Z]{3}-){3}[0-9]{2}-";
 
 	public static void validateInvestigationDoneAllowed(CaseDataDto caze) throws ValidationException {
+
 		if (caze.getCaseClassification() == CaseClassification.NOT_CLASSIFIED) {
 			throw new ValidationException("Not allowed to set investigation status to done for an unclassified case.");
 		}
 	}
 
 	public static Date getStartDate(Date onsetDate, Date reportDate) {
+
 		if (onsetDate != null) {
 			return onsetDate;
 		} else {
@@ -50,6 +52,7 @@ public final class CaseLogic {
 	}
 
 	public static boolean isEpidNumberPrefix(String s) {
+
 		if (StringUtils.isEmpty(s)) {
 			return false;
 		}
@@ -58,6 +61,7 @@ public final class CaseLogic {
 	}
 
 	public static boolean isCompleteEpidNumber(String s) {
+
 		if (StringUtils.isEmpty(s)) {
 			return false;
 		}
@@ -66,6 +70,7 @@ public final class CaseLogic {
 	}
 
 	public static void createPreviousHospitalizationAndUpdateHospitalization(CaseDataDto caze, CaseDataDto oldCase) {
+
 		PreviousHospitalizationDto prevHosp = PreviousHospitalizationDto.build(oldCase);
 		caze.getHospitalization().getPreviousHospitalizations().add(prevHosp);
 		caze.getHospitalization().setHospitalizedPreviously(YesNoUnknown.YES);
@@ -73,5 +78,4 @@ public final class CaseLogic {
 		caze.getHospitalization().setDischargeDate(null);
 		caze.getHospitalization().setIsolated(null);
 	}
-
 }

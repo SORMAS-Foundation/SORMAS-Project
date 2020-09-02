@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
@@ -88,6 +88,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	@Override
 	public CaseCriteria clone() {
+
 		try {
 			return (CaseCriteria) super.clone();
 		} catch (CloneNotSupportedException e) {
@@ -123,9 +124,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.disease = disease;
 	}
 
-	public CaseCriteria disease(Disease disease){
+	public CaseCriteria disease(Disease disease) {
 		setDisease(disease);
-
 		return this;
 	}
 
@@ -137,9 +137,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.region = region;
 	}
 
-	public CaseCriteria region(RegionReferenceDto region){
+	public CaseCriteria region(RegionReferenceDto region) {
 		setRegion(region);
-
 		return this;
 	}
 
@@ -151,9 +150,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.district = district;
 	}
 
-	public CaseCriteria district(DistrictReferenceDto district){
+	public CaseCriteria district(DistrictReferenceDto district) {
 		setDistrict(district);
-
 		return this;
 	}
 
@@ -170,9 +168,11 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	}
 
 	/**
-	 * @param newCaseDateTo will automatically be set to the end of the day
+	 * @param newCaseDateTo
+	 *            will automatically be set to the end of the day
 	 */
 	public CaseCriteria newCaseDateBetween(Date newCaseDateFrom, Date newCaseDateTo, NewCaseDateType newCaseDateType) {
+
 		this.newCaseDateFrom = newCaseDateFrom;
 		this.newCaseDateTo = newCaseDateTo;
 		this.newCaseDateType = newCaseDateType;
@@ -227,7 +227,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public CaseCriteria person(PersonReferenceDto person) {
 		setPerson(person);
-
 		return this;
 	}
 
@@ -371,9 +370,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.creationDateFrom = creationDateFrom;
 	}
 
-	public CaseCriteria creationDateFrom(Date creationDateFrom){
+	public CaseCriteria creationDateFrom(Date creationDateFrom) {
 		setCreationDateFrom(creationDateFrom);
-
 		return this;
 	}
 
@@ -385,9 +383,8 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 		this.creationDateTo = creationDateTo;
 	}
 
-	public CaseCriteria creationDateTo(Date creationDateTo){
+	public CaseCriteria creationDateTo(Date creationDateTo) {
 		setCreationDateTo(creationDateTo);
-
 		return this;
 	}
 
@@ -406,5 +403,4 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
 	}
-
 }

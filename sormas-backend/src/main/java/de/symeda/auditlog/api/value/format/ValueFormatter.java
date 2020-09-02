@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -22,7 +22,7 @@ package de.symeda.auditlog.api.value.format;
  * 
  * @author Stefan Kock
  * @param <V>
- *      	Type of the {@code value} to format.
+ *            Type of the {@code value} to format.
  */
 public interface ValueFormatter<V> {
 
@@ -30,8 +30,8 @@ public interface ValueFormatter<V> {
 	 * Formats the given value as String.
 	 * 
 	 * @param value
-	 *        	Value to format.
-	 * @return 	String format of the given value.
+	 *            Value to format.
+	 * @return String format of the given value.
 	 */
 	String format(V value);
 }

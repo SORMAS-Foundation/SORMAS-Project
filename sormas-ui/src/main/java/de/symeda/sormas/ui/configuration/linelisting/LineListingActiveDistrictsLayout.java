@@ -16,14 +16,15 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 public class LineListingActiveDistrictsLayout extends CssLayout {
 
 	private List<FeatureConfigurationIndexDto> configurations;
-	
+
 	public LineListingActiveDistrictsLayout(List<FeatureConfigurationIndexDto> configurations) {
 		this.configurations = configurations;
-	
+
 		buildLayout();
 	}
-	
+
 	private void buildLayout() {
+
 		for (FeatureConfigurationIndexDto config : configurations) {
 			StringBuilder captionBuilder = new StringBuilder();
 			captionBuilder.append("<b>").append(config.getDistrictName()).append("</b><br/>");
@@ -32,12 +33,16 @@ public class LineListingActiveDistrictsLayout extends CssLayout {
 			} else {
 				captionBuilder.append(I18nProperties.getString(Strings.messageNoEndDate));
 			}
-			
+
 			Label configLabel = new Label(captionBuilder.toString(), ContentMode.HTML);
-			CssStyles.style(configLabel, CssStyles.LABEL_ROUNDED_CORNERS, CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT, CssStyles.ALIGN_CENTER,
-					CssStyles.HSPACE_LEFT_4, CssStyles.VSPACE_4);
+			CssStyles.style(
+				configLabel,
+				CssStyles.LABEL_ROUNDED_CORNERS,
+				CssStyles.LABEL_BACKGROUND_FOCUS_LIGHT,
+				CssStyles.ALIGN_CENTER,
+				CssStyles.HSPACE_LEFT_4,
+				CssStyles.VSPACE_4);
 			addComponent(configLabel);
 		}
 	}
-	
 }

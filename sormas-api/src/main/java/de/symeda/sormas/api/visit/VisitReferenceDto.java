@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.visit;
 
@@ -24,16 +24,15 @@ public class VisitReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -441664767075414789L;
 
 	public VisitReferenceDto() {
-		
+
 	}
-	
+
 	public VisitReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public VisitReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}
-	
 }

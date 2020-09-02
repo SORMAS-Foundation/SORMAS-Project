@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -23,16 +23,15 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 
 public class StatisticsController {
-	
+
 	public StatisticsController() {
-		
+
 	}
-	
+
 	public void registerViews(Navigator navigator) {
 		navigator.addView(StatisticsView.VIEW_NAME, StatisticsView.class);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DATABASE_EXPORT_ACCESS)) {
 			navigator.addView(DatabaseExportView.VIEW_NAME, DatabaseExportView.class);
 		}
 	}
-
 }

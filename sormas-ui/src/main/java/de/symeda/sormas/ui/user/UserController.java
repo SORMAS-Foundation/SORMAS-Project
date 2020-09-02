@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
@@ -61,18 +61,17 @@ public class UserController {
 		CommitDiscardWrapperComponent<UserEditForm> userCreateComponent = getUserCreateComponent();
 		Window window = VaadinUiUtil.showModalPopupWindow(userCreateComponent, I18nProperties.getString(Strings.headingCreateNewUser));
 		// user form is too big for typical screens
-		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS);
-		window.setHeight(90, Unit.PERCENTAGE); 
+		window.setWidth(userCreateComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
+		window.setHeight(90, Unit.PERCENTAGE);
 	}
 
 	public void edit(UserDto user) {
 		CommitDiscardWrapperComponent<UserEditForm> userComponent = getUserEditComponent(user.getUuid());
 		Window window = VaadinUiUtil.showModalPopupWindow(userComponent, I18nProperties.getString(Strings.headingEditUser));
 		// user form is too big for typical screens
-		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64+20, Unit.PIXELS); 
-		window.setHeight(90, Unit.PERCENTAGE); 
+		window.setWidth(userComponent.getWrappedComponent().getWidth() + 64 + 20, Unit.PIXELS);
+		window.setHeight(90, Unit.PERCENTAGE);
 	}
-
 
 	public void overview() {
 		String navigationState = UsersView.VIEW_NAME;
@@ -91,22 +90,24 @@ public class UserController {
 		}
 
 		Page page = SormasUI.get().getPage();
-		page.setUriFragment("!" + UsersView.VIEW_NAME + "/"
-				+ fragmentParameter, false);
+		page.setUriFragment("!" + UsersView.VIEW_NAME + "/" + fragmentParameter, false);
 	}
 
 	public CommitDiscardWrapperComponent<UserEditForm> getUserEditComponent(final String userUuid) {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(userEditForm,
-				UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT), userEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
+			userEditForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT),
+			userEditForm.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);        
+		Button resetPasswordButton = createResetPasswordButton(userUuid, editView);
 		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!userEditForm.getFieldGroup().isModified()) {
@@ -125,10 +126,13 @@ public class UserController {
 
 		UserEditForm createForm = new UserEditForm(true);
 		createForm.setValue(UserDto.build());
-		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(createForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
+			createForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
@@ -140,7 +144,7 @@ public class UserController {
 			}
 		});
 		return editView;
-	}  
+	}
 
 	public boolean isLoginUnique(String uuid, String userName) {
 		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
@@ -156,19 +160,19 @@ public class UserController {
 		layout.addComponent(passwordLabel);
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
-		layout.setMargin(true);    	
+		layout.setMargin(true);
 	}
 
 	public List<UserReferenceDto> filterByDistrict(List<UserReferenceDto> users, DistrictReferenceDto district) {
 		List<UserDto> userDtos = new ArrayList<>();
-		for(UserReferenceDto userRef : users) {
+		for (UserReferenceDto userRef : users) {
 			userDtos.add(FacadeProvider.getUserFacade().getByUuid(userRef.getUuid()));
 		}
 
 		userDtos.removeIf(user -> user.getDistrict() == null || !user.getDistrict().equals(district));
 
 		List<UserReferenceDto> userRefs = new ArrayList<>();
-		for(UserDto user : userDtos) {
+		for (UserDto user : userDtos) {
 			userRefs.add(FacadeProvider.getUserFacade().getByUserNameAsReference(user.getUserName()));
 		}
 
@@ -186,14 +190,18 @@ public class UserController {
 	public Button createResetPasswordButton(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
 
 		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid, editView);
 				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
 				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
 				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
+
 					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(ClickEvent event) {
 						popupWindow.close();
@@ -206,13 +214,16 @@ public class UserController {
 
 	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, CommitDiscardWrapperComponent<UserEditForm> editView) {
 		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
+
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void onConfirm() {
 				onDone();
 				editView.discard();
 				makeNewPassword(userUuid);
 			}
+
 			@Override
 			protected void onCancel() {
 			}
@@ -227,8 +238,9 @@ public class UserController {
 		UserSettingsForm form = new UserSettingsForm();
 		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
 		form.setValue(user);
-		
-		final CommitDiscardWrapperComponent<UserSettingsForm> component = new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());
+
+		final CommitDiscardWrapperComponent<UserSettingsForm> component =
+			new CommitDiscardWrapperComponent<UserSettingsForm>(form, form.getFieldGroup());
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
@@ -244,11 +256,10 @@ public class UserController {
 
 		return component;
 	}
-	
+
 	public void setFlagIcons(ComboBox cbLanguage) {
 		for (Language language : Language.values()) {
 			cbLanguage.setItemIcon(language, new ThemeResource("img/flag-icons/" + language.name().toLowerCase() + ".png"));
 		}
 	}
-
 }

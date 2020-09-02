@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -28,26 +28,27 @@ import elemental.json.JsonValue;
 
 @SuppressWarnings("serial")
 public class CaseUuidRenderer extends HtmlRenderer {
-	
+
 	private final boolean withCreateCaseIfEmpty;
-	
+
 	public CaseUuidRenderer(boolean withCreateCaseIfEmpty) {
 		this.withCreateCaseIfEmpty = withCreateCaseIfEmpty;
 	}
-	
+
 	@Override
 	public JsonValue encode(String value) {
-		if(withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
-			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) +"'>" + I18nProperties.getCaption(Captions.actionCreate) + "</a> " + VaadinIcons.EDIT.getHtml();
+
+		if (withCreateCaseIfEmpty && (value == null || value.isEmpty())) {
+			value = "<a title='" + I18nProperties.getString(Strings.headingCreateNewCase) + "'>" + I18nProperties.getCaption(Captions.actionCreate)
+				+ "</a> " + VaadinIcons.EDIT.getHtml();
 			return super.encode(value);
 		}
-		
-    	if(value != null && !value.isEmpty()) {
-	    	value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
-	        return super.encode(value);
-    	} else {
-    		return null;
-    	}
+
+		if (value != null && !value.isEmpty()) {
+			value = "<a title='" + value + "'>" + DataHelper.getShortUuid(value) + "</a>";
+			return super.encode(value);
+		} else {
+			return null;
+		}
 	}
-	
 }

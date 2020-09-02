@@ -2,10 +2,12 @@ package de.symeda.sormas.ui.utils;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.MenuBar;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class MenuBarHelper {
-	public static MenuBar createDropDown(String captionKey, MenuBarItem... items){
+
+	public static MenuBar createDropDown(String captionKey, MenuBarItem... items) {
 		MenuBar menuBar = new MenuBar();
 		menuBar.setId(captionKey);
 
@@ -20,6 +22,7 @@ public class MenuBarHelper {
 	}
 
 	public static class MenuBarItem {
+
 		private String caption;
 		private Resource icon;
 		private MenuBar.Command command;

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -72,14 +72,15 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "0", second = "0", persistent = false)
 	public void deleteAllExpiredFeatureConfigurations() {
+
 		// Remove all feature configurations whose end dates have been reached
 		featureConfigurationFacade.deleteAllExpiredFeatureConfigurations(new Date());
-
 		logger.info("Deleted expired feature configurations");
 	}
 
 	@Schedule(hour = "1", minute = "5", second = "0", persistent = false)
 	public void generateAutomaticTasks() {
+
 		if (featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_FOLLOW_UP)) {
 			contactFacade.generateContactFollowUpTasks();
 		}
@@ -90,6 +91,7 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "10", second = "0", persistent = false)
 	public void cleanUpTemporaryFiles() {
+
 		Date now = new Date();
 		File exportFolder = new File(configFacade.getTempFilesPath());
 		int numberOfDeletedFiles = 0;
@@ -131,4 +133,3 @@ public class CronService {
 		}
 	}
 }
-

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration.infrastructure;
 
@@ -38,14 +38,15 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriteria> {
 
 	private static final long serialVersionUID = -4437531618828715458L;
-	
+
 	public DistrictsGrid(DistrictCriteria criteria) {
+
 		super(DistrictIndexDto.class);
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(DistrictsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
-		
+
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -53,42 +54,53 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
-		
-		setColumns(DistrictIndexDto.NAME, DistrictIndexDto.REGION, DistrictIndexDto.EPID_CODE,
-				DistrictIndexDto.EXTERNAL_ID, DistrictIndexDto.POPULATION, DistrictIndexDto.GROWTH_RATE);
+
+		setColumns(
+			DistrictIndexDto.NAME,
+			DistrictIndexDto.REGION,
+			DistrictIndexDto.EPID_CODE,
+			DistrictIndexDto.EXTERNAL_ID,
+			DistrictIndexDto.POPULATION,
+			DistrictIndexDto.GROWTH_RATE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getItem().getUuid()));
-		}	
-		
-		for(Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					DistrictIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		}
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
 	public void reload() {
 		getDataProvider().refreshAll();
 	}
-	
+
 	public void setLazyDataProvider() {
+
 		DataProvider<DistrictIndexDto, DistrictCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getDistrictFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getDistrictFacade().count(
-						query.getFilter().orElse(null));
-				});
+			query -> FacadeProvider.getDistrictFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getDistrictFacade().count(query.getFilter().orElse(null));
+			});
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<DistrictIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getDistrictFacade().getIndexList(getCriteria(), null, null, null).stream());
+
+		ListDataProvider<DistrictIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getDistrictFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-	
 }

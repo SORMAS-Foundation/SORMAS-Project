@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -28,19 +28,19 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 @SuppressWarnings("serial")
 public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGroupingKey {
-	
+
 	private final Integer year;
 	private final Integer week;
-	
+
 	public EpiWeek(Integer year, Integer week) {
 		this.year = year;
 		this.week = week;
 	}
-	
+
 	public Integer getYear() {
 		return year;
 	}
-	
+
 	public Integer getWeek() {
 		return week;
 	}
@@ -66,7 +66,7 @@ public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGro
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(year, week);
@@ -78,50 +78,67 @@ public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGro
 	}
 
 	public String toString(Language language) {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this), language) + ")") : "");
+
+		return I18nProperties.getString(Strings.weekShort) + " " + week
+			+ (year != null
+				? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - "
+					+ DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekEnd(this), language) + ")")
+				: "");
 	}
-	
+
 	/**
-	 * Returns a human-readable representation of the epi week, starting from the first day of the week until the specified end date. This should ideally lay within the same week.
+	 * Returns a human-readable representation of the epi week, starting from the first day of the week until the specified end date. This
+	 * should ideally lay within the same week.
 	 */
 	public String toString(Date endDate, Language language) {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatLocalDate(endDate, language) + ")") : "");
+
+		return I18nProperties.getString(Strings.weekShort) + " " + week
+			+ (year != null
+				? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - "
+					+ DateHelper.formatLocalDate(endDate, language) + ")")
+				: "");
 	}
-	
+
 	/**
-	 * Returns a human-readable representation of the epi week, starting from the first day of the week for as many days as specified by epi week length.
+	 * Returns a human-readable representation of the epi week, starting from the first day of the week for as many days as specified by epi
+	 * week length.
 	 */
 	public String toString(int epiWeekLength, Language language) {
-		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - " + DateHelper.formatLocalDate(DateHelper.addDays(DateHelper.getEpiWeekStart(this), epiWeekLength), language) + ")") : "");
+
+		return I18nProperties.getString(Strings.weekShort) + " " + week
+			+ (year != null
+				? ("-" + year + " (" + DateHelper.formatDateWithoutYear(DateHelper.getEpiWeekStart(this), language) + " - "
+					+ DateHelper.formatLocalDate(DateHelper.addDays(DateHelper.getEpiWeekStart(this), epiWeekLength), language) + ")")
+				: "");
 	}
-	
+
 	public String toShortString() {
 		return I18nProperties.getString(Strings.weekShort) + " " + week + (year != null ? ("-" + year) : "");
 	}
-	
+
 	public String toUrlString() {
 		return "year-" + year + "-week-" + week;
 	}
 
 	public static EpiWeek fromUrlString(String urlString) {
+
 		int dashIndex = urlString.indexOf("-");
 		int year = Integer.valueOf(urlString.substring(dashIndex + 1, urlString.indexOf("-", dashIndex + 1)));
 		int week = Integer.valueOf(urlString.substring(urlString.lastIndexOf("-") + 1));
 		return new EpiWeek(year, week);
 	}
-	
+
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		EpiWeek other = (EpiWeek) o;
-		
 		if (other == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
-		if ((this.getYear() == null && other.getYear() != null) ||
-				(this.getYear() != null && other.getYear() == null)) {
+		if ((this.getYear() == null && other.getYear() != null) || (this.getYear() != null && other.getYear() == null)) {
 			throw new UnsupportedOperationException("Can't compare an epi week with a year to an epi week without a year");
 		}
-		
+
 		if (this.equals(other)) {
 			return 0;
 		}
@@ -146,5 +163,4 @@ public class EpiWeek implements Serializable, Comparable<EpiWeek>, StatisticsGro
 	public int compareTo(EpiWeek o) {
 		return keyCompareTo(o);
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
@@ -45,7 +45,6 @@ public final class SymptomsHelper {
 	private static List<String> specialSymptomPropertyIds;
 	private static List<String> lesionsLocationsPropertyIds;
 
-	
 	public static List<Float> getTemperatureValues() {
 		List<Float> x = new ArrayList<Float>();
 		for (int i = 350; i <= 440; i++) {
@@ -53,7 +52,7 @@ public final class SymptomsHelper {
 		}
 		return x;
 	}
-	
+
 	public static List<Integer> getBloodPressureValues() {
 		return DataHelper.buildIntegerList(0, 300);
 	}
@@ -85,23 +84,25 @@ public final class SymptomsHelper {
 	public static String getTemperatureString(float value) {
 		return String.format("%.1f °C", value);
 	}
-	
+
 	public static String getDecimalString(int value) {
+
 		BigDecimal d = new BigDecimal(value).divide(new BigDecimal(100));
 		return d.toString();
 	}
 
 	public static String getBloodPressureString(Integer systolic, Integer diastolic) {
+
 		if (systolic == null && diastolic == null) {
 			return "";
 		}
 
 		StringBuilder bpStringBuilder = new StringBuilder();
 		bpStringBuilder.append(systolic != null ? systolic : "?")
-		.append("/")
-		.append(diastolic != null ? diastolic : "?")
-		.append(" ")
-		.append(I18nProperties.getString(Strings.mmhg));
+			.append("/")
+			.append(diastolic != null ? diastolic : "?")
+			.append(" ")
+			.append(I18nProperties.getString(Strings.mmhg));
 
 		return bpStringBuilder.toString();
 	}
@@ -118,6 +119,7 @@ public final class SymptomsHelper {
 	}
 
 	private static void buildSymptomPropertyIds() {
+
 		symptomPropertyIds = new ArrayList<String>();
 
 		for (Field field : SymptomsDto.class.getDeclaredFields()) {
@@ -128,6 +130,7 @@ public final class SymptomsHelper {
 	}
 
 	public static boolean isSpecialSymptom(String symptomPropertyId) {
+
 		if (specialSymptomPropertyIds == null) {
 			buildSpecialSymptomPropertyIds();
 		}
@@ -135,6 +138,7 @@ public final class SymptomsHelper {
 	}
 
 	private static void buildSpecialSymptomPropertyIds() {
+
 		specialSymptomPropertyIds = new ArrayList<String>();
 		specialSymptomPropertyIds.add(SymptomsDto.OTHER_HEMORRHAGIC_SYMPTOMS);
 		specialSymptomPropertyIds.add(SymptomsDto.OTHER_NON_HEMORRHAGIC_SYMPTOMS);
@@ -149,6 +153,7 @@ public final class SymptomsHelper {
 	}
 
 	public static List<String> getLesionsLocationsPropertyIds() {
+
 		if (lesionsLocationsPropertyIds == null) {
 			buildLesionsLocationsPropertyIds();
 		}
@@ -156,6 +161,7 @@ public final class SymptomsHelper {
 	}
 
 	private static void buildLesionsLocationsPropertyIds() {
+
 		lesionsLocationsPropertyIds = new ArrayList<String>();
 		lesionsLocationsPropertyIds.add(SymptomsDto.LESIONS_FACE);
 		lesionsLocationsPropertyIds.add(SymptomsDto.LESIONS_LEGS);
@@ -168,6 +174,7 @@ public final class SymptomsHelper {
 	}
 
 	public static void updateIsSymptomatic(SymptomsDto dto) {
+
 		if (dto == null) {
 			return;
 		}
@@ -192,20 +199,21 @@ public final class SymptomsHelper {
 	 * Updates the targetSymptoms according to the sourceSymptoms values. All sourceSymptoms that
 	 * are set to YES will also be set to YES in the targetSymptoms, while sourceSymptoms set to NO
 	 * will not result in an update of the corresponding targetSymptom. Additionally, the
-	 * targetSymptoms temperature will be updated if it is lower than the sourceSymptoms temperature, 
+	 * targetSymptoms temperature will be updated if it is lower than the sourceSymptoms temperature,
 	 * and Strings will be added to existing Strings when those do not contain them already.
 	 */
 	public static void updateSymptoms(SymptomsDto sourceSymptoms, SymptomsDto targetSymptoms) {
+
 		if (sourceSymptoms == null || targetSymptoms == null) {
 			throw new NullPointerException("sourceSymptoms and targetSymptoms can not be null.");
 		}
 
-		boolean newTemperatureSet = false;		
+		boolean newTemperatureSet = false;
 		try {
 			PropertyDescriptor[] pds = Introspector.getBeanInfo(SymptomsDto.class, EntityDto.class).getPropertyDescriptors();
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
-				if (pd.getReadMethod() == null|| pd.getWriteMethod() == null) {
+				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
 					continue;
 				}
 

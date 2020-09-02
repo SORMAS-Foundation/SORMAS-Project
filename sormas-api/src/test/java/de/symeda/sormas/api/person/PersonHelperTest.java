@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
@@ -21,13 +21,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.Language;
 import org.junit.Test;
+
+import de.symeda.sormas.api.Language;
 
 public class PersonHelperTest {
 
 	@Test
-	public void nameSimilarityExceedsThreshold() {
+	public void testNameSimilarityExceedsThreshold() {
+
 		String firstName = "Thomas Miller";
 		String secondName = "Tomas Miller";
 
@@ -60,7 +62,7 @@ public class PersonHelperTest {
 	}
 
 	@Test
-	public void nameSimilarityDeceedsThreshold() {
+	public void testNameSimilarityDeceedsThreshold() {
 		String firstName = "Thomas Miller";
 		String secondName = "Tomislav Millerton";
 

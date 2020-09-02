@@ -27,60 +27,64 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 
 	@EJB
 	private RegionService regionService;
-	
+
 	public PointOfEntryService() {
 		super(PointOfEntry.class);
 	}
-	
+
 	public List<PointOfEntry> getAllByDistrict(District district, boolean includeOthers) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
 		Root<PointOfEntry> pointOfEntry = cq.from(getElementClass());
-		
-		Predicate filter = cb.and(
-				cb.equal(pointOfEntry.get(PointOfEntry.DISTRICT), district),
-				cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), true));
+
+		Predicate filter = cb.and(cb.equal(pointOfEntry.get(PointOfEntry.DISTRICT), district), cb.equal(pointOfEntry.get(PointOfEntry.ACTIVE), true));
 
 		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(pointOfEntry.get(PointOfEntry.NAME)));
-		
+
 		List<PointOfEntry> pointsOfEntry = em.createQuery(cq).getResultList();
-		
+
 		if (includeOthers) {
 			pointsOfEntry.add(getByUuid(PointOfEntryDto.OTHER_AIRPORT_UUID));
 			pointsOfEntry.add(getByUuid(PointOfEntryDto.OTHER_SEAPORT_UUID));
 			pointsOfEntry.add(getByUuid(PointOfEntryDto.OTHER_GROUND_CROSSING_UUID));
 			pointsOfEntry.add(getByUuid(PointOfEntryDto.OTHER_POE_UUID));
 		}
-		
+
 		return pointsOfEntry;
 	}
-	
+
 	public List<PointOfEntry> getByName(String name, District district) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PointOfEntry> cq = cb.createQuery(getElementClass());
 		Root<PointOfEntry> from = cq.from(getElementClass());
-		
+
 		Predicate filter = cb.or(
-				cb.equal(cb.trim(from.get(PointOfEntry.NAME)), name.trim()),
-				cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase())
-				);
+			cb.equal(cb.trim(from.get(PointOfEntry.NAME)), name.trim()),
+			cb.equal(cb.lower(cb.trim(from.get(PointOfEntry.NAME))), name.trim().toLowerCase()));
 		if (!PointOfEntryDto.isNameOtherPointOfEntry(name.trim())) {
 			filter = cb.and(filter, cb.equal(from.get(PointOfEntry.DISTRICT), district));
 		}
-		
+
 		cq.where(filter);
 		return em.createQuery(cq).getResultList();
 	}
 
 	public Predicate buildCriteriaFilter(PointOfEntryCriteria criteria, CriteriaBuilder cb, Root<PointOfEntry> pointOfEntry) {
+
 		Predicate filter = null;
 		if (criteria.getRegion() != null) {
-			filter = and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter =
+				and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(pointOfEntry.join(PointOfEntry.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getType() != null) {
 			filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.POINT_OF_ENTRY_TYPE), criteria.getType()));
@@ -100,21 +104,21 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		}
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = and(cb, filter, cb.or(
-						cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false),
-						cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
+				filter = and(
+					cb,
+					filter,
+					cb.or(cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), false), cb.isNull(pointOfEntry.get(PointOfEntry.ARCHIVED))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = and(cb, filter, cb.equal(pointOfEntry.get(PointOfEntry.ARCHIVED), true));
 			}
 		}
-		
+
 		return filter;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<PointOfEntry, PointOfEntry> from) {
 		return null;
 	}
-
 }

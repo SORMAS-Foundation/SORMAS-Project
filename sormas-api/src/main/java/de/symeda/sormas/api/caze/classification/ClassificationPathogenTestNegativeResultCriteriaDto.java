@@ -26,6 +26,7 @@ public class ClassificationPathogenTestNegativeResultCriteriaDto extends Classif
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			if (pathogenTest.getTestResult() == PathogenTestResultType.NEGATIVE) {
 				if (pathogenTest.getTestedDisease() == testedDisease) {
@@ -38,15 +39,14 @@ public class ClassificationPathogenTestNegativeResultCriteriaDto extends Classif
 
 	@Override
 	public String buildDescription() {
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getString(Strings.classificationOneNegativeTestResult)).append(" ");
-		
+
 		if (testedDisease != null) {
 			stringBuilder.append(" ").append(I18nProperties.getString(Strings.classificationForDisease)).append(" ").append(testedDisease.toString());
 		}
 
 		return stringBuilder.toString();
 	}
-
 }

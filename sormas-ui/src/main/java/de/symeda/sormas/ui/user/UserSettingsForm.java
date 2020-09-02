@@ -12,16 +12,15 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class UserSettingsForm extends AbstractEditForm<UserDto> {
 
 	private static final long serialVersionUID = -928337100277917699L;
-	
-	private static final String HTML_LAYOUT =
-			loc(UserDto.LANGUAGE);
-	
+
+	private static final String HTML_LAYOUT = loc(UserDto.LANGUAGE);
+
 	public UserSettingsForm() {
 		super(UserDto.class, UserDto.I18N_PREFIX);
-		
+
 		setWidth(480, Unit.PIXELS);
 	}
-	
+
 	@Override
 	protected void addFields() {
 		ComboBox cbLanguage = addField(UserDto.LANGUAGE, ComboBox.class);
@@ -31,7 +30,6 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		 return HTML_LAYOUT;
+		return HTML_LAYOUT;
 	}
-	
 }

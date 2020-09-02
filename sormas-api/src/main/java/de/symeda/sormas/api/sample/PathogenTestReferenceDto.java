@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -24,16 +24,15 @@ public class PathogenTestReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -5213210080802372054L;
 
 	public PathogenTestReferenceDto() {
-		
+
 	}
-	
+
 	public PathogenTestReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public PathogenTestReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}
-	
 }

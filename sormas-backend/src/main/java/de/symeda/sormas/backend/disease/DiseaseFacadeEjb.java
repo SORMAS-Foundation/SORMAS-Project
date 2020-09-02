@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.disease;
 
@@ -44,9 +44,9 @@ import de.symeda.sormas.backend.region.District;
 /**
  * Provides the application configuration settings
  */
-@Stateless(name="DiseaseFacade")
+@Stateless(name = "DiseaseFacade")
 public class DiseaseFacadeEjb implements DiseaseFacade {
-	
+
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -56,44 +56,43 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
-	DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+
 	@Override
 	public List<DiseaseBurdenDto> getDiseaseBurdenForDashboard(
-			RegionReferenceDto regionRef,
-			DistrictReferenceDto districtRef, 
-			Date from, 
-			Date to,
-			Date previousFrom,
-			Date previousTo) {
-		
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Date from,
+		Date to,
+		Date previousFrom,
+		Date previousTo) {
+
 		//diseases
 		List<Disease> diseases = diseaseConfigurationFacade.getAllDiseases(true, true, true);
-				
+
 		//new cases
-		CaseCriteria caseCriteria = new CaseCriteria()
-				.newCaseDateBetween(from, to, null)
-				.region(regionRef)
-				.district(districtRef);
-		
+		CaseCriteria caseCriteria = new CaseCriteria().newCaseDateBetween(from, to, null).region(regionRef).district(districtRef);
+
 		Map<Disease, Long> newCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
-		
+
 		//events
-		Map<Disease, Long> events = eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
-					
+		Map<Disease, Long> events =
+			eventFacade.getEventCountByDisease(new EventCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
+
 		//outbreaks
-		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
-				
+		Map<Disease, Long> outbreakDistrictsCount = outbreakFacade
+			.getOutbreakDistrictCountByDisease(new OutbreakCriteria().region(regionRef).district(districtRef).reportedBetween(from, to));
+
 		//last report district
 		Map<Disease, District> lastReportedDistricts = caseFacade.getLastReportedDistrictByDisease(caseCriteria, true, true);
-		
+
 		//case fatalities
 		Map<Disease, Long> caseFatalities = personFacade.getDeathCountByDisease(caseCriteria, true, true);
-		
+
 		//previous cases
-		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);		
+		caseCriteria.newCaseDateBetween(previousFrom, previousTo, null);
 		Map<Disease, Long> previousCases = caseFacade.getCaseCountByDisease(caseCriteria, true, true);
-		
+
 		//build diseasesBurden
 		List<DiseaseBurdenDto> diseasesBurden = diseases.stream().map(disease -> {
 			Long caseCount = newCases.getOrDefault(disease, 0L);
@@ -102,19 +101,26 @@ public class DiseaseFacadeEjb implements DiseaseFacade {
 			Long outbreakDistrictCount = outbreakDistrictsCount.getOrDefault(disease, 0L);
 			Long caseFatalityCount = caseFatalities.getOrDefault(disease, 0L);
 			District lastReportedDistrict = lastReportedDistricts.getOrDefault(disease, null);
-			
+
 			String lastReportedDistrictName = lastReportedDistrict == null ? "" : lastReportedDistrict.getName();
-			
-			return new DiseaseBurdenDto(disease, caseCount, previousCaseCount, eventCount, outbreakDistrictCount, caseFatalityCount, lastReportedDistrictName);
-			
+
+			return new DiseaseBurdenDto(
+				disease,
+				caseCount,
+				previousCaseCount,
+				eventCount,
+				outbreakDistrictCount,
+				caseFatalityCount,
+				lastReportedDistrictName);
+
 		}).collect(Collectors.toList());
-		
+
 		return diseasesBurden;
 	}
-		
+
 	@LocalBean
 	@Stateless
 	public static class DiseaseFacadeEjbLocal extends DiseaseFacadeEjb {
+
 	}
-	
 }

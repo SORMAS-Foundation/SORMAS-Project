@@ -7,16 +7,16 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 /**
  * @author Christopher Riedel
  */
-public class ContactBulkEditData extends EntityDto{
+public class ContactBulkEditData extends EntityDto {
 
 	private static final long serialVersionUID = -7234609753914205675L;
-	
+
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String CONTACT_OFFICER = "contactOfficer";
-	
+
 	private ContactClassification contactClassification;
 	private UserReferenceDto contactOfficer;
-	
+
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}

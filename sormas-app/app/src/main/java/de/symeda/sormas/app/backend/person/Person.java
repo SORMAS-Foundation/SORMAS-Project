@@ -40,7 +40,7 @@ import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
@@ -49,7 +49,7 @@ import de.symeda.sormas.app.backend.region.Region;
 
 @Entity(name=Person.TABLE_NAME)
 @DatabaseTable(tableName = Person.TABLE_NAME)
-public class Person extends AbstractDomainObject {
+public class Person extends PseudonymizableAdo {
 	
 	private static final long serialVersionUID = -1735038738114840087L;
 

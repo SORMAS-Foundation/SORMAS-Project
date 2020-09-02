@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
@@ -31,7 +31,7 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 	private DistrictReferenceDto district;
 	private String nameLike;
 	private EntityRelevanceStatus relevanceStatus;
-	
+
 	public CommunityCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
@@ -40,12 +40,12 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
-	
+
 	public CommunityCriteria district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
@@ -58,16 +58,15 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 	public CommunityCriteria nameLike(String nameLike) {
 		this.nameLike = nameLike;
 		return this;
-	}	
-	
+	}
+
 	public CommunityCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-
 }

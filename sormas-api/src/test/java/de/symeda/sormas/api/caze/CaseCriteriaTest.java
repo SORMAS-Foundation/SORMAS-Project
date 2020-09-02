@@ -11,13 +11,14 @@ import de.symeda.sormas.api.utils.DataHelper;
 public class CaseCriteriaTest {
 
 	@Test
-	public void testFromToUrlParams() throws Exception {
+	public void testFromToUrlParams() {
+
 		CaseCriteria criteria = new CaseCriteria();
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
 		criteria.setDistrict(district);
 		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
 		criteria.setDisease(Disease.CSM);
-		
+
 		CaseCriteria generatedCriteria = new CaseCriteria();
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());

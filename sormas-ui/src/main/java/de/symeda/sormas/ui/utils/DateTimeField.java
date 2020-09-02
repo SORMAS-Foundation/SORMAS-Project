@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -47,6 +47,7 @@ public class DateTimeField extends CustomField<Date> {
 
 	@Override
 	protected Component initContent() {
+
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSpacing(true);
 		layout.setWidth(100, Unit.PERCENTAGE);
@@ -58,26 +59,27 @@ public class DateTimeField extends CustomField<Date> {
 		dateField.setLenient(true);
 		layout.addComponent(dateField);
 		layout.setExpandRatio(dateField, 0.5f);
-		
+
 		if (!converterSet) {
 			dateField.setConverter(converter);
 			converterSet = true;
 		}
-		
+
 		timeField = new ComboBox();
 		timeField.setId(this.getId() + "_" + "time");
 		timeField.addContainerProperty(CAPTION_PROPERTY_ID, String.class, null);
 		timeField.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
 
 		// fill
-		for (int hours=0; hours<=23; hours++) {
-			for (int minutes = 0; minutes<=59; minutes+=15) {
+		for (int hours = 0; hours <= 23; hours++) {
+			for (int minutes = 0; minutes <= 59; minutes += 15) {
 				ensureTimeEntry(hours, minutes);
 			}
 		}
 
 		timeField.setNewItemsAllowed(true);
 		timeField.setNewItemHandler(new NewItemHandler() {
+
 			@Override
 			public void addNewItem(String newItemCaption) {
 				Date date = DateHelper.parseTime(newItemCaption);
@@ -100,6 +102,7 @@ public class DateTimeField extends CustomField<Date> {
 		timeField.setReadOnly(isReadOnly());
 
 		Property.ValueChangeListener validationValueChangeListener = new Property.ValueChangeListener() {
+
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				markAsDirty();
@@ -125,8 +128,7 @@ public class DateTimeField extends CustomField<Date> {
 			if (newValue != null) {
 				dateField.setValue(new LocalDate(newValue).toDate());
 				timeField.setValue(ensureTimeEntry(newValue));
-			}
-			else {
+			} else {
 				dateField.setValue(null);
 				timeField.setValue(null);
 			}
@@ -139,10 +141,10 @@ public class DateTimeField extends CustomField<Date> {
 		if (dateField != null && timeField != null) {
 			Date date = dateField.getValue();
 			if (date != null) {
-				Integer totalMinutes = (Integer)timeField.getValue();
+				Integer totalMinutes = (Integer) timeField.getValue();
 				if (totalMinutes != null) {
 					DateTime dateTime = new DateTime(date);
-					dateTime = dateTime.withHourOfDay((totalMinutes / 60) % 24).withMinuteOfHour( totalMinutes % 60);
+					dateTime = dateTime.withHourOfDay((totalMinutes / 60) % 24).withMinuteOfHour(totalMinutes % 60);
 					date = dateTime.toDate();
 				}
 				return date;
@@ -161,7 +163,7 @@ public class DateTimeField extends CustomField<Date> {
 			return null;
 		}
 		int totalMinutes = new DateTime(time).minuteOfDay().get();
-		return ensureTimeEntry((totalMinutes / 60)%24, totalMinutes % 60);
+		return ensureTimeEntry((totalMinutes / 60) % 24, totalMinutes % 60);
 	}
 
 	/**
@@ -169,15 +171,18 @@ public class DateTimeField extends CustomField<Date> {
 	 */
 	@SuppressWarnings("unchecked")
 	private Object ensureTimeEntry(int hours, int minutes) {
-		int itemId = hours*60 + minutes;
+		int itemId = hours * 60 + minutes;
 		if (!timeField.containsId(itemId)) {
 			timeField.addItem(itemId).getItemProperty(CAPTION_PROPERTY_ID).setValue(String.format("%1$02d:%2$02d", hours, minutes));
 
 			// don't do this on initialization
 			if (timeField.getParent() != null) {
 				// order the entries by time
-				((IndexedContainer)timeField.getContainerDataSource())
-				.sort(new String[] {CAPTION_PROPERTY_ID}, new boolean[]{true});
+				((IndexedContainer) timeField.getContainerDataSource()).sort(
+					new String[] {
+						CAPTION_PROPERTY_ID },
+					new boolean[] {
+						true });
 			}
 		}
 		return itemId;
@@ -186,7 +191,7 @@ public class DateTimeField extends CustomField<Date> {
 	@Override
 	public void setConverter(Converter<Date, ?> converter) {
 		this.converter = converter;
-		
+
 		if (dateField != null) {
 			dateField.setConverter(converter);
 			converterSet = true;

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -37,7 +37,7 @@ import de.symeda.auditlog.api.value.ValueContainer;
  * 
  * @author Stefan Kock
  * @param <V>
- * 			Type of the {@code value} to be formatted within the {@link Collection}.
+ *            Type of the {@code value} to be formatted within the {@link Collection}.
  */
 public abstract class AbstractCollectionFormatter<V> implements CollectionFormatter<V> {
 
@@ -48,7 +48,7 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 	 * <code>nullString = {@link ValueContainer#DEFAULT_NULL_STRING}</code>
 	 * 
 	 * @param valueFormatter
-	 * 			The {@link ValueFormatter} to format the individual values with.
+	 *            The {@link ValueFormatter} to format the individual values with.
 	 */
 	public AbstractCollectionFormatter(ValueFormatter<V> valueFormatter) {
 
@@ -57,9 +57,9 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 
 	/**
 	 * @param nullString
-	 * 			Placeholder for {@code null} values.
+	 *            Placeholder for {@code null} values.
 	 * @param valueFormatter
-	 * 			The {@link ValueFormatter} to format the individual values with.
+	 *            The {@link ValueFormatter} to format the individual values with.
 	 */
 	public AbstractCollectionFormatter(String nullString, ValueFormatter<V> valueFormatter) {
 
@@ -100,8 +100,8 @@ public abstract class AbstractCollectionFormatter<V> implements CollectionFormat
 	 * Provides a reliable sorting so that sorting it again does not result in a changed formatted String.
 	 * 
 	 * @param valueCollection
-	 * 			{@link Collection} to format.
-	 * @return	Sorted values.
+	 *            {@link Collection} to format.
+	 * @return Sorted values.
 	 */
 	protected abstract List<V> toSortedList(Collection<V> valueCollection);
 }

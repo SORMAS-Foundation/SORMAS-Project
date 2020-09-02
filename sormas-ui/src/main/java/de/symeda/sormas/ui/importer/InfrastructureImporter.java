@@ -38,9 +38,14 @@ public class InfrastructureImporter extends DataImporter {
 	}
 
 	@Override
-	protected ImportLineResult importDataFromCsvLine(String[] values, String[] entityClasses, String[] entityProperties,
-			String[][] entityPropertyPaths, boolean firstLine)
-					throws IOException, InvalidColumnException, InterruptedException {
+	protected ImportLineResult importDataFromCsvLine(
+		String[] values,
+		String[] entityClasses,
+		String[] entityProperties,
+		String[][] entityPropertyPaths,
+		boolean firstLine)
+		throws IOException, InvalidColumnException, InterruptedException {
+
 		// Check whether the new line has the same length as the header line
 		if (values.length > entityProperties.length) {
 			writeImportError(values, I18nProperties.getValidationError(Validations.importLineTooLong));
@@ -119,15 +124,15 @@ public class InfrastructureImporter extends DataImporter {
 	 * Inserts the entry of a single cell into the infrastructure object.
 	 */
 	private void insertColumnEntryIntoData(EntityDto newEntityDto, String value, String[] entityPropertyPath)
-			throws InvalidColumnException, ImportErrorException {
+		throws InvalidColumnException, ImportErrorException {
+
 		Object currentElement = newEntityDto;
 		for (int i = 0; i < entityPropertyPath.length; i++) {
 			String headerPathElementName = entityPropertyPath[i];
 
 			try {
 				if (i != entityPropertyPath.length - 1) {
-					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass())
-							.getReadMethod().invoke(currentElement);
+					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
 				} else {
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
@@ -141,29 +146,28 @@ public class InfrastructureImporter extends DataImporter {
 						List<DistrictReferenceDto> district;
 						switch (type) {
 						case COMMUNITY:
-							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((CommunityDto) newEntityDto).getRegion(), false);
+							district = FacadeProvider.getDistrictFacade().getByName(value, ((CommunityDto) newEntityDto).getRegion(), false);
 							break;
 						case FACILITY:
-							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((FacilityDto) newEntityDto).getRegion(), false);
+							district = FacadeProvider.getDistrictFacade().getByName(value, ((FacilityDto) newEntityDto).getRegion(), false);
 							break;
 						case POINT_OF_ENTRY:
-							district = FacadeProvider.getDistrictFacade().getByName(value,
-									((PointOfEntryDto) newEntityDto).getRegion(), false);
+							district = FacadeProvider.getDistrictFacade().getByName(value, ((PointOfEntryDto) newEntityDto).getRegion(), false);
 							break;
 						default:
-							throw new UnsupportedOperationException(I18nProperties.getValidationError(
-									Validations.importPropertyTypeNotAllowed, propertyType.getName()));
+							throw new UnsupportedOperationException(
+								I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 						}
 						if (district.isEmpty()) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion,
-											value, buildEntityProperty(entityPropertyPath)));
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrRegion,
+									value,
+									buildEntityProperty(entityPropertyPath)));
 						} else if (district.size() > 1) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(Validations.importDistrictNotUnique, value,
-											buildEntityProperty(entityPropertyPath)));
+								I18nProperties
+									.getValidationError(Validations.importDistrictNotUnique, value, buildEntityProperty(entityPropertyPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, district.get(0));
 						}
@@ -171,34 +175,35 @@ public class InfrastructureImporter extends DataImporter {
 						List<CommunityReferenceDto> community;
 						switch (type) {
 						case FACILITY:
-							community = FacadeProvider.getCommunityFacade().getByName(value,
-									((FacilityDto) newEntityDto).getDistrict(), false);
+							community = FacadeProvider.getCommunityFacade().getByName(value, ((FacilityDto) newEntityDto).getDistrict(), false);
 							break;
 						default:
-							throw new UnsupportedOperationException(I18nProperties.getValidationError(
-									Validations.importPropertyTypeNotAllowed, propertyType.getName()));
+							throw new UnsupportedOperationException(
+								I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 						}
 						if (community.isEmpty()) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion,
-											value, buildEntityProperty(entityPropertyPath)));
+								I18nProperties.getValidationError(
+									Validations.importEntryDoesNotExistDbOrRegion,
+									value,
+									buildEntityProperty(entityPropertyPath)));
 						} else if (community.size() > 1) {
 							throw new ImportErrorException(
-									I18nProperties.getValidationError(Validations.importDistrictNotUnique, value,
-											buildEntityProperty(entityPropertyPath)));
+								I18nProperties
+									.getValidationError(Validations.importDistrictNotUnique, value, buildEntityProperty(entityPropertyPath)));
 						} else {
 							pd.getWriteMethod().invoke(currentElement, community.get(0));
 						}
 					} else {
-						throw new UnsupportedOperationException(I18nProperties
-								.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
+						throw new UnsupportedOperationException(
+							I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 					}
 				}
 			} catch (IntrospectionException e) {
 				throw new InvalidColumnException(buildEntityProperty(entityPropertyPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
-				throw new ImportErrorException(I18nProperties.getValidationError(Validations.importErrorInColumn,
-						buildEntityProperty(entityPropertyPath)));
+				throw new ImportErrorException(
+					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entityPropertyPath)));
 			} catch (IllegalArgumentException e) {
 				throw new ImportErrorException(value, buildEntityProperty(entityPropertyPath));
 			} catch (ImportErrorException e) {

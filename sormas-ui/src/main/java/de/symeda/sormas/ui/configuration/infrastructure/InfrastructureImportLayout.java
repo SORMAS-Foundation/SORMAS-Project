@@ -26,8 +26,9 @@ import de.symeda.sormas.ui.importer.PopulationDataImporter;
 public class InfrastructureImportLayout extends AbstractImportLayout {
 
 	public InfrastructureImportLayout(InfrastructureType infrastructureType) {
+
 		super();
-		
+
 		DateField dfCollectionDate = new DateField();
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
 			Label lblCollectionDateInfo = new Label(I18nProperties.getString(Strings.infoPopulationCollectionDate));
@@ -38,7 +39,7 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 				upload.setEnabled(e.getProperty().getValue() != null);
 			});
 		}
-		
+
 		String templateFilePath = null;
 		String templateFileName = null;
 		String fileNameAddition = null;
@@ -77,13 +78,17 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 			throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
 		}
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"), new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);		
+		addDownloadResourcesComponent(
+			1,
+			new ClassResource("/SORMAS_Infrastructure_Import_Guide.pdf"),
+			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadImportTemplateComponent(2, templateFilePath, templateFileName);
 		addImportCsvComponent(3, new ImportReceiver(fileNameAddition, new Consumer<File>() {
+
 			@Override
 			public void accept(File file) {
 				resetDownloadErrorReportButton();
-				
+
 				try {
 					DataImporter importer;
 					switch (infrastructureType) {
@@ -106,26 +111,31 @@ public class InfrastructureImportLayout extends AbstractImportLayout {
 						importer = new InfrastructureImporter(file, currentUser, InfrastructureType.REGION);
 						break;
 					default:
-						throw new UnsupportedOperationException("Import is currently not implemented for infrastructure type " + infrastructureType.name());
+						throw new UnsupportedOperationException(
+							"Import is currently not implemented for infrastructure type " + infrastructureType.name());
 					}
-					
+
 					importer.startImport(new Consumer<StreamResource>() {
+
 						@Override
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
 					}, currentUI, true);
 				} catch (IOException e) {
-					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 				}
 			}
 		}));
-		
+
 		if (infrastructureType == InfrastructureType.POPULATION_DATA) {
 			upload.setEnabled(false);
 		}
-		
+
 		addDownloadErrorReportComponent(4);
 	}
-
 }

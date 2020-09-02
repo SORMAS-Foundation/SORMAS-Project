@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
@@ -28,12 +28,12 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class DashboardStatisticsGraphicalGrowthElement extends VerticalLayout {
-	
+
 	private SvgBarElement svgBarElement;
 	private Label countLabel;
 	private Label growthLabel;
 	private Label percentageLabel;
-	
+
 	public DashboardStatisticsGraphicalGrowthElement(String caption, String svgFillClass) {
 		this.setMargin(false);
 		this.setSpacing(false);
@@ -42,11 +42,11 @@ public class DashboardStatisticsGraphicalGrowthElement extends VerticalLayout {
 		captionAndValueLayout.setMargin(false);
 		captionAndValueLayout.setSpacing(false);
 		captionAndValueLayout.setWidth(100, Unit.PERCENTAGE);
-		
+
 		Label captionLabel = new Label(caption);
 		CssStyles.style(captionLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_BOLD);
 		captionAndValueLayout.addComponent(captionLabel);
-		
+
 		countLabel = new Label();
 		CssStyles.style(countLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD, CssStyles.HSPACE_RIGHT_4);
 		countLabel.setWidthUndefined();
@@ -61,15 +61,15 @@ public class DashboardStatisticsGraphicalGrowthElement extends VerticalLayout {
 		CssStyles.style(percentageLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
 		percentageLabel.setWidthUndefined();
 		captionAndValueLayout.addComponent(percentageLabel);
-		
+
 		captionAndValueLayout.setComponentAlignment(captionLabel, Alignment.MIDDLE_LEFT);
 		captionAndValueLayout.setComponentAlignment(countLabel, Alignment.MIDDLE_RIGHT);
 		captionAndValueLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_RIGHT);
 		captionAndValueLayout.setComponentAlignment(percentageLabel, Alignment.MIDDLE_RIGHT);
 		captionAndValueLayout.setExpandRatio(captionLabel, 1);
-		
+
 		addComponent(captionAndValueLayout);
-		
+
 		svgBarElement = new SvgBarElement(svgFillClass);
 		svgBarElement.setWidth(100, Unit.PERCENTAGE);
 		addComponent(svgBarElement);
@@ -91,5 +91,4 @@ public class DashboardStatisticsGraphicalGrowthElement extends VerticalLayout {
 			CssStyles.style(growthLabel, CssStyles.LABEL_IMPORTANT);
 		}
 	}
-
 }

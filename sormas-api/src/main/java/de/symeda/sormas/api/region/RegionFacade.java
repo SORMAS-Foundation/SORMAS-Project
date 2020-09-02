@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
@@ -29,34 +29,33 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 @Remote
 public interface RegionFacade {
 
-    List<RegionReferenceDto> getAllActiveAsReference();
+	List<RegionReferenceDto> getAllActiveAsReference();
 
 	List<RegionDto> getAllAfter(Date date);
-	
+
 	List<RegionIndexDto> getIndexList(RegionCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
-	
+
 	long count(RegionCriteria criteria);
-	
+
 	RegionDto getRegionByUuid(String uuid);
-	
+
 	RegionReferenceDto getRegionReferenceByUuid(String uuid);
 
 	RegionReferenceDto getRegionReferenceById(int id);
-	
-	List<String> getAllUuids();
-	
-	List<RegionDto> getByUuids(List<String> uuids);
-	
-	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
-	
-	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
-	
-	List<String> getNamesByIds(List<Long> regionIds);
-	
-	void archive(String regionUuid);
-	
-	void dearchive(String regionUuid);
-	
-	boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids);
 
+	List<String> getAllUuids();
+
+	List<RegionDto> getByUuids(List<String> uuids);
+
+	void saveRegion(RegionDto dto) throws ValidationRuntimeException;
+
+	List<RegionReferenceDto> getByName(String name, boolean includeArchivedEntities);
+
+	List<String> getNamesByIds(List<Long> regionIds);
+
+	void archive(String regionUuid);
+
+	void dearchive(String regionUuid);
+
+	boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids);
 }

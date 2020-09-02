@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.clinicalcourse;
 
@@ -24,16 +24,15 @@ public class ClinicalCourseReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -2664896907352864261L;
 
 	public ClinicalCourseReferenceDto() {
-		
+
 	}
-	
+
 	public ClinicalCourseReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public ClinicalCourseReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}
-	
 }

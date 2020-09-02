@@ -10,7 +10,7 @@ public class TreatmentCriteria extends BaseCriteria implements Cloneable {
 	private TherapyReferenceDto therapy;
 	private TreatmentType treatmentType;
 	private String textFilter;
-	
+
 	@Override
 	public TreatmentCriteria clone() {
 		try {
@@ -24,7 +24,7 @@ public class TreatmentCriteria extends BaseCriteria implements Cloneable {
 	public TherapyReferenceDto getTherapy() {
 		return therapy;
 	}
-	
+
 	public TreatmentCriteria therapy(TherapyReferenceDto therapy) {
 		this.therapy = therapy;
 		return this;
@@ -33,7 +33,7 @@ public class TreatmentCriteria extends BaseCriteria implements Cloneable {
 	public TreatmentType getTreatmentType() {
 		return treatmentType;
 	}
-	
+
 	public TreatmentCriteria treatmentType(TreatmentType treatmentType) {
 		this.treatmentType = treatmentType;
 		return this;
@@ -43,10 +43,9 @@ public class TreatmentCriteria extends BaseCriteria implements Cloneable {
 	public String getTextFilter() {
 		return textFilter;
 	}
-	
+
 	public TreatmentCriteria textFilter(String textFilter) {
 		this.textFilter = textFilter;
 		return this;
 	}
-	
 }

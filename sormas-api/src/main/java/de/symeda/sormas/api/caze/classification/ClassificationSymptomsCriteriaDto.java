@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -30,7 +30,7 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 	public ClassificationSymptomsCriteriaDto() {
 		super();
 	}
-	
+
 	public ClassificationSymptomsCriteriaDto(String propertyId) {
 		super(propertyId, SymptomState.YES);
 	}
@@ -51,6 +51,7 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 
 	@Override
 	public String buildDescription() {
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, propertyId));
 		if (!(propertyValues.get(0) instanceof SymptomState)) {
@@ -58,5 +59,4 @@ public class ClassificationSymptomsCriteriaDto extends ClassificationCaseCriteri
 		}
 		return stringBuilder.toString();
 	}
-	
 }

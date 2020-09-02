@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
@@ -28,19 +28,19 @@ import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface EventFacade {
-	
+
 	List<EventDto> getAllActiveEventsAfter(Date date);
-	
+
 	List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria);
-	
+
 	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
-	
+
 	Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria);
-	
+
 	EventDto getEventByUuid(String uuid);
-	
+
 	EventDto saveEvent(EventDto dto);
-	
+
 	EventReferenceDto getReferenceByUuid(String uuid);
 
 	List<String> getAllActiveUuids();
@@ -51,19 +51,17 @@ public interface EventFacade {
 
 	long count(EventCriteria eventCriteria);
 
-	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max,
-			List<SortProperty> sortProperties);
-	
+	List<EventIndexDto> getIndexList(EventCriteria eventCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	boolean isArchived(String caseUuid);
-	
+
 	boolean isDeleted(String eventUuid);
-	
+
 	void archiveOrDearchiveEvent(String eventUuid, boolean archive);
-	
+
 	List<String> getArchivedUuidsSince(Date since);
-	
+
 	List<String> getDeletedUuidsSince(Date since);
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
-	
 }

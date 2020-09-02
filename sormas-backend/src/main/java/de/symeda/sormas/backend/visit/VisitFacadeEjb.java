@@ -9,15 +9,46 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -43,6 +74,7 @@ import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -56,34 +88,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import de.symeda.sormas.backend.util.PseudonymizationService;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -107,6 +112,10 @@ public class VisitFacadeEjb implements VisitFacade {
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private PseudonymizationService pseudonymizationService;
+	@EJB
+	private ContactJurisdictionChecker contactJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -121,9 +130,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public List<VisitDto> getAllActiveVisitsAfter(Date date) {
-		return visitService.getAllActiveVisitsAfter(date).stream()
-				.map(c -> toDto(c))
-				.collect(Collectors.toList());
+		return visitService.getAllActiveVisitsAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -134,9 +141,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public VisitDto getLastVisitByContact(ContactReferenceDto contactRef) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		return toDto(contact.getVisits().stream()
-				.max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime()))
-				.orElse(null));
+		return toDto(contact.getVisits().stream().max((v1, v2) -> v1.getVisitDateTime().compareTo(v2.getVisitDateTime())).orElse(null));
 	}
 
 	@Override
@@ -146,6 +151,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public VisitDto saveVisit(VisitDto dto) {
+
 		this.validate(dto);
 
 		final String visitUuid = dto.getUuid();
@@ -163,23 +169,39 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public ExternalVisitDto saveExternalVisit(final ExternalVisitDto dto) {
+
 		final String personUuid = dto.getPersonUuid();
 		final UserReferenceDto currentUser = new UserReferenceDto(userService.getCurrentUser().getUuid());
 
-		final VisitDto visitDto = VisitDto.build(new PersonReferenceDto(personUuid), dto.getDisease(),
-				dto.getVisitDateTime(), currentUser, dto.getVisitStatus(),
-				dto.getVisitRemarks(), dto.getSymptoms(), dto.getReportLat(), dto.getReportLon(),
-				dto.getReportLatLonAccuracy());
+		final VisitDto visitDto = VisitDto.build(
+			new PersonReferenceDto(personUuid),
+			dto.getDisease(),
+			dto.getVisitDateTime(),
+			currentUser,
+			dto.getVisitStatus(),
+			dto.getVisitRemarks(),
+			dto.getSymptoms(),
+			dto.getReportLat(),
+			dto.getReportLon(),
+			dto.getReportLatLonAccuracy());
 
 		saveVisit(visitDto);
 
-		return ExternalVisitDto.build(personUuid, visitDto.getDisease(), visitDto.getVisitDateTime(),
-				visitDto.getVisitStatus(), visitDto.getVisitRemarks(), visitDto.getSymptoms(),
-				visitDto.getReportLat(), visitDto.getReportLon(), visitDto.getReportLatLonAccuracy());
+		return ExternalVisitDto.build(
+			personUuid,
+			visitDto.getDisease(),
+			visitDto.getVisitDateTime(),
+			visitDto.getVisitStatus(),
+			visitDto.getVisitRemarks(),
+			visitDto.getSymptoms(),
+			visitDto.getReportLat(),
+			visitDto.getReportLon(),
+			visitDto.getReportLatLonAccuracy());
 	}
 
 	@Override
 	public void validate(VisitDto visit) {
+
 		if (visit.getVisitStatus() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.visitStatus));
 		}
@@ -199,9 +221,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public void deleteVisit(String visitUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()])).contains(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete visits.");
+
+		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete visits.");
 		}
 
 		Visit visit = visitService.getByUuid(visitUuid);
@@ -210,6 +232,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public List<VisitIndexDto> getIndexList(VisitCriteria visitCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+
 		if (visitCriteria == null || visitCriteria.getContact() == null) {
 			return new ArrayList<>(); // Retrieving an index list independent of a contact is not possible
 		}
@@ -219,9 +242,15 @@ public class VisitFacadeEjb implements VisitFacade {
 		Root<Visit> visit = cq.from(Visit.class);
 		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		cq.multiselect(visit.get(Visit.UUID), visit.get(Visit.VISIT_DATE_TIME), visit.get(Visit.VISIT_STATUS),
-				visit.get(Visit.VISIT_REMARKS), visit.get(Visit.DISEASE), symptoms.get(Symptoms.SYMPTOMATIC),
-				symptoms.get(Symptoms.TEMPERATURE), symptoms.get(Symptoms.TEMPERATURE_SOURCE));
+		cq.multiselect(
+			visit.get(Visit.UUID),
+			visit.get(Visit.VISIT_DATE_TIME),
+			visit.get(Visit.VISIT_STATUS),
+			visit.get(Visit.VISIT_REMARKS),
+			visit.get(Visit.DISEASE),
+			symptoms.get(Symptoms.SYMPTOMATIC),
+			symptoms.get(Symptoms.TEMPERATURE),
+			symptoms.get(Symptoms.TEMPERATURE_SOURCE));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
 
@@ -259,6 +288,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	public long count(VisitCriteria visitCriteria) {
+
 		if (visitCriteria == null || visitCriteria.getContact() == null) {
 			return 0L; // Retrieving a list count independent of a contact is not possible
 		}
@@ -273,9 +303,12 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public List<VisitExportDto> getVisitsExportList(VisitCriteria visitCriteria,
-			VisitExportType exportType, int first, int max,
-			ExportConfigurationDto exportConfiguration) {
+	public List<VisitExportDto> getVisitsExportList(
+		VisitCriteria visitCriteria,
+		VisitExportType exportType,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
@@ -284,17 +317,27 @@ public class VisitFacadeEjb implements VisitFacade {
 		final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
 		final Join<Visit, User> userJoin = visitRoot.join(Visit.VISIT_USER, JoinType.LEFT);
 
-		cq.multiselect(visitRoot.get(Visit.ID), visitRoot.get(Visit.UUID), personJoin.get(Person.ID),
-				personJoin.get(Person.FIRST_NAME), personJoin.get(Person.LAST_NAME),
-				symptomsJoin.get(Symptoms.ID), userJoin.get(User.ID), visitRoot.get(Visit.DISEASE),
-				visitRoot.get(Visit.VISIT_DATE_TIME), visitRoot.get(Visit.VISIT_STATUS),
-				visitRoot.get(Visit.VISIT_REMARKS), visitRoot.get(Visit.REPORT_LAT), visitRoot.get(Visit.REPORT_LON));
+		cq.multiselect(
+			visitRoot.get(Visit.ID),
+			visitRoot.get(Visit.UUID),
+			personJoin.get(Person.ID),
+			personJoin.get(Person.FIRST_NAME),
+			personJoin.get(Person.LAST_NAME),
+			symptomsJoin.get(Symptoms.ID),
+			userJoin.get(User.ID),
+			visitRoot.get(Visit.DISEASE),
+			visitRoot.get(Visit.VISIT_DATE_TIME),
+			visitRoot.get(Visit.VISIT_STATUS),
+			visitRoot.get(Visit.VISIT_REMARKS),
+			visitRoot.get(Visit.REPORT_LAT),
+			visitRoot.get(Visit.REPORT_LON),
+			personJoin.get(Person.UUID));
 
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot));
 		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
 
-		List<VisitExportDto> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY,
-				true).setFirstResult(first).setMaxResults(max).getResultList();
+		List<VisitExportDto> resultList =
+			em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).setFirstResult(first).setMaxResults(max).getResultList();
 
 		if (!resultList.isEmpty()) {
 
@@ -310,8 +353,14 @@ public class VisitFacadeEjb implements VisitFacade {
 			}
 
 			for (VisitExportDto exportDto : resultList) {
+				List<Contact> visitContacts =
+					contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(exportDto.getPersonUuid())), null);
+				boolean inJurisdiction = visitContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
+
 				if (symptoms != null) {
-					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId())).ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
+						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 				}
 			}
 		}
@@ -320,6 +369,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	public Visit fromDto(@NotNull VisitDto source) {
+
 		final String visitUuid = source.getUuid();
 		Visit target = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
 		if (target == null) {
@@ -347,18 +397,21 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	public static VisitReferenceDto toReferenceDto(Visit source) {
+
 		if (source == null) {
 			return null;
 		}
-		
+
 		VisitReferenceDto target = new VisitReferenceDto(source.getUuid(), source.toString());
 		return target;
 	}
 
 	public static VisitDto toDto(Visit source) {
+
 		if (source == null) {
 			return null;
 		}
+
 		VisitDto target = new VisitDto();
 		DtoHelper.fillDto(target, source);
 
@@ -382,41 +435,50 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		// Send an email to all responsible supervisors when the contact has become
 		// symptomatic
-		boolean previousSymptomaticStatus = existingVisit != null
-				&& Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
+		boolean previousSymptomaticStatus = existingVisit != null && Boolean.TRUE.equals(existingVisit.getSymptoms().getSymptomatic());
 		if (newVisit.getContacts() != null && previousSymptomaticStatus == false && Boolean.TRUE.equals(newVisit.getSymptoms().getSymptomatic())) {
 			for (Contact contact : newVisit.getContacts()) {
 				// Skip if there is already a symptomatic visit for this contact
-				if (contact.getVisits().stream()
-						.filter(v -> !v.equals(newVisit))
-						.filter(v -> Boolean.TRUE.equals(v.getSymptoms().getSymptomatic()))
-						.count() > 0) {
+				if (contact.getVisits()
+					.stream()
+					.filter(v -> !v.equals(newVisit))
+					.filter(v -> Boolean.TRUE.equals(v.getSymptoms().getSymptomatic()))
+					.count()
+					> 0) {
 					continue;
 				}
 
 				Case contactCase = contact.getCaze();
-				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(contact.getRegion() != null ?
-						contact.getRegion() : contactCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR);
+				List<User> messageRecipients = userService.getAllByRegionAndUserRoles(
+					contact.getRegion() != null ? contact.getRegion() : contactCase.getRegion(),
+					UserRole.SURVEILLANCE_SUPERVISOR,
+					UserRole.CONTACT_SUPERVISOR);
 				for (User recipient : messageRecipients) {
 					try {
 						String messageContent;
 						if (contactCase != null) {
-							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
-									DataHelper.getShortUuid(contact.getUuid()),
-									DataHelper.getShortUuid(contactCase.getUuid()));
+							messageContent = String.format(
+								I18nProperties.getString(MessagingService.CONTENT_CONTACT_SYMPTOMATIC),
+								DataHelper.getShortUuid(contact.getUuid()),
+								DataHelper.getShortUuid(contactCase.getUuid()));
 						} else {
-							messageContent = String.format(I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
-									DataHelper.getShortUuid(contact.getUuid()));
+							messageContent = String.format(
+								I18nProperties.getString(MessagingService.CONTENT_CONTACT_WITHOUT_CASE_SYMPTOMATIC),
+								DataHelper.getShortUuid(contact.getUuid()));
 						}
 
-						messagingService.sendMessage(recipient,
-								I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
-								messageContent, MessageType.EMAIL, MessageType.SMS);
+						messagingService.sendMessage(
+							recipient,
+							I18nProperties.getString(MessagingService.SUBJECT_CONTACT_SYMPTOMATIC),
+							messageContent,
+							MessageType.EMAIL,
+							MessageType.SMS);
 					} catch (NotificationDeliveryFailedException e) {
-						logger.error(String.format(
+						logger.error(
+							String.format(
 								"EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic. "
-										+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
-										recipient.getUuid()));
+									+ "Failed to send " + e.getMessageType() + " to user with UUID %s.",
+								recipient.getUuid()));
 					}
 				}
 			}
@@ -430,6 +492,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	private void updateContactVisitAssociations(VisitDto existingVisit, Visit visit) {
+
 		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
 			// No need to update the associations
 			return;
@@ -445,5 +508,6 @@ public class VisitFacadeEjb implements VisitFacade {
 	@LocalBean
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
+
 	}
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
@@ -35,11 +35,15 @@ public class DiseaseTileComponent extends VerticalLayout {
 
 	private static final long serialVersionUID = 6582975657305031105L;
 
-	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {		
+	public DiseaseTileComponent(DiseaseBurdenDto diseaseBurden) {
 		setMargin(false);
 		setSpacing(false);
 
-		addTopLayout(diseaseBurden.getDisease(), diseaseBurden.getCaseCount(), diseaseBurden.getPreviousCaseCount(), diseaseBurden.getOutbreakDistrictCount() > 0);	
+		addTopLayout(
+			diseaseBurden.getDisease(),
+			diseaseBurden.getCaseCount(),
+			diseaseBurden.getPreviousCaseCount(),
+			diseaseBurden.getOutbreakDistrictCount() > 0);
 		addStatsLayout(diseaseBurden.getCaseDeathCount(), diseaseBurden.getEventCount(), diseaseBurden.getLastReportedDistrictName());
 	}
 
@@ -63,31 +67,27 @@ public class DiseaseTileComponent extends VerticalLayout {
 		nameLayout.setWidth(100, Unit.PERCENTAGE);
 		nameLayout.setHeight(100, Unit.PERCENTAGE);
 		Label nameLabel = new Label(disease.toShortString());
-		CssStyles.style(nameLabel, 
-				CssStyles.LABEL_WHITE,
-				nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
-						CssStyles.LABEL_BOLD,
-						CssStyles.ALIGN_CENTER, 
-						CssStyles.LABEL_UPPERCASE
-				);
+		CssStyles.style(
+			nameLabel,
+			CssStyles.LABEL_WHITE,
+			nameLabel.getValue().length() > 12 ? CssStyles.LABEL_LARGE : CssStyles.LABEL_XLARGE,
+			CssStyles.LABEL_BOLD,
+			CssStyles.ALIGN_CENTER,
+			CssStyles.LABEL_UPPERCASE);
 		nameLayout.addComponent(nameLabel);
-		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);		
+		nameLayout.setComponentAlignment(nameLabel, Alignment.MIDDLE_CENTER);
 		nameAndOutbreakLayout.addComponent(nameLayout);
 		nameAndOutbreakLayout.setExpandRatio(nameLayout, 1);
 
 		if (isOutbreak) {
-			HorizontalLayout outbreakLayout = new HorizontalLayout();	
+			HorizontalLayout outbreakLayout = new HorizontalLayout();
 			outbreakLayout.setMargin(false);
 			outbreakLayout.setSpacing(false);
 			CssStyles.style(outbreakLayout, CssStyles.BACKGROUND_CRITICAL);
 			outbreakLayout.setWidth(100, Unit.PERCENTAGE);
 			outbreakLayout.setHeight(30, Unit.PIXELS);
 			Label outbreakLabel = new Label(I18nProperties.getCaption(Captions.dashboardOutbreak));
-			CssStyles.style(outbreakLabel, 
-					CssStyles.LABEL_WHITE, 
-					CssStyles.ALIGN_CENTER, 
-					CssStyles.LABEL_UPPERCASE
-					);
+			CssStyles.style(outbreakLabel, CssStyles.LABEL_WHITE, CssStyles.ALIGN_CENTER, CssStyles.LABEL_UPPERCASE);
 			outbreakLayout.addComponent(outbreakLabel);
 			outbreakLayout.setComponentAlignment(outbreakLabel, Alignment.MIDDLE_CENTER);
 			nameAndOutbreakLayout.addComponent(outbreakLayout);
@@ -104,13 +104,8 @@ public class DiseaseTileComponent extends VerticalLayout {
 		countLayout.setWidth(100, Unit.PERCENTAGE);
 
 		Label countLabel = new Label(casesCount.toString());
-		CssStyles.style(countLabel, 
-				CssStyles.LABEL_WHITE, 
-				CssStyles.LABEL_BOLD, 
-				CssStyles.LABEL_XXXLARGE,
-				CssStyles.ALIGN_CENTER,
-				CssStyles.VSPACE_TOP_4
-				);
+		CssStyles
+			.style(countLabel, CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XXXLARGE, CssStyles.ALIGN_CENTER, CssStyles.VSPACE_TOP_4);
 		countLayout.addComponent(countLabel);
 		countLayout.setComponentAlignment(countLabel, Alignment.BOTTOM_CENTER);
 
@@ -128,27 +123,22 @@ public class DiseaseTileComponent extends VerticalLayout {
 			} else {
 				chevronType = VaadinIcons.CHEVRON_RIGHT.getHtml();
 			}
-			growthLabel.setValue("<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-" + CssStyles.LABEL_WHITE
-					+ " align-center v-label-align-center bold v-label-bold v-has-width\" "
-					+ "	  style=\"margin-top: 3px;\">"
-					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>"
-					+ "</div>");
-			
+			growthLabel.setValue(
+				"<div class=\"v-label v-widget " + CssStyles.LABEL_WHITE + " v-label-" + CssStyles.LABEL_WHITE
+					+ " align-center v-label-align-center bold v-label-bold v-has-width\" " + "	  style=\"margin-top: 3px;\">"
+					+ "		<span class=\"v-icon\" style=\"font-family: VaadinIcons;\">" + chevronType + "		</span>" + "</div>");
+
 			comparisonLayout.addComponent(growthLabel);
-			
+
 			Label previousCountLabel = new Label(previousCasesCount.toString());
-			CssStyles.style(previousCountLabel,
-					CssStyles.LABEL_WHITE,
-					CssStyles.LABEL_BOLD,
-					CssStyles.LABEL_XLARGE,
-					CssStyles.HSPACE_LEFT_4);
+			CssStyles.style(previousCountLabel, CssStyles.LABEL_WHITE, CssStyles.LABEL_BOLD, CssStyles.LABEL_XLARGE, CssStyles.HSPACE_LEFT_4);
 			comparisonLayout.addComponent(previousCountLabel);
 			comparisonLayout.setComponentAlignment(growthLabel, Alignment.MIDDLE_CENTER);
 			comparisonLayout.setComponentAlignment(previousCountLabel, Alignment.MIDDLE_CENTER);
 		}
 		countLayout.addComponent(comparisonLayout);
 		countLayout.setComponentAlignment(comparisonLayout, Alignment.MIDDLE_CENTER);
-		
+
 		countLayout.setExpandRatio(countLabel, 0.4f);
 		countLayout.setExpandRatio(comparisonLayout, 0.6f);
 
@@ -165,7 +155,11 @@ public class DiseaseTileComponent extends VerticalLayout {
 		layout.setSpacing(false);
 		CssStyles.style(layout, CssStyles.BACKGROUND_HIGHLIGHT);
 
-		HorizontalLayout statsItem = createStatsItem(I18nProperties.getCaption(Captions.dashboardLastReport) + ": ", district.length() == 0 ? I18nProperties.getString(Strings.none) : district, false, true);
+		HorizontalLayout statsItem = createStatsItem(
+			I18nProperties.getCaption(Captions.dashboardLastReport) + ": ",
+			district.length() == 0 ? I18nProperties.getString(Strings.none) : district,
+			false,
+			true);
 		CssStyles.style(statsItem, CssStyles.VSPACE_TOP_4);
 		layout.addComponent(statsItem);
 		layout.addComponent(createStatsItem(I18nProperties.getCaption(Captions.dashboardFatalities), fatalities.toString(), fatalities > 0, false));
@@ -190,10 +184,14 @@ public class DiseaseTileComponent extends VerticalLayout {
 		}
 
 		Label valueLabel = new Label(value);
-		CssStyles.style(valueLabel, CssStyles.LABEL_PRIMARY, isCritical ? CssStyles.LABEL_CRITICAL : "", singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
+		CssStyles.style(
+			valueLabel,
+			CssStyles.LABEL_PRIMARY,
+			isCritical ? CssStyles.LABEL_CRITICAL : "",
+			singleColumn ? CssStyles.HSPACE_LEFT_5 : CssStyles.ALIGN_CENTER);
 		layout.addComponent(valueLabel);
 		layout.setExpandRatio(valueLabel, singleColumn ? 1f : 0.65f);
 
-		return layout;	
+		return layout;
 	}
 }

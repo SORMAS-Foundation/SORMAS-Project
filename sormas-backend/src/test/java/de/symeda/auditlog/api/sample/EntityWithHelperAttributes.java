@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.sample;
 
@@ -26,47 +26,46 @@ import de.symeda.sormas.api.HasUuid;
 
 @Audited
 public class EntityWithHelperAttributes implements HasUuid {
-	
+
 	private final String uuid;
 	private EntityWithIgnoredMethods firstEntity;
 	private EntityWithIgnoredMethods secondEntity;
 	private EntityWithIgnoredMethods thirdEntity;
-	
+
 	public EntityWithHelperAttributes(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	@Override
 	@AuditedIgnore
 	public String getUuid() {
 		return uuid;
 	}
-	
+
 	@OneToOne
 	public EntityWithIgnoredMethods getFirstEntity() {
 		return firstEntity;
 	}
-	
+
 	public void setFirstEntity(EntityWithIgnoredMethods firstEntity) {
 		this.firstEntity = firstEntity;
 	}
-	
+
 	@ManyToOne
 	public EntityWithIgnoredMethods getSecondEntity() {
 		return secondEntity;
 	}
-	
+
 	public void setSecondEntity(EntityWithIgnoredMethods secondEntity) {
 		this.secondEntity = secondEntity;
 	}
-	
+
 	@OneToOne(mappedBy = "thirdEntity")
 	public EntityWithIgnoredMethods getThirdEntity() {
 		return thirdEntity;
 	}
-	
+
 	public void setThirdEntity(EntityWithIgnoredMethods thirdEntity) {
 		this.thirdEntity = thirdEntity;
 	}
-
 }

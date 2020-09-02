@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
@@ -26,45 +26,44 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
 public class DashboardStatisticsPercentageElement extends VerticalLayout {
-	
+
 	private SvgBarElement svgBarElement;
 	private Label percentageLabel;
-	
+
 	public DashboardStatisticsPercentageElement(String caption, String svgFillClass) {
 		this.setMargin(false);
 		this.setSpacing(false);
 
 		HorizontalLayout captionAndValueLayout = new HorizontalLayout();
 		captionAndValueLayout.setWidth(100, Unit.PERCENTAGE);
-		
+
 		Label captionLabel = new Label(caption);
 		captionLabel.setWidthUndefined();
 		CssStyles.style(captionLabel, CssStyles.LABEL_SECONDARY, CssStyles.LABEL_BOLD);
 		captionAndValueLayout.addComponent(captionLabel);
-		
+
 		percentageLabel = new Label();
 		CssStyles.style(percentageLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_BOLD);
 		percentageLabel.setWidthUndefined();
 		captionAndValueLayout.addComponent(percentageLabel);
-		
+
 		captionAndValueLayout.setComponentAlignment(captionLabel, Alignment.MIDDLE_LEFT);
 		captionAndValueLayout.setComponentAlignment(percentageLabel, Alignment.MIDDLE_RIGHT);
-		
+
 		addComponent(captionAndValueLayout);
-		
+
 		svgBarElement = new SvgBarElement(svgFillClass);
 		svgBarElement.setWidth(100, Unit.PERCENTAGE);
 		addComponent(svgBarElement);
 	}
-	
+
 	public void updatePercentageValue(int percentageValue) {
 		percentageLabel.setValue(Integer.toString(percentageValue) + "%");
 		svgBarElement.updateSvg(percentageValue);
 	}
-	
+
 	public void updatePercentageValueWithCount(int count, int percentageValue) {
-		percentageLabel.setValue(Integer.toString(count) +  " (" + Integer.toString(percentageValue) + " %)");
+		percentageLabel.setValue(Integer.toString(count) + " (" + Integer.toString(percentageValue) + " %)");
 		svgBarElement.updateSvg(percentageValue);
 	}
-
 }

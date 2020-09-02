@@ -9,26 +9,27 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum PresentCondition {
-	ALIVE, 
-	DEAD, 
+
+	ALIVE,
+	DEAD,
 	BURIED;
-	
-	public String toString() {
-		return I18nProperties.getEnumCaption(this);
-	};
-	
+
 	public boolean isDeceased() {
 		return this == DEAD || this == BURIED;
+	}
+
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
 	}
 }

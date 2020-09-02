@@ -7,11 +7,12 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.PersonalData;
 
 public class ContactIndexDetailedDto extends ContactIndexDto {
-	
+
 	private static final long serialVersionUID = 577830364406605991L;
-	
+
 	public static final String SEX = "sex";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String DISTRICT_NAME = "districtName";
@@ -24,24 +25,37 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	private Sex sex;
 	private String approximateAge;
 	private String districtName;
+	@PersonalData
 	private String city;
+	@PersonalData
 	private String address;
+	@PersonalData
 	private String postalCode;
 	private String phone;
 	private UserReferenceDto reportingUser;
 
-	public ContactIndexDetailedDto(String uuid, String firstName, String lastName, String cazeUuid, Disease disease, String diseaseDetails,
+	//@formatter:off
+	public ContactIndexDetailedDto(String uuid, String personFirstName, String personLastName, String cazeUuid, Disease disease, String diseaseDetails,
 								   String caseFirstName, String caseLastName, String regionUuid, String districtUuid,
 								   Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-								   ContactClassification contactClassification, ContactStatus contactStatus,
-								   FollowUpStatus followUpStatus, Date followUpUntil, String contactOfficerUuid, Date reportDateTime,
+								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+								   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
+								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
+								   String caseHealthFacilityUuid, String casePointOfEntryUuid,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String address, String postalCode, String phone,
-								   String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName, int visitCount) {
-		super(uuid, firstName, lastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName,
-				regionUuid, districtUuid, lastContactDate, contactCategory, contactProximity, contactClassification,
-				contactStatus, followUpStatus, followUpUntil, contactOfficerUuid, reportDateTime, caseClassification, visitCount);
+								   String reportingUserFirstName, String reportingUserLastName,
+								   int visitCount) {
+	//@formatter:on
+
+		//@formatter:off
+		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
+				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
+				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
+		//@formatter:on
+
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.districtName = districtName;
@@ -49,7 +63,7 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 		this.address = address;
 		this.postalCode = postalCode;
 		this.phone = phone;
-		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName,  null);
+		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
 	}
 
 	public Sex getSex() {
@@ -83,5 +97,4 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
-	
 }

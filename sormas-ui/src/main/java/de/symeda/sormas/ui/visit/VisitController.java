@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
@@ -47,48 +47,53 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class VisitController {
 
-    public VisitController() {
-    	
-    }
+	public VisitController() {
+
+	}
 
 	public void editVisit(String visitUuid, ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
-    	VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
-    	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
-    	VisitReferenceDto referenceDto = visit.toReference();
-    	PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
-    	VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
-        editForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(editForm, 
-        		UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT), editForm.getFieldGroup());
-        editView.setWidth(100, Unit.PERCENTAGE);
 
-        Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
-        // visit form is too big for typical screens
-		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
-        
-        editView.addCommitListener(new CommitListener() {
-        	@Override
-        	public void onCommit() {
-        		if (!editForm.getFieldGroup().isModified()) {
-        			VisitDto dto = editForm.getValue();
-        			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
-        			if (doneConsumer != null) {
-        				doneConsumer.accept(referenceDto);
-        			}
-        		}
-        	}
-        });
-        
-        if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+		VisitReferenceDto referenceDto = visit.toReference();
+		PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
+		VisitEditForm editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false);
+		editForm.setValue(visit);
+		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_EDIT),
+			editForm.getFieldGroup());
+		editView.setWidth(100, Unit.PERCENTAGE);
+
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditVisit));
+		// visit form is too big for typical screens
+		window.setWidth(editForm.getWidth() + 90, Unit.PIXELS);
+		window.setHeight(80, Unit.PERCENTAGE);
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				if (!editForm.getFieldGroup().isModified()) {
+					VisitDto dto = editForm.getValue();
+					dto = FacadeProvider.getVisitFacade().saveVisit(dto);
+					if (doneConsumer != null) {
+						doneConsumer.accept(referenceDto);
+					}
+				}
+			}
+		});
+
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					FacadeProvider.getVisitFacade().deleteVisit(referenceDto.getUuid());
 					UI.getCurrent().removeWindow(window);
-        			if (doneConsumer != null) {
-        				doneConsumer.accept(referenceDto);
-        			}
+					if (doneConsumer != null) {
+						doneConsumer.accept(referenceDto);
+					}
 				}
 			}, I18nProperties.getCaption(VisitDto.I18N_PREFIX));
 		}
@@ -98,54 +103,63 @@ public class VisitController {
 		VisitDto visit = createNewVisit(contactRef);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-    	VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
-        createForm.setValue(visit);
-        final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(createForm, 
-        		UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE), createForm.getFieldGroup());
-        
-        editView.addCommitListener(new CommitListener() {
-        	@Override
-        	public void onCommit() {
-        		if (!createForm.getFieldGroup().isModified()) {
-        			VisitDto dto = createForm.getValue();
-        			dto = FacadeProvider.getVisitFacade().saveVisit(dto);
-        			if (doneConsumer != null) {
-        				doneConsumer.accept(dto.toReference());
-        			}
-        		}
-        	}
-        });
+		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true);
+		createForm.setValue(visit);
+		final CommitDiscardWrapperComponent<VisitEditForm> editView = new CommitDiscardWrapperComponent<VisitEditForm>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.VISIT_CREATE),
+			createForm.getFieldGroup());
 
-        Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewVisit));
-        // visit form is too big for typical screens
-		window.setWidth(createForm.getWidth() + 64 + 24, Unit.PIXELS); 
-		window.setHeight(80, Unit.PERCENTAGE); 
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				if (!createForm.getFieldGroup().isModified()) {
+					VisitDto dto = createForm.getValue();
+					dto = FacadeProvider.getVisitFacade().saveVisit(dto);
+					if (doneConsumer != null) {
+						doneConsumer.accept(dto.toReference());
+					}
+				}
+			}
+		});
+
+		Window window = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewVisit));
+		// visit form is too big for typical screens
+		window.setWidth(createForm.getWidth() + 64 + 24, Unit.PIXELS);
+		window.setHeight(80, Unit.PERCENTAGE);
 	}
-	
-    private VisitDto createNewVisit(ContactReferenceDto contactRef) {
-    	ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
-    	
-    	VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease());
-    	UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-    	visit.setVisitUser(userReference);
-    	
-    	return visit;
-    }
-	
+
+	private VisitDto createNewVisit(ContactReferenceDto contactRef) {
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+
+		VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease());
+		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
+		visit.setVisitUser(userReference);
+
+		return visit;
+	}
+
 	public void deleteAllSelectedItems(Collection<VisitIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoVisitsSelected), 
-					I18nProperties.getString(Strings.messageNoVisitsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoVisitsSelected),
+				I18nProperties.getString(Strings.messageNoVisitsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), () -> {
-				for (Object selectedRow : selectedRows) {
-					FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid());
-				}
-				callback.run();
-				new Notification(I18nProperties.getString(Strings.headingVisitsDeleted),
-						I18nProperties.getString(Strings.messageVisitsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-			});
+			VaadinUiUtil
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteVisits), selectedRows.size()), () -> {
+					for (Object selectedRow : selectedRows) {
+						FacadeProvider.getVisitFacade().deleteVisit(((VisitIndexDto) selectedRow).getUuid());
+					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingVisitsDeleted),
+						I18nProperties.getString(Strings.messageVisitsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
 		}
 	}
-	
 }

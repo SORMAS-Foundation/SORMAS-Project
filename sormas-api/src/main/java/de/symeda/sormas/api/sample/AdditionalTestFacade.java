@@ -7,13 +7,13 @@ import javax.ejb.Remote;
 
 @Remote
 public interface AdditionalTestFacade {
-	
+
 	AdditionalTestDto getByUuid(String uuid);
-	
+
 	List<AdditionalTestDto> getAllBySample(String sampleUuid);
-	
+
 	AdditionalTestDto saveAdditionalTest(AdditionalTestDto additionalTest);
-	
+
 	void deleteAdditionalTest(String additionalTestUuid);
 
 	List<AdditionalTestDto> getAllActiveAdditionalTestsAfter(Date date);

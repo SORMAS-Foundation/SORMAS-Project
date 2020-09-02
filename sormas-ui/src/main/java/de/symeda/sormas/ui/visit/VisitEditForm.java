@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.visit;
 
@@ -42,25 +42,23 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
-	
-    private static final String HTML_LAYOUT = 
-    		fluidRowLocs(VisitDto.VISIT_STATUS) +
-    		fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) +
-			fluidRowLocs(VisitDto.SYMPTOMS);
-    
-    private final Disease disease;
-    private final ContactDto contact;
-    private final PersonDto person;
-    private SymptomsForm symptomsForm;
 
-    public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
-        super(VisitDto.class, VisitDto.I18N_PREFIX);
-        if (create) {
-        	hideValidationUntilNextCommit();
-        }
+	private static final long serialVersionUID = 1L;
+
+	private static final String HTML_LAYOUT =
+		fluidRowLocs(VisitDto.VISIT_STATUS) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+
+	private final Disease disease;
+	private final ContactDto contact;
+	private final PersonDto person;
+	private SymptomsForm symptomsForm;
+
+	public VisitEditForm(Disease disease, ContactDto contact, PersonDto person, boolean create) {
+
+		super(VisitDto.class, VisitDto.I18N_PREFIX);
+		if (create) {
+			hideValidationUntilNextCommit();
+		}
 		this.disease = disease;
 		this.contact = contact;
 		this.person = person;
@@ -68,67 +66,75 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			throw new IllegalArgumentException("disease cannot be null");
 		}
 		addFields();
-    }
-    
-    @Override
-    protected void setInternalValue(VisitDto newValue) {
-    	if (!disease.equals(newValue.getDisease())) {
-    		throw new IllegalArgumentException("Visit's disease doesn't match the form configuration");
-    	}
-    	super.setInternalValue(newValue);
-    }
-    
+	}
+
+	@Override
+	protected void setInternalValue(VisitDto newValue) {
+
+		if (!disease.equals(newValue.getDisease())) {
+			throw new IllegalArgumentException("Visit's disease doesn't match the form configuration");
+		}
+		super.setInternalValue(newValue);
+	}
+
 	@Override
 	protected void addFields() {
-		
+
 		if (disease == null) {
 			// workaround to stop initialization until disease is set 
 			return;
 		}
-		
-    	addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
+
+		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
-    	addField(VisitDto.VISIT_REMARKS, TextField.class);
-    	
-    	symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
+		addField(VisitDto.VISIT_REMARKS, TextField.class);
+
+		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);
 		getContent().addComponent(symptomsForm, VisitDto.SYMPTOMS);
-    	
-    	setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
-    	
-    	if (contact != null) {
-	    	getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {
-	    		@Override
-	    		public void validate(Object value) throws InvalidValueException {
-	    			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-	    			Date contactReferenceDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
-	    			if (visitDateTime.before(contactReferenceDate) && DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-	    				if (contact.getLastContactDate() != null) {
-	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-	    				} else {
-	    					throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitBeforeContactReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-	    				}
-	    			}
-	    			if (contact.getFollowUpUntil() != null && visitDateTime.after(contact.getFollowUpUntil()) && DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-	    				throw new InvalidValueException(I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
-	    			}
-	    		}
-	    	});
-    	}   	
-    	
-    	symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
-    	
-    	FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE),
-				Arrays.asList(VisitDto.SYMPTOMS), true);    	
-    }
-	
+
+		setRequired(true, VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_STATUS);
+
+		if (contact != null) {
+			getField(VisitDto.VISIT_DATE_TIME).addValidator(new Validator() {
+
+				private static final long serialVersionUID = -7857409200401637094L;
+
+				@Override
+				public void validate(Object value) throws InvalidValueException {
+					Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
+					Date contactReferenceDate = ContactLogic.getStartDate(contact.getLastContactDate(), contact.getReportDateTime());
+					if (visitDateTime.before(contactReferenceDate)
+						&& DateHelper.getDaysBetween(visitDateTime, contactReferenceDate) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+						if (contact.getLastContactDate() != null) {
+							throw new InvalidValueException(
+								I18nProperties.getValidationError(Validations.visitBeforeLastContactDate, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						} else {
+							throw new InvalidValueException(
+								I18nProperties.getValidationError(Validations.visitBeforeContactReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						}
+					}
+					if (contact.getFollowUpUntil() != null
+						&& visitDateTime.after(contact.getFollowUpUntil())
+						&& DateHelper.getDaysBetween(contact.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+						throw new InvalidValueException(
+							I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+					}
+				}
+			});
+		}
+
+		symptomsForm.initializeSymptomRequirementsForVisit((OptionGroup) getFieldGroup().getField(VisitDto.VISIT_STATUS));
+
+		FieldHelper.setEnabledWhen(getFieldGroup(), visitStatus, Arrays.asList(VisitStatus.COOPERATIVE), Arrays.asList(VisitDto.SYMPTOMS), true);
+	}
+
 	@Override
 	protected String createHtmlLayout() {
-		 return HTML_LAYOUT;
+		return HTML_LAYOUT;
 	}
 
 	public SymptomsForm getSymptomsForm() {
 		return symptomsForm;
 	}
-	
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -35,42 +35,44 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
- * documentation</a>
+ *      documentation</a>
  * @see <a href=
- * "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
- * documentation HTTP Methods</a>
+ *      "https://jersey.java.net/documentation/latest/jaxrs-resources.html#d0e2051">Jersey
+ *      documentation HTTP Methods</a>
  */
 @Path("/eventparticipants")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class EventParticipantResource extends EntityDtoResource {
 
-    @GET
-    @Path("/all/{since}")
-    public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
-        return FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
-    }
+	@GET
+	@Path("/all/{since}")
+	public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+	}
 
-    @POST
-    @Path("/query")
-    public List<EventParticipantDto> getByUuids(List<String> uuids) {
+	@POST
+	@Path("/query")
+	public List<EventParticipantDto> getByUuids(List<String> uuids) {
 
-        List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
-        return result;
-    }
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getByUuids(uuids);
+		return result;
+	}
 
-    @POST
-    @Path("/push")
-    public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
+	@POST
+	@Path("/push")
+	public List<PushResult> postEventParticipants(List<EventParticipantDto> dtos) {
 
-        List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
-        return result;
-    }
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+		return result;
+	}
 
-    @GET
-    @Path("/uuids")
-    public List<String> getAllActiveUuids() {
-        return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
-    }
+	@GET
+	@Path("/uuids")
+	public List<String> getAllActiveUuids() {
+		return FacadeProvider.getEventParticipantFacade().getAllActiveUuids();
+	}
 }

@@ -28,32 +28,34 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	private EntityManager em;
 
 	@EJB
-	ClinicalCourseService service;
+	private ClinicalCourseService service;
 	@EJB
-	ClinicalVisitService clinicalVisitService;
+	private ClinicalVisitService clinicalVisitService;
 	@EJB
-	SymptomsFacadeEjbLocal symptomsFacade;
+	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
-	UserService userService;
+	private UserService userService;
 	@EJB
-	CaseFacadeEjbLocal caseFacade;
+	private CaseFacadeEjbLocal caseFacade;
 	@EJB
-	CaseService caseService;
+	private CaseService caseService;
 	@EJB
-	PersonService personService;
+	private PersonService personService;
 	@EJB
-	HealthConditionsService healthConditionsService;
-	
+	private HealthConditionsService healthConditionsService;
+
 	public static ClinicalCourseReferenceDto toReferenceDto(ClinicalCourse entity) {
+
 		if (entity == null) {
 			return null;
 		}
-		
+
 		ClinicalCourseReferenceDto dto = new ClinicalCourseReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 
 	public static ClinicalCourseDto toDto(ClinicalCourse source) {
+
 		if (source == null) {
 			return null;
 		}
@@ -69,6 +71,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	}
 
 	public ClinicalCourse fromDto(@NotNull ClinicalCourseDto source) {
+
 		ClinicalCourse target = service.getByUuid(source.getUuid());
 
 		if (target == null) {
@@ -89,6 +92,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	}
 
 	public static HealthConditionsDto toHealthConditionsDto(HealthConditions source) {
+
 		if (source == null) {
 			return null;
 		}
@@ -125,6 +129,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	}
 
 	public HealthConditions fromHealthConditionsDto(@NotNull HealthConditionsDto source) {
+
 		HealthConditions target = healthConditionsService.getByUuid(source.getUuid());
 
 		if (target == null) {
@@ -169,5 +174,4 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 	public static class ClinicalCourseFacadeEjbLocal extends ClinicalCourseFacadeEjb {
 
 	}
-
 }

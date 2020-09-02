@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.reports;
 
@@ -49,21 +49,22 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 	private int year;
 
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
+
 		@Override
 		public String getStyle(CellReference cell) {
-			
+
 			String css;
 			if (WeeklyReportRegionSummaryDto.OFFICERS.equals(cell.getPropertyId())
-					|| WeeklyReportRegionSummaryDto.OFFICER_REPORTS.equals(cell.getPropertyId())
-					|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())
-					|| WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS.equals(cell.getPropertyId())) {
+				|| WeeklyReportRegionSummaryDto.OFFICER_REPORTS.equals(cell.getPropertyId())
+				|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())
+				|| WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS.equals(cell.getPropertyId())) {
 				css = CssStyles.GRID_CELL_ODD;
 			} else {
 				css = "";
 			}
-				
+
 			if (WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
-					|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())) {
+				|| WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE.equals(cell.getPropertyId())) {
 				Integer reportPercentage = (Integer) cell.getProperty().getValue();
 				if (reportPercentage >= 90) {
 					css += " " + CssStyles.GRID_CELL_PRIORITY_LOW;
@@ -80,33 +81,35 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 	public WeeklyReportRegionsGrid() {
 		setSizeFull();
 
-		BeanItemContainer<WeeklyReportRegionSummaryDto> container = new BeanItemContainer<WeeklyReportRegionSummaryDto>(
-				WeeklyReportRegionSummaryDto.class);
+		BeanItemContainer<WeeklyReportRegionSummaryDto> container =
+			new BeanItemContainer<WeeklyReportRegionSummaryDto>(WeeklyReportRegionSummaryDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		VaadinUiUtil.addIconColumn(generatedContainer, VIEW_DETAILS_BTN_ID, VaadinIcons.EYE);
 		setContainerDataSource(generatedContainer);
 
-		setColumns(VIEW_DETAILS_BTN_ID, 
-				WeeklyReportRegionSummaryDto.REGION,
-				WeeklyReportRegionSummaryDto.OFFICERS,
-				WeeklyReportRegionSummaryDto.OFFICER_REPORTS, 
-				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE, 
-				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS,
-				WeeklyReportRegionSummaryDto.INFORMANTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
-				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS);
+		setColumns(
+			VIEW_DETAILS_BTN_ID,
+			WeeklyReportRegionSummaryDto.REGION,
+			WeeklyReportRegionSummaryDto.OFFICERS,
+			WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
+			WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
+			WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS,
+			WeeklyReportRegionSummaryDto.INFORMANTS,
+			WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
+			WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+			WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
 				column.setSortable(false);
 			} else {
-				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX,
-						column.getPropertyId().toString(), column.getHeaderCaption()));
+				column.setHeaderCaption(
+					I18nProperties
+						.getPrefixCaption(WeeklyReportRegionSummaryDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
-		
+
 		HeaderRow headerRow = getHeaderRow(0);
 		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICERS).setStyleName(CssStyles.GRID_CELL_ODD);
 		headerRow.getCell(WeeklyReportRegionSummaryDto.OFFICER_REPORTS).setStyleName(CssStyles.GRID_CELL_ODD);
@@ -115,15 +118,16 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 
 		HeaderRow preHeaderRow = prependHeaderRow();
 		HeaderCell preHeaderCell = preHeaderRow.join(
-				WeeklyReportRegionSummaryDto.OFFICERS, 
-				WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
-				WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
-				WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS);
+			WeeklyReportRegionSummaryDto.OFFICERS,
+			WeeklyReportRegionSummaryDto.OFFICER_REPORTS,
+			WeeklyReportRegionSummaryDto.OFFICER_REPORT_PERCENTAGE,
+			WeeklyReportRegionSummaryDto.OFFICER_ZERO_REPORTS);
 		preHeaderCell.setHtml(I18nProperties.getCaption(Captions.weeklyReportRegionOfficers));
-		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);		
-		
-		preHeaderRow.join(
-				WeeklyReportRegionSummaryDto.INFORMANTS, 
+		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
+
+		preHeaderRow
+			.join(
+				WeeklyReportRegionSummaryDto.INFORMANTS,
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORTS,
 				WeeklyReportRegionSummaryDto.INFORMANT_REPORT_PERCENTAGE,
 				WeeklyReportRegionSummaryDto.INFORMANT_ZERO_REPORTS)
@@ -155,8 +159,7 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 		getContainer().removeAllItems();
 		EpiWeek epiWeek = new EpiWeek(year, week);
 
-		List<WeeklyReportRegionSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade()
-				.getSummariesPerRegion(epiWeek);
+		List<WeeklyReportRegionSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerRegion(epiWeek);
 		summaryDtos.forEach(s -> getContainer().addItem(s));
 	}
 
@@ -175,8 +178,9 @@ public class WeeklyReportRegionsGrid extends Grid implements ItemClickListener {
 			grid.setHeightMode(HeightMode.ROW);
 			grid.setHeightUndefined();
 			layout.addComponent(grid);
-			window.setCaption(String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getRegion().toString())
-					+ " - " + I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
+			window.setCaption(
+				String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getRegion().toString()) + " - "
+					+ I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
 		}
 	}
 }

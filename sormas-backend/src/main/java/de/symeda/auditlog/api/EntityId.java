@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api;
 
@@ -42,12 +42,13 @@ public class EntityId {
 
 	public String getEntityUuid() {
 		return entityUuid;
-	} 
+	}
 
 	/**
 	 * Returns the object ID to differentiate various entity types and instances of the same entity type.
 	 * <p/>
 	 * Uses {@link #getClass()} and {@link #getUuid()} in the default mode.
+	 * 
 	 * @return
 	 */
 	public static EntityId getOidFromHasUuid(HasUuid hasUuid) {
@@ -95,5 +96,4 @@ public class EntityId {
 
 		return true;
 	}
-
 }

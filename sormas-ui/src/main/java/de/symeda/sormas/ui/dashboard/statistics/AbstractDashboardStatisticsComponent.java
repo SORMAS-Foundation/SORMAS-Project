@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
@@ -34,7 +34,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -74,11 +73,11 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 
 		subComponentsLayout = new CustomLayout();
 		subComponentsLayout.setTemplateContents(
-				LayoutUtil.fluidRow(
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, FIRST_LOC), 
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, SECOND_LOC),
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, THIRD_LOC),
-						LayoutUtil.fluidColumnLoc(3, 0, 6, 0, FOURTH_LOC)));
+			LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumnLoc(3, 0, 6, 0, FIRST_LOC),
+				LayoutUtil.fluidColumnLoc(3, 0, 6, 0, SECOND_LOC),
+				LayoutUtil.fluidColumnLoc(3, 0, 6, 0, THIRD_LOC),
+				LayoutUtil.fluidColumnLoc(3, 0, 6, 0, FOURTH_LOC)));
 		subComponentsLayout.setWidth(100, Unit.PERCENTAGE);
 
 		addFirstComponent();
@@ -98,17 +97,25 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	protected abstract void addFirstComponent();
+
 	protected abstract void addSecondComponent();
+
 	protected abstract void addThirdComponent();
+
 	protected abstract void addFourthComponent();
 
 	protected abstract void updateFirstComponent(int visibleDiseasesCount);
+
 	protected abstract void updateSecondComponent(int visibleDiseasesCount);
+
 	protected abstract void updateThirdComponent(int visibleDiseasesCount);
+
 	protected abstract void updateFourthComponent(int visibleDiseasesCount);
 
 	protected abstract int getNormalHeight();
+
 	protected abstract int getFullHeight();
+
 	protected abstract int getFilteredHeight();
 
 	public void updateStatistics(Disease disease) {
@@ -124,7 +131,8 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 			}
 		}
 
-		int visibleDiseasesCount = currentDisease == null ? (isFullMode() ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).size() : 6) : 0; 
+		int visibleDiseasesCount =
+			currentDisease == null ? (isFullMode() ? FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true).size() : 6) : 0;
 		updateFirstComponent(visibleDiseasesCount);
 		updateSecondComponent(visibleDiseasesCount);
 		updateThirdComponent(visibleDiseasesCount);
@@ -150,10 +158,20 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	private void addShowMoreAndLessButtons() {
-		showMoreButton = ButtonHelper.createIconButton(Captions.dashboardShowAllDiseases, VaadinIcons.CHEVRON_DOWN, null,
-				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
-		showLessButton = ButtonHelper.createIconButton(Captions.dashboardShowFirstDiseases, VaadinIcons.CHEVRON_UP, null,
-				ValoTheme.BUTTON_BORDERLESS, CssStyles.VSPACE_TOP_NONE, CssStyles.VSPACE_3);
+		showMoreButton = ButtonHelper.createIconButton(
+			Captions.dashboardShowAllDiseases,
+			VaadinIcons.CHEVRON_DOWN,
+			null,
+			ValoTheme.BUTTON_BORDERLESS,
+			CssStyles.VSPACE_TOP_NONE,
+			CssStyles.VSPACE_3);
+		showLessButton = ButtonHelper.createIconButton(
+			Captions.dashboardShowFirstDiseases,
+			VaadinIcons.CHEVRON_UP,
+			null,
+			ValoTheme.BUTTON_BORDERLESS,
+			CssStyles.VSPACE_TOP_NONE,
+			CssStyles.VSPACE_3);
 
 		showMoreButton.addClickListener(e -> {
 			showMoreButton.setVisible(false);
@@ -181,6 +199,7 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	protected List<Map.Entry<Disease, Integer>> createSortedDiseaseList(Map<Disease, Integer> diseaseMap) {
 		List<Map.Entry<Disease, Integer>> sortedDiseaseList = new ArrayList<>(diseaseMap.entrySet());
 		Collections.sort(sortedDiseaseList, new Comparator<Map.Entry<Disease, Integer>>() {
+
 			public int compare(Map.Entry<Disease, Integer> e1, Map.Entry<Disease, Integer> e2) {
 				return e2.getValue().compareTo(e1.getValue());
 			}
@@ -190,11 +209,10 @@ public abstract class AbstractDashboardStatisticsComponent extends VerticalLayou
 	}
 
 	public int calculateGrowth(int currentCount, int previousCount) {
-		return currentCount == 0 ?
-				(previousCount > 0 ? -100 : 0) : 
-					previousCount == 0 ? 
-							(currentCount > 0 ? Integer.MIN_VALUE : 0) : 
-								Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
+		return currentCount == 0
+			? (previousCount > 0 ? -100 : 0)
+			: previousCount == 0
+				? (currentCount > 0 ? Integer.MIN_VALUE : 0)
+				: Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
 	}
-
 }

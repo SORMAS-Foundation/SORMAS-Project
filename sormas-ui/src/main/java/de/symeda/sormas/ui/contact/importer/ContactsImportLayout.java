@@ -23,27 +23,35 @@ public class ContactsImportLayout extends AbstractImportLayout {
 	public ContactsImportLayout() {
 		super();
 
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
-				new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2, FacadeProvider.getImportFacade()
-				.getContactImportTemplateFilePath(), "sormas_import_contact_template.csv");
+		addDownloadResourcesComponent(
+			1,
+			new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
+			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadImportTemplateComponent(
+			2,
+			FacadeProvider.getImportFacade().getContactImportTemplateFilePath(),
+			"sormas_import_contact_template.csv");
 		addImportCsvComponent(3, new ImportReceiver("_contact_import_", new Consumer<File>() {
+
 			@Override
 			public void accept(File file) {
 				resetDownloadErrorReportButton();
-			
+
 				try {
 					ContactImporter importer = new ContactImporter(file, false, currentUser, null);
 					importer.startImport(new Consumer<StreamResource>() {
+
 						@Override
 						public void accept(StreamResource resource) {
 							extendDownloadErrorReportButton(resource);
 						}
 					}, currentUI, false);
 				} catch (IOException e) {
-					new Notification(I18nProperties.getString(Strings.headingImportFailed),
-							I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false)
-									.show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 				}
 			}
 		}));

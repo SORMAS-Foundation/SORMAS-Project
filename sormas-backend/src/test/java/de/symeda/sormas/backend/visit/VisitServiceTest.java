@@ -20,7 +20,8 @@ import de.symeda.sormas.backend.person.Person;
 public class VisitServiceTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetAllRelevantVisits() throws Exception {
+	public void testGetAllRelevantVisits() {
+
 		Date startDate = DateHelper.subtractDays(new Date(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET * 2);
 		Date endDate = DateHelper.addDays(startDate, 28);
 		PersonDto visitPerson = creator.createPerson();
@@ -74,5 +75,4 @@ public class VisitServiceTest extends AbstractBeanTest {
 		visits = getVisitService().getAllRelevantVisits(visitPersonEntity, visit.getDisease(), startDate, endDate);
 		assertThat(visits, hasSize(1));
 	}
-
 }

@@ -40,7 +40,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
-            android:paddingRight="@dimen/rowListItemHorizontalMargin">
+            android:paddingRight="@dimen/rowListItemHorizontalMargin"
+            android:id="@+id/main_content">
 
             <de.symeda.sormas.app.component.controls.ControlTextEditField
                 android:id="@+id/location_address"

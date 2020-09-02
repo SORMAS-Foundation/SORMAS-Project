@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -27,28 +27,28 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 
 public class ClassificationPersonAgeBetweenYearsCriteriaDto extends ClassificationCriteriaDto {
-	
+
 	private static final long serialVersionUID = 7306888279187764644L;
-	
+
 	protected Integer lowerYearsThreshold;
 	protected Integer upperYearsThreshold;
-	
+
 	public ClassificationPersonAgeBetweenYearsCriteriaDto() {
-		
+
 	}
-	
+
 	public ClassificationPersonAgeBetweenYearsCriteriaDto(Integer lowerYearsThreshold, Integer upperYearsThreshold) {
 		this.lowerYearsThreshold = lowerYearsThreshold;
 		this.upperYearsThreshold = upperYearsThreshold;
 	}
-	
+
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
 		Integer approximateAge = ApproximateAgeHelper.getAgeYears(person.getApproximateAge(), person.getApproximateAgeType());
 		if (approximateAge == null) {
 			return false;
 		}
-		
+
 		if (lowerYearsThreshold != null && approximateAge < lowerYearsThreshold) {
 			return false;
 		}
@@ -58,16 +58,22 @@ public class ClassificationPersonAgeBetweenYearsCriteriaDto extends Classificati
 
 		return true;
 	}
-	
+
 	@Override
 	public String buildDescription() {
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getString(Strings.classificationPersonAged)).append(" ");
 		if (lowerYearsThreshold != null && upperYearsThreshold != null) {
 			stringBuilder.append(I18nProperties.getString(Strings.between))
-					.append(" ").append(lowerYearsThreshold).append(" ")
-					.append(I18nProperties.getString(Strings.and)).append(" ")
-					.append(upperYearsThreshold).append(" ").append(I18nProperties.getString(Strings.years));
+				.append(" ")
+				.append(lowerYearsThreshold)
+				.append(" ")
+				.append(I18nProperties.getString(Strings.and))
+				.append(" ")
+				.append(upperYearsThreshold)
+				.append(" ")
+				.append(I18nProperties.getString(Strings.years));
 		} else if (lowerYearsThreshold != null) {
 			stringBuilder.append(lowerYearsThreshold).append(" ").append(I18nProperties.getString(Strings.classificationYearsOrMore));
 		} else if (upperYearsThreshold != null) {

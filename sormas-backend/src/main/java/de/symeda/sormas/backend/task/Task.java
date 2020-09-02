@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
@@ -45,7 +45,7 @@ public class Task extends AbstractDomainObject {
 	private static final long serialVersionUID = -4754578341242164661L;
 
 	public static final String TABLE_NAME = "task";
-	
+
 	public static final String ASSIGNEE_REPLY = "assigneeReply";
 	public static final String ASSIGNEE_USER = "assigneeUser";
 	public static final String CAZE = "caze";
@@ -64,12 +64,12 @@ public class Task extends AbstractDomainObject {
 	public static final String CLOSED_LAT = "closedLat";
 	public static final String CLOSED_LON = "closedLon";
 	public static final String ARCHIVED = "archived";
-	
+
 	private TaskContext taskContext;
 	private Case caze;
 	private Contact contact;
 	private Event event;
-	
+
 	private TaskType taskType;
 	private TaskPriority priority;
 	private Date dueDate;
@@ -77,132 +77,147 @@ public class Task extends AbstractDomainObject {
 	private TaskStatus taskStatus;
 	private Date statusChangeDate;
 	private Date perceivedStart;
-	
+
 	private User creatorUser;
 	private String creatorComment;
 	private User assigneeUser;
 	private String assigneeReply;
-	
+
 	private Double closedLat;
 	private Double closedLon;
 	private Float closedLatLonAccuracy;
-	
+
 	@Enumerated(EnumType.STRING)
 	public TaskContext getTaskContext() {
 		return taskContext;
 	}
+
 	public void setTaskContext(TaskContext taskContext) {
 		this.taskContext = taskContext;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Case getCaze() {
 		return caze;
 	}
+
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Contact getContact() {
 		return contact;
 	}
+
 	public void setContact(Contact contact) {
 		this.contact = contact;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public Event getEvent() {
 		return event;
 	}
+
 	public void setEvent(Event event) {
 		this.event = event;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public TaskType getTaskType() {
 		return taskType;
 	}
+
 	public void setTaskType(TaskType taskType) {
 		this.taskType = taskType;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getDueDate() {
 		return dueDate;
 	}
+
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
 	}
+
 	public void setTaskStatus(TaskStatus taskStatus) {
 		this.taskStatus = taskStatus;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getStatusChangeDate() {
 		return statusChangeDate;
 	}
+
 	public void setStatusChangeDate(Date statusChangeDate) {
 		this.statusChangeDate = statusChangeDate;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getPerceivedStart() {
 		return perceivedStart;
 	}
+
 	public void setPerceivedStart(Date perceivedStart) {
 		this.perceivedStart = perceivedStart;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public User getCreatorUser() {
 		return creatorUser;
 	}
+
 	public void setCreatorUser(User creatorUser) {
 		this.creatorUser = creatorUser;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = 512)
 	public String getCreatorComment() {
 		return creatorComment;
 	}
+
 	public void setCreatorComment(String creatorComment) {
 		this.creatorComment = creatorComment;
 	}
-	
+
 	@ManyToOne(cascade = {})
 	public User getAssigneeUser() {
 		return assigneeUser;
 	}
+
 	public void setAssigneeUser(User assigneeUser) {
 		this.assigneeUser = assigneeUser;
 	}
-	
-	@Column(length=512)
+
+	@Column(length = 512)
 	public String getAssigneeReply() {
 		return assigneeReply;
 	}
+
 	public void setAssigneeReply(String assigneeReply) {
 		this.assigneeReply = assigneeReply;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public TaskPriority getPriority() {
 		return priority;
 	}
+
 	public void setPriority(TaskPriority priority) {
 		this.priority = priority;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getSuggestedStart() {
 		return suggestedStart;
 	}
+
 	public void setSuggestedStart(Date suggestedStart) {
 		this.suggestedStart = suggestedStart;
 	}
@@ -210,6 +225,7 @@ public class Task extends AbstractDomainObject {
 	public Double getClosedLat() {
 		return closedLat;
 	}
+
 	public void setClosedLat(Double closedLat) {
 		this.closedLat = closedLat;
 	}
@@ -217,6 +233,7 @@ public class Task extends AbstractDomainObject {
 	public Double getClosedLon() {
 		return closedLon;
 	}
+
 	public void setClosedLon(Double closedLon) {
 		this.closedLon = closedLon;
 	}
@@ -224,8 +241,8 @@ public class Task extends AbstractDomainObject {
 	public Float getClosedLatLonAccuracy() {
 		return closedLatLonAccuracy;
 	}
+
 	public void setClosedLatLonAccuracy(Float closedLatLonAccuracy) {
 		this.closedLatLonAccuracy = closedLatLonAccuracy;
 	}
-	
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -31,36 +31,44 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class EpiDataTravelEditForm extends AbstractEditForm<EpiDataTravelDto> {
-	
+
 	private static final long serialVersionUID = 1L;
-	
-	private static final String HTML_LAYOUT = 
-			fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO) +
-			fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
-	
+
+	private static final String HTML_LAYOUT = fluidRowLocs(EpiDataTravelDto.TRAVEL_DATE_FROM, EpiDataTravelDto.TRAVEL_DATE_TO)
+		+ fluidRowLocs(EpiDataTravelDto.TRAVEL_TYPE, EpiDataTravelDto.TRAVEL_DESTINATION);
+
 	public EpiDataTravelEditForm() {
 		super(EpiDataTravelDto.class, EpiDataTravelDto.I18N_PREFIX);
-		
+
 		setWidth(540, Unit.PIXELS);
 	}
-	
+
 	@Override
 	protected void addFields() {
 		DateField travelDateFrom = addField(EpiDataTravelDto.TRAVEL_DATE_FROM, DateField.class);
 		DateField travelDateTo = addField(EpiDataTravelDto.TRAVEL_DATE_TO, DateField.class);
-		travelDateFrom.addValidator(new DateComparisonValidator(travelDateFrom, travelDateTo, true, true, 
+		travelDateFrom.addValidator(
+			new DateComparisonValidator(
+				travelDateFrom,
+				travelDateTo,
+				true,
+				true,
 				I18nProperties.getValidationError(Validations.beforeDate, travelDateFrom.getCaption(), travelDateTo.getCaption())));
-		travelDateTo.addValidator(new DateComparisonValidator(travelDateTo, travelDateFrom, false, true, 
+		travelDateTo.addValidator(
+			new DateComparisonValidator(
+				travelDateTo,
+				travelDateFrom,
+				false,
+				true,
 				I18nProperties.getValidationError(Validations.afterDate, travelDateFrom.getCaption(), travelDateTo.getCaption())));
 		addField(EpiDataTravelDto.TRAVEL_TYPE, ComboBox.class);
 		addField(EpiDataTravelDto.TRAVEL_DESTINATION, TextField.class);
-		
+
 		FieldHelper.addSoftRequiredStyle(travelDateFrom, travelDateTo);
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

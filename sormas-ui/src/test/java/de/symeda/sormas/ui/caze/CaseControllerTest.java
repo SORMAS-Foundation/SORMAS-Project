@@ -31,12 +31,7 @@ public class CaseControllerTest extends AbstractBeanTest {
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 
 		VaadinRequest request = Mockito.mock(VaadinServletRequest.class);
-		when(request.getUserPrincipal()).thenReturn(new Principal() {
-			@Override
-			public String getName() {
-				return "admin";
-			}
-		});
+		when(request.getUserPrincipal()).thenReturn((Principal) () -> "admin");
 
 		CurrentInstance.set(VaadinRequest.class, request);
 

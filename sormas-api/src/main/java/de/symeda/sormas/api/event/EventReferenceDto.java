@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
@@ -32,18 +32,18 @@ public class EventReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = 2430932452606853497L;
 
 	public EventReferenceDto() {
-		
+
 	}
-	
+
 	public EventReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public EventReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}
-	
+
 	public EventReferenceDto(String uuid, Disease disease, String diseaseDetails, EventStatus eventStatus, Date eventDate) {
 		setUuid(uuid);
 		setCaption(buildCaption(disease, diseaseDetails, eventStatus, eventDate));
@@ -55,15 +55,15 @@ public class EventReferenceDto extends ReferenceDto {
 	}
 
 	public static String buildCaption(Disease disease, String diseaseDetails, EventStatus eventStatus, Date eventDate) {
-		String diseaseString = disease != Disease.OTHER
-				? DataHelper.toStringNullable(disease)
-				: DataHelper.toStringNullable(diseaseDetails);
+
+		String diseaseString = disease != Disease.OTHER ? DataHelper.toStringNullable(disease) : DataHelper.toStringNullable(diseaseDetails);
 		String eventStatusString = DataHelper.toStringNullable(eventStatus);
 		if (!diseaseString.isEmpty()) {
 			eventStatusString = eventStatusString.toLowerCase();
 		}
 
 		Language language = I18nProperties.getUserLanguage();
-		return diseaseString + " " + eventStatusString + " " + I18nProperties.getString(Strings.on) + " " + DateHelper.formatLocalDate(eventDate, language);
+		return diseaseString + " " + eventStatusString + " " + I18nProperties.getString(Strings.on) + " "
+			+ DateHelper.formatLocalDate(eventDate, language);
 	}
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.report;
 
@@ -34,17 +34,18 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 public class WeeklyReportEntryService extends AbstractAdoService<WeeklyReportEntry> {
 
 	@EJB
-	WeeklyReportService weeklyReportService;
-	
+	private WeeklyReportService weeklyReportService;
+
 	public WeeklyReportEntryService() {
 		super(WeeklyReportEntry.class);
 	}
-	
+
 	public long getNumberOfNonZeroEntries(WeeklyReport report) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<WeeklyReportEntry> from = cq.from(getElementClass());
-		
+
 		cq.select(cb.count(from));
 		cq.where(cb.equal(from.get(WeeklyReportEntry.WEEKLY_REPORT), report));
 		cq.where(cb.greaterThan(from.get(WeeklyReportEntry.NUMBER_OF_CASES), 0));
@@ -59,5 +60,4 @@ public class WeeklyReportEntryService extends AbstractAdoService<WeeklyReportEnt
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<WeeklyReportEntry, WeeklyReportEntry> from) {
 		return weeklyReportService.createUserFilter(cb, cq, from.join(WeeklyReportEntry.WEEKLY_REPORT, JoinType.LEFT));
 	}
-
 }

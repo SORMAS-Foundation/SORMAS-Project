@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
@@ -25,13 +25,13 @@ public class FacilityReferenceDto extends ReferenceDto implements StatisticsGrou
 	private static final long serialVersionUID = -7987228795475507196L;
 
 	public FacilityReferenceDto() {
-		
+
 	}
-	
+
 	public FacilityReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public FacilityReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
@@ -46,12 +46,11 @@ public class FacilityReferenceDto extends ReferenceDto implements StatisticsGrou
 		if (this.equals(o)) {
 			return 0;
 		}
-		int captionComparison = this.getCaption().compareTo(((FacilityReferenceDto) o) .getCaption());
+		int captionComparison = this.getCaption().compareTo(((FacilityReferenceDto) o).getCaption());
 		if (captionComparison != 0) {
 			return captionComparison;
 		} else {
 			return this.getUuid().compareTo(((FacilityReferenceDto) o).getUuid());
 		}
 	}
-	
 }

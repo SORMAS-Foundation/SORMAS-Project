@@ -6,20 +6,21 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
 public class VisitSummaryExportDetails {
-	
+
 	private Long contactId;
 	private Date visitDateTime;
-    private VisitStatus visitStatus;
-    private Symptoms symptoms;
+	private VisitStatus visitStatus;
+	private Symptoms symptoms;
 
-    public VisitSummaryExportDetails(Long contactId, Date visitDateTime, VisitStatus visitStatus, Symptoms symptoms) {
-    	this.contactId = contactId;
-        this.visitDateTime = visitDateTime;
-        this.visitStatus = visitStatus;
-        this.symptoms = symptoms;
-    }
+	public VisitSummaryExportDetails(Long contactId, Date visitDateTime, VisitStatus visitStatus, Symptoms symptoms) {
 
-    public Long getContactId() {
+		this.contactId = contactId;
+		this.visitDateTime = visitDateTime;
+		this.visitStatus = visitStatus;
+		this.symptoms = symptoms;
+	}
+
+	public Long getContactId() {
 		return contactId;
 	}
 
@@ -28,27 +29,26 @@ public class VisitSummaryExportDetails {
 	}
 
 	public Date getVisitDateTime() {
-        return visitDateTime;
-    }
+		return visitDateTime;
+	}
 
-    public void setVisitDateTime(Date visitDateTime) {
-        this.visitDateTime = visitDateTime;
-    }
+	public void setVisitDateTime(Date visitDateTime) {
+		this.visitDateTime = visitDateTime;
+	}
 
-    public VisitStatus getVisitStatus() {
-        return visitStatus;
-    }
+	public VisitStatus getVisitStatus() {
+		return visitStatus;
+	}
 
-    public void setVisitStatus(VisitStatus visitStatus) {
-        this.visitStatus = visitStatus;
-    }
+	public void setVisitStatus(VisitStatus visitStatus) {
+		this.visitStatus = visitStatus;
+	}
 
-    public Symptoms getSymptoms() {
-        return symptoms;
-    }
+	public Symptoms getSymptoms() {
+		return symptoms;
+	}
 
-    public void setSymptoms(Symptoms symptoms) {
-        this.symptoms = symptoms;
-    }
-    
+	public void setSymptoms(Symptoms symptoms) {
+		this.symptoms = symptoms;
+	}
 }

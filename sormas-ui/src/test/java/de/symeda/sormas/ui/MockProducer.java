@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
 package de.symeda.sormas.ui;
@@ -54,15 +54,15 @@ public class MockProducer {
 	private static TimerService timerService = mock(TimerService.class);
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
-	
+
 	private static FacadeProvider facadeProvider = new FacadeProviderMock();
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
 	static {
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ",");
-		
+
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
 			instance.setAccessible(true);
@@ -70,14 +70,14 @@ public class MockProducer {
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		
-	    try {
-	        Field instance = FacadeProvider.class.getDeclaredField("instance");
-	        instance.setAccessible(true);
-	        instance.set(instance, facadeProvider);
-	    } catch (Exception e) {
-	        throw new RuntimeException(e);
-	    }
+
+		try {
+			Field instance = FacadeProvider.class.getDeclaredField("instance");
+			instance.setAccessible(true);
+			instance.set(instance, facadeProvider);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
 		// Make sure that the default session does not use a local mail server (if mock-javamail is removed)
 		mailSession = Session.getInstance(properties);

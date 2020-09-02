@@ -13,17 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.MDC;
 
-@WebFilter(asyncSupported=true, urlPatterns="/*")
+@WebFilter(asyncSupported = true, urlPatterns = "/*")
 public class Slf4jMdcFilter implements Filter {
 
 	@Override
 	public void destroy() {
+
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
-			throws IOException, ServletException {
-		
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
 		setMDC((HttpServletRequest) request);
 		try {
 			chain.doFilter(request, response);
@@ -34,6 +34,7 @@ public class Slf4jMdcFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig cfg) throws ServletException {
+
 	}
 
 	private void setMDC(HttpServletRequest request) {

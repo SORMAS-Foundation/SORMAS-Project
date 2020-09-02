@@ -15,7 +15,6 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -29,12 +28,12 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 public class DtoHelperTest extends AbstractBeanTest {
 
 	@Test
-	public void testFillDto() throws Exception {
+	public void testFillDto() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		RDCFEntities rdcf2 = creator.createRDCFEntities();
 		rdcf2.facility.setType(FacilityType.LABORATORY);
-		
+
 		UserDto user = creator.createUser(rdcf, UserRole.ADMIN);
 
 		// Test simple values
@@ -141,9 +140,9 @@ public class DtoHelperTest extends AbstractBeanTest {
 			// Check 'lead has still same entries'
 			targetDto.getEpiData().setBurials(targetList1);
 			sourceDto.getEpiData().setBurials(sourceList1);
-			String existingUuid = targetList1.get(0).getUuid(); 
+			String existingUuid = targetList1.get(0).getUuid();
 			DtoHelper.fillDto(targetDto, sourceDto, false);
-			
+
 			assertEquals(targetList1.size(), targetDto.getEpiData().getBurials().size());
 			assertNotNull(targetDto.getEpiData().getBurials().get(0).getUuid());
 			assertEquals(existingUuid, targetDto.getEpiData().getBurials().get(0).getUuid());
@@ -169,13 +168,13 @@ public class DtoHelperTest extends AbstractBeanTest {
 			assertNotEquals(sourceList2.get(0).getUuid(), targetDto.getEpiData().getBurials().get(0).getUuid());
 			assertNotEquals(sourceList2.get(1).getUuid(), targetDto.getEpiData().getBurials().get(1).getUuid());
 		}
-		
+
 		// test non-entity list
-		{ 
+		{
 			PersonDto person = creator.createPerson("First", "Last");
 			CaseDataDto targetCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
 			CaseDataDto sourceCaseDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
-			
+
 			SampleDto sourceDto = creator.createSample(sourceCaseDto.toReference(), user.toReference(), rdcf2.facility);
 			sourceDto.setPathogenTestingRequested(true);
 			sourceDto.getRequestedPathogenTests().add(PathogenTestType.ANTIGEN_DETECTION);

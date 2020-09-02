@@ -9,22 +9,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.Language;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.classification.ClassificationXOfCriteriaDto.ClassificationXOfSubCriteriaDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -94,7 +94,7 @@ public final class ClassificationHtmlRenderer {
 
 		return sb.toString();
 	}
-	
+
 	public static String createNotACaseHtmlString(DiseaseClassificationCriteriaDto criteria) {
 		StringBuilder sb = new StringBuilder();
 		ClassificationCriteriaDto notACaseCriteria = criteria.getNotACaseCriteria();
@@ -118,6 +118,7 @@ public final class ClassificationHtmlRenderer {
 		html.append("<html><header><style>");
 
 		// Add style definitions
+		//@formatter:off
 		html.append("body {\r\n" +
 				" font-family: verdana;\r\n" +
 				"}\r\n" +
@@ -167,7 +168,9 @@ public final class ClassificationHtmlRenderer {
 				"  background: rgba(244, 244, 244, 0.7);\r\n" + 
 				"  display: inline-block;\r\n" + 
 				"}</style></header><body>");
+		//@formatter:on
 
+		//@formatter:off
 		html.append("<h1 style=\"text-align: center; color: #005A9C;\">").append(I18nProperties.getString(Strings.classificationClassificationRules)).append("</h1>");
 		html.append("<h4 style=\"text-align: center;\">")
 				.append(I18nProperties.getString(Strings.classificationGeneratedFor))
@@ -175,6 +178,7 @@ public final class ClassificationHtmlRenderer {
 				.append(StringUtils.wrap(I18nProperties.getString(Strings.on), " "))
 				.append(sormasServerUrl).append(StringUtils.wrap(I18nProperties.getString(Strings.at), " "))
 				.append(DateHelper.formatLocalDateTime(new Date(), language)).append("</h4>");
+		//@formatter:on
 
 		for (Disease disease : diseases) {
 			DiseaseClassificationCriteriaDto diseaseCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
@@ -200,7 +204,8 @@ public final class ClassificationHtmlRenderer {
 		} else {
 			// Otherwise, create a div and fill it by iterating over the sub criteria
 			for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
-				if (subCriteria instanceof ClassificationAllOfCriteriaDto && !((ClassificationAllOfCriteriaDto) subCriteria).isDrawSubCriteriaTogether()) {
+				if (subCriteria instanceof ClassificationAllOfCriteriaDto
+					&& !((ClassificationAllOfCriteriaDto) subCriteria).isDrawSubCriteriaTogether()) {
 					// If the sub criteria is an AllOfCriteria, every one of its sub criteria needs its own div
 					for (ClassificationCriteriaDto subSubCriteria : ((ClassificationCollectiveCriteria) subCriteria).getSubCriteria()) {
 						sb.append(createCriteriaSurroundingDiv(buildSubCriteriaDiv(new StringBuilder(), subSubCriteria, subCriteria)));
@@ -214,7 +219,11 @@ public final class ClassificationHtmlRenderer {
 		return sb.toString();
 	}
 
-	private static String buildSubCriteriaDiv(StringBuilder subCriteriaSb, ClassificationCriteriaDto criteria, ClassificationCriteriaDto parentCriteria) {
+	private static String buildSubCriteriaDiv(
+		StringBuilder subCriteriaSb,
+		ClassificationCriteriaDto criteria,
+		ClassificationCriteriaDto parentCriteria) {
+
 		// For non-collective criteria, only a simple div needs to be added
 		if (!(criteria instanceof ClassificationCollectiveCriteria)) {
 			subCriteriaSb.append(createCriteriaItemDiv(criteria.buildDescription()));
@@ -229,16 +238,18 @@ public final class ClassificationHtmlRenderer {
 		for (ClassificationCriteriaDto subCriteria : ((ClassificationCollectiveCriteria) criteria).getSubCriteria()) {
 			if (!(subCriteria instanceof ClassificationCollectiveCriteria) || subCriteria instanceof ClassificationCompactCriteria) {
 				// For non-collective or compact collective criteria, add the description as a list item
-				subCriteriaSb.append("- " + subCriteria.buildDescription()+ "</br>");
-			} else if (subCriteria instanceof ClassificationCollectiveCriteria && !(subCriteria instanceof ClassificationAllOfCriteriaDto)
-					&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
+				subCriteriaSb.append("- " + subCriteria.buildDescription() + "</br>");
+			} else if (subCriteria instanceof ClassificationCollectiveCriteria
+				&& !(subCriteria instanceof ClassificationAllOfCriteriaDto)
+				&& !(subCriteria.getClass() == ClassificationXOfCriteriaDto.class)) {
 				// For collective criteria, but not ClassificationAllOfCriteria, add a sub div with a slightly different color to make clear
 				// that it belongs to the criteria listed before
 				String itemDiv = null;
 				if (subCriteria instanceof ClassificationXOfSubCriteriaDto && !((ClassificationXOfSubCriteriaDto) subCriteria).isAddition()) {
 					itemDiv = createCriteriaItemDiv(subCriteria.buildDescription());
 				} else {
-					itemDiv = createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
+					itemDiv =
+						createCriteriaItemDiv("<b>" + I18nProperties.getString(Strings.and).toUpperCase() + "</b>" + subCriteria.buildDescription());
 				}
 				subCriteriaSb.append(createSubCriteriaSurroundingDiv(itemDiv));
 			} else {
@@ -255,21 +266,27 @@ public final class ClassificationHtmlRenderer {
 	 * Creates the surrounding div of a whole (suspect, probable or confirmed) criteria definition.
 	 */
 	private static String createSurroundingDiv(ClassificationCriteriaType criteriaType, String content, boolean marginBottom) {
+
+		//@formatter:off
 		return "<div class='classification-rules'>"
 				+ "<div class='main-criteria main-criteria-"
 				+ criteriaType.toString()
 				+ "'>"
 				+ content
 				+ "</div></div>";
+		//@formatter:on
 	}
 
 	/**
 	 * Creates a div containing the headline of a whole criteria.
 	 */
 	private static String createHeadlineDiv(String headline) {
+
+		//@formatter:off
 		return "<div class='headline'>"
 				+ headline 
 				+ "</div>";
+		//@formatter:on
 	}
 
 	/**
@@ -287,18 +304,24 @@ public final class ClassificationHtmlRenderer {
 	 * Creates the surrounding div of a single part of the criteria.
 	 */
 	private static String createCriteriaSurroundingDiv(String content) {
+
+		//@formatter:off
 		return "<div class='criteria'>"
 				+ content
 				+ "</div>";
+		//@formatter:on
 	}
 
 	/**
 	 * Creates the surrounding div of a single sub criteria (with a slightly darker background).
 	 */
 	private static String createSubCriteriaSurroundingDiv(String content) {
+
+		//@formatter:off
 		return "<div class='sub-criteria'><div class='sub-criteria-content'>"
 				+ content
 				+ "</div></div>";
+		//@formatter:on
 	}
 
 	/**
@@ -309,6 +332,7 @@ public final class ClassificationHtmlRenderer {
 	}
 
 	private enum ClassificationCriteriaType {
+
 		SUSPECT,
 		PROBABLE,
 		CONFIRMED,
@@ -319,5 +343,4 @@ public final class ClassificationHtmlRenderer {
 			return name().toLowerCase();
 		}
 	}
-
 }

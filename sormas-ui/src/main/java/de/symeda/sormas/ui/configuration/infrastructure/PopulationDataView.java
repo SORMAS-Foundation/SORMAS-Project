@@ -29,6 +29,7 @@ public class PopulationDataView extends AbstractConfigurationView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/populationdata";
 
 	public PopulationDataView() {
+
 		super(VIEW_NAME);
 
 		VerticalLayout layout = new VerticalLayout();
@@ -51,11 +52,10 @@ public class PopulationDataView extends AbstractConfigurationView {
 		layout.addComponent(btnExport);
 		layout.setComponentAlignment(btnExport, Alignment.MIDDLE_CENTER);
 
-		StreamResource populationDataExportResource = DownloadUtil.createPopulationDataExportResource("sormas_population_data_"
-				+ DateHelper.formatDateForExport(new Date()) + ".csv");
+		StreamResource populationDataExportResource =
+			DownloadUtil.createPopulationDataExportResource("sormas_population_data_" + DateHelper.formatDateForExport(new Date()) + ".csv");
 		new FileDownloader(populationDataExportResource).extend(btnExport);
 
 		addComponent(layout);
 	}
-
 }

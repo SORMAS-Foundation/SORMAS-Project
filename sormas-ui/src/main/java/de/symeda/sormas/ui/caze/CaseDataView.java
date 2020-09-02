@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
@@ -64,9 +64,9 @@ public class CaseDataView extends AbstractCaseView {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
 		String htmlLayout = LayoutUtil.fluidRow(
-				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
+			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -79,12 +79,13 @@ public class CaseDataView extends AbstractCaseView {
 		layout.setHeightUndefined();
 		container.addComponent(layout);
 
+		Boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
 		CommitDiscardWrapperComponent<CaseDataForm> editComponent;
 		//		if (getViewMode() == ViewMode.SIMPLE) {
 		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
 		//					ViewMode.SIMPLE);
 		//		} else {
-		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
+		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL, isInJurisdiction);
 		//		}
 
 		// setSubComponent(editComponent);
@@ -93,26 +94,29 @@ public class CaseDataView extends AbstractCaseView {
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, CASE_LOC);
-		
+
 		TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
-					   
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW) && !caze.isUnreferredPortHealthCase()) {
 			VerticalLayout sampleLocLayout = new VerticalLayout();
 			sampleLocLayout.setMargin(false);
 			sampleLocLayout.setSpacing(false);
-			
+
 			SampleListComponent sampleList = new SampleListComponent(getCaseRef());
 			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
 			sampleLocLayout.addComponent(sampleList);
-			
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				sampleLocLayout.addComponent(new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges), ContentMode.HTML));
+				sampleLocLayout.addComponent(
+					new Label(
+						VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
+						ContentMode.HTML));
 			}
-			
+
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
-			
+
 		}
 
 		setCaseEditPermission(container);

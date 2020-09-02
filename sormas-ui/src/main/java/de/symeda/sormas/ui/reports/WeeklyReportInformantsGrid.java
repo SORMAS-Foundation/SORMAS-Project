@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.reports;
 
@@ -42,11 +42,12 @@ public class WeeklyReportInformantsGrid extends Grid {
 
 	private final UserReferenceDto officerRef;
 	private final EpiWeek epiWeek;
-	
+
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
+
 		@Override
 		public String getStyle(CellReference cell) {
-			 if (WeeklyReportInformantSummary.INFORMANT_REPORT_DATE.equals(cell.getPropertyId())) {
+			if (WeeklyReportInformantSummary.INFORMANT_REPORT_DATE.equals(cell.getPropertyId())) {
 				if (cell.getValue() == null) {
 					return CssStyles.GRID_CELL_PRIORITY_HIGH;
 				}
@@ -54,7 +55,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 			return null;
 		}
 	}
-	
+
 	public WeeklyReportInformantsGrid(UserReferenceDto officerRef, EpiWeek epiWeek) {
 		this.officerRef = officerRef;
 		this.epiWeek = epiWeek;
@@ -62,26 +63,28 @@ public class WeeklyReportInformantsGrid extends Grid {
 
 		setSelectionMode(SelectionMode.NONE);
 
-		BeanItemContainer<WeeklyReportInformantSummary> container = new BeanItemContainer<WeeklyReportInformantSummary>(
-				WeeklyReportInformantSummary.class);
+		BeanItemContainer<WeeklyReportInformantSummary> container =
+			new BeanItemContainer<WeeklyReportInformantSummary>(WeeklyReportInformantSummary.class);
 		setContainerDataSource(container);
 
-		setColumns(WeeklyReportInformantSummary.INFORMANT, 
-				WeeklyReportInformantSummary.COMMUNITY,
-				WeeklyReportInformantSummary.FACILITY,
-				WeeklyReportInformantSummary.INFORMANT_REPORT_DATE,
-				WeeklyReportInformantSummary.TOTAL_CASE_COUNT);
+		setColumns(
+			WeeklyReportInformantSummary.INFORMANT,
+			WeeklyReportInformantSummary.COMMUNITY,
+			WeeklyReportInformantSummary.FACILITY,
+			WeeklyReportInformantSummary.INFORMANT_REPORT_DATE,
+			WeeklyReportInformantSummary.TOTAL_CASE_COUNT);
 
 		for (Column column : getColumns()) {
-			column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportInformantSummary.I18N_PREFIX,
-					column.getPropertyId().toString(), column.getHeaderCaption()));
+			column.setHeaderCaption(
+				I18nProperties
+					.getPrefixCaption(WeeklyReportInformantSummary.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 		}
 
-		getColumn(WeeklyReportInformantSummary.INFORMANT_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getCaption(Captions.weeklyReportNoReport)));
+		getColumn(WeeklyReportInformantSummary.INFORMANT_REPORT_DATE)
+			.setRenderer(new HtmlRenderer(I18nProperties.getCaption(Captions.weeklyReportNoReport)));
 
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
-		
+
 		reload();
 	}
 
@@ -94,37 +97,37 @@ public class WeeklyReportInformantsGrid extends Grid {
 		getContainer().removeAllItems();
 
 		List<WeeklyReportInformantSummary> reportDetailDtos = new ArrayList<>();
-		List<UserDto> informants = FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef,
-				UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
+		List<UserDto> informants =
+			FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
 		// sort by...
-		informants.sort((a, b) -> {
-			// 1. community
-			if (a.getCommunity() != null && b.getCommunity() != null) {
-				int result = a.getCommunity().getCaption().compareTo(b.getCommunity().getCaption());
-				if (result != 0)
-					return result;
-			} else if (a.getCommunity() != null) {
-				return 1;
-			} else if (b.getCommunity() != null) {
-				return -1;
-			}
-			// 2. facility
-			if (a.getHealthFacility() != null && b.getHealthFacility() != null) {
-				int result = a.getHealthFacility().getCaption().compareTo(b.getHealthFacility().getCaption());
-				if (result != 0)
-					return result;
-			}
-			// 3. name
-			return a.getName().compareTo(b.getName());
-		});
+		informants.sort(
+			(a, b) -> {
+				// 1. community
+				if (a.getCommunity() != null && b.getCommunity() != null) {
+					int result = a.getCommunity().getCaption().compareTo(b.getCommunity().getCaption());
+					if (result != 0)
+						return result;
+				} else if (a.getCommunity() != null) {
+					return 1;
+				} else if (b.getCommunity() != null) {
+					return -1;
+				}
+				// 2. facility
+				if (a.getHealthFacility() != null && b.getHealthFacility() != null) {
+					int result = a.getHealthFacility().getCaption().compareTo(b.getHealthFacility().getCaption());
+					if (result != 0)
+						return result;
+				}
+				// 3. name
+				return a.getName().compareTo(b.getName());
+			});
 
 		for (UserDto informant : informants) {
 			WeeklyReportInformantSummary reportDetails = new WeeklyReportInformantSummary();
 			reportDetails.setInformant(informant.toReference());
 			reportDetails.setCommunity(informant.getCommunity());
 			reportDetails.setFacility(informant.getHealthFacility());
-			WeeklyReportDto weeklyReport = FacadeProvider.getWeeklyReportFacade().getByEpiWeekAndUser(epiWeek,
-					informant.toReference());
+			WeeklyReportDto weeklyReport = FacadeProvider.getWeeklyReportFacade().getByEpiWeekAndUser(epiWeek, informant.toReference());
 			if (weeklyReport != null) {
 				reportDetails.setFacility(weeklyReport.getHealthFacility());
 				reportDetails.setCommunity(weeklyReport.getCommunity());
@@ -139,8 +142,9 @@ public class WeeklyReportInformantsGrid extends Grid {
 	}
 
 	public class WeeklyReportInformantSummary {
+
 		public static final String I18N_PREFIX = "WeeklyReportInformantSummary";
-		
+
 		public static final String INFORMANT = "informant";
 		public static final String COMMUNITY = "community";
 		public static final String FACILITY = "facility";

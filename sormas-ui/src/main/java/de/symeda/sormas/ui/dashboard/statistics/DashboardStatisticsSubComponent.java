@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.statistics;
 
@@ -62,7 +62,13 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 
 			if (showTotalCount) {
 				totalCountLabel = new Label();
-				CssStyles.style(totalCountLabel, CssStyles.LABEL_PRIMARY, CssStyles.LABEL_XXXLARGE, CssStyles.LABEL_BOLD, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
+				CssStyles.style(
+					totalCountLabel,
+					CssStyles.LABEL_PRIMARY,
+					CssStyles.LABEL_XXXLARGE,
+					CssStyles.LABEL_BOLD,
+					CssStyles.VSPACE_4,
+					CssStyles.VSPACE_TOP_NONE);
 				labelAndTotalLayout.addComponent(totalCountLabel);
 			} else {
 				CssStyles.style(labelAndTotalLayout, CssStyles.VSPACE_4);
@@ -206,5 +212,4 @@ public class DashboardStatisticsSubComponent extends VerticalLayout {
 	public void updateCountLabel(int count) {
 		totalCountLabel.setValue(Integer.toString(count));
 	}
-
 }

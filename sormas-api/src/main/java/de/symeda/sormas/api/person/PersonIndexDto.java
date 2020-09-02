@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
@@ -43,7 +43,7 @@ public class PersonIndexDto implements Serializable {
 	public static final String DISTRICT_NAME = "districtName";
 	public static final String COMMUNITY_NAME = "communityName";
 	public static final String CITY = "city";
-	
+
 	private String uuid;
 	private Sex sex;
 	private String firstName;
@@ -61,10 +61,24 @@ public class PersonIndexDto implements Serializable {
 	private String communityName;
 	private String city;
 
-	public PersonIndexDto(String uuid, Sex sex, String firstName, String lastName, PresentCondition presentCondition,
-			Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Integer approximateAge, 
-			ApproximateAgeType approximateAgeType, Date deathDate, String nickname, String regionName, String districtName,
-			String communityName, String city) {
+	public PersonIndexDto(
+		String uuid,
+		Sex sex,
+		String firstName,
+		String lastName,
+		PresentCondition presentCondition,
+		Integer birthdateDD,
+		Integer birthdateMM,
+		Integer birthdateYYYY,
+		Integer approximateAge,
+		ApproximateAgeType approximateAgeType,
+		Date deathDate,
+		String nickname,
+		String regionName,
+		String districtName,
+		String communityName,
+		String city) {
+
 		this.uuid = uuid;
 		this.sex = sex;
 		this.firstName = firstName;
@@ -79,15 +93,14 @@ public class PersonIndexDto implements Serializable {
 		this.districtName = districtName;
 		this.communityName = communityName;
 		this.city = city;
-		
+
 		if (birthdateYYYY != null) {
 			Calendar birthdate = new GregorianCalendar();
-			birthdate.set(birthdateYYYY, birthdateMM!=null?birthdateMM-1:0, birthdateDD!=null?birthdateDD:1);			
+			birthdate.set(birthdateYYYY, birthdateMM != null ? birthdateMM - 1 : 0, birthdateDD != null ? birthdateDD : 1);
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper.getApproximateAge(birthdate.getTime(), deathDate);
 			this.approximateAge = pair.getElement0();
 			this.approximateAgeType = pair.getElement1();
-		}
-		else {
+		} else {
 			this.approximateAge = approximateAge;
 			this.approximateAgeType = approximateAgeType;
 		}
@@ -108,7 +121,7 @@ public class PersonIndexDto implements Serializable {
 	public void setApproximateAge(Integer approximateAge) {
 		this.approximateAge = approximateAge;
 	}
-	
+
 	public ApproximateAgeType getApproximateAgeType() {
 		return approximateAgeType;
 	}
@@ -124,7 +137,7 @@ public class PersonIndexDto implements Serializable {
 	public void setSex(Sex sex) {
 		this.sex = sex;
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -144,6 +157,7 @@ public class PersonIndexDto implements Serializable {
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
+
 	public void setPresentCondition(PresentCondition presentCondition) {
 		this.presentCondition = presentCondition;
 	}
@@ -152,7 +166,7 @@ public class PersonIndexDto implements Serializable {
 	public String toString() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
-	
+
 	public PersonReferenceDto toReference() {
 		return new PersonReferenceDto(getUuid(), firstName, lastName);
 	}
@@ -228,5 +242,4 @@ public class PersonIndexDto implements Serializable {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
 }

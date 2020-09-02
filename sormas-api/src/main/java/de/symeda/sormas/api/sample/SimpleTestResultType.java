@@ -7,9 +7,8 @@ public enum SimpleTestResultType {
 	POSITIVE,
 	NEGATIVE,
 	INDETERMINATE;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

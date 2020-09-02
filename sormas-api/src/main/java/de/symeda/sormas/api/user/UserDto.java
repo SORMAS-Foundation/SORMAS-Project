@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -59,15 +59,15 @@ public class UserDto extends EntityDto {
 	public static final String LANGUAGE = "language";
 
 	private boolean active = true;
-	
+
 	private String userName;
-	
+
 	private String firstName;
 	private String lastName;
 	private String userEmail;
 	private String phone;
-	private LocationDto address;	
-	
+	private LocationDto address;
+
 	private Set<UserRole> userRoles;
 
 	private RegionReferenceDto region;
@@ -82,18 +82,18 @@ public class UserDto extends EntityDto {
 	private PointOfEntryReferenceDto pointOfEntry;
 
 	private UserReferenceDto associatedOfficer;
-	
+
 	private Disease limitedDisease;
-	
+
 	private Language language;
-	
+
 	public static UserDto build() {
 		UserDto user = new UserDto();
 		user.setUuid(DataHelper.createUuid());
 		user.setAddress(LocationDto.build());
 		return user;
 	}
-	
+
 	public boolean isActive() {
 		return active;
 	}
@@ -101,7 +101,7 @@ public class UserDto extends EntityDto {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
 	public String getUserName() {
 		return userName;
 	}
@@ -109,27 +109,27 @@ public class UserDto extends EntityDto {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
-	
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public String getName() {
 		return firstName + " " + lastName;
 	}
-	
+
 	public String getUserEmail() {
 		return userEmail;
 	}
@@ -153,7 +153,7 @@ public class UserDto extends EntityDto {
 	public void setAddress(LocationDto address) {
 		this.address = address;
 	}
-	
+
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -161,13 +161,12 @@ public class UserDto extends EntityDto {
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
 	}
-	
+
 	@Override
 	public String toString() {
 		return UserReferenceDto.buildCaption(firstName, lastName, userRoles);
 	}
 
-	
 	public UserReferenceDto getAssociatedOfficer() {
 		return associatedOfficer;
 	}
@@ -207,15 +206,15 @@ public class UserDto extends EntityDto {
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	
+
 	public FacilityReferenceDto getLaboratory() {
 		return laboratory;
 	}
-	
+
 	public void setLaboratory(FacilityReferenceDto laboratory) {
 		this.laboratory = laboratory;
 	}
-	
+
 	public PointOfEntryReferenceDto getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -243,5 +242,4 @@ public class UserDto extends EntityDto {
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
-	
 }

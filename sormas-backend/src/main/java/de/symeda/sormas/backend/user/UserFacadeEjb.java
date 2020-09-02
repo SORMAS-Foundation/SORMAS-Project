@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
@@ -78,7 +78,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-	
+
 	@EJB
 	private UserService userService;
 	@EJB
@@ -102,36 +102,32 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
-		Region region = regionService.getByReferenceDto(regionRef);
 
-		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream().map(f -> toReferenceDto(f))
-				.collect(Collectors.toList());
+		Region region = regionService.getByReferenceDto(regionRef);
+		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef,
-			boolean includeSupervisors, UserRole... userRoles) {
-		
-		District district = districtService.getByReferenceDto(districtRef);
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
 
-		return userService.getAllByDistrict(district, includeSupervisors, userRoles).stream()
-				.map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		District district = districtService.getByReferenceDto(districtRef);
+		return userService.getAllByDistrict(district, includeSupervisors, userRoles)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
-
-		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream()
-				.map(f -> toDto(f)).collect(Collectors.toList());
+		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getAll(UserRole... roles) {
 
-		return userService.getAllByRegionAndUserRoles(null, roles).stream().map(f -> toDto(f))
-				.collect(Collectors.toList());
+		return userService.getAllByRegionAndUserRoles(null, roles).stream().map(f -> toDto(f)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -189,24 +185,25 @@ public class UserFacadeEjb implements UserFacade {
 
 		return toDto(user);
 	}
-	
+
 	@Override
 	public List<UserDto> getIndexList(UserCriteria userCriteria, int first, int max, List<SortProperty> sortProperties) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(User.class);
 		Root<User> user = cq.from(User.class);
 		Join<User, District> district = user.join(User.DISTRICT, JoinType.LEFT);
 		Join<User, Location> address = user.join(User.ADDRESS, JoinType.LEFT);
-	
+
 		// TODO: We'll need a user filter for users at some point, to make sure that users can edit their own details,
 		// but not those of others
-		
+
 		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
-				
+
 		if (filter != null) {
 			cq.where(filter).distinct(true);
 		}
-		
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<Order>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
@@ -238,33 +235,36 @@ public class UserFacadeEjb implements UserFacade {
 		} else {
 			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
 		}
-		
+
 		cq.select(user);
-		
+
 		List<User> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		return resultList.stream().map(u -> toDto(u)).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public long count(UserCriteria userCriteria) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<User> root = cq.from(User.class);
-		
+
 		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, root);
-		
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		
+
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 
 	public static UserDto toDto(User source) {
+
 		if (source == null) {
 			return null;
 		}
+
 		UserDto target = new UserDto();
 		DtoHelper.fillDto(target, source);
 
@@ -292,9 +292,11 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	public static UserReferenceDto toReferenceDto(User entity) {
+
 		if (entity == null) {
 			return null;
 		}
+
 		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
@@ -329,7 +331,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setPointOfEntry(pointOfEntryService.getByReferenceDto(source.getPointOfEntry()));
 		target.setLimitedDisease(source.getLimitedDisease());
 		target.setLanguage(source.getLanguage());
-		
+
 		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
 
 		return target;
@@ -357,6 +359,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public Set<UserRole> getValidLoginRoles(String userName, String password) {
+
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
@@ -369,5 +372,6 @@ public class UserFacadeEjb implements UserFacade {
 	@LocalBean
 	@Stateless
 	public static class UserFacadeEjbLocal extends UserFacadeEjb {
+
 	}
 }

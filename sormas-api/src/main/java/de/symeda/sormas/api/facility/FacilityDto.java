@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
@@ -57,10 +57,25 @@ public class FacilityDto extends EntityDto {
 	private boolean archived;
 	private String externalID;
 
-	public FacilityDto(Date creationDate, Date changeDate, String uuid, boolean archived, String name,
-			String regionUuid, String regionName, String districtUuid, String districtName, String communityUuid,
-			String communityName, String city, Double latitude, Double longitude, FacilityType type,
-			boolean publicOwnership, String externalID) {
+	public FacilityDto(
+		Date creationDate,
+		Date changeDate,
+		String uuid,
+		boolean archived,
+		String name,
+		String regionUuid,
+		String regionName,
+		String districtUuid,
+		String districtName,
+		String communityUuid,
+		String communityName,
+		String city,
+		Double latitude,
+		Double longitude,
+		FacilityType type,
+		boolean publicOwnership,
+		String externalID) {
+
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
 		this.name = name;
@@ -80,7 +95,7 @@ public class FacilityDto extends EntityDto {
 		this.publicOwnership = publicOwnership;
 		this.externalID = externalID;
 	}
-	
+
 	public FacilityDto() {
 		super();
 	}
@@ -156,11 +171,11 @@ public class FacilityDto extends EntityDto {
 	public void setPublicOwnership(boolean publicOwnership) {
 		this.publicOwnership = publicOwnership;
 	}
-	
+
 	public boolean isArchived() {
 		return archived;
 	}
-	
+
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
@@ -187,5 +202,4 @@ public class FacilityDto extends EntityDto {
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
 	}
-
 }

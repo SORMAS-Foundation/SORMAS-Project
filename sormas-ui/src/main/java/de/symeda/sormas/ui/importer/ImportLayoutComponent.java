@@ -12,7 +12,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class ImportLayoutComponent extends VerticalLayout {
-	
+
+	private static final long serialVersionUID = 3281659031721493105L;
+
 	private Label headlineLabel;
 	private Label infoTextLabel;
 	private Button button;
@@ -29,7 +31,13 @@ public class ImportLayoutComponent extends VerticalLayout {
 		addComponent(infoTextLabel);
 
 		if (buttonCaption != null) {
-			button = ButtonHelper.createIconButtonWithCaption("import-step-" + step, buttonCaption, buttonIcon, null, ValoTheme.BUTTON_PRIMARY, CssStyles.VSPACE_TOP_3);
+			button = ButtonHelper.createIconButtonWithCaption(
+				"import-step-" + step,
+				buttonCaption,
+				buttonIcon,
+				null,
+				ValoTheme.BUTTON_PRIMARY,
+				CssStyles.VSPACE_TOP_3);
 
 			addComponent(button);
 		}
@@ -38,5 +46,4 @@ public class ImportLayoutComponent extends VerticalLayout {
 	public Button getButton() {
 		return button;
 	}
-	
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.clinicalcourse;
 
@@ -23,8 +23,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
@@ -55,12 +53,14 @@ public class ClinicalCourseView extends AbstractCaseView {
 	private ClinicalVisitGrid clinicalVisitGrid;
 
 	public ClinicalCourseView() {
+
 		super(VIEW_NAME, true);
 
 		clinicalVisitCriteria = ViewModelProviders.of(ClinicalCourseView.class).get(ClinicalVisitCriteria.class);
 	}
 
 	private VerticalLayout createClinicalVisitsHeader() {
+
 		VerticalLayout clinicalVisitsHeader = new VerticalLayout();
 		clinicalVisitsHeader.setMargin(false);
 		clinicalVisitsHeader.setSpacing(false);
@@ -78,22 +78,25 @@ public class ClinicalCourseView extends AbstractCaseView {
 
 			// Bulk operations
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-							ControllerProvider.getClinicalCourseController().deleteAllSelectedClinicalVisits(clinicalVisitGrid.getSelectedRows(), new Runnable() {
+				MenuBar bulkOperationsDropdown = MenuBarHelper.createDropDown(
+					Captions.bulkActions,
+					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+						ControllerProvider.getClinicalCourseController()
+							.deleteAllSelectedClinicalVisits(clinicalVisitGrid.getSelectedRows(), new Runnable() {
+
 								public void run() {
 									clinicalVisitGrid.reload();
 								}
 							});
-						})
-				);
+					}));
 
 				headlineRow.addComponent(bulkOperationsDropdown);
 				headlineRow.setComponentAlignment(bulkOperationsDropdown, Alignment.MIDDLE_RIGHT);
 			}
 
 			Button newClinicalVisitButton = ButtonHelper.createButton(Captions.clinicalVisitNewClinicalVisit, e -> {
-				ControllerProvider.getClinicalCourseController().openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
+				ControllerProvider.getClinicalCourseController()
+					.openClinicalVisitCreateForm(clinicalVisitCriteria.getClinicalCourse(), getCaseRef().getUuid(), this::reloadClinicalVisitGrid);
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			headlineRow.addComponent(newClinicalVisitButton);
@@ -106,19 +109,20 @@ public class ClinicalCourseView extends AbstractCaseView {
 	}
 
 	private void update() {
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		clinicalVisitCriteria.clinicalCourse(caze.getClinicalCourse().toReference());
 	}
 
 	public void reloadClinicalVisitGrid() {
+
 		clinicalVisitGrid.reload();
 		clinicalVisitGrid.setHeightByRows(Math.max(1, Math.min(clinicalVisitGrid.getContainer().size(), 10)));
 	}
 
 	@Override
 	protected void initView(String params) {
-		
+
 		// TODO: Remove this once a proper ViewModel system has been introduced
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 		if (caze.getClinicalCourse() == null) {
@@ -138,8 +142,9 @@ public class ClinicalCourseView extends AbstractCaseView {
 		clinicalVisitGrid.setHeightMode(HeightMode.ROW);
 		CssStyles.style(clinicalVisitGrid, CssStyles.VSPACE_3);
 		container.addComponent(clinicalVisitGrid);
-		
-		CommitDiscardWrapperComponent<ClinicalCourseForm> clinicalCourseComponent = ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid(), getViewMode());
+
+		CommitDiscardWrapperComponent<ClinicalCourseForm> clinicalCourseComponent =
+			ControllerProvider.getCaseController().getClinicalCourseComponent(getCaseRef().getUuid(), getViewMode());
 		clinicalCourseComponent.setMargin(false);
 		container.addComponent(clinicalCourseComponent);
 

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -37,20 +37,23 @@ import de.symeda.sormas.api.region.DistrictDto;
  *
  */
 @Path("/districts")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class DistrictResource {
 
-	@GET @Path("/all/{since}")
+	@GET
+	@Path("/all/{since}")
 	public List<DistrictDto> getAll(@PathParam("since") long since) {
 		return FacadeProvider.getDistrictFacade().getAllAfter(new Date(since));
 	}
-	
+
 	@POST
 	@Path("/query")
 	public List<DistrictDto> getByUuids(List<String> uuids) {
 
-		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids); 
+		List<DistrictDto> result = FacadeProvider.getDistrictFacade().getByUuids(uuids);
 		return result;
 	}
 

@@ -22,195 +22,201 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class ContactSelectionField extends CustomField<SimilarContactDto> {
 
-    public static final String CREATE_CONTACT = "createContact";
-    public static final String SELECT_CONTACT = "selectContact";
+	private static final long serialVersionUID = 1595770585498718792L;
 
-    private ContactDto referenceContact;
-    private String infoText;
-    private String referenceFirstName;
-    private String referenceLastName;
-    private VerticalLayout mainLayout;
-    private ContactSelectionGrid contactSelectionGrid;
-    private RadioButtonGroup<String> rbSelectContact;
-    private RadioButtonGroup<String> rbCreateContact;
-    private Consumer<Boolean> selectionChangeCallback;
+	public static final String CREATE_CONTACT = "createContact";
+	public static final String SELECT_CONTACT = "selectContact";
 
-    public ContactSelectionField(ContactDto referenceContact, String infoText, String referenceFirstName, String referenceLastName) {
-        this.referenceContact = referenceContact;
-        this.infoText = infoText;
-        this.referenceFirstName = referenceFirstName;
-        this.referenceLastName = referenceLastName;
+	private ContactDto referenceContact;
+	private String infoText;
+	private String referenceFirstName;
+	private String referenceLastName;
+	private VerticalLayout mainLayout;
+	private ContactSelectionGrid contactSelectionGrid;
+	private RadioButtonGroup<String> rbSelectContact;
+	private RadioButtonGroup<String> rbCreateContact;
+	private Consumer<Boolean> selectionChangeCallback;
 
-        initializeGrid();
-    }
+	public ContactSelectionField(ContactDto referenceContact, String infoText, String referenceFirstName, String referenceLastName) {
+		this.referenceContact = referenceContact;
+		this.infoText = infoText;
+		this.referenceFirstName = referenceFirstName;
+		this.referenceLastName = referenceLastName;
 
-    private void initializeGrid() {
-        final ContactSimilarityCriteria criteria = new ContactSimilarityCriteria(referenceContact.getPerson(),
-                referenceContact.getCaze(), referenceContact.getDisease(), referenceContact.getLastContactDate(),
-                referenceContact.getReportDateTime());
-        contactSelectionGrid = new ContactSelectionGrid(criteria);
+		initializeGrid();
+	}
 
-        contactSelectionGrid.addSelectionListener(e -> {
-            if (e.getSelected().size() > 0) {
-                rbCreateContact.setValue(null);
-            }
+	private void initializeGrid() {
 
-            if (selectionChangeCallback != null) {
-                selectionChangeCallback.accept(!e.getSelected().isEmpty());
-            }
-        });
-    }
+		final ContactSimilarityCriteria criteria = new ContactSimilarityCriteria(
+			referenceContact.getPerson(),
+			referenceContact.getCaze(),
+			referenceContact.getDisease(),
+			referenceContact.getLastContactDate(),
+			referenceContact.getReportDateTime());
+		contactSelectionGrid = new ContactSelectionGrid(criteria);
 
-    @Override
-    protected Component initContent() {
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(false);
-        mainLayout.setSizeUndefined();
-        mainLayout.setWidth(100, Unit.PERCENTAGE);
+		contactSelectionGrid.addSelectionListener(e -> {
+			if (e.getSelected().size() > 0) {
+				rbCreateContact.setValue(null);
+			}
 
-        addInfoComponent();
-        addContactDetailsComponent();
-        addSelectContactRadioGroup();
-        mainLayout.addComponent(contactSelectionGrid);
-        addCreateContactRadioGroup();
+			if (selectionChangeCallback != null) {
+				selectionChangeCallback.accept(!e.getSelected().isEmpty());
+			}
+		});
+	}
 
-        rbSelectContact.setValue(SELECT_CONTACT);
+	@Override
+	protected Component initContent() {
 
-        return mainLayout;
-    }
+		mainLayout = new VerticalLayout();
+		mainLayout.setSpacing(true);
+		mainLayout.setMargin(false);
+		mainLayout.setSizeUndefined();
+		mainLayout.setWidth(100, Unit.PERCENTAGE);
 
-    @Override
-    protected void doSetValue(SimilarContactDto similarContactDto) {
-        rbSelectContact.setValue(SELECT_CONTACT);
+		addInfoComponent();
+		addContactDetailsComponent();
+		addSelectContactRadioGroup();
+		mainLayout.addComponent(contactSelectionGrid);
+		addCreateContactRadioGroup();
 
-        if (similarContactDto != null) {
-            contactSelectionGrid.select(similarContactDto);
-        }
-    }
+		rbSelectContact.setValue(SELECT_CONTACT);
 
-    @Override
-    public SimilarContactDto getValue() {
-        if (contactSelectionGrid != null) {
-            SimilarContactDto value = (SimilarContactDto) contactSelectionGrid.getSelectedRow();
-            return value;
-        }
+		return mainLayout;
+	}
 
-        return null;
-    }
+	@Override
+	protected void doSetValue(SimilarContactDto similarContactDto) {
 
-    public boolean hasMatches() {
-        return contactSelectionGrid.getContainerDataSource().size() > 0;
-    }
+		rbSelectContact.setValue(SELECT_CONTACT);
 
-    public void selectBestMatch() {
-        if (contactSelectionGrid.getContainerDataSource().size() == 1) {
-            setValue((SimilarContactDto) contactSelectionGrid.getContainerDataSource().firstItemId());
-        } else {
-            setValue(null);
-        }
-    }
+		if (similarContactDto != null) {
+			contactSelectionGrid.select(similarContactDto);
+		}
+	}
 
-    /**
-     * Callback is executed with 'true' when a grid entry or "Create new person" is selected.
-     */
-    public void setSelectionChangeCallback(Consumer<Boolean> callback) {
-        this.selectionChangeCallback = callback;
-    }
+	@Override
+	public SimilarContactDto getValue() {
 
-    private void addInfoComponent() {
-        mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoText));
-    }
+		if (contactSelectionGrid != null) {
+			SimilarContactDto value = (SimilarContactDto) contactSelectionGrid.getSelectedRow();
+			return value;
+		}
 
-    private void addContactDetailsComponent() {
-        HorizontalLayout contactDetailsLayout = new HorizontalLayout();
-        contactDetailsLayout.setSpacing(true);
+		return null;
+	}
 
-        final Label lblFirstName = new Label(referenceFirstName);
-        lblFirstName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-        lblFirstName.setWidthUndefined();
-        contactDetailsLayout.addComponent(lblFirstName);
+	public boolean hasMatches() {
+		return contactSelectionGrid.getContainerDataSource().size() > 0;
+	}
 
-        final Label lblLastName = new Label(referenceLastName);
-        lblLastName.setWidthUndefined();
-        lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-        contactDetailsLayout.addComponent(lblLastName);
+	public void selectBestMatch() {
 
-        final Label lblCase = new Label(referenceContact.getCaze() != null ? referenceContact.getCaze().getCaption() : "");
-        lblCase.setWidthUndefined();
-        lblCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.CAZE));
-        contactDetailsLayout.addComponent(lblCase);
+		if (contactSelectionGrid.getContainerDataSource().size() == 1) {
+			setValue((SimilarContactDto) contactSelectionGrid.getContainerDataSource().firstItemId());
+		} else {
+			setValue(null);
+		}
+	}
 
-        final Label lblCaseIdExternalSystem = new Label(referenceContact.getCaseIdExternalSystem());
-        lblCaseIdExternalSystem.setWidthUndefined();
-        lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.CASE_ID_EXTERNAL_SYSTEM));
-        contactDetailsLayout.addComponent(lblCaseIdExternalSystem);
+	/**
+	 * Callback is executed with 'true' when a grid entry or "Create new person" is selected.
+	 */
+	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
+		this.selectionChangeCallback = callback;
+	}
 
-        final Label lblLastContactDate =
-                new Label(DateFormatHelper.formatDate(referenceContact.getLastContactDate()));
-        lblLastContactDate.setWidthUndefined();
-        lblLastContactDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.LAST_CONTACT_DATE));
-        contactDetailsLayout.addComponent(lblLastContactDate);
+	private void addInfoComponent() {
+		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoText));
+	}
 
-        final Label lblContactProximity = new Label(referenceContact.getContactProximity() != null ?
-                referenceContact.getContactProximity().toString() : "");
-        lblContactProximity.setWidthUndefined();
-        lblContactProximity.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.CONTACT_PROXIMITY));
-        contactDetailsLayout.addComponent(lblContactProximity);
+	private void addContactDetailsComponent() {
 
-        final Label lblContactClassification = new Label(referenceContact.getContactClassification() != null ?
-                referenceContact.getContactClassification().toString() : "");
-        lblContactClassification.setWidthUndefined();
-        lblContactClassification.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX,
-                ContactDto.CONTACT_CLASSIFICATION));
-        contactDetailsLayout.addComponent(lblContactClassification);
+		HorizontalLayout contactDetailsLayout = new HorizontalLayout();
+		contactDetailsLayout.setSpacing(true);
 
-        final Label lblContactStatus = new Label(referenceContact.getContactStatus() != null ?
-                referenceContact.getContactStatus().toString() : "");
-        lblContactStatus.setWidthUndefined();
-        lblContactStatus.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_STATUS));
-        contactDetailsLayout.addComponent(lblContactStatus);
+		final Label lblFirstName = new Label(referenceFirstName);
+		lblFirstName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
+		lblFirstName.setWidthUndefined();
+		contactDetailsLayout.addComponent(lblFirstName);
 
-        mainLayout.addComponent(new Panel(contactDetailsLayout));
-    }
+		final Label lblLastName = new Label(referenceLastName);
+		lblLastName.setWidthUndefined();
+		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
+		contactDetailsLayout.addComponent(lblLastName);
 
-    private void addSelectContactRadioGroup() {
-        rbSelectContact = new RadioButtonGroup<>();
-        rbSelectContact.setItems(SELECT_CONTACT);
-        rbSelectContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactSelect));
-        CssStyles.style(rbSelectContact, CssStyles.VSPACE_NONE);
-        rbSelectContact.addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                rbCreateContact.setValue(null);
-                contactSelectionGrid.setEnabled(true);
-                if (selectionChangeCallback != null) {
-                    selectionChangeCallback.accept(contactSelectionGrid.getSelectedRow() != null);
-                }
-            }
-        });
+		final Label lblCase = new Label(referenceContact.getCaze() != null ? referenceContact.getCaze().getCaption() : "");
+		lblCase.setWidthUndefined();
+		lblCase.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CAZE));
+		contactDetailsLayout.addComponent(lblCase);
 
-        mainLayout.addComponent(rbSelectContact);
-    }
+		final Label lblCaseIdExternalSystem = new Label(referenceContact.getCaseIdExternalSystem());
+		lblCaseIdExternalSystem.setWidthUndefined();
+		lblCaseIdExternalSystem.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CASE_ID_EXTERNAL_SYSTEM));
+		contactDetailsLayout.addComponent(lblCaseIdExternalSystem);
 
-    private void addCreateContactRadioGroup() {
-        rbCreateContact = new RadioButtonGroup<>();
-        rbCreateContact.setItems(CREATE_CONTACT);
-        rbCreateContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactCreateNew));
-        rbCreateContact.addValueChangeListener(e -> {
-            if (e.getValue() != null) {
-                rbSelectContact.setValue(null);
-                contactSelectionGrid.deselectAll();
-                contactSelectionGrid.setEnabled(false);
-                if (selectionChangeCallback != null) {
-                    selectionChangeCallback.accept(true);
-                }
-            }
-        });
+		final Label lblLastContactDate = new Label(DateFormatHelper.formatDate(referenceContact.getLastContactDate()));
+		lblLastContactDate.setWidthUndefined();
+		lblLastContactDate.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
+		contactDetailsLayout.addComponent(lblLastContactDate);
 
-        mainLayout.addComponent(rbCreateContact);
-    }
+		final Label lblContactProximity =
+			new Label(referenceContact.getContactProximity() != null ? referenceContact.getContactProximity().toString() : "");
+		lblContactProximity.setWidthUndefined();
+		lblContactProximity.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_PROXIMITY));
+		contactDetailsLayout.addComponent(lblContactProximity);
+
+		final Label lblContactClassification =
+			new Label(referenceContact.getContactClassification() != null ? referenceContact.getContactClassification().toString() : "");
+		lblContactClassification.setWidthUndefined();
+		lblContactClassification.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION));
+		contactDetailsLayout.addComponent(lblContactClassification);
+
+		final Label lblContactStatus = new Label(referenceContact.getContactStatus() != null ? referenceContact.getContactStatus().toString() : "");
+		lblContactStatus.setWidthUndefined();
+		lblContactStatus.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_STATUS));
+		contactDetailsLayout.addComponent(lblContactStatus);
+
+		mainLayout.addComponent(new Panel(contactDetailsLayout));
+	}
+
+	private void addSelectContactRadioGroup() {
+
+		rbSelectContact = new RadioButtonGroup<>();
+		rbSelectContact.setItems(SELECT_CONTACT);
+		rbSelectContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactSelect));
+		CssStyles.style(rbSelectContact, CssStyles.VSPACE_NONE);
+		rbSelectContact.addValueChangeListener(e -> {
+			if (e.getValue() != null) {
+				rbCreateContact.setValue(null);
+				contactSelectionGrid.setEnabled(true);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(contactSelectionGrid.getSelectedRow() != null);
+				}
+			}
+		});
+
+		mainLayout.addComponent(rbSelectContact);
+	}
+
+	private void addCreateContactRadioGroup() {
+
+		rbCreateContact = new RadioButtonGroup<>();
+		rbCreateContact.setItems(CREATE_CONTACT);
+		rbCreateContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactCreateNew));
+		rbCreateContact.addValueChangeListener(e -> {
+			if (e.getValue() != null) {
+				rbSelectContact.setValue(null);
+				contactSelectionGrid.deselectAll();
+				contactSelectionGrid.setEnabled(false);
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(true);
+				}
+			}
+		});
+
+		mainLayout.addComponent(rbCreateContact);
+	}
 }

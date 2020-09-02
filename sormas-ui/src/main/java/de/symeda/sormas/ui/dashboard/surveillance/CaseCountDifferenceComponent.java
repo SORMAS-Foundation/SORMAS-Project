@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
@@ -42,6 +42,7 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 	private Label subtitleLabel;
 
 	public CaseCountDifferenceComponent(DashboardDataProvider dashboardDataProvider) {
+
 		this.dashboardDataProvider = dashboardDataProvider;
 
 		Label title = new Label(I18nProperties.getCaption(Captions.dashboardDiseaseDifference));
@@ -67,17 +68,19 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 	}
 
 	public void refresh(int limitDiseasesCount) {
+
 		List<DiseaseBurdenDto> diseasesBurden = dashboardDataProvider.getDiseasesBurden();
-		
-		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream()
-									   .sorted((dto1, dto2) -> {
-										   long caseDifference1 = dto1.getCasesDifference();
-										   long caseDifference2 = dto2.getCasesDifference();
-										   if (caseDifference1 == 0) caseDifference1 = Long.MIN_VALUE;
-										   if (caseDifference2 == 0) caseDifference2 = Long.MIN_VALUE;
-										   return Long.compare(caseDifference2, caseDifference1);
-									   });
-									   
+
+		Stream<DiseaseBurdenDto> diseasesBurdenStream = diseasesBurden.stream().sorted((dto1, dto2) -> {
+			long caseDifference1 = dto1.getCasesDifference();
+			long caseDifference2 = dto2.getCasesDifference();
+			if (caseDifference1 == 0)
+				caseDifference1 = Long.MIN_VALUE;
+			if (caseDifference2 == 0)
+				caseDifference2 = Long.MIN_VALUE;
+			return Long.compare(caseDifference2, caseDifference1);
+		});
+
 		if (limitDiseasesCount > 0) {
 			diseasesBurdenStream = diseasesBurdenStream.limit(limitDiseasesCount);
 		}
@@ -91,12 +94,13 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 		}
 	}
 
-	private void refreshChart(List<DiseaseBurdenDto> data) {	
+	private void refreshChart(List<DiseaseBurdenDto> data) {
 		int maxCasesDifference = data.stream().map(d -> Math.abs(d.getCasesDifference())).max(Long::compare).orElse(5L).intValue();
 		maxCasesDifference = Math.max(5, maxCasesDifference);
-		
+
 		StringBuilder hcjs = new StringBuilder();
-		
+
+		//@formatter:off
 		hcjs.append(
 			"var options = {" + 
 				"plotOptions: {" + 
@@ -150,14 +154,17 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 				"" + 
 			"}"
 		);
+		//@formatter:on
 
 		chart.setHcjs(hcjs.toString());
 	}
-	
+
 	public void updateSubHeader() {
-		subtitleLabel.setValue(String.format(I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod),
+
+		subtitleLabel.setValue(
+			String.format(
+				I18nProperties.getCaption(Captions.dashboardComparedToPreviousPeriod),
 				DateFormatHelper.buildPeriodString(dashboardDataProvider.getFromDate(), dashboardDataProvider.getToDate()),
 				DateFormatHelper.buildPeriodString(dashboardDataProvider.getPreviousFromDate(), dashboardDataProvider.getPreviousToDate())));
 	}
-
 }

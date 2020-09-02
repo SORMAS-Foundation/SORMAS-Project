@@ -9,16 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.region;
 
 public class GeoShapeProviderEjbTest {
-	
+
 //TODO: Re-implement relevant unit tests once shape files can be imported from the ui
 
 //    private static BeanProviderHelper bm;
@@ -49,7 +49,7 @@ public class GeoShapeProviderEjbTest {
 //
 //	
 //	@Test
-//	public void testGetRegionShape() throws Exception {
+//	public void testGetRegionShape() {
 //		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 //		RegionFacade regionFacade = getBean(RegionFacadeEjbLocal.class);
 //		
@@ -62,14 +62,14 @@ public class GeoShapeProviderEjbTest {
 //	}
 //
 //	@Test
-//	public void testGetRegionByCoord() throws Exception {
+//	public void testGetRegionByCoord() {
 //		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 //		RegionReferenceDto region = geoShapeProvider.getRegionByCoord(new GeoLatLon(9.076344, 7.276929));
 //		assertEquals("FCT", region.getCaption());
 //	}
 //
 //	@Test
-//	public void testGetDistrictShape() throws Exception {
+//	public void testGetDistrictShape() {
 //		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 //
 //		RegionReferenceDto region = geoShapeProvider.getRegionByCoord(new GeoLatLon(9.076344, 7.276929));
@@ -85,14 +85,14 @@ public class GeoShapeProviderEjbTest {
 //	}
 //
 //	@Test
-//	public void testGetDistrictByCoord() throws Exception {
+//	public void testGetDistrictByCoord() {
 //		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 //		DistrictReferenceDto district = geoShapeProvider.getDistrictByCoord(new GeoLatLon(9.076344, 7.276929));
 //		assertEquals("Abuja Municipal", district.getCaption());
 //	}
 //
 //	@Test
-//	public void testBuildCountryShape() throws Exception {
+//	public void testBuildCountryShape() {
 //		GeoShapeProvider geoShapeProvider = getBean(GeoShapeProviderEjbLocal.class);
 //
 //		GeoLatLon[][] countryShape = geoShapeProvider.getCountryShape();

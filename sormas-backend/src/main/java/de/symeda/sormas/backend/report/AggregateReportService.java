@@ -28,21 +28,33 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 	public AggregateReportService() {
 		super(AggregateReport.class);
 	}
-	
-	public Predicate createCriteriaFilter(AggregateReportCriteria criteria, CriteriaBuilder cb, CriteriaQuery<?> cq, From<AggregateReport, AggregateReport> from) {
+
+	public Predicate createCriteriaFilter(
+		AggregateReportCriteria criteria,
+		CriteriaBuilder cb,
+		CriteriaQuery<?> cq,
+		From<AggregateReport, AggregateReport> from) {
+
 		Predicate filter = null;
-	
+
 		if (criteria.getRegion() != null) {
 			filter = and(cb, filter, cb.equal(from.join(AggregateReport.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter =
+				and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getHealthFacility() != null) {
-			filter = and(cb, filter, cb.equal(from.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), criteria.getHealthFacility().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(from.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), criteria.getHealthFacility().getUuid()));
 		}
 		if (criteria.getPointOfEntry() != null) {
-			filter = and(cb, filter, cb.equal(from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), criteria.getPointOfEntry().getUuid()));
+			filter = and(
+				cb,
+				filter,
+				cb.equal(from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), criteria.getPointOfEntry().getUuid()));
 		}
 		if (criteria.getEpiWeekFrom() != null || criteria.getEpiWeekTo() != null) {
 			if (criteria.getEpiWeekFrom() == null) {
@@ -52,24 +64,27 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 				filter = and(cb, filter, cb.ge(from.get(AggregateReport.YEAR), criteria.getEpiWeekFrom().getYear()));
 				filter = and(cb, filter, cb.ge(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekFrom().getWeek()));
 			} else {
-				filter = and(cb, filter, cb.between(from.get(AggregateReport.YEAR), criteria.getEpiWeekFrom().getYear(), criteria.getEpiWeekTo().getYear()));
-				filter = and(cb, filter, cb.between(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekFrom().getWeek(), criteria.getEpiWeekTo().getWeek()));
+				filter = and(
+					cb,
+					filter,
+					cb.between(from.get(AggregateReport.YEAR), criteria.getEpiWeekFrom().getYear(), criteria.getEpiWeekTo().getYear()));
+				filter = and(
+					cb,
+					filter,
+					cb.between(from.get(AggregateReport.EPI_WEEK), criteria.getEpiWeekFrom().getWeek(), criteria.getEpiWeekTo().getWeek()));
 			}
 		}
-		
+
 		return filter;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AggregateReport, AggregateReport> from) {
+
 		User currentUser = getCurrentUser();
-		if (currentUser == null 
-			|| currentUser.hasAnyUserRole(
-				UserRole.NATIONAL_USER,
-				UserRole.NATIONAL_CLINICIAN,
-				UserRole.NATIONAL_OBSERVER,
-				UserRole.REST_USER)) {
+		if (currentUser == null
+			|| currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -78,20 +93,18 @@ public class AggregateReportService extends AbstractAdoService<AggregateReport> 
 		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		// Allow access based on user role
-		if(currentUser.hasAnyUserRole(
-				UserRole.SURVEILLANCE_SUPERVISOR,
-				UserRole.CONTACT_SUPERVISOR,
-				UserRole.CASE_SUPERVISOR,
-				UserRole.STATE_OBSERVER) 
+		if (currentUser
+			.hasAnyUserRole(UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.CASE_SUPERVISOR, UserRole.STATE_OBSERVER)
 			&& currentUser.getRegion() != null) {
-				// Supervisors see all reports from their region
-				filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
-			}
+			// Supervisors see all reports from their region
+			filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
+		}
 
 		return filter;
 	}
-	
+
 	public List<AggregateReport> findBy(AggregateReportCriteria aggregateReportCriteria, User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AggregateReport> cq = cb.createQuery(getElementClass());
 		Root<AggregateReport> from = cq.from(getElementClass());

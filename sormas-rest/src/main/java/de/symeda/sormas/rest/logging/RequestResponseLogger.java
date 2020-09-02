@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest.logging;
 
@@ -58,39 +58,38 @@ public class RequestResponseLogger implements Filter {
 	/**
 	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
 	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 // 		There is an issue, when both criteria are enabled
 //		if (logger.isDebugEnabled()) {
 
-			// request logging
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			logger.debug("requestUri = {}", httpRequest.getRequestURI());
+		// request logging
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		logger.debug("requestUri = {}", httpRequest.getRequestURI());
 
-			Map<String, String[]> params = httpRequest.getParameterMap();
-			for (String s : params.keySet()) {
-				// logger.debug(" " + s + " = " + req.getParameter(s));
-				logger.debug("  {} = {}", s, httpRequest.getParameter(s));
-			}
+		Map<String, String[]> params = httpRequest.getParameterMap();
+		for (String s : params.keySet()) {
+			// logger.debug(" " + s + " = " + req.getParameter(s));
+			logger.debug("  {} = {}", s, httpRequest.getParameter(s));
+		}
 //		}
 
 //	 	There is an issue, when both criteria are enabled
 //		if (logger.isTraceEnabled()) {
-			// response logging
-			if (response.getCharacterEncoding() == null) {
-				response.setCharacterEncoding("UTF-8");
-			}
+		// response logging
+		if (response.getCharacterEncoding() == null) {
+			response.setCharacterEncoding("UTF-8");
+		}
 
-			HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
+		HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
 
-			try {
-				// pass the request along the filter chain
-				chain.doFilter(request, responseCopier);
-				responseCopier.flushBuffer();
-			} finally {
-				byte[] copy = responseCopier.getCopy();
-				logger.trace(new String(copy, response.getCharacterEncoding()));
-			}
+		try {
+			// pass the request along the filter chain
+			chain.doFilter(request, responseCopier);
+			responseCopier.flushBuffer();
+		} finally {
+			byte[] copy = responseCopier.getCopy();
+			logger.trace(new String(copy, response.getCharacterEncoding()));
+		}
 //		}
 
 	}
@@ -101,5 +100,4 @@ public class RequestResponseLogger implements Filter {
 	public void init(FilterConfig fConfig) throws ServletException {
 
 	}
-
 }

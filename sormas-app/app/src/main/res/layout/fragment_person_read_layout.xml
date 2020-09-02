@@ -30,6 +30,7 @@
         <import type="de.symeda.sormas.api.person.OccupationType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.person.Person" />
+        <variable name="birthDayVisibility" type="Boolean" />
     </data>
 
     <ScrollView
@@ -68,6 +69,7 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/person_approximateAge"
                     app:ageWithDateValue="@{data}"
+                    app:showDay="@{birthDayVisibility}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField

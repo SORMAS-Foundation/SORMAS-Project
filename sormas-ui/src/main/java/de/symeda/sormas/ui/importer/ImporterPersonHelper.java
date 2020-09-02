@@ -15,7 +15,13 @@ public final class ImporterPersonHelper {
 		// Hide Utility Class Constructor
 	}
 
-	public static RegionReferenceDto getRegionBasedOnDistrict(String propertyName, CaseDataDto caze, ContactDto contact, PersonDto person, Object currentElement) {
+	public static RegionReferenceDto getRegionBasedOnDistrict(
+		String propertyName,
+		CaseDataDto caze,
+		ContactDto contact,
+		PersonDto person,
+		Object currentElement) {
+
 		if (currentElement instanceof CaseDataDto) {
 			return caze.getRegion();
 		} else if (currentElement instanceof ContactDto) {
@@ -24,7 +30,7 @@ public final class ImporterPersonHelper {
 			return getPersonRegion(propertyName, person);
 		}
 	}
-	
+
 	public static DistrictReferenceDto getDistrictBasedOnCommunity(String propertyName, CaseDataDto caze, PersonDto person, Object currentElement) {
 		if (currentElement instanceof CaseDataDto) {
 			return caze.getDistrict();
@@ -32,15 +38,20 @@ public final class ImporterPersonHelper {
 			return getPersonDistrict(propertyName, person);
 		}
 	}
-	
-	public static Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(String propertyName, CaseDataDto caze, PersonDto person, Object currentElement) {
+
+	public static Pair<DistrictReferenceDto, CommunityReferenceDto> getDistrictAndCommunityBasedOnFacility(
+		String propertyName,
+		CaseDataDto caze,
+		PersonDto person,
+		Object currentElement) {
+
 		if (currentElement instanceof CaseDataDto) {
 			return Pair.createPair(caze.getDistrict(), caze.getCommunity());
 		} else {
 			return getPersonDistrictAndCommunity(propertyName, person);
 		}
 	}
-	
+
 	public static RegionReferenceDto getPersonRegion(String propertyName, PersonDto person) {
 		switch (propertyName) {
 		case PersonDto.OCCUPATION_DISTRICT:
@@ -53,7 +64,7 @@ public final class ImporterPersonHelper {
 			throw new IllegalArgumentException(propertyName);
 		}
 	}
-	
+
 	public static DistrictReferenceDto getPersonDistrict(String propertyName, PersonDto person) {
 		switch (propertyName) {
 		case PersonDto.OCCUPATION_COMMUNITY:
@@ -66,11 +77,11 @@ public final class ImporterPersonHelper {
 			throw new IllegalArgumentException(propertyName);
 		}
 	}
-	
+
 	public static Pair<DistrictReferenceDto, CommunityReferenceDto> getPersonDistrictAndCommunity(String propertyName, PersonDto person) {
 		DistrictReferenceDto district;
 		CommunityReferenceDto community;
-		
+
 		switch (propertyName) {
 		case PersonDto.OCCUPATION_FACILITY:
 			district = person.getOccupationDistrict();
@@ -83,8 +94,7 @@ public final class ImporterPersonHelper {
 		default:
 			throw new IllegalArgumentException(propertyName);
 		}
-		
+
 		return Pair.createPair(district, community);
 	}
-
 }

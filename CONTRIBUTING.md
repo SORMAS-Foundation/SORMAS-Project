@@ -65,10 +65,19 @@ If you're interested in participating in the development of SORMAS, you can use 
 
 ### Development Contributing Guidelines 
 
-1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project.
-2. Each commit should be related to a single issue on Github and have a reference to this issue as well as a short description on what has been done in this commit:
+1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project. To not forget this, use save actions [for your IDE](DEVELOPMENT_ENVIRONMENT.md).
+2. Rules for blank lines (which cannot be enforced by automatic formatting):
+    - Use one blank line after method definition (but usually not for one liners like getters/setters or delegation).
+	- Use one blank line to separate statements within a code block from each other when you start a new logical block.
+	- Do not use blank lines after each statement.
+    - No blank line after last statement of a block, but closing } with proper intendation in the next line.
+    - No blank line between two closing }.
+3. You can use ``//@formatter:off`` and ``//@formatter:on`` to encapsulate a code block where the automated formatting messes up the readability. Try to use this rarely and use proper intendation nevertheless.
+4. Rules for code comments:
+    - Separate code and comment: Set the comment before the statement(s) you want to explain.
+5. Each commit should be related to a single issue on Github and have a reference to this issue as well as a short description on what has been done in this commit:
    > #61 - added model to define classification, apply automatic case classification whenever a field value changes
-3. Each pull request should be related to a single issue (if possible). 
+6. Each pull request should be related to a single issue (if possible). 
 
 ### SORMAS Sprint Board
 

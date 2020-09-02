@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -74,13 +74,13 @@ public class StatisticsFilterComponent extends VerticalLayout {
 					selectedAttribute = attribute;
 					selectedSubAttribute = null;
 					filterAttributeItem.setText(attribute.toString());
-					
+
 					// Add style to keep chosen item selected and remove it from all other items
 					for (MenuItem menuItem : filterAttributeItem.getChildren()) {
 						menuItem.setStyleName(null);
 					}
 					selectedItem.setStyleName("selected-filter");
-					
+
 					// Reset the sub attribute dropdown
 					filterSubAttributeItem.removeChildren();
 					filterSubAttributeItem.setText(SPECIFY_YOUR_SELECTION);
@@ -91,13 +91,13 @@ public class StatisticsFilterComponent extends VerticalLayout {
 								Command subAttributeCommand = selectedSubItem -> {
 									selectedSubAttribute = subAttribute;
 									filterSubAttributeItem.setText(subAttribute.toString());
-									
+
 									// Add style to keep chosen item selected and remove it from all other items
 									for (MenuItem menuItem : filterSubAttributeItem.getChildren()) {
 										menuItem.setStyleName(null);
 									}
 									selectedSubItem.setStyleName("selected-filter");
-									
+
 									updateFilterElement(rowIndex);
 								};
 
@@ -132,16 +132,17 @@ public class StatisticsFilterComponent extends VerticalLayout {
 			removeComponent(filterElement);
 			filterElement = null;
 		}
-		
+
 		if (selectedSubAttribute == StatisticsCaseSubAttribute.DATE_RANGE) {
 			filterElement = new StatisticsFilterDateRangeElement(rowIndex);
 		} else if (selectedAttribute == StatisticsCaseAttribute.JURISDICTION) {
 			filterElement = new StatisticsFilterJurisdictionElement(rowIndex);
-		} else if (selectedAttribute.getSubAttributes().length == 0 
-				|| selectedSubAttribute != null) {
+		} else if (selectedAttribute.getSubAttributes().length == 0 || selectedSubAttribute != null) {
 			filterElement = new StatisticsFilterValuesElement(
-					selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""), 
-					selectedAttribute, selectedSubAttribute, rowIndex);
+				selectedAttribute.toString() + (selectedSubAttribute != null ? " (" + selectedSubAttribute.toString() + ")" : ""),
+				selectedAttribute,
+				selectedSubAttribute,
+				rowIndex);
 		}
 
 		if (filterElement != null) {

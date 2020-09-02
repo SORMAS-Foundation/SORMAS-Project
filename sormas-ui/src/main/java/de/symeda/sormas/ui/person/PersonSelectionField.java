@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
@@ -80,9 +80,14 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		lblNickname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
 		personDetailsLayout.addComponent(lblNickname);
 
-		Label lblBirthDateAndAge = new Label(PersonHelper.getAgeAndBirthdateString(
-				referencePerson.getApproximateAge(), referencePerson.getApproximateAgeType(),
-				referencePerson.getBirthdateDD(), referencePerson.getBirthdateMM(), referencePerson.getBirthdateYYYY(), I18nProperties.getUserLanguage()));
+		Label lblBirthDateAndAge = new Label(
+			PersonHelper.getAgeAndBirthdateString(
+				referencePerson.getApproximateAge(),
+				referencePerson.getApproximateAgeType(),
+				referencePerson.getBirthdateDD(),
+				referencePerson.getBirthdateMM(),
+				referencePerson.getBirthdateYYYY(),
+				I18nProperties.getUserLanguage()));
 		lblBirthDateAndAge.setWidthUndefined();
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout.addComponent(lblBirthDateAndAge);
@@ -97,12 +102,14 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 		lblPresentCondition.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
 		personDetailsLayout.addComponent(lblPresentCondition);
 
-		Label lblDistrict = new Label(referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "");
+		Label lblDistrict =
+			new Label(referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "");
 		lblDistrict.setWidthUndefined();
 		lblDistrict.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
 		personDetailsLayout.addComponent(lblDistrict);
 
-		Label lblCommunity = new Label(referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "");
+		Label lblCommunity =
+			new Label(referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "");
 		lblCommunity.setWidthUndefined();
 		lblCommunity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
 		personDetailsLayout.addComponent(lblCommunity);
@@ -136,13 +143,12 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 	}
 
 	private void initializeGrid() {
-		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria()
-				.firstName(referencePerson.getFirstName())
-				.lastName(referencePerson.getLastName())
-				.sex(referencePerson.getSex())
-				.birthdateDD(referencePerson.getBirthdateDD())
-				.birthdateMM(referencePerson.getBirthdateMM())
-				.birthdateYYYY(referencePerson.getBirthdateYYYY());
+		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
+			.lastName(referencePerson.getLastName())
+			.sex(referencePerson.getSex())
+			.birthdateDD(referencePerson.getBirthdateDD())
+			.birthdateMM(referencePerson.getBirthdateMM())
+			.birthdateYYYY(referencePerson.getBirthdateYYYY());
 		personGrid = new PersonSelectionGrid(criteria);
 
 		personGrid.addSelectionListener(e -> {
@@ -235,5 +241,4 @@ public class PersonSelectionField extends CustomField<PersonIndexDto> {
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
 		this.selectionChangeCallback = callback;
 	}
-
 }

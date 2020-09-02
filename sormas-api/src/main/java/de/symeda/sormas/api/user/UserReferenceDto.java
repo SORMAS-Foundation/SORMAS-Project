@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
@@ -27,27 +27,27 @@ public class UserReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -8558187171374254398L;
 
 	public UserReferenceDto() {
-		
+
 	}
-	
+
 	public UserReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public UserReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
 	}
-	
+
 	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles) {
 		setUuid(uuid);
 		setCaption(buildCaption(firstName, lastName, userRoles));
 	}
-	
+
 	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
+
 		StringBuilder result = new StringBuilder();
-		result.append(DataHelper.toStringNullable(firstName))
-			.append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
+		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
 		boolean first = true;
 		if (userRoles != null) {
 			for (UserRole userRole : userRoles) {

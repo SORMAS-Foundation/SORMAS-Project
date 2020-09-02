@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
@@ -31,10 +31,11 @@ public class ViewModelProvider {
 
 	@SuppressWarnings("unchecked")
 	public <M extends Object> M get(Class<M> modelClass, M defaultModel) {
+
 		if (!viewModels.containsKey(modelClass)) {
 			try {
 				if (defaultModel != null) {
-					viewModels.put(modelClass, defaultModel);					
+					viewModels.put(modelClass, defaultModel);
 				} else {
 					viewModels.put(modelClass, modelClass.newInstance());
 				}
@@ -42,10 +43,11 @@ public class ViewModelProvider {
 				throw new RuntimeException(e);
 			}
 		}
-		return (M)viewModels.get(modelClass);
+		return (M) viewModels.get(modelClass);
 	}
 
 	public <M extends Object> void remove(Class<M> modelClass) {
+
 		if (viewModels.containsKey(modelClass)) {
 			viewModels.remove(modelClass);
 		}
@@ -54,7 +56,7 @@ public class ViewModelProvider {
 	public <M extends Object> boolean has(Class<M> modelClass) {
 		return viewModels.containsKey(modelClass);
 	}
-	
+
 	public Collection<Object> getAll() {
 		return viewModels.values();
 	}

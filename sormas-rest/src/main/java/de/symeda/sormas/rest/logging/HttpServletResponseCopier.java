@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest.logging;
 
@@ -34,57 +34,56 @@ import javax.servlet.http.HttpServletResponseWrapper;
  */
 public class HttpServletResponseCopier extends HttpServletResponseWrapper {
 
-    private ServletOutputStream outputStream;
-    private PrintWriter writer;
-    private ServletOutputStreamCopier copier;
+	private ServletOutputStream outputStream;
+	private PrintWriter writer;
+	private ServletOutputStreamCopier copier;
 
-    public HttpServletResponseCopier(HttpServletResponse response) throws IOException {
-        super(response);
-    }
+	public HttpServletResponseCopier(HttpServletResponse response) throws IOException {
+		super(response);
+	}
 
-    @Override
-    public ServletOutputStream getOutputStream() throws IOException {
-        if (writer != null) {
-            throw new IllegalStateException("getWriter() has already been called on this response.");
-        }
+	@Override
+	public ServletOutputStream getOutputStream() throws IOException {
+		if (writer != null) {
+			throw new IllegalStateException("getWriter() has already been called on this response.");
+		}
 
-        if (outputStream == null) {
-            outputStream = getResponse().getOutputStream();
-            copier = new ServletOutputStreamCopier(outputStream);
-        }
+		if (outputStream == null) {
+			outputStream = getResponse().getOutputStream();
+			copier = new ServletOutputStreamCopier(outputStream);
+		}
 
-        return copier;
-    }
+		return copier;
+	}
 
-    @Override
-    public PrintWriter getWriter() throws IOException {
-        if (outputStream != null) {
-            throw new IllegalStateException("getOutputStream() has already been called on this response.");
-        }
+	@Override
+	public PrintWriter getWriter() throws IOException {
+		if (outputStream != null) {
+			throw new IllegalStateException("getOutputStream() has already been called on this response.");
+		}
 
-        if (writer == null) {
-            copier = new ServletOutputStreamCopier(getResponse().getOutputStream());
-            writer = new PrintWriter(new OutputStreamWriter(copier, getResponse().getCharacterEncoding()), true);
-        }
+		if (writer == null) {
+			copier = new ServletOutputStreamCopier(getResponse().getOutputStream());
+			writer = new PrintWriter(new OutputStreamWriter(copier, getResponse().getCharacterEncoding()), true);
+		}
 
-        return writer;
-    }
+		return writer;
+	}
 
-    @Override
-    public void flushBuffer() throws IOException {
-        if (writer != null) {
-            writer.flush();
-        } else if (outputStream != null) {
-            copier.flush();
-        }
-    }
+	@Override
+	public void flushBuffer() throws IOException {
+		if (writer != null) {
+			writer.flush();
+		} else if (outputStream != null) {
+			copier.flush();
+		}
+	}
 
-    public byte[] getCopy() {
-        if (copier != null) {
-            return copier.getCopy();
-        } else {
-            return new byte[0];
-        }
-    }
-
+	public byte[] getCopy() {
+		if (copier != null) {
+			return copier.getCopy();
+		} else {
+			return new byte[0];
+		}
+	}
 }

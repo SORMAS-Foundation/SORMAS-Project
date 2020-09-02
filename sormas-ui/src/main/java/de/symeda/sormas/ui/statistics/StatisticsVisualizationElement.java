@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
@@ -42,29 +42,29 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	private StatisticsVisualizationType visualizationType;
 	private StatisticsCaseAttribute attribute;
 	private StatisticsCaseSubAttribute subAttribute;
-	
+
 	public StatisticsVisualizationElement(StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
 		this.type = type;
 		this.visualizationType = visualizationType;
-		
+
 		CssStyles.style(this, CssStyles.LAYOUT_MINIMAL);
 		setSpacing(true);
 		setWidthUndefined();
-		
+
 		createAndAddComponents();
 	}
-	
+
 	private void createAndAddComponents() {
 		displayedAttributeDropdown = new MenuBar();
 		displayedAttributeDropdown.setId("visualizationType");
 		displayedAttributeDropdown.setCaption(type.toString(visualizationType));
 		displayedAttributeItem = displayedAttributeDropdown.addItem(type.getEmptySelectionString(visualizationType), null);
-		
+
 		displayedSubAttributeDropdown = new MenuBar();
 		displayedSubAttributeDropdown.setId("displayedSubAttribute");
 		CssStyles.style(displayedSubAttributeDropdown, CssStyles.FORCE_CAPTION);
 		displayedSubAttributeItem = displayedSubAttributeDropdown.addItem(I18nProperties.getCaption(Captions.statisticsSpecifySelection), null);
-		
+
 		// Empty selections
 		Command emptyItemCommand = selectedItem -> {
 			attribute = null;
@@ -74,12 +74,12 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 			removeSelections(displayedAttributeItem);
 		};
 		emptySelectionItem = displayedAttributeItem.addItem(type.getEmptySelectionString(visualizationType), emptyItemCommand);
-		
+
 		// Add attribute groups
 		for (StatisticsCaseAttributeGroup attributeGroup : StatisticsCaseAttributeGroup.values()) {
 			MenuItem attributeGroupItem = displayedAttributeItem.addItem(attributeGroup.toString(), null);
 			attributeGroupItem.setEnabled(false);
-			
+
 			// Add attributes belonging to the current group
 			for (StatisticsCaseAttribute attribute : attributeGroup.getAttributes()) {
 				Command attributeCommand = selectedItem -> {
@@ -89,7 +89,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 					displayedAttributeItem.setText(attribute.toString());
 					removeSelections(displayedAttributeItem);
 					selectedItem.setStyleName("selected-filter");
-					
+
 					// Build sub attribute dropdown
 					if (attribute.getSubAttributes().length > 0) {
 						for (StatisticsCaseSubAttribute subAttribute : attribute.getSubAttributes()) {
@@ -100,28 +100,28 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 									removeSelections(displayedSubAttributeItem);
 									selectedSubItem.setStyleName("selected-filter");
 								};
-								
+
 								displayedSubAttributeItem.addItem(subAttribute.toString(), subAttributeCommand);
 							}
 						}
-						
+
 						addComponent(displayedSubAttributeDropdown);
 					}
 				};
-				
+
 				displayedAttributeItem.addItem(attribute.toString(), attributeCommand);
-			}		
+			}
 		}
-		
+
 		addComponent(displayedAttributeDropdown);
 	}
-	
+
 	private void removeSelections(MenuItem parentItem) {
 		for (MenuItem childItem : parentItem.getChildren()) {
 			childItem.setStyleName(null);
 		}
 	}
-	
+
 	private void resetSubAttributeDropdown() {
 		displayedSubAttributeItem.removeChildren();
 		displayedSubAttributeItem.setText(I18nProperties.getCaption(Captions.statisticsSpecifySelection));
@@ -139,7 +139,7 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 	public StatisticsVisualizationElementType getType() {
 		return type;
 	}
-	
+
 	public void setType(StatisticsVisualizationElementType type, StatisticsVisualizationType visualizationType) {
 		this.type = type;
 		this.visualizationType = visualizationType;
@@ -149,5 +149,4 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 			displayedAttributeItem.setText(type.getEmptySelectionString(visualizationType));
 		}
 	}
-	
 }

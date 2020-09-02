@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "EpiDataFacade")
 public class EpiDataFacadeEjb implements EpiDataFacade {
-	
+
 	@EJB
 	private EpiDataService service;
 	@EJB
@@ -49,12 +49,13 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 	private EpiDataTravelService travelService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
-	
+
 	public EpiData fromDto(EpiDataDto source) {
+
 		if (source == null) {
 			return null;
 		}
-		
+
 		EpiData target = service.getByUuid(source.getUuid());
 		if (target == null) {
 			target = new EpiData();
@@ -64,16 +65,16 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 			}
 		}
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setBurialAttended(source.getBurialAttended());
 		target.setGatheringAttended(source.getGatheringAttended());
 		target.setTraveled(source.getTraveled());
-		
+
 		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
 		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
 		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
 		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
-		
+
 		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
 		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
 		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
@@ -87,7 +88,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
 		target.setEatingRawAnimals(source.getEatingRawAnimals());
 		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
-		
+
 		target.setRodents(source.getRodents());
 		target.setBats(source.getBats());
 		target.setPrimates(source.getPrimates());
@@ -123,7 +124,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
 		target.setCamels(source.getCamels());
 		target.setSnakes(source.getSnakes());
-		
+
 		List<EpiDataBurial> burials = new ArrayList<>();
 		for (EpiDataBurialDto burialDto : source.getBurials()) {
 			EpiDataBurial burial = fromDto(burialDto);
@@ -135,7 +136,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.getBurials().clear();
 		target.getBurials().addAll(burials);
-		
+
 		List<EpiDataGathering> gatherings = new ArrayList<>();
 		for (EpiDataGatheringDto gatheringDto : source.getGatherings()) {
 			EpiDataGathering gathering = fromDto(gatheringDto);
@@ -147,27 +148,27 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		}
 		target.getGatherings().clear();
 		target.getGatherings().addAll(gatherings);
-		
+
 		List<EpiDataTravel> travels = new ArrayList<>();
 		for (EpiDataTravelDto travelDto : source.getTravels()) {
 			EpiDataTravel travel = fromDto(travelDto);
 			travel.setEpiData(target);
 			travels.add(travel);
-		}		
+		}
 		if (!DataHelper.equal(target.getTravels(), travels)) {
 			target.setChangeDateOfEmbeddedLists(new Date());
 		}
 		target.getTravels().clear();
 		target.getTravels().addAll(travels);
-		
+
 		return target;
 	}
-	
+
 	public EpiDataBurial fromDto(EpiDataBurialDto dto) {
 		if (dto == null) {
 			return null;
 		}
-		
+
 		EpiDataBurial burial = burialService.getByUuid(dto.getUuid());
 		if (burial == null) {
 			burial = new EpiDataBurial();
@@ -176,11 +177,11 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 				burial.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		
+
 		EpiDataBurial target = burial;
 		EpiDataBurialDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setBurialAddress(locationFacade.fromDto(source.getBurialAddress()));
 		target.setBurialDateFrom(source.getBurialDateFrom());
 		target.setBurialDateTo(source.getBurialDateTo());
@@ -188,15 +189,16 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setBurialPersonName(source.getBurialPersonName());
 		target.setBurialRelation(source.getBurialRelation());
 		target.setBurialTouching(source.getBurialTouching());
-		
+
 		return burial;
 	}
-	
+
 	public EpiDataGathering fromDto(EpiDataGatheringDto dto) {
+
 		if (dto == null) {
 			return null;
 		}
-		
+
 		EpiDataGathering gathering = gatheringService.getByUuid(dto.getUuid());
 		if (gathering == null) {
 			gathering = new EpiDataGathering();
@@ -205,23 +207,24 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 				gathering.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		
+
 		EpiDataGathering target = gathering;
 		EpiDataGatheringDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setDescription(source.getDescription());
 		target.setGatheringAddress(locationFacade.fromDto(source.getGatheringAddress()));
 		target.setGatheringDate(source.getGatheringDate());
-		
+
 		return gathering;
 	}
-	
+
 	public EpiDataTravel fromDto(EpiDataTravelDto dto) {
+
 		if (dto == null) {
 			return null;
 		}
-		
+
 		EpiDataTravel travel = travelService.getByUuid(dto.getUuid());
 		if (travel == null) {
 			travel = new EpiDataTravel();
@@ -230,40 +233,41 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 				travel.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		
+
 		EpiDataTravel target = travel;
 		EpiDataTravelDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setTravelDateFrom(source.getTravelDateFrom());
 		target.setTravelDateTo(source.getTravelDateTo());
 		target.setTravelDestination(source.getTravelDestination());
 		target.setTravelType(source.getTravelType());
-		
+
 		return travel;
 	}
-	
+
 	public static EpiDataDto toDto(EpiData epiData) {
+
 		if (epiData == null) {
 			return null;
 		}
-		
+
 		EpiDataDto target = new EpiDataDto();
 		EpiData source = epiData;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setBurialAttended(source.getBurialAttended());
 		target.setGatheringAttended(source.getGatheringAttended());
 		target.setTraveled(source.getTraveled());
-		
+
 		target.setDirectContactConfirmedCase(source.getDirectContactConfirmedCase());
 		target.setDirectContactProbableCase(source.getDirectContactProbableCase());
 		target.setCloseContactProbableCase(source.getCloseContactProbableCase());
 		target.setAreaConfirmedCases(source.getAreaConfirmedCases());
-		
+
 		target.setProcessingConfirmedCaseFluidUnsafe(source.getProcessingConfirmedCaseFluidUnsafe());
 		target.setPercutaneousCaseBlood(source.getPercutaneousCaseBlood());
 		target.setDirectContactDeadUnsafe(source.getDirectContactDeadUnsafe());
@@ -277,7 +281,7 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setEatingRawAnimalsInInfectedArea(source.getEatingRawAnimalsInInfectedArea());
 		target.setEatingRawAnimals(source.getEatingRawAnimals());
 		target.setEatingRawAnimalsDetails(source.getEatingRawAnimalsDetails());
-				
+
 		target.setRodents(source.getRodents());
 		target.setBats(source.getBats());
 		target.setPrimates(source.getPrimates());
@@ -313,43 +317,44 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setVisitedAnimalMarket(source.getVisitedAnimalMarket());
 		target.setCamels(source.getCamels());
 		target.setSnakes(source.getSnakes());
-		
+
 		List<EpiDataBurialDto> burialDtos = new ArrayList<>();
 		for (EpiDataBurial burial : source.getBurials()) {
 			EpiDataBurialDto burialDto = toDto(burial);
 			burialDtos.add(burialDto);
 		}
 		target.setBurials(burialDtos);
-		
+
 		List<EpiDataGatheringDto> gatheringDtos = new ArrayList<>();
 		for (EpiDataGathering gathering : source.getGatherings()) {
 			EpiDataGatheringDto gatheringDto = toDto(gathering);
 			gatheringDtos.add(gatheringDto);
 		}
 		target.setGatherings(gatheringDtos);
-		
+
 		List<EpiDataTravelDto> travelDtos = new ArrayList<>();
 		for (EpiDataTravel travel : source.getTravels()) {
 			EpiDataTravelDto travelDto = toDto(travel);
 			travelDtos.add(travelDto);
 		}
 		target.setTravels(travelDtos);
-		
+
 		return target;
 	}
-	
+
 	public static EpiDataBurialDto toDto(EpiDataBurial burial) {
+
 		if (burial == null) {
 			return null;
 		}
-		
+
 		EpiDataBurialDto target = new EpiDataBurialDto();
 		EpiDataBurial source = burial;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setBurialAddress(LocationFacadeEjb.toDto(source.getBurialAddress()));
 		target.setBurialDateFrom(source.getBurialDateFrom());
 		target.setBurialDateTo(source.getBurialDateTo());
@@ -357,52 +362,54 @@ public class EpiDataFacadeEjb implements EpiDataFacade {
 		target.setBurialPersonName(source.getBurialPersonName());
 		target.setBurialRelation(source.getBurialRelation());
 		target.setBurialTouching(source.getBurialTouching());
-		
+
 		return target;
 	}
-	
+
 	public static EpiDataGatheringDto toDto(EpiDataGathering gathering) {
+
 		if (gathering == null) {
 			return null;
 		}
-		
+
 		EpiDataGatheringDto target = new EpiDataGatheringDto();
 		EpiDataGathering source = gathering;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setDescription(source.getDescription());
 		target.setGatheringAddress(LocationFacadeEjb.toDto(source.getGatheringAddress()));
 		target.setGatheringDate(source.getGatheringDate());
-		
+
 		return target;
 	}
 
 	public static EpiDataTravelDto toDto(EpiDataTravel travel) {
+
 		if (travel == null) {
 			return null;
 		}
-		
+
 		EpiDataTravelDto target = new EpiDataTravelDto();
 		EpiDataTravel source = travel;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setTravelDateFrom(source.getTravelDateFrom());
 		target.setTravelDateTo(source.getTravelDateTo());
 		target.setTravelDestination(source.getTravelDestination());
 		target.setTravelType(source.getTravelType());
-		
+
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class EpiDataFacadeEjbLocal extends EpiDataFacadeEjb {
+
 	}
-	
 }

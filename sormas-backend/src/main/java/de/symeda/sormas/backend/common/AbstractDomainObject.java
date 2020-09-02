@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -41,7 +41,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 
 	private static final String SEQ_GEN_NAME = "ENTITY_SEQ_GEN";
 	private static final String SEQ_SQL_NAME = "ENTITY_SEQ";
-	
+
 	public static final String HISTORY_TABLE_SUFFIX = "_history";
 
 	public static final String ID = "id";
@@ -78,13 +78,15 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	@Size(min = 20, max = 36)
 	@Column(nullable = false, unique = true, length = 36)
 	public String getUuid() {
+
 		if (uuid == null) {
-			/** New objects should automatically get a UUID. 
-			 * This should be returned already before saving via getUuid(). 
-			 * The generation of UUIDs is relatively time-consuming. Most objects are loaded from the database. 
-			 * Therefore, no UUIDs should be created for these objects. 
+			/**
+			 * New objects should automatically get a UUID.
+			 * This should be returned already before saving via getUuid().
+			 * The generation of UUIDs is relatively time-consuming. Most objects are loaded from the database.
+			 * Therefore, no UUIDs should be created for these objects.
 			 * This is not compatible with lazy instance loading:
-			 *  The UUIDs will not be overwritten later.
+			 * The UUIDs will not be overwritten later.
 			 * Solution: getUuid () may create a UUID & the ADO Interceptor calls getUuid() before saving.
 			 * Then this can be done immediately with getDate().
 			 */
@@ -92,7 +94,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 		}
 		return uuid;
 	}
-	
+
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
@@ -121,6 +123,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o) {
 			return true;
 		}

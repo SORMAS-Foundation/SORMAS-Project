@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -23,31 +22,33 @@ public class CaseContactsImportLayout extends AbstractImportLayout {
 
 	public CaseContactsImportLayout(CaseDataDto caze) {
 		super();
-		
-		addDownloadResourcesComponent(1, new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
-				new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
-		addDownloadImportTemplateComponent(2,
-				FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath(),
-				"sormas_import_case_contact_template.csv");
+
+		addDownloadResourcesComponent(
+			1,
+			new ClassResource("/SORMAS_Contact_Import_Guide.pdf"),
+			new ClassResource("/doc/SORMAS_Data_Dictionary.xlsx"));
+		addDownloadImportTemplateComponent(
+			2,
+			FacadeProvider.getImportFacade().getCaseContactImportTemplateFilePath(),
+			"sormas_import_case_contact_template.csv");
 		addImportCsvComponent(3, new ImportReceiver("_case_contact_import_", new Consumer<File>() {
+
 			@Override
 			public void accept(File file) {
+
 				resetDownloadErrorReportButton();
-				
 				try {
 					ContactImporter importer = new ContactImporter(file, false, currentUser, caze);
-					importer.startImport(new Consumer<StreamResource>() {
-						@Override
-						public void accept(StreamResource resource) {
-							extendDownloadErrorReportButton(resource);
-						}
-					}, currentUI, false);
+					importer.startImport(resource -> extendDownloadErrorReportButton(resource), currentUI, false);
 				} catch (IOException e) {
-					new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.headingImportFailed),
+						I18nProperties.getString(Strings.messageImportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 				}
 			}
 		}));
 		addDownloadErrorReportComponent(4);
 	}
-
 }

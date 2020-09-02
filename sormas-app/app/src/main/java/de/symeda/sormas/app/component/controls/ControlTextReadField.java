@@ -362,10 +362,14 @@ public class ControlTextReadField extends ControlPropertyField<String> {
     }
 
     // Age with date
-    @BindingAdapter(value = {"ageWithDateValue", "valueFormat", "defaultValue"}, requireAll = false)
-    public static void setAgeWithDateValue(ControlTextReadField textField, Person person, String valueFormat, String defaultValue) {
+    @BindingAdapter(value = {"ageWithDateValue", "valueFormat", "defaultValue", "showDay"}, requireAll = false)
+    public static void setAgeWithDateValue(ControlTextReadField textField, Person person, String valueFormat, String defaultValue, Boolean showDay) {
         if (valueFormat == null) {
             valueFormat = ResourceUtils.getString(textField.getContext(), R.string.age_with_birth_date_format);
+        }
+
+        if(showDay == null){
+            showDay = true;
         }
 
         if (person == null || person.getApproximateAge() == null) {
@@ -373,7 +377,10 @@ public class ControlTextReadField extends ControlPropertyField<String> {
         } else {
             String age = person.getApproximateAge().toString();
             ApproximateAgeType ageType = person.getApproximateAgeType();
-            String dateOfBirth = DateFormatHelper.formatBirthdate(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+            String dateOfBirth = DateFormatHelper.formatBirthdate(
+                    showDay ? person.getBirthdateDD() : null,
+                    person.getBirthdateMM(),
+                    person.getBirthdateYYYY());
 
             StringBuilder ageWithDateBuilder = new StringBuilder()
                     .append(age).append(" ").append(ageType != null ? ageType.toString() : "")

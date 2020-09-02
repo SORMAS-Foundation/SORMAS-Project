@@ -19,10 +19,10 @@
 package de.symeda.sormas.app.caze.edit;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.FragmentActivity;
-import android.util.Log;
-import android.view.View;
 
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BR;
@@ -34,7 +34,6 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.component.validation.FragmentValidator;
-import de.symeda.sormas.app.core.Callback;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.databinding.DialogCaseEpidGatheringEditLayoutBinding;
 
@@ -65,7 +64,7 @@ public class EpiDataGatheringDialog extends AbstractDialog {
     private void openAddressPopup() {
         final Location location = (Location) contentBinding.epiDataGatheringGatheringAddress.getValue();
         final Location locationClone = (Location) location.clone();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, null);
         locationDialog.show();
 
         locationDialog.setPositiveCallback(() -> {

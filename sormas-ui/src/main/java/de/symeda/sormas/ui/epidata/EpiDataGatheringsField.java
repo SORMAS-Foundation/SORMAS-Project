@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.epidata;
 
@@ -54,6 +54,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		Table table = getTable();
 
 		table.addGeneratedColumn(CITY, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
@@ -63,6 +64,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		});
 
 		table.addGeneratedColumn(DISTRICT, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
@@ -72,6 +74,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		});
 
 		table.addGeneratedColumn(GATHERING_DAY, new Table.ColumnGenerator() {
+
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
 				EpiDataGatheringDto gathering = (EpiDataGatheringDto) itemId;
@@ -83,12 +86,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 			}
 		});
 
-		table.setVisibleColumns(
-				EDIT_COLUMN_ID,
-				EpiDataGatheringDto.DESCRIPTION,
-				GATHERING_DAY,
-				CITY,
-				DISTRICT);
+		table.setVisibleColumns(EDIT_COLUMN_ID, EpiDataGatheringDto.DESCRIPTION, GATHERING_DAY, CITY, DISTRICT);
 
 		table.setColumnExpandRatio(EDIT_COLUMN_ID, 0);
 		table.setColumnExpandRatio(EpiDataGatheringDto.DESCRIPTION, 0);
@@ -125,17 +123,20 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 		if (create && entry.getUuid() == null) {
 			entry.setUuid(DataHelper.createUuid());
 		}
-		
+
 		EpiDataGatheringEditForm editForm = new EpiDataGatheringEditForm();
 		editForm.setValue(entry);
 
-		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(editForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT), editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EpiDataGatheringEditForm> editView = new CommitDiscardWrapperComponent<EpiDataGatheringEditForm>(
+			editForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			editForm.getFieldGroup());
 		editView.getCommitButton().setCaption(I18nProperties.getString(Strings.done));
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.entityGathering));
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				if (!editForm.getFieldGroup().isModified()) {
@@ -146,6 +147,7 @@ public class EpiDataGatheringsField extends AbstractTableField<EpiDataGatheringD
 
 		if (!isEmpty(entry)) {
 			editView.addDeleteListener(new DeleteListener() {
+
 				@Override
 				public void onDelete() {
 					popupWindow.close();

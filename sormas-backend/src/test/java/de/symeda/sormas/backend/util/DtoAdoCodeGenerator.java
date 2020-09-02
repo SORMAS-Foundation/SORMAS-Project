@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.util;
 
@@ -39,19 +39,17 @@ public class DtoAdoCodeGenerator {
 
 		System.out.println("\n\ngenerateCopyJava:\n");
 
-		for (PropertyDescriptor property : Introspector.getBeanInfo(dto).getPropertyDescriptors()){
+		for (PropertyDescriptor property : Introspector.getBeanInfo(dto).getPropertyDescriptors()) {
 
 			if (property.getWriteMethod() == null) {
 				continue;
 			}
-			
+
 			String propertyName = property.getName();
-			if (EntityDto.UUID.equals(propertyName)
-					|| EntityDto.CHANGE_DATE.equals(propertyName)
-					|| EntityDto.CREATION_DATE.equals(propertyName)) {
+			if (EntityDto.UUID.equals(propertyName) || EntityDto.CHANGE_DATE.equals(propertyName) || EntityDto.CREATION_DATE.equals(propertyName)) {
 				continue;
 			}
-			
+
 			try {
 				Method toWriteMethod = ado.getMethod(property.getWriteMethod().getName(), property.getWriteMethod().getParameterTypes());
 				System.out.println("target." + toWriteMethod.getName() + "(source." + property.getReadMethod().getName() + "());");
@@ -62,26 +60,26 @@ public class DtoAdoCodeGenerator {
 			}
 		}
 	}
-	
+
 	@Test
 	public void generateNotMatchingMembersList() throws IntrospectionException {
 
 		System.out.println("\n\ngenerateNotMatchingMembersList:\n");
-		
-		for (PropertyDescriptor property : Introspector.getBeanInfo(ado).getPropertyDescriptors()){
+
+		for (PropertyDescriptor property : Introspector.getBeanInfo(ado).getPropertyDescriptors()) {
 
 			if (property.getWriteMethod() == null) {
 				continue;
 			}
-			
+
 			String propertyName = property.getName();
 			if (AbstractDomainObject.UUID.equals(propertyName)
-					|| AbstractDomainObject.ID.equals(propertyName)
-					|| AbstractDomainObject.CHANGE_DATE.equals(propertyName)
-					|| AbstractDomainObject.CREATION_DATE.equals(propertyName)) {
+				|| AbstractDomainObject.ID.equals(propertyName)
+				|| AbstractDomainObject.CHANGE_DATE.equals(propertyName)
+				|| AbstractDomainObject.CREATION_DATE.equals(propertyName)) {
 				continue;
 			}
-			
+
 			try {
 				dto.getMethod(property.getWriteMethod().getName(), property.getWriteMethod().getParameterTypes());
 			} catch (NoSuchMethodException e) {
@@ -90,26 +88,27 @@ public class DtoAdoCodeGenerator {
 			}
 		}
 	}
+
 	@Test
 	public void generatePropertyConstantsJava() throws IntrospectionException {
 
 		System.out.println("\n\ngeneratePropertyConstantsJava:\n");
 
-		for (PropertyDescriptor property : Introspector.getBeanInfo(dto).getPropertyDescriptors()){
+		for (PropertyDescriptor property : Introspector.getBeanInfo(dto).getPropertyDescriptors()) {
 			String propertyName = property.getName();
-			
+
 			if (EntityDto.UUID.equals(propertyName)
-					|| EntityDto.CHANGE_DATE.equals(propertyName)
-					|| EntityDto.CREATION_DATE.equals(propertyName)
-					|| "class".equals(propertyName)) {
+				|| EntityDto.CHANGE_DATE.equals(propertyName)
+				|| EntityDto.CREATION_DATE.equals(propertyName)
+				|| "class".equals(propertyName)) {
 				continue;
 			}
 
-			System.out.println(String.format("public static final String %s = \"%s\";", 
-					propertyName.replaceAll("(.)([A-Z])", "$1_$2").toUpperCase(), propertyName));
+			System.out.println(
+				String.format("public static final String %s = \"%s\";", propertyName.replaceAll("(.)([A-Z])", "$1_$2").toUpperCase(), propertyName));
 		}
 	}
-	
+
 	// see sormas-api/tools/Fields.xlsx
 //	@Test
 //	public void generateI18nProperties() throws IntrospectionException {
@@ -133,5 +132,4 @@ public class DtoAdoCodeGenerator {
 //					i18nPrefixName, propertyName, caption));
 //		}
 //	}
-
 }

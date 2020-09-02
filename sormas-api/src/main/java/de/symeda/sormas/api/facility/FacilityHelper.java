@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.facility;
 
@@ -27,19 +27,21 @@ public final class FacilityHelper {
 	}
 
 	public static String buildFacilityString(String facilityUuid, String facilityName, String facilityDetails) {
+
 		StringBuilder result = new StringBuilder();
 		result.append(buildFacilityString(facilityUuid, facilityName));
 
 		if (!DataHelper.isNullOrEmpty(facilityDetails)) {
 			if (result.length() > 0) {
-				result.append(" - ");			
+				result.append(" - ");
 			}
 			result.append(facilityDetails);
-		}		
+		}
 		return result.toString();
 	}
 
 	public static String buildFacilityString(String facilityUuid, String facilityName) {
+
 		if (facilityUuid != null) {
 			if (facilityUuid.equals(FacilityDto.OTHER_FACILITY_UUID)) {
 				return I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.OTHER_FACILITY);
@@ -61,7 +63,6 @@ public final class FacilityHelper {
 	}
 
 	public static boolean isOtherOrNoneHealthFacility(String facilityUuid) {
-		return FacilityDto.OTHER_FACILITY_UUID.equals(facilityUuid)
-				|| FacilityDto.NONE_FACILITY_UUID.equals(facilityUuid);
+		return FacilityDto.OTHER_FACILITY_UUID.equals(facilityUuid) || FacilityDto.NONE_FACILITY_UUID.equals(facilityUuid);
 	}
 }

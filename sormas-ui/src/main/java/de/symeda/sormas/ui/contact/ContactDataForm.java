@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
@@ -27,8 +27,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.ui.utils.*;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -69,8 +67,16 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewMode;
 
 public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
@@ -81,6 +87,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
+	//@formatter:off
 	private static final String HTML_LAYOUT =
 			h3(I18nProperties.getString(Strings.headingContactData)) +
 					fluidRowLocs(ContactDto.CONTACT_CLASSIFICATION, ContactDto.CONTACT_STATUS) +
@@ -113,6 +120,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
 					fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
 					+ fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
+	//@formatter:on
 
 	private final ViewMode viewMode;
 	private final Disease disease;
@@ -126,7 +134,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private OptionGroup contactCategory;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX);
+		super(
+			ContactDto.class,
+			ContactDto.I18N_PREFIX,
+			false,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
+			new FieldAccessCheckers());
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
@@ -134,6 +147,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	@Override
 	protected void addFields() {
+
 		if (viewMode == null) {
 			return;
 		}
@@ -147,8 +161,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, OptionGroup.class);
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 		if (isGermanServer()) {
-			contactProximity.addValueChangeListener(
-					e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
+			contactProximity.addValueChangeListener(e -> updateContactCategory((ContactProximity) contactProximity.getValue()));
 			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
 			contactCategory = addField(ContactDto.CONTACT_CATEGORY, OptionGroup.class);
 		}
@@ -170,8 +183,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			quarantineOrderedOfficialDocument = addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, CheckBox.class);
 			CssStyles.style(quarantineOrderedOfficialDocument, CssStyles.FORCE_CAPTION);
 			addField(ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, DateField.class);
-			setVisible(false, ContactDto.QUARANTINE_ORDERED_VERBALLY, ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
-					ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
+			setVisible(
+				false,
+				ContactDto.QUARANTINE_ORDERED_VERBALLY,
+				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE);
 		}
 		TextField quarantineHelpNeeded = addField(ContactDto.QUARANTINE_HELP_NEEDED, TextField.class);
 		quarantineHelpNeeded.setInputPrompt(I18nProperties.getString(Strings.pleaseSpecify));
@@ -182,12 +199,37 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, OptionGroup.class);
 		addField(ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.NO), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, ContactDto.QUARANTINE_HOME_POSSIBLE, Arrays.asList(YesNoUnknown.YES), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED, Arrays.asList(YesNoUnknown.NO), true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.QUARANTINE_HOME_POSSIBLE_COMMENT,
+			ContactDto.QUARANTINE_HOME_POSSIBLE,
+			Arrays.asList(YesNoUnknown.NO),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
+			ContactDto.QUARANTINE_HOME_POSSIBLE,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT,
+			ContactDto.QUARANTINE_HOME_SUPPLY_ENSURED,
+			Arrays.asList(YesNoUnknown.NO),
+			true);
 		if (isGermanServer()) {
-			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE, ContactDto.QUARANTINE_ORDERED_VERBALLY, Arrays.asList(Boolean.TRUE), true);
-			FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, Arrays.asList(Boolean.TRUE), true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.QUARANTINE_ORDERED_VERBALLY_DATE,
+				ContactDto.QUARANTINE_ORDERED_VERBALLY,
+				Arrays.asList(Boolean.TRUE),
+				true);
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE,
+				ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
+				Arrays.asList(Boolean.TRUE),
+				true);
 		}
 
 		addField(ContactDto.DESCRIPTION, TextArea.class).setRows(3);
@@ -208,8 +250,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		district.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(district,
-					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+			FieldHelper
+				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
@@ -218,10 +260,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				districtDto = caseDto.getDistrict();
 			}
 
-			FieldHelper.updateItems(contactOfficerField, districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+			FieldHelper.updateItems(
+				contactOfficerField,
+				districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-
 
 		CheckBox cbHighPriority = addField(ContactDto.HIGH_PRIORITY, CheckBox.class);
 		addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
@@ -233,8 +276,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			updateDiseaseConfiguration((Disease) e.getProperty().getValue());
 		});
 
-		Label generalCommentLabel = new Label(
-				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
+		Label generalCommentLabel = new Label(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS));
 		generalCommentLabel.addStyleName(H3);
 		getContent().addComponent(generalCommentLabel, GENERAL_COMMENT_LOC);
 
@@ -244,15 +286,39 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);
 
-		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.FOLLOW_UP_STATUS, Arrays.asList(ContactDto.FOLLOW_UP_COMMENT), Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.RELATION_DESCRIPTION, ContactDto.RELATION_TO_CASE, Arrays.asList(ContactRelation.OTHER), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, Arrays.asList(YesNoUnknown.YES), true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ContactDto.FOLLOW_UP_STATUS,
+			Arrays.asList(ContactDto.FOLLOW_UP_COMMENT),
+			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.LOST));
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.RELATION_DESCRIPTION,
+			ContactDto.RELATION_TO_CASE,
+			Arrays.asList(ContactRelation.OTHER),
+			true);
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS,
+			ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE,
+			Arrays.asList(YesNoUnknown.YES),
+			true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), ContactDto.DISEASE_DETAILS, ContactDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.DISEASE, Arrays.asList(ContactDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
-		FieldHelper.setReadOnlyWhen(getFieldGroup(), Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(Boolean.FALSE), false, true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), ContactDto.OVERWRITE_FOLLOW_UP_UTIL, Arrays.asList(ContactDto.FOLLOW_UP_UNTIL), Arrays.asList(Boolean.TRUE));
+		FieldHelper.setReadOnlyWhen(
+			getFieldGroup(),
+			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),
+			ContactDto.OVERWRITE_FOLLOW_UP_UTIL,
+			Arrays.asList(Boolean.FALSE),
+			false,
+			true);
+		FieldHelper.setRequiredWhen(
+			getFieldGroup(),
+			ContactDto.OVERWRITE_FOLLOW_UP_UTIL,
+			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),
+			Arrays.asList(Boolean.TRUE));
 
-		initializeVisibilitiesAndAllowedVisibilities(disease, viewMode);
+		initializeVisibilitiesAndAllowedVisibilities();
 
 		addValueChangeListener(e -> {
 			if (getValue() != null) {
@@ -269,24 +335,26 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				updateDiseaseConfiguration(getValue().getDisease());
 				updateFollowUpStatusComponents();
 
-				DistrictReferenceDto referenceDistrict = getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
+				DistrictReferenceDto referenceDistrict =
+					getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
 				if (referenceDistrict != null) {
-					contactOfficerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, UserRole.CONTACT_OFFICER));
+					contactOfficerField
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, UserRole.CONTACT_OFFICER));
 				}
 
 				getContent().removeComponent(TO_CASE_BTN_LOC);
 				if (getValue().getResultingCase() != null) {
 					// link to case
-					Link linkToData = ControllerProvider.getCaseController().createLinkToData(getValue().getResultingCase().getUuid(),
-							I18nProperties.getCaption(Captions.contactOpenContactCase));
+					Link linkToData = ControllerProvider.getCaseController()
+						.createLinkToData(getValue().getResultingCase().getUuid(), I18nProperties.getCaption(Captions.contactOpenContactCase));
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
 					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
 						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
 							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
 								VaadinUiUtil.showSimplePopupWindow(
-										I18nProperties.getString(Strings.headingContactConfirmationRequired),
-										I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
+									I18nProperties.getString(Strings.headingContactConfirmationRequired),
+									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
 								ControllerProvider.getCaseController().createFromContact(getValue());
 							}
@@ -297,18 +365,27 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				}
 
 				if (!isGermanServer()) {
-					setVisible(false, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE, ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS,
-							ContactDto.CARE_FOR_PEOPLE_OVER_60, ContactDto.EXTERNAL_ID);
+					setVisible(
+						false,
+						ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE,
+						ContactDto.IMMUNOSUPPRESSIVE_THERAPY_BASIC_DISEASE_DETAILS,
+						ContactDto.CARE_FOR_PEOPLE_OVER_60,
+						ContactDto.EXTERNAL_ID);
 				} else {
 					ogImmunosuppressiveTherapyBasicDisease.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));
 					ogCareForPeopleOver60.addValueChangeListener(getHighPriorityValueChangeListener(cbHighPriority));
 				}
 
 				// Add follow-up until validator
-				Date minimumFollowUpUntilDate = DateHelper.addDays(ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
-						FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
-				dfFollowUpUntil.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
-						minimumFollowUpUntilDate, null, Resolution.DAY));
+				Date minimumFollowUpUntilDate = DateHelper.addDays(
+					ContactLogic.getStartDate(lastContactDate.getValue(), reportDate.getValue()),
+					FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration((Disease) cbDisease.getValue()));
+				dfFollowUpUntil.addValidator(
+					new DateRangeValidator(
+						I18nProperties.getValidationError(Validations.contactFollowUpUntilDate),
+						minimumFollowUpUntilDate,
+						null,
+						Resolution.DAY));
 			}
 		});
 
@@ -322,27 +399,27 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private void updateContactCategory(ContactProximity proximity) {
 		if (proximity != null) {
 			switch (proximity) {
-				case FACE_TO_FACE_LONG:
-				case TOUCHED_FLUID:
-				case AEROSOL:
-					contactCategory.setValue(ContactCategory.HIGH_RISK);
-					break;
-				case MEDICAL_UNSAFE:
-					contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
-					break;
-				case MEDICAL_LIMITED:
-					contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
-					break;
-				case SAME_ROOM:
-				case FACE_TO_FACE_SHORT:
-				case MEDICAL_SAME_ROOM:
-					contactCategory.setValue(ContactCategory.LOW_RISK);
-					break;
-				case MEDICAL_DISTANT:
-				case MEDICAL_SAFE:
-					contactCategory.setValue(ContactCategory.NO_RISK);
-					break;
-				default:
+			case FACE_TO_FACE_LONG:
+			case TOUCHED_FLUID:
+			case AEROSOL:
+				contactCategory.setValue(ContactCategory.HIGH_RISK);
+				break;
+			case MEDICAL_UNSAFE:
+				contactCategory.setValue(ContactCategory.HIGH_RISK_MED);
+				break;
+			case MEDICAL_LIMITED:
+				contactCategory.setValue(ContactCategory.MEDIUM_RISK_MED);
+				break;
+			case SAME_ROOM:
+			case FACE_TO_FACE_SHORT:
+			case MEDICAL_SAME_ROOM:
+				contactCategory.setValue(ContactCategory.LOW_RISK);
+				break;
+			case MEDICAL_DISTANT:
+			case MEDICAL_SAFE:
+				contactCategory.setValue(ContactCategory.NO_RISK);
+				break;
+			default:
 			}
 		}
 	}
@@ -398,7 +475,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				cancelButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(cancelButton, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC);
 
-				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp,  event -> {
+				Button lostButton = ButtonHelper.createButton(Captions.contactLostToFollowUp, event -> {
 					Field<FollowUpStatus> statusField12 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
 					statusField12.setReadOnly(false);
 					statusField12.setValue(FollowUpStatus.LOST);
@@ -408,8 +485,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				lostButton.setWidth(100, Unit.PERCENTAGE);
 				getContent().addComponent(lostButton, LOST_FOLLOW_UP_BTN_LOC);
 
-			} else if (followUpStatus == FollowUpStatus.CANCELED
-					|| followUpStatus == FollowUpStatus.LOST) {
+			} else if (followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST) {
 
 				Button resumeButton = ButtonHelper.createButton(Captions.contactResumeFollowUp, event -> {
 					Field<FollowUpStatus> statusField13 = (Field<FollowUpStatus>) getField(ContactDto.FOLLOW_UP_STATUS);
@@ -426,6 +502,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	protected void updateLastContactDateValidator() {
+
 		Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
 		for (Validator validator : dateField.getValidators()) {
 			if (validator instanceof DateRangeValidator) {
@@ -433,19 +510,26 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			}
 		}
 		if (getValue() != null) {
-			dateField.addValidator(new DateRangeValidator(I18nProperties.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
-					null, new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(), Resolution.SECOND));
+			dateField.addValidator(
+				new DateRangeValidator(
+					I18nProperties
+						.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
+					null,
+					new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(),
+					Resolution.SECOND));
 		}
 	}
 
 	private void updateDiseaseConfiguration(Disease disease) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
-			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String)propertyId, disease);
+			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String) propertyId, disease);
 			getFieldGroup().getField(propertyId).setVisible(visible && getFieldGroup().getField(propertyId).isVisible());
 		}
 
 		ContactProximity value = (ContactProximity) contactProximity.getValue();
-		FieldHelper.updateEnumData(contactProximity, Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
+		FieldHelper.updateEnumData(
+			contactProximity,
+			Arrays.asList(ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale())));
 		contactProximity.setValue(value);
 	}
 

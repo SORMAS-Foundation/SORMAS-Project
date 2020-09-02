@@ -16,15 +16,15 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 
 	@EJB
 	private PortHealthInfoService service;
-	
+
 	public static PortHealthInfoDto toDto(PortHealthInfo source) {
 		if (source == null) {
 			return null;
 		}
-		
+
 		PortHealthInfoDto target = new PortHealthInfoDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setAirlineName(source.getAirlineName());
 		target.setFlightNumber(source.getFlightNumber());
 		target.setDepartureDateTime(source.getDepartureDateTime());
@@ -47,13 +47,13 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setDepartureLocation(source.getDepartureLocation());
 		target.setFinalDestination(source.getFinalDestination());
 		target.setDetails(source.getDetails());
-		
+
 		return target;
 	}
-	
+
 	public PortHealthInfo fromDto(@NotNull PortHealthInfoDto source) {
 		PortHealthInfo target = service.getByUuid(source.getUuid());
-		
+
 		if (target == null) {
 			target = new PortHealthInfo();
 			target.setUuid(source.getUuid());
@@ -61,7 +61,7 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		
+
 		DtoHelper.validateDto(source, target);
 
 		target.setAirlineName(source.getAirlineName());
@@ -86,14 +86,13 @@ public class PortHealthInfoFacadeEjb implements PortHealthInfoFacade {
 		target.setDepartureLocation(source.getDepartureLocation());
 		target.setFinalDestination(source.getFinalDestination());
 		target.setDetails(source.getDetails());
-		
+
 		return target;
 	}
 
 	@LocalBean
 	@Stateless
 	public static class PortHealthInfoFacadeEjbLocal extends PortHealthInfoFacadeEjb {
-		
+
 	}
-	
 }

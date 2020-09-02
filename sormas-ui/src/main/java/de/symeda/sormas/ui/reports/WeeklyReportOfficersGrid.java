@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.reports;
 
@@ -54,13 +54,14 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 	private int year;
 
 	private final class WeeklyReportGridCellStyleGenerator implements CellStyleGenerator {
+
 		@Override
 		public String getStyle(CellReference cell) {
 			String css;
 			if (WeeklyReportOfficerSummaryDto.INFORMANTS.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
-					|| WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS.equals(cell.getPropertyId())) {
+				|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS.equals(cell.getPropertyId())
+				|| WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE.equals(cell.getPropertyId())
+				|| WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS.equals(cell.getPropertyId())) {
 				css = CssStyles.GRID_CELL_ODD;
 			} else {
 				css = "";
@@ -83,12 +84,13 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 	public WeeklyReportOfficersGrid() {
 		setSizeFull();
 
-		BeanItemContainer<WeeklyReportOfficerSummaryDto> container = new BeanItemContainer<WeeklyReportOfficerSummaryDto>(
-				WeeklyReportOfficerSummaryDto.class);
+		BeanItemContainer<WeeklyReportOfficerSummaryDto> container =
+			new BeanItemContainer<WeeklyReportOfficerSummaryDto>(WeeklyReportOfficerSummaryDto.class);
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
 		generatedContainer.addGeneratedProperty(VIEW_DETAILS_BTN_ID, new PropertyValueGenerator<String>() {
+
 			@Override
 			public String getValue(Item item, Object itemId, Object propertyId) {
 				if (((WeeklyReportOfficerSummaryDto) itemId).getInformants() > 0) {
@@ -97,28 +99,31 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 					return "";
 				}
 			}
+
 			@Override
 			public Class<String> getType() {
 				return String.class;
 			}
 		});
 
-		setColumns(VIEW_DETAILS_BTN_ID, 
-				WeeklyReportOfficerSummaryDto.OFFICER, 
-				WeeklyReportOfficerSummaryDto.DISTRICT,
-				WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE, 
-				WeeklyReportOfficerSummaryDto.TOTAL_CASE_COUNT, 
-				WeeklyReportOfficerSummaryDto.INFORMANTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
+		setColumns(
+			VIEW_DETAILS_BTN_ID,
+			WeeklyReportOfficerSummaryDto.OFFICER,
+			WeeklyReportOfficerSummaryDto.DISTRICT,
+			WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE,
+			WeeklyReportOfficerSummaryDto.TOTAL_CASE_COUNT,
+			WeeklyReportOfficerSummaryDto.INFORMANTS,
+			WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
+			WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+			WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
 
 		for (Column column : getColumns()) {
 			if (column.getPropertyId().equals(VIEW_DETAILS_BTN_ID)) {
 				column.setHeaderCaption("");
 			} else {
-				column.setHeaderCaption(I18nProperties.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX,
-						column.getPropertyId().toString(), column.getHeaderCaption()));
+				column.setHeaderCaption(
+					I18nProperties
+						.getPrefixCaption(WeeklyReportOfficerSummaryDto.I18N_PREFIX, column.getPropertyId().toString(), column.getHeaderCaption()));
 			}
 		}
 
@@ -130,18 +135,18 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 
 		HeaderRow preHeaderRow = prependHeaderRow();
 		HeaderCell preHeaderCell = preHeaderRow.join(
-				WeeklyReportOfficerSummaryDto.INFORMANTS, 
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
-				WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
-				WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
+			WeeklyReportOfficerSummaryDto.INFORMANTS,
+			WeeklyReportOfficerSummaryDto.INFORMANT_REPORTS,
+			WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE,
+			WeeklyReportOfficerSummaryDto.INFORMANT_ZERO_REPORTS);
 		preHeaderCell.setHtml(I18nProperties.getCaption(Captions.weeklyReportOfficerInformants));
 		preHeaderCell.setStyleName(CssStyles.GRID_CELL_ODD);
 
 		getColumn(VIEW_DETAILS_BTN_ID).setRenderer(new HtmlRenderer());
 		getColumn(VIEW_DETAILS_BTN_ID).setWidth(60);
 
-		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE).setRenderer(new HtmlRenderer(
-				I18nProperties.getCaption(Captions.weeklyReportNoReport)));
+		getColumn(WeeklyReportOfficerSummaryDto.OFFICER_REPORT_DATE)
+			.setRenderer(new HtmlRenderer(I18nProperties.getCaption(Captions.weeklyReportNoReport)));
 		getColumn(WeeklyReportOfficerSummaryDto.INFORMANT_REPORT_PERCENTAGE).setRenderer(new PercentageRenderer());
 
 		setCellStyleGenerator(new WeeklyReportGridCellStyleGenerator());
@@ -165,8 +170,7 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 		getContainer().removeAllItems();
 		EpiWeek epiWeek = new EpiWeek(year, week);
 
-		List<WeeklyReportOfficerSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade()
-				.getSummariesPerOfficer(region, epiWeek);
+		List<WeeklyReportOfficerSummaryDto> summaryDtos = FacadeProvider.getWeeklyReportFacade().getSummariesPerOfficer(region, epiWeek);
 		summaryDtos.forEach(s -> getContainer().addItem(s));
 	}
 
@@ -185,8 +189,9 @@ public class WeeklyReportOfficersGrid extends Grid implements ItemClickListener 
 				grid.setHeightMode(HeightMode.ROW);
 				grid.setHeightUndefined();
 				layout.addComponent(grid);
-				window.setCaption(String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getDistrict().toString())
-						+ " - " + I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
+				window.setCaption(
+					String.format(I18nProperties.getCaption(Captions.weeklyReportsInDistrict), summaryDto.getDistrict().toString()) + " - "
+						+ I18nProperties.getString(Strings.epiWeek) + " " + week + "/" + year);
 			}
 		}
 	}

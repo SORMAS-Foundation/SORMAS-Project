@@ -124,6 +124,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setEmailAddress(source.getEmailAddress());
         target.setPassportNumber(source.getPassportNumber());
         target.setNationalHealthId(source.getNationalHealthId());
+
+        target.setPseudonymized(source.isPseudonymized());
     }
 
     @Override
@@ -222,6 +224,8 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
         target.setEmailAddress(source.getEmailAddress());
         target.setPassportNumber(source.getPassportNumber());
         target.setNationalHealthId(source.getNationalHealthId());
+
+        target.setPseudonymized(source.isPseudonymized());
     }
 
     public static PersonReferenceDto toReferenceDto(Person ado) {

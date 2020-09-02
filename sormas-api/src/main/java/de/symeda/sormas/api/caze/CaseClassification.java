@@ -9,47 +9,50 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
-public enum CaseClassification implements StatisticsGroupingKey {
-	
-	NOT_CLASSIFIED, 
-	SUSPECT, 
+public enum CaseClassification
+	implements
+	StatisticsGroupingKey {
+
+	NOT_CLASSIFIED,
+	SUSPECT,
 	PROBABLE,
-	CONFIRMED, 
+	CONFIRMED,
 	NO_CASE;
 
 	public String getName() {
 		return this.name();
 	}
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
+
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);
 	}
-	
+
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
-		
+
 		return this.toString().compareTo(o.toString());
 	}
-	
 }

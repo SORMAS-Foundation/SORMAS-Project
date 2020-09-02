@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -40,12 +40,14 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
+
 		super(EventParticipantIndexDto.class);
 		setSizeFull();
 
 		setInEagerMode(true);
 		setCriteria(criteria);
-		ListDataProvider<EventParticipantIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<EventParticipantIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getEventParticipantFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -67,20 +69,19 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
 		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
 
-		setColumns(EDIT_BTN_ID,
-				EventParticipantIndexDto.PERSON_UUID,
-				EventParticipantIndexDto.NAME,
-				EventParticipantIndexDto.SEX,
-				EventParticipantIndexDto.APPROXIMATE_AGE,
-				EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
-				CASE_ID);
+		setColumns(
+			EDIT_BTN_ID,
+			EventParticipantIndexDto.PERSON_UUID,
+			EventParticipantIndexDto.NAME,
+			EventParticipantIndexDto.SEX,
+			EventParticipantIndexDto.APPROXIMATE_AGE,
+			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
+			CASE_ID);
 
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
-
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
 		addItemClickListener(e -> {
@@ -88,7 +89,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				if (e.getItem().getCaseUuid() != null) {
 					ControllerProvider.getCaseController().navigateToCase(e.getItem().getCaseUuid());
 				} else {
-					EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
+					EventParticipantDto eventParticipant =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
 					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 				}
 			}
@@ -96,11 +98,11 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 	}
 
 	public void reload() {
+
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
 		getDataProvider().refreshAll();
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.auditlog.api.value.format;
 
@@ -29,7 +29,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.auditlog.api.sample.CustomEnum;
-import de.symeda.auditlog.api.value.format.ComparableCollectionFormatter;
 
 /**
  * @see ComparableCollectionFormatter
@@ -53,7 +52,8 @@ public class ComparableCollectionFormatterTest {
 
 		ComparableCollectionFormatter<String> cut = new ComparableCollectionFormatter<>();
 
-		List<String> unsortedList = Arrays.asList(new String[] {
+		List<String> unsortedList = Arrays.asList(
+			new String[] {
 				"B",
 				"A",
 				"AA",
@@ -68,7 +68,8 @@ public class ComparableCollectionFormatterTest {
 
 		ComparableCollectionFormatter<BigDecimal> cut = new ComparableCollectionFormatter<>();
 
-		List<BigDecimal> unsortedList = Arrays.asList(new BigDecimal[] {
+		List<BigDecimal> unsortedList = Arrays.asList(
+			new BigDecimal[] {
 				new BigDecimal("1"),
 				new BigDecimal("1.0"),
 				new BigDecimal("1.01"),
@@ -84,7 +85,8 @@ public class ComparableCollectionFormatterTest {
 
 		ComparableCollectionFormatter<CustomEnum> cut = new ComparableCollectionFormatter<>(value -> value.name());
 
-		List<CustomEnum> unsortedList = Arrays.asList(new CustomEnum[] {
+		List<CustomEnum> unsortedList = Arrays.asList(
+			new CustomEnum[] {
 				CustomEnum.VALUE_2,
 				CustomEnum.VALUE_1,
 				CustomEnum.VALUE_3 });
@@ -99,7 +101,8 @@ public class ComparableCollectionFormatterTest {
 
 		ComparableCollectionFormatter<CustomEnum> cut = new ComparableCollectionFormatter<>(value -> value.name());
 
-		List<CustomEnum> unsortedList = Arrays.asList(new CustomEnum[] {
+		List<CustomEnum> unsortedList = Arrays.asList(
+			new CustomEnum[] {
 				CustomEnum.VALUE_2,
 				null,
 				CustomEnum.VALUE_3 });

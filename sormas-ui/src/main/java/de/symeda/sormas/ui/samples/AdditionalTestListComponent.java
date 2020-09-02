@@ -22,22 +22,22 @@ public class AdditionalTestListComponent extends VerticalLayout {
 
 	private AdditionalTestList list;
 	private Button createButton;
-	
+
 	public AdditionalTestListComponent(String sampleUuid) {
 		setWidth(100, Unit.PERCENTAGE);
-		
+
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
-		
+
 		list = new AdditionalTestList(sampleUuid);
 		addComponent(list);
 		list.reload();
-		
+
 		Label testsHeader = new Label(I18nProperties.getString(Strings.headingAdditionalTests));
 		testsHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(testsHeader);
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_CREATE)) {
 			createButton = ButtonHelper.createIconButton(Captions.additionalTestNewTest, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getAdditionalTestController().openCreateComponent(sampleUuid, list::reload);
@@ -47,9 +47,8 @@ public class AdditionalTestListComponent extends VerticalLayout {
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
 	}
-	
+
 	public void reload() {
 		list.reload();
 	}
-	
 }

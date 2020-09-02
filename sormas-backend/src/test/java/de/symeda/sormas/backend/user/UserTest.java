@@ -12,17 +12,17 @@ import de.symeda.sormas.api.user.UserRole;
 public class UserTest {
 
 	@Test
-	public void testHasAnyUserRole() throws Exception {
-		
+	public void testHasAnyUserRole() {
+
 		User u = new User();
 		Set<UserRole> userRoles = new HashSet<>();
 		u.setUserRoles(userRoles);
 
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.ADMIN), Matchers.is(false));
-		
+
 		userRoles.add(UserRole.ADMIN);
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.ADMIN), Matchers.is(true));
-		
+
 		userRoles.add(UserRole.CASE_OFFICER);
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.ADMIN), Matchers.is(true));
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.CASE_OFFICER), Matchers.is(true));
@@ -31,6 +31,4 @@ public class UserTest {
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.ADMIN, UserRole.CASE_OFFICER), Matchers.is(true));
 		MatcherAssert.assertThat(u.hasAnyUserRole(UserRole.CASE_OFFICER, UserRole.CASE_SUPERVISOR), Matchers.is(true));
 	}
-		
-
 }

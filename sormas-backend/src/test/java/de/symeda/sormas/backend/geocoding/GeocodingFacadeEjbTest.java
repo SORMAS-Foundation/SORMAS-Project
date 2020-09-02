@@ -8,11 +8,9 @@ import org.junit.Test;
 public class GeocodingFacadeEjbTest {
 
 	@Test
-	public void testEscape() throws Exception {
-		
-		assertThat(GeocodingFacadeEjb.escape("Test"), is("Test"));
+	public void testEscape() {
 
+		assertThat(GeocodingFacadeEjb.escape("Test"), is("Test"));
 		assertThat(GeocodingFacadeEjb.escape("Halle (Saale)"), is("Halle \\(Saale\\)"));
 	}
-
 }

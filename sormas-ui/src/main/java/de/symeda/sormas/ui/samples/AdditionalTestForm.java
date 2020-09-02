@@ -19,10 +19,10 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 
 public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
 
+	private static final long serialVersionUID = 7231529309871021783L;
+
+	//@formatter:off
 	private static final String HTML_LAYOUT =
 			fluidRowLocs(AdditionalTestDto.TEST_DATE_TIME, "") +
 			fluidRowLocs(AdditionalTestDto.HAEMOGLOBINURIA, AdditionalTestDto.PROTEINURIA) +
@@ -39,6 +39,7 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 			fluidRowLocs(AdditionalTestDto.UREA, AdditionalTestDto.PROTHROMBIN_TIME) +
 			fluidRowLocs(AdditionalTestDto.HAEMOGLOBIN, "") +
 			loc(AdditionalTestDto.OTHER_TEST_RESULTS);
+	//@formatter:on
 
 	private final SampleDto sample;
 
@@ -62,9 +63,17 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 
 		DateTimeField testDateTimeField = addField(AdditionalTestDto.TEST_DATE_TIME, DateTimeField.class);
 		testDateTimeField.setRequired(true);
-		testDateTimeField.addValidator(new DateComparisonValidator(testDateTimeField, sample.getSampleDateTime(), false, false,
-				I18nProperties.getValidationError(Validations.afterDate, testDateTimeField.getCaption(), I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
-		
+		testDateTimeField.addValidator(
+			new DateComparisonValidator(
+				testDateTimeField,
+				sample.getSampleDateTime(),
+				false,
+				false,
+				I18nProperties.getValidationError(
+					Validations.afterDate,
+					testDateTimeField.getCaption(),
+					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
+
 		addField(AdditionalTestDto.HAEMOGLOBINURIA, ComboBox.class);
 		addField(AdditionalTestDto.PROTEINURIA, ComboBox.class);
 		addField(AdditionalTestDto.HEMATURIA, ComboBox.class);
@@ -78,7 +87,8 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 		TextField bloodGasHco3Field = addField(AdditionalTestDto.ARTERIAL_VENOUS_GAS_HCO3, TextField.class);
 		bloodGasHco3Field.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, bloodGasHco3Field.getCaption()));
 		TextField gasOxygenTherapyField = addField(AdditionalTestDto.GAS_OXYGEN_THERAPY, TextField.class);
-		gasOxygenTherapyField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, gasOxygenTherapyField.getCaption()));
+		gasOxygenTherapyField
+			.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, gasOxygenTherapyField.getCaption()));
 		TextField altSgptField = addField(AdditionalTestDto.ALT_SGPT, TextField.class);
 		altSgptField.setConversionError(I18nProperties.getValidationError(Validations.onlyNumbersAllowed, altSgptField.getCaption()));
 		TextField astSgotField = addField(AdditionalTestDto.AST_SGOT, TextField.class);
@@ -108,5 +118,4 @@ public class AdditionalTestForm extends AbstractEditForm<AdditionalTestDto> {
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-
 }

@@ -14,29 +14,30 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 public class DiseaseConfiguration extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -7653585175036656526L;
-	
+
 	public static final String TABLE_NAME = "diseaseconfiguration";
-	
+
 	public static final String DISEASE = "disease";
-	
+
 	private Disease disease;
 	private Boolean active;
 	private Boolean primaryDisease;
 	private Boolean caseBased;
 	private Boolean followUpEnabled;
 	private Integer followUpDuration;
-	
+
 	public static DiseaseConfiguration build(Disease disease) {
 		DiseaseConfiguration configuration = new DiseaseConfiguration();
 		configuration.setDisease(disease);
 		return configuration;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(unique = true)
 	public Disease getDisease() {
 		return disease;
 	}
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
@@ -45,6 +46,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public Boolean getActive() {
 		return active;
 	}
+
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
@@ -53,6 +55,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public Boolean getPrimaryDisease() {
 		return primaryDisease;
 	}
+
 	public void setPrimaryDisease(Boolean primaryDisease) {
 		this.primaryDisease = primaryDisease;
 	}
@@ -61,6 +64,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public Boolean getCaseBased() {
 		return caseBased;
 	}
+
 	public void setCaseBased(Boolean caseBased) {
 		this.caseBased = caseBased;
 	}
@@ -69,6 +73,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public Boolean getFollowUpEnabled() {
 		return followUpEnabled;
 	}
+
 	public void setFollowUpEnabled(Boolean followUpEnabled) {
 		this.followUpEnabled = followUpEnabled;
 	}
@@ -77,8 +82,8 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	public Integer getFollowUpDuration() {
 		return followUpDuration;
 	}
+
 	public void setFollowUpDuration(Integer followUpDuration) {
 		this.followUpDuration = followUpDuration;
 	}
-	
 }

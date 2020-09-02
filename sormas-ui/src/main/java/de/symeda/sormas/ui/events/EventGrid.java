@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -44,19 +44,20 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
-	
+
 	public static final String INFORMATION_SOURCE = Captions.Event_informationSource;
 	public static final String NUMBER_OF_PENDING_TASKS = Captions.columnNumberOfPendingTasks;
 	public static final String DISEASE_SHORT = Captions.columnDiseaseShort;
 
 	@SuppressWarnings("unchecked")
 	public EventGrid(EventCriteria criteria) {
+
 		super(EventIndexDto.class);
 		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(EventsView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
-		
+
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 			setCriteria(criteria);
 			setEagerDataProvider();
@@ -65,67 +66,83 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			setCriteria(criteria);
 		}
 
-		Column<EventIndexDto, String> diseaseShortColumn = addColumn(entry -> 
-			DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
+		Column<EventIndexDto, String> diseaseShortColumn = addColumn(entry -> DiseaseHelper.toString(entry.getDisease(), entry.getDiseaseDetails()));
 		diseaseShortColumn.setId(DISEASE_SHORT);
 		diseaseShortColumn.setSortProperty(EventIndexDto.DISEASE);
-		
-		Column<EventIndexDto, String> informationSourceColumn = addColumn(event -> 
-			(event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " " + 
-			(event.getSrcLastName() != null ? event.getSrcLastName() : "") + 
-			(event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : ""));
+
+		Column<EventIndexDto, String> informationSourceColumn = addColumn(
+			event -> (event.getSrcFirstName() != null ? event.getSrcFirstName() : "") + " "
+				+ (event.getSrcLastName() != null ? event.getSrcLastName() : "")
+				+ (event.getSrcTelNo() != null && !event.getSrcTelNo().isEmpty() ? " (" + event.getSrcTelNo() + ")" : ""));
 		informationSourceColumn.setId(INFORMATION_SOURCE);
 		informationSourceColumn.setSortable(false);
-		
-		Column<EventIndexDto, String> pendingTasksColumn = addColumn(entry -> 
-			String.format(I18nProperties.getCaption(Captions.formatSimpleNumberFormat), 
+
+		Column<EventIndexDto, String> pendingTasksColumn = addColumn(
+			entry -> String.format(
+				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
 				FacadeProvider.getTaskFacade().getPendingTaskCountByEvent(entry.toReference())));
 		pendingTasksColumn.setId(NUMBER_OF_PENDING_TASKS);
 		pendingTasksColumn.setSortable(false);
 
-		setColumns(EventIndexDto.UUID, EventIndexDto.EVENT_STATUS,
-				EventIndexDto.EVENT_DATE, DISEASE_SHORT, EventIndexDto.EVENT_DESC, EventIndexDto.EVENT_LOCATION, INFORMATION_SOURCE, EventIndexDto.REPORT_DATE_TIME, NUMBER_OF_PENDING_TASKS);
+		setColumns(
+			EventIndexDto.UUID,
+			EventIndexDto.EVENT_STATUS,
+			EventIndexDto.EVENT_DATE,
+			DISEASE_SHORT,
+			EventIndexDto.EVENT_DESC,
+			EventIndexDto.EVENT_LOCATION,
+			INFORMATION_SOURCE,
+			EventIndexDto.REPORT_DATE_TIME,
+			NUMBER_OF_PENDING_TASKS);
 		Language userLanguage = I18nProperties.getUserLanguage();
-		((Column<EventIndexDto, String>)getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.EVENT_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<EventIndexDto, Date>)getColumn(EventIndexDto.REPORT_DATE_TIME)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		
-		
-		for(Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.EVENT_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(EventIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-		
-		addItemClickListener(e ->  {
-			if ((e.getColumn() != null && EventIndexDto.UUID.equals(e.getColumn().getId()))
-					|| e.getMouseEventDetails().isDoubleClick()) {
+
+		addItemClickListener(e -> {
+			if ((e.getColumn() != null && EventIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
 				ControllerProvider.getEventController().navigateToData(e.getItem().getUuid());
 			}
-		});		
+		});
 	}
-	
+
 	public void reload() {
+
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
 		getDataProvider().refreshAll();
 	}
-	
+
 	public void setLazyDataProvider() {
-		DataProvider<EventIndexDto,EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getEventFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(), query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
+
+		DataProvider<EventIndexDto, EventCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getEventFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> (int) FacadeProvider.getEventFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<EventIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<EventIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getEventFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-	
 }

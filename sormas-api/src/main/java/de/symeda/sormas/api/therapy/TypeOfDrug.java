@@ -11,5 +11,4 @@ public enum TypeOfDrug {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

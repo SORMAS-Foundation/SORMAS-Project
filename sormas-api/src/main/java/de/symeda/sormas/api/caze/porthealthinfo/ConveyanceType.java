@@ -8,9 +8,8 @@ public enum ConveyanceType {
 	BUS,
 	MOTORBIKE,
 	OTHER;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

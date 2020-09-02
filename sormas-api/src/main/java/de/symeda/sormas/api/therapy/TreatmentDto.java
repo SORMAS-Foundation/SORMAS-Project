@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.therapy;
 
@@ -25,9 +25,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 public class TreatmentDto extends EntityDto {
 
 	private static final long serialVersionUID = 816932182306785932L;
-	
+
 	public static final String I18N_PREFIX = "Treatment";
-	
+
 	public static final String TREATMENT_DATE_TIME = "treatmentDateTime";
 	public static final String EXECUTING_CLINICIAN = "executingClinician";
 	public static final String TREATMENT_TYPE = "treatmentType";
@@ -39,7 +39,7 @@ public class TreatmentDto extends EntityDto {
 	public static final String ROUTE_DETAILS = "routeDetails";
 	public static final String ADDITIONAL_NOTES = "additionalNotes";
 	public static final String PRESCRIPTION = "prescription";
-	
+
 	private TherapyReferenceDto therapy;
 	private Date treatmentDateTime;
 	private String executingClinician;
@@ -51,16 +51,16 @@ public class TreatmentDto extends EntityDto {
 	private String routeDetails;
 	private String additionalNotes;
 	private PrescriptionReferenceDto prescription;
-	
+
 	public static TreatmentDto build(TherapyReferenceDto therapy) {
 		TreatmentDto treatment = new TreatmentDto();
 		treatment.setUuid(DataHelper.createUuid());
 		treatment.setTherapy(therapy);
 		treatment.setTreatmentDateTime(new Date());
-		
+
 		return treatment;
 	}
-	
+
 	public static TreatmentDto build(PrescriptionDto prescription) {
 		TreatmentDto treatment = new TreatmentDto();
 		treatment.setUuid(DataHelper.createUuid());
@@ -73,75 +73,95 @@ public class TreatmentDto extends EntityDto {
 		treatment.setRoute(prescription.getRoute());
 		treatment.setRouteDetails(prescription.getRouteDetails());
 		treatment.setPrescription(prescription.toReference());
-		
+
 		return treatment;
 	}
-	
+
 	public TherapyReferenceDto getTherapy() {
 		return therapy;
 	}
+
 	public void setTherapy(TherapyReferenceDto therapy) {
 		this.therapy = therapy;
 	}
+
 	public Date getTreatmentDateTime() {
 		return treatmentDateTime;
 	}
+
 	public void setTreatmentDateTime(Date treatmentDateTime) {
 		this.treatmentDateTime = treatmentDateTime;
 	}
+
 	public String getExecutingClinician() {
 		return executingClinician;
 	}
+
 	public void setExecutingClinician(String executingClinician) {
 		this.executingClinician = executingClinician;
 	}
+
 	public TreatmentType getTreatmentType() {
 		return treatmentType;
 	}
+
 	public void setTreatmentType(TreatmentType treatmentType) {
 		this.treatmentType = treatmentType;
 	}
+
 	public String getTreatmentDetails() {
 		return treatmentDetails;
 	}
+
 	public void setTreatmentDetails(String treatmentDetails) {
 		this.treatmentDetails = treatmentDetails;
 	}
+
 	public TypeOfDrug getTypeOfDrug() {
 		return typeOfDrug;
 	}
+
 	public void setTypeOfDrug(TypeOfDrug typeOfDrug) {
 		this.typeOfDrug = typeOfDrug;
 	}
+
 	public String getDose() {
 		return dose;
 	}
+
 	public void setDose(String dose) {
 		this.dose = dose;
 	}
+
 	public TreatmentRoute getRoute() {
 		return route;
 	}
+
 	public void setRoute(TreatmentRoute route) {
 		this.route = route;
 	}
+
 	public String getRouteDetails() {
 		return routeDetails;
 	}
+
 	public void setRouteDetails(String routeDetails) {
 		this.routeDetails = routeDetails;
 	}
+
 	public String getAdditionalNotes() {
 		return additionalNotes;
 	}
+
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
+
 	public PrescriptionReferenceDto getPrescription() {
 		return prescription;
 	}
+
 	public void setPrescription(PrescriptionReferenceDto prescription) {
 		this.prescription = prescription;
 	}
-	
 }

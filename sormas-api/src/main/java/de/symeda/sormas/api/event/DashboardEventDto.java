@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
@@ -41,8 +41,17 @@ public class DashboardEventDto implements Serializable {
 	private Double reportLon;
 	private String districtUuid;
 	private DistrictReferenceDto district;
-	
-	public DashboardEventDto(String uuid, EventStatus eventStatus, Disease disease, String diseaseDetails, Date eventDate, Double reportLat, Double reportLon, String districtUuid) {
+
+	public DashboardEventDto(
+		String uuid,
+		EventStatus eventStatus,
+		Disease disease,
+		String diseaseDetails,
+		Date eventDate,
+		Double reportLat,
+		Double reportLon,
+		String districtUuid) {
+
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
@@ -108,7 +117,7 @@ public class DashboardEventDto implements Serializable {
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
 	}
-	
+
 	public String getDistrictUuid() {
 		return districtUuid;
 	}
@@ -124,10 +133,9 @@ public class DashboardEventDto implements Serializable {
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
-	
+
 	@Override
 	public String toString() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
 	}
-	
 }

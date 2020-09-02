@@ -6,9 +6,9 @@ import java.util.Date;
 public class TreatmentIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 8736174497617079947L;
-	
+
 	public static final String I18N_PREFIX = "Treatment";
-	
+
 	public static final String TREATMENT_TYPE = "treatmentType";
 	public static final String TREATMENT_DATE_TIME = "treatmentDateTime";
 	public static final String DOSE = "dose";
@@ -22,9 +22,17 @@ public class TreatmentIndexDto implements Serializable {
 	private String route;
 	private String executingClinician;
 
-	public TreatmentIndexDto(String uuid, TreatmentType treatmentType, String treatmentDetails, TypeOfDrug typeOfDrug,
-			Date treatmentDateTime, String dose, TreatmentRoute route, String routeDetails, 
-			String executingClinician) {
+	public TreatmentIndexDto(
+		String uuid,
+		TreatmentType treatmentType,
+		String treatmentDetails,
+		TypeOfDrug typeOfDrug,
+		Date treatmentDateTime,
+		String dose,
+		TreatmentRoute route,
+		String routeDetails,
+		String executingClinician) {
+
 		this.uuid = uuid;
 		this.treatmentType = TreatmentType.buildCaption(treatmentType, treatmentDetails, typeOfDrug);
 		this.treatmentDateTime = treatmentDateTime;
@@ -80,5 +88,4 @@ public class TreatmentIndexDto implements Serializable {
 	public void setExecutingClinician(String executingClinician) {
 		this.executingClinician = executingClinician;
 	}
-	
 }

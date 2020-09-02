@@ -9,7 +9,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 public class PointOfEntryDto extends EntityDto {
 
 	private static final long serialVersionUID = 4124483408068181854L;
-	
+
 	public static final String I18N_PREFIX = "PointOfEntry";
 	public static final String OTHER_AIRPORT_UUID = "SORMAS-CONSTID-OTHERS-AIRPORTX";
 	public static final String OTHER_SEAPORT_UUID = "SORMAS-CONSTID-OTHERS-SEAPORTX";
@@ -19,7 +19,7 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String OTHER_SEAPORT = "OTHER_SEAPORT";
 	public static final String OTHER_GROUND_CROSSING = "OTHER_GROUND_CROSSING";
 	public static final String OTHER_POE = "OTHER_POE";
-	
+
 	public static final String POINT_OF_ENTRY_TYPE = "pointOfEntryType";
 	public static final String NAME = "name";
 	public static final String REGION = "region";
@@ -28,7 +28,7 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String LONGITUDE = "longitude";
 	public static final String ACTIVE = "active";
 	public static final String EXTERNAL_ID = "externalID";
-	
+
 	private PointOfEntryType pointOfEntryType;
 	private String name;
 	private RegionReferenceDto region;
@@ -39,10 +39,24 @@ public class PointOfEntryDto extends EntityDto {
 	private boolean archived;
 	private String externalID;
 
-	public PointOfEntryDto(Date creationDate, Date changeDate, String uuid, boolean archived, PointOfEntryType pointOfEntryType,
-			String name, String regionUuid, String regionName, String districtUuid, String districtName,
-			Double latitude, Double longitude, boolean active, String externalID) {
+	public PointOfEntryDto(
+		Date creationDate,
+		Date changeDate,
+		String uuid,
+		boolean archived,
+		PointOfEntryType pointOfEntryType,
+		String name,
+		String regionUuid,
+		String regionName,
+		String districtUuid,
+		String districtName,
+		Double latitude,
+		Double longitude,
+		boolean active,
+		String externalID) {
+
 		super(creationDate, changeDate, uuid);
+
 		this.archived = archived;
 		this.pointOfEntryType = pointOfEntryType;
 		this.name = name;
@@ -66,71 +80,87 @@ public class PointOfEntryDto extends EntityDto {
 		PointOfEntryDto dto = new PointOfEntryDto();
 		return dto;
 	}
-	
+
 	public boolean isOtherPointOfEntry() {
-		return OTHER_AIRPORT_UUID.equals(getUuid()) || OTHER_SEAPORT_UUID.equals(getUuid()) ||
-				OTHER_GROUND_CROSSING_UUID.equals(getUuid()) || OTHER_POE_UUID.equals(getUuid());
+
+		return OTHER_AIRPORT_UUID.equals(getUuid())
+			|| OTHER_SEAPORT_UUID.equals(getUuid())
+			|| OTHER_GROUND_CROSSING_UUID.equals(getUuid())
+			|| OTHER_POE_UUID.equals(getUuid());
 	}
-	
+
 	public boolean isNameOtherPointOfEntry() {
 		return isNameOtherPointOfEntry(getName());
 	}
 
 	public static boolean isNameOtherPointOfEntry(String name) {
-		return OTHER_AIRPORT.equals(name) || OTHER_SEAPORT.equals(name) ||
-				OTHER_GROUND_CROSSING.equals(name) || OTHER_POE.equals(name);
+		return OTHER_AIRPORT.equals(name) || OTHER_SEAPORT.equals(name) || OTHER_GROUND_CROSSING.equals(name) || OTHER_POE.equals(name);
 	}
-	
-	
+
 	public PointOfEntryType getPointOfEntryType() {
 		return pointOfEntryType;
 	}
+
 	public void setPointOfEntryType(PointOfEntryType pointOfEntryType) {
 		this.pointOfEntryType = pointOfEntryType;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
+
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
+
 	public Double getLatitude() {
 		return latitude;
 	}
+
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
+
 	public Double getLongitude() {
 		return longitude;
 	}
+
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
+
 	public boolean isActive() {
 		return active;
 	}
+
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
 	public boolean isArchived() {
 		return archived;
 	}
+
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
-	
+
 	public String getExternalID() {
 		return externalID;
 	}
@@ -143,5 +173,4 @@ public class PointOfEntryDto extends EntityDto {
 	public String toString() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
-	
 }

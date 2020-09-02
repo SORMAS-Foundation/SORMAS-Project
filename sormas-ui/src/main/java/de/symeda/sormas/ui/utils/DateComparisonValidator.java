@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -31,13 +31,19 @@ import com.vaadin.v7.ui.Field;
  */
 @SuppressWarnings("serial")
 public class DateComparisonValidator extends AbstractValidator<Date> {
-	
+
 	private Field<Date> dateField;
 	private Supplier<Date> referenceDateSupplier;
 	private boolean earlierOrSame;
 	private boolean changeInvalidCommitted;
 
-	public DateComparisonValidator(Field<Date> dateField, Supplier<Date> referenceDateSupplier, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+	public DateComparisonValidator(
+		Field<Date> dateField,
+		Supplier<Date> referenceDateSupplier,
+		boolean earlierOrSame,
+		boolean changeInvalidCommitted,
+		String errorMessage) {
+
 		super(errorMessage);
 		this.dateField = dateField;
 		this.referenceDateSupplier = referenceDateSupplier;
@@ -45,22 +51,34 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		this.changeInvalidCommitted = changeInvalidCommitted;
 	}
 
-	public DateComparisonValidator(Field<Date> dateField, Field<Date> referenceField, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+	public DateComparisonValidator(
+		Field<Date> dateField,
+		Field<Date> referenceField,
+		boolean earlierOrSame,
+		boolean changeInvalidCommitted,
+		String errorMessage) {
+
 		this(dateField, () -> referenceField.getValue(), earlierOrSame, changeInvalidCommitted, errorMessage);
 	}
-	
-	public DateComparisonValidator(Field<Date> dateField, Date referenceDate, boolean earlierOrSame, boolean changeInvalidCommitted, String errorMessage) {
+
+	public DateComparisonValidator(
+		Field<Date> dateField,
+		Date referenceDate,
+		boolean earlierOrSame,
+		boolean changeInvalidCommitted,
+		String errorMessage) {
+
 		this(dateField, () -> referenceDate, earlierOrSame, changeInvalidCommitted, errorMessage);
 	}
 
 	@Override
 	protected boolean isValidValue(Date date) {
+
 		Date referenceDate = referenceDateSupplier.get();
-		
 		if (date == null || referenceDate == null) {
 			return true;
 		}
-		
+
 		if (earlierOrSame) {
 			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) <= 0) {
 				if (changeInvalidCommitted) {
@@ -74,7 +92,7 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 				return false;
 			}
 		} else {
-			if(DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) >= 0) {
+			if (DateTimeComparator.getDateOnlyInstance().compare(date, referenceDate) >= 0) {
 				if (changeInvalidCommitted) {
 					dateField.setInvalidCommitted(true);
 				}
@@ -92,5 +110,4 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 	public Class<Date> getType() {
 		return Date.class;
 	}
-	
 }

@@ -21,6 +21,7 @@ public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfi
 	}
 
 	public DiseaseConfiguration getDiseaseConfiguration(Disease disease) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<DiseaseConfiguration> cq = cb.createQuery(DiseaseConfiguration.class);
 		Root<DiseaseConfiguration> root = cq.from(DiseaseConfiguration.class);
@@ -42,9 +43,7 @@ public class DiseaseConfigurationService extends AbstractAdoService<DiseaseConfi
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq,
-			From<DiseaseConfiguration, DiseaseConfiguration> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<DiseaseConfiguration, DiseaseConfiguration> from) {
 		return null;
 	}
-
 }

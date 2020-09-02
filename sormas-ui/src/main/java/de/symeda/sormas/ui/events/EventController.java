@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -44,7 +44,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DiscardListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EventController {
@@ -68,14 +67,15 @@ public class EventController {
 	public void navigateToData(String eventUuid) {
 		navigateToData(eventUuid, false);
 	}
-	
+
 	public void navigateToData(String eventUuid, boolean openTab) {
+
 		String navigationState = EventDataView.VIEW_NAME + "/" + eventUuid;
 		if (openTab) {
 			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
 		} else {
 			SormasUI.get().getNavigator().navigateTo(navigationState);
-		}	
+		}
 	}
 
 	public void navigateToParticipants(String eventUuid) {
@@ -84,8 +84,9 @@ public class EventController {
 	}
 
 	public void setUriFragmentParameter(String eventUuid) {
+
 		String fragmentParameter;
-		if(eventUuid == null || eventUuid.isEmpty()) {
+		if (eventUuid == null || eventUuid.isEmpty()) {
 			fragmentParameter = "";
 		} else {
 			fragmentParameter = eventUuid;
@@ -100,15 +101,19 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventCreateComponent() {
+
 		EventDataForm eventCreateForm = new EventDataForm(true);
 		eventCreateForm.setValue(createNewEvent());
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventCreateForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE), eventCreateForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
+			eventCreateForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			eventCreateForm.getFieldGroup());
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
-				if(!eventCreateForm.getFieldGroup().isModified()) {
+				if (!eventCreateForm.getFieldGroup().isModified()) {
 					EventDto dto = eventCreateForm.getValue();
 					FacadeProvider.getEventFacade().saveEvent(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventCreated), Type.WARNING_MESSAGE);
@@ -121,11 +126,14 @@ public class EventController {
 	}
 
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid) {
+
 		EventDto event = findEvent(eventUuid);
 		EventDataForm eventEditForm = new EventDataForm(false);
 		eventEditForm.setValue(event);
-		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(eventEditForm, 
-				UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT), eventEditForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
+			eventEditForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
+			eventEditForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
@@ -159,9 +167,13 @@ public class EventController {
 	}
 
 	public void showBulkEventDataEditComponent(Collection<EventIndexDto> selectedEvents) {
+
 		if (selectedEvents.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
-					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventsSelected),
+				I18nProperties.getString(Strings.messageNoEventsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 			return;
 		}
 
@@ -170,11 +182,13 @@ public class EventController {
 
 		BulkEventDataForm form = new BulkEventDataForm();
 		form.setValue(tempEvent);
-		final CommitDiscardWrapperComponent<BulkEventDataForm> editView = new CommitDiscardWrapperComponent<BulkEventDataForm>(form, form.getFieldGroup());
+		final CommitDiscardWrapperComponent<BulkEventDataForm> editView =
+			new CommitDiscardWrapperComponent<BulkEventDataForm>(form, form.getFieldGroup());
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditEvents));
 
 		editView.addCommitListener(new CommitListener() {
+
 			@Override
 			public void onCommit() {
 				EventDto updatedTempEvent = form.getValue();
@@ -192,12 +206,7 @@ public class EventController {
 			}
 		});
 
-		editView.addDiscardListener(new DiscardListener() {
-			@Override
-			public void onDiscard() {
-				popupWindow.close();
-			}
-		});
+		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
 	private EventDto createNewEvent() {
@@ -211,82 +220,135 @@ public class EventController {
 	}
 
 	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
+
 		if (archive) {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingArchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
-				if (e.booleanValue() == true) {
-					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
-					Notification.show(String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
-					navigateToData(eventUuid);
-				}
-			});
+			Label contentLabel = new Label(
+				String.format(
+					I18nProperties.getString(Strings.confirmationArchiveEvent),
+					I18nProperties.getString(Strings.entityEvent).toLowerCase(),
+					I18nProperties.getString(Strings.entityEvent).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingArchiveEvent),
+				contentLabel,
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				e -> {
+					if (e.booleanValue() == true) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, true);
+						Notification.show(
+							String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)),
+							Type.ASSISTIVE_NOTIFICATION);
+						navigateToData(eventUuid);
+					}
+				});
 		} else {
-			Label contentLabel = new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvent), I18nProperties.getString(Strings.entityEvent).toLowerCase(), I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingDearchiveEvent), contentLabel, I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640, e -> {
-				if (e.booleanValue()) {
-					FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
-					Notification.show(String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)), Type.ASSISTIVE_NOTIFICATION);
-					navigateToData(eventUuid);
-				}
-			});
+			Label contentLabel = new Label(
+				String.format(
+					I18nProperties.getString(Strings.confirmationDearchiveEvent),
+					I18nProperties.getString(Strings.entityEvent).toLowerCase(),
+					I18nProperties.getString(Strings.entityEvent).toLowerCase()));
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingDearchiveEvent),
+				contentLabel,
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				640,
+				e -> {
+					if (e.booleanValue()) {
+						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(eventUuid, false);
+						Notification.show(
+							String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)),
+							Type.ASSISTIVE_NOTIFICATION);
+						navigateToData(eventUuid);
+					}
+				});
 		}
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
-					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventsSelected),
+				I18nProperties.getString(Strings.messageNoEventsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
-				for (EventIndexDto selectedRow : selectedRows) {
-					FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
-				}
-				callback.run();
-				new Notification(I18nProperties.getString(Strings.headingEventsDeleted),
-						I18nProperties.getString(Strings.messageEventsDeleted), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-			});
+			VaadinUiUtil
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+					for (EventIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getEventFacade().deleteEvent(selectedRow.getUuid());
+					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingEventsDeleted),
+						I18nProperties.getString(Strings.messageEventsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
 		}
 	}
 
-
 	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
-					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventsSelected),
+				I18nProperties.getString(Strings.messageNoEventsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmArchiving), 
-					new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())), 
-					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
-				if (e.booleanValue() == true) {
-					for (EventIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), true);
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmArchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue() == true) {
+						for (EventIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), true);
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingEventsArchived),
+							I18nProperties.getString(Strings.messageEventsArchived),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingEventsArchived), 
-							I18nProperties.getString(Strings.messageEventsArchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
 
 	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+
 		if (selectedRows.size() == 0) {
-			new Notification(I18nProperties.getString(Strings.headingNoEventsSelected), 
-					I18nProperties.getString(Strings.messageNoEventsSelected), Type.WARNING_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoEventsSelected),
+				I18nProperties.getString(Strings.messageNoEventsSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingConfirmDearchiving), 
-					new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())), 
-					I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), null, e -> {
-				if (e.booleanValue() == true) {
-					for (EventIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), false);
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.headingConfirmDearchiving),
+				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())),
+				I18nProperties.getString(Strings.yes),
+				I18nProperties.getString(Strings.no),
+				null,
+				e -> {
+					if (e.booleanValue() == true) {
+						for (EventIndexDto selectedRow : selectedRows) {
+							FacadeProvider.getEventFacade().archiveOrDearchiveEvent(selectedRow.getUuid(), false);
+						}
+						callback.run();
+						new Notification(
+							I18nProperties.getString(Strings.headingEventsDearchived),
+							I18nProperties.getString(Strings.messageEventsDearchived),
+							Type.HUMANIZED_MESSAGE,
+							false).show(Page.getCurrent());
 					}
-					callback.run();
-					new Notification(I18nProperties.getString(Strings.headingEventsDearchived), 
-							I18nProperties.getString(Strings.messageEventsDearchived), Type.HUMANIZED_MESSAGE, false).show(Page.getCurrent());
-				}
-			});
+				});
 		}
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.epidata;
 
@@ -30,27 +30,64 @@ public class EpiDataGatheringDto extends EntityDto {
 	private static final long serialVersionUID = 4953376180428831063L;
 
 	public static final String I18N_PREFIX = "EpiDataGathering";
-	
+
 	public static final String DESCRIPTION = "description";
 	public static final String GATHERING_DATE = "gatheringDate";
 	public static final String GATHERING_ADDRESS = "gatheringAddress";
-	
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private String description;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private Date gatheringDate;
-	@Diseases({ Disease.AFP, Disease.EVD, Disease.GUINEA_WORM, Disease.LASSA, Disease.NEW_INFLUENZA, Disease.CSM,
-			Disease.CHOLERA, Disease.MEASLES, Disease.POLIO, Disease.YELLOW_FEVER, Disease.DENGUE,
-			Disease.UNSPECIFIED_VHF, Disease.UNDEFINED, Disease.OTHER })
+	@Diseases({
+		Disease.AFP,
+		Disease.EVD,
+		Disease.GUINEA_WORM,
+		Disease.LASSA,
+		Disease.NEW_INFLUENZA,
+		Disease.CSM,
+		Disease.CHOLERA,
+		Disease.MEASLES,
+		Disease.POLIO,
+		Disease.YELLOW_FEVER,
+		Disease.DENGUE,
+		Disease.UNSPECIFIED_VHF,
+		Disease.UNDEFINED,
+		Disease.OTHER })
 	private LocationDto gatheringAddress;
-	
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -58,18 +95,21 @@ public class EpiDataGatheringDto extends EntityDto {
 	public Date getGatheringDate() {
 		return gatheringDate;
 	}
+
 	public void setGatheringDate(Date gatheringDate) {
 		this.gatheringDate = gatheringDate;
 	}
-	
+
 	public LocationDto getGatheringAddress() {
 		return gatheringAddress;
 	}
+
 	public void setGatheringAddress(LocationDto gatheringAddress) {
 		this.gatheringAddress = gatheringAddress;
 	}
 
 	public static EpiDataGatheringDto build() {
+
 		EpiDataGatheringDto dto = new EpiDataGatheringDto();
 		dto.setUuid(DataHelper.createUuid());
 		LocationDto location = LocationDto.build();

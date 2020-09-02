@@ -38,63 +38,63 @@ public class AggregateReportDto extends EntityDto {
 	private Integer newCases;
 	private Integer labConfirmations;
 	private Integer deaths;
-	
+
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
-	
+
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
-	
+
 	public Disease getDisease() {
 		return disease;
 	}
-	
+
 	public void setDisease(Disease disease) {
 		this.disease = disease;
 	}
-	
+
 	public Integer getYear() {
 		return year;
 	}
-	
+
 	public void setYear(Integer year) {
 		this.year = year;
 	}
-	
+
 	public Integer getEpiWeek() {
 		return epiWeek;
 	}
-	
+
 	public void setEpiWeek(Integer epiWeek) {
 		this.epiWeek = epiWeek;
 	}
-	
+
 	public RegionReferenceDto getRegion() {
 		return region;
 	}
-	
+
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
-	
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
-	
+
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
 	}
-	
+
 	public FacilityReferenceDto getHealthFacility() {
 		return healthFacility;
 	}
-	
+
 	public void setHealthFacility(FacilityReferenceDto healthFacility) {
 		this.healthFacility = healthFacility;
 	}
-	
+
 	public PointOfEntryReferenceDto getPointOfEntry() {
 		return pointOfEntry;
 	}
@@ -106,23 +106,23 @@ public class AggregateReportDto extends EntityDto {
 	public Integer getNewCases() {
 		return newCases;
 	}
-	
+
 	public void setNewCases(Integer newCases) {
 		this.newCases = newCases;
 	}
-	
+
 	public Integer getLabConfirmations() {
 		return labConfirmations;
 	}
-	
+
 	public void setLabConfirmations(Integer labConfirmations) {
 		this.labConfirmations = labConfirmations;
 	}
-	
+
 	public Integer getDeaths() {
 		return deaths;
 	}
-	
+
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
 	}
@@ -132,5 +132,4 @@ public class AggregateReportDto extends EntityDto {
 		aggregateReport.setUuid(DataHelper.createUuid());
 		return aggregateReport;
 	}
-	
 }

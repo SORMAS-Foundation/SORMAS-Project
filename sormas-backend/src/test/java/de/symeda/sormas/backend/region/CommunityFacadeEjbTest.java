@@ -9,14 +9,12 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.region.CommunityDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 
 public class CommunityFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllAfter() throws InterruptedException {
-		
+
 		Region region = creator.createRegion("region");
 		District district = creator.createDistrict("district", region);
 		creator.createCommunity("community1", district);
@@ -41,14 +39,14 @@ public class CommunityFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveByDistrict() throws Exception {
+	public void testGetAllActiveByDistrict() {
+
 		Region r = creator.createRegion("r");
 		District d = creator.createDistrict("d", r);
 		creator.createCommunity("c1", d);
 		Community c2 = creator.createCommunity("c2", d);
 		getCommunityFacade().archive(c2.getUuid());
-		
+
 		assertEquals(1, getCommunityFacade().getAllActiveByDistrict(d.getUuid()).size());
 	}
-
 }

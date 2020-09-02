@@ -19,50 +19,48 @@ import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "InfrastructureFacade")
 public class InfrastructureFacadeEjb implements InfrastructureFacade {
 
 	@EJB
-	protected RegionFacadeEjbLocal regionFacade;
+	private RegionFacadeEjbLocal regionFacade;
 	@EJB
-	protected DistrictFacadeEjbLocal districtFacade;
+	private DistrictFacadeEjbLocal districtFacade;
 	@EJB
-	protected CommunityFacadeEjbLocal communityFacade;
+	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
-	protected FacilityFacadeEjbLocal facilityFacade;
+	private FacilityFacadeEjbLocal facilityFacade;
 	@EJB
-	protected PointOfEntryFacadeEjbLocal pointOfEntryFacade;
+	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@EJB
-	protected UserFacadeEjbLocal userFacade;
+	private UserFacadeEjbLocal userFacade;
 	@EJB
-	protected CaseClassificationFacadeEjbLocal caseClassificationFacade;
+	private CaseClassificationFacadeEjbLocal caseClassificationFacade;
 	@EJB
-	protected DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
-	protected UserRoleConfigFacadeEjbLocal userRoleConfigurationFacade;
+	private UserRoleConfigFacadeEjbLocal userRoleConfigurationFacade;
 	@EJB
-	protected FacilityService facilityService;
+	private FacilityService facilityService;
 	@EJB
-	protected CommunityService communityService;
+	private CommunityService communityService;
 	@EJB
-	protected ConfigFacadeEjbLocal configFacade;
+	private ConfigFacadeEjbLocal configFacade;
 	@EJB
-	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	protected UserService userService;
-	
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+
 	@Override
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
+
 		InfrastructureSyncDto sync = new InfrastructureSyncDto();
-		
+
 		if (facilityService.countAfter(changeDates.getFacilityChangeDate()) > configFacade.getInfrastructureSyncThreshold()
-				|| communityService.countAfter(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
+			|| communityService.countAfter(changeDates.getCommunityChangeDate()) > configFacade.getInfrastructureSyncThreshold()) {
 			sync.setInitialSyncRequired(true);
 			return sync;
 		}
-		
+
 		sync.setRegions(regionFacade.getAllAfter(changeDates.getRegionChangeDate()));
 		sync.setDistricts(districtFacade.getAllAfter(changeDates.getDistrictChangeDate()));
 		sync.setCommunities(communityFacade.getAllAfter(changeDates.getCommunityChangeDate()));
@@ -75,8 +73,7 @@ public class InfrastructureFacadeEjb implements InfrastructureFacade {
 		sync.setDeletedUserRoleConfigurationUuids(userRoleConfigurationFacade.getDeletedUuids(changeDates.getUserRoleConfigurationChangeDate()));
 		sync.setFeatureConfigurations(featureConfigurationFacade.getAllAfter(changeDates.getFeatureConfigurationChangeDate()));
 		sync.setDeletedFeatureConfigurationUuids(featureConfigurationFacade.getDeletedUuids(changeDates.getFeatureConfigurationChangeDate()));
-		
+
 		return sync;
 	}
-	
 }

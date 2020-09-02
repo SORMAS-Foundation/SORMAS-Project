@@ -9,33 +9,31 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
 public class SampleEditForm extends AbstractSampleForm {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingLaboratorySample)) +
-			loc(REPORT_INFORMATION_LOC) +
-			SAMPLE_COMMON_HTML_LAYOUT;
 
+	private static final long serialVersionUID = 1L;
+
+	private static final String HTML_LAYOUT =
+		h3(I18nProperties.getString(Strings.headingLaboratorySample)) + loc(REPORT_INFORMATION_LOC) + SAMPLE_COMMON_HTML_LAYOUT;
 
 	public SampleEditForm() {
 		super(SampleDto.class, SampleDto.I18N_PREFIX);

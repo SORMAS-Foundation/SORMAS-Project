@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
@@ -55,11 +55,11 @@ public class MockProducer {
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
-	
+
 	static {
-		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME,"nigeria");
+		properties.setProperty(ConfigFacadeEjb.COUNTRY_NAME, "nigeria");
 		properties.setProperty(ConfigFacadeEjb.CSV_SEPARATOR, ";");
-		
+
 		try {
 			Field instance = InfoProvider.class.getDeclaredField("instance");
 			instance.setAccessible(true);

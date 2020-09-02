@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 
@@ -44,10 +43,14 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationAppHelper;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationCriteria;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
@@ -92,21 +95,29 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     // Static methods
 
     public static CaseEditFragment newInstance(Case activityRootData) {
-        return newInstance(CaseEditFragment.class, null, activityRootData);
+        return newInstanceWithFieldCheckers(CaseEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease())
+                        .add(new CountryFieldVisibilityChecker(ConfigProvider.getServerLocale())),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
     }
 
     // Instance methods
 
     private void setUpFieldVisibilities(final FragmentCaseEditLayoutBinding contentBinding) {
-        setVisibilityByDisease(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.mainContent);
+        setFieldVisibilitiesAndAccesses(CaseDataDto.class, contentBinding.mainContent);
         InfrastructureHelper.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
         InfrastructureHelper.initializePointOfEntryDetailsFieldVisibility(contentBinding.caseDataPointOfEntry, contentBinding.caseDataPointOfEntryDetails);
 
+        if(!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataCommunity)){
+            contentBinding.caseDataRegion.setEnabled(false);
+            contentBinding.caseDataDistrict.setEnabled(false);
+        }
+
         // Vaccination date
-        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataVaccination)) {
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataVaccination)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataVaccination, Vaccination.VACCINATED);
         }
-        if (isVisibleAllowed(CaseDataDto.class, contentBinding.getData().getDisease(), contentBinding.caseDataSmallpoxVaccinationReceived)) {
+        if (isVisibleAllowed(CaseDataDto.class, contentBinding.caseDataSmallpoxVaccinationReceived)) {
             setVisibleWhen(contentBinding.caseDataVaccinationDate, contentBinding.caseDataSmallpoxVaccinationReceived, YesNoUnknown.YES);
         }
 
@@ -304,7 +315,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
     @Override
     public void onAfterLayoutBinding(final FragmentCaseEditLayoutBinding contentBinding) {
         setUpFieldVisibilities(contentBinding);
-        if (ConfigProvider.getUser().getHealthFacility() != null || ConfigProvider.getUser().getCommunity() != null){
+        if (ConfigProvider.getUser().getHealthFacility() != null || ConfigProvider.getUser().getCommunity() != null) {
             contentBinding.caseDataDistrictLevelDate.setEnabled(false);
         }
 

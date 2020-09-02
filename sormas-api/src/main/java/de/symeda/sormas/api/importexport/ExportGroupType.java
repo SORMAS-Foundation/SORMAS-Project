@@ -3,7 +3,7 @@ package de.symeda.sormas.api.importexport;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ExportGroupType {
-	
+
 	CORE,
 	SENSITIVE,
 	PERSON,
@@ -16,5 +16,4 @@ public enum ExportGroupType {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-	
 }

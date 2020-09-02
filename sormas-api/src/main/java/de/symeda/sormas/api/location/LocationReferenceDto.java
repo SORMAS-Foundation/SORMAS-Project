@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
@@ -25,27 +25,27 @@ public class LocationReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -1399197327930368752L;
 
 	public LocationReferenceDto() {
-		
+
 	}
-	
+
 	public LocationReferenceDto(String uuid) {
 		this.setUuid(uuid);
 	}
-	
+
 	public LocationReferenceDto(String uuid, String caption) {
 		this.setUuid(uuid);
 		this.setCaption(caption);
 	}
-	
+
 	public LocationReferenceDto(String uuid, String regionName, String districtName, String communityName, String city, String address) {
 		this.setUuid(uuid);
 		this.setCaption(buildCaption(regionName, districtName, communityName, city, address));
 	}
-	
+
 	public static String buildCaption(String regionName, String districtName, String communityName, String city, String address) {
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append(DataHelper.toStringNullable(regionName));
 		if (!DataHelper.isNullOrEmpty(districtName)) {
 			if (stringBuilder.length() > 0) {
@@ -73,5 +73,4 @@ public class LocationReferenceDto extends ReferenceDto {
 		}
 		return stringBuilder.toString();
 	}
-	
 }

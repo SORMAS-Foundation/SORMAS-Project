@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
@@ -43,7 +43,8 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 	private static final long serialVersionUID = 1L;
 
 	public static final String NONE_HEALTH_FACILITY_DETAILS = CaseDataDto.NONE_HEALTH_FACILITY_DETAILS;
-	
+
+	//@formatter:off
 	private static final String HTML_LAYOUT = 
 			//XXX #1620 are the divs needed?
 			divs(
@@ -51,13 +52,15 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY) +
 					fluidRowLocs(CaseDataDto.SURVEILLANCE_OFFICER, CaseDataDto.HEALTH_FACILITY_DETAILS)
 			);
+	//@formatter:on
 
 	public CaseFacilityChangeForm() {
 		super(CaseDataDto.class, CaseDataDto.I18N_PREFIX);
 	}
-	
+
 	@Override
 	protected void addFields() {
+
 		ComboBox region = addInfrastructureField(CaseDataDto.REGION);
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
@@ -65,21 +68,27 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		ComboBox officer = addField(CaseDataDto.SURVEILLANCE_OFFICER, ComboBox.class);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
-		
+
 		region.addValueChangeListener(e -> {
-			RegionReferenceDto regionDto = (RegionReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
-       	});
+			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper
+				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+		});
 		district.addValueChangeListener(e -> {
 			if (community.getValue() == null) {
-    			FieldHelper.removeItems(facility);
-    		}
-    		FieldHelper.removeItems(community);
-    		DistrictReferenceDto districtDto = (DistrictReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
-    		FieldHelper.updateItems(facility, districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
-			
-			List<UserReferenceDto> assignableSurveillanceOfficers = FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
+				FieldHelper.removeItems(facility);
+			}
+			FieldHelper.removeItems(community);
+			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				community,
+				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(
+				facility,
+				districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(districtDto, true) : null);
+
+			List<UserReferenceDto> assignableSurveillanceOfficers =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(officer, assignableSurveillanceOfficers);
 			if (assignableSurveillanceOfficers.size() == 1) {
 				officer.setValue(assignableSurveillanceOfficers.get(0));
@@ -89,20 +98,24 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		});
 		community.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
-    		CommunityReferenceDto communityDto = (CommunityReferenceDto)e.getProperty().getValue();
-    		FieldHelper.updateItems(facility, communityDto != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true) :
-    			district.getValue() != null ? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true) :
-    				null);
-    	});
+			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(
+				facility,
+				communityDto != null
+					? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(communityDto, true)
+					: district.getValue() != null
+						? FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict((DistrictReferenceDto) district.getValue(), true)
+						: null);
+		});
 		facility.addValueChangeListener(e -> {
 			if (e.getProperty().getValue() != null) {
 				boolean otherHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = ((FacilityReferenceDto) e.getProperty().getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 				boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
-				
+
 				facilityDetails.setVisible(visibleAndRequired);
 				facilityDetails.setRequired(visibleAndRequired);
-				
+
 				if (otherHealthFacility) {
 					facilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
 				}
@@ -119,15 +132,14 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
-		
+
 		FieldHelper.addSoftRequiredStyle(community, facilityDetails, officer);
 		setRequired(true, CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.HEALTH_FACILITY);
 		officer.setNullSelectionAllowed(true);
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
-	
 }

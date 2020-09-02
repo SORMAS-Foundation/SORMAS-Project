@@ -31,16 +31,18 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 	private Map<FeatureConfigurationIndexDto, DateField> dateFieldMap;
 
 	public LineListingConfigurationsGrid(List<FeatureConfigurationIndexDto> configurations, boolean nationLevel) {
+
 		this.nationLevel = nationLevel;
 		this.configurations = configurations;
 		this.changedConfigurations = new HashSet<>();
 		this.dateFieldMap = new HashMap<>();
 		buildGrid();
-		reload();		
+		reload();
 	}
 
 	public void enableAll() {
-		configurations.stream().forEach(config -> { 
+
+		configurations.stream().forEach(config -> {
 			config.setEnabled(true);
 			if (config.getEndDate() == null) {
 				config.setEndDate(DateHelper.addDays(new Date(), 21));
@@ -64,27 +66,28 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 		changedConfigurations.addAll(configurations);
 		reload();
 	}
-	
+
 	public boolean validateDates() {
 		for (FeatureConfigurationIndexDto config : configurations) {
 			if (dateFieldMap.get(config) != null && dateFieldMap.get(config).getErrorMessage() != null) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
 	private void buildGrid() {
+
 		setSelectionMode(SelectionMode.NONE);
-		
+
 		if (nationLevel) {
 			addColumn(FeatureConfigurationIndexDto::getRegionName)
-			.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.REGION_NAME));
+				.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.REGION_NAME));
 		}
-		
+
 		addColumn(FeatureConfigurationIndexDto::getDistrictName)
-		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.DISTRICT_NAME));
+			.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.DISTRICT_NAME));
 		addComponentColumn(config -> {
 			CheckBox cbActive = new CheckBox();
 			cbActive.setValue(config.isEnabled());
@@ -100,15 +103,16 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 				changedConfigurations.add(config);
 			});
 			return cbActive;
-		})
-		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ENABLED));
+		}).setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ENABLED));
 		addComponentColumn(config -> {
 			DateField dfEndDate = new DateField();
 			dfEndDate.setValue(DateHelper8.toLocalDate(config.getEndDate()));
 			dfEndDate.addValueChangeListener(e -> {
 				if (e.getValue() != null && e.getValue().isBefore(LocalDate.now())) {
-					Notification errorNotification = new Notification(I18nProperties.getString(Strings.headingInvalidDateEntered), 
-							I18nProperties.getValidationError(Validations.noPastDateAllowed), Type.TRAY_NOTIFICATION);
+					Notification errorNotification = new Notification(
+						I18nProperties.getString(Strings.headingInvalidDateEntered),
+						I18nProperties.getValidationError(Validations.noPastDateAllowed),
+						Type.TRAY_NOTIFICATION);
 					errorNotification.setStyleName("tray notification-error");
 					errorNotification.show(Page.getCurrent());
 				} else {
@@ -119,16 +123,14 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 			dfEndDate.setRangeStart(LocalDate.now());
 			dateFieldMap.put(config, dfEndDate);
 			return dfEndDate;
-		})
-		.setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.END_DATE));
+		}).setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.END_DATE));
 	}
 
 	public void reload() {
 		setItems(configurations);
 	}
-	
+
 	public Set<FeatureConfigurationIndexDto> getChangedConfigurations() {
 		return changedConfigurations;
 	}
-
 }

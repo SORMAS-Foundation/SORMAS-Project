@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.caze.classification;
 
@@ -35,8 +35,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 	@JsonSubTypes.Type(value = ClassificationEpiDataCriteriaDto.class, name = "ClassificationEpiDataCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationNotInStartDateRangeCriteriaDto.class, name = "ClassificationNotInStartDateRangeCriteriaDto"),
 	@JsonSubTypes.Type(value = ClassificationPathogenTestCriteriaDto.class, name = "ClassificationPathogenTestCriteriaDto"),
-	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"),
-})
+	@JsonSubTypes.Type(value = ClassificationSymptomsCriteriaDto.class, name = "ClassificationSymptomsCriteriaDto"), })
 public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	private static final long serialVersionUID = 2640725590302569043L;
@@ -45,9 +44,9 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	protected List<Object> propertyValues;
 
 	public ClassificationCaseCriteriaDto() {
-		
+
 	}
-	
+
 	public ClassificationCaseCriteriaDto(String propertyId, Object... propertyValues) {
 		this.propertyId = propertyId;
 		this.propertyValues = Arrays.asList(propertyValues);
@@ -63,6 +62,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> sampleTests) {
+
 		try {
 			Method method = getInvokeClass().getMethod("get" + propertyId.substring(0, 1).toUpperCase() + propertyId.substring(1));
 			Object value = method.invoke(getInvokeObject(caze));
@@ -73,6 +73,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	}
 
 	protected StringBuilder appendDescValues(StringBuilder stringBuilder) {
+
 		if (propertyValues.size() == 1 && propertyValues.get(0) instanceof YesNoUnknown) {
 			return stringBuilder;
 		}
@@ -91,6 +92,7 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 
 	@Override
 	public String buildDescription() {
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, propertyId));
 		appendDescValues(stringBuilder);
@@ -112,5 +114,4 @@ public class ClassificationCaseCriteriaDto extends ClassificationCriteriaDto {
 	public void setPropertyValues(List<Object> propertyValues) {
 		this.propertyValues = propertyValues;
 	}
-	
 }

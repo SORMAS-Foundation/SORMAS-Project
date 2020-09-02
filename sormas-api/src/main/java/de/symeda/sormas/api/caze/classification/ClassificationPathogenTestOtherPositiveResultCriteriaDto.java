@@ -26,9 +26,11 @@ public class ClassificationPathogenTestOtherPositiveResultCriteriaDto extends Cl
 
 	@Override
 	public boolean eval(CaseDataDto caze, PersonDto person, List<PathogenTestDto> pathogenTests) {
+
 		for (PathogenTestDto pathogenTest : pathogenTests) {
-			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE && testedDisease != null
-					&& pathogenTest.getTestedDisease() != testedDisease) {
+			if (pathogenTest.getTestResult() == PathogenTestResultType.POSITIVE
+				&& testedDisease != null
+				&& pathogenTest.getTestedDisease() != testedDisease) {
 				return true;
 			}
 		}
@@ -37,11 +39,10 @@ public class ClassificationPathogenTestOtherPositiveResultCriteriaDto extends Cl
 
 	@Override
 	public String buildDescription() {
-		
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(I18nProperties.getString(Strings.classificationOneOtherPositiveTestResult)).append(" ");
-		
+
 		return stringBuilder.toString();
 	}
-
 }

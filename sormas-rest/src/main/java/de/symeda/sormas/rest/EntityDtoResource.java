@@ -33,8 +33,7 @@ public abstract class EntityDtoResource {
 			} catch (Exception e) {
 				String errorMessage = createErrorMessage(dto);
 				errorMessage += e.getMessage();
-				if (e instanceof OutdatedEntityException
-						|| ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
+				if (e instanceof OutdatedEntityException || ExceptionUtils.getRootCause(e) instanceof OutdatedEntityException) {
 					logger.warn(errorMessage, e);
 					result = PushResult.TOO_OLD;
 				} else {
@@ -48,7 +47,9 @@ public abstract class EntityDtoResource {
 	}
 
 	protected <T extends Object> String createErrorMessage(T dto) {
+
 		final EntityDto entityDto = (EntityDto) dto;
-		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate()) + "\n";
+		return dto.getClass().getSimpleName() + " " + entityDto.getUuid() + " " + DateFormat.getDateTimeInstance().format(entityDto.getChangeDate())
+			+ "\n";
 	}
 }

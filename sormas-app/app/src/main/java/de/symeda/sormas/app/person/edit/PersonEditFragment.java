@@ -37,13 +37,17 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.caze.CaseEditAuthorization;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.event.Event;
+import de.symeda.sormas.app.backend.contact.ContactEditAuthorization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.component.Item;
@@ -68,28 +72,23 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
     // Instance methods
 
     public static PersonEditFragment newInstance(Case activityRootData) {
-        return newInstance(PersonEditFragment.class, null, activityRootData);
+
+        return newInstanceWithFieldCheckers(PersonEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, CaseEditAuthorization.isCaseEditAllowed(activityRootData)));
     }
 
     public static PersonEditFragment newInstance(Contact activityRootData) {
-        return newInstance(PersonEditFragment.class, null, activityRootData);
+
+        return newInstanceWithFieldCheckers(PersonEditFragment.class, null, activityRootData,
+                FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+                FieldAccessCheckers.withPersonalData(ConfigProvider::hasUserRight, ContactEditAuthorization.isContactEditAllowed(activityRootData)));
     }
 
     public static void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding, AbstractDomainObject rootData) {
-        setUpControlListeners(record, contentBinding);
+        setUpControlListeners(record, fragment, contentBinding);
 
-        Disease rootDisease = null;
-        if (rootData instanceof Case) {
-            rootDisease = ((Case) rootData).getDisease();
-        } else if (rootData instanceof Contact) {
-            rootDisease = ((Contact) rootData).getDisease();
-        } else if (rootData instanceof Event) {
-            rootDisease = ((Event) rootData).getDisease();
-        }
-
-        if (rootDisease != null) {
-           fragment.setVisibilityByDisease(PersonDto.class, rootDisease, contentBinding.mainContent);
-        }
+        fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
 
         List<Item> monthList = DataUtils.getMonthItems(true);
         List<Item> yearList = DataUtils.toItems(DateHelper.getYearsToNow(), true);
@@ -152,7 +151,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
 
         contentBinding.personApproximateAge.addValueChangedListener(field -> {
-            if (DataHelper.isNullOrEmpty((String)field.getValue())) {
+            if (DataHelper.isNullOrEmpty((String) field.getValue())) {
                 contentBinding.personApproximateAgeType.setRequired(false);
                 contentBinding.personApproximateAgeType.setValue(null);
             } else {
@@ -175,8 +174,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         contentBinding.personBurialDate.initializeDateField(fragment.getFragmentManager());
     }
 
-    public static void setUpControlListeners(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
-        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, contentBinding));
+    public static void setUpControlListeners(final Person record, final BaseEditFragment fragment, final FragmentPersonEditLayoutBinding contentBinding) {
+        contentBinding.personAddress.setOnClickListener(v -> openAddressPopup(record, fragment, contentBinding));
     }
 
     public static Date calculateBirthDateValue(FragmentPersonEditLayoutBinding contentBinding) {
@@ -218,10 +217,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
         }
     }
 
-    private static void openAddressPopup(final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+    private static void openAddressPopup(final Person record, final BaseEditFragment fragment, final FragmentPersonEditLayoutBinding contentBinding) {
         final Location location = record.getAddress();
         final Location locationClone = (Location) location.clone();
-        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone);
+        final LocationDialog locationDialog = new LocationDialog(BaseActivity.getActiveActivity(), locationClone, fragment.getFieldAccessCheckers());
         locationDialog.show();
 
         locationDialog.setPositiveCallback(() -> {

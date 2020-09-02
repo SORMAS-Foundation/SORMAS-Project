@@ -35,7 +35,6 @@ import de.symeda.sormas.app.component.dialog.AbstractDialog;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
-import de.symeda.sormas.app.util.Callback;
 import de.symeda.sormas.app.util.ResultCallback;
 
 public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T> {
@@ -234,7 +233,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
      * @return true if an error is set, false if not
      */
     public boolean setErrorIfEmpty() {
-        if (!required) {
+        if (!required || !isEnabled()) {
             return false;
         }
 
@@ -270,6 +269,10 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
 
     private void changeErrorState() {
         if (!this.isEnabled()) {
+            labelError.setVisibility(GONE);
+            labelSoftRequired.setVisibility(GONE);
+            labelRequired.setVisibility(GONE);
+
             return;
         }
 
@@ -395,6 +398,7 @@ public abstract class ControlPropertyEditField<T> extends ControlPropertyField<T
             }
         } else {
             changeVisualState(VisualState.DISABLED);
+            disableErrorState();
         }
     }
 

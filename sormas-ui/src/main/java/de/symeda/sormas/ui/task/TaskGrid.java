@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
@@ -50,11 +50,11 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
 public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implements ItemClickListener<TaskIndexDto> {
-	
+
 	@SuppressWarnings("unchecked")
 	public TaskGrid(TaskCriteria criteria) {
 		super(TaskIndexDto.class);
-        setSizeFull();
+		setSizeFull();
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(TasksView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
@@ -66,9 +66,9 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
-		
+
 		addEditColumn(e -> ControllerProvider.getTaskController().edit(e.getItem(), this::reload));
-		
+
 		setStyleGenerator(item -> {
 			if (item != null && item.getTaskStatus() != null) {
 				switch (item.getTaskStatus()) {
@@ -87,16 +87,26 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			return null;
 		});
 
-        setColumns(EDIT_BTN_ID, TaskIndexDto.CONTEXT_REFERENCE, TaskIndexDto.TASK_TYPE,  TaskIndexDto.PRIORITY,
-        		TaskIndexDto.SUGGESTED_START, TaskIndexDto.DUE_DATE,
-        		TaskIndexDto.ASSIGNEE_USER, TaskIndexDto.ASSIGNEE_REPLY, 
-        		TaskIndexDto.CREATOR_USER, TaskIndexDto.CREATOR_COMMENT, TaskIndexDto.TASK_STATUS);
+		setColumns(
+			EDIT_BTN_ID,
+			TaskIndexDto.CONTEXT_REFERENCE,
+			TaskIndexDto.TASK_TYPE,
+			TaskIndexDto.PRIORITY,
+			TaskIndexDto.SUGGESTED_START,
+			TaskIndexDto.DUE_DATE,
+			TaskIndexDto.ASSIGNEE_USER,
+			TaskIndexDto.ASSIGNEE_REPLY,
+			TaskIndexDto.CREATOR_USER,
+			TaskIndexDto.CREATOR_COMMENT,
+			TaskIndexDto.TASK_STATUS);
 
 		Language userLanguage = I18nProperties.getUserLanguage();
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.DUE_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<TaskIndexDto, Date>)getColumn(TaskIndexDto.SUGGESTED_START)).setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
-		((Column<TaskIndexDto, String>)getColumn(TaskIndexDto.CREATOR_COMMENT)).setRenderer(new ShortStringRenderer(50));
-        
+		((Column<TaskIndexDto, Date>) getColumn(TaskIndexDto.DUE_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<TaskIndexDto, Date>) getColumn(TaskIndexDto.SUGGESTED_START))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));
+		((Column<TaskIndexDto, String>) getColumn(TaskIndexDto.CREATOR_COMMENT)).setRenderer(new ShortStringRenderer(50));
+
 		Column<TaskIndexDto, ReferenceDto> contextColumn = (Column<TaskIndexDto, ReferenceDto>) getColumn(TaskIndexDto.CONTEXT_REFERENCE);
 		contextColumn.setRenderer(new ReferenceDtoHtmlProvider(), new HtmlRenderer());
 		contextColumn.setSortable(false);
@@ -104,14 +114,14 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 		Column<TaskIndexDto, UserReferenceDto> assigneeUserColumn = (Column<TaskIndexDto, UserReferenceDto>) getColumn(TaskIndexDto.ASSIGNEE_USER);
 		assigneeUserColumn.setRenderer(user -> {
 			String html;
-    		if (user != null) {
-    			html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(user);
-    		} else {
-    			html = "";
-    		}
-    		return html;
+			if (user != null) {
+				html = ControllerProvider.getTaskController().getUserCaptionWithPendingTaskCount(user);
+			} else {
+				html = "";
+			}
+			return html;
 		}, new HtmlRenderer());
-        
+
 		Column<TaskIndexDto, TaskPriority> priorityColumn = (Column<TaskIndexDto, TaskPriority>) getColumn(TaskIndexDto.PRIORITY);
 		priorityColumn.setStyleGenerator(item -> {
 			if (item.getPriority() != null) {
@@ -128,7 +138,7 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			}
 			return null;
 		});
-		
+
 		Column<TaskIndexDto, Date> dueDateColumn = (Column<TaskIndexDto, Date>) getColumn(TaskIndexDto.DUE_DATE);
 		dueDateColumn.setStyleGenerator(item -> {
 			Date dueDate = item.getDueDate();
@@ -138,28 +148,27 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			return null;
 		});
 
-		for(Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					TaskIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+		for (Column<?, ?> column : getColumns()) {
+			column.setCaption(I18nProperties.getPrefixCaption(TaskIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
-		
-		addItemClickListener(this);	        
+
+		addItemClickListener(this);
 	}
-    
-    public void reload() {
+
+	public void reload() {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
 
 		getDataProvider().refreshAll();
-    }
+	}
 
 	@Override
 	public void itemClick(Grid.ItemClick<TaskIndexDto> event) {
 		if (event.getColumn() == null) {
 			return;
 		}
-		
+
 		TaskIndexDto task = event.getItem();
 		if (TaskIndexDto.CONTEXT_REFERENCE.equals(event.getColumn().getId())) {
 			switch (task.getTaskContext()) {
@@ -179,22 +188,28 @@ public class TaskGrid extends FilteredGrid<TaskIndexDto, TaskCriteria> implement
 			}
 		}
 	}
-	
+
 	public void setLazyDataProvider() {
-		DataProvider<TaskIndexDto,TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getTaskFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(),
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-							.collect(Collectors.toList())).stream(),
-				query -> (int)FacadeProvider.getTaskFacade().count(query.getFilter().orElse(null)));
+		DataProvider<TaskIndexDto, TaskCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getTaskFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> (int) FacadeProvider.getTaskFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
+
 	public void setEagerDataProvider() {
-		ListDataProvider<TaskIndexDto> dataProvider = DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
+		ListDataProvider<TaskIndexDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getTaskFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);
 	}
-	
 }

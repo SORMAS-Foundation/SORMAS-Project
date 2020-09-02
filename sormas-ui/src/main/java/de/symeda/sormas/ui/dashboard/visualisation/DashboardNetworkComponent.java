@@ -9,19 +9,26 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.visualisation;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,12 +39,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
 
 @SuppressWarnings("serial")
 public class DashboardNetworkComponent extends VerticalLayout {
@@ -50,17 +51,18 @@ public class DashboardNetworkComponent extends VerticalLayout {
 	private final NetworkDiagram diagram;
 
 	private Consumer<Boolean> externalExpandListener;
-	
+
 	private String getNetworkDiagramJson() {
 		Set<Disease> diseases = Optional.of(dashboardDataProvider)
-				.map(DashboardDataProvider::getDisease)
-				.map(Collections::singleton)
-				.orElseGet(() -> EnumSet.allOf(Disease.class));
+			.map(DashboardDataProvider::getDisease)
+			.map(Collections::singleton)
+			.orElseGet(() -> EnumSet.allOf(Disease.class));
 
 		RegionReferenceDto region = dashboardDataProvider.getRegion();
 		DistrictReferenceDto district = dashboardDataProvider.getDistrict();
-		
-		String networkJson = FacadeProvider.getVisualizationFacade().buildTransmissionChainJson(region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
+
+		String networkJson = FacadeProvider.getVisualizationFacade()
+			.buildTransmissionChainJson(region, district, diseases, UserProvider.getCurrent().getUser().getLanguage());
 		return networkJson;
 	}
 
@@ -73,7 +75,7 @@ public class DashboardNetworkComponent extends VerticalLayout {
 
 		diagram = new NetworkDiagram();
 		diagram.setSizeFull();
-		
+
 		this.setMargin(true);
 
 		// Add components
@@ -85,6 +87,7 @@ public class DashboardNetworkComponent extends VerticalLayout {
 	}
 
 	boolean dirty = true;
+
 	public void refreshDiagram() {
 		dirty = true;
 		updateDiagram();
@@ -118,10 +121,15 @@ public class DashboardNetworkComponent extends VerticalLayout {
 //			mapHeaderLayout.setComponentAlignment(diagramLabel, Alignment.BOTTOM_LEFT);
 //			mapHeaderLayout.setExpandRatio(diagramLabel, 1);
 //		}
-		expandMapButton = ButtonHelper.createIconButtonWithCaption(Strings.infoDisplayNetworkDiagram, I18nProperties.getString(Strings.infoDisplayNetworkDiagram), VaadinIcons.EXPAND,
-				e -> expandMap(true), CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
-		collapseMapButton = ButtonHelper.createIconButtonWithCaption("", "", VaadinIcons.COMPRESS,
-				e -> expandMap(false), CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
+		expandMapButton = ButtonHelper.createIconButtonWithCaption(
+			Strings.infoDisplayNetworkDiagram,
+			I18nProperties.getString(Strings.infoDisplayNetworkDiagram),
+			VaadinIcons.EXPAND,
+			e -> expandMap(true),
+			CssStyles.BUTTON_SUBTLE,
+			CssStyles.VSPACE_NONE);
+		collapseMapButton = ButtonHelper
+			.createIconButtonWithCaption("", "", VaadinIcons.COMPRESS, e -> expandMap(false), CssStyles.BUTTON_SUBTLE, CssStyles.VSPACE_NONE);
 
 		mapHeaderLayout.addComponent(expandMapButton);
 		mapHeaderLayout.setComponentAlignment(expandMapButton, Alignment.MIDDLE_RIGHT);

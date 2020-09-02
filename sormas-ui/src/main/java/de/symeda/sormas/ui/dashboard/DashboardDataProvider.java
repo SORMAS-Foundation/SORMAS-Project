@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
@@ -73,23 +73,24 @@ public class DashboardDataProvider {
 	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
 
 	public void refreshData() {
+
 		// Update the entities lists according to the filters
 		// Disease burden
-		setDiseasesBurden(FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate,
-				toDate, previousFromDate, previousToDate));
+		setDiseasesBurden(
+			FacadeProvider.getDiseaseFacade().getDiseaseBurdenForDashboard(region, district, fromDate, toDate, previousFromDate, previousToDate));
 
 		this.refreshDataForSelectedDisease();
 	}
 
-	private void refreshDataForSelectedDisease () {
+	private void refreshDataForSelectedDisease() {
+
 		// Update the entities lists according to the filters
 
 		if (getDashboardType() == DashboardType.CONTACTS) {
 			// Contacts
-			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate,
-					toDate));
-			setPreviousContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease,
-					previousFromDate, previousToDate));
+			setContacts(FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, fromDate, toDate));
+			setPreviousContacts(
+				FacadeProvider.getContactFacade().getContactsForDashboard(region, district, disease, previousFromDate, previousToDate));
 		}
 		
 		if (getDashboardType() == DashboardType.SAMPLES) {
@@ -110,7 +111,9 @@ public class DashboardDataProvider {
 
 			if (getDashboardType() != DashboardType.CONTACTS) {
 				if (getCases().size() > 0) {
-					setTestResultCountByResultType(FacadeProvider.getSampleFacade().getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
+					setTestResultCountByResultType(
+						FacadeProvider.getSampleFacade()
+							.getNewTestResultCountByResultType(getCases().stream().map(c -> c.getId()).collect(Collectors.toList())));
 				} else {
 					setTestResultCountByResultType(new HashMap<>());
 				}
@@ -123,7 +126,7 @@ public class DashboardDataProvider {
 
 		// Events
 		EventCriteria eventCriteria = new EventCriteria();
-		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);	
+		eventCriteria.region(region).district(district).disease(disease).reportedBetween(fromDate, toDate);
 		setEvents(FacadeProvider.getEventFacade().getNewEventsForDashboard(eventCriteria));
 
 		eventCriteria.reportedBetween(previousFromDate, previousToDate);
@@ -138,7 +141,10 @@ public class DashboardDataProvider {
 		//		setPreviousTestResults(FacadeProvider.getPathogenTestFacade().getNewTestResultsForDashboard(region, district,
 		//				disease, previousFromDate, previousToDate, userUuid));
 
-		setOutbreakDistrictCount(FacadeProvider.getOutbreakFacade().getOutbreakDistrictCount(new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
+		setOutbreakDistrictCount(
+			FacadeProvider.getOutbreakFacade()
+				.getOutbreakDistrictCount(
+					new OutbreakCriteria().region(region).district(district).disease(disease).reportedBetween(fromDate, toDate)));
 	}
 
 	public List<DashboardCaseDto> getCases() {
@@ -233,17 +239,17 @@ public class DashboardDataProvider {
 		return outbreakDistrictCount;
 	}
 
-	public void setOutbreakDistrictCount (Long districtCount) {
+	public void setOutbreakDistrictCount(Long districtCount) {
 		this.outbreakDistrictCount = districtCount;
-	}	
+	}
 
-	public String getLastReportedDistrict () {
+	public String getLastReportedDistrict() {
 		return this.lastReportedDistrict;
 	}
 
-	public void setLastReportedDistrict (String district) {
+	public void setLastReportedDistrict(String district) {
 		this.lastReportedDistrict = district;
-	}	
+	}
 
 	public RegionReferenceDto getRegion() {
 		return region;

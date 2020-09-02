@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
@@ -47,8 +47,15 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 @SuppressWarnings("serial")
 public class V7GridExportStreamResource extends StreamResource {
 
-	public V7GridExportStreamResource(Indexed container, List<Column> gridColumns, String tempFilePrefix, String filename, String... ignoredPropertyIds) {
+	public V7GridExportStreamResource(
+		Indexed container,
+		List<Column> gridColumns,
+		String tempFilePrefix,
+		String filename,
+		String... ignoredPropertyIds) {
+
 		super(new StreamSource() {
+
 			@Override
 			public InputStream getStream() {
 				List<String> ignoredPropertyIdsList = Arrays.asList(ignoredPropertyIds);
@@ -63,10 +70,12 @@ public class V7GridExportStreamResource extends StreamResource {
 				});
 
 				try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
-					try (CSVWriter writer = CSVUtils.createCSVWriter(new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()), FacadeProvider.getConfigFacade().getCsvSeparator())) {
-		
+					try (CSVWriter writer = CSVUtils.createCSVWriter(
+						new OutputStreamWriter(byteStream, StandardCharsets.UTF_8.name()),
+						FacadeProvider.getConfigFacade().getCsvSeparator())) {
+
 						writer.writeNext(headerRow.toArray(new String[headerRow.size()]));
-						
+
 						itemIds.forEach(i -> {
 							List<String> row = new ArrayList<>();
 							columns.forEach(c -> {
@@ -86,18 +95,21 @@ public class V7GridExportStreamResource extends StreamResource {
 									row.add("");
 								}
 							});
-		
+
 							writer.writeNext(row.toArray(new String[row.size()]));
 						});
-		
+
 						writer.flush();
-					}					
+					}
 					return new ByteArrayInputStream(byteStream.toByteArray());
 				} catch (IOException e) {
 					// TODO This currently requires the user to click the "Export" button again or reload the page as the UI
 					// is not automatically updated; this should be changed once Vaadin push is enabled (see #516)
-					new Notification(I18nProperties.getString(Strings.headingExportFailed), I18nProperties.getString(Strings.messageExportFailed),
-							Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+					new Notification(
+						I18nProperties.getString(Strings.headingExportFailed),
+						I18nProperties.getString(Strings.messageExportFailed),
+						Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
 					return null;
 				}
 			}
@@ -105,5 +117,4 @@ public class V7GridExportStreamResource extends StreamResource {
 		setMIMEType("text/csv");
 		setCacheTime(0);
 	}
-	
 }

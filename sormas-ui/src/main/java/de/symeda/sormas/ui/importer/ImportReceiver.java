@@ -47,30 +47,40 @@ public class ImportReceiver implements Receiver, SucceededListener {
 		// Reject empty files
 		if (fileName == null || fileName.isEmpty()) {
 			file = null;
-			new Notification(I18nProperties.getString(Strings.headingNoFile), I18nProperties.getString(Strings.messageNoCsvFile), 
-					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingNoFile),
+				I18nProperties.getString(Strings.messageNoCsvFile),
+				Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
 		// Reject all files except .csv files - we also need to accept excel files here
 		if (!(mimeType.equals("text/csv") || mimeType.equals("application/vnd.ms-excel"))) {
 			file = null;
-			new Notification(I18nProperties.getString(Strings.headingWrongFileType), I18nProperties.getString(Strings.messageWrongFileType), 
-					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingWrongFileType),
+				I18nProperties.getString(Strings.messageWrongFileType),
+				Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
 
 		final FileOutputStream fos;
 		try {
-			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_" + DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
+			String newFileName = ImportExportUtils.TEMP_FILE_PREFIX + fileNameAddition + DateHelper.formatDateForExport(new Date()) + "_"
+				+ DataHelper.getShortUuid(UserProvider.getCurrent().getUuid()) + ".csv";
 			file = new File(Paths.get(FacadeProvider.getConfigFacade().getTempFilesPath()).resolve(newFileName).toString());
 			fos = new FileOutputStream(file);
 		} catch (FileNotFoundException e) {
 			file = null;
 			logger.error("Reading the file to import failed", e);
-			new Notification(I18nProperties.getString(Strings.headingImportError), I18nProperties.getString(Strings.messageImportError), 
-					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingImportError),
+				I18nProperties.getString(Strings.messageImportError),
+				Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 			// Workaround because returning null here throws an uncatchable UploadException
 			return new ByteArrayOutputStream();
 		}
@@ -80,6 +90,7 @@ public class ImportReceiver implements Receiver, SucceededListener {
 
 	@Override
 	public void uploadSucceeded(SucceededEvent event) {
+
 		if (file == null) {
 			return;
 		}
@@ -93,9 +104,11 @@ public class ImportReceiver implements Receiver, SucceededListener {
 
 			fileConsumer.accept(csvFile);
 		} catch (IOException e) {
-			new Notification(I18nProperties.getString(Strings.headingImportFailed), I18nProperties.getString(Strings.messageImportFailed), 
-					Type.ERROR_MESSAGE, false).show(Page.getCurrent());
+			new Notification(
+				I18nProperties.getString(Strings.headingImportFailed),
+				I18nProperties.getString(Strings.messageImportFailed),
+				Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
 		}
 	}
-
 }

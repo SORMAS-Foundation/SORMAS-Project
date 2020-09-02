@@ -28,6 +28,8 @@ import androidx.fragment.app.FragmentActivity;
 import java.util.List;
 
 import de.symeda.sormas.api.location.AreaType;
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -36,6 +38,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
+import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
 
@@ -45,14 +48,16 @@ public class LocationDialog extends AbstractDialog {
 
     private Location data;
     private DialogLocationLayoutBinding contentBinding;
+    private FieldAccessCheckers fieldAccessCheckers;
 
     // Constructor
 
-    public LocationDialog(final FragmentActivity activity, Location location) {
+    public LocationDialog(final FragmentActivity activity, Location location, FieldAccessCheckers fieldAccessCheckers) {
         super(activity, R.layout.dialog_root_layout, R.layout.dialog_location_layout,
                 R.layout.dialog_root_two_button_panel_layout, R.string.heading_location, -1);
 
         this.data = location;
+        this.fieldAccessCheckers = fieldAccessCheckers;
     }
 
     // Overrides
@@ -75,6 +80,12 @@ public class LocationDialog extends AbstractDialog {
                 this.contentBinding.locationRegion, initialRegions, data.getRegion(),
                 this.contentBinding.locationDistrict, initialDistricts, data.getDistrict(),
                 this.contentBinding.locationCommunity, initialCommunities, data.getCommunity());
+
+        FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent, null, fieldAccessCheckers);
+        if (!FieldVisibilityAndAccessHelper.isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY, fieldAccessCheckers)) {
+            this.contentBinding.locationRegion.setEnabled(false);
+            this.contentBinding.locationDistrict.setEnabled(false);
+        }
 
         contentBinding.locationAreaType.initializeSpinner(DataUtils.getEnumItems(AreaType.class));
 

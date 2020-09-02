@@ -1,29 +1,47 @@
 package de.symeda.sormas.backend.caze;
 
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+public class CaseJoins<T extends AbstractDomainObject> extends AbstractDomainObjectJoins<T, Case> {
 
-class CaseJoins extends AbstractDomainObjectJoins<Case> {
 	private Join<Case, Person> person;
 	private Join<Case, Region> region;
 	private Join<Case, District> district;
+	private Join<Case, Community> community;
 	private Join<Case, Facility> facility;
 	private Join<Case, PointOfEntry> pointOfEntry;
 	private Join<Case, User> surveillanceOfficer;
 	private Join<Person, Location> address;
 	private Join<Case, User> reportingUser;
+	private Join<Person, Location> personAddress;
+	private Join<Location, Region> personAddressRegion;
+	private Join<Location, District> personAddressDistrict;
+	private Join<Person, Facility> occupationFacility;
+	private Join<Case, Hospitalization> hospitalization;
+	private Join<Case, EpiData> epiData;
+	private Join<Case, Symptoms> symptoms;
+	private Join<Case, ClinicalCourse> clinicalCourse;
+	private Join<ClinicalCourse, HealthConditions> healthConditions;
 
-	public CaseJoins(Root<Case> caze) {
+	public CaseJoins(From<T, Case> caze) {
 		super(caze);
 	}
 
@@ -45,6 +63,14 @@ class CaseJoins extends AbstractDomainObjectJoins<Case> {
 
 	public Join<Case, District> getDistrict() {
 		return getOrCreate(district, Case.DISTRICT, JoinType.LEFT, this::setDistrict);
+	}
+
+	public Join<Case, Community> getCommunity() {
+		return getOrCreate(community, Case.COMMUNITY, JoinType.LEFT, this::setCommunity);
+	}
+
+	private void setCommunity(Join<Case, Community> community) {
+		this.community = community;
 	}
 
 	private void setDistrict(Join<Case, District> district) {
@@ -91,4 +117,75 @@ class CaseJoins extends AbstractDomainObjectJoins<Case> {
 		this.reportingUser = reportingUser;
 	}
 
+	public Join<Person, Location> getPersonAddress() {
+		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
+	}
+
+	private void setPersonAddress(Join<Person, Location> personAddress) {
+		this.personAddress = personAddress;
+	}
+
+	public Join<Location, Region> getPersonAddressRegion() {
+		return getOrCreate(personAddressRegion, Location.REGION, JoinType.LEFT, getPersonAddress(), this::setPersonAddressRegion);
+	}
+
+	private void setPersonAddressRegion(Join<Location, Region> personAddressRegion) {
+		this.personAddressRegion = personAddressRegion;
+	}
+
+	public Join<Location, District> getPersonAddressDistrict() {
+		return getOrCreate(personAddressDistrict, Location.DISTRICT, JoinType.LEFT, getPersonAddress(), this::setPersonAddressDistrict);
+	}
+
+	private void setPersonAddressDistrict(Join<Location, District> personAddressDistrict) {
+		this.personAddressDistrict = personAddressDistrict;
+	}
+
+	public Join<Person, Facility> getOccupationFacility() {
+		return getOrCreate(occupationFacility, Person.OCCUPATION_FACILITY, JoinType.LEFT, getPerson(), this::setOccupationFacility);
+	}
+
+	private void setOccupationFacility(Join<Person, Facility> occupationFacility) {
+		this.occupationFacility = occupationFacility;
+	}
+
+	public Join<Case, Hospitalization> getHospitalization() {
+		return getOrCreate(hospitalization, Case.HOSPITALIZATION, JoinType.LEFT, this::setHospitalization);
+	}
+
+	private void setHospitalization(Join<Case, Hospitalization> hospitalization) {
+		this.hospitalization = hospitalization;
+	}
+
+	public Join<Case, EpiData> getEpiData() {
+		return getOrCreate(epiData, Case.EPI_DATA, JoinType.LEFT, this::setEpiData);
+	}
+
+	private void setEpiData(Join<Case, EpiData> epiData) {
+		this.epiData = epiData;
+	}
+
+	public Join<Case, Symptoms> getSymptoms() {
+		return getOrCreate(symptoms, Case.SYMPTOMS, JoinType.LEFT, this::setSymptoms);
+	}
+
+	private void setSymptoms(Join<Case, Symptoms> symptoms) {
+		this.symptoms = symptoms;
+	}
+
+	public Join<Case, ClinicalCourse> getClinicalCourse() {
+		return getOrCreate(clinicalCourse, Case.CLINICAL_COURSE, JoinType.LEFT, this::setClinicalCourse);
+	}
+
+	private void setClinicalCourse(Join<Case, ClinicalCourse> clinicalCourse) {
+		this.clinicalCourse = clinicalCourse;
+	}
+
+	public Join<ClinicalCourse, HealthConditions> getHealthConditions() {
+		return getOrCreate(healthConditions, ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT, getClinicalCourse(), this::setHealthConditions);
+	}
+
+	private void setHealthConditions(Join<ClinicalCourse, HealthConditions> healthConditions) {
+		this.healthConditions = healthConditions;
+	}
 }

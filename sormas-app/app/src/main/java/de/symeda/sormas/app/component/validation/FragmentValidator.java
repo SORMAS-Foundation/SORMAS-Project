@@ -87,7 +87,7 @@ public class FragmentValidator {
                     field.disableErrorState();
                 }
 
-                if (field.isHasError() && field.getVisibility() == VISIBLE) {
+                if (field.isHasError() && field.getVisibility() == VISIBLE && field.isEnabled()) {
                     errorInfo.addFieldWithError(field);
                 }
             } else if (child instanceof ViewGroup) {

@@ -1,16 +1,20 @@
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.person.BurialConductor;
-
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.person.BurialConductor;
+
 public class BurialInfoDto implements Serializable {
+
+	private static final long serialVersionUID = -8353779195208414541L;
+
 	private Date burialDate;
 	private BurialConductor burialConductor;
 	private String burialPlaceDescription;
 
 	public BurialInfoDto(Date burialDate, BurialConductor burialConductor, String burialPlaceDescription) {
+
 		this.burialDate = burialDate;
 		this.burialConductor = burialConductor;
 		this.burialPlaceDescription = burialPlaceDescription;

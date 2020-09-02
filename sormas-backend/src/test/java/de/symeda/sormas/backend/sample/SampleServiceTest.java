@@ -37,9 +37,13 @@ public class SampleServiceTest extends AbstractBeanTest {
 		assertThat(cut.getNewTestResultCountByResultType(Arrays.asList(1L, 2L, 1001L)).entrySet(), is(empty()));
 
 		// 2a. Works for 1_000 cases
-		assertThat(cut.getNewTestResultCountByResultType(LongStream.rangeClosed(1, 1_000).boxed().collect(Collectors.toList())).entrySet(), is(empty()));
+		assertThat(
+			cut.getNewTestResultCountByResultType(LongStream.rangeClosed(1, 1_000).boxed().collect(Collectors.toList())).entrySet(),
+			is(empty()));
 
 		// 2b. Works for 100_000 cases
-		assertThat(cut.getNewTestResultCountByResultType(LongStream.rangeClosed(1, 100_000).boxed().collect(Collectors.toList())).entrySet(), is(empty()));
+		assertThat(
+			cut.getNewTestResultCountByResultType(LongStream.rangeClosed(1, 100_000).boxed().collect(Collectors.toList())).entrySet(),
+			is(empty()));
 	}
 }

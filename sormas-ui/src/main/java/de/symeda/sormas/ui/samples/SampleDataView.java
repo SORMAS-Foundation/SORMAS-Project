@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
@@ -63,11 +63,12 @@ public class SampleDataView extends AbstractSampleView {
 		super.enter(event);
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACT_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
-				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
+		String htmlLayout = LayoutUtil.fluidRow(
+			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -104,8 +105,8 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
 		}
 
-		CommitDiscardWrapperComponent<SampleEditForm> editComponent = ControllerProvider.getSampleController()
-				.getSampleEditComponent(getSampleRef().getUuid());
+		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
+			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -115,12 +116,13 @@ public class SampleDataView extends AbstractSampleView {
 		Disease finalDisease = disease;
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
 			if (pathogenTestDto != null
-					&& pathogenTestDto.getTestResult() != null
-					&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
-					&& pathogenTestDto.getTestedDisease() == finalDisease) {
+				&& pathogenTestDto.getTestResult() != null
+				&& Boolean.TRUE.equals(pathogenTestDto.getTestResultVerified())
+				&& pathogenTestDto.getTestedDisease() == finalDisease) {
 				SampleDto componentSample = editComponent.getWrappedComponent().getValue();
-				if (pathogenTestDto.getTestResult()  != componentSample.getPathogenTestResult()) {
-					ControllerProvider.getSampleController().showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
+				if (pathogenTestDto.getTestResult() != componentSample.getPathogenTestResult()) {
+					ControllerProvider.getSampleController()
+						.showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
 				}
 			} else {
 				callback.run();
@@ -136,7 +138,7 @@ public class SampleDataView extends AbstractSampleView {
 		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest, createOrEditAllowedCallback);
 		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
 			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);

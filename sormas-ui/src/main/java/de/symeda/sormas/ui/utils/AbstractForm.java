@@ -13,17 +13,17 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
-	
+
+	private static final long serialVersionUID = -4362630675613167165L;
+
 	protected final String propertyI18nPrefix;
 	private final BeanFieldGroup<T> fieldGroup;
 	private Class<T> type;
 	private List<Field<?>> customFields = new ArrayList<>();
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix) {
-		this(type, propertyI18nPrefix, true);
-	}
+	@SuppressWarnings("serial")
+	protected AbstractForm(Class<T> type, String propertyI18nPrefix, SormasFieldGroupFieldFactory fieldFactory, boolean addFields) {
 
-	protected AbstractForm(Class<T> type, String propertyI18nPrefix, boolean addFields) {
 		this.type = type;
 		this.propertyI18nPrefix = propertyI18nPrefix;
 
@@ -45,7 +45,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 			}
 		};
 
-		fieldGroup.setFieldFactory(new SormasFieldGroupFieldFactory());
+		fieldGroup.setFieldFactory(fieldFactory);
 		setHeightUndefined();
 
 		if (addFields) {
@@ -109,11 +109,17 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 	}
 
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(FieldConfiguration configuration) {
 		return addField(getContent(), configuration);
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, FieldConfiguration configuration) {
 		Field field = addField(layout, configuration.getPropertyId());
 
@@ -122,6 +128,10 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return (T) field;
 	}
 
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, Class<T> fieldType, FieldConfiguration configuration) {
 		Field field = addField(layout, configuration.getPropertyId(), fieldType);
 
@@ -130,6 +140,7 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return (T) field;
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected void applyFieldConfiguration(FieldConfiguration configuration, Field field) {
 		if (configuration.getWidth() != null) {
 			field.setWidth(configuration.getWidth(), configuration.getWidthUnit());
@@ -148,35 +159,50 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> void addFields(Class<T> fieldType, String... properties) {
 		for (String property : properties) {
 			addField(property, fieldType);
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> void addFields(CustomLayout layout, Class<T> fieldType, String... properties) {
 		for (String property : properties) {
 			addField(layout, property, fieldType);
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(String propertyId) {
 		return (T) addField(propertyId, Field.class);
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({
+		"unchecked",
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, String propertyId) {
 		return (T) addField(layout, propertyId, Field.class);
 	}
 
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(String propertyId, Class<T> fieldType) {
 		return addField(getContent(), propertyId, fieldType);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addField(CustomLayout layout, String propertyId, Class<T> fieldType) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
@@ -186,7 +212,9 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addCustomField(String fieldId, Class<?> dataType, Class<T> fieldType) {
 		T field = getFieldGroup().getFieldFactory().createField(dataType, fieldType);
 		field.setId(fieldId);
@@ -197,14 +225,19 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> void formatField(T field, String propertyId) {
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	/**
-	 * @param allowedDaysInFuture How many days in the future the value of this field can be or
-	 * -1 for no restriction at all
+	 * @param allowedDaysInFuture
+	 *            How many days in the future the value of this field can be or
+	 *            -1 for no restriction at all
 	 */
 	protected <T extends Field> T addDateField(String propertyId, Class<T> fieldType, int allowedDaysInFuture) {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
@@ -215,20 +248,23 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return field;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addDefaultAdditionalValidators(T field) {
 		addFutureDateValidator(field, 0);
 		return field;
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"hiding" })
 	protected <T extends Field> T addFutureDateValidator(T field, int amountOfDays) {
 		if (amountOfDays < 0) {
 			return field;
 		}
 
-		if (DateField.class.isAssignableFrom(field.getClass())
-				|| DateTimeField.class.isAssignableFrom(field.getClass())) {
+		if (DateField.class.isAssignableFrom(field.getClass()) || DateTimeField.class.isAssignableFrom(field.getClass())) {
 			field.addValidator(new FutureDateValidator(field, amountOfDays, field.getCaption()));
 		}
 
@@ -267,5 +303,4 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 	protected String getPropertyI18nPrefix() {
 		return propertyI18nPrefix;
 	}
-	
 }

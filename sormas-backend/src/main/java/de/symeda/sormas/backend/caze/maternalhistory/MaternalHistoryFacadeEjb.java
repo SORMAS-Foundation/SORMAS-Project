@@ -19,24 +19,24 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "MaternalHistoryFacade")
 public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
-	
+
 	@EJB
-	MaternalHistoryService service;
+	private MaternalHistoryService service;
 	@EJB
-	RegionService regionService;
+	private RegionService regionService;
 	@EJB
-	DistrictService districtService;
+	private DistrictService districtService;
 	@EJB
-	CommunityService communityService;
+	private CommunityService communityService;
 
 	public static MaternalHistoryDto toDto(MaternalHistory source) {
 		if (source == null) {
 			return null;
 		}
-		
+
 		MaternalHistoryDto target = new MaternalHistoryDto();
 		DtoHelper.fillDto(target, source);
-		
+
 		target.setAgeAtBirth(source.getAgeAtBirth());
 		target.setArthralgiaArthritis(source.getArthralgiaArthritis());
 		target.setArthralgiaArthritisOnset(source.getArthralgiaArthritisOnset());
@@ -63,13 +63,13 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 		target.setOtherComplicationsOnset(source.getOtherComplicationsOnset());
 		target.setOtherComplicationsMonth(source.getOtherComplicationsMonth());
 		target.setOtherComplicationsDetails(source.getOtherComplicationsDetails());
-	
+
 		return target;
 	}
-	
+
 	public MaternalHistory fromDto(@NotNull MaternalHistoryDto source) {
 		MaternalHistory target = service.getByUuid(source.getUuid());
-		
+
 		if (target == null) {
 			target = new MaternalHistory();
 			target.setUuid(source.getUuid());
@@ -77,9 +77,9 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
 		}
-		
+
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAgeAtBirth(source.getAgeAtBirth());
 		target.setArthralgiaArthritis(source.getArthralgiaArthritis());
 		target.setArthralgiaArthritisOnset(source.getArthralgiaArthritisOnset());
@@ -106,14 +106,13 @@ public class MaternalHistoryFacadeEjb implements MaternalHistoryFacade {
 		target.setOtherComplicationsOnset(source.getOtherComplicationsOnset());
 		target.setOtherComplicationsMonth(source.getOtherComplicationsMonth());
 		target.setOtherComplicationsDetails(source.getOtherComplicationsDetails());
-		
+
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class MaternalHistoryFacadeEjbLocal extends MaternalHistoryFacadeEjb {
-		
+
 	}
-	
 }

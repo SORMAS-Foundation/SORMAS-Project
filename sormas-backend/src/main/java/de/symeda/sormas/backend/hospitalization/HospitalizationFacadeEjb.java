@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
@@ -58,17 +58,18 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
-	
+
 	@Override
 	public HospitalizationDto getHospitalizationByUuid(String uuid) {
 		return toDto(service.getByUuid(uuid));
 	}
-	
+
 	public Hospitalization fromDto(HospitalizationDto dto) {
+
 		if (dto == null) {
 			return null;
 		}
-		
+
 		Hospitalization hospitalization = service.getByUuid(dto.getUuid());
 		if (hospitalization == null) {
 			hospitalization = new Hospitalization();
@@ -77,11 +78,11 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 				hospitalization.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		
+
 		Hospitalization target = hospitalization;
 		HospitalizationDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
@@ -104,15 +105,16 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
-		
+
 		return hospitalization;
 	}
-	
+
 	public PreviousHospitalization fromDto(PreviousHospitalizationDto dto) {
+
 		if (dto == null) {
 			return null;
 		}
-		
+
 		PreviousHospitalization prevHospitalization = prevHospService.getByUuid(dto.getUuid());
 		if (prevHospitalization == null) {
 			prevHospitalization = new PreviousHospitalization();
@@ -121,11 +123,11 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 				prevHospitalization.setCreationDate(new Timestamp(dto.getCreationDate().getTime()));
 			}
 		}
-		
+
 		PreviousHospitalization target = prevHospitalization;
 		PreviousHospitalizationDto source = dto;
 		DtoHelper.validateDto(source, target);
-		
+
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
@@ -135,22 +137,23 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setHealthFacilityDetails(source.getHealthFacilityDetails());
 		target.setIsolated(source.getIsolated());
 		target.setDescription(source.getDescription());
-		
+
 		return prevHospitalization;
 	}
 
 	public static HospitalizationDto toDto(Hospitalization hospitalization) {
+
 		if (hospitalization == null) {
 			return null;
 		}
-		
+
 		HospitalizationDto target = new HospitalizationDto();
 		Hospitalization source = hospitalization;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setAdmittedToHealthFacility(source.getAdmittedToHealthFacility());
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
@@ -158,7 +161,7 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIsolated(source.getIsolated());
 		target.setIsolationDate(source.getIsolationDate());
 		target.setLeftAgainstAdvice(source.getLeftAgainstAdvice());
-		
+
 		List<PreviousHospitalizationDto> previousHospitalizations = new ArrayList<>();
 		for (PreviousHospitalization prevDto : source.getPreviousHospitalizations()) {
 			PreviousHospitalizationDto prevHosp = toDto(prevDto);
@@ -168,22 +171,23 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 		target.setIntensiveCareUnit(source.getIntensiveCareUnit());
 		target.setIntensiveCareUnitStart(source.getIntensiveCareUnitStart());
 		target.setIntensiveCareUnitEnd(source.getIntensiveCareUnitEnd());
-		
+
 		return target;
 	}
-	
+
 	public static PreviousHospitalizationDto toDto(PreviousHospitalization hospitalization) {
+
 		if (hospitalization == null) {
 			return null;
 		}
-		
+
 		PreviousHospitalizationDto target = new PreviousHospitalizationDto();
 		PreviousHospitalization source = hospitalization;
-		
+
 		target.setCreationDate(source.getCreationDate());
 		target.setChangeDate(source.getChangeDate());
 		target.setUuid(source.getUuid());
-		
+
 		target.setAdmissionDate(source.getAdmissionDate());
 		target.setDischargeDate(source.getDischargeDate());
 		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
@@ -196,9 +200,10 @@ public class HospitalizationFacadeEjb implements HospitalizationFacade {
 
 		return target;
 	}
-	
+
 	@LocalBean
 	@Stateless
 	public static class HospitalizationFacadeEjbLocal extends HospitalizationFacadeEjb {
-	}	
+
+	}
 }

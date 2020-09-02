@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
@@ -55,27 +55,49 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 		menu.removeAllViews();
 
-		menu.addView(OutbreaksView.VIEW_NAME,
-				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
-				params);
+		menu.addView(
+			OutbreaksView.VIEW_NAME,
+			I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+			params);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_VIEW)) {
-			menu.addView(RegionsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			menu.addView(DistrictsView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			menu.addView(CommunitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			menu.addView(HealthFacilitiesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			menu.addView(LaboratoriesView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			menu.addView(PointsOfEntryView.VIEW_NAME, I18nProperties.getPrefixCaption("View", 
-					PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
-			
+			menu.addView(
+				RegionsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", RegionsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				DistrictsView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", DistrictsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				CommunitiesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", CommunitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				HealthFacilitiesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", HealthFacilitiesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				LaboratoriesView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", LaboratoriesView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+			menu.addView(
+				PointsOfEntryView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", PointsOfEntryView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
-				menu.addView(PopulationDataView.VIEW_NAME, I18nProperties.getPrefixCaption("View", 
-						PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+				menu.addView(
+					PopulationDataView.VIEW_NAME,
+					I18nProperties.getPrefixCaption("View", PopulationDataView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+					null,
+					false);
 			}
 		}
 
@@ -84,16 +106,20 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//					UserRightsView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), params);
 		//		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode()
-				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			menu.addView(DevModeView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), null, false);
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+			menu.addView(
+				DevModeView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				null,
+				false);
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			RegionReferenceDto region = UserProvider.getCurrent().getUser().getRegion();
-			menu.addView(LineListingConfigurationView.VIEW_NAME, I18nProperties.getPrefixCaption("View",
-					LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""), 
-					region != null ? region.getUuid() : null, false);
+			menu.addView(
+				LineListingConfigurationView.VIEW_NAME,
+				I18nProperties.getPrefixCaption("View", LineListingConfigurationView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
+				region != null ? region.getUuid() : null,
+				false);
 		}
 	}
 
@@ -107,7 +133,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(HealthFacilitiesView.VIEW_NAME, HealthFacilitiesView.class);
 			navigator.addView(LaboratoriesView.VIEW_NAME, LaboratoriesView.class);
 			navigator.addView(PointsOfEntryView.VIEW_NAME, PointsOfEntryView.class);
-			
+
 			if (UserProvider.getCurrent().hasUserRight(UserRight.POPULATION_MANAGE)) {
 				navigator.addView(PopulationDataView.VIEW_NAME, PopulationDataView.class);
 			}
@@ -117,11 +143,10 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 		//			navigator.addView(UserRightsView.VIEW_NAME, UserRightsView.class);
 		//		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode()
-				&& UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 		}
-		
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE)) {
 			navigator.addView(LineListingConfigurationView.VIEW_NAME, LineListingConfigurationView.class);
 		}

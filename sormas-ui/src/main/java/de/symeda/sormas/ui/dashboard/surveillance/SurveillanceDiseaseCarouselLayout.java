@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
@@ -183,17 +183,17 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		this.dashboardDataProvider.setDisease(disease);
 		refresh();
 	}
-	
+
 	@Override
 	public void detach() {
 		super.detach();
-		
+
 		// deactivate polling
 		changeAutoSlideOption(false);
 	}
 
 	private void changeAutoSlideOption(boolean isActivated) {
-		
+
 		if (isActivated) {
 			SormasUI.getCurrent().setPollInterval(1000 * 90);
 
@@ -202,21 +202,21 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 				pollRegistration = SormasUI.getCurrent().addPollListener(e -> {
 					Disease selectedDisease = dashboardDataProvider.getDisease();
 					int nextDiseaseIndex = 0;
-	
+
 					if (selectedDisease != null) {
 						nextDiseaseIndex = diseases.indexOf(selectedDisease) + 1;
-	
+
 						if (nextDiseaseIndex >= diseases.size()) {
 							nextDiseaseIndex = 0;
 						}
 					}
-	
+
 					this.setActiveDisease(diseases.get(nextDiseaseIndex));
 				});
 			}
 		} else {
 			SormasUI.getCurrent().setPollInterval(-1);
-			
+
 			if (pollRegistration != null) {
 				pollRegistration.remove();
 				pollRegistration = null;

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api;
 
@@ -55,6 +55,7 @@ public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, S
 
 	@Override
 	public int hashCode() {
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((quarter == null) ? 0 : quarter.hashCode());
@@ -64,6 +65,7 @@ public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, S
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -86,19 +88,20 @@ public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, S
 
 	@Override
 	public int keyCompareTo(StatisticsGroupingKey o) {
+
 		if (o == null) {
 			throw new NullPointerException("Can't compare to null.");
 		}
 		if (o.getClass() != this.getClass()) {
-			throw new UnsupportedOperationException("Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
+			throw new UnsupportedOperationException(
+				"Can't compare to class " + o.getClass().getName() + " that differs from " + this.getClass().getName());
 		}
 
 		if (this.equals(o)) {
 			return 0;
 		}
-		if (this.getYear().keyCompareTo(((QuarterOfYear) o).getYear()) < 0 ||
-				(this.getYear().equals(((QuarterOfYear) o).getYear()) &&
-						this.getQuarter().keyCompareTo(((QuarterOfYear) o).getQuarter()) < 0)) {
+		if (this.getYear().keyCompareTo(((QuarterOfYear) o).getYear()) < 0
+			|| (this.getYear().equals(((QuarterOfYear) o).getYear()) && this.getQuarter().keyCompareTo(((QuarterOfYear) o).getQuarter()) < 0)) {
 			return -1;
 		}
 		return 1;
@@ -108,5 +111,4 @@ public class QuarterOfYear implements Serializable, Comparable<QuarterOfYear>, S
 	public int compareTo(QuarterOfYear o) {
 		return keyCompareTo(o);
 	}
-
 }

@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
@@ -26,11 +26,11 @@ import de.symeda.sormas.api.utils.IgnoreForUrl;
 public class DistrictCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -1794892073657582900L;
-	
+
 	private RegionReferenceDto region;
 	private String nameEpidLike;
 	private EntityRelevanceStatus relevanceStatus;
-	
+
 	public DistrictCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
@@ -49,15 +49,14 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 		this.nameEpidLike = nameEpidLike;
 		return this;
 	}
-	
+
 	public DistrictCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}
-	
+
 	@IgnoreForUrl
 	public EntityRelevanceStatus getRelevanceStatus() {
 		return relevanceStatus;
 	}
-	
 }

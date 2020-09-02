@@ -9,14 +9,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 
 package de.symeda.sormas.ui;
+
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +27,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import org.junit.Before;
 
 import de.symeda.sormas.api.Disease;
@@ -37,6 +37,8 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.region.CommunityFacade;
 import de.symeda.sormas.api.region.DistrictFacade;
 import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
@@ -47,8 +49,6 @@ import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLoca
 import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import info.novatec.beantest.api.BaseBeanTest;
-
-import static org.mockito.Mockito.when;
 
 public class AbstractBeanTest extends BaseBeanTest {
 
@@ -64,7 +64,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 
 		UserDto user = creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName()	);
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
 	private void initH2Functions() {
@@ -74,12 +74,11 @@ public class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
-	
+
 	@Before
 	public void createDiseaseConfigurations() {
 		List<DiseaseConfiguration> diseaseConfigurations = getDiseaseConfigurationService().getAll();
-		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease())
-				.collect(Collectors.toList());
+		List<Disease> configuredDiseases = diseaseConfigurations.stream().map(c -> c.getDisease()).collect(Collectors.toList());
 		Arrays.stream(Disease.values()).filter(d -> !configuredDiseases.contains(d)).forEach(d -> {
 			DiseaseConfiguration configuration = DiseaseConfiguration.build(d);
 			getDiseaseConfigurationService().ensurePersisted(configuration);
@@ -93,23 +92,23 @@ public class AbstractBeanTest extends BaseBeanTest {
 	public CaseFacade getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
-	
+
 	public RegionFacade getRegionFacade() {
 		return getBean(RegionFacadeEjbLocal.class);
 	}
-	
+
 	public DistrictFacade getDistrictFacade() {
 		return getBean(DistrictFacadeEjbLocal.class);
 	}
-	
+
 	public CommunityFacade getCommunityFacade() {
 		return getBean(CommunityFacadeEjbLocal.class);
 	}
-	
+
 	public FacilityFacade getFacilityFacade() {
 		return getBean(FacilityFacadeEjbLocal.class);
 	}
-	
+
 	public PointOfEntryFacade getPointOfEntryFacade() {
 		return getBean(PointOfEntryFacadeEjbLocal.class);
 	}

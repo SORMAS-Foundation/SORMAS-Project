@@ -11,13 +11,15 @@ import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 
 @Path("/infrastructure")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class InfrastructureResource {
 
-	@POST @Path("/sync")
+	@POST
+	@Path("/sync")
 	public InfrastructureSyncDto getInfrastructureSyncData(InfrastructureChangeDatesDto changeDates) {
 		return FacadeProvider.getInfrastructureFacade().getInfrastructureSyncData(changeDates);
 	}
-	
 }

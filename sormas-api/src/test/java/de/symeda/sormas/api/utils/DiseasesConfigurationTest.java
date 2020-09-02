@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -34,17 +34,18 @@ public class DiseasesConfigurationTest {
 
 		@Diseases()
 		private String testEmpty;
-		
+
 		@Diseases(Disease.EVD)
 		private String testOne;
 
-		@Diseases({Disease.CHOLERA, Disease.CSM})
+		@Diseases({
+			Disease.CHOLERA,
+			Disease.CSM })
 		private String testMultiple;
-
 	}
 
 	@Test
-	public void testIsMissing() throws Exception {
+	public void testIsMissing() {
 
 		assertTrue(DiseasesConfiguration.isMissing(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
 		assertFalse(DiseasesConfiguration.isMissing(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
@@ -53,7 +54,7 @@ public class DiseasesConfigurationTest {
 	}
 
 	@Test
-	public void testIsDefined() throws Exception {
+	public void testIsDefined() {
 
 		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testNone", Disease.NEW_INFLUENZA));
 		assertFalse(DiseasesConfiguration.isDefined(TestClass.class, "testEmpty", Disease.NEW_INFLUENZA));
@@ -63,5 +64,4 @@ public class DiseasesConfigurationTest {
 		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CHOLERA));
 		assertTrue(DiseasesConfiguration.isDefined(TestClass.class, "testMultiple", Disease.CSM));
 	}
-
 }

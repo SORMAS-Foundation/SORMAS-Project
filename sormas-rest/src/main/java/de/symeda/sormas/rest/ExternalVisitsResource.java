@@ -16,35 +16,35 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 @Path("/visits-external")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@Consumes({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed("REST_EXTERNAL_VISITS_USER")
 public class ExternalVisitsResource extends EntityDtoResource {
 
 	public static final String EXTERNAL_VISITS_API_VERSION = "1.41.0";
 
-    @GET
-    @Path("/person/{personUuid}/isValid")
-    public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
-        return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
-    }
+	@GET
+	@Path("/person/{personUuid}/isValid")
+	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
+		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
+	}
 
-    @POST
-    @Path("/")
-    public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
-        List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
-        return result;
-    }
+	@POST
+	@Path("/")
+	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
+		return result;
+	}
 
-    @GET
-    @Path("/version")
-    public String getVersion() {
-        return EXTERNAL_VISITS_API_VERSION;
-    }
+	@GET
+	@Path("/version")
+	public String getVersion() {
+		return EXTERNAL_VISITS_API_VERSION;
+	}
 
-    @Override
-    protected <T> String createErrorMessage(T dto) {
-        final ExternalVisitDto externalVisitDto = (ExternalVisitDto) dto;
-        return dto.getClass().getSimpleName() + " #personUUID: " + externalVisitDto.getPersonUuid() + "\n";
-    }
+	@Override
+	protected <T> String createErrorMessage(T dto) {
+		final ExternalVisitDto externalVisitDto = (ExternalVisitDto) dto;
+		return dto.getClass().getSimpleName() + " #personUUID: " + externalVisitDto.getPersonUuid() + "\n";
+	}
 }

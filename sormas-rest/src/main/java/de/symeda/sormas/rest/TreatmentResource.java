@@ -17,9 +17,11 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 
 @Path("/treatments")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class TreatmentResource extends EntityDtoResource {
 
 	@GET
@@ -45,5 +47,4 @@ public class TreatmentResource extends EntityDtoResource {
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getTreatmentFacade().getAllActiveUuids();
 	}
-
 }

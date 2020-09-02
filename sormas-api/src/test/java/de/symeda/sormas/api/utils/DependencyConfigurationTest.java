@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
@@ -40,26 +40,29 @@ public class DependencyConfigurationTest {
 
 		@DependantOn("testC")
 		private String testD;
-
 	}
 
 	@Test
-	public void testGetChildren() throws Exception {
+	public void testGetChildren() {
 
-		assertArrayEquals(new String[] { "testB", "testC" },
-				DependencyConfiguration.getChildren(TestClass.class, "testA").toArray());
-		assertArrayEquals(new String[] { "testD" },
-				DependencyConfiguration.getChildren(TestClass.class, "testC").toArray());
+		assertArrayEquals(
+			new String[] {
+				"testB",
+				"testC" },
+			DependencyConfiguration.getChildren(TestClass.class, "testA").toArray());
+		assertArrayEquals(
+			new String[] {
+				"testD" },
+			DependencyConfiguration.getChildren(TestClass.class, "testC").toArray());
 		assertArrayEquals(new String[] {}, DependencyConfiguration.getChildren(TestClass.class, "testB").toArray());
 	}
 
 	@Test
-	public void testGetParent() throws Exception {
+	public void testGetParent() {
 
 		assertEquals("testA", DependencyConfiguration.getParent(TestClass.class, "testB"));
 		assertEquals("testA", DependencyConfiguration.getParent(TestClass.class, "testC"));
 		assertEquals("testC", DependencyConfiguration.getParent(TestClass.class, "testD"));
 		assertNull(DependencyConfiguration.getParent(TestClass.class, "testA"));
 	}
-
 }

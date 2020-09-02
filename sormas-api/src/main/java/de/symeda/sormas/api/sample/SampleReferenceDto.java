@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
@@ -29,13 +29,13 @@ public class SampleReferenceDto extends ReferenceDto {
 	private static final long serialVersionUID = -6975445672442728938L;
 
 	public SampleReferenceDto() {
-		
+
 	}
-	
+
 	public SampleReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-	
+
 	public SampleReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
@@ -47,6 +47,7 @@ public class SampleReferenceDto extends ReferenceDto {
 	}
 
 	public static String buildCaption(SampleMaterial sampleMaterial, String caseUuid, String contactUuid) {
+
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(DataHelper.toStringNullable(sampleMaterial));
 		if (stringBuilder.length() > 0) {
@@ -54,12 +55,10 @@ public class SampleReferenceDto extends ReferenceDto {
 		}
 		stringBuilder.append(I18nProperties.getString(Strings.entitySample));
 		if (caseUuid != null) {
-			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forCase), " "))
-					.append(DataHelper.getShortUuid(caseUuid));
+			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forCase), " ")).append(DataHelper.getShortUuid(caseUuid));
 		}
 		if (contactUuid != null) {
-			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forContact), " "))
-					.append(DataHelper.getShortUuid(contactUuid));
+			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forContact), " ")).append(DataHelper.getShortUuid(contactUuid));
 		}
 		return stringBuilder.toString();
 	}

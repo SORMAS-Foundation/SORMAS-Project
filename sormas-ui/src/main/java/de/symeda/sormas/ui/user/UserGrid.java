@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
@@ -50,28 +50,43 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		setSelectionMode(SelectionMode.NONE);
 
 		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
-				query -> FacadeProvider.getUserFacade().getIndexList(
-						query.getFilter().orElse(null), query.getOffset(), query.getLimit(), 
-						query.getSortOrders().stream().map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
-						.collect(Collectors.toList())).stream(),
-				query -> {
-					return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
-				});
+			query -> FacadeProvider.getUserFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> {
+				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
+			});
 		setDataProvider(dataProvider);
 
 		addEditColumn(e -> ControllerProvider.getUserController().edit(e.getItem()));
 
-		setColumns(EDIT_BTN_ID, UserDto.UUID, UserDto.ACTIVE, UserDto.USER_ROLES, UserDto.USER_NAME, 
-				UserDto.NAME, UserDto.USER_EMAIL, UserDto.ADDRESS, UserDto.DISTRICT, UserDto.HEALTH_FACILITY);
+		setColumns(
+			EDIT_BTN_ID,
+			UserDto.UUID,
+			UserDto.ACTIVE,
+			UserDto.USER_ROLES,
+			UserDto.USER_NAME,
+			UserDto.NAME,
+			UserDto.USER_EMAIL,
+			UserDto.ADDRESS,
+			UserDto.DISTRICT,
+			UserDto.HEALTH_FACILITY);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
+		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
+			.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
 		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
-		
+
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(
-					UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
@@ -80,18 +95,14 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 	}
 
 	public static class ActiveRenderer extends HtmlRenderer {
-		
+
 		@Override
-        public JsonValue encode(String value) {
-        	String iconValue = VaadinIcons.CHECK_SQUARE_O.getHtml();
-        	if(!Boolean.parseBoolean(value)) {
-        		iconValue = VaadinIcons.THIN_SQUARE.getHtml();
-        	}
-            return super.encode(iconValue);
-        }
-
+		public JsonValue encode(String value) {
+			String iconValue = VaadinIcons.CHECK_SQUARE_O.getHtml();
+			if (!Boolean.parseBoolean(value)) {
+				iconValue = VaadinIcons.THIN_SQUARE.getHtml();
+			}
+			return super.encode(iconValue);
+		}
 	}
-
 }
-
-

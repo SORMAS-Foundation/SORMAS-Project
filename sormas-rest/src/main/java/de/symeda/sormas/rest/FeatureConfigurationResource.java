@@ -16,8 +16,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 
 @Path("/featureconfigurations")
-@Produces({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
-@Consumes({ MediaType.APPLICATION_JSON + "; charset=UTF-8" })
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @RolesAllowed("USER")
 public class FeatureConfigurationResource extends EntityDtoResource {
 
@@ -38,11 +38,10 @@ public class FeatureConfigurationResource extends EntityDtoResource {
 	public List<String> getAllUuids() {
 		return FacadeProvider.getFeatureConfigurationFacade().getAllUuids();
 	}
-	
+
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuids(@PathParam("since") long since) {
 		return FacadeProvider.getFeatureConfigurationFacade().getDeletedUuids(new Date(since));
 	}
-	
 }

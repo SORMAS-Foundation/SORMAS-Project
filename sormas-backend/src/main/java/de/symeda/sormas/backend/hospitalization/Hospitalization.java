@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
@@ -52,49 +52,53 @@ public class Hospitalization extends AbstractDomainObject {
 	public static final String INTENSIVE_CARE_UNIT = "intensiveCareUnit";
 	public static final String INTENSIVE_CARE_UNIT_START = "intensiveCareUnitStart";
 	public static final String INTENSIVE_CARE_UNIT_END = "intensiveCareUnitEnd";
-	
+
 	private YesNoUnknown admittedToHealthFacility;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private YesNoUnknown isolated;
 	private Date isolationDate;
 	private YesNoUnknown leftAgainstAdvice;
-	
+
 	private YesNoUnknown hospitalizedPreviously;
 	private Date changeDateOfEmbeddedLists;
 	private List<PreviousHospitalization> previousHospitalizations = new ArrayList<PreviousHospitalization>();
 	private YesNoUnknown intensiveCareUnit;
 	private Date intensiveCareUnitStart;
 	private Date intensiveCareUnitEnd;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
+
 	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getDischargeDate() {
 		return dischargeDate;
 	}
+
 	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getIsolated() {
 		return isolated;
 	}
+
 	public void setIsolated(YesNoUnknown isolated) {
 		this.isolated = isolated;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getIsolationDate() {
 		return isolationDate;
 	}
+
 	public void setIsolationDate(Date isolationDate) {
 		this.isolationDate = isolationDate;
 	}
@@ -103,14 +107,16 @@ public class Hospitalization extends AbstractDomainObject {
 	public YesNoUnknown getHospitalizedPreviously() {
 		return hospitalizedPreviously;
 	}
+
 	public void setHospitalizedPreviously(YesNoUnknown hospitalizedPreviously) {
 		this.hospitalizedPreviously = hospitalizedPreviously;
 	}
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = PreviousHospitalization.HOSPITALIZATION)
 	public List<PreviousHospitalization> getPreviousHospitalizations() {
 		return previousHospitalizations;
 	}
+
 	public void setPreviousHospitalizations(List<PreviousHospitalization> previousHospitalizations) {
 		this.previousHospitalizations = previousHospitalizations;
 	}
@@ -119,25 +125,29 @@ public class Hospitalization extends AbstractDomainObject {
 	public YesNoUnknown getAdmittedToHealthFacility() {
 		return admittedToHealthFacility;
 	}
+
 	public void setAdmittedToHealthFacility(YesNoUnknown admittedToHealthFacility) {
 		this.admittedToHealthFacility = admittedToHealthFacility;
 	}
-	
+
 	/**
 	 * This change date has to be set whenever one of the embedded lists is modified: !oldList.equals(newList)
+	 * 
 	 * @return
 	 */
 	public Date getChangeDateOfEmbeddedLists() {
 		return changeDateOfEmbeddedLists;
 	}
+
 	public void setChangeDateOfEmbeddedLists(Date changeDateOfEmbeddedLists) {
 		this.changeDateOfEmbeddedLists = changeDateOfEmbeddedLists;
 	}
-	
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getLeftAgainstAdvice() {
 		return leftAgainstAdvice;
 	}
+
 	public void setLeftAgainstAdvice(YesNoUnknown leftAgainstAdvice) {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 	}

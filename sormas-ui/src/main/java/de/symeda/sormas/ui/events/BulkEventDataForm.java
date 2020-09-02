@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
@@ -33,38 +33,35 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class BulkEventDataForm extends AbstractEditForm<EventDto> {
-		
-		private static final long serialVersionUID = 1L;
-		
+
+	private static final long serialVersionUID = 1L;
 
 	private static final String EVENT_STATUS_CHECKBOX = "eventStatusCheckbox";
-	
-	private static final String HTML_LAYOUT =
-			fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX) +
-			fluidRowLocs(EventDto.EVENT_STATUS);
+
+	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, EVENT_STATUS_CHECKBOX) + fluidRowLocs(EventDto.EVENT_STATUS);
 
 	private CheckBox eventStatusCheckBox;
-	
+
 	public BulkEventDataForm() {
 		super(EventDto.class, EventDto.I18N_PREFIX);
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 	}
-	
+
 	@Override
 	protected void addFields() {
 		eventStatusCheckBox = new CheckBox(I18nProperties.getCaption(Captions.bulkEventStatus));
 		getContent().addComponent(eventStatusCheckBox, EVENT_STATUS_CHECKBOX);
 		OptionGroup eventStatus = addField(EventDto.EVENT_STATUS, OptionGroup.class);
 		eventStatus.setEnabled(false);
-		
+
 		FieldHelper.setRequiredWhen(getFieldGroup(), eventStatusCheckBox, Arrays.asList(EventDto.EVENT_STATUS), Arrays.asList(true));
-	
+
 		eventStatusCheckBox.addValueChangeListener(e -> {
 			eventStatus.setEnabled((boolean) e.getProperty().getValue());
 		});
 	}
-	
+
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;

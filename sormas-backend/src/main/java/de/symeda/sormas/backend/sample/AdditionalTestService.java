@@ -24,12 +24,13 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 	@EJB
 	private SampleService sampleService;
-	
+
 	public AdditionalTestService() {
 		super(AdditionalTest.class);
 	}
 
 	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
 		Root<AdditionalTest> from = cq.from(getElementClass());
@@ -56,6 +57,7 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 	}
 
 	public List<String> getAllActiveUuids(User user) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<AdditionalTest> from = cq.from(getElementClass());
@@ -74,12 +76,13 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<AdditionalTest> getAllBySample(Sample sample) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
 		Root<AdditionalTest> from = cq.from(getElementClass());
-		
+
 		if (sample != null) {
 			cq.where(cb.equal(from.get(AdditionalTest.SAMPLE), sample));
 		}
@@ -88,18 +91,18 @@ public class AdditionalTestService extends AbstractAdoService<AdditionalTest> {
 		List<AdditionalTest> resultList = em.createQuery(cq).getResultList();
 		return resultList;
 	}
-	
+
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<AdditionalTest, AdditionalTest> additionalTestPath) {
+
 		// whoever created the sample the additional test is associated with is allowed to access it
 		Join<Sample, Sample> sampleJoin = additionalTestPath.join(AdditionalTest.SAMPLE);
 		Predicate filter = sampleService.createUserFilter(cb, cq, sampleJoin);
 
 		return filter;
 	}
-	
 }

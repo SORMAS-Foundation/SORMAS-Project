@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest.logging;
 
@@ -32,23 +32,23 @@ import javax.servlet.WriteListener;
  */
 public class ServletOutputStreamCopier extends ServletOutputStream {
 
-    private OutputStream outputStream;
-    private ByteArrayOutputStream copy;
+	private OutputStream outputStream;
+	private ByteArrayOutputStream copy;
 
-    public ServletOutputStreamCopier(OutputStream outputStream) {
-        this.outputStream = outputStream;
-        this.copy = new ByteArrayOutputStream(1024);
-    }
+	public ServletOutputStreamCopier(OutputStream outputStream) {
+		this.outputStream = outputStream;
+		this.copy = new ByteArrayOutputStream(1024);
+	}
 
-    @Override
-    public void write(int b) throws IOException {
-        outputStream.write(b);
-        copy.write(b);
-    }
+	@Override
+	public void write(int b) throws IOException {
+		outputStream.write(b);
+		copy.write(b);
+	}
 
-    public byte[] getCopy() {
-        return copy.toByteArray();
-    }
+	public byte[] getCopy() {
+		return copy.toByteArray();
+	}
 
 	@Override
 	public boolean isReady() {
@@ -60,5 +60,4 @@ public class ServletOutputStreamCopier extends ServletOutputStream {
 	public void setWriteListener(WriteListener writeListener) {
 
 	}
-
 }

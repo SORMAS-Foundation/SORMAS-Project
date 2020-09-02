@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
@@ -46,6 +46,7 @@ public final class PersonHelper {
 	}
 
 	public static String formatBirthdate(Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
+
 		if (birthdateDD == null && birthdateMM == null && birthdateYYYY == null) {
 			return "";
 		} else {
@@ -59,10 +60,19 @@ public final class PersonHelper {
 		}
 	}
 
-	public static String getAgeAndBirthdateString(Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Language language) {
+	public static String getAgeAndBirthdateString(
+		Integer age,
+		ApproximateAgeType ageType,
+		Integer birthdateDD,
+		Integer birthdateMM,
+		Integer birthdateYYYY,
+		Language language) {
+
 		String ageStr = ApproximateAgeHelper.formatApproximateAge(age, ageType);
 		String birthdateStr = formatBirthdate(birthdateDD, birthdateMM, birthdateYYYY, language);
-		return !StringUtils.isEmpty(ageStr) ? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : "")) : !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
+		return !StringUtils.isEmpty(ageStr)
+			? (ageStr + (!StringUtils.isEmpty(birthdateStr) ? " (" + birthdateStr + ")" : ""))
+			: !StringUtils.isEmpty(birthdateStr) ? birthdateStr : "";
 	}
 
 	public static String buildBurialInfoString(BurialInfoDto dto, Language language) {
@@ -92,6 +102,7 @@ public final class PersonHelper {
 	}
 
 	public static String buildPhoneString(String phone, String phoneOwner) {
+
 		StringBuilder result = new StringBuilder();
 		if (!DataHelper.isNullOrEmpty(phone)) {
 			result.append(phone);
@@ -106,6 +117,7 @@ public final class PersonHelper {
 	}
 
 	public static String buildOccupationString(OccupationType occupationType, String occupationDetails, String occupationFacilityName) {
+
 		StringBuilder result = new StringBuilder();
 		if (occupationType == OccupationType.OTHER) {
 			result.append(occupationDetails);
@@ -122,6 +134,7 @@ public final class PersonHelper {
 	}
 
 	public static String buildEducationString(EducationType educationType, String educationDetails) {
+
 		StringBuilder result = new StringBuilder();
 		if (educationType == EducationType.OTHER) {
 			result.append(educationDetails);

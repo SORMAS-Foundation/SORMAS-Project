@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
@@ -34,7 +34,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
@@ -44,15 +43,15 @@ public class SampleListComponent extends VerticalLayout {
 	private Button createButton;
 
 	public SampleListComponent(ContactReferenceDto contactRef) {
-		createSampleListComponent(new SampleList(contactRef),
-				e -> ControllerProvider.getSampleController().create(contactRef,
-				() -> SormasUI.refreshView()));
+		createSampleListComponent(
+			new SampleList(contactRef),
+			e -> ControllerProvider.getSampleController().create(contactRef, () -> SormasUI.refreshView()));
 	}
 
 	public SampleListComponent(CaseReferenceDto caseRef) {
-		createSampleListComponent(new SampleList(caseRef),
-				e -> ControllerProvider.getSampleController().create(caseRef,
-				() -> SormasUI.refreshView()));
+		createSampleListComponent(
+			new SampleList(caseRef),
+			e -> ControllerProvider.getSampleController().create(caseRef, () -> SormasUI.refreshView()));
 	}
 
 	private void createSampleListComponent(SampleList sampleList, Button.ClickListener clickListener) {

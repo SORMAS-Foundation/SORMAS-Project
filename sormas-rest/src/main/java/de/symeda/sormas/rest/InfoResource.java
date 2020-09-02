@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.rest;
 
@@ -30,26 +30,27 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
 
 @Path("/info")
-@Produces({MediaType.APPLICATION_JSON + "; charset=UTF-8"})
-@RolesAllowed({"USER", "REST_USER"})
+@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
+@RolesAllowed({
+	"USER",
+	"REST_USER" })
 public class InfoResource {
 
 	@GET
 	@Path("/version")
-	public String getVersion() {	
+	public String getVersion() {
 		return InfoProvider.get().getVersion();
 	}
-	
+
 	@GET
 	@Path("/appurl")
 	public String getAppUrl(@QueryParam("appVersion") String appVersionString) {
-		
+
 		int[] appVersion = VersionHelper.extractVersion(appVersionString);
 
 		String appLegacyUrl = FacadeProvider.getConfigFacade().getAppLegacyUrl();
 		int[] appLegacyVersion = VersionHelper.extractVersion(appLegacyUrl);
-		if (VersionHelper.isVersion(appLegacyVersion))
-		{
+		if (VersionHelper.isVersion(appLegacyVersion)) {
 			if (!VersionHelper.isVersion(appVersion)) {
 				return appLegacyUrl; // no version -> likely old app 0.22.0 or older
 			} else if (VersionHelper.isEqual(appVersion, appLegacyVersion)) {
@@ -58,16 +59,16 @@ public class InfoResource {
 				return appLegacyUrl;
 			}
 		}
-		
+
 		return FacadeProvider.getConfigFacade().getAppUrl();
 	}
-	
+
 	@GET
 	@Path("/locale")
 	public String getLocale() {
 		return FacadeProvider.getConfigFacade().getCountryLocale();
 	}
-	
+
 	@GET
 	@Path("/checkcompatibility")
 	public CompatibilityCheckResponse isCompatibleToApi(@QueryParam("appVersion") String appVersion) {

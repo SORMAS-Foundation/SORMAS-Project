@@ -9,11 +9,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
@@ -53,7 +53,7 @@ public class MessagingService {
 	public static final String SUBJECT_TASK_DUE = "notificationTtaskDueSubject";
 	public static final String SUBJECT_VISIT_COMPLETED = "notificationVisitCompletedSubject";
 	public static final String SUBJECT_DISEASE_CHANGED = "notificationDiseaseChangedSubject";
-	
+
 	// Message contents (via properties file)
 	public static final String CONTENT_CASE_CLASSIFICATION_CHANGED = "notificationCaseClassificationChanged";
 	public static final String CONTENT_CASE_INVESTIGATION_DONE = "notificationCaseInvestigationDone";
@@ -72,7 +72,7 @@ public class MessagingService {
 	public static final String CONTENT_TASK_DUE_SPECIFIC = "notificationTaskDueSpecific";
 	public static final String CONTENT_VISIT_COMPLETED = "notificationVisitCompleted";
 	public static final String CONTENT_DISEASE_CHANGED = "notificationDiseaseChanged";
-	
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -81,20 +81,22 @@ public class MessagingService {
 	private EmailService emailService;
 	@EJB
 	private SmsService smsService;
-	
+
 	/**
 	 * Sends the message specified by the messageContent via mail and/or SMS, according to the messageTypes, to the specified recipient's
 	 * email address and/or phone number. Logs an error if the email address or phone number is not set.
 	 */
-	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes) throws NotificationDeliveryFailedException {
+	public void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
+		throws NotificationDeliveryFailedException {
+
 		// Don't send notifications to users that initiated an action
 		if (recipient.equals(userService.getCurrentUser())) {
 			return;
 		}
-		
+
 		String emailAddress = recipient.getUserEmail();
 		String phoneNumber = recipient.getPhone();
-		
+
 		for (MessageType messageType : messageTypes) {
 			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
 				logger.info(String.format("Tried to send an email to a user without an email address (UUID: %s).", recipient.getUuid()));
@@ -116,7 +118,5 @@ public class MessagingService {
 				}
 			}
 		}
-		
 	}
-	
 }

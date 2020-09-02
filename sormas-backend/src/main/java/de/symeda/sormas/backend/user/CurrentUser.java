@@ -4,16 +4,17 @@ import javax.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class CurrentUser {
-    private User user;
 
-    public CurrentUser() {
-    }
+	private User user;
 
-    public CurrentUser(User user) {
-        this.user = user;
-    }
+	public CurrentUser() {
+	}
 
-    public User getUser() {
-        return user;
-    }
+	public CurrentUser(User user) {
+		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
+	}
 }
