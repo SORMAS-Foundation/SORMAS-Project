@@ -95,10 +95,9 @@ public class CampaignDataView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			if (value == null) {
 				campaignFormElementImportance.setVisible(false);
-				campaignFormElementImportance.clear();
+				campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 			} else {
 				campaignFormElementImportance.setVisible(true);
-				campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 			}
 		});
 
@@ -172,8 +171,6 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignFormElementImportance
 			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 
-		campaignFormElementImportance.setEnabled(true);
-		campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 		campaignFormElementImportance.setVisible(false);
 	}
 
