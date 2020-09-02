@@ -13,32 +13,43 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.sormastosormas;
+package de.symeda.sormas.backend.sormastosormas;
 
-import de.symeda.sormas.api.EntityDto;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
-public class SormasToSormasSourceDto extends EntityDto {
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
-	private static final long serialVersionUID = -4921614789451304041L;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
-	private HealthDepartmentServerReferenceDto healthDepartment;
+@Entity(name = "sormastosormasorigininfo")
+public class SormasToSormasOriginInfo extends AbstractDomainObject {
+
+	private static final long serialVersionUID = -842917698322793413L;
+
+	private String healthDepartment;
+
 	private String senderName;
+
 	private String senderEmail;
+
 	private String senderPhoneNumber;
+
 	private boolean ownershipHandedOver;
+
 	private String comment;
 
-	public SormasToSormasSourceDto() {
-	}
-
-	public HealthDepartmentServerReferenceDto getHealthDepartment() {
+	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	public String getHealthDepartment() {
 		return healthDepartment;
 	}
 
-	public void setHealthDepartment(HealthDepartmentServerReferenceDto healthDepartment) {
+	public void setHealthDepartment(String healthDepartment) {
 		this.healthDepartment = healthDepartment;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getSenderName() {
 		return senderName;
 	}
@@ -47,6 +58,7 @@ public class SormasToSormasSourceDto extends EntityDto {
 		this.senderName = senderName;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSenderEmail() {
 		return senderEmail;
 	}
@@ -55,6 +67,7 @@ public class SormasToSormasSourceDto extends EntityDto {
 		this.senderEmail = senderEmail;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSenderPhoneNumber() {
 		return senderPhoneNumber;
 	}
@@ -63,6 +76,7 @@ public class SormasToSormasSourceDto extends EntityDto {
 		this.senderPhoneNumber = senderPhoneNumber;
 	}
 
+	@Column
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}
@@ -71,6 +85,7 @@ public class SormasToSormasSourceDto extends EntityDto {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}

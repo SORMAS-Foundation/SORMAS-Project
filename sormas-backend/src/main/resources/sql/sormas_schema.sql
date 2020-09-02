@@ -5022,7 +5022,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (243, 'Campaign diag
 
 
 -- 2020-08-13 Sormas 2 Sormas sharing information #2624
-CREATE TABLE sormastosormassource (
+CREATE TABLE sormastosormasorigininfo (
     id bigint NOT NULL,
     uuid varchar(36) not null unique,
     creationdate timestamp without time zone NOT NULL,
@@ -5031,16 +5031,17 @@ CREATE TABLE sormastosormassource (
     sendername varchar(512),
     senderemail varchar(512),
     senderphonenumber varchar(512),
+    ownershipHandedOver boolean NOT NULL DEFAULT false,
     comment varchar(4096),
     primary key(id)
 );
-ALTER TABLE sormastosormassource OWNER TO sormas_user;
+ALTER TABLE sormastosormasorigininfo OWNER TO sormas_user;
 
-ALTER TABLE cases ADD COLUMN sormasToSormasSource_id bigint;
-ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasToSormasSource_id FOREIGN KEY (sormasToSormasSource_id) REFERENCES sormastosormassource (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-ALTER TABLE contact ADD COLUMN sormasToSormasSource_id bigint;
-ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasSource_id FOREIGN KEY (sormasToSormasSource_id) REFERENCES sormastosormassource (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE contact ADD COLUMN sormasToSormasOriginInfo_id bigint;
+ALTER TABLE contact ADD CONSTRAINT fk_contact_sormasToSormasOriginInfo_id FOREIGN KEY (sormasToSormasOriginInfo_id) REFERENCES sormastosormasorigininfo (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 CREATE TABLE sormastosormasshareinfo (
     id bigint NOT NULL,
@@ -5051,6 +5052,7 @@ CREATE TABLE sormastosormasshareinfo (
     contact_id bigint,
     healthdepartment varchar(512),
     sender_id bigint,
+    ownershipHandedOver boolean NOT NULL DEFAULT false,
     comment varchar(4096),
     primary key(id)
 );
@@ -5061,10 +5063,5 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_co
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (244, 'Store Sormas 2 Sormas sharing information #2624');
-
-ALTER TABLE sormastosormasshareinfo ADD COLUMN ownershipHandedOver boolean NOT NULL DEFAULT false;
-ALTER TABLE sormastosormassource ADD COLUMN ownershipHandedOver boolean NOT NULL DEFAULT false;
-
-INSERT INTO schema_version (version_number, comment) VALUES (245, 'Sormas 2 Sormas ownership #2628');
 
 -- *** Insert new sql commands BEFORE this line ***

@@ -26,14 +26,14 @@ import de.symeda.sormas.backend.common.AbstractAdoService;
 
 @Stateless
 @LocalBean
-public class SormasToSormasSourceService extends AbstractAdoService<SormasToSormasSource> {
+public class SormasToSormasOriginInfoService extends AbstractAdoService<SormasToSormasOriginInfo> {
 
-	public SormasToSormasSourceService() {
-		super(SormasToSormasSource.class);
+	public SormasToSormasOriginInfoService() {
+		super(SormasToSormasOriginInfo.class);
 	}
 
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SormasToSormasSource, SormasToSormasSource> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SormasToSormasOriginInfo, SormasToSormasOriginInfo> from) {
 		return null;
 	}
 

@@ -43,7 +43,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -377,7 +377,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
-	private SormasToSormasSourceDto sormasToSormasSource;
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
 	private boolean ownershipHandedOver;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
@@ -1141,12 +1141,12 @@ public class CaseDataDto extends PseudonymizableDto {
 		this.facilityType = facilityType;
 	}
 
-	public SormasToSormasSourceDto getSormasToSormasSource() {
-		return sormasToSormasSource;
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
 	}
 
-	public void setSormasToSormasSource(SormasToSormasSourceDto sormasToSormasSource) {
-		this.sormasToSormasSource = sormasToSormasSource;
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
 	}
 
 	public boolean isOwnershipHandedOver() {

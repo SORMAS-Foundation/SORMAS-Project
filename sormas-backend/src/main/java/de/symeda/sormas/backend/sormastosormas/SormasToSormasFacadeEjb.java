@@ -77,9 +77,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -114,7 +114,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private SormasToSormasSourceService sormasToSormasSourceService;
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
@@ -187,7 +187,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer, options);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
-		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
+		cazeDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
 		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
 
@@ -203,7 +203,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
 		ContactDto contactDto = getContactDto(contact, pseudonymizer);
-		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
+		contactDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
@@ -289,7 +289,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		caze.setPointOfEntry(infrastructure.pointOfEntry);
 
 		// init uuids
-		caze.getSormasToSormasSource().setUuid(DataHelper.createUuid());
+		caze.getSormasToSormasOriginInfo().setUuid(DataHelper.createUuid());
 
 		if (caze.getHospitalization() != null) {
 			caze.getHospitalization().setUuid(DataHelper.createUuid());
@@ -379,7 +379,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		contact.setCommunity(infrastructure.community);
 
 		// init uuids
-		contact.getSormasToSormasSource().setUuid(DataHelper.createUuid());
+		contact.getSormasToSormasOriginInfo().setUuid(DataHelper.createUuid());
 
 		if (contact.getEpiData() != null) {
 			processEpiData(contact.getEpiData());
@@ -487,7 +487,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
 		}
 
-		validateSource(caze.getSormasToSormasSource());
+		validateSource(caze.getSormasToSormasOriginInfo());
 	}
 
 	private void validateContact(ContactDto contact) throws ValidationRuntimeException {
@@ -499,10 +499,10 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
 		}
 
-		validateSource(contact.getSormasToSormasSource());
+		validateSource(contact.getSormasToSormasOriginInfo());
 	}
 
-	private void validateSource(SormasToSormasSourceDto source) {
+	private void validateSource(SormasToSormasOriginInfoDto source) {
 		if (source == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
 		}
@@ -529,17 +529,17 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return pseudonymizer;
 	}
 
-	private SormasToSormasSourceDto createSormasToSormasSource(User currentUser, SormasToSormasOptionsDto options) {
-		SormasToSormasSourceDto sormasToSormasSource = new SormasToSormasSourceDto();
+	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User currentUser, SormasToSormasOptionsDto options) {
+		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
 
-		sormasToSormasSource.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
-		sormasToSormasSource.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
-		sormasToSormasSource.setSenderEmail(currentUser.getUserEmail());
-		sormasToSormasSource.setSenderPhoneNumber(currentUser.getPhone());
-		sormasToSormasSource.setOwnershipHandedOver(options.isHandOverOwnership());
-		sormasToSormasSource.setComment(options.getComment());
+		sormasToSormasOriginInfo.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
+		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
+		sormasToSormasOriginInfo.setSenderEmail(currentUser.getUserEmail());
+		sormasToSormasOriginInfo.setSenderPhoneNumber(currentUser.getPhone());
+		sormasToSormasOriginInfo.setOwnershipHandedOver(options.isHandOverOwnership());
+		sormasToSormasOriginInfo.setComment(options.getComment());
 
-		return sormasToSormasSource;
+		return sormasToSormasOriginInfo;
 	}
 
 	private void saveNewShareInfo(UserReferenceDto sender, SormasToSormasOptionsDto options, Case caze, Contact contact) {
@@ -609,14 +609,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
 	}
 
-	public SormasToSormasSource fromSormasToSormasSourceDto(SormasToSormasSourceDto source) {
+	public SormasToSormasOriginInfo fromSormasToSormasOriginInfoDto(SormasToSormasOriginInfoDto source) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasSource target = sormasToSormasSourceService.getByUuid(source.getUuid());
+		SormasToSormasOriginInfo target = sormasToSormasOriginInfoService.getByUuid(source.getUuid());
 		if (target == null) {
-			target = new SormasToSormasSource();
+			target = new SormasToSormasOriginInfo();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
@@ -634,12 +634,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return target;
 	}
 
-	public static SormasToSormasSourceDto toSormasTsoSormasSourceDto(SormasToSormasSource source) {
+	public static SormasToSormasOriginInfoDto toSormasToSormasOriginInfoDto(SormasToSormasOriginInfo source) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasSourceDto target = new SormasToSormasSourceDto();
+		SormasToSormasOriginInfoDto target = new SormasToSormasOriginInfoDto();
 
 		DtoHelper.fillDto(target, source);
 

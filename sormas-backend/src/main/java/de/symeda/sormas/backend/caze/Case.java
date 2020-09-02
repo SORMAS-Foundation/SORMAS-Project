@@ -74,8 +74,8 @@ import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasSource;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
@@ -287,7 +287,7 @@ public class Case extends CoreAdo {
 	private Set<Visit> visits = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 
-	private SormasToSormasSource sormasToSormasSource;
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
@@ -1185,20 +1185,15 @@ public class Case extends CoreAdo {
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@AuditedIgnore
-	public SormasToSormasSource getSormasToSormasSource() {
-		return sormasToSormasSource;
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
 	}
 
-	public void setSormasToSormasSource(SormasToSormasSource sormasSource) {
-		this.sormasToSormasSource = sormasSource;
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo originInfo) {
+		this.sormasToSormasOriginInfo = originInfo;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE,
-		fetch = FetchType.LAZY,
-		cascade = {
-			CascadeType.REFRESH,
-			CascadeType.REMOVE,
-			CascadeType.DETACH })
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}

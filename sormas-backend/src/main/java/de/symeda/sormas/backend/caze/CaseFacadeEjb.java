@@ -1912,8 +1912,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 		target.setFacilityType(source.getFacilityType());
-		if (source.getSormasToSormasSource() != null) {
-			target.setSormasToSormasSource(sormasToSormasFacade.fromSormasToSormasSourceDto(source.getSormasToSormasSource()));
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasFacade.fromSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
 		}
 
 		// TODO this makes sure follow-up is not overriden from the mobile app side. remove once that is implemented
@@ -2183,7 +2183,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		target.setFacilityType(source.getFacilityType());
 
-		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toSormasTsoSormasSourceDto(source.getSormasToSormasSource()));
+		target.setSormasToSormasOriginInfo(SormasToSormasFacadeEjb.toSormasToSormasOriginInfoDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
@@ -2855,8 +2855,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	public Boolean isCaseEditAllowed(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
 
-		if (caze.getSormasToSormasSource() != null) {
-			return caze.getSormasToSormasSource().isOwnershipHandedOver();
+		if (caze.getSormasToSormasOriginInfo() != null) {
+			return caze.getSormasToSormasOriginInfo().isOwnershipHandedOver();
 		}
 
 		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);

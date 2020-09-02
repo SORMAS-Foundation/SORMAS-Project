@@ -59,9 +59,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -86,7 +86,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 
-		caze.setSormasToSormasSource(createSormasToSormasSource());
+		caze.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
 
 		getSormasToSormasFacade().saveSharedCase(new SormasToSormasCaseDto(person, caze));
 
@@ -110,8 +110,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedCase.getClinicalCourse().getUuid(), is(caze.getClinicalCourse().getUuid()));
 		assertThat(savedCase.getMaternalHistory().getUuid(), is(caze.getMaternalHistory().getUuid()));
 
-		assertThat(savedCase.getSormasToSormasSource().getHealthDepartment().getUuid(), is("testHealthDep"));
-		assertThat(savedCase.getSormasToSormasSource().getSenderName(), is("John doe"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getHealthDepartment().getUuid(), is("testHealthDep"));
+		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setHealthFacility(rdcf.remoteRdcf.facility);
 		caze.setFacilityType(FacilityType.HOSPITAL);
 
-		caze.setSormasToSormasSource(createSormasToSormasSource());
+		caze.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
 
 		caze.getHospitalization().getPreviousHospitalizations().add(PreviousHospitalizationDto.build(caze));
 		caze.getEpiData().getBurials().add(EpiDataBurialDto.build());
@@ -161,7 +161,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		caze.setPointOfEntry(rdcf.remoteRdcf.pointOfEntry);
 		PortHealthInfoDto portHealthInfo = PortHealthInfoDto.build();
 		caze.setPortHealthInfo(portHealthInfo);
-		caze.setSormasToSormasSource(createSormasToSormasSource());
+		caze.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
 
 		getSormasToSormasFacade().saveSharedCase(new SormasToSormasCaseDto(person, caze));
 
@@ -186,7 +186,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.remoteRdcf.district);
 		contact.setCommunity(rdcf.remoteRdcf.community);
 
-		contact.setSormasToSormasSource(createSormasToSormasSource());
+		contact.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
 
 		getSormasToSormasFacade().saveSharedContact(new SormasToSormasContactDto(person, contact));
 
@@ -204,8 +204,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		assertThat(savedContact.getCommunity(), is(rdcf.localRdcf.community));
 		assertThat(savedContact.getEpiData().getUuid(), is(contact.getEpiData().getUuid()));
 
-		assertThat(savedContact.getSormasToSormasSource().getHealthDepartment().getUuid(), is("testHealthDep"));
-		assertThat(savedContact.getSormasToSormasSource().getSenderName(), is("John doe"));
+		assertThat(savedContact.getSormasToSormasOriginInfo().getHealthDepartment().getUuid(), is("testHealthDep"));
+		assertThat(savedContact.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.remoteRdcf.district);
 		contact.setCommunity(rdcf.remoteRdcf.community);
 
-		contact.setSormasToSormasSource(createSormasToSormasSource());
+		contact.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo());
 
 		getSormasToSormasFacade().saveSharedContact(new SormasToSormasContactDto(person, contact));
 
@@ -276,9 +276,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedCase.getCaze().getClassificationUser(), is(nullValue()));
 
 				// share information
-				assertThat(sharedCase.getCaze().getSormasToSormasSource().getHealthDepartment().getUuid(), is("healthDepMain"));
-				assertThat(sharedCase.getCaze().getSormasToSormasSource().getSenderName(), is("Surv Off"));
-				assertThat(sharedCase.getCaze().getSormasToSormasSource().getComment(), is("Test comment"));
+				assertThat(sharedCase.getCaze().getSormasToSormasOriginInfo().getHealthDepartment().getUuid(), is("healthDepMain"));
+				assertThat(sharedCase.getCaze().getSormasToSormasOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(sharedCase.getCaze().getSormasToSormasOriginInfo().getComment(), is("Test comment"));
 
 				return Response.ok().build();
 			});
@@ -333,9 +333,9 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 				assertThat(sharedContact.getContact().getResultingCaseUser(), is(nullValue()));
 
 				// share information
-				assertThat(sharedContact.getContact().getSormasToSormasSource().getHealthDepartment().getUuid(), is("healthDepMain"));
-				assertThat(sharedContact.getContact().getSormasToSormasSource().getSenderName(), is("Surv Off"));
-				assertThat(sharedContact.getContact().getSormasToSormasSource().getComment(), is("Test comment"));
+				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getHealthDepartment().getUuid(), is("healthDepMain"));
+				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getSenderName(), is("Surv Off"));
+				assertThat(sharedContact.getContact().getSormasToSormasOriginInfo().getComment(), is("Test comment"));
 
 				return Response.ok().build();
 			});
@@ -447,8 +447,8 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 		return person;
 	}
 
-	private SormasToSormasSourceDto createSormasToSormasSource() {
-		SormasToSormasSourceDto source = new SormasToSormasSourceDto();
+	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo() {
+		SormasToSormasOriginInfoDto source = new SormasToSormasOriginInfoDto();
 		source.setHealthDepartment(new HealthDepartmentServerReferenceDto("testHealthDep", "Test Department"));
 		source.setSenderName("John doe");
 
