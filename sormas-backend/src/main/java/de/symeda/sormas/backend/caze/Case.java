@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.caze;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -167,6 +168,7 @@ public class Case extends CoreAdo {
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
 	public static final String FACILITY_TYPE = "facilityType";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Person person;
 	private String description;
@@ -286,7 +288,7 @@ public class Case extends CoreAdo {
 	private Set<EventParticipant> eventParticipants;
 
 	private SormasToSormasSource sormasToSormasSource;
-	private List<SormasToSormasShareInfo> sormasToSormasShares;
+	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1191,7 +1193,12 @@ public class Case extends CoreAdo {
 		this.sormasToSormasSource = sormasSource;
 	}
 
-	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = SormasToSormasShareInfo.CAZE,
+		fetch = FetchType.LAZY,
+		cascade = {
+			CascadeType.REFRESH,
+			CascadeType.REMOVE,
+			CascadeType.DETACH })
 	public List<SormasToSormasShareInfo> getSormasToSormasShares() {
 		return sormasToSormasShares;
 	}

@@ -58,6 +58,7 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.therapy.Therapy;
 import de.symeda.sormas.app.backend.user.User;
@@ -299,6 +300,11 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown postpartum;
 	@Enumerated(EnumType.STRING)
 	private Trimester trimester;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
+	@DatabaseField
+	private boolean ownershipHandedOver;
 
 	public boolean isUnreferredPortHealthCase() {
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
@@ -958,5 +964,21 @@ public class Case extends PseudonymizableAdo {
 
 	public void setFacilityType(FacilityType facilityType) {
 		this.facilityType = facilityType;
+	}
+
+	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
+	}
+
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfo sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

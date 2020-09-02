@@ -73,7 +73,6 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -771,6 +770,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filters.add(changeDateFilter(cb, date, casePath, Case.MATERNAL_HISTORY));
 		filters.add(changeDateFilter(cb, date, casePath, Case.PORT_HEALTH_INFO));
 
+		filters.add(changeDateFilter(cb, date, casePath, Case.SORMAS_TO_SORMAS_SHARES));
+
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
 			filters.add(changeDateFilter(cb, date, caseSampleJoin));
@@ -782,14 +783,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return cb.or(filters.build().toArray(Predicate[]::new));
-	}
-
-	private <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
-		From<?, ?> parent = path;
-		for (int i = 0; i < joinFields.length; i++) {
-			parent = parent.join(joinFields[i], JoinType.LEFT);
-		}
-		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 
 	@SuppressWarnings("rawtypes")

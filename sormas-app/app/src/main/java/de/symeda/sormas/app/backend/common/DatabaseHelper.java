@@ -96,6 +96,8 @@ import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.PathogenTestDao;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleDao;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfo;
+import de.symeda.sormas.app.backend.sormastosormas.SormasToSormasOriginInfoDao;
 import de.symeda.sormas.app.backend.symptoms.Symptoms;
 import de.symeda.sormas.app.backend.symptoms.SymptomsDao;
 import de.symeda.sormas.app.backend.synclog.SyncLog;
@@ -127,7 +129,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// name of the database file for your application. Stored in data/data/de.symeda.sormas.app/databases
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	public static final int DATABASE_VERSION = 222;
+	public static final int DATABASE_VERSION = 223;
 
 	private static DatabaseHelper instance = null;
 
@@ -269,6 +271,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, AggregateReport.class);
 			TableUtils.createTable(connectionSource, Outbreak.class);
 			TableUtils.createTable(connectionSource, DiseaseClassificationCriteria.class);
+			TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't build database", e);
 			throw new RuntimeException(e);
@@ -1531,6 +1534,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 				// ATTENTION: break should only be done after last version
 				break;
+
+			case 222:
+				currentVersion = 222;
+				TableUtils.createTable(connectionSource, SormasToSormasOriginInfo.class);
+
+				getDao(Case.class)
+					.executeRaw("ALTER TABLE cases ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN ownershipHandedOver boolean;");
+
+				getDao(Contact.class)
+					.executeRaw("ALTER TABLE contacts ADD COLUMN sormasToSormasOriginInfo_id bigint REFERENCES sormasToSormasOriginInfo(id);");
+				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN ownershipHandedOver boolean;");
+
+				// ATTENTION: break should only be done after last version
+				break;
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
 			}
@@ -1685,6 +1703,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					dao = (AbstractAdoDao<ADO>) new OutbreakDao((Dao<Outbreak, Long>) innerDao);
 				} else if (type.equals(DiseaseClassificationCriteria.class)) {
 					dao = (AbstractAdoDao<ADO>) new DiseaseClassificationCriteriaDao((Dao<DiseaseClassificationCriteria, Long>) innerDao);
+				} else if (type.equals(SormasToSormasOriginInfo.class)) {
+					dao = (AbstractAdoDao<ADO>) new SormasToSormasOriginInfoDao((Dao<SormasToSormasOriginInfo, Long>) innerDao);
 				} else {
 					throw new UnsupportedOperationException(type.toString());
 				}

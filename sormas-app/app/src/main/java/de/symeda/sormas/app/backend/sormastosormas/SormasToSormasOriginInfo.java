@@ -1,19 +1,4 @@
-/*
- * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-package de.symeda.sormas.backend.sormastosormas;
+package de.symeda.sormas.app.backend.sormastosormas;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
@@ -21,26 +6,42 @@ import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import com.j256.ormlite.table.DatabaseTable;
 
-@Entity(name = "sormastosormassource")
-public class SormasToSormasSource extends AbstractDomainObject {
+import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.EmbeddedAdo;
 
-	private static final long serialVersionUID = -842917698322793413L;
+@Entity(name = SormasToSormasOriginInfo.TABLE_NAME)
+@DatabaseTable(tableName = SormasToSormasOriginInfo.TABLE_NAME)
+@EmbeddedAdo(nullable = true)
+public class SormasToSormasOriginInfo extends AbstractDomainObject {
 
+	public static final String TABLE_NAME = "sormasToSormasOriginInfo";
+	private static final String I18N_PREFIX = "SormasToSormasOriginInfo";
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String healthDepartment;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String senderName;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String senderEmail;
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String senderPhoneNumber;
 
+	@Column
 	private boolean ownershipHandedOver;
 
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String comment;
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
+
 	public String getHealthDepartment() {
 		return healthDepartment;
 	}
@@ -49,7 +50,6 @@ public class SormasToSormasSource extends AbstractDomainObject {
 		this.healthDepartment = healthDepartment;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT, nullable = false)
 	public String getSenderName() {
 		return senderName;
 	}
@@ -58,7 +58,6 @@ public class SormasToSormasSource extends AbstractDomainObject {
 		this.senderName = senderName;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSenderEmail() {
 		return senderEmail;
 	}
@@ -67,7 +66,6 @@ public class SormasToSormasSource extends AbstractDomainObject {
 		this.senderEmail = senderEmail;
 	}
 
-	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSenderPhoneNumber() {
 		return senderPhoneNumber;
 	}
@@ -76,7 +74,6 @@ public class SormasToSormasSource extends AbstractDomainObject {
 		this.senderPhoneNumber = senderPhoneNumber;
 	}
 
-	@Column
 	public boolean isOwnershipHandedOver() {
 		return ownershipHandedOver;
 	}
@@ -85,7 +82,6 @@ public class SormasToSormasSource extends AbstractDomainObject {
 		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
-	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}

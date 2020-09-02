@@ -221,6 +221,8 @@ import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -343,6 +345,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -2178,7 +2182,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 		target.setFacilityType(source.getFacilityType());
+
 		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toSormasTsoSormasSourceDto(source.getSormasToSormasSource()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
 	}
@@ -2848,6 +2854,11 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	public Boolean isCaseEditAllowed(String caseUuid) {
 		Case caze = caseService.getByUuid(caseUuid);
-		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze);
+
+		if (caze.getSormasToSormasSource() != null) {
+			return caze.getSormasToSormasSource().isOwnershipHandedOver();
+		}
+
+		return caseJurisdictionChecker.isInJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
 	}
 }

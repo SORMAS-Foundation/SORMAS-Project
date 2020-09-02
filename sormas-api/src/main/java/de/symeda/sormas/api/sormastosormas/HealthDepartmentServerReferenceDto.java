@@ -24,6 +24,10 @@ public class HealthDepartmentServerReferenceDto extends ReferenceDto {
 	public HealthDepartmentServerReferenceDto() {
 	}
 
+	public HealthDepartmentServerReferenceDto(String uuid) {
+		super(uuid);
+	}
+
 	public HealthDepartmentServerReferenceDto(String uuid, String caption) {
 		super(uuid, caption);
 	}

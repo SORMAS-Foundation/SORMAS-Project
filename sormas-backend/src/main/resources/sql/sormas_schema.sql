@@ -5062,4 +5062,9 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_se
 
 INSERT INTO schema_version (version_number, comment) VALUES (244, 'Store Sormas 2 Sormas sharing information #2624');
 
+ALTER TABLE sormastosormasshareinfo ADD COLUMN ownershipHandedOver boolean NOT NULL DEFAULT false;
+ALTER TABLE sormastosormassource ADD COLUMN ownershipHandedOver boolean NOT NULL DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (245, 'Sormas 2 Sormas ownership #2628');
+
 -- *** Insert new sql commands BEFORE this line ***

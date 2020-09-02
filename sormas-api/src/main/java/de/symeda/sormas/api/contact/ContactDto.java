@@ -202,6 +202,7 @@ public class ContactDto extends PseudonymizableDto {
 	private EpiDataDto epiData;
 	private HealthConditionsDto healthConditions;
 	private SormasToSormasSourceDto sormasToSormasSource;
+	private boolean ownershipHandedOver;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -697,5 +698,13 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setSormasToSormasSource(SormasToSormasSourceDto sormasToSormasSource) {
 		this.sormasToSormasSource = sormasToSormasSource;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

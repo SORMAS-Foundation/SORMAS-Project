@@ -133,6 +133,8 @@ import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -192,6 +194,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
+	@EJB
+	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1186,6 +1190,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(source.getHealthConditions()));
 
 		target.setSormasToSormasSource(SormasToSormasFacadeEjb.toSormasTsoSormasSourceDto(source.getSormasToSormasSource()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(SormasToSormasShareInfo::isOwnershipHandedOver));
 
 		return target;
 	}
@@ -1395,6 +1400,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public boolean isContactEditAllowed(String contactUuid) {
 		Contact contact = contactService.getByUuid(contactUuid);
-		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact);
+
+		if (contact.getSormasToSormasSource() != null) {
+			return contact.getSormasToSormasSource().isOwnershipHandedOver();
+		}
+
+		return contactJurisdictionChecker.isInJurisdictionOrOwned(contact) && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
 	}
 }

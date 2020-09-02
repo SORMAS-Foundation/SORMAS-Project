@@ -35,12 +35,15 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public static final String CAZE = "caze";
 	public static final String CONTACT = "contact";
+	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 
 	private Case caze;
 
 	private Contact contact;
 
 	private String healthDepartment;
+
+	private boolean ownershipHandedOver;
 
 	private User sender;
 
@@ -73,6 +76,15 @@ public class SormasToSormasShareInfo extends AbstractDomainObject {
 
 	public void setHealthDepartment(String healthDepartment) {
 		this.healthDepartment = healthDepartment;
+	}
+
+	@Column
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	@ManyToOne

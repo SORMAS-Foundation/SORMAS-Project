@@ -134,6 +134,7 @@ public class Contact extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 
 	private Date reportDateTime;
 	private User reportingUser;

@@ -32,6 +32,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.HEALTH_DEPARTMENT)
+		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
@@ -58,10 +59,12 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			healthDepartmentField.setItemCaption(hd, hd.getName());
 		});
 
+		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+
 		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 
 		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-		pseudonymizeSensitiveData.addStyleNames(CssStyles.FORCE_CAPTION, CssStyles.VSPACE_2);
+		pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
 
 		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 		comment.setRows(3);

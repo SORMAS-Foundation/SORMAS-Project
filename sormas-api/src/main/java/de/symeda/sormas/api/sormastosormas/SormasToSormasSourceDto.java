@@ -25,6 +25,7 @@ public class SormasToSormasSourceDto extends EntityDto {
 	private String senderName;
 	private String senderEmail;
 	private String senderPhoneNumber;
+	private boolean ownershipHandedOver;
 	private String comment;
 
 	public SormasToSormasSourceDto() {
@@ -60,6 +61,14 @@ public class SormasToSormasSourceDto extends EntityDto {
 
 	public void setSenderPhoneNumber(String senderPhoneNumber) {
 		this.senderPhoneNumber = senderPhoneNumber;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public String getComment() {

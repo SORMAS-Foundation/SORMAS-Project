@@ -378,6 +378,7 @@ public class CaseDataDto extends PseudonymizableDto {
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
 	private SormasToSormasSourceDto sormasToSormasSource;
+	private boolean ownershipHandedOver;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, null);
@@ -1146,5 +1147,13 @@ public class CaseDataDto extends PseudonymizableDto {
 
 	public void setSormasToSormasSource(SormasToSormasSourceDto sormasToSormasSource) {
 		this.sormasToSormasSource = sormasToSormasSource;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

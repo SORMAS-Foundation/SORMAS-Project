@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -62,7 +63,12 @@ public class SormasToSormasController {
 				handleShareWithOptions.handle(options);
 
 				optionsPopup.close();
-				listComponent.reloadList();
+
+				if (options.isHandOverOwnership()) {
+					SormasUI.refreshView();
+				} else {
+					listComponent.reloadList();
+				}
 			} catch (SormasToSormasException ex) {
 				Label messageLabel = new Label(ex.getMessage(), ContentMode.HTML);
 				messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);

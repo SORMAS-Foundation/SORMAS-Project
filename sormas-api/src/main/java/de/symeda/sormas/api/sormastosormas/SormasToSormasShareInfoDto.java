@@ -19,7 +19,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class SormasToSormasShareInfoDto extends EntityDto {
 
@@ -29,6 +28,7 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 	private ContactReferenceDto contact;
 	private HealthDepartmentServerReferenceDto healthDepartment;
 	private UserReferenceDto sender;
+	private boolean ownershipHandedOver;
 	private String comment;
 
 	public CaseReferenceDto getCaze() {
@@ -63,27 +63,19 @@ public class SormasToSormasShareInfoDto extends EntityDto {
 		this.sender = sender;
 	}
 
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
+	}
+
 	public String getComment() {
 		return comment;
 	}
 
 	public void setComment(String comment) {
 		this.comment = comment;
-	}
-
-	public static SormasToSormasShareInfoDto forCase(CaseReferenceDto caze) {
-		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-		shareInfo.setUuid(DataHelper.createUuid());
-		shareInfo.setCaze(caze);
-
-		return shareInfo;
-	}
-
-	public static SormasToSormasShareInfoDto forContact(ContactReferenceDto contact) {
-		SormasToSormasShareInfoDto shareInfo = new SormasToSormasShareInfoDto();
-		shareInfo.setUuid(DataHelper.createUuid());
-		shareInfo.setContact(contact);
-
-		return shareInfo;
 	}
 }

@@ -536,6 +536,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		sormasToSormasSource.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
 		sormasToSormasSource.setSenderEmail(currentUser.getUserEmail());
 		sormasToSormasSource.setSenderPhoneNumber(currentUser.getPhone());
+		sormasToSormasSource.setOwnershipHandedOver(options.isHandOverOwnership());
 		sormasToSormasSource.setComment(options.getComment());
 
 		return sormasToSormasSource;
@@ -547,6 +548,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setCreationDate(new Timestamp(new Date().getTime()));
 		shareInfo.setHealthDepartment(options.getHealthDepartment().getId());
+		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 		shareInfo.setSender(userService.getByReferenceDto(sender));
 		shareInfo.setComment(options.getComment());
 
@@ -626,6 +628,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;
@@ -647,6 +650,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;
@@ -670,6 +674,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
 
 		target.setSender(source.getSender().toReference());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;
