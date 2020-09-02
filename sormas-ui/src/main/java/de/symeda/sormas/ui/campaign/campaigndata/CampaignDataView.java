@@ -66,6 +66,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String ONLY_IMPORTANT_FORM_ELEMENTS = "onlyImportantFormElements";
 
+	@SuppressWarnings("deprecation")
 	public CampaignDataView() {
 		super(VIEW_NAME);
 
@@ -95,9 +96,11 @@ public class CampaignDataView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			if (value == null) {
 				campaignFormElementImportance.setVisible(false);
-				campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 			} else {
 				campaignFormElementImportance.setVisible(true);
+				if (campaignFormElementImportance.getValue() == null) {
+					campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
+				}
 			}
 		});
 
@@ -194,9 +197,9 @@ public class CampaignDataView extends AbstractCampaignView {
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
-		grid.removeAllColumns();
-		grid.addDefaultColumns();
 		return formMetaReference -> {
+			grid.removeAllColumns();
+			grid.addDefaultColumns();
 			if (formMetaReference != null) {
 				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
 				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
