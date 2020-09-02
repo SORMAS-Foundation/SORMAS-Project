@@ -5173,7 +5173,7 @@ INSERT INTO epidataburial (SELECT * FROM t_epidataburial);
 INSERT INTO epidatagathering (SELECT * FROM t_epidatagathering);
 INSERT INTO epidatatravel (SELECT * FROM t_epidatatravel);
 
-UPDATE cases SET epidata_id = (SELECT new_id FROM t_id_map WHERE cases.epidata_id = old_id);
+UPDATE cases SET epidata_id = m.new_id FROM t_id_map m WHERE cases.epidata_id = m.old_id;
 
 -- EPI DATA END
 
@@ -5197,7 +5197,7 @@ uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
 
 INSERT INTO symptoms (SELECT * FROM t_symptoms);
 
-UPDATE cases SET symptoms_id = (SELECT new_id FROM t_id_map WHERE cases.symptoms_id = old_id);
+UPDATE cases SET symptoms_id = m.new_id FROM t_id_map m WHERE cases.symptoms_id = m.old_id;
 
 -- SYMPTOMS END
 
