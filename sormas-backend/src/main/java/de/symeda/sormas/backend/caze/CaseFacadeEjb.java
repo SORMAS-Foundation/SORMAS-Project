@@ -1418,6 +1418,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			}
 		}
 
+		// Clear facility type if no facility or home was selected
+		if (newCase.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(newCase.getHealthFacility().getUuid())) {
+			newCase.setFacilityType(null);
+		}
+
 		// Generate epid number if missing or incomplete
 		if (!CaseLogic.isCompleteEpidNumber(newCase.getEpidNumber())) {
 			newCase.setEpidNumber(generateEpidNumber(newCase));
