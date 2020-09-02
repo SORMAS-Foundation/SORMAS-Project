@@ -2,13 +2,9 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -20,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Path("/visits-external")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
