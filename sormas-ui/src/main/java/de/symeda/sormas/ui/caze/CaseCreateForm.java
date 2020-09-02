@@ -28,6 +28,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import com.vaadin.ui.themes.ValoTheme;
@@ -175,13 +176,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
 		facilityTypeGroup.addItems(FacilityTypeGroup.getAccomodationGroups());
-		facilityTypeGroup.setVisible(false);
 		getContent().addComponent(facilityTypeGroup, FACILITY_TYPE_GROUP_LOC);
 		facilityType = addField(CaseDataDto.FACILITY_TYPE);
-		facilityType.setVisible(false);
 		ComboBox facility = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facility.setImmediate(true);
-		facility.setVisible(false);
 		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 		ComboBox cbPointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
@@ -195,7 +193,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		district.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+				FieldHelper.removeItems(facility);
+			}
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
@@ -212,7 +212,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
 		});
 		community.addValueChangeListener(e -> {
-			FieldHelper.removeItems(facility);
+			if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
+				FieldHelper.removeItems(facility);
+			}
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 			if (facilityType.getValue() != null) {
 				FieldHelper.updateItems(
@@ -233,10 +235,6 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityOrHome.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
-				facilityTypeGroup.setVisible(true);
-				facilityType.setVisible(true);
-				facility.setVisible(true);
-
 				if (facilityTypeGroup.getValue() == null) {
 					facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				}
@@ -251,19 +249,12 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				if (CaseOrigin.IN_COUNTRY.equals(ogCaseOrigin.getValue())) {
 					facility.setRequired(true);
 				}
+				updateFacilityFields(facility, facilityDetails);
 			} else {
-				facilityTypeGroup.setVisible(false);
-				facilityType.setVisible(false);
-				facility.setVisible(false);
-				facility.setRequired(false);
-
-				if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
-					FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
-					facility.addItem(noFacilityRef);
-					facility.setValue(noFacilityRef);
-				}
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				facility.addItem(noFacilityRef);
+				facility.setValue(noFacilityRef);
 			}
-			updateFacilityFields(facility, facilityDetails);
 		});
 		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facility);
@@ -342,6 +333,17 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.DENGUE_FEVER_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.DENGUE), true);
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(CaseDataDto.RABIES_TYPE), CaseDataDto.DISEASE, Arrays.asList(Disease.RABIES), true);
+		FieldHelper.setVisibleWhen(
+			facilityOrHome,
+			Arrays.asList(facilityTypeGroup, facilityType, facility),
+			Collections.singletonList(TypeOfPlace.FACILITY),
+			false);
+		FieldHelper.setRequiredWhen(
+			facilityOrHome,
+			Arrays.asList(facilityTypeGroup, facilityType, facility),
+			Collections.singletonList(TypeOfPlace.FACILITY),
+			false,
+			null);
 
 		facility.addValueChangeListener(e -> {
 			updateFacilityFields(facility, facilityDetails);
