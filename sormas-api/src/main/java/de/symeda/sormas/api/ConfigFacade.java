@@ -95,4 +95,6 @@ public interface ConfigFacade {
 	String getPatientDiaryUrl();
 
 	void validateExternalUrls();
+
+	String getAuthenticationProvider();
 }

@@ -84,9 +84,9 @@ public class UserService extends AbstractAdoService<User> {
 		ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
-		cq.where(cb.equal(from.get(User.USER_NAME), userNameParam));
+		cq.where(cb.equal(cb.lower(from.get(User.USER_NAME)), userNameParam));
 
-		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName);
+		TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
 		User entity = q.getResultList().stream().findFirst().orElse(null);
 		return entity;
