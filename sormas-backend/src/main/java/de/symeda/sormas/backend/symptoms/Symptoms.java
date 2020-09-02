@@ -98,7 +98,7 @@ public class Symptoms extends AbstractDomainObject {
 	private SymptomState soreThroat;
 	private SymptomState cough;
 	private SymptomState coughWithSputum;
-	private SymptomState coughWithHeamoptysis;
+	private SymptomState coughWithHemoptysis;
 	private SymptomState runnyNose;
 	private SymptomState difficultyBreathing;
 	private SymptomState chestPain;
@@ -1666,12 +1666,12 @@ public class Symptoms extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public SymptomState getCoughWithHeamoptysis() {
-		return coughWithHeamoptysis;
+	public SymptomState getCoughWithHemoptysis() {
+		return coughWithHemoptysis;
 	}
 
-	public void setCoughWithHeamoptysis(SymptomState coughWithHeamoptysis) {
-		this.coughWithHeamoptysis = coughWithHeamoptysis;
+	public void setCoughWithHemoptysis(SymptomState coughWithHemoptysis) {
+		this.coughWithHemoptysis = coughWithHemoptysis;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1894,7 +1894,7 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, soreThroat, SymptomsDto.SORE_THROAT);
 		appendYesSymptom(string, cough, SymptomsDto.COUGH);
 		appendYesSymptom(string, coughWithSputum, SymptomsDto.COUGH_WITH_SPUTUM);
-		appendYesSymptom(string, coughWithHeamoptysis, SymptomsDto.COUGH_WITH_HEAMOPTYSIS);
+		appendYesSymptom(string, coughWithHemoptysis, SymptomsDto.COUGH_WITH_HEAMOPTYSIS);
 		appendYesSymptom(string, runnyNose, SymptomsDto.RUNNY_NOSE);
 		appendYesSymptom(string, difficultyBreathing, SymptomsDto.DIFFICULTY_BREATHING);
 		appendYesSymptom(string, chestPain, SymptomsDto.CHEST_PAIN);

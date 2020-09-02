@@ -274,10 +274,10 @@
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField
-                android:id="@+id/symptoms_coughWithHeamoptysis"
+                android:id="@+id/symptoms_coughWithHemoptysis"
                 app:enumClass="@{symptomStateClass}"
                 app:slim="true"
-                app:value="@={data.coughWithHeamoptysis}"
+                app:value="@={data.coughWithHemoptysis}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlSwitchField

@@ -138,7 +138,7 @@ public class Symptoms extends PseudonymizableAdo {
 	@Enumerated(EnumType.STRING)
 	private SymptomState coughWithSputum;
 	@Enumerated(EnumType.STRING)
-	private SymptomState coughWithHeamoptysis;
+	private SymptomState coughWithHemoptysis;
 	@Enumerated(EnumType.STRING)
 	private SymptomState runnyNose;
 	@Enumerated(EnumType.STRING)
@@ -1669,12 +1669,12 @@ public class Symptoms extends PseudonymizableAdo {
 		this.coughWithSputum = coughWithSputum;
 	}
 
-	public SymptomState getCoughWithHeamoptysis() {
-		return coughWithHeamoptysis;
+	public SymptomState getCoughWithHemoptysis() {
+		return coughWithHemoptysis;
 	}
 
-	public void setCoughWithHeamoptysis(SymptomState coughWithHeamoptysis) {
-		this.coughWithHeamoptysis = coughWithHeamoptysis;
+	public void setCoughWithHemoptysis(SymptomState coughWithHemoptysis) {
+		this.coughWithHemoptysis = coughWithHemoptysis;
 	}
 
 	public SymptomState getLymphadenopathy() {

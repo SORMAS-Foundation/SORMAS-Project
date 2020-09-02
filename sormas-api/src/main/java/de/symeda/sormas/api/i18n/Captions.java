@@ -1292,7 +1292,7 @@ public interface Captions {
 	String Symptoms_convulsion = "Symptoms.convulsion";
 	String Symptoms_cough = "Symptoms.cough";
 	String Symptoms_coughingBlood = "Symptoms.coughingBlood";
-	String Symptoms_coughWithHeamoptysis = "Symptoms.coughWithHeamoptysis";
+	String Symptoms_coughWithHemoptysis = "Symptoms.coughWithHemoptysis";
 	String Symptoms_coughWithoutSputum = "Symptoms.coughWithoutSputum";
 	String Symptoms_coughWithSputum = "Symptoms.coughWithSputum";
 	String Symptoms_darkUrine = "Symptoms.darkUrine";
