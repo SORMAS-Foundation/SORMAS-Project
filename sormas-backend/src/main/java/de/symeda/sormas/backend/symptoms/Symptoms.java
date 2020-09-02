@@ -1894,7 +1894,7 @@ public class Symptoms extends AbstractDomainObject {
 		appendYesSymptom(string, soreThroat, SymptomsDto.SORE_THROAT);
 		appendYesSymptom(string, cough, SymptomsDto.COUGH);
 		appendYesSymptom(string, coughWithSputum, SymptomsDto.COUGH_WITH_SPUTUM);
-		appendYesSymptom(string, coughWithHemoptysis, SymptomsDto.COUGH_WITH_HEAMOPTYSIS);
+		appendYesSymptom(string, coughWithHemoptysis, SymptomsDto.COUGH_WITH_HEMOPTYSIS);
 		appendYesSymptom(string, runnyNose, SymptomsDto.RUNNY_NOSE);
 		appendYesSymptom(string, difficultyBreathing, SymptomsDto.DIFFICULTY_BREATHING);
 		appendYesSymptom(string, chestPain, SymptomsDto.CHEST_PAIN);
