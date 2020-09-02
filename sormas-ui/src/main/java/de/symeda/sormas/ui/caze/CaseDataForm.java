@@ -35,6 +35,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -439,6 +440,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				facility);
 		});
 		facilityOrHome.addValueChangeListener(e -> {
+			FieldHelper.removeItems(facility);
 			if (TypeOfPlace.FACILITY.equals(facilityOrHome.getValue())) {
 				facilityTypeGroup.setVisible(true);
 				facilityType.setVisible(true);
@@ -453,19 +455,24 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					&& !facilityType.isReadOnly()) {
 					facilityType.setValue(FacilityType.HOSPITAL);
 				}
+				if (facilityType.getValue() != null) {
+					updateFacility(
+						(DistrictReferenceDto) district.getValue(),
+						(CommunityReferenceDto) community.getValue(),
+						(FacilityType) facilityType.getValue(),
+						facility);
+				}
 
 				if (CaseOrigin.IN_COUNTRY.equals(getField(CaseDataDto.CASE_ORIGIN).getValue())) {
 					facility.setRequired(true);
 				}
+				updateFacilityDetails(facility, facilityDetails);
 			} else {
 
-				facilityTypeGroup.clear();
-				facilityTypeGroup.setVisible(false);
-				facilityType.setVisible(false);
-				facility.setVisible(false);
-				facility.setRequired(false);
+				FacilityReferenceDto noFacilityRef = FacadeProvider.getFacilityFacade().getByUuid(FacilityDto.NONE_FACILITY_UUID).toReference();
+				facility.addItem(noFacilityRef);
+				facility.setValue(noFacilityRef);
 			}
-			updateFacilityDetails(facility, facilityDetails);
 		});
 		facilityTypeGroup.addValueChangeListener(e -> {
 			FieldHelper.updateEnumData(facilityType, FacilityType.getAccommodationTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
@@ -494,7 +501,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		tfReportLat.setConverter(new StringToAngularLocationConverter());
 		TextField tfReportLon = addField(CaseDataDto.REPORT_LON, TextField.class);
 		tfReportLon.setConverter(new StringToAngularLocationConverter());
-		TextField tfReportAccuracy = addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
+		addField(CaseDataDto.REPORT_LAT_LON_ACCURACY, TextField.class);
 
 		DateField dfFollowUpUntil = null;
 		if (caseFollowUpEnabled) {
@@ -696,6 +703,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				Arrays.asList(HospitalWardType.OTHER),
 				true);
 		}
+		FieldHelper.setVisibleWhen(
+			facilityOrHome,
+			Arrays.asList(facilityTypeGroup, facilityType, facility),
+			Collections.singletonList(TypeOfPlace.FACILITY),
+			false);
+		FieldHelper.setRequiredWhen(
+			facilityOrHome,
+			Arrays.asList(facilityTypeGroup, facilityType, facility),
+			Collections.singletonList(TypeOfPlace.FACILITY),
+			false,
+			null);
 
 		/// CLINICIAN FIELDS
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
@@ -791,9 +809,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setEpidNumberError(epidField, assignNewEpidNumberButton, epidNumberWarningLabel, (String) f.getProperty().getValue());
 			});
 
-			// Set health facility details visibility and caption
 			if (getValue().getHealthFacility() != null) {
-				boolean otherHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 				boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
 
 				FacilityType caseFacilityType = getValue().getFacilityType();
