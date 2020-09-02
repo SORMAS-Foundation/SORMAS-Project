@@ -60,6 +60,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -307,6 +308,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.QUARANTINE_TO)));
 
 		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
+		PersonDto person = getPersonByUuid(personUuid);;
+		person.setSymptomJournalStatus(status);
+		savePerson(person);
+		return true;
 	}
 
 	/**

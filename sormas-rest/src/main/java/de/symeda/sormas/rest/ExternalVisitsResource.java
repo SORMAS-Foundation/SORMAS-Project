@@ -4,6 +4,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
+import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 import org.slf4j.Logger;
@@ -37,17 +38,10 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@POST
 	@Path("/person/{personUuid}/status")
-	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, Map<String, Object> body) {
+	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, PersonSymptomJournalStatusDto statusDto) {
 		try {
-			PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
-			SymptomJournalStatus statusValue = SymptomJournalStatus.valueOf(body.get("status").toString());
-			person.setSymptomJournalStatus(statusValue);
-			FacadeProvider.getPersonFacade().savePerson(person);
-			return true;
+			return FacadeProvider.getPersonFacade().setSymptomJournalStatus(personUuid, statusDto.getStatus());
 		} catch (Exception e) {
-			Logger logger = LoggerFactory.getLogger(ExternalVisitsResource.class);
-			// log the error or warning
-			logger.error(e.getMessage(), e);
 			return false;
 		}
 	}
