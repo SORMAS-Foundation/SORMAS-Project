@@ -138,7 +138,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@Inject
-	private SormasToSormasClient sormasToSormasClient;
+	private SormasToSormasRestClient sormasToSormasRestClient;
 
 	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
 	static {
@@ -572,7 +572,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Response response;
 		try {
 			response =
-				sormasToSormasClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
+				sormasToSormasRestClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));

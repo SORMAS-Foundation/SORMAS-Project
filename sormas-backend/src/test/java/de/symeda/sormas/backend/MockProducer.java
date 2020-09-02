@@ -37,8 +37,8 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasClient;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasClientProducer;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
 
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
@@ -55,7 +55,7 @@ public class MockProducer {
 	private static final TimerService timerService = mock(TimerService.class);
 	public static final Properties properties = new Properties();
 	private static final UserTransaction userTransaction = mock(UserTransaction.class);
-	private static final SormasToSormasClient sormasToSormasClient = mock(SormasToSormasClient.class);
+	private static final SormasToSormasRestClient SORMAS_TO_SORMAS_REST_CLIENT = mock(SormasToSormasRestClient.class);
 
 	// Receiving e-mail server is mocked: org. jvnet. mock_javamail. mailbox
 	private static Session mailSession;
@@ -82,7 +82,7 @@ public class MockProducer {
 
 	public static void resetMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, sormasToSormasClient);
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, SORMAS_TO_SORMAS_REST_CLIENT);
 		wireMocks();
 	}
 
@@ -131,8 +131,8 @@ public class MockProducer {
 		return principal;
 	}
 
-	public static SormasToSormasClient getSormasToSormasClient() {
-		return sormasToSormasClient;
+	public static SormasToSormasRestClient getSormasToSormasClient() {
+		return SORMAS_TO_SORMAS_REST_CLIENT;
 	}
 
 	@Specializes
@@ -140,8 +140,8 @@ public class MockProducer {
 
 		@Override
 		@Produces
-		public SormasToSormasClient sormasToSormasClient() {
-			return sormasToSormasClient;
+		public SormasToSormasRestClient sormasToSormasClient() {
+			return SORMAS_TO_SORMAS_REST_CLIENT;
 		}
 	}
 }
