@@ -70,11 +70,13 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -321,9 +323,9 @@ public class CaseController {
 			}
 			person = FacadeProvider.getPersonFacade().getPersonByUuid(convertedContact.getPerson().getUuid());
 			if (unrelatedDisease == null) {
-				caze = CaseDataDto.buildFromContact(convertedContact, lastVisit);
+				caze = CaseDataDto.buildFromContact(convertedContact);
 			} else {
-				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, lastVisit, unrelatedDisease);
+				caze = CaseDataDto.buildFromUnrelatedContact(convertedContact, unrelatedDisease);
 			}
 		} else if (convertedEventParticipant != null) {
 			EventDto event = FacadeProvider.getEventFacade().getEventByUuid(convertedEventParticipant.getEvent().getUuid());
@@ -380,6 +382,16 @@ public class CaseController {
 				}
 
 				if (convertedContact != null) {
+
+					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(dto.getDisease());
+					List<VisitDto> visits = FacadeProvider.getVisitFacade().getVisitsByContactAndPeriod(
+							convertedContact.toReference(),
+							DateHelper.subtractDays(dto.getReportDate(), incubationPeriod),
+							DateHelper.addDays(dto.getReportDate(), incubationPeriod));
+					for(VisitDto visit : visits) {
+						SymptomsHelper.updateSymptoms(visit.getSymptoms(), dto.getSymptoms());
+					}
+
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					dto.getSymptoms().setUuid(DataHelper.createUuid());
 					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());

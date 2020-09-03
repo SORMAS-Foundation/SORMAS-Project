@@ -28,7 +28,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
@@ -97,11 +96,10 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);
-		final VisitDto visit = creator.createVisit(caze.getDisease(), person.toReference());
 		final SampleDto sample =
 			creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
-		final CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
+		final CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
 		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		caseDataDto.setFacilityType(rdcf.facility.getType());
