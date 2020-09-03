@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -92,7 +93,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
-
 		final String passportNr = "passportNr";
 		final String otherPassportNr = "otherPassportNr";
 		final String healthId = "healthId";
@@ -109,25 +109,27 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		criteria.sex(Sex.MALE).birthdateYYYY(1980);
 		criteria.passportNumber(passportNr);
 		matchingUuids =
-				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(6));
-		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid(), person9.getUuid(), person10.getUuid()));
+		assertThat(
+			matchingUuids,
+			containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid(), person9.getUuid(), person10.getUuid()));
 
 		criteria.nationalHealthId(healthId).passportNumber(null);
 		matchingUuids =
-				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid()));
 
 		criteria.nationalHealthId(otherHealthId);
 		matchingUuids =
-				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid()));
 
 		criteria.passportNumber(otherPassportNr);
 		matchingUuids =
-				getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+			getPersonFacade().getMatchingNameDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(5));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
 	}
@@ -169,5 +171,37 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Optional<PersonQuarantineEndDto> result2 = quarantineEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
 		assertTrue(result2.isPresent());
 		assertTrue(DateHelper.isSameDay(result2.get().getLatestQuarantineEndDate(), now));
+	}
+
+	@Test
+	public void testGetFollowUpEndDates() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+
+		creator.createPerson(); // Person without contact
+		final PersonDto person1 = creator.createPerson();
+		final PersonDto person2 = creator.createPerson();
+		final ContactDto contact11 = creator.createContact(user.toReference(), person1.toReference());
+		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference());
+		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
+
+		Date now = new Date();
+		contact11.setFollowUpUntil(DateHelper.subtractDays(now, 20));
+		contact12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
+		contact2.setFollowUpUntil(now);
+
+		getContactFacade().saveContact(contact11);
+		getContactFacade().saveContact(contact12);
+		getContactFacade().saveContact(contact2);
+
+		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
+
+		assertThat(followUpEndDtos, hasSize(2));
+		Optional<PersonFollowUpEndDto> result1 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person1.getUuid())).findFirst();
+		assertTrue(result1.isPresent());
+		assertTrue(DateHelper.isSameDay(result1.get().getLatestFollowUpEndDate(), DateHelper.subtractDays(now, 8)));
+		Optional<PersonFollowUpEndDto> result2 = followUpEndDtos.stream().filter(p -> p.getPersonUuid().equals(person2.getUuid())).findFirst();
+		assertTrue(result2.isPresent());
+		assertTrue(DateHelper.isSameDay(result2.get().getLatestFollowUpEndDate(), now));
 	}
 }

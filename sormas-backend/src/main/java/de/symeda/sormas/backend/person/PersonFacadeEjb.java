@@ -312,7 +312,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since) {
+	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
 		Root<Contact> contactRoot = cq.from(Contact.class);
@@ -321,6 +321,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
 		if (since != null) {
 			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
+		}
+
+		if (forSymptomJournal) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
 		}
 
 		if (filter != null) {

@@ -64,7 +64,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@GET
 	@Path("/followUpEndDates/{since}")
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(@PathParam("since") long since) {
-		return FacadeProvider.getPersonFacade().getLatestFollowUpEndDates(new Date(since));
+		return FacadeProvider.getPersonFacade().getLatestFollowUpEndDates(new Date(since), true);
 	}
 
 	@Override
