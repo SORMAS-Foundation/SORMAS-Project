@@ -159,7 +159,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
 			Date startDate = startDateSupplier.get();
 			if (visitDateTime.before(startDate)
-				&& DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
+				&& DateHelper.getDaysBetween(visitDateTime, startDate) > FollowUpLogic.ALLOWED_DATE_OFFSET) {
 				if (firstStartDatePart.get() != null) {
 					throw new Validator.InvalidValueException(
 						I18nProperties.getValidationError(errorMessageDateTooEarlyFirstPart, FollowUpLogic.ALLOWED_DATE_OFFSET));
