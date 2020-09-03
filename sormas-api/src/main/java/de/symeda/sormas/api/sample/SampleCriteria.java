@@ -151,6 +151,13 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.dateFilterOption = dateFilterOption;
 		return this;
 	}
+	
+	public SampleCriteria reportDateBetween(Date reportDateFrom, Date reportDateTo, DateFilterOption dateFilterOption) {
+		this.sampleDateFrom = reportDateFrom;
+		this.sampleDateTo = reportDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
 
 	public SampleCriteria dateFilterOption(DateFilterOption dateFilterOption) {
 		this.dateFilterOption = dateFilterOption;
