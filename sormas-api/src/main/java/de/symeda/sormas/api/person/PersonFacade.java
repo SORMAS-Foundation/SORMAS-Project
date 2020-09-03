@@ -60,4 +60,6 @@ public interface PersonFacade {
 	Boolean isValidPersonUuid(String personUuid);
 
 	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
+
+	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 }
