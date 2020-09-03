@@ -185,6 +185,10 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final ContactDto contact12 = creator.createContact(user.toReference(), person1.toReference());
 		final ContactDto contact2 = creator.createContact(user.toReference(), person2.toReference());
 
+		contact11.setOverwriteFollowUpUntil(true);
+		contact12.setOverwriteFollowUpUntil(true);
+		contact2.setOverwriteFollowUpUntil(true);
+
 		Date now = new Date();
 		contact11.setFollowUpUntil(DateHelper.subtractDays(now, 20));
 		contact12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
