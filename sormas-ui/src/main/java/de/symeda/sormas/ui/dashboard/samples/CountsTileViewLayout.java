@@ -55,7 +55,7 @@ public class CountsTileViewLayout extends CssLayout {
 	public void refresh() {
 		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCount();
 		this.removeAllComponents();
-		row1.setWidth(100, Unit.PERCENTAGE);
+//		row1.setWidth(100, Unit.PERCENTAGE);
 //		layout.setMargin(false);
 
 		SampleCountType[] totalCol = {
