@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -121,7 +122,9 @@ public class EntityInspector {
 		} else {
 			return method.getAnnotation(Transient.class) == null
 				&& (method.getAnnotation(OneToMany.class) == null || method.getAnnotation(OneToMany.class).mappedBy().isEmpty())
-				&& (method.getAnnotation(OneToOne.class) == null || method.getAnnotation(OneToOne.class).mappedBy().isEmpty());
+				&& (method.getAnnotation(OneToOne.class) == null
+					|| method.getAnnotation(OneToOne.class).mappedBy().isEmpty()
+						&& (method.getAnnotation(ManyToMany.class) == null || method.getAnnotation(ManyToMany.class).mappedBy().isEmpty()));
 		}
 	}
 

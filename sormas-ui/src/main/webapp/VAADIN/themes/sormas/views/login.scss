@@ -64,6 +64,8 @@ $login-background-image: null !default;
     }
 
     .login-sidebar {
+      display: flex;
+      flex-direction: column;
       background: #FFFFFF;
       top: 0;
       right: 0;
@@ -96,6 +98,10 @@ $login-background-image: null !default;
       	  width: 250px;
       	  margin-bottom: 30px;
       	}
+      }
+
+      .login-sidebar-custom-header {
+        flex-grow: 1;
       }
     }
     

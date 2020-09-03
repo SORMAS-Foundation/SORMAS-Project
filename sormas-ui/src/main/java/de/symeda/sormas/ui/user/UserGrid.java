@@ -65,7 +65,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			});
 		setDataProvider(dataProvider);
 
-		addEditColumn(e -> ControllerProvider.getUserController().edit(e.getItem()));
+		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
 
 		setColumns(
 			EDIT_BTN_ID,

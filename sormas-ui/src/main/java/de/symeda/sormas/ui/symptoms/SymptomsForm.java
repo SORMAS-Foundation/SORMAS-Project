@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.symptoms;
 
 import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
@@ -25,7 +26,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
@@ -83,6 +83,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String CLINICAL_MEASUREMENTS_HEADING_LOC = "clinicalMeasurementsHeadingLoc";
+	private static final String SIGNS_AND_SYMPTOMS_HEADING_LOC = "signsAndSymptomsHeadingLoc";
 	private static final String BUTTONS_LOC = "buttonsLoc";
 	private static final String LESIONS_LOCATIONS_LOC = "lesionsLocationsLoc";
 	private static final String MONKEYPOX_LESIONS_IMG1 = "monkeypoxLesionsImg1";
@@ -94,11 +96,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingClinicalMeasurements)) +
+			loc(CLINICAL_MEASUREMENTS_HEADING_LOC) +
 					fluidRowLocs(TEMPERATURE, TEMPERATURE_SOURCE) +
 					fluidRowLocs(BLOOD_PRESSURE_SYSTOLIC, BLOOD_PRESSURE_DIASTOLIC, HEART_RATE, RESPIRATORY_RATE) +
 					fluidRowLocs(GLASGOW_COMA_SCALE, WEIGHT, HEIGHT, MID_UPPER_ARM_CIRCUMFERENCE) +
-					h3(I18nProperties.getString(Strings.headingSignsAndSymptoms)) +
+					loc(SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
@@ -221,6 +223,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Add fields
+		Label clinicalMeasurementsHeadingLabel = new Label(I18nProperties.getString(Strings.headingClinicalMeasurements));
+		clinicalMeasurementsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(clinicalMeasurementsHeadingLabel, CLINICAL_MEASUREMENTS_HEADING_LOC);
+
+		Label signsAndSymptomsHeadingLabel = new Label(I18nProperties.getString(Strings.headingSignsAndSymptoms));
+		signsAndSymptomsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(signsAndSymptomsHeadingLabel, SIGNS_AND_SYMPTOMS_HEADING_LOC);
 
 		DateField onsetDateField = addField(ONSET_DATE, DateField.class);
 		ComboBox onsetSymptom = addField(ONSET_SYMPTOM, ComboBox.class);

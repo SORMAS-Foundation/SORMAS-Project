@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -56,6 +57,10 @@ import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -524,6 +529,18 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		EpiDataDto epiData = contact.getEpiData();
+		epiData.setTraveled(YesNoUnknown.YES);
+		List<EpiDataTravelDto> travels = new ArrayList<>();
+		EpiDataTravelDto travel = EpiDataTravelDto.build();
+		travel.setTravelDateFrom(DateHelper.subtractDays(new Date(), 15));
+		travel.setTravelDateTo(DateHelper.subtractDays(new Date(), 7));
+		travel.setTravelDestination("Mallorca");
+		travel.setTravelType(TravelType.ABROAD);
+		travels.add(travel);
+		epiData.setTravels(travels);
+		contact.setEpiData(epiData);
+		getContactFacade().saveContact(contact);
 
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
@@ -551,7 +568,18 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
-		assertEquals(exportDto.getLastCooperativeVisitSymptomatic(), YesNoUnknown.YES);
+		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
+
+		assertNotNull(exportDto.getEpiDataId());
+		assertEquals(YesNoUnknown.YES, exportDto.getTraveled());
+		assertEquals(
+			EpiDataTravelHelper.buildTravelString(
+				travel.getTravelType(),
+				travel.getTravelDestination(),
+				travel.getTravelDateFrom(),
+				travel.getTravelDateTo(),
+				Language.EN),
+			exportDto.getTravelHistory());
 	}
 
 	@Test

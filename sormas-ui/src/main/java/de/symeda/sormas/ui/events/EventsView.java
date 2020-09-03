@@ -20,9 +20,10 @@ package de.symeda.sormas.ui.events;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -30,28 +31,39 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventExportDto;
+import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SearchSpecificLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class EventsView extends AbstractView {
@@ -91,7 +103,7 @@ public class EventsView extends AbstractView {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
 
-		grid = new EventGrid(criteria);
+		grid = new EventGrid(criteria, getClass());
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 		gridLayout.addComponent(createStatusFilterBar());
@@ -106,14 +118,50 @@ public class EventsView extends AbstractView {
 		addComponent(gridLayout);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EXPORT)) {
-			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+			VerticalLayout exportLayout = new VerticalLayout();
+			{
+				exportLayout.setSpacing(true);
+				exportLayout.setMargin(true);
+				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				exportLayout.setWidth(250, Unit.PIXELS);
+			}
 
-			StreamResource streamResource =
-				new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
-			FileDownloader fileDownloader = new FileDownloader(streamResource);
-			fileDownloader.extend(exportButton);
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportPopupButton);
 
-			addHeaderComponent(exportButton);
+			{
+				StreamResource streamResource =
+					new GridExportStreamResource(grid, "sormas_events", "sormas_events_" + DateHelper.formatDateForExport(new Date()) + ".csv");
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+			}
+
+			{
+				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
+					EventExportDto.class,
+					null,
+					(Integer start, Integer max) -> FacadeProvider.getEventFacade().getExportList(grid.getCriteria(), start, max),
+					(propertyId, type) -> {
+						String caption = I18nProperties.findPrefixCaption(
+							propertyId,
+							EventExportDto.I18N_PREFIX,
+							EventIndexDto.I18N_PREFIX,
+							EventDto.I18N_PREFIX,
+							LocationDto.I18N_PREFIX);
+						if (Date.class.isAssignableFrom(type)) {
+							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
+						}
+						return caption;
+					},
+					createFileNameWithCurrentDate("sormas_events_", ".csv"),
+					null);
+				addExportButton(
+					exportStreamResource,
+					exportPopupButton,
+					exportLayout,
+					VaadinIcons.FILE_TEXT,
+					Captions.exportDetailed,
+					Strings.infoDetailedExport);
+			}
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -149,11 +197,18 @@ public class EventsView extends AbstractView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.eventNewEvent,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create(),
+				e -> ControllerProvider.getEventController().create(null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
+
+		Button searchSpecificEventButton = ButtonHelper.createIconButton(
+			Captions.eventSearchSpecificEvent,
+			VaadinIcons.SEARCH,
+			e -> buildAndOpenSearchSpecificEventWindow(),
+			ValoTheme.BUTTON_PRIMARY);
+		addHeaderComponent(searchSpecificEventButton);
 	}
 
 	public HorizontalLayout createFilterBar() {
@@ -174,6 +229,38 @@ public class EventsView extends AbstractView {
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
+	}
+
+	private void buildAndOpenSearchSpecificEventWindow() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getCaption(Captions.eventSearchSpecificEvent));
+		window.setWidth(768, Unit.PIXELS);
+
+		SearchSpecificLayout layout = buildSearchSpecificLayout(window);
+		window.setContent(layout);
+		UI.getCurrent().addWindow(window);
+	}
+
+	private SearchSpecificLayout buildSearchSpecificLayout(Window window) {
+
+		String description = I18nProperties.getString(Strings.infoSpecificEventSearch);
+		String confirmCaption = I18nProperties.getCaption(Captions.eventSearchEvent);
+
+		TextField searchField = new TextField();
+		Runnable confirmCallback = () -> {
+			String foundEventUuid = FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchField.getValue());
+
+			if (foundEventUuid != null) {
+				ControllerProvider.getEventController().navigateToData(foundEventUuid);
+				window.close();
+			} else {
+				VaadinUiUtil.showSimplePopupWindow(
+					I18nProperties.getString(Strings.headingNoEventFound),
+					I18nProperties.getString(Strings.messageNoEventFound));
+			}
+		};
+
+		return new SearchSpecificLayout(confirmCallback, () -> window.close(), searchField, description, confirmCaption);
 	}
 
 	public HorizontalLayout createStatusFilterBar() {

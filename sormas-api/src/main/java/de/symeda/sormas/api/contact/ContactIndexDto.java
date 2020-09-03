@@ -73,7 +73,7 @@ public class ContactIndexDto implements Serializable {
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
 
-	//formatter:off
+	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
 						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,

@@ -17,38 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.visit;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.caze.CaseJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -70,15 +41,21 @@ import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -89,6 +66,34 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Stateless(name = "VisitFacade")
 public class VisitFacadeEjb implements VisitFacade {
@@ -116,6 +121,8 @@ public class VisitFacadeEjb implements VisitFacade {
 	private PseudonymizationService pseudonymizationService;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -352,11 +359,14 @@ public class VisitFacadeEjb implements VisitFacade {
 				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 			}
 
+//			Map<Long, List<VisitContactJurisdiction>> jurisdictions =
+//				getVisitContactJurisdictions(resultList.stream().map(VisitExportDto::getId).collect(Collectors.toList()));
+
 			for (VisitExportDto exportDto : resultList) {
-				List<Contact> visitContacts =
-					contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(exportDto.getPersonUuid())), null);
-				boolean inJurisdiction = visitContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
+//				List<VisitContactJurisdiction> visitContactJurisdictions = jurisdictions.get(exportDto.getId());
+//				boolean inJurisdiction = visitContactJurisdictions.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
+//
+//				pseudonymizationService.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, null);
 
 				if (symptoms != null) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
@@ -505,9 +515,72 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 	}
 
+	private Map<Long, List<VisitContactJurisdiction>> getVisitContactJurisdictions(List<Long> visitIds) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<VisitContactJurisdiction> cq = cb.createQuery(VisitContactJurisdiction.class);
+		final Root<Visit> visitRoot = cq.from(Visit.class);
+		VisitJoins joins = new VisitJoins(visitRoot, JoinType.INNER);
+
+		cq.multiselect(
+			visitRoot.get(Visit.ID),
+			joins.getContactReportingUser().get(User.UUID),
+			joins.getContactRegion().get(Region.UUID),
+			joins.getContactDistrict().get(District.UUID),
+			joins.getContactCaseReportingUser().get(User.UUID),
+			joins.getContactCaseRegion().get(Region.UUID),
+			joins.getContactCaseDistrict().get(District.UUID),
+			joins.getContactCaseCommunity().get(Community.UUID),
+			joins.getContactCaseHealthFacility().get(Facility.UUID),
+			joins.getContactCasePointOfEntry().get(PointOfEntry.UUID));
+
+		cq.where(visitRoot.get(Visit.ID).in(visitIds));
+		cq.orderBy(cb.desc(visitRoot.get(Visit.VISIT_DATE_TIME)), cb.desc(visitRoot.get(Case.ID)));
+
+		List<VisitContactJurisdiction> jurisdictions = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+
+		return jurisdictions.stream().collect(Collectors.groupingBy(VisitContactJurisdiction::getVisitId));
+	}
+
 	@LocalBean
 	@Stateless
 	public static class VisitFacadeEjbLocal extends VisitFacadeEjb {
 
+	}
+
+	static class VisitContactJurisdiction extends ContactJurisdictionDto {
+
+		private long visitId;
+
+		public VisitContactJurisdiction(
+			long visitId,
+			String reportingUserUuid,
+			String regionUuid,
+			String districtUuid,
+			String caseReportingUserUuid,
+			String caseRegionUui,
+			String caseDistrictUud,
+			String caseCommunityUuid,
+			String caseHealthFacilityUuid,
+			String casePointOfEntryUuid) {
+
+			super(
+				reportingUserUuid,
+				regionUuid,
+				districtUuid,
+				caseReportingUserUuid != null
+					? new CaseJurisdictionDto(
+						caseReportingUserUuid,
+						caseRegionUui,
+						caseDistrictUud,
+						caseCommunityUuid,
+						caseHealthFacilityUuid,
+						casePointOfEntryUuid)
+					: null);
+			this.visitId = visitId;
+		}
+
+		public long getVisitId() {
+			return visitId;
+		}
 	}
 }

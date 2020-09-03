@@ -17,11 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,22 +35,27 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -79,6 +88,10 @@ public class Contact extends CoreAdo {
 	public static final String TASKS = "tasks";
 	public static final String RELATION_TO_CASE = "relationToCase";
 	public static final String RELATION_DESCRIPTION = "relationDescription";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String RESULTING_CASE = "resultingCase";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
@@ -92,6 +105,7 @@ public class Contact extends CoreAdo {
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
@@ -112,6 +126,7 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+	public static final String EPI_DATA = "epiData";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -129,6 +144,10 @@ public class Contact extends CoreAdo {
 	private ContactRelation relationToCase;
 	private String relationDescription;
 	private Date lastContactDate;
+	private ContactIdentificationSource contactIdentificationSource;
+	private String contactIdentificationSourceDetails;
+	private TracingApp tracingApp;
+	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -149,6 +168,7 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 
@@ -168,6 +188,7 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private String additionalDetails;
+	private EpiData epiData;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
@@ -202,7 +223,7 @@ public class Contact extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -241,6 +262,42 @@ public class Contact extends CoreAdo {
 	}
 
 	@Enumerated(EnumType.STRING)
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
+	}
+
+	@Enumerated(EnumType.STRING)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
@@ -249,7 +306,7 @@ public class Contact extends CoreAdo {
 		this.contactProximity = contactProximity;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDescription() {
 		return description;
 	}
@@ -313,7 +370,7 @@ public class Contact extends CoreAdo {
 		this.relationToCase = relationToCase;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRelationDescription() {
 		return relationDescription;
 	}
@@ -334,7 +391,6 @@ public class Contact extends CoreAdo {
 
 	@Override
 	public String toString() {
-
 		Person contactPerson = getPerson();
 		return ContactReferenceDto.buildCaption(
 			contactPerson.getFirstName(),
@@ -345,16 +401,13 @@ public class Contact extends CoreAdo {
 	}
 
 	public ContactReferenceDto toReference() {
-
 		Person contactPerson = getPerson();
-		String casePersonFirstName = null;
-		String casePersonLastName = null;
-		if (getCaze() != null) {
-			casePersonFirstName = getCaze().getPerson().getFirstName();
-			casePersonLastName = getCaze().getPerson().getLastName();
-		}
-
-		return new ContactReferenceDto(getUuid(), contactPerson.getFirstName(), contactPerson.getLastName(), casePersonFirstName, casePersonLastName);
+		return new ContactReferenceDto(
+			getUuid(),
+			contactPerson.getFirstName(),
+			contactPerson.getLastName(),
+			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
+			getCaze() != null ? getCaze().getPerson().getLastName() : null);
 	}
 
 	@OneToMany(cascade = {}, mappedBy = Task.CONTACT)
@@ -366,6 +419,7 @@ public class Contact extends CoreAdo {
 		this.tasks = tasks;
 	}
 
+	@AuditedIgnore
 	@ManyToMany(mappedBy = Visit.CONTACTS, fetch = FetchType.LAZY)
 	public Set<Visit> getVisits() {
 		return visits;
@@ -400,7 +454,7 @@ public class Contact extends CoreAdo {
 		this.reportLon = reportLon;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getFollowUpComment() {
 		return followUpComment;
 	}
@@ -427,7 +481,7 @@ public class Contact extends CoreAdo {
 		this.resultingCaseUser = resultingCaseUser;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -472,7 +526,7 @@ public class Contact extends CoreAdo {
 		this.immunosuppressiveTherapyBasicDisease = immunosuppressiveTherapyBasicDisease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getImmunosuppressiveTherapyBasicDiseaseDetails() {
 		return immunosuppressiveTherapyBasicDiseaseDetails;
 	}
@@ -499,6 +553,15 @@ public class Contact extends CoreAdo {
 		this.quarantine = quarantine;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getquarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
@@ -517,7 +580,7 @@ public class Contact extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCaseIdExternalSystem() {
 		return caseIdExternalSystem;
 	}
@@ -526,7 +589,7 @@ public class Contact extends CoreAdo {
 		this.caseIdExternalSystem = caseIdExternalSystem;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getCaseOrEventInformation() {
 		return caseOrEventInformation;
 	}
@@ -544,7 +607,7 @@ public class Contact extends CoreAdo {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getContactProximityDetails() {
 		return contactProximityDetails;
 	}
@@ -562,7 +625,7 @@ public class Contact extends CoreAdo {
 		this.contactCategory = contactCategory;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -616,7 +679,7 @@ public class Contact extends CoreAdo {
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -634,7 +697,7 @@ public class Contact extends CoreAdo {
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}
@@ -643,12 +706,28 @@ public class Contact extends CoreAdo {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public EpiData getEpiData() {
+		if (epiData == null) {
+			epiData = new EpiData();
+		}
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 }

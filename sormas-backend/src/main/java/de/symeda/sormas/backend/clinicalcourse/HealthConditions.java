@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.clinicalcourse;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -167,7 +169,7 @@ public class HealthConditions extends AbstractDomainObject {
 		this.congenitalSyphilis = congenitalSyphilis;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getOtherConditions() {
 		return otherConditions;
 	}
@@ -247,4 +249,5 @@ public class HealthConditions extends AbstractDomainObject {
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
+
 }

@@ -39,6 +39,8 @@ public class DashboardEventDto implements Serializable {
 	private Date eventDate;
 	private Double reportLat;
 	private Double reportLon;
+	private Double locationLat;
+	private Double locationLon;
 	private String districtUuid;
 	private DistrictReferenceDto district;
 
@@ -50,6 +52,8 @@ public class DashboardEventDto implements Serializable {
 		Date eventDate,
 		Double reportLat,
 		Double reportLon,
+		Double locationLat,
+		Double locationLon,
 		String districtUuid) {
 
 		this.uuid = uuid;
@@ -59,6 +63,8 @@ public class DashboardEventDto implements Serializable {
 		this.eventDate = eventDate;
 		this.reportLat = reportLat;
 		this.reportLon = reportLon;
+		this.locationLat = locationLat;
+		this.locationLon = locationLon;
 		this.districtUuid = districtUuid;
 	}
 
@@ -116,6 +122,22 @@ public class DashboardEventDto implements Serializable {
 
 	public void setReportLon(Double reportLon) {
 		this.reportLon = reportLon;
+	}
+
+	public Double getLocationLat() {
+		return locationLat;
+	}
+
+	public void setLocationLat(Double locationLat) {
+		this.locationLat = locationLat;
+	}
+
+	public Double getLocationLon() {
+		return locationLon;
+	}
+
+	public void setLocationLon(Double locationLon) {
+		this.locationLon = locationLon;
 	}
 
 	public String getDistrictUuid() {

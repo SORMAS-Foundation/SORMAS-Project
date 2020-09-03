@@ -31,6 +31,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -106,9 +107,12 @@ public class SamplesView extends AbstractView {
 								CaseDataDto.I18N_PREFIX,
 								propertyId,
 								I18nProperties.getPrefixCaption(
-									PersonDto.I18N_PREFIX,
+									ContactDto.I18N_PREFIX,
 									propertyId,
-									I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId)))));
+									I18nProperties.getPrefixCaption(
+										PersonDto.I18N_PREFIX,
+										propertyId,
+										I18nProperties.getPrefixCaption(AdditionalTestDto.I18N_PREFIX, propertyId))))));
 					if (Date.class.isAssignableFrom(type)) {
 						caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
 					}
@@ -126,7 +130,9 @@ public class SamplesView extends AbstractView {
 				Strings.infoDetailedExport);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS) 
+			|| UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks that the epid-number does not change if a contact is transferred to it</description>
+   <name>ChangeCaseOfContact</name>
+   <tag>TODO</tag>
+   <comment></comment>
+   <testCaseGuid>46897302-ea12-4e0e-b836-89150d46408b</testCaseGuid>
+   <variable>
+      <defaultValue>false</defaultValue>
+      <description></description>
+      <id>1f1302fb-3e53-47b3-a9c2-abd6f3796e7c</id>
+      <masked>false</masked>
+      <name>checkChangeableEpid</name>
+   </variable>
+</TestCaseEntity>

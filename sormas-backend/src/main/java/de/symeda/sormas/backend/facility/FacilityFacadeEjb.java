@@ -41,6 +41,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -289,6 +291,11 @@ public class FacilityFacadeEjb implements FacilityFacade {
 
 	@Override
 	public boolean hasArchivedParentInfrastructure(Collection<String> facilityUuids) {
+
+		if (CollectionUtils.isEmpty(facilityUuids)) {
+			// Avoid empty IN clause
+			return false;
+		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);

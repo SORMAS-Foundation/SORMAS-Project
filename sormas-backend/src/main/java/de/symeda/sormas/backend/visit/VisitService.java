@@ -28,6 +28,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -86,6 +87,9 @@ public class VisitService extends AbstractAdoService<Visit> {
 		CriteriaQuery<Visit> visitsQuery = cb.createQuery(Visit.class);
 		Root<Contact> contactRoot = visitsQuery.from(Contact.class);
 		Join<Contact, Visit> visitJoin = contactRoot.join(Contact.VISITS, JoinType.LEFT);
+		visitJoin.fetch(Visit.SYMPTOMS);
+		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
+		personFetch.fetch(Person.ADDRESS);
 
 		Predicate filter =
 			and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));

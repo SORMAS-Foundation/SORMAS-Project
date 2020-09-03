@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Fields whose getters are annotated with this annotation are ignored 
+ * Fields whose getters are annotated with this annotation are ignored
  * when building .csv templates and importing entities.
  */
 @Target({

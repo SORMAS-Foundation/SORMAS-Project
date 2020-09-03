@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -67,7 +70,7 @@ public class Location extends AbstractDomainObject {
 
 	private String postalCode;
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAddress() {
 		return address;
 	}
@@ -76,7 +79,7 @@ public class Location extends AbstractDomainObject {
 		this.address = address;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDetails() {
 		return details;
 	}
@@ -85,7 +88,7 @@ public class Location extends AbstractDomainObject {
 		this.details = details;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getCity() {
 		return city;
 	}
@@ -94,7 +97,6 @@ public class Location extends AbstractDomainObject {
 		this.city = city;
 	}
 
-	@Column(length = 255)
 	@Enumerated(EnumType.STRING)
 	public AreaType getAreaType() {
 		return areaType;
@@ -155,7 +157,7 @@ public class Location extends AbstractDomainObject {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -165,7 +167,6 @@ public class Location extends AbstractDomainObject {
 	}
 
 	public String buildGpsCoordinatesCaption() {
-
 		if (latitude == null && longitude == null) {
 			return "";
 		} else if (latitude == null || longitude == null) {
@@ -179,7 +180,6 @@ public class Location extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-
 		return LocationReferenceDto.buildCaption(
 			region != null ? region.getName() : null,
 			district != null ? district.getName() : null,

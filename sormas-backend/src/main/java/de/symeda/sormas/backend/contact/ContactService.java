@@ -17,32 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.collections.CollectionUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -57,6 +31,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.task.TaskCriteria;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -68,6 +43,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
@@ -80,6 +56,31 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import org.apache.commons.collections.CollectionUtils;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -95,6 +96,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private TaskService taskService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private EpiDataService epiDataService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -143,6 +146,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+	}
+
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
+
+		Predicate dateFilter = greaterThanAndNotNull(cb, from.get(AbstractDomainObject.CHANGE_DATE), date);
+		return cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -824,7 +839,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// National users can access all contacts in the system
 		User currentUser = getCurrentUser();
-		if (currentUser.hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER, UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -836,11 +853,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = cb.equal(contactPath.join(Contact.REPORTING_USER, JoinType.LEFT), currentUser);
 		filter = cb.or(filter, cb.equal(contactPath.join(Contact.CONTACT_OFFICER, JoinType.LEFT), currentUser));
 
-		// users have access to all contacts in their region/district
-		if (currentUser.getDistrict() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
-		} else if (currentUser.getRegion() != null) {
-			filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+		switch (jurisdictionLevel) {
+		case REGION:
+			final Region region = currentUser.getRegion();
+			if (region != null) {
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.REGION), currentUser.getRegion()));
+			}
+			break;
+		case DISTRICT:
+			final District district = currentUser.getDistrict();
+			if (district != null) {
+				filter = cb.or(filter, cb.equal(contactPath.get(Contact.DISTRICT), currentUser.getDistrict()));
+			}
+			break;
+		default:
 		}
 
 		return filter;
@@ -1020,15 +1046,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			taskService.delete(task);
 		}
 
-		contact.getSamples().stream().filter(sample -> sample.getAssociatedCase() == null).forEach(sample -> sampleService.delete(sample));
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(contact);
 	}
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link CoreAdo#deleted} or associated with cases that are
-	 * {@link Case#archived}.
+	 * {@link CoreAdo#isDeleted()} or associated with cases that are
+	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
 
@@ -1039,7 +1068,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link CoreAdo#deleted} contacts from the queries.
+	 * {@link CoreAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));

@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -48,9 +51,11 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
@@ -64,6 +69,7 @@ public class Sample extends CoreAdo {
 
 	public static final String ASSOCIATED_CASE = "associatedCase";
 	public static final String ASSOCIATED_CONTACT = "associatedContact";
+	public static final String ASSOCIATED_EVENT_PARTICIPANT = "associatedEventParticipant";
 	public static final String LAB_SAMPLE_ID = "labSampleID";
 	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -97,8 +103,10 @@ public class Sample extends CoreAdo {
 
 	private Case associatedCase;
 	private Contact associatedContact;
+	private EventParticipant associatedEventParticipant;
 	private String labSampleID;
 	private String fieldSampleID;
+	private YesNoUnknown forRetest;
 	private Date sampleDateTime;
 
 	private Date reportDateTime;
@@ -157,7 +165,17 @@ public class Sample extends CoreAdo {
 		this.associatedContact = associatedContact;
 	}
 
-	@Column(length = 512)
+	@ManyToOne
+	@JoinColumn
+	public EventParticipant getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
+	public void setAssociatedEventParticipant(EventParticipant associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
+	}
+
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabSampleID() {
 		return labSampleID;
 	}
@@ -166,13 +184,22 @@ public class Sample extends CoreAdo {
 		this.labSampleID = labSampleID;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFieldSampleID() {
 		return fieldSampleID;
 	}
 
 	public void setFieldSampleID(String fieldSampleID) {
 		this.fieldSampleID = fieldSampleID;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getForRetest() {
+		return forRetest;
+	}
+	
+	public void setForRetest(YesNoUnknown forRetest) {
+		this.forRetest = forRetest;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -215,7 +242,7 @@ public class Sample extends CoreAdo {
 		this.sampleMaterial = sampleMaterial;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSampleMaterialText() {
 		return sampleMaterialText;
 	}
@@ -244,7 +271,7 @@ public class Sample extends CoreAdo {
 		this.lab = lab;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -262,7 +289,7 @@ public class Sample extends CoreAdo {
 		this.shipmentDate = shipmentDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getShipmentDetails() {
 		return shipmentDetails;
 	}
@@ -289,7 +316,7 @@ public class Sample extends CoreAdo {
 		this.specimenCondition = specimenCondition;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNoTestPossibleReason() {
 		return noTestPossibleReason;
 	}
@@ -316,7 +343,7 @@ public class Sample extends CoreAdo {
 		this.additionalTests = additionalTests;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getComment() {
 		return comment;
 	}
@@ -478,7 +505,7 @@ public class Sample extends CoreAdo {
 		requestedAdditionalTests = null;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherPathogenTests() {
 		return requestedOtherPathogenTests;
 	}
@@ -487,7 +514,7 @@ public class Sample extends CoreAdo {
 		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getRequestedOtherAdditionalTests() {
 		return requestedOtherAdditionalTests;
 	}
@@ -501,7 +528,8 @@ public class Sample extends CoreAdo {
 		return SampleReferenceDto.buildCaption(
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	public SampleReferenceDto toReference() {
@@ -509,7 +537,8 @@ public class Sample extends CoreAdo {
 			getUuid(),
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null);
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 
 	public Double getReportLat() {
@@ -535,4 +564,5 @@ public class Sample extends CoreAdo {
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
+
 }

@@ -110,6 +110,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ExportErrorException;
 import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportType;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
@@ -576,6 +577,8 @@ public final class DownloadUtil {
 		String exportFileName,
 		ExportConfigurationDto exportConfiguration) {
 
+
+		CountryFieldVisibilityChecker countryFieldVisibilityChecker = new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale());
 		StreamResource extendedStreamResource = new StreamResource(() -> {
 
 			return new DelayedInputStream((out) -> {
@@ -590,6 +593,7 @@ public final class DownloadUtil {
 							.filter(
 								m -> (m.getName().startsWith("get") || m.getName().startsWith("is"))
 									&& m.isAnnotationPresent(Order.class)
+									&& (countryFieldVisibilityChecker.isVisible(m))
 									&& (exportType == null || hasExportTarget(exportType, m))
 									&& (exportConfiguration == null
 										|| exportConfiguration.getProperties().contains(m.getAnnotation(ExportProperty.class).value())))
@@ -704,6 +708,10 @@ public final class DownloadUtil {
 						startIndex += DETAILED_EXPORT_STEP_SIZE;
 						exportRows = exportRowsSupplier.apply(startIndex, DETAILED_EXPORT_STEP_SIZE);
 					}
+				}
+				catch (Exception e) {
+					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+					throw new RuntimeException(e);
 				}
 			},
 				e -> {

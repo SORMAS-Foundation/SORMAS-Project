@@ -102,16 +102,14 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 					Validations.afterDate,
 					sampleTestDateField.getCaption(),
 					I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_DATE_TIME))));
-		ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
-		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
-		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
-		labDetails.setVisible(false);
+
 		addDiseaseField(PathogenTestDto.TESTED_DISEASE, true);
 		addField(PathogenTestDto.TESTED_DISEASE_DETAILS, TextField.class);
 
-		addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
+		ComboBox testResultField = addField(PathogenTestDto.TEST_RESULT, ComboBox.class);
 		addField(PathogenTestDto.SEROTYPE, TextField.class);
-		addField(PathogenTestDto.CQ_VALUE, TextField.class);
+		TextField cqValueField = addField(PathogenTestDto.CQ_VALUE, TextField.class);
+		removeMaxLengthValidators(cqValueField);
 		OptionGroup testResultVerifiedField = addField(PathogenTestDto.TEST_RESULT_VERIFIED, OptionGroup.class);
 		testResultVerifiedField.setRequired(true);
 		CheckBox fourFoldIncrease = addField(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, CheckBox.class);
@@ -161,21 +159,49 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		lab.addValueChangeListener(event -> {
-			if (event.getProperty().getValue() != null
-				&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
-				labDetails.setVisible(true);
-				labDetails.setRequired(true);
+		testTypeField.addValueChangeListener(e -> {
+			PathogenTestType testType = (PathogenTestType) e.getProperty().getValue();
+			if ((testType == PathogenTestType.PCR_RT_PCR && testResultField.getValue() == PathogenTestResultType.POSITIVE)
+				|| testType == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
 			} else {
-				labDetails.setVisible(false);
-				labDetails.setRequired(false);
-				labDetails.clear();
+				cqValueField.setVisible(false);
+				cqValueField.clear();
+			}
+		});
+
+		testResultField.addValueChangeListener(e -> {
+			PathogenTestResultType testResult = (PathogenTestResultType) e.getProperty().getValue();
+			if ((testTypeField.getValue() == PathogenTestType.PCR_RT_PCR && testResult == PathogenTestResultType.POSITIVE)
+				|| testTypeField.getValue() == PathogenTestType.CQ_VALUE_DETECTION) {
+				cqValueField.setVisible(true);
+			} else {
+				cqValueField.setVisible(false);
+				cqValueField.clear();
 			}
 		});
 
 		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+			ComboBox lab = addField(PathogenTestDto.LAB, ComboBox.class);
+			lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
+			TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
+			labDetails.setVisible(false);
+
+			lab.addValueChangeListener(event -> {
+				if (event.getProperty().getValue() != null
+					&& ((FacilityReferenceDto) event.getProperty().getValue()).getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+					labDetails.setVisible(true);
+					labDetails.setRequired(true);
+				} else {
+					labDetails.setVisible(false);
+					labDetails.setRequired(false);
+					labDetails.clear();
+				}
+			});
+			
 			setRequired(true, PathogenTestDto.LAB);
 		}
+		
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_DATE_TIME, PathogenTestDto.TEST_RESULT);
 	}
 

@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.region;
@@ -39,80 +36,81 @@ import retrofit2.Call;
  */
 public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 
-    @Override
-    protected Class<Community> getAdoClass() {
-        return Community.class;
-    }
+	@Override
+	protected Class<Community> getAdoClass() {
+		return Community.class;
+	}
 
-    @Override
-    protected Class<CommunityDto> getDtoClass() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	protected Class<CommunityDto> getDtoClass() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    protected Call<List<CommunityDto>> pullAllSince(long since) throws NoConnectionException {
-        return RetroProvider.getCommunityFacade().pullAllSince(since);
-    }
+	@Override
+	protected Call<List<CommunityDto>> pullAllSince(long since) throws NoConnectionException {
+		return RetroProvider.getCommunityFacade().pullAllSince(since);
+	}
 
-    @Override
-    protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-        return RetroProvider.getCommunityFacade().pullByUuids(uuids);
-    }
+	@Override
+	protected Call<List<CommunityDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+		return RetroProvider.getCommunityFacade().pullByUuids(uuids);
+	}
 
-    @Override
-    protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) throws NoConnectionException {
-        throw new UnsupportedOperationException("Entity is infrastructure");
-    }
+	@Override
+	protected Call<List<PushResult>> pushAll(List<CommunityDto> communityDtos) throws NoConnectionException {
+		throw new UnsupportedOperationException("Entity is infrastructure");
+	}
 
-    // cache of last queried entities
-    private District lastDistrict = null;
+	// cache of last queried entities
+	private District lastDistrict = null;
 
-    @Override
-    public void fillInnerFromDto(Community target, CommunityDto source) {
-        target.setName(source.getName());
+	@Override
+	public void fillInnerFromDto(Community target, CommunityDto source) {
+		target.setName(source.getName());
 
-        if (lastDistrict == null || !lastDistrict.getUuid().equals(source.getDistrict().getUuid())) {
-            lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
-        }
-        target.setDistrict(lastDistrict);
-        target.setArchived(source.isArchived());
-    }
+		if (lastDistrict == null || !lastDistrict.getUuid().equals(source.getDistrict().getUuid())) {
+			lastDistrict = DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict());
+		}
+		target.setDistrict(lastDistrict);
+		target.setArchived(source.isArchived());
+	}
 
-    @Override
-    public void pullEntities(final boolean markAsRead) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
-        databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
-        try {
-            super.pullEntities(markAsRead);
-        } finally {
-            databaseWasEmpty = false;
-        }
-    }
+	@Override
+	public void pullEntities(final boolean markAsRead)
+		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+		databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
+		try {
+			super.pullEntities(markAsRead);
+		} finally {
+			databaseWasEmpty = false;
+		}
+	}
 
-    // performance tweak: only query for existing during pull, when database was not empty
-    private boolean databaseWasEmpty = false;
+	// performance tweak: only query for existing during pull, when database was not empty
+	private boolean databaseWasEmpty = false;
 
-    @Override
-    protected Community handlePulledDto(AbstractAdoDao<Community> dao, CommunityDto dto) throws SQLException {
-        Community existing = null;
-        if (!databaseWasEmpty) {
-            existing = dao.queryUuid(dto.getUuid());
-        }
-        Community existingOrNew = fillOrCreateFromDto(existing, dto);
-        dao.updateOrCreate(existingOrNew);
-        return existingOrNew;
-    }
+	@Override
+	protected Community handlePulledDto(AbstractAdoDao<Community> dao, CommunityDto dto) throws SQLException {
+		Community existing = null;
+		if (!databaseWasEmpty) {
+			existing = dao.queryUuid(dto.getUuid());
+		}
+		Community existingOrNew = fillOrCreateFromDto(existing, dto);
+		dao.updateOrCreate(existingOrNew);
+		return existingOrNew;
+	}
 
-    @Override
-    public void fillInnerFromAdo(CommunityDto communityDto, Community community) {
-        throw new UnsupportedOperationException("Entity is infrastructure");
-    }
+	@Override
+	public void fillInnerFromAdo(CommunityDto communityDto, Community community) {
+		throw new UnsupportedOperationException("Entity is infrastructure");
+	}
 
-    public static CommunityReferenceDto toReferenceDto(Community ado) {
-        if (ado == null) {
-            return null;
-        }
-        CommunityReferenceDto dto = new CommunityReferenceDto(ado.getUuid());
+	public static CommunityReferenceDto toReferenceDto(Community ado) {
+		if (ado == null) {
+			return null;
+		}
+		CommunityReferenceDto dto = new CommunityReferenceDto(ado.getUuid());
 
-        return dto;
-    }
+		return dto;
+	}
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>ResetFilterInSearchView</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>1b2143f5-6594-4cc1-8b59-573750711ee3</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description>Set when it is called by other test case (Browser won't close)</description>
+      <id>3db22bf8-7a84-4b81-9f3a-b859d317141a</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

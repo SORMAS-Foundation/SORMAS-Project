@@ -1,6 +1,9 @@
 package de.symeda.sormas.rest;
 
-import java.util.List;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonQuarantineEndDto;
+import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
@@ -10,10 +13,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.visit.ExternalVisitDto;
+import java.util.Date;
+import java.util.List;
 
 @Path("/visits-external")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -42,9 +43,16 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		return EXTERNAL_VISITS_API_VERSION;
 	}
 
+	@GET
+	@Path("/quarantineEndDates/{since}")
+	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(@PathParam("since") long since) {
+		return FacadeProvider.getPersonFacade().getLatestQuarantineEndDates(new Date(since));
+	}
+
 	@Override
 	protected <T> String createErrorMessage(T dto) {
 		final ExternalVisitDto externalVisitDto = (ExternalVisitDto) dto;
 		return dto.getClass().getSimpleName() + " #personUUID: " + externalVisitDto.getPersonUuid() + "\n";
 	}
+
 }

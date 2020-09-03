@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.contact;
@@ -26,6 +23,8 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.District;
@@ -40,187 +39,208 @@ import retrofit2.Call;
 
 public class ContactDtoHelper extends AdoDtoHelper<Contact, ContactDto> {
 
-    public ContactDtoHelper() {
-    }
+	private EpiDataDtoHelper epiDataDtoHelper = new EpiDataDtoHelper();
 
-    @Override
-    protected Class<Contact> getAdoClass() {
-        return Contact.class;
-    }
+	public ContactDtoHelper() {
+	}
 
-    @Override
-    protected Class<ContactDto> getDtoClass() {
-        return ContactDto.class;
-    }
+	@Override
+	protected Class<Contact> getAdoClass() {
+		return Contact.class;
+	}
 
-    @Override
-    protected Call<List<ContactDto>> pullAllSince(long since) throws NoConnectionException {
-        return RetroProvider.getContactFacade().pullAllSince(since);
-    }
+	@Override
+	protected Class<ContactDto> getDtoClass() {
+		return ContactDto.class;
+	}
 
-    @Override
-    protected Call<List<ContactDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-        return RetroProvider.getContactFacade().pullByUuids(uuids);
-    }
+	@Override
+	protected Call<List<ContactDto>> pullAllSince(long since) throws NoConnectionException {
+		return RetroProvider.getContactFacade().pullAllSince(since);
+	}
 
-    @Override
-    protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) throws NoConnectionException {
-        return RetroProvider.getContactFacade().pushAll(contactDtos);
-    }
+	@Override
+	protected Call<List<ContactDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
+		return RetroProvider.getContactFacade().pullByUuids(uuids);
+	}
 
-    @Override
-    public void fillInnerFromDto(Contact target, ContactDto source) {
-        target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
-        target.setDisease(source.getDisease());
-        target.setDiseaseDetails(source.getDiseaseDetails());
-        target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
+	@Override
+	protected Call<List<PushResult>> pushAll(List<ContactDto> contactDtos) throws NoConnectionException {
+		return RetroProvider.getContactFacade().pushAll(contactDtos);
+	}
 
-        target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
-        target.setReportDateTime(source.getReportDateTime());
-        target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
+	@Override
+	public void fillInnerFromDto(Contact target, ContactDto source) {
+		target.setCaseUuid(source.getCaze() != null ? source.getCaze().getUuid() : null);
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setPerson(DatabaseHelper.getPersonDao().getByReferenceDto(source.getPerson()));
 
-        target.setLastContactDate(source.getLastContactDate());
-        target.setContactProximity(source.getContactProximity());
-        target.setContactClassification(source.getContactClassification());
-        target.setContactStatus(source.getContactStatus());
-        target.setRelationToCase(source.getRelationToCase());
-        target.setRelationDescription(source.getRelationDescription());
-        target.setFollowUpStatus(source.getFollowUpStatus());
-        target.setFollowUpComment(source.getFollowUpComment());
-        target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setReportingUser(DatabaseHelper.getUserDao().getByReferenceDto(source.getReportingUser()));
+		target.setReportDateTime(source.getReportDateTime());
+		target.setContactOfficer(DatabaseHelper.getUserDao().getByReferenceDto(source.getContactOfficer()));
 
-        target.setDescription(source.getDescription());
+		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
+		target.setContactProximity(source.getContactProximity());
+		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
+		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpUntil(source.getFollowUpUntil());
 
-        target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
+		target.setDescription(source.getDescription());
 
-        target.setReportLat(source.getReportLat());
-        target.setReportLon(source.getReportLon());
-        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-        target.setExternalID(source.getExternalID());
-        target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
-        target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
+		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
 
-        target.setHighPriority(source.isHighPriority());
-        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
-        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
-        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
+		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));
+		target.setDistrict(DatabaseHelper.getDistrictDao().getByReferenceDto(source.getDistrict()));
 
-        target.setQuarantine(source.getQuarantine());
-        target.setQuarantineFrom(source.getQuarantineFrom());
-        target.setQuarantineTo(source.getQuarantineTo());
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
-        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 
-        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
-        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
-        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
-        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
-        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
-        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
-        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
-        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
-        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
-        target.setAdditionalDetails(source.getAdditionalDetails());
-    }
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
-    @Override
-    public void fillInnerFromAdo(ContactDto target, Contact source) {
-        if (source.getPerson() != null) {
-            Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
-            target.setPerson(PersonDtoHelper.toReferenceDto(person));
-        } else {
-            target.setPerson(null);
-        }
-        if (source.getRegion() != null) {
-            Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
-            target.setRegion(RegionDtoHelper.toReferenceDto(region));
-        } else {
-            target.setRegion(null);
-        }
-        if (source.getDistrict() != null) {
-            District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
-            target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
-        } else {
-            target.setDistrict(null);
-        }
-        if (source.getCaseUuid() != null) {
-            target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
-        } else {
-            target.setCaze(null);
-        }
-        if (source.getResultingCaseUuid() != null) {
-            target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
-        } else {
-            target.setResultingCase(null);
-        }
+		target.setAdditionalDetails(source.getAdditionalDetails());
 
-        target.setDisease(source.getDisease());
-        target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setEpiData(epiDataDtoHelper.fillOrCreateFromDto(target.getEpiData(), source.getEpiData()));
+	}
 
-        if (source.getReportingUser() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
-            target.setReportingUser(UserDtoHelper.toReferenceDto(user));
-        } else {
-            target.setReportingUser(null);
-        }
-        target.setReportDateTime(source.getReportDateTime());
+	@Override
+	public void fillInnerFromAdo(ContactDto target, Contact source) {
+		if (source.getPerson() != null) {
+			Person person = DatabaseHelper.getPersonDao().queryForId(source.getPerson().getId());
+			target.setPerson(PersonDtoHelper.toReferenceDto(person));
+		} else {
+			target.setPerson(null);
+		}
+		if (source.getRegion() != null) {
+			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
+			target.setRegion(RegionDtoHelper.toReferenceDto(region));
+		} else {
+			target.setRegion(null);
+		}
+		if (source.getDistrict() != null) {
+			District district = DatabaseHelper.getDistrictDao().queryForId(source.getDistrict().getId());
+			target.setDistrict(DistrictDtoHelper.toReferenceDto(district));
+		} else {
+			target.setDistrict(null);
+		}
+		if (source.getCaseUuid() != null) {
+			target.setCaze(new CaseReferenceDto(source.getCaseUuid()));
+		} else {
+			target.setCaze(null);
+		}
+		if (source.getResultingCaseUuid() != null) {
+			target.setResultingCase(new CaseReferenceDto(source.getResultingCaseUuid()));
+		} else {
+			target.setResultingCase(null);
+		}
 
-        target.setLastContactDate(source.getLastContactDate());
-        target.setContactProximity(source.getContactProximity());
-        target.setContactClassification(source.getContactClassification());
-        target.setContactStatus(source.getContactStatus());
-        target.setRelationToCase(source.getRelationToCase());
-        target.setRelationDescription(source.getRelationDescription());
-        target.setFollowUpStatus(source.getFollowUpStatus());
-        target.setFollowUpComment(source.getFollowUpComment());
-        target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
 
-        if (source.getContactOfficer() != null) {
-            User user = DatabaseHelper.getUserDao().queryForId(source.getContactOfficer().getId());
-            target.setContactOfficer(UserDtoHelper.toReferenceDto(user));
-        } else {
-            target.setContactOfficer(null);
-        }
+		if (source.getReportingUser() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getReportingUser().getId());
+			target.setReportingUser(UserDtoHelper.toReferenceDto(user));
+		} else {
+			target.setReportingUser(null);
+		}
+		target.setReportDateTime(source.getReportDateTime());
 
-        target.setDescription(source.getDescription());
-        target.setReportLat(source.getReportLat());
-        target.setReportLon(source.getReportLon());
-        target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-        target.setExternalID(source.getExternalID());
+		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
+		target.setContactProximity(source.getContactProximity());
+		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
+		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpUntil(source.getFollowUpUntil());
 
-        target.setHighPriority(source.isHighPriority());
-        target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
-        target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
-        target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+		if (source.getContactOfficer() != null) {
+			User user = DatabaseHelper.getUserDao().queryForId(source.getContactOfficer().getId());
+			target.setContactOfficer(UserDtoHelper.toReferenceDto(user));
+		} else {
+			target.setContactOfficer(null);
+		}
 
-        target.setQuarantine(source.getQuarantine());
-        target.setQuarantineFrom(source.getQuarantineFrom());
-        target.setQuarantineTo(source.getQuarantineTo());
+		target.setDescription(source.getDescription());
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
 
-        target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-        target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
-        target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
-        target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
-        target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
-        target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
-        target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
-        target.setQuarantineHomePossible(source.getQuarantineHomePossible());
-        target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
-        target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
-        target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
 
-        target.setAdditionalDetails(source.getAdditionalDetails());
-    }
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
 
-    public static ContactReferenceDto toReferenceDto(Contact ado) {
-        if (ado == null) {
-            return null;
-        }
-        ContactReferenceDto dto = new ContactReferenceDto(ado.getUuid());
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 
-        return dto;
-    }
+		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		if (source.getEpiData() != null) {
+			EpiData epiData = DatabaseHelper.getEpiDataDao().queryForId(source.getEpiData().getId());
+			target.setEpiData(epiDataDtoHelper.adoToDto(epiData));
+		} else {
+			target.setEpiData(null);
+		}
+	}
+
+	public static ContactReferenceDto toReferenceDto(Contact ado) {
+		if (ado == null) {
+			return null;
+		}
+		ContactReferenceDto dto = new ContactReferenceDto(ado.getUuid());
+
+		return dto;
+	}
 }

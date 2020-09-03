@@ -1,11 +1,12 @@
 package de.symeda.sormas.ui.caze.porthealthinfo;
 
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Arrays;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
@@ -31,9 +32,11 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String PORT_HEALTH_INFO_HEADING_LOC = "portHealthInfoHeadingLoc";
+
 	//@formatter:off
-	private static final String POINT_OF_ENTRY_LAYOUT_HTML = 
-			h3(I18nProperties.getString(Strings.headingPointOfEntryInformation)) +
+	private static final String POINT_OF_ENTRY_LAYOUT_HTML =
+			loc(PORT_HEALTH_INFO_HEADING_LOC) +
 			fluidRowLocs(PointOfEntryDto.POINT_OF_ENTRY_TYPE, CaseDataDto.POINT_OF_ENTRY);
 
 	private static final String HTML_LAYOUT_AIRPORT =
@@ -82,6 +85,10 @@ public class PortHealthInfoForm extends AbstractEditForm<PortHealthInfoDto> {
 		if (pointOfEntry == null) {
 			return;
 		}
+
+		Label portHealthInfoHeadingLabel = new Label(I18nProperties.getString(Strings.headingPointOfEntryInformation));
+		portHealthInfoHeadingLabel.addStyleName(H3);
+		getContent().addComponent(portHealthInfoHeadingLabel, PORT_HEALTH_INFO_HEADING_LOC);
 
 		TextField tfPointOfEntryType = addCustomField(PointOfEntryDto.POINT_OF_ENTRY_TYPE, String.class, TextField.class);
 		tfPointOfEntryType.setValue(pointOfEntry.getPointOfEntryType().toString());

@@ -23,16 +23,23 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
 public class EventCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 2194071020732246594L;
 
-	public static String REPORTING_USER_ROLE = "reportingUserRole";
+	public static final String EVENT_DATE_FROM = "eventDateFrom";
+	public static final String EVENT_DATE_TO = "eventDateTo";
+	public static final String REPORTING_USER_ROLE = "reportingUserRole";
+	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
+	public static final String FREE_TEXT = "freeText";
 
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -43,6 +50,14 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	private Date reportedDateFrom;
 	private Date reportedDateTo;
 	private EntityRelevanceStatus relevanceStatus;
+	private Date eventDateFrom;
+	private Date eventDateTo;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
+	private UserReferenceDto surveillanceOfficer;
+	private String freeText;
+	private EventSourceType srcType;
+	private CaseReferenceDto caze;
+	private Boolean userFilterIncluded = true;
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
@@ -64,6 +79,23 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 	public EventCriteria disease(Disease disease) {
 		setDisease(disease);
 		return this;
+	}
+
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public EventCriteria caze(CaseReferenceDto caze) {
+		this.caze = caze;
+		return this;
+	}
+
+	public Boolean getUserFilterIncluded() {
+		return userFilterIncluded;
+	}
+
+	public void setUserFilterIncluded(Boolean userFilterIncluded) {
+		this.userFilterIncluded = userFilterIncluded;
 	}
 
 	public UserRole getReportingUserRole() {
@@ -139,5 +171,74 @@ public class EventCriteria extends BaseCriteria implements Serializable {
 
 	public Date getReportedDateTo() {
 		return reportedDateTo;
+	}
+
+	public EventCriteria eventDateBetween(Date eventDateFrom, Date eventDateTo, DateFilterOption dateFilterOption) {
+		this.eventDateFrom = eventDateFrom;
+		this.eventDateTo = eventDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public EventCriteria eventDateFrom(Date eventDateFrom) {
+		this.eventDateFrom = eventDateFrom;
+		return this;
+	}
+
+	public Date getEventDateFrom() {
+		return eventDateFrom;
+	}
+
+	public EventCriteria eventDateTo(Date eventDateTo) {
+		this.eventDateTo = eventDateTo;
+		return this;
+	}
+
+	public Date getEventDateTo() {
+		return eventDateTo;
+	}
+
+	public EventCriteria dateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+		return this;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public EventCriteria surveillanceOfficer(UserReferenceDto surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+		return this;
+	}
+
+	public void setSurveillanceOfficer(UserReferenceDto surveillanceOfficer) {
+		this.surveillanceOfficer = surveillanceOfficer;
+	}
+
+	public UserReferenceDto getSurveillanceOfficer() {
+		return surveillanceOfficer;
+	}
+
+	public EventCriteria freeText(String freeText) {
+		this.freeText = freeText;
+		return this;
+	}
+
+	public void setFreeText(String freeText) {
+		this.freeText = freeText;
+	}
+
+	@IgnoreForUrl
+	public String getFreeText() {
+		return freeText;
+	}
+
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 }

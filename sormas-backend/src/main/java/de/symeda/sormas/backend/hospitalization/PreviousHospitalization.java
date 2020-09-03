@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.hospitalization;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -129,7 +132,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.isolated = isolated;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -148,7 +151,7 @@ public class PreviousHospitalization extends AbstractDomainObject {
 		this.hospitalization = hospitalization;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -156,4 +159,5 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public void setHealthFacilityDetails(String healthFacilityDetails) {
 		this.healthFacilityDetails = healthFacilityDetails;
 	}
+
 }

@@ -106,10 +106,22 @@
 
                 </LinearLayout>
 
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/sample_fieldSampleID"
-                    app:value="@{data.fieldSampleID}"
-                    style="@style/ControlSingleColumnStyle" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_fieldSampleID"
+                        app:value="@{data.fieldSampleID}"
+                        style="@style/ControlFirstOfTwoColumnsStyle" />
+
+                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                        android:id="@+id/sample_forRetest"
+                        app:value="@{data.forRetest}"
+                        style="@style/ControlSecondOfTwoColumnsStyle" />
+
+                </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/sample_lab"

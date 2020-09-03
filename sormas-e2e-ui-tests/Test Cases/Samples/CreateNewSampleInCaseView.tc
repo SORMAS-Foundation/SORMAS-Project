@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>CreateNewSampleInCaseView</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>4bd1da10-6ad7-4314-a860-48d823d4fbe4</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>f6da25fe-6938-44f2-b3a4-243fe6e92324</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

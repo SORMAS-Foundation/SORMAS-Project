@@ -1,16 +1,5 @@
 package de.symeda.sormas.ui.samples;
 
-import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
-
-import java.util.Arrays;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -24,7 +13,6 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -53,6 +41,17 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
+import java.util.Arrays;
+
+import static de.symeda.sormas.ui.utils.CssStyles.HSPACE_RIGHT_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_3;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
+
 public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 	private static final long serialVersionUID = -2323128076462668517L;
@@ -71,7 +70,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
                     fluidRowLocs(SampleDto.SAMPLE_DATE_TIME, SampleDto.SAMPLE_MATERIAL) +
                     fluidRowLocs("", SampleDto.SAMPLE_MATERIAL_TEXT) +
                     fluidRowLocs(SampleDto.SAMPLE_SOURCE, "") +
-                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, "") +
+                    fluidRowLocs(SampleDto.FIELD_SAMPLE_ID, SampleDto.FOR_RETEST) +
                     fluidRowLocs(SampleDto.LAB, SampleDto.LAB_DETAILS) +
 
                     locCss(VSPACE_TOP_3, SampleDto.PATHOGEN_TESTING_REQUESTED) +
@@ -118,6 +117,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		addField(SampleDto.SAMPLE_MATERIAL_TEXT, TextField.class);
 		addField(SampleDto.SAMPLE_SOURCE, ComboBox.class);
 		addField(SampleDto.FIELD_SAMPLE_ID, TextField.class);
+		addField(SampleDto.FOR_RETEST, OptionGroup.class).setRequired(true);
 		addDateField(SampleDto.SHIPMENT_DATE, DateField.class, 7);
 		addField(SampleDto.SHIPMENT_DETAILS, TextField.class);
 		addField(SampleDto.RECEIVED_DATE, DateField.class);
@@ -155,23 +155,23 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			}
 		}
 
+		FieldHelper.setVisibleWhen(
+			getFieldGroup(),
+			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
+			SampleDto.RECEIVED,
+			Arrays.asList(true),
+			true);
+		FieldHelper.setEnabledWhen(
+			getFieldGroup(),
+			receivedField,
+			Arrays.asList(true),
+			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
+			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
 			receivedField,
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.SPECIMEN_CONDITION),
 			Arrays.asList(true));
-		FieldHelper.setEnabledWhen(
-			getFieldGroup(),
-			receivedField,
-			Arrays.asList(true),
-			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
-			true);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON),
-			SampleDto.RECEIVED,
-			Arrays.asList(true),
-			true);
 
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);

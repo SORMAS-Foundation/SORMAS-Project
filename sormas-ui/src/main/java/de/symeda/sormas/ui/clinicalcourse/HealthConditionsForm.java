@@ -24,14 +24,15 @@ import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OBESITY;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.OTHER_CONDITIONS;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.SICKLE_CELL_DISEASE;
 import static de.symeda.sormas.api.clinicalcourse.HealthConditionsDto.TUBERCULOSIS;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import java.util.Arrays;
 
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -47,9 +48,11 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String HEALTH_CONDITIONS_HEADINGS_LOC = "healthConditionsHeadingLoc";
+
 	//@formatter:off
 	private static final String HTML_LAYOUT =
-			h3(I18nProperties.getString(Strings.headingHealthConditions)) +
+			loc(HEALTH_CONDITIONS_HEADINGS_LOC) +
 					fluidRow(
 							fluidColumn(6, 0, locs(
 									TUBERCULOSIS, ASPLENIA, HEPATITIS, DIABETES, IMMUNODEFICIENCY_OTHER_THAN_HIV,
@@ -69,6 +72,10 @@ public class HealthConditionsForm extends AbstractEditForm<HealthConditionsDto> 
 
 	@Override
 	protected void addFields() {
+
+		Label healthConditionsHeadingLabel = new Label(I18nProperties.getString(Strings.headingHealthConditions));
+		healthConditionsHeadingLabel.addStyleName(H3);
+		getContent().addComponent(healthConditionsHeadingLabel, HEALTH_CONDITIONS_HEADINGS_LOC);
 
 		addFields(
 			TUBERCULOSIS,

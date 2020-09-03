@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.component.tooltip;
@@ -32,248 +29,263 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+
 import androidx.annotation.Nullable;
 
 import de.symeda.sormas.app.R;
 
 class TooltipTextDrawable extends Drawable {
-    public static final float ARROW_RATIO_DEFAULT = 1.4f;
-    public static final float ALPHA_MAX = 255f;
-    static final String TAG = "TooltipTextDrawable";
-    private final RectF rectF;
-    private final Path path;
-    private final Point tmpPoint = new Point();
-    private final Rect outlineRect = new Rect();
-    private final Paint bgPaint;
-    private final Paint stPaint;
-    private final float arrowRatio;
-    private final float ellipseSize;
-    private Point point;
-    private int padding = 0;
-    private int arrowWeight = 0;
-    private Tooltip.Gravity gravity;
 
-    public TooltipTextDrawable(final Context context, final Tooltip.Builder builder) {
+	public static final float ARROW_RATIO_DEFAULT = 1.4f;
+	public static final float ALPHA_MAX = 255f;
+	static final String TAG = "TooltipTextDrawable";
+	private final RectF rectF;
+	private final Path path;
+	private final Point tmpPoint = new Point();
+	private final Rect outlineRect = new Rect();
+	private final Paint bgPaint;
+	private final Paint stPaint;
+	private final float arrowRatio;
+	private final float ellipseSize;
+	private Point point;
+	private int padding = 0;
+	private int arrowWeight = 0;
+	private Tooltip.Gravity gravity;
 
-        TypedArray theme =
-            context.getTheme().obtainStyledAttributes(null, R.styleable.TooltipLayout, builder.defStyleAttr, builder.defStyleRes);
-        this.ellipseSize = theme.getDimensionPixelSize(R.styleable.TooltipLayout_ttlm_cornerRadius, 4);
-        final int strokeWidth = theme.getDimensionPixelSize(R.styleable.TooltipLayout_ttlm_strokeWeight, 2);
-        final int backgroundColor = theme.getColor(R.styleable.TooltipLayout_ttlm_backgroundColor, 0);
-        final int strokeColor = theme.getColor(R.styleable.TooltipLayout_ttlm_strokeColor, 0);
-        this.arrowRatio = theme.getFloat(R.styleable.TooltipLayout_ttlm_arrowRatio, ARROW_RATIO_DEFAULT);
-        theme.recycle();
+	public TooltipTextDrawable(final Context context, final Tooltip.Builder builder) {
 
-        this.rectF = new RectF();
+		TypedArray theme = context.getTheme().obtainStyledAttributes(null, R.styleable.TooltipLayout, builder.defStyleAttr, builder.defStyleRes);
+		this.ellipseSize = theme.getDimensionPixelSize(R.styleable.TooltipLayout_ttlm_cornerRadius, 4);
+		final int strokeWidth = theme.getDimensionPixelSize(R.styleable.TooltipLayout_ttlm_strokeWeight, 2);
+		final int backgroundColor = theme.getColor(R.styleable.TooltipLayout_ttlm_backgroundColor, 0);
+		final int strokeColor = theme.getColor(R.styleable.TooltipLayout_ttlm_strokeColor, 0);
+		this.arrowRatio = theme.getFloat(R.styleable.TooltipLayout_ttlm_arrowRatio, ARROW_RATIO_DEFAULT);
+		theme.recycle();
 
-        if (backgroundColor != 0) {
-            bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            bgPaint.setColor(backgroundColor);
-            bgPaint.setStyle(Paint.Style.FILL);
-        } else {
-            bgPaint = null;
-        }
+		this.rectF = new RectF();
 
-        if (strokeColor != 0) {
-            stPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            stPaint.setColor(strokeColor);
-            stPaint.setStyle(Paint.Style.STROKE);
-            stPaint.setStrokeWidth(strokeWidth);
-        } else {
-            stPaint = null;
-        }
+		if (backgroundColor != 0) {
+			bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+			bgPaint.setColor(backgroundColor);
+			bgPaint.setStyle(Paint.Style.FILL);
+		} else {
+			bgPaint = null;
+		}
 
-        path = new Path();
-    }
+		if (strokeColor != 0) {
+			stPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+			stPaint.setColor(strokeColor);
+			stPaint.setStyle(Paint.Style.STROKE);
+			stPaint.setStrokeWidth(strokeWidth);
+		} else {
+			stPaint = null;
+		}
 
-    @Override
-    public void draw(final Canvas canvas) {
-        if (null != bgPaint) {
-            canvas.drawPath(path, bgPaint);
-        }
+		path = new Path();
+	}
 
-        if (null != stPaint) {
-            canvas.drawPath(path, stPaint);
-        }
-    }
+	@Override
+	public void draw(final Canvas canvas) {
+		if (null != bgPaint) {
+			canvas.drawPath(path, bgPaint);
+		}
 
-    public void setAnchor(final Tooltip.Gravity gravity, int padding, @Nullable Point point) {
-        if (gravity != this.gravity || padding != this.padding || !Utils.equals(this.point, point)) {
-            this.gravity = gravity;
-            this.padding = padding;
-            this.arrowWeight = (int) ((float) padding / arrowRatio);
+		if (null != stPaint) {
+			canvas.drawPath(path, stPaint);
+		}
+	}
 
-            if (null != point) {
-                this.point = new Point(point);
-            } else {
-                this.point = null;
-            }
+	public void setAnchor(final Tooltip.Gravity gravity, int padding, @Nullable Point point) {
+		if (gravity != this.gravity || padding != this.padding || !Utils.equals(this.point, point)) {
+			this.gravity = gravity;
+			this.padding = padding;
+			this.arrowWeight = (int) ((float) padding / arrowRatio);
 
-            final Rect bounds = getBounds();
-            if (!bounds.isEmpty()) {
-                calculatePath(getBounds());
-                invalidateSelf();
-            }
-        }
-    }
+			if (null != point) {
+				this.point = new Point(point);
+			} else {
+				this.point = null;
+			}
 
-    void calculatePath(Rect outBounds) {
-        int left = outBounds.left + padding;
-        int top = outBounds.top + padding;
-        int right = outBounds.right - padding;
-        int bottom = outBounds.bottom - padding;
+			final Rect bounds = getBounds();
+			if (!bounds.isEmpty()) {
+				calculatePath(getBounds());
+				invalidateSelf();
+			}
+		}
+	}
 
-        final float maxY = bottom - ellipseSize;
-        final float maxX = right - ellipseSize;
-        final float minY = top + ellipseSize;
-        final float minX = left + ellipseSize;
+	void calculatePath(Rect outBounds) {
+		int left = outBounds.left + padding;
+		int top = outBounds.top + padding;
+		int right = outBounds.right - padding;
+		int bottom = outBounds.bottom - padding;
 
-        if (null != point && null != gravity) {
-            calculatePathWithGravity(outBounds, left, top, right, bottom, maxY, maxX, minY, minX);
-        } else {
-            rectF.set(left, top, right, bottom);
-            path.addRoundRect(rectF, ellipseSize, ellipseSize, Path.Direction.CW);
-        }
-    }
+		final float maxY = bottom - ellipseSize;
+		final float maxX = right - ellipseSize;
+		final float minY = top + ellipseSize;
+		final float minX = left + ellipseSize;
 
-    private void calculatePathWithGravity(
-        final Rect outBounds, final int left, final int top, final int right, final int bottom, final float maxY, final float maxX,
-        final float minY, final float minX) {
-        boolean drawPoint =
-            isDrawPoint(left, top, right, bottom, maxY, maxX, minY, minX, tmpPoint, point, gravity, arrowWeight);
-        clampPoint(left, top, right, bottom, tmpPoint);
+		if (null != point && null != gravity) {
+			calculatePathWithGravity(outBounds, left, top, right, bottom, maxY, maxX, minY, minX);
+		} else {
+			rectF.set(left, top, right, bottom);
+			path.addRoundRect(rectF, ellipseSize, ellipseSize, Path.Direction.CW);
+		}
+	}
 
-        path.reset();
+	private void calculatePathWithGravity(
+		final Rect outBounds,
+		final int left,
+		final int top,
+		final int right,
+		final int bottom,
+		final float maxY,
+		final float maxX,
+		final float minY,
+		final float minX) {
+		boolean drawPoint = isDrawPoint(left, top, right, bottom, maxY, maxX, minY, minX, tmpPoint, point, gravity, arrowWeight);
+		clampPoint(left, top, right, bottom, tmpPoint);
 
-        // top/left
-        path.moveTo(left + ellipseSize, top);
+		path.reset();
 
-        if (drawPoint && gravity == Tooltip.Gravity.BOTTOM) {
-            path.lineTo(left + tmpPoint.x - arrowWeight, top);
-            path.lineTo(left + tmpPoint.x, outBounds.top);
-            path.lineTo(left + tmpPoint.x + arrowWeight, top);
-        }
+		// top/left
+		path.moveTo(left + ellipseSize, top);
 
-        // top/right
-        path.lineTo(right - ellipseSize, top);
-        path.quadTo(right, top, right, top + ellipseSize);
+		if (drawPoint && gravity == Tooltip.Gravity.BOTTOM) {
+			path.lineTo(left + tmpPoint.x - arrowWeight, top);
+			path.lineTo(left + tmpPoint.x, outBounds.top);
+			path.lineTo(left + tmpPoint.x + arrowWeight, top);
+		}
 
-        if (drawPoint && gravity == Tooltip.Gravity.LEFT) {
-            path.lineTo(right, top + tmpPoint.y - arrowWeight);
-            path.lineTo(outBounds.right, top + tmpPoint.y);
-            path.lineTo(right, top + tmpPoint.y + arrowWeight);
-        }
+		// top/right
+		path.lineTo(right - ellipseSize, top);
+		path.quadTo(right, top, right, top + ellipseSize);
 
-        // bottom/right
-        path.lineTo(right, bottom - ellipseSize);
-        path.quadTo(right, bottom, right - ellipseSize, bottom);
+		if (drawPoint && gravity == Tooltip.Gravity.LEFT) {
+			path.lineTo(right, top + tmpPoint.y - arrowWeight);
+			path.lineTo(outBounds.right, top + tmpPoint.y);
+			path.lineTo(right, top + tmpPoint.y + arrowWeight);
+		}
 
-        if (drawPoint && gravity == Tooltip.Gravity.TOP) {
-            path.lineTo(left + tmpPoint.x + arrowWeight, bottom);
-            path.lineTo(left + tmpPoint.x, outBounds.bottom);
-            path.lineTo(left + tmpPoint.x - arrowWeight, bottom);
-        }
+		// bottom/right
+		path.lineTo(right, bottom - ellipseSize);
+		path.quadTo(right, bottom, right - ellipseSize, bottom);
 
-        // bottom/left
-        path.lineTo(left + ellipseSize, bottom);
-        path.quadTo(left, bottom, left, bottom - ellipseSize);
+		if (drawPoint && gravity == Tooltip.Gravity.TOP) {
+			path.lineTo(left + tmpPoint.x + arrowWeight, bottom);
+			path.lineTo(left + tmpPoint.x, outBounds.bottom);
+			path.lineTo(left + tmpPoint.x - arrowWeight, bottom);
+		}
 
-        if (drawPoint && gravity == Tooltip.Gravity.RIGHT) {
-            path.lineTo(left, top + tmpPoint.y + arrowWeight);
-            path.lineTo(outBounds.left, top + tmpPoint.y);
-            path.lineTo(left, top + tmpPoint.y - arrowWeight);
-        }
+		// bottom/left
+		path.lineTo(left + ellipseSize, bottom);
+		path.quadTo(left, bottom, left, bottom - ellipseSize);
 
-        // top/left
-        path.lineTo(left, top + ellipseSize);
-        path.quadTo(left, top, left + ellipseSize, top);
-    }
+		if (drawPoint && gravity == Tooltip.Gravity.RIGHT) {
+			path.lineTo(left, top + tmpPoint.y + arrowWeight);
+			path.lineTo(outBounds.left, top + tmpPoint.y);
+			path.lineTo(left, top + tmpPoint.y - arrowWeight);
+		}
 
-    private static boolean isDrawPoint(
-        final int left, final int top, final int right, final int bottom, final float maxY, final float maxX, final float minY,
-        final float minX, final Point tmpPoint, final Point point, final Tooltip.Gravity gravity,
-        final int arrowWeight) {
-        boolean drawPoint = false;
-        tmpPoint.set(point.x, point.y);
+		// top/left
+		path.lineTo(left, top + ellipseSize);
+		path.quadTo(left, top, left + ellipseSize, top);
+	}
 
-        if (gravity == Tooltip.Gravity.RIGHT || gravity == Tooltip.Gravity.LEFT) {
-            if (tmpPoint.y >= top && tmpPoint.y <= bottom) {
-                if (top + tmpPoint.y + arrowWeight > maxY) {
-                    tmpPoint.y = (int) (maxY - arrowWeight - top);
-                } else if (top + tmpPoint.y - arrowWeight < minY) {
-                    tmpPoint.y = (int) (minY + arrowWeight - top);
-                }
-                drawPoint = true;
-            }
-        } else {
-            if (tmpPoint.x >= left && tmpPoint.x <= right) {
-                if (tmpPoint.x >= left && tmpPoint.x <= right) {
-                    if (left + tmpPoint.x + arrowWeight > maxX) {
-                        tmpPoint.x = (int) (maxX - arrowWeight - left);
-                    } else if (left + tmpPoint.x - arrowWeight < minX) {
-                        tmpPoint.x = (int) (minX + arrowWeight - left);
-                    }
-                    drawPoint = true;
-                }
-            }
-        }
-        return drawPoint;
-    }
+	private static boolean isDrawPoint(
+		final int left,
+		final int top,
+		final int right,
+		final int bottom,
+		final float maxY,
+		final float maxX,
+		final float minY,
+		final float minX,
+		final Point tmpPoint,
+		final Point point,
+		final Tooltip.Gravity gravity,
+		final int arrowWeight) {
+		boolean drawPoint = false;
+		tmpPoint.set(point.x, point.y);
 
-    private static void clampPoint(
-        final int left, final int top, final int right, final int bottom, final Point tmpPoint) {
-        if (tmpPoint.y < top) {
-            tmpPoint.y = top;
-        } else if (tmpPoint.y > bottom) {
-            tmpPoint.y = bottom;
-        }
-        if (tmpPoint.x < left) {
-            tmpPoint.x = left;
-        }
-        if (tmpPoint.x > right) {
-            tmpPoint.x = right;
-        }
-    }
+		if (gravity == Tooltip.Gravity.RIGHT || gravity == Tooltip.Gravity.LEFT) {
+			if (tmpPoint.y >= top && tmpPoint.y <= bottom) {
+				if (top + tmpPoint.y + arrowWeight > maxY) {
+					tmpPoint.y = (int) (maxY - arrowWeight - top);
+				} else if (top + tmpPoint.y - arrowWeight < minY) {
+					tmpPoint.y = (int) (minY + arrowWeight - top);
+				}
+				drawPoint = true;
+			}
+		} else {
+			if (tmpPoint.x >= left && tmpPoint.x <= right) {
+				if (tmpPoint.x >= left && tmpPoint.x <= right) {
+					if (left + tmpPoint.x + arrowWeight > maxX) {
+						tmpPoint.x = (int) (maxX - arrowWeight - left);
+					} else if (left + tmpPoint.x - arrowWeight < minX) {
+						tmpPoint.x = (int) (minX + arrowWeight - left);
+					}
+					drawPoint = true;
+				}
+			}
+		}
+		return drawPoint;
+	}
 
-    @Override
-    protected void onBoundsChange(final Rect bounds) {
-        super.onBoundsChange(bounds);
-        calculatePath(bounds);
-    }
+	private static void clampPoint(final int left, final int top, final int right, final int bottom, final Point tmpPoint) {
+		if (tmpPoint.y < top) {
+			tmpPoint.y = top;
+		} else if (tmpPoint.y > bottom) {
+			tmpPoint.y = bottom;
+		}
+		if (tmpPoint.x < left) {
+			tmpPoint.x = left;
+		}
+		if (tmpPoint.x > right) {
+			tmpPoint.x = right;
+		}
+	}
 
-    public float getRadius() {
-        return ellipseSize;
-    }
+	@Override
+	protected void onBoundsChange(final Rect bounds) {
+		super.onBoundsChange(bounds);
+		calculatePath(bounds);
+	}
 
-    @Override
-    public int getAlpha() {
-        return bgPaint.getAlpha();
-    }
+	public float getRadius() {
+		return ellipseSize;
+	}
 
-    @Override
-    public void setAlpha(final int alpha) {
-        bgPaint.setAlpha(alpha);
-        stPaint.setAlpha(alpha);
-    }
+	@Override
+	public int getAlpha() {
+		return bgPaint.getAlpha();
+	}
 
-    @Override
-    public void setColorFilter(final ColorFilter cf) {
-    }
+	@Override
+	public void setAlpha(final int alpha) {
+		bgPaint.setAlpha(alpha);
+		stPaint.setAlpha(alpha);
+	}
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSLUCENT;
-    }
+	@Override
+	public void setColorFilter(final ColorFilter cf) {
+	}
 
-    @TargetApi (Build.VERSION_CODES.LOLLIPOP)
-    @Override
-    public void getOutline(Outline outline) {
-        copyBounds(outlineRect);
-        outlineRect.inset(padding, padding);
-        outline.setRoundRect(outlineRect, getRadius());
-        if (getAlpha() < 255) {
-            outline.setAlpha(0);
-        }
-        //outline.setAlpha(getAlpha() / ALPHA_MAX);
-    }
+	@Override
+	public int getOpacity() {
+		return PixelFormat.TRANSLUCENT;
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	@Override
+	public void getOutline(Outline outline) {
+		copyBounds(outlineRect);
+		outlineRect.inset(padding, padding);
+		outline.setRoundRect(outlineRect, getRadius());
+		if (getAlpha() < 255) {
+			outline.setAlpha(0);
+		}
+		//outline.setAlpha(getAlpha() / ALPHA_MAX);
+	}
 }

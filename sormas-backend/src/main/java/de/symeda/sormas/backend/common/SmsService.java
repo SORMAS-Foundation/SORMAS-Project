@@ -17,16 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.io.IOException;
-
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoClientException;
 import com.nexmo.client.auth.AuthMethod;
@@ -36,8 +26,16 @@ import com.nexmo.client.insight.InsightClient;
 import com.nexmo.client.insight.standard.StandardInsightResponse;
 import com.nexmo.client.sms.SmsSubmissionResult;
 import com.nexmo.client.sms.messages.TextMessage;
-
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.io.IOException;
 
 @Stateless(name = "SmsService")
 @LocalBean
@@ -66,7 +64,8 @@ public class SmsService {
 			throw new InvalidPhoneNumberException("Cannot send an SMS to the specified phone number", null);
 		}
 
-		SmsSubmissionResult[] results = client.getSmsClient().submitMessage(new TextMessage("SORMAS", phoneNumber, content));
+		SmsSubmissionResult[] results =
+			client.getSmsClient().submitMessage(new TextMessage(FacadeProvider.getConfigFacade().getSormasInstanceName(), phoneNumber, content));
 
 		for (SmsSubmissionResult result : results) {
 			if (result.getStatus() == 0) {

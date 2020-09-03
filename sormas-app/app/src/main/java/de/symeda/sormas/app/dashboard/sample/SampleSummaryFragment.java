@@ -1,35 +1,33 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.dashboard.sample;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import de.symeda.sormas.app.BaseSummaryFragment;
 import de.symeda.sormas.app.R;
@@ -60,226 +58,247 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SampleSummaryFragment extends BaseSummaryFragment<ViewTypeHelper.ViewTypeEnum, SampleSummaryAdapter> {
 
-    public static final String TAG = SampleSummaryFragment.class.getSimpleName();
+	public static final String TAG = SampleSummaryFragment.class.getSimpleName();
 
-    private CompositeSubscription mSubscription = new CompositeSubscription();
+	private CompositeSubscription mSubscription = new CompositeSubscription();
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
+		showPreloader();
+		Subscription mDataSubscription = Observable.zip(getTotalDataObservable(), getCircularDataObservable(), getMergeDataObservable())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Subscriber<SummaryObservableDataResult>() {
 
-        showPreloader();
-        Subscription mDataSubscription = Observable
-                .zip(getTotalDataObservable(), getCircularDataObservable(), getMergeDataObservable())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SummaryObservableDataResult>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.d(TAG, "Completed");
-                    }
+				@Override
+				public void onCompleted() {
+					Log.d(TAG, "Completed");
+				}
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage(), e);
-                        hidePreloader();
-                        showEmptySummaryHint();
-                    }
+				@Override
+				public void onError(Throwable e) {
+					Log.e(TAG, e.getMessage(), e);
+					hidePreloader();
+					showEmptySummaryHint();
+				}
 
-                    @Override
-                    public void onNext(SummaryObservableDataResult summparyObservableDataResult) {
-                        final List<SummaryTotalData> totalData = summparyObservableDataResult.getTotalData();
-                        final List<SummaryCircularData> circularData = summparyObservableDataResult.getCircularData();
+				@Override
+				public void onNext(SummaryObservableDataResult summparyObservableDataResult) {
+					final List<SummaryTotalData> totalData = summparyObservableDataResult.getTotalData();
+					final List<SummaryCircularData> circularData = summparyObservableDataResult.getCircularData();
 
-                        try {
-                            getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
-                                @Override
-                                public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                    context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
-                                }
-                            })
-                                    .forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
-                                        @Override
-                                        public void register(IAdapterRegistrationContext context) throws java.lang.InstantiationException, IllegalAccessException {
-                                            context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
-                                        }
-                                    });
+					try {
+						getLandingAdapter().startConfig().forViewType(ViewTypeHelper.ViewTypeEnum.TOTAL, new IAdapterRegistrationService() {
 
-                            hidePreloader();
-                        } catch (IllegalAccessException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        } catch (java.lang.InstantiationException e) {
-                            Log.e(TAG, e.getMessage(), e);
-                        }
-                    }
-                });
+							@Override
+							public void register(IAdapterRegistrationContext context)
+								throws java.lang.InstantiationException, IllegalAccessException {
+								context.registerBinder(SummaryTotalBinder.class).registerData(totalData);
+							}
+						}).forViewType(ViewTypeHelper.ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS, new IAdapterRegistrationService() {
 
-        mSubscription.add(mDataSubscription);
-        configure();
-    }
+							@Override
+							public void register(IAdapterRegistrationContext context)
+								throws java.lang.InstantiationException, IllegalAccessException {
+								context.registerBinder(SummaryCircularProgressBinder.class).registerData(circularData);
+							}
+						});
 
+						hidePreloader();
+					} catch (IllegalAccessException e) {
+						Log.e(TAG, e.getMessage(), e);
+					} catch (java.lang.InstantiationException e) {
+						Log.e(TAG, e.getMessage(), e);
+					}
+				}
+			});
 
-    //<editor-fold desc="Observable Methods">
-    private Observable<List<SummaryTotalData>> getTotalDataObservable() {
-        return Observable.defer(new Func0<Observable<List<SummaryTotalData>>>() {
-            @Override
-            public Observable<List<SummaryTotalData>> call() {
-                return Observable.create(new Observable.OnSubscribe<List<SummaryTotalData>>() {
-                    @Override
-                    public void call(Subscriber<? super List<SummaryTotalData>> subscriber) {
-                        try {
-                            subscriber.onNext(getTotalDataAsync());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
+		mSubscription.add(mDataSubscription);
+		configure();
+	}
 
-    private Observable<List<SummaryCircularData>> getCircularDataObservable() {
-        return Observable.defer(new Func0<Observable<List<SummaryCircularData>>>() {
-            @Override
-            public Observable<List<SummaryCircularData>> call() {
-                return Observable.create(new Observable.OnSubscribe<List<SummaryCircularData>>() {
-                    @Override
-                    public void call(Subscriber<? super List<SummaryCircularData>> subscriber) {
-                        try {
-                            subscriber.onNext(getCircularDataAsync());
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
+	//<editor-fold desc="Observable Methods">
+	private Observable<List<SummaryTotalData>> getTotalDataObservable() {
+		return Observable.defer(new Func0<Observable<List<SummaryTotalData>>>() {
 
-    private Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult> getMergeDataObservable() {
-        return new Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult>() {
-            @Override
-            public SummaryObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryCircularData) {
-                return new SummaryObservableDataResult(summaryTotalData, summaryCircularData);
-            }
-        };
-    }
-    //</editor-fold>
+			@Override
+			public Observable<List<SummaryTotalData>> call() {
+				return Observable.create(new Observable.OnSubscribe<List<SummaryTotalData>>() {
 
-    //<editor-fold desc="Private Methods">
-    private List<SummaryTotalData> getTotalDataAsync() {
-        List<SummaryTotalData> dataSet = new ArrayList<>();
+					@Override
+					public void call(Subscriber<? super List<SummaryTotalData>> subscriber) {
+						try {
+							subscriber.onNext(getTotalDataAsync());
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				});
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+	}
 
-        SummaryTotalData data = new SummaryTotalData();
-        data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_samples);
-        ;
-        data.dataValue = String.valueOf(new Random().nextInt(10000));
-        dataSet.add(data);
+	private Observable<List<SummaryCircularData>> getCircularDataObservable() {
+		return Observable.defer(new Func0<Observable<List<SummaryCircularData>>>() {
 
-        return dataSet;
-    }
+			@Override
+			public Observable<List<SummaryCircularData>> call() {
+				return Observable.create(new Observable.OnSubscribe<List<SummaryCircularData>>() {
 
-    private List<SummaryCircularData> getCircularDataAsync() {
-        Random random = new Random();
-        List<SummaryCircularData> dataSet = new ArrayList<>();
+					@Override
+					public void call(Subscriber<? super List<SummaryCircularData>> subscriber) {
+						try {
+							subscriber.onNext(getCircularDataAsync());
+							subscriber.onCompleted();
+						} catch (Exception e) {
+							subscriber.onError(e);
+						}
+					}
+				});
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+	}
 
-        String titlePositiveResults = ResourceUtils.getString(getActivity(), R.string.caption_positive);
-        String titleNegativeResults = ResourceUtils.getString(getActivity(), R.string.caption_negative);
-        String titlePendingResults = ResourceUtils.getString(getActivity(), R.string.caption_pending);
-        String titleIndeterminateResults = ResourceUtils.getString(getActivity(), R.string.caption_indeterminate);
-        String titleInadequateSpecimen = ResourceUtils.getString(getActivity(), R.string.caption_inadequate_specimen);
+	private Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult> getMergeDataObservable() {
+		return new Func2<List<SummaryTotalData>, List<SummaryCircularData>, SummaryObservableDataResult>() {
 
-        //Confirmed Cases
-        SummaryCircularData data1 = new SummaryCircularData(titlePositiveResults, random.nextInt(10000), random.nextInt(100),
-                R.color.circularProgressFinishedWatchOut, R.color.circularProgressUnfinishedWatchOut);
+			@Override
+			public SummaryObservableDataResult call(List<SummaryTotalData> summaryTotalData, List<SummaryCircularData> summaryCircularData) {
+				return new SummaryObservableDataResult(summaryTotalData, summaryCircularData);
+			}
+		};
+	}
+	//</editor-fold>
 
-        //Probable Cases
-        SummaryCircularData data2 = new SummaryCircularData(titleNegativeResults, random.nextInt(10000), random.nextInt(100),
-                R.color.circularProgressFinishedSuccess, R.color.circularProgressUnfinishedSuccess);
+	//<editor-fold desc="Private Methods">
+	private List<SummaryTotalData> getTotalDataAsync() {
+		List<SummaryTotalData> dataSet = new ArrayList<>();
 
-        //Suspected Case
-        SummaryCircularData data3 = new SummaryCircularData(titlePendingResults, random.nextInt(10000), random.nextInt(100),
-                R.color.circularProgressFinishedWarning, R.color.circularProgressUnfinishedWarning);
+		SummaryTotalData data = new SummaryTotalData();
+		data.dataTitle = ResourceUtils.getString(getActivity(), R.string.caption_total_samples);;
+		data.dataValue = String.valueOf(new Random().nextInt(10000));
+		dataSet.add(data);
 
-        //Fatalities
-        SummaryCircularData data4 = new SummaryCircularData(titleIndeterminateResults, random.nextInt(10000), random.nextInt(100), R.color.circularProgressFinishedNeutral,
-                R.color.circularProgressUnfinishedNeutral);
+		return dataSet;
+	}
 
-        //Case Fatality Rate
-        SummaryCircularData data5 = new SummaryCircularData(titleInadequateSpecimen, random.nextInt(10000), random.nextInt(100), R.color.circularProgressFinishedNeutral,
-                R.color.circularProgressUnfinishedNeutral);
+	private List<SummaryCircularData> getCircularDataAsync() {
+		Random random = new Random();
+		List<SummaryCircularData> dataSet = new ArrayList<>();
 
-        dataSet.add(data1);
-        dataSet.add(data2);
-        dataSet.add(data3);
-        dataSet.add(data4);
-        dataSet.add(data5);
+		String titlePositiveResults = ResourceUtils.getString(getActivity(), R.string.caption_positive);
+		String titleNegativeResults = ResourceUtils.getString(getActivity(), R.string.caption_negative);
+		String titlePendingResults = ResourceUtils.getString(getActivity(), R.string.caption_pending);
+		String titleIndeterminateResults = ResourceUtils.getString(getActivity(), R.string.caption_indeterminate);
+		String titleInadequateSpecimen = ResourceUtils.getString(getActivity(), R.string.caption_inadequate_specimen);
 
-        return dataSet;
-    }
-    //</editor-fold>
+		//Confirmed Cases
+		SummaryCircularData data1 = new SummaryCircularData(
+			titlePositiveResults,
+			random.nextInt(10000),
+			random.nextInt(100),
+			R.color.circularProgressFinishedWatchOut,
+			R.color.circularProgressUnfinishedWatchOut);
 
-    //<editor-fold desc="More Overrides">
-    @Override
-    protected int getSectionTitleResId() {
-        return R.string.heading_sample_summary;
-    }
+		//Probable Cases
+		SummaryCircularData data2 = new SummaryCircularData(
+			titleNegativeResults,
+			random.nextInt(10000),
+			random.nextInt(100),
+			R.color.circularProgressFinishedSuccess,
+			R.color.circularProgressUnfinishedSuccess);
 
-    @Override
-    protected int getEntityResId() {
-        return R.string.entity_sample;
-    }
+		//Suspected Case
+		SummaryCircularData data3 = new SummaryCircularData(
+			titlePendingResults,
+			random.nextInt(10000),
+			random.nextInt(100),
+			R.color.circularProgressFinishedWarning,
+			R.color.circularProgressUnfinishedWarning);
 
-    @Override
-    protected SampleSummaryAdapter createSummaryAdapter() {
-        return new SampleSummaryAdapter(getActivity());
-    }
+		//Fatalities
+		SummaryCircularData data4 = new SummaryCircularData(
+			titleIndeterminateResults,
+			random.nextInt(10000),
+			random.nextInt(100),
+			R.color.circularProgressFinishedNeutral,
+			R.color.circularProgressUnfinishedNeutral);
 
-    @Override
-    protected RecyclerView.LayoutManager createLayoutManager() {
-        return new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
-    }
+		//Case Fatality Rate
+		SummaryCircularData data5 = new SummaryCircularData(
+			titleInadequateSpecimen,
+			random.nextInt(10000),
+			random.nextInt(100),
+			R.color.circularProgressFinishedNeutral,
+			R.color.circularProgressUnfinishedNeutral);
 
-    @Override
-    protected int getContainerResId() {
-        return R.id.fragment_frame_sample;
-    }
+		dataSet.add(data1);
+		dataSet.add(data2);
+		dataSet.add(data3);
+		dataSet.add(data4);
+		dataSet.add(data5);
 
-    @Override
-    public String getIdentifier() {
-        return TAG;
-    }
+		return dataSet;
+	}
+	//</editor-fold>
 
-    @Override
-    public void onPause() {
-        super.onPause();
+	//<editor-fold desc="More Overrides">
+	@Override
+	protected int getSectionTitleResId() {
+		return R.string.heading_sample_summary;
+	}
 
-        if (mSubscription != null && !mSubscription.isUnsubscribed())
-            mSubscription.unsubscribe();
-    }
+	@Override
+	protected int getEntityResId() {
+		return R.string.entity_sample;
+	}
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+	@Override
+	protected SampleSummaryAdapter createSummaryAdapter() {
+		return new SampleSummaryAdapter(getActivity());
+	}
 
-        if (mSubscription != null && !mSubscription.isUnsubscribed())
-            mSubscription.unsubscribe();
-    }
-    //</editor-fold>
+	@Override
+	protected RecyclerView.LayoutManager createLayoutManager() {
+		return new GridLayoutManager(getActivity(), 3, GridLayoutManager.VERTICAL, false);
+	}
 
-    public static SampleSummaryFragment newInstance() {
-        return newInstance(SampleSummaryFragment.class, null);
-    }
+	@Override
+	protected int getContainerResId() {
+		return R.id.fragment_frame_sample;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return TAG;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		if (mSubscription != null && !mSubscription.isUnsubscribed())
+			mSubscription.unsubscribe();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (mSubscription != null && !mSubscription.isUnsubscribed())
+			mSubscription.unsubscribe();
+	}
+	//</editor-fold>
+
+	public static SampleSummaryFragment newInstance() {
+		return newInstance(SampleSummaryFragment.class, null);
+	}
 }

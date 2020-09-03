@@ -42,9 +42,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -88,7 +86,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 
@@ -230,48 +227,48 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setClosedLon(source.getClosedLon());
 		target.setClosedLatLonAccuracy(source.getClosedLatLonAccuracy());
 
-		CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
-		ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getContact());
-
-		boolean isInJurisdiction;
-		if (source.getContact() == null) {
-			isInJurisdiction = source.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(caseJurisdiction);
-		} else {
-			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
-		}
-
-		pseudonymizationService.pseudonymizeDto(
-			TaskDto.class,
-			target,
-			isInJurisdiction,
-			(t) -> pseudonymizeEmbeddedFields(t.getContact(), contactJurisdiction, t.getCaze(), caseJurisdiction));
+//		CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
+//		ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getContact());
+//
+//		boolean isInJurisdiction;
+//		if (source.getContact() == null) {
+//			isInJurisdiction = source.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(caseJurisdiction);
+//		} else {
+//			isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(contactJurisdiction);
+//		}
+//
+//		pseudonymizationService.pseudonymizeDto(
+//			TaskDto.class,
+//			target,
+//			isInJurisdiction,
+//			(t) -> pseudonymizeEmbeddedFields(t.getContact(), contactJurisdiction, t.getCaze(), caseJurisdiction));
 
 		return target;
 	}
 
-	private void pseudonymizeEmbeddedFields(
-		ContactReferenceDto contact,
-		ContactJurisdictionDto contactJurisdiction,
-		CaseReferenceDto caze,
-		CaseJurisdictionDto caseJurisdiction) {
-
-		if (contact != null) {
-			pseudonymizationService.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				contact.getCaseName(),
-				caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()),
-				null);
-			pseudonymizationService.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				contact.getContactName(),
-				contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
-				null);
-		}
-
-		if (caze != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
-		}
-	}
+//	private void pseudonymizeEmbeddedFields(
+//		ContactReferenceDto contact,
+//		ContactJurisdictionDto contactJurisdiction,
+//		CaseReferenceDto caze,
+//		CaseJurisdictionDto caseJurisdiction) {
+//
+//		if (contact != null) {
+//			pseudonymizationService.pseudonymizeDto(
+//				ContactReferenceDto.PersonName.class,
+//				contact.getCaseName(),
+//				caseJurisdictionChecker.isInJurisdiction(contactJurisdiction.getCaseJurisdiction()),
+//				null);
+//			pseudonymizationService.pseudonymizeDto(
+//				ContactReferenceDto.PersonName.class,
+//				contact.getContactName(),
+//				contactJurisdictionChecker.isInJurisdiction(contactJurisdiction),
+//				null);
+//		}
+//
+//		if (caze != null) {
+//			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, caze, caseJurisdictionChecker.isInJurisdiction(caseJurisdiction), null);
+//		}
+//	}
 
 	@Override
 	public TaskDto saveTask(TaskDto dto) {
@@ -378,7 +375,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
 				joins.getCaze().get(Case.UUID), joins.getCasePerson().get(Person.FIRST_NAME), joins.getCasePerson().get(Person.LAST_NAME),
-				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.EVENT_DATE),
+				joins.getEvent().get(Event.UUID), joins.getEvent().get(Event.DISEASE), joins.getEvent().get(Event.DISEASE_DETAILS), joins.getEvent().get(Event.EVENT_STATUS), joins.getEvent().get(Event.START_DATE),
 				joins.getContact().get(Contact.UUID), joins.getContactPerson().get(Person.FIRST_NAME), joins.getContactPerson().get(Person.LAST_NAME),
 				joins.getContactCasePerson().get(Person.FIRST_NAME), joins.getContactCasePerson().get(Person.LAST_NAME),
 				task.get(Task.TASK_TYPE), task.get(Task.PRIORITY),
@@ -441,7 +438,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					expression = joins.getContactPerson().get(Person.FIRST_NAME);
 					break;
 				case TaskIndexDto.EVENT:
-					expression = joins.getEvent().get(Event.EVENT_DATE);
+					expression = joins.getEvent().get(Event.START_DATE);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -458,13 +455,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			tasks = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
-			if (t.getContact() == null) {
-				return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction());
-			}
-
-			return contactJurisdictionChecker.isInJurisdiction(t.getContactJurisdiction());
-		}, (t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getContactJurisdiction(), t.getCaze(), t.getCaseJurisdiction()));
+//		pseudonymizationService.pseudonymizeDtoCollection(TaskIndexDto.class, tasks, t -> {
+//			if (t.getContact() == null) {
+//				return t.getCaze() == null || caseJurisdictionChecker.isInJurisdiction(t.getCaseJurisdiction());
+//			}
+//
+//			return contactJurisdictionChecker.isInJurisdiction(t.getContactJurisdiction());
+//		}, (t, isInJurisdiction) -> pseudonymizeEmbeddedFields(t.getContact(), t.getContactJurisdiction(), t.getCaze(), t.getCaseJurisdiction()));
 
 		return tasks;
 	}

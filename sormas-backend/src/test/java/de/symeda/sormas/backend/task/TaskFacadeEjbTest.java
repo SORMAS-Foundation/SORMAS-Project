@@ -103,7 +103,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		EventDto event = creator.createEvent(
-			EventStatus.POSSIBLE,
+			EventStatus.SIGNAL,
 			"Description",
 			"First",
 			"Name",

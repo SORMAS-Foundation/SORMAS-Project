@@ -17,16 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
@@ -34,9 +40,11 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -108,11 +116,18 @@ public class SampleGridComponent extends VerticalLayout {
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
+						
+			if (!DataHelper.isNullOrEmpty(criteria.getCaseCodeIdLike()) || !samplesView.navigateTo(criteria, false)) {
 				filterForm.updateResetButtonState();
 				grid.reload();
+				
+				if (!DataHelper.isNullOrEmpty(criteria.getCaseCodeIdLike()) && grid.getItemCount() == 1) {
+					String sampleUuid = grid.getFirstItem().getUuid();
+					ControllerProvider.getSampleController().navigateToData(sampleUuid);
+				}
 			}
 		});
+		
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 			samplesView.navigateTo(null, true);
@@ -172,24 +187,8 @@ public class SampleGridComponent extends VerticalLayout {
 				actionButtonsLayout.addComponent(relevanceStatusFilter);
 			}
 
-			// Bulk operation dropdown
-			if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			if (addBulkOperationsDropdown(actionButtonsLayout)) {
 				shipmentFilterLayout.setWidth(100, Unit.PERCENTAGE);
-
-				bulkOperationsDropdown = MenuBarHelper.createDropDown(
-					Captions.bulkActions,
-					new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-						ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-							public void run() {
-								samplesView.navigateTo(criteria);
-							}
-						});
-					}));
-
-				bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
-
-				actionButtonsLayout.addComponent(bulkOperationsDropdown);
 			}
 
 			sampleTypeFilter = new ComboBox();
@@ -200,6 +199,8 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
+			sampleTypeFilter
+				.setItemCaption(SampleAssociationType.EVENT_PARTICIPANT, I18nProperties.getEnumCaption(SampleAssociationType.EVENT_PARTICIPANT));
 			sampleTypeFilter.addValueChangeListener(e -> {
 				criteria.sampleAssociationType(((SampleAssociationType) e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);
@@ -218,6 +219,7 @@ public class SampleGridComponent extends VerticalLayout {
 		if (params.startsWith("?")) {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
+			criteria.setCaseCodeIdLike(null);
 		}
 		updateFilterComponents();
 		grid.reload();
@@ -278,6 +280,42 @@ public class SampleGridComponent extends VerticalLayout {
 
 		samplesView.navigateTo(criteria);
 	}
+	
+	private boolean addBulkOperationsDropdown (AbstractOrderedLayout actionButtonsLayout) {
+		List<MenuBarHelper.MenuBarItem> menuItems = new ArrayList<MenuBarHelper.MenuBarItem>();
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			menuItems.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.bulkEnterTestResult),
+					VaadinIcons.ELLIPSIS_H,
+					selectedItem -> createBulkTestResult())
+			);				
+		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			menuItems.add(
+				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
+					ControllerProvider.getSampleController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
+
+						public void run() {
+							samplesView.navigateTo(criteria);
+						}
+					});
+				})
+			);
+		}
+		
+		if (menuItems.size() > 0) {
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, menuItems.toArray(new MenuBarHelper.MenuBarItem[0]));
+			
+			bulkOperationsDropdown.setVisible(samplesView.getViewConfiguration().isInEagerMode());
+
+			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+		}
+		
+		return menuItems.size() > 0;
+	}
 
 	private void createAndAddStatusButton(String captionKey, String status, HorizontalLayout filterLayout) {
 		Button button = ButtonHelper.createButton(
@@ -323,5 +361,27 @@ public class SampleGridComponent extends VerticalLayout {
 
 	public SampleCriteria getCriteria() {
 		return criteria;
+	}
+	
+	private void createBulkTestResult() {
+		if (criteria.getDisease() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoDiseasesSelected),
+				I18nProperties.getString(Strings.messageNoDiseasesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+		
+		if (criteria.getLaboratory() == null) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLaboratoriesSelected),
+				I18nProperties.getString(Strings.messageNoLaboratoriesSelected),
+				Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		ControllerProvider.getPathogenTestController().showBulkTestResultComponent(grid.asMultiSelect().getSelectedItems(), criteria.getDisease()); 
 	}
 }

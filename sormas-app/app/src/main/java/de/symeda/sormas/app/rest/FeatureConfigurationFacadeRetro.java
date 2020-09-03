@@ -11,16 +11,16 @@ import retrofit2.http.Path;
 
 public interface FeatureConfigurationFacadeRetro {
 
-    @GET("featureconfigurations/all/{since}")
-    Call<List<FeatureConfigurationDto>> pullAllSince(@Path("since") long since);
+	@GET("featureconfigurations/all/{since}")
+	Call<List<FeatureConfigurationDto>> pullAllSince(@Path("since") long since);
 
-    @POST("featureconfigurations/query")
-    Call<List<FeatureConfigurationDto>> pullByUuids(@Body List<String> uuids);
+	@POST("featureconfigurations/query")
+	Call<List<FeatureConfigurationDto>> pullByUuids(@Body List<String> uuids);
 
-    @GET("featureconfigurations/uuids")
-    Call<List<String>> pullUuids();
+	@GET("featureconfigurations/uuids")
+	Call<List<String>> pullUuids();
 
-    @GET("userroles/deleted/{since}")
-    Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("userroles/deleted/{since}")
+	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
 
 }

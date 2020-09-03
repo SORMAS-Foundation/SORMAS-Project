@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.dashboard.caze;
@@ -31,52 +28,52 @@ import de.symeda.sormas.app.core.adapter.multiview.IAdapterConfiguration;
 
 public class CaseSummaryAdapter extends EnumMapDataBinderAdapter<ViewTypeEnum> {
 
-    private Context context;
+	private Context context;
 
-    public CaseSummaryAdapter(Context context) {
-        this.context = context;
-    }
+	public CaseSummaryAdapter(Context context) {
+		this.context = context;
+	}
 
-    @Override
-    public ViewTypeEnum getEnumFromPosition(int position) {
-        ViewTypeEnum viewType;
+	@Override
+	public ViewTypeEnum getEnumFromPosition(int position) {
+		ViewTypeEnum viewType;
 
-        switch (position) {
-            case PositionHelper.TOTAL_CASES: {
-                viewType = ViewTypeEnum.TOTAL;
-                break;
-            }
-            case PositionHelper.CONFIRMED_CASES:
-            case PositionHelper.PROBABLE_CASES:
-            case PositionHelper.SUSPECTED_CASES:
-            case PositionHelper.FATALITIES:
-            case PositionHelper.CASE_FATALITY_RATE: {
-                viewType = ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS;
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("The value of position is invalid.");
-        }
+		switch (position) {
+		case PositionHelper.TOTAL_CASES: {
+			viewType = ViewTypeEnum.TOTAL;
+			break;
+		}
+		case PositionHelper.CONFIRMED_CASES:
+		case PositionHelper.PROBABLE_CASES:
+		case PositionHelper.SUSPECTED_CASES:
+		case PositionHelper.FATALITIES:
+		case PositionHelper.CASE_FATALITY_RATE: {
+			viewType = ViewTypeEnum.SINGLE_CIRCULAR_PROGRESS;
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("The value of position is invalid.");
+		}
 
+		return viewType;
+	}
 
-        return viewType;
-    }
+	@Override
+	public ViewTypeEnum getEnumFromOrdinal(int ordinal) {
+		return ViewTypeEnum.values()[ordinal];
+	}
 
-    @Override
-    public ViewTypeEnum getEnumFromOrdinal(int ordinal) {
-        return ViewTypeEnum.values()[ordinal];
-    }
+	public IAdapterConfiguration startConfig() {
+		return new AdapterConfiguration<ViewTypeEnum>(this.context, this);
+	}
 
-    public IAdapterConfiguration startConfig() {
-        return new AdapterConfiguration<ViewTypeEnum>(this.context, this);
-    }
+	static class PositionHelper {
 
-    static class PositionHelper {
-        static final int TOTAL_CASES = 0;
-        static final int CONFIRMED_CASES = 1;
-        static final int PROBABLE_CASES = 2;
-        static final int SUSPECTED_CASES = 3;
-        static final int FATALITIES = 4;
-        static final int CASE_FATALITY_RATE = 5;
-    }
+		static final int TOTAL_CASES = 0;
+		static final int CONFIRMED_CASES = 1;
+		static final int PROBABLE_CASES = 2;
+		static final int SUSPECTED_CASES = 3;
+		static final int FATALITIES = 4;
+		static final int CASE_FATALITY_RATE = 5;
+	}
 }

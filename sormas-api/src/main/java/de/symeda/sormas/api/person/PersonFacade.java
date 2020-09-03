@@ -17,17 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.api.person;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+
+import javax.ejb.Remote;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Remote
 public interface PersonFacade {
@@ -40,9 +38,9 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
-	PersonDto savePerson(PersonDto dto) throws ValidationRuntimeException;
+	PersonDto savePerson(PersonDto dto);
 
-	void validate(PersonDto dto) throws ValidationRuntimeException;
+	void validate(PersonDto dto);
 
 	List<String> getAllUuids();
 
@@ -58,7 +56,9 @@ public interface PersonFacade {
 	 */
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 
-	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
+	List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids);
 
 	Boolean isValidPersonUuid(String personUuid);
+
+	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
 }

@@ -1,26 +1,22 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.contact;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 
@@ -29,24 +25,31 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 
-@Entity(name=Contact.TABLE_NAME)
+@Entity(name = Contact.TABLE_NAME)
 @DatabaseTable(tableName = Contact.TABLE_NAME)
 public class Contact extends AbstractDomainObject {
 
@@ -61,6 +64,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -89,16 +96,24 @@ public class Contact extends AbstractDomainObject {
 	private Region region;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
-	@DatabaseField(foreign = true, foreignAutoRefresh=true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField
 	private String caseUuid;
 	@DatabaseField(dataType = DataType.ENUM_STRING, columnName = "caseDisease")
 	private Disease disease;
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
+	@Enumerated(EnumType.STRING)
+	private ContactIdentificationSource contactIdentificationSource;
+	@DatabaseField
+	private String contactIdentificationSourceDetails;
+	@Enumerated(EnumType.STRING)
+	private TracingApp tracingApp;
+	@DatabaseField
+	private String tracingAppDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactProximity contactProximity;
 	@Enumerated(EnumType.STRING)
@@ -107,19 +122,19 @@ public class Contact extends AbstractDomainObject {
 	private ContactStatus contactStatus;
 	@Enumerated(EnumType.STRING)
 	private FollowUpStatus followUpStatus;
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String followUpComment;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date followUpUntil;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private User contactOfficer;
-	@Column(length=512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String description;
 	@Enumerated(EnumType.STRING)
 	private ContactRelation relationToCase;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String relationDescription;
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String externalID;
 
 	@DatabaseField
@@ -131,13 +146,15 @@ public class Contact extends AbstractDomainObject {
 	private boolean highPriority;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown immunosuppressiveTherapyBasicDisease;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String immunosuppressiveTherapyBasicDiseaseDetails;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown careForPeopleOver60;
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
@@ -145,18 +162,18 @@ public class Contact extends AbstractDomainObject {
 
 	@Column
 	private String caseIdExternalSystem;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String caseOrEventInformation;
 
 	@Enumerated(EnumType.STRING)
 	private ContactCategory contactCategory;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String contactProximityDetails;
 
 	@Enumerated(EnumType.STRING)
 	@Deprecated
 	private OrderMeans quarantineOrderMeans;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHelpNeeded;
 	@DatabaseField
 	private boolean quarantineOrderedVerbally;
@@ -168,18 +185,22 @@ public class Contact extends AbstractDomainObject {
 	private Date quarantineOrderedOfficialDocumentDate;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomePossibleComment;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomeSupplyEnsured;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EpiData epiData;
 
 	public Person getPerson() {
 		return person;
 	}
+
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -187,6 +208,7 @@ public class Contact extends AbstractDomainObject {
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
+
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
 	}
@@ -194,6 +216,7 @@ public class Contact extends AbstractDomainObject {
 	public User getReportingUser() {
 		return reportingUser;
 	}
+
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -201,13 +224,47 @@ public class Contact extends AbstractDomainObject {
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}
+
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
+
 	public void setContactProximity(ContactProximity contactProximity) {
 		this.contactProximity = contactProximity;
 	}
@@ -215,10 +272,10 @@ public class Contact extends AbstractDomainObject {
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
+
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
 		this.followUpStatus = followUpStatus;
 	}
-
 
 	public String getFollowUpComment() {
 		return followUpComment;
@@ -231,6 +288,7 @@ public class Contact extends AbstractDomainObject {
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
+
 	public void setFollowUpUntil(Date followUpUntil) {
 		this.followUpUntil = followUpUntil;
 	}
@@ -238,6 +296,7 @@ public class Contact extends AbstractDomainObject {
 	public ContactClassification getContactClassification() {
 		return contactClassification;
 	}
+
 	public void setContactClassification(ContactClassification contactClassification) {
 		this.contactClassification = contactClassification;
 	}
@@ -245,6 +304,7 @@ public class Contact extends AbstractDomainObject {
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
+
 	public void setContactStatus(ContactStatus contactStatus) {
 		this.contactStatus = contactStatus;
 	}
@@ -252,6 +312,7 @@ public class Contact extends AbstractDomainObject {
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -259,6 +320,7 @@ public class Contact extends AbstractDomainObject {
 	public User getContactOfficer() {
 		return contactOfficer;
 	}
+
 	public void setContactOfficer(User contactOfficer) {
 		this.contactOfficer = contactOfficer;
 	}
@@ -266,6 +328,7 @@ public class Contact extends AbstractDomainObject {
 	public ContactRelation getRelationToCase() {
 		return relationToCase;
 	}
+
 	public void setRelationToCase(ContactRelation relationToCase) {
 		this.relationToCase = relationToCase;
 	}
@@ -273,6 +336,7 @@ public class Contact extends AbstractDomainObject {
 	public String getRelationDescription() {
 		return relationDescription;
 	}
+
 	public void setRelationDescription(String relationDescription) {
 		this.relationDescription = relationDescription;
 	}
@@ -427,6 +491,14 @@ public class Contact extends AbstractDomainObject {
 		this.quarantine = quarantine;
 	}
 
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
@@ -458,6 +530,7 @@ public class Contact extends AbstractDomainObject {
 	public void setCaseOrEventInformation(String caseOrEventInformation) {
 		this.caseOrEventInformation = caseOrEventInformation;
 	}
+
 	public ContactCategory getContactCategory() {
 		return contactCategory;
 	}
@@ -562,5 +635,13 @@ public class Contact extends AbstractDomainObject {
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiData getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 }

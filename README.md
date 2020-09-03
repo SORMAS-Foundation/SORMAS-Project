@@ -35,7 +35,7 @@ The project consists of the following modules:
 - **sormas-backend:** Server entity services, facades, etc.
 - **sormas-base:** Base project that also contains build scripts
 - **sormas-ear:** The ear needed to build the application
-- **sormas-rest:** The REST interface
+- **sormas-rest:** The REST interface; see [`sormas-rest/README.md`](sormas-rest/README.md)
 - **sormas-ui:** The web application
 
 ## Server Management

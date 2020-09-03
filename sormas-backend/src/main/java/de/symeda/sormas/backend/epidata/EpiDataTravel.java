@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -71,7 +73,7 @@ public class EpiDataTravel extends AbstractDomainObject {
 		this.travelType = travelType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTravelDestination() {
 		return travelDestination;
 	}
@@ -97,4 +99,5 @@ public class EpiDataTravel extends AbstractDomainObject {
 	public void setTravelDateTo(Date travelDateTo) {
 		this.travelDateTo = travelDateTo;
 	}
+
 }

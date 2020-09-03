@@ -22,8 +22,7 @@ public class CaseJurisdictionChecker {
 	}
 
 	public Boolean isInJurisdiction(CaseJurisdictionDto caseJurisdictionDto) {
-		User user = userService.getCurrentUser();
-
-		return CaseJurisdictionHelper.isInJurisdiction(userService::hasAnyRole, JurisdictionHelper.createUserJurisdiction(user), caseJurisdictionDto);
+		final User user = userService.getCurrentUser();
+		return CaseJurisdictionHelper.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), caseJurisdictionDto);
 	}
 }

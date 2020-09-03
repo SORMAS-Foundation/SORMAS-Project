@@ -1,37 +1,33 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.OnRebindCallback;
-import androidx.databinding.ViewDataBinding;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.OnRebindCallback;
+import androidx.databinding.ViewDataBinding;
+
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
 import de.symeda.sormas.app.core.NotificationContext;
@@ -41,133 +37,133 @@ import de.symeda.sormas.app.core.async.TaskResultHolder;
 
 public abstract class BaseReportFragment<TBinding extends ViewDataBinding> extends BaseFragment {
 
-    private final static String TAG = BaseReportFragment.class.getSimpleName();
+	private final static String TAG = BaseReportFragment.class.getSimpleName();
 
-    private AsyncTask jobTask;
-    private BaseReportActivity baseReportActivity;
-    private IUpdateSubHeadingTitle subHeadingHandler;
-    private ViewDataBinding rootBinding;
-    private TBinding contentViewStubBinding;
-    private boolean skipAfterLayoutBinding = false;
+	private AsyncTask jobTask;
+	private BaseReportActivity baseReportActivity;
+	private IUpdateSubHeadingTitle subHeadingHandler;
+	private ViewDataBinding rootBinding;
+	private TBinding contentViewStubBinding;
+	private boolean skipAfterLayoutBinding = false;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
-        if (getActivity() instanceof BaseReportActivity) {
-            this.baseReportActivity = (BaseReportActivity) this.getActivity();
-        } else {
-            throw new NotImplementedException("The list activity for fragment must implement BaseReportActivity");
-        }
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
+		if (getActivity() instanceof BaseReportActivity) {
+			this.baseReportActivity = (BaseReportActivity) this.getActivity();
+		} else {
+			throw new NotImplementedException("The list activity for fragment must implement BaseReportActivity");
+		}
 
-        if (getActivity() instanceof IUpdateSubHeadingTitle) {
-            this.subHeadingHandler = (IUpdateSubHeadingTitle) this.getActivity();
-        } else {
-            throw new NotImplementedException("Activity for fragment does not support updateSubHeadingTitle; "
-                    + "implement IUpdateSubHeadingTitle");
-        }
+		if (getActivity() instanceof IUpdateSubHeadingTitle) {
+			this.subHeadingHandler = (IUpdateSubHeadingTitle) this.getActivity();
+		} else {
+			throw new NotImplementedException("Activity for fragment does not support updateSubHeadingTitle; " + "implement IUpdateSubHeadingTitle");
+		}
 
-        if (!(getActivity() instanceof NotificationContext)) {
-            throw new NotImplementedException("Activity for fragment does not support showErrorNotification; "
-                    + "implement NotificationContext");
-        }
+		if (!(getActivity() instanceof NotificationContext)) {
+			throw new NotImplementedException("Activity for fragment does not support showErrorNotification; " + "implement NotificationContext");
+		}
 
-        //Inflate Root
-        rootBinding = DataBindingUtil.inflate(inflater, getRootLayoutResId(), container, false);
-        View rootView = rootBinding.getRoot();
+		//Inflate Root
+		rootBinding = DataBindingUtil.inflate(inflater, getRootLayoutResId(), container, false);
+		View rootView = rootBinding.getRoot();
 
-        final ViewStub vsChildFragmentFrame = rootView.findViewById(R.id.vsChildFragmentFrame);
-        vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
-            @Override
-            public void onInflate(ViewStub stub, View inflated) {
+		final ViewStub vsChildFragmentFrame = rootView.findViewById(R.id.vsChildFragmentFrame);
+		vsChildFragmentFrame.setOnInflateListener(new ViewStub.OnInflateListener() {
 
-                contentViewStubBinding = DataBindingUtil.bind(inflated);
-                contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
-                    @Override
-                    public void onBound(ViewDataBinding binding) {
-                        super.onBound(binding);
+			@Override
+			public void onInflate(ViewStub stub, View inflated) {
 
-                        if (!skipAfterLayoutBinding)
-                            onAfterLayoutBinding(contentViewStubBinding);
-                        skipAfterLayoutBinding = true;
+				contentViewStubBinding = DataBindingUtil.bind(inflated);
+				contentViewStubBinding.addOnRebindCallback(new OnRebindCallback() {
 
-                        getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
-                    }
-                });
-                onLayoutBinding(contentViewStubBinding);
-            }
-        });
+					@Override
+					public void onBound(ViewDataBinding binding) {
+						super.onBound(binding);
 
-        vsChildFragmentFrame.setLayoutResource(getReportLayout());
+						if (!skipAfterLayoutBinding)
+							onAfterLayoutBinding(contentViewStubBinding);
+						skipAfterLayoutBinding = true;
 
-        jobTask = new DefaultAsyncTask(getContext()) {
-            @Override
-            public void onPreExecute() {
-                getBaseActivity().showPreloader();
-            }
+						getSubHeadingHandler().updateSubHeadingTitle(getSubHeadingTitle());
+					}
+				});
+				onLayoutBinding(contentViewStubBinding);
+			}
+		});
 
-            @Override
-            public void doInBackground(final TaskResultHolder resultHolder) {
-                prepareFragmentData(savedInstanceState);
-            }
+		vsChildFragmentFrame.setLayoutResource(getReportLayout());
 
-            @Override
-            protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
-                getBaseActivity().hidePreloader();
+		jobTask = new DefaultAsyncTask(getContext()) {
 
-                if (taskResult.getResultStatus().isFailed())
-                    return;
+			@Override
+			public void onPreExecute() {
+				getBaseActivity().showPreloader();
+			}
 
-                vsChildFragmentFrame.inflate();
-            }
-        }.executeOnThreadPool();
+			@Override
+			public void doInBackground(final TaskResultHolder resultHolder) {
+				prepareFragmentData(savedInstanceState);
+			}
 
-        return rootView;
-    }
+			@Override
+			protected void onPostExecute(AsyncTaskResult<TaskResultHolder> taskResult) {
+				getBaseActivity().hidePreloader();
 
-    public int getRootLayoutResId() {
-        return R.layout.fragment_root_report_layout;
-    }
+				if (taskResult.getResultStatus().isFailed())
+					return;
 
-    public IUpdateSubHeadingTitle getSubHeadingHandler() {
-        return this.subHeadingHandler;
-    }
+				vsChildFragmentFrame.inflate();
+			}
+		}.executeOnThreadPool();
 
-    public BaseReportActivity getBaseReportActivity() {
-        return this.baseReportActivity;
-    }
+		return rootView;
+	}
 
-    protected String getSubHeadingTitle() {
-        return null;
-    }
+	public int getRootLayoutResId() {
+		return R.layout.fragment_root_report_layout;
+	}
 
-    protected ViewDataBinding getRootBinding() {
-        return rootBinding;
-    }
+	public IUpdateSubHeadingTitle getSubHeadingHandler() {
+		return this.subHeadingHandler;
+	}
 
-    protected TBinding getContentBinding() {
-        return contentViewStubBinding;
-    }
+	public BaseReportActivity getBaseReportActivity() {
+		return this.baseReportActivity;
+	}
 
-    protected abstract void prepareFragmentData(Bundle savedInstanceState);
+	protected String getSubHeadingTitle() {
+		return null;
+	}
 
-    protected abstract void onLayoutBinding(TBinding contentBinding);
+	protected ViewDataBinding getRootBinding() {
+		return rootBinding;
+	}
 
-    protected void onAfterLayoutBinding(TBinding contentBinding) {
+	protected TBinding getContentBinding() {
+		return contentViewStubBinding;
+	}
 
-    }
+	protected abstract void prepareFragmentData(Bundle savedInstanceState);
 
-    protected abstract int getReportLayout();
+	protected abstract void onLayoutBinding(TBinding contentBinding);
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+	protected void onAfterLayoutBinding(TBinding contentBinding) {
 
-        if (jobTask != null && !jobTask.isCancelled())
-            jobTask.cancel(true);
-    }
+	}
 
+	protected abstract int getReportLayout();
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (jobTask != null && !jobTask.isCancelled())
+			jobTask.cancel(true);
+	}
 }

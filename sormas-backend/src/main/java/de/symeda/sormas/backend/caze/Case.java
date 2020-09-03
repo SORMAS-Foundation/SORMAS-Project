@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +83,11 @@ public class Case extends CoreAdo {
 	public static final String TABLE_NAME = "cases";
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
+	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
+	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";
+	public static final String LABORATORY_DIAGNOSTIC_CONFIRMATION = "laboratoryDiagnosticConfirmation";
 	public static final String SYSTEM_CASE_CLASSIFICATION = "systemCaseClassification";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String INVESTIGATION_STATUS = "investigationStatus";
 	public static final String PERSON = "person";
 	public static final String DISEASE = "disease";
@@ -131,6 +138,7 @@ public class Case extends CoreAdo {
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String SHARED_TO_COUNTRY = "sharedToCountry";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
@@ -160,6 +168,10 @@ public class Case extends CoreAdo {
 	private User classificationUser;
 	private Date classificationDate;
 	private String classificationComment;
+
+	private YesNoUnknown clinicalConfirmation;
+	private YesNoUnknown epidemiologicalConfirmation;
+	private YesNoUnknown laboratoryDiagnosticConfirmation;
 
 	private InvestigationStatus investigationStatus;
 	private Hospitalization hospitalization;
@@ -231,6 +243,7 @@ public class Case extends CoreAdo {
 	private boolean sharedToCountry;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private String quarantineHelpNeeded;
@@ -260,7 +273,7 @@ public class Case extends CoreAdo {
 		this.person = person;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getDescription() {
 		return description;
 	}
@@ -278,7 +291,7 @@ public class Case extends CoreAdo {
 		this.disease = disease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDiseaseDetails() {
 		return diseaseDetails;
 	}
@@ -343,13 +356,40 @@ public class Case extends CoreAdo {
 		this.classificationDate = classificationDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClassificationComment() {
 		return classificationComment;
 	}
 
 	public void setClassificationComment(String classificationComment) {
 		this.classificationComment = classificationComment;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getClinicalConfirmation() {
+		return clinicalConfirmation;
+	}
+
+	public void setClinicalConfirmation(YesNoUnknown clinicalConfirmation) {
+		this.clinicalConfirmation = clinicalConfirmation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getEpidemiologicalConfirmation() {
+		return epidemiologicalConfirmation;
+	}
+
+	public void setEpidemiologicalConfirmation(YesNoUnknown epidemiologicalConfirmation) {
+		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public YesNoUnknown getLaboratoryDiagnosticConfirmation() {
+		return laboratoryDiagnosticConfirmation;
+	}
+
+	public void setLaboratoryDiagnosticConfirmation(YesNoUnknown laboratoryDiagnosticConfirmation) {
+		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
 	}
 
 	@ManyToOne(cascade = {})
@@ -417,7 +457,7 @@ public class Case extends CoreAdo {
 		this.healthFacility = healthFacility;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getHealthFacilityDetails() {
 		return healthFacilityDetails;
 	}
@@ -435,7 +475,7 @@ public class Case extends CoreAdo {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	@Column(length = 512, name = "cliniciandetails")
+	@Column(length = COLUMN_LENGTH_DEFAULT, name = "cliniciandetails")
 	public String getClinicianName() {
 		return clinicianName;
 	}
@@ -444,7 +484,7 @@ public class Case extends CoreAdo {
 		this.clinicianName = clinicianName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClinicianPhone() {
 		return clinicianPhone;
 	}
@@ -453,7 +493,7 @@ public class Case extends CoreAdo {
 		this.clinicianPhone = clinicianPhone;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getClinicianEmail() {
 		return clinicianEmail;
 	}
@@ -612,7 +652,7 @@ public class Case extends CoreAdo {
 		this.vaccination = vaccination;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVaccinationDoses() {
 		return vaccinationDoses;
 	}
@@ -630,7 +670,7 @@ public class Case extends CoreAdo {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getVaccine() {
 		return vaccine;
 	}
@@ -666,7 +706,7 @@ public class Case extends CoreAdo {
 		this.vaccinationDate = vaccinationDate;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getEpidNumber() {
 		return epidNumber;
 	}
@@ -764,7 +804,7 @@ public class Case extends CoreAdo {
 		this.sequelae = sequelae;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSequelaeDetails() {
 		return sequelaeDetails;
 	}
@@ -782,7 +822,7 @@ public class Case extends CoreAdo {
 		this.notifyingClinic = notifyingClinic;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNotifyingClinicDetails() {
 		return notifyingClinicDetails;
 	}
@@ -855,7 +895,7 @@ public class Case extends CoreAdo {
 		this.pointOfEntry = pointOfEntry;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPointOfEntryDetails() {
 		return pointOfEntryDetails;
 	}
@@ -872,7 +912,7 @@ public class Case extends CoreAdo {
 		this.completeness = completeness;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
@@ -881,7 +921,7 @@ public class Case extends CoreAdo {
 		this.additionalDetails = additionalDetails;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getExternalID() {
 		return externalID;
 	}
@@ -908,6 +948,15 @@ public class Case extends CoreAdo {
 		this.quarantine = quarantine;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
@@ -926,7 +975,7 @@ public class Case extends CoreAdo {
 		this.quarantineTo = quarantineTo;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
@@ -980,7 +1029,7 @@ public class Case extends CoreAdo {
 		this.quarantineHomePossible = quarantineHomePossible;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomePossibleComment() {
 		return quarantineHomePossibleComment;
 	}
@@ -998,7 +1047,7 @@ public class Case extends CoreAdo {
 		this.quarantineHomeSupplyEnsured = quarantineHomeSupplyEnsured;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getQuarantineHomeSupplyEnsuredComment() {
 		return quarantineHomeSupplyEnsuredComment;
 	}

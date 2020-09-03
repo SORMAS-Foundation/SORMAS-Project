@@ -1,28 +1,22 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.backend.sample;
 
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import org.apache.commons.lang3.StringUtils;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -34,6 +28,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -41,459 +41,486 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSource;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.core.YesNo;
 import de.symeda.sormas.app.util.DateFormatHelper;
 
-@Entity(name=Sample.TABLE_NAME)
+@Entity(name = Sample.TABLE_NAME)
 @DatabaseTable(tableName = Sample.TABLE_NAME)
 public class Sample extends AbstractDomainObject {
 
-    private static final long serialVersionUID = -7196712070188634978L;
+	private static final long serialVersionUID = -7196712070188634978L;
 
-    public static final String TABLE_NAME = "samples";
-    public static final String I18N_PREFIX = "Sample";
+	public static final String TABLE_NAME = "samples";
+	public static final String I18N_PREFIX = "Sample";
 
-    public static final String SAMPLE_DATE_TIME = "sampleDateTime";
-    public static final String ASSOCIATED_CASE = "associatedCase";
-    public static final String REFERRED_TO_UUID = "referredToUuid";
-    public static final String SHIPPED = "shipped";
-    public static final String RECEIVED = "received";
-    public static final String LAB_SAMPLE_ID = "labSampleID";
-    public static final String FIELD_SAMPLE_ID = "fieldSampleID";
+	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
+	public static final String ASSOCIATED_CASE = "associatedCase";
+	public static final String REFERRED_TO_UUID = "referredToUuid";
+	public static final String SHIPPED = "shipped";
+	public static final String RECEIVED = "received";
+	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
+	public static final String LAB_SAMPLE_ID = "labSampleID";
+	public static final String FIELD_SAMPLE_ID = "fieldSampleID";
+	public static final String FOR_RETEST = "forRetest";
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private Case associatedCase;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Case associatedCase;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private Contact associatedContact;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Contact associatedContact;
 
-    @Column(length = 512)
-    private String labSampleID;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EventParticipant associatedEventParticipant;
 
-    @Column(length = 512)
-    private String fieldSampleID;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String labSampleID;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date sampleDateTime;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String fieldSampleID;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date reportDateTime;
+	@Enumerated(EnumType.STRING)
+	private YesNoUnknown forRetest;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true)
-    private User reportingUser;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date sampleDateTime;
 
-    @DatabaseField
-    private Double reportLat;
-    @DatabaseField
-    private Double reportLon;
-    @DatabaseField
-    private Float reportLatLonAccuracy;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date reportDateTime;
 
-    @Enumerated(EnumType.STRING)
-    private SampleMaterial sampleMaterial;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User reportingUser;
 
-    @Column(length = 512)
-    private String sampleMaterialText;
+	@DatabaseField
+	private Double reportLat;
+	@DatabaseField
+	private Double reportLon;
+	@DatabaseField
+	private Float reportLatLonAccuracy;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
-    private Facility lab;
+	@Enumerated(EnumType.STRING)
+	private SampleMaterial sampleMaterial;
 
-    @Column(length = 512)
-    private String labDetails;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String sampleMaterialText;
 
-    @Enumerated(EnumType.STRING)
-    private SamplePurpose samplePurpose;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, maxForeignAutoRefreshLevel = 3)
+	private Facility lab;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date shipmentDate;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String labDetails;
 
-    @Column(length = 512)
-    private String shipmentDetails;
+	@Enumerated(EnumType.STRING)
+	private SamplePurpose samplePurpose;
 
-    @DatabaseField(dataType = DataType.DATE_LONG)
-    private Date receivedDate;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date shipmentDate;
 
-    @Enumerated(EnumType.STRING)
-    private SpecimenCondition specimenCondition;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String shipmentDetails;
 
-    @Column(length = 512)
-    private String noTestPossibleReason;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date receivedDate;
 
-    @Column(length = 512)
-    private String comment;
+	@Enumerated(EnumType.STRING)
+	private SpecimenCondition specimenCondition;
 
-    @Enumerated(EnumType.STRING)
-    private SampleSource sampleSource;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String noTestPossibleReason;
 
-    @DatabaseField
-    private String referredToUuid;
+	@Column(length = COLUMN_LENGTH_BIG)
+	private String comment;
 
-    @DatabaseField
-    private boolean shipped;
+	@Enumerated(EnumType.STRING)
+	private SampleSource sampleSource;
 
-    @DatabaseField
-    private boolean received;
+	@DatabaseField
+	private String referredToUuid;
 
-    @Enumerated(EnumType.STRING)
-    private PathogenTestResultType pathogenTestResult;
+	@DatabaseField
+	private boolean shipped;
 
-    @DatabaseField
-    private Boolean pathogenTestingRequested;
+	@DatabaseField
+	private boolean received;
 
-    @DatabaseField
-    private Boolean additionalTestingRequested;
+	@Enumerated(EnumType.STRING)
+	private PathogenTestResultType pathogenTestResult;
 
-    @Column(length = 512)
-    private String requestedPathogenTestsString;
+	@DatabaseField
+	private Boolean pathogenTestingRequested;
 
-    @Column(length = 512)
-    private String requestedAdditionalTestsString;
+	@DatabaseField
+	private Boolean additionalTestingRequested;
 
-    @Transient
-    private Set<PathogenTestType> requestedPathogenTests;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String requestedPathogenTestsString;
 
-    @Transient
-    private Set<AdditionalTestType> requestedAdditionalTests;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String requestedAdditionalTestsString;
 
-    @Column(length = 512)
-    private String requestedOtherPathogenTests;
+	@Transient
+	private Set<PathogenTestType> requestedPathogenTests;
 
-    @Column(length = 512)
-    private String requestedOtherAdditionalTests;
+	@Transient
+	private Set<AdditionalTestType> requestedAdditionalTests;
 
-    public Case getAssociatedCase() {
-        return associatedCase;
-    }
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String requestedOtherPathogenTests;
 
-    public void setAssociatedCase(Case associatedCase) {
-        this.associatedCase = associatedCase;
-    }
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String requestedOtherAdditionalTests;
 
-    public Contact getAssociatedContact() {
-        return associatedContact;
-    }
+	public Case getAssociatedCase() {
+		return associatedCase;
+	}
 
-    public void setAssociatedContact(Contact associatedContact) {
-        this.associatedContact = associatedContact;
-    }
+	public void setAssociatedCase(Case associatedCase) {
+		this.associatedCase = associatedCase;
+	}
 
-    public String getLabSampleID() {
-        return labSampleID;
-    }
+	public Contact getAssociatedContact() {
+		return associatedContact;
+	}
 
-    public void setLabSampleID(String labSampleID) {
-        this.labSampleID = labSampleID;
-    }
+	public void setAssociatedContact(Contact associatedContact) {
+		this.associatedContact = associatedContact;
+	}
 
-    public Date getSampleDateTime() {
-        return sampleDateTime;
-    }
+	public EventParticipant getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
 
-    public String getFieldSampleID() {
-        return fieldSampleID;
-    }
+	public void setAssociatedEventParticipant(EventParticipant associatedEventParticipant) {
+		this.associatedEventParticipant = associatedEventParticipant;
+	}
 
-    public void setFieldSampleID(String fieldSampleID) {
-        this.fieldSampleID = fieldSampleID;
-    }
+	public String getLabSampleID() {
+		return labSampleID;
+	}
 
-    public void setSampleDateTime(Date sampleDateTime) {
-        this.sampleDateTime = sampleDateTime;
-    }
+	public void setLabSampleID(String labSampleID) {
+		this.labSampleID = labSampleID;
+	}
 
-    public Date getReportDateTime() {
-        return reportDateTime;
-    }
+	public Date getSampleDateTime() {
+		return sampleDateTime;
+	}
 
-    public void setReportDateTime(Date reportDateTime) {
-        this.reportDateTime = reportDateTime;
-    }
+	public String getFieldSampleID() {
+		return fieldSampleID;
+	}
 
-    public User getReportingUser() {
-        return reportingUser;
-    }
+	public void setFieldSampleID(String fieldSampleID) {
+		this.fieldSampleID = fieldSampleID;
+	}
 
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
-    }
+	public YesNoUnknown getForRetest() {
+		return forRetest;
+	}
 
-    public SampleMaterial getSampleMaterial() {
-        return sampleMaterial;
-    }
+	public void setForRetest(YesNoUnknown forRetest) {
+		this.forRetest = forRetest;
+	}
 
-    public void setSampleMaterial(SampleMaterial sampleMaterial) {
-        this.sampleMaterial = sampleMaterial;
-    }
+	public void setSampleDateTime(Date sampleDateTime) {
+		this.sampleDateTime = sampleDateTime;
+	}
 
-    public String getSampleMaterialText() {
-        return sampleMaterialText;
-    }
+	public Date getReportDateTime() {
+		return reportDateTime;
+	}
 
-    public void setSampleMaterialText(String sampleMaterialText) {
-        this.sampleMaterialText = sampleMaterialText;
-    }
+	public void setReportDateTime(Date reportDateTime) {
+		this.reportDateTime = reportDateTime;
+	}
 
-    public Facility getLab() {
-        return lab;
-    }
+	public User getReportingUser() {
+		return reportingUser;
+	}
 
-    public void setLab(Facility lab) {
-        this.lab = lab;
-    }
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
-    public String getLabDetails() {
-        return labDetails;
-    }
+	public SampleMaterial getSampleMaterial() {
+		return sampleMaterial;
+	}
 
-    public void setLabDetails(String labDetails) {
-        this.labDetails = labDetails;
-    }
+	public void setSampleMaterial(SampleMaterial sampleMaterial) {
+		this.sampleMaterial = sampleMaterial;
+	}
 
-    public SamplePurpose getSamplePurpose() {
-        return samplePurpose;
-    }
+	public String getSampleMaterialText() {
+		return sampleMaterialText;
+	}
 
-    public void setSamplePurpose(SamplePurpose samplePurpose) {
-        this.samplePurpose = samplePurpose;
-    }
+	public void setSampleMaterialText(String sampleMaterialText) {
+		this.sampleMaterialText = sampleMaterialText;
+	}
 
-    public Date getShipmentDate() {
-        return shipmentDate;
-    }
+	public Facility getLab() {
+		return lab;
+	}
 
-    public void setShipmentDate(Date shipmentDate) {
-        this.shipmentDate = shipmentDate;
-    }
+	public void setLab(Facility lab) {
+		this.lab = lab;
+	}
 
-    public String getShipmentDetails() {
-        return shipmentDetails;
-    }
+	public String getLabDetails() {
+		return labDetails;
+	}
 
-    public void setShipmentDetails(String shipmentDetails) {
-        this.shipmentDetails = shipmentDetails;
-    }
+	public void setLabDetails(String labDetails) {
+		this.labDetails = labDetails;
+	}
 
-    public Date getReceivedDate() {
-        return receivedDate;
-    }
+	public SamplePurpose getSamplePurpose() {
+		return samplePurpose;
+	}
 
-    public void setReceivedDate(Date receivedDate) {
-        this.receivedDate = receivedDate;
-    }
+	public void setSamplePurpose(SamplePurpose samplePurpose) {
+		this.samplePurpose = samplePurpose;
+	}
 
-    public String getNoTestPossibleReason() {
-        return noTestPossibleReason;
-    }
+	public Date getShipmentDate() {
+		return shipmentDate;
+	}
 
-    public void setNoTestPossibleReason(String noTestPossibleReason) {
-        this.noTestPossibleReason = noTestPossibleReason;
-    }
-
-    public SpecimenCondition getSpecimenCondition() {
-        return specimenCondition;
-    }
-
-    public void setSpecimenCondition(SpecimenCondition specimenCondition) {
-        this.specimenCondition = specimenCondition;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public SampleSource getSampleSource() {
-        return sampleSource;
-    }
-
-    public void setSampleSource(SampleSource sampleSource) {
-        this.sampleSource = sampleSource;
-    }
-
-    public String getReferredToUuid() {
-        return referredToUuid;
-    }
-
-    public void setReferredToUuid(String referredToUuid) {
-        this.referredToUuid = referredToUuid;
-    }
-
-    public boolean isShipped() {
-        return shipped;
-    }
-
-    public void setShipped(boolean shipped) {
-        this.shipped = shipped;
-    }
-
-    public boolean isReceived() {
-        return received;
-    }
-
-    public void setReceived(boolean received) {
-        this.received = received;
-    }
-
-    public PathogenTestResultType getPathogenTestResult() {
-        return pathogenTestResult;
-    }
-
-    public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
-        this.pathogenTestResult = pathogenTestResult;
-    }
-
-    public Boolean getPathogenTestingRequested() {
-        return pathogenTestingRequested;
-    }
-
-    public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
-        this.pathogenTestingRequested = pathogenTestingRequested;
-    }
-
-    public Boolean getAdditionalTestingRequested() {
-        return additionalTestingRequested;
-    }
-
-    public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
-        this.additionalTestingRequested = additionalTestingRequested;
-    }
-
-    public String getRequestedPathogenTestsString() {
-        return requestedPathogenTestsString;
-    }
-
-    public void setRequestedPathogenTestsString(String requestedPathogenTestsString) {
-        this.requestedPathogenTestsString = requestedPathogenTestsString;
-        requestedPathogenTests = null;
-    }
-
-    public String getRequestedAdditionalTestsString() {
-        return requestedAdditionalTestsString;
-    }
-
-    public void setRequestedAdditionalTestsString(String requestedAdditionalTestsString) {
-        this.requestedAdditionalTestsString = requestedAdditionalTestsString;
-        requestedAdditionalTests = null;
-    }
-
-    @Transient
-    public Set<PathogenTestType> getRequestedPathogenTests() {
-        if (requestedPathogenTests == null) {
-            requestedPathogenTests = new HashSet<>();
-            if (!StringUtils.isEmpty(requestedPathogenTestsString)) {
-                String[] testTypes = requestedPathogenTestsString.split(",");
-                for (String testType : testTypes) {
-                    requestedPathogenTests.add(PathogenTestType.valueOf(testType));
-                }
-            }
-        }
-        return requestedPathogenTests;
-    }
-
-    public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
-        this.requestedPathogenTests = requestedPathogenTests;
-
-        if (this.requestedPathogenTests == null) {
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (PathogenTestType test : requestedPathogenTests) {
-            sb.append(test.name());
-            sb.append(",");
-        }
-        if (sb.length() > 0) {
-            sb.substring(0, sb.lastIndexOf(","));
-        }
-        requestedPathogenTestsString = sb.toString();
-    }
-
-    @Transient
-    public Set<AdditionalTestType> getRequestedAdditionalTests() {
-        if (requestedAdditionalTests == null) {
-            requestedAdditionalTests = new HashSet<>();
-            if (!StringUtils.isEmpty(requestedAdditionalTestsString)) {
-                String[] testTypes = requestedAdditionalTestsString.split(",");
-                for (String testType : testTypes) {
-                    requestedAdditionalTests.add(AdditionalTestType.valueOf(testType));
-                }
-            }
-        }
-        return requestedAdditionalTests;
-    }
-
-    public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
-        this.requestedAdditionalTests = requestedAdditionalTests;
-
-        if (this.requestedAdditionalTests == null) {
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (AdditionalTestType test : requestedAdditionalTests) {
-            sb.append(test.name());
-            sb.append(",");
-        }
-        if (sb.length() > 0) {
-            sb.substring(0, sb.lastIndexOf(","));
-        }
-        requestedAdditionalTestsString = sb.toString();
-    }
-
-    public String getRequestedOtherPathogenTests() {
-        return requestedOtherPathogenTests;
-    }
-
-    public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
-        this.requestedOtherPathogenTests = requestedOtherPathogenTests;
-    }
-
-    public String getRequestedOtherAdditionalTests() {
-        return requestedOtherAdditionalTests;
-    }
-
-    public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
-        this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
-    }
-
-    @Override
-    public String getI18nPrefix() {
-        return I18N_PREFIX;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
-    }
-
-    public Double getReportLat() {
-        return reportLat;
-    }
-
-    public void setReportLat(Double reportLat) {
-        this.reportLat = reportLat;
-    }
-
-    public Double getReportLon() {
-        return reportLon;
-    }
-
-    public void setReportLon(Double reportLon) {
-        this.reportLon = reportLon;
-    }
-
-    public Float getReportLatLonAccuracy() {
-        return reportLatLonAccuracy;
-    }
-
-    public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
-        this.reportLatLonAccuracy = reportLatLonAccuracy;
-    }
+	public void setShipmentDate(Date shipmentDate) {
+		this.shipmentDate = shipmentDate;
+	}
+
+	public String getShipmentDetails() {
+		return shipmentDetails;
+	}
+
+	public void setShipmentDetails(String shipmentDetails) {
+		this.shipmentDetails = shipmentDetails;
+	}
+
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
+
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
+
+	public String getNoTestPossibleReason() {
+		return noTestPossibleReason;
+	}
+
+	public void setNoTestPossibleReason(String noTestPossibleReason) {
+		this.noTestPossibleReason = noTestPossibleReason;
+	}
+
+	public SpecimenCondition getSpecimenCondition() {
+		return specimenCondition;
+	}
+
+	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
+		this.specimenCondition = specimenCondition;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public SampleSource getSampleSource() {
+		return sampleSource;
+	}
+
+	public void setSampleSource(SampleSource sampleSource) {
+		this.sampleSource = sampleSource;
+	}
+
+	public String getReferredToUuid() {
+		return referredToUuid;
+	}
+
+	public void setReferredToUuid(String referredToUuid) {
+		this.referredToUuid = referredToUuid;
+	}
+
+	public boolean isShipped() {
+		return shipped;
+	}
+
+	public void setShipped(boolean shipped) {
+		this.shipped = shipped;
+	}
+
+	public boolean isReceived() {
+		return received;
+	}
+
+	public void setReceived(boolean received) {
+		this.received = received;
+	}
+
+	public PathogenTestResultType getPathogenTestResult() {
+		return pathogenTestResult;
+	}
+
+	public void setPathogenTestResult(PathogenTestResultType pathogenTestResult) {
+		this.pathogenTestResult = pathogenTestResult;
+	}
+
+	public Boolean getPathogenTestingRequested() {
+		return pathogenTestingRequested;
+	}
+
+	public void setPathogenTestingRequested(Boolean pathogenTestingRequested) {
+		this.pathogenTestingRequested = pathogenTestingRequested;
+	}
+
+	public Boolean getAdditionalTestingRequested() {
+		return additionalTestingRequested;
+	}
+
+	public void setAdditionalTestingRequested(Boolean additionalTestingRequested) {
+		this.additionalTestingRequested = additionalTestingRequested;
+	}
+
+	public String getRequestedPathogenTestsString() {
+		return requestedPathogenTestsString;
+	}
+
+	public void setRequestedPathogenTestsString(String requestedPathogenTestsString) {
+		this.requestedPathogenTestsString = requestedPathogenTestsString;
+		requestedPathogenTests = null;
+	}
+
+	public String getRequestedAdditionalTestsString() {
+		return requestedAdditionalTestsString;
+	}
+
+	public void setRequestedAdditionalTestsString(String requestedAdditionalTestsString) {
+		this.requestedAdditionalTestsString = requestedAdditionalTestsString;
+		requestedAdditionalTests = null;
+	}
+
+	@Transient
+	public Set<PathogenTestType> getRequestedPathogenTests() {
+		if (requestedPathogenTests == null) {
+			requestedPathogenTests = new HashSet<>();
+			if (!StringUtils.isEmpty(requestedPathogenTestsString)) {
+				String[] testTypes = requestedPathogenTestsString.split(",");
+				for (String testType : testTypes) {
+					requestedPathogenTests.add(PathogenTestType.valueOf(testType));
+				}
+			}
+		}
+		return requestedPathogenTests;
+	}
+
+	public void setRequestedPathogenTests(Set<PathogenTestType> requestedPathogenTests) {
+		this.requestedPathogenTests = requestedPathogenTests;
+
+		if (this.requestedPathogenTests == null) {
+			return;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (PathogenTestType test : requestedPathogenTests) {
+			sb.append(test.name());
+			sb.append(",");
+		}
+		if (sb.length() > 0) {
+			sb.substring(0, sb.lastIndexOf(","));
+		}
+		requestedPathogenTestsString = sb.toString();
+	}
+
+	@Transient
+	public Set<AdditionalTestType> getRequestedAdditionalTests() {
+		if (requestedAdditionalTests == null) {
+			requestedAdditionalTests = new HashSet<>();
+			if (!StringUtils.isEmpty(requestedAdditionalTestsString)) {
+				String[] testTypes = requestedAdditionalTestsString.split(",");
+				for (String testType : testTypes) {
+					requestedAdditionalTests.add(AdditionalTestType.valueOf(testType));
+				}
+			}
+		}
+		return requestedAdditionalTests;
+	}
+
+	public void setRequestedAdditionalTests(Set<AdditionalTestType> requestedAdditionalTests) {
+		this.requestedAdditionalTests = requestedAdditionalTests;
+
+		if (this.requestedAdditionalTests == null) {
+			return;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (AdditionalTestType test : requestedAdditionalTests) {
+			sb.append(test.name());
+			sb.append(",");
+		}
+		if (sb.length() > 0) {
+			sb.substring(0, sb.lastIndexOf(","));
+		}
+		requestedAdditionalTestsString = sb.toString();
+	}
+
+	public String getRequestedOtherPathogenTests() {
+		return requestedOtherPathogenTests;
+	}
+
+	public void setRequestedOtherPathogenTests(String requestedOtherPathogenTests) {
+		this.requestedOtherPathogenTests = requestedOtherPathogenTests;
+	}
+
+	public String getRequestedOtherAdditionalTests() {
+		return requestedOtherAdditionalTests;
+	}
+
+	public void setRequestedOtherAdditionalTests(String requestedOtherAdditionalTests) {
+		this.requestedOtherAdditionalTests = requestedOtherAdditionalTests;
+	}
+
+	@Override
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + DateFormatHelper.formatLocalDate(getSampleDateTime());
+	}
+
+	public Double getReportLat() {
+		return reportLat;
+	}
+
+	public void setReportLat(Double reportLat) {
+		this.reportLat = reportLat;
+	}
+
+	public Double getReportLon() {
+		return reportLon;
+	}
+
+	public void setReportLon(Double reportLon) {
+		this.reportLon = reportLon;
+	}
+
+	public Float getReportLatLonAccuracy() {
+		return reportLatLonAccuracy;
+	}
+
+	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
+		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
 }

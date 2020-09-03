@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>returns the number of testcases in the dashboard for the complete year</description>
+   <name>DashboardNumberOfCasesInYear</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>df203c92-fd02-4152-bcb1-82e3d724bc88</testCaseGuid>
+</TestCaseEntity>

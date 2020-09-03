@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks the ui after switching between Contacts and FollowUpVisits</description>
+   <name>SwitchViewFollowUpVisits</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>c66c750a-318d-4781-9af8-ca602836266c</testCaseGuid>
+</TestCaseEntity>

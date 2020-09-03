@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Login as Surveillance Supervisor</description>
+   <name>LoginActions</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>8432ba03-f2f9-4e9c-9b19-d785abb7ccd1</testCaseGuid>
+   <variable>
+      <defaultValue>'testuser'</defaultValue>
+      <description></description>
+      <id>139ec057-def6-4f71-80a5-47fe02e8f02b</id>
+      <masked>false</masked>
+      <name>Username</name>
+   </variable>
+   <variable>
+      <defaultValue>'testpassord'</defaultValue>
+      <description></description>
+      <id>58bb6f81-4f0b-4acd-b32c-a8a2a875792b</id>
+      <masked>false</masked>
+      <name>Password</name>
+   </variable>
+</TestCaseEntity>

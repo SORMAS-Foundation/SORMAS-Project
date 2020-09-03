@@ -17,8 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
@@ -42,6 +44,8 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -88,6 +92,10 @@ public class SampleController {
 
 	public void create(ContactReferenceDto contactRef, Runnable callback) {
 		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef));
+	}
+
+	public void create(EventParticipantReferenceDto eventParticipantRef, Runnable callback) {
+		createSample(callback, SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef));
 	}
 
 	private void createSample(Runnable callback, SampleDto sampleDto) {
@@ -144,7 +152,8 @@ public class SampleController {
 			final PathogenTestDto pathogenTest = PathogenTestDto.build(newSample, UserProvider.getCurrent().getUser());
 			pathogenTest.setLab(newSample.getLab());
 			pathogenTest.setTestResult(testResult);
-			pathogenTest.setTestResultVerified((Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue());
+			final Boolean testResultVerified = (Boolean) createForm.getField(PathogenTestDto.TEST_RESULT_VERIFIED).getValue();
+			pathogenTest.setTestResultVerified(testResultVerified);
 			pathogenTest.setTestType((PathogenTestType) (createForm.getField(PathogenTestDto.TEST_TYPE)).getValue());
 			pathogenTest.setTestedDisease((Disease) (createForm.getField(PathogenTestDto.TESTED_DISEASE)).getValue());
 			pathogenTest.setTestDateTime((Date) (createForm.getField(PathogenTestDto.TEST_DATE_TIME)).getValue());
@@ -152,6 +161,13 @@ public class SampleController {
 			newSample.setPathogenTestResult(testResult);
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+			final EventParticipantReferenceDto eventParticipantRef = newSample.getAssociatedEventParticipant();
+			if (eventParticipantRef != null && testResult.equals(PathogenTestResultType.POSITIVE) && testResultVerified) {
+				EventParticipantDto eventParticipant =
+					FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
+				ControllerProvider.getPathogenTestController().showConvertEventParticipantToCaseDialog(eventParticipant);
+			}
 		} else {
 			FacadeProvider.getSampleFacade().saveSample(newSample);
 		}
@@ -274,10 +290,15 @@ public class SampleController {
 				popupWindow.close();
 				final CaseReferenceDto associatedCase = dto.getAssociatedCase();
 				final ContactReferenceDto associatedContact = dto.getAssociatedContact();
+				final EventParticipantReferenceDto associatedEventParticipant = dto.getAssociatedEventParticipant();
 				if (associatedCase != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto);
 				} else if (associatedContact != null) {
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto);
+				} else if (associatedEventParticipant != null) {
+					final EventParticipantDto eventParticipantDto =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.EVENT, eventParticipantDto.getEvent(), dto);
 				}
 			}
 		});
@@ -286,16 +307,23 @@ public class SampleController {
 
 	public void showChangePathogenTestResultWindow(
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
-		String sampleUuid,
+		List<String> samplesUuids,
 		PathogenTestResultType newResult,
 		Runnable callback) {
+		
+		if (samplesUuids == null || samplesUuids.size() == 0)
+			return;
 
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(true);
 
 		ConfirmationComponent confirmationComponent = VaadinUiUtil.buildYesNoConfirmationComponent();
+		
+		String descriptionText = samplesUuids.size() > 1 ?
+			String.format(I18nProperties.getString(Strings.messageChangePathogenTestsResults), samplesUuids.size(), newResult.toString())
+			: String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString());
 
-		Label description = new Label(String.format(I18nProperties.getString(Strings.messageChangePathogenTestResult), newResult.toString()));
+		Label description = new Label(descriptionText);
 		description.setWidth(100, Unit.PERCENTAGE);
 		layout.addComponent(description);
 		layout.addComponent(confirmationComponent);
@@ -312,13 +340,19 @@ public class SampleController {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				editComponent.commit();
-				SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(sampleUuid);
-				sample.setPathogenTestResult(newResult);
-				FacadeProvider.getSampleFacade().saveSample(sample);
+				if (editComponent != null)
+					editComponent.commit();
+				
+				List<SampleDto> samples = FacadeProvider.getSampleFacade().getByUuids(samplesUuids);
+				for (SampleDto sample : samples) {
+					sample.setPathogenTestResult(newResult);
+					FacadeProvider.getSampleFacade().saveSample(sample);
+				}
+				
 				popupWindow.close();
 				SormasUI.refreshView();
-				callback.run();
+				if (callback != null)
+					callback.run();
 			}
 		});
 		confirmationComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -328,9 +362,19 @@ public class SampleController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				popupWindow.close();
-				callback.run();
+				if (callback != null)
+					callback.run();
 			}
 		});
+	}
+	
+	public void showChangePathogenTestResultWindow(
+		CommitDiscardWrapperComponent<SampleEditForm> editComponent,
+		String sampleUuid,
+		PathogenTestResultType newResult,
+		Runnable callback) {
+
+		showChangePathogenTestResultWindow(editComponent, Arrays.asList(sampleUuid), newResult, callback);
 	}
 
 	public void deleteAllSelectedItems(Collection<SampleIndexDto> selectedRows, Runnable callback) {

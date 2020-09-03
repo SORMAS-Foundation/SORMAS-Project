@@ -1,8 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Date;
-import java.util.List;
-
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
@@ -14,8 +11,8 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -30,14 +27,20 @@ import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 
+import java.util.Date;
+import java.util.List;
+
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
 	private static final long serialVersionUID = 471700572643936674L;
 
+	public static final int TEXT_AREA_MAX_LENGTH = EntityDto.COLUMN_LENGTH_BIG;
+	public static final int TEXT_FIELD_MAX_LENGTH = EntityDto.COLUMN_LENGTH_DEFAULT;
+
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final FieldAccessCheckers fieldAccessCheckers;
 
-	SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
+	public SormasFieldGroupFieldFactory(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
 		this.fieldAccessCheckers = fieldAccessCheckers;
 	}

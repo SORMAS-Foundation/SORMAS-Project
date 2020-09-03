@@ -779,10 +779,10 @@ public class DashboardMapComponent extends VerticalLayout {
 			{
 				eventsKeyLayout.setSpacing(false);
 				eventsKeyLayout.setMargin(false);
-				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.POSSIBLE.toString());
+				HorizontalLayout legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_RUMOR, EventStatus.SIGNAL.toString());
 				CssStyles.style(legendEntry, CssStyles.HSPACE_RIGHT_3);
 				eventsKeyLayout.addComponent(legendEntry);
-				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.CONFIRMED.toString());
+				legendEntry = buildMarkerLegendEntry(MarkerIcon.EVENT_OUTBREAK, EventStatus.EVENT.toString());
 				eventsKeyLayout.addComponent(legendEntry);
 			}
 			legendLayout.addComponent(eventsKeyLayout);
@@ -1272,10 +1272,10 @@ public class DashboardMapComponent extends VerticalLayout {
 		for (DashboardEventDto event : events) {
 			MarkerIcon icon;
 			switch (event.getEventStatus()) {
-			case CONFIRMED:
+			case EVENT:
 				icon = MarkerIcon.EVENT_OUTBREAK;
 				break;
-			case POSSIBLE:
+			case SIGNAL:
 				icon = MarkerIcon.EVENT_RUMOR;
 				break;
 			default:
@@ -1289,7 +1289,9 @@ public class DashboardMapComponent extends VerticalLayout {
 			}
 
 			LeafletMarker marker = new LeafletMarker();
-			if (event.getReportLat() != null && event.getReportLon() != null) {
+			if (event.getLocationLat() != null && event.getLocationLon() != null) {
+				marker.setLatLon(event.getLocationLat(), event.getLocationLon());
+			} else if (event.getReportLat() != null && event.getReportLon() != null) {
 				marker.setLatLon(event.getReportLat(), event.getReportLon());
 			} else if (event.getDistrict() != null) {
 				GeoLatLon districtCenter = FacadeProvider.getGeoShapeProvider().getCenterOfDistrict(event.getDistrict());

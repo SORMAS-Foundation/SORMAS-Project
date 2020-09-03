@@ -1,7 +1,9 @@
 package de.symeda.sormas.backend.facility;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -112,5 +114,14 @@ public class FacilityFacadeEjbTest extends AbstractBeanTest {
 		getFacilityFacade().saveFacility(f2);
 
 		assertEquals(1, getFacilityFacade().getAllActiveLaboratories(false).size());
+	}
+
+	/**
+	 * If no facilities are present, no parent of them is archived.
+	 */
+	@Test
+	public void testHasArchivedParentInfrastructureNoFacilities() {
+
+		assertFalse(getFacilityFacade().hasArchivedParentInfrastructure(Collections.emptyList()));
 	}
 }

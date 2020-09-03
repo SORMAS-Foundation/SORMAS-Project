@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -241,7 +243,7 @@ public class AdditionalTest extends AbstractDomainObject {
 		this.prothrombinTime = prothrombinTime;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getOtherTestResults() {
 		return otherTestResults;
 	}
@@ -249,4 +251,5 @@ public class AdditionalTest extends AbstractDomainObject {
 	public void setOtherTestResults(String otherTestResults) {
 		this.otherTestResults = otherTestResults;
 	}
+
 }

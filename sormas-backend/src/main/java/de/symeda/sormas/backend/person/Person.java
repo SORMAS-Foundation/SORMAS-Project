@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -154,7 +156,7 @@ public class Person extends AbstractDomainObject {
 	private String passportNumber;
 	private String nationalHealthId;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -163,7 +165,7 @@ public class Person extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
@@ -172,6 +174,7 @@ public class Person extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getNickname() {
 		return nickname;
 	}
@@ -442,7 +445,7 @@ public class Person extends AbstractDomainObject {
 		this.occupationFacilityDetails = occupationFacilityDetails;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getMothersName() {
 		return mothersName;
 	}
@@ -451,7 +454,7 @@ public class Person extends AbstractDomainObject {
 		this.mothersName = mothersName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getFathersName() {
 		return fathersName;
 	}
@@ -496,7 +499,7 @@ public class Person extends AbstractDomainObject {
 		this.placeOfBirthFacility = placeOfBirthFacility;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getPlaceOfBirthFacilityDetails() {
 		return placeOfBirthFacilityDetails;
 	}
@@ -521,7 +524,7 @@ public class Person extends AbstractDomainObject {
 		this.birthWeight = birthWeight;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getGeneralPractitionerDetails() {
 		return generalPractitionerDetails;
 	}

@@ -1,26 +1,23 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.content.res.Resources;
-
 import java.util.List;
+
+import android.content.res.Resources;
 
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
@@ -32,63 +29,68 @@ import de.symeda.sormas.app.util.InfrastructureHelper;
 
 public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCaseEditMaternalHistoryLayoutBinding, MaternalHistory, Case> {
 
-    public static final String TAG = CaseEditMaternalHistoryFragment.class.getSimpleName();
+	public static final String TAG = CaseEditMaternalHistoryFragment.class.getSimpleName();
 
-    private MaternalHistory record;
+	private MaternalHistory record;
 
-    // Static methods
+	// Static methods
 
-    public static CaseEditMaternalHistoryFragment newInstance(Case activityRootData) {
-        return newInstance(CaseEditMaternalHistoryFragment.class, null, activityRootData);
-    }
+	public static CaseEditMaternalHistoryFragment newInstance(Case activityRootData) {
+		return newInstance(CaseEditMaternalHistoryFragment.class, null, activityRootData);
+	}
 
-    // Overrides
+	// Overrides
 
-    @Override
-    protected String getSubHeadingTitle() {
-        Resources r = getResources();
-        return r.getString(R.string.caption_case_maternal_history);
-    }
+	@Override
+	protected String getSubHeadingTitle() {
+		Resources r = getResources();
+		return r.getString(R.string.caption_case_maternal_history);
+	}
 
-    @Override
-    public MaternalHistory getPrimaryData() {
-        return record;
-    }
+	@Override
+	public MaternalHistory getPrimaryData() {
+		return record;
+	}
 
-    @Override
-    protected void prepareFragmentData() {
-        Case caze = getActivityRootData();
-        record = caze.getMaternalHistory();
-    }
+	@Override
+	protected void prepareFragmentData() {
+		Case caze = getActivityRootData();
+		record = caze.getMaternalHistory();
+	}
 
-    @Override
-    public void onLayoutBinding(final FragmentCaseEditMaternalHistoryLayoutBinding contentBinding) {
-        contentBinding.setData(record);
-    }
+	@Override
+	public void onLayoutBinding(final FragmentCaseEditMaternalHistoryLayoutBinding contentBinding) {
+		contentBinding.setData(record);
+	}
 
-    @Override
-    protected void onAfterLayoutBinding(FragmentCaseEditMaternalHistoryLayoutBinding contentBinding) {
-        // Initialize ControlDateFields
-        contentBinding.maternalHistoryArthralgiaArthritisOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistoryConjunctivitisOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistoryMaculopapularRashOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistoryOtherComplicationsOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistoryRubellaOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistorySwollenLymphsOnset.initializeDateField(getFragmentManager());
-        contentBinding.maternalHistoryRashExposureDate.initializeDateField(getFragmentManager());
+	@Override
+	protected void onAfterLayoutBinding(FragmentCaseEditMaternalHistoryLayoutBinding contentBinding) {
+		// Initialize ControlDateFields
+		contentBinding.maternalHistoryArthralgiaArthritisOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistoryConjunctivitisOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistoryMaculopapularRashOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistoryOtherComplicationsOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistoryRubellaOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistorySwollenLymphsOnset.initializeDateField(getFragmentManager());
+		contentBinding.maternalHistoryRashExposureDate.initializeDateField(getFragmentManager());
 
-        List<Item> initialRegions = InfrastructureHelper.loadRegions();
-        List<Item> initialDistricts = InfrastructureHelper.loadDistricts(record.getRashExposureRegion());
-        List<Item> initialCommunities = InfrastructureHelper.loadCommunities(record.getRashExposureDistrict());
-        InfrastructureHelper.initializeRegionFields(
-                contentBinding.maternalHistoryRashExposureRegion, initialRegions, record.getRashExposureRegion(),
-                contentBinding.maternalHistoryRashExposureDistrict, initialDistricts, record.getRashExposureDistrict(),
-                contentBinding.maternalHistoryRashExposureCommunity, initialCommunities, record.getRashExposureCommunity());
-    }
+		List<Item> initialRegions = InfrastructureHelper.loadRegions();
+		List<Item> initialDistricts = InfrastructureHelper.loadDistricts(record.getRashExposureRegion());
+		List<Item> initialCommunities = InfrastructureHelper.loadCommunities(record.getRashExposureDistrict());
+		InfrastructureHelper.initializeRegionFields(
+			contentBinding.maternalHistoryRashExposureRegion,
+			initialRegions,
+			record.getRashExposureRegion(),
+			contentBinding.maternalHistoryRashExposureDistrict,
+			initialDistricts,
+			record.getRashExposureDistrict(),
+			contentBinding.maternalHistoryRashExposureCommunity,
+			initialCommunities,
+			record.getRashExposureCommunity());
+	}
 
-    @Override
-    public int getEditLayout() {
-        return R.layout.fragment_case_edit_maternal_history_layout;
-    }
-
+	@Override
+	public int getEditLayout() {
+		return R.layout.fragment_case_edit_maternal_history_layout;
+	}
 }

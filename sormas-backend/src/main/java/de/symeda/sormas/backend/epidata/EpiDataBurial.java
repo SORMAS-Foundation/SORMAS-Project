@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -71,7 +73,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 		this.epiData = epiData;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getBurialPersonName() {
 		return burialPersonName;
 	}
@@ -80,7 +82,7 @@ public class EpiDataBurial extends AbstractDomainObject {
 		this.burialPersonName = burialPersonName;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getBurialRelation() {
 		return burialRelation;
 	}
@@ -136,4 +138,5 @@ public class EpiDataBurial extends AbstractDomainObject {
 	public void setBurialTouching(YesNoUnknown burialTouching) {
 		this.burialTouching = burialTouching;
 	}
+
 }

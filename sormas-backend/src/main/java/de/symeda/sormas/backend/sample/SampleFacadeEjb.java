@@ -50,9 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -91,6 +89,10 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
@@ -108,7 +110,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
 
@@ -143,6 +144,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -160,6 +163,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
+	@EJB
+	private SampleJurisdictionChecker sampleJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -191,6 +196,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public List<SampleDto> getByCaseUuids(List<String> caseUuids) {
 		return sampleService.getByCaseUuids(caseUuids).stream().map(c -> convertToDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return sampleService.exists(uuid);
 	}
 
 	@Override
@@ -257,27 +267,48 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
+		final Join<Case, Community> caseCommunity = joins.getCaseCommunity();
 
 		final Join<Sample, Contact> contact = joins.getContact();
 		final Join<Contact, District> contactDistrict = joins.getContactDistrict();
-		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
+		final Join<Contact, Community> contactCommunity = joins.getContactCommunity();
 
-		Expression<Object> diseaseSelect = cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE)).otherwise(contact.get(Contact.DISEASE));
-		Expression<Object> diseaseDetailsSelect =
-			cb.selectCase().when(cb.isNotNull(caze), caze.get(Case.DISEASE_DETAILS)).otherwise(contact.get(Contact.DISEASE_DETAILS));
+		final Join<Case, District> contactCaseDistrict = joins.getContactCaseDistrict();
+		final Join<Case, Community> contactCaseCommunity = joins.getContactCaseCommunity();
+
+		final Join<EventParticipant, Event> event = joins.getEvent();
+		final Join<Location, District> eventDistrict = joins.getEventDistrict();
+
+		Expression<Object> diseaseSelect = cb.selectCase()
+			.when(cb.isNotNull(caze), caze.get(Case.DISEASE))
+			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE)).otherwise(event.get(Event.DISEASE)));
+		Expression<Object> diseaseDetailsSelect = cb.selectCase()
+			.when(cb.isNotNull(caze), caze.get(Case.DISEASE_DETAILS))
+			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
 
 		Expression<Object> districtSelect = cb.selectCase()
 			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.UUID))
 			.otherwise(
 				cb.selectCase()
 					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.UUID))
-					.otherwise(contactCaseDistrict.get(District.UUID)));
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.UUID))
+							.otherwise(eventDistrict.get(District.UUID))));
+
+		Expression<Object> communitySelect = cb.selectCase()
+			.when(cb.isNotNull(caseCommunity), caseCommunity.get(Community.UUID))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(contactCommunity), contactCommunity.get(Community.UUID))
+					.otherwise(contactCaseCommunity.get(Community.UUID)));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
 				sample.get(Sample.UUID),
 				caze.get(Case.EPID_NUMBER),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.FIELD_SAMPLE_ID),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SHIPPED),
 				sample.get(Sample.SHIPMENT_DATE),
@@ -295,16 +326,24 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getContact().get(Contact.UUID),
 				joins.getContactPerson().get(Person.FIRST_NAME),
 				joins.getContactPerson().get(Person.LAST_NAME),
+				joins.getEventParticipant().get(EventParticipant.UUID),
+				joins.getEventParticipantPerson().get(Person.FIRST_NAME),
+				joins.getEventParticipantPerson().get(Person.LAST_NAME),
 				diseaseSelect,
 				diseaseDetailsSelect,
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				joins.getCaseDistrict().get(Region.NAME),
-				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME)));
+				joins.getCaseDistrict().get(District.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContactCaseDistrict().get(District.NAME),
+				joins.getCaseCommunity().get(Community.NAME),
+				joins.getContactCommunity().get(Community.NAME),
+				joins.getContactCaseCommunity().get(Community.NAME)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
+		selections.add(districtSelect);
+		selections.add(joins.getEventDistrict().get(District.NAME));
 
 		cq.multiselect(selections);
 
@@ -326,6 +365,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				switch (sortProperty.propertyName) {
 				case SampleIndexDto.UUID:
 				case SampleIndexDto.LAB_SAMPLE_ID:
+				case SampleIndexDto.FIELD_SAMPLE_ID:
 				case SampleIndexDto.SHIPPED:
 				case SampleIndexDto.RECEIVED:
 				case SampleIndexDto.REFERRED:
@@ -354,8 +394,16 @@ public class SampleFacadeEjb implements SampleFacade {
 					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
 					expression = joins.getContactPerson().get(Person.FIRST_NAME);
 					break;
+				case SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT:
+					expression = joins.getEventParticipantPerson().get(Person.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getEventParticipantPerson().get(Person.FIRST_NAME);
+					break;
 				case SampleIndexDto.DISTRICT:
 					expression = districtSelect;
+					break;
+				case SampleIndexDto.COMMUNITY:
+					expression = communitySelect;
 					break;
 				case SampleIndexDto.LAB:
 					expression = joins.getLab().get(Facility.NAME);
@@ -377,19 +425,19 @@ public class SampleFacadeEjb implements SampleFacade {
 			samples = em.createQuery(cq).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> {
-			CaseReferenceDto associatedCase = s.getAssociatedCase();
-			ContactReferenceDto associatedContact = s.getAssociatedContact();
-			return isInJurisdiction(
-				associatedCase != null ? s.getAssociatedCaseJurisdiction() : null,
-				associatedContact != null ? s.getAssociatedContactJurisdiction() : null);
-		}, (s, isInJurisdiction) -> {
-			pseudonymizeEmbeddedObjects(
-				s.getAssociatedCase(),
-				s.getAssociatedCaseJurisdiction(),
-				s.getAssociatedContact(),
-				s.getAssociatedContactJurisdiction());
-		});
+//		pseudonymizationService.pseudonymizeDtoCollection(SampleIndexDto.class, samples, s -> {
+//			CaseReferenceDto associatedCase = s.getAssociatedCase();
+//			ContactReferenceDto associatedContact = s.getAssociatedContact();
+//			return isInJurisdiction(
+//				associatedCase != null ? s.getAssociatedCaseJurisdiction() : null,
+//				associatedContact != null ? s.getAssociatedContactJurisdiction() : null);
+//		}, (s, isInJurisdiction) -> {
+//			pseudonymizeEmbeddedObjects(
+//				s.getAssociatedCase(),
+//				s.getAssociatedCaseJurisdiction(),
+//				s.getAssociatedContact(),
+//				s.getAssociatedContactJurisdiction());
+//		});
 
 		return samples;
 	}
@@ -422,8 +470,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void validate(SampleDto sample) throws ValidationRuntimeException {
 
-		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseOrContact));
+		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null & sample.getAssociatedEventParticipant() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
 		if (sample.getSampleDateTime() == null) {
 			throw new ValidationRuntimeException(
@@ -464,11 +512,20 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.ID),
 				sample.get(Sample.UUID),
 				sample.get(Sample.LAB_SAMPLE_ID),
+				sample.get(Sample.REPORT_DATE_TIME),
 				joins.getCaze().get(Case.EPID_NUMBER),
 				joins.getCasePerson().get(Person.FIRST_NAME),
 				joins.getCasePerson().get(Person.LAST_NAME),
+				joins.getContactPerson().get(Person.FIRST_NAME),
+				joins.getContactPerson().get(Person.LAST_NAME),
+				joins.getEventParticipantPerson().get(Person.FIRST_NAME),
+				joins.getEventParticipantPerson().get(Person.LAST_NAME),
 				joins.getCaze().get(Case.DISEASE),
 				joins.getCaze().get(Case.DISEASE_DETAILS),
+				joins.getContact().get(Contact.DISEASE),
+				joins.getContact().get(Contact.DISEASE_DETAILS),
+				joins.getEvent().get(Event.DISEASE),
+				joins.getEvent().get(Event.DISEASE_DETAILS),
 				sample.get(Sample.SAMPLE_DATE_TIME),
 				sample.get(Sample.SAMPLE_MATERIAL),
 				sample.get(Sample.SAMPLE_MATERIAL_TEXT),
@@ -494,14 +551,32 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.COMMENT),
 				joins.getReferredSample().get(Sample.UUID),
 				joins.getCaze().get(Case.UUID),
+				joins.getContact().get(Contact.UUID),
+				joins.getEventParticipant().get(EventParticipant.UUID),
 				joins.getCasePerson().get(Person.APPROXIMATE_AGE),
 				joins.getCasePerson().get(Person.APPROXIMATE_AGE_TYPE),
 				joins.getCasePerson().get(Person.SEX),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE),
+				joins.getContactPerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getContactPerson().get(Person.SEX),
+				joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE),
+				joins.getEventParticipantPerson().get(Person.APPROXIMATE_AGE_TYPE),
+				joins.getEventParticipantPerson().get(Person.SEX),
 				joins.getCasePersonAddressRegion().get(Region.NAME),
 				joins.getCasePersonAddressDistrict().get(District.NAME),
 				joins.getCasePersonAddressCommunity().get(Community.NAME),
 				joins.getCasePersonAddress().get(Location.CITY),
 				joins.getCasePersonAddress().get(Location.ADDRESS),
+				joins.getContactPersonAddressRegion().get(Region.NAME),
+				joins.getContactPersonAddressDistrict().get(District.NAME),
+				joins.getContactPersonAddressCommunity().get(Community.NAME),
+				joins.getContactPersonAddress().get(Location.CITY),
+				joins.getContactPersonAddress().get(Location.ADDRESS),
+				joins.getEventRegion().get(Region.NAME),
+				joins.getEventDistrict().get(District.NAME),
+				joins.getEventCommunity().get(Community.NAME),
+				joins.getEventLocation().get(Location.CITY),
+				joins.getEventLocation().get(Location.ADDRESS),
 				joins.getCaze().get(Case.REPORT_DATE),
 				joins.getCaze().get(Case.CASE_CLASSIFICATION),
 				joins.getCaze().get(Case.OUTCOME),
@@ -509,7 +584,15 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCaseDistrict().get(District.NAME),
 				joins.getCaseCommunity().get(Community.NAME),
 				joins.getCaseFacility().get(Facility.NAME),
-				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS)));
+				joins.getCaze().get(Case.HEALTH_FACILITY_DETAILS),
+				joins.getContactRegion().get(Region.NAME),
+				joins.getContactDistrict().get(District.NAME),
+				joins.getContact().get(Contact.REPORT_DATE_TIME),
+				joins.getContact().get(Contact.LAST_CONTACT_DATE),
+				joins.getContact().get(Contact.CONTACT_CLASSIFICATION),
+				joins.getContact().get(Contact.CONTACT_STATUS)));
+
+		cq.distinct(true);
 
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
@@ -531,14 +614,23 @@ public class SampleFacadeEjb implements SampleFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(sample.get(Sample.REPORT_DATE_TIME)), cb.desc(sample.get(Sample.ID)));
 
 		List<SampleExportDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
 		for (SampleExportDto exportDto : resultList) {
-			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), null);
-			pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
-			pseudonymizationService.pseudonymizeDto(SampleExportDto.CasePersonAddress.class, exportDto.getCaseAddress(), isInJurisdiction, null);
+//			boolean isInJurisdiction = isInJurisdiction(exportDto.getAssociatedCaseJurisdiction(), exportDto.getAssociatedContactJurisdiction());
+//
+//			if (exportDto.getAssociatedCase() != null) {
+//				pseudonymizationService.pseudonymizeDto(SampleExportDto.AssociatedCase.class, exportDto.getAssociatedCase(), isInJurisdiction, null);
+//			}
+//
+//			if (exportDto.getAssociatedContact() != null) {
+//				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, exportDto.getAssociatedContact(), isInJurisdiction, null);
+//			}
+//
+//			pseudonymizationService
+//				.pseudonymizeDto(SampleExportDto.SampleExportPersonAddress.class, exportDto.getPersonAddress(), isInJurisdiction, null);
 
 			List<PathogenTest> pathogenTests = pathogenTestService.getAllBySample(sampleService.getById(exportDto.getId()));
 			int count = 0;
@@ -768,8 +860,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
+		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
@@ -807,47 +901,47 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleDto dto = toDto(source);
 
-		if (dto != null) {
-
-			CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
-			ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
-
-			boolean isInJurisdiction = isInJurisdiction(
-				source.getAssociatedCase() != null ? caseJurisdiction : null,
-				source.getAssociatedContact() != null ? contactJurisdiction : null);
-
-			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
-				pseudonymizeEmbeddedObjects(s.getAssociatedCase(), caseJurisdiction, s.getAssociatedContact(), contactJurisdiction);
-			});
-
-		}
+//		if (dto != null) {
+//
+//			CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getAssociatedCase());
+//			ContactJurisdictionDto contactJurisdiction = JurisdictionHelper.createContactJurisdictionDto(source.getAssociatedContact());
+//
+//			boolean isInJurisdiction = isInJurisdiction(
+//				source.getAssociatedCase() != null ? caseJurisdiction : null,
+//				source.getAssociatedContact() != null ? contactJurisdiction : null);
+//
+//			pseudonymizationService.pseudonymizeDto(SampleDto.class, dto, isInJurisdiction, s -> {
+//				pseudonymizeEmbeddedObjects(s.getAssociatedCase(), caseJurisdiction, s.getAssociatedContact(), contactJurisdiction);
+//			});
+//
+//		}
 
 		return dto;
 	}
 
-	private void pseudonymizeEmbeddedObjects(
-		CaseReferenceDto sampleCase,
-		CaseJurisdictionDto caseJurisdiction,
-		ContactReferenceDto sampleContact,
-		ContactJurisdictionDto contactJurisdiction) {
-
-		if (sampleCase != null) {
-			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, sampleCase, isInJurisdiction(caseJurisdiction, null), null);
-		}
-
-		if (sampleContact != null) {
-			pseudonymizationService.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				sampleContact.getContactName(),
-				isInJurisdiction(null, contactJurisdiction),
-				null);
-			pseudonymizationService.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				sampleContact.getCaseName(),
-				isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
-				null);
-		}
-	}
+//	private void pseudonymizeEmbeddedObjects(
+//		CaseReferenceDto sampleCase,
+//		CaseJurisdictionDto caseJurisdiction,
+//		ContactReferenceDto sampleContact,
+//		ContactJurisdictionDto contactJurisdiction) {
+//
+//		if (sampleCase != null) {
+//			pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, sampleCase, isInJurisdiction(caseJurisdiction, null), null);
+//		}
+//
+//		if (sampleContact != null) {
+//			pseudonymizationService.pseudonymizeDto(
+//				ContactReferenceDto.PersonName.class,
+//				sampleContact.getContactName(),
+//				isInJurisdiction(null, contactJurisdiction),
+//				null);
+//			pseudonymizationService.pseudonymizeDto(
+//				ContactReferenceDto.PersonName.class,
+//				sampleContact.getCaseName(),
+//				isInJurisdiction(contactJurisdiction.getCaseJurisdiction(), null),
+//				null);
+//		}
+//	}
 
 	private boolean isInJurisdiction(CaseJurisdictionDto caseJurisdiction, ContactJurisdictionDto contactJurisdiction) {
 
@@ -873,8 +967,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
 		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
+		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
+		target.setForRetest(source.getForRetest());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
@@ -947,8 +1043,12 @@ public class SampleFacadeEjb implements SampleFacade {
 							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
 					} else if (newSample.getAssociatedContact() != null) {
 						messageContent = String.format(
-							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOT_CONTACT),
+							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
 							DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
+					} else if (newSample.getAssociatedEventParticipant() != null) {
+						messageContent = String.format(
+							I18nProperties.getString(MessagingService.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
+							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
 					}
 					messagingService.sendMessage(
 						recipient,
@@ -985,5 +1085,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Stateless
 	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
 
+	}
+
+	public Boolean isSampleEditAllowed(String sampleUuid) {
+
+		Sample sample = sampleService.getByUuid(sampleUuid);
+		return sampleJurisdictionChecker.isInJurisdiction(sample);
 	}
 }

@@ -68,4 +68,8 @@ public interface SampleFacade {
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 	
 	Map<SampleCountType, Long> getSampleCount(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
+
+	Boolean isSampleEditAllowed(String sampleUuid);
+
+	boolean exists(String uuid);
 }

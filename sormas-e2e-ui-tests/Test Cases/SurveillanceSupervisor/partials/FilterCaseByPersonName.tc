@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>FilterCaseByPersonName</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>8052f6c1-882e-4e5a-a67c-c80cabcf3555</testCaseGuid>
+   <variable>
+      <defaultValue>'Person'</defaultValue>
+      <description>Person to search for in database</description>
+      <id>1190aa6d-a98c-41e6-afee-815206ae84ed</id>
+      <masked>false</masked>
+      <name>personName</name>
+   </variable>
+</TestCaseEntity>

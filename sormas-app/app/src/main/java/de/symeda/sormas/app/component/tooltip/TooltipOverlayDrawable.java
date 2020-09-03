@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.component.tooltip;
@@ -36,251 +33,251 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import de.symeda.sormas.app.R;
 
 public class TooltipOverlayDrawable extends Drawable {
-    @SuppressWarnings ("unused")
-    public static final String TAG = TooltipOverlay.class.getSimpleName();
-    public static final float ALPHA_MAX = 255f;
-    public static final double FADEOUT_START_DELAY = 0.55;
-    public static final double FADEIN_DURATION = 0.3;
-    public static final double SECOND_ANIM_START_DELAY = 0.25;
-    private Paint mOuterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint mInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private float mOuterRadius;
-    private float mInnerRadius = 0;
-    private AnimatorSet mFirstAnimatorSet;
-    private AnimatorSet mSecondAnimatorSet;
-    private ValueAnimator mFirstAnimator;
-    private ValueAnimator mSecondAnimator;
-    private int mRepeatIndex;
-    private boolean mStarted;
-    private int mOuterAlpha;
-    private int mInnerAlpha;
-    private int mRepeatCount = 1;
-    private long mDuration = 400;
 
-    public TooltipOverlayDrawable(Context context, int defStyleResId) {
-        mOuterPaint.setStyle(Paint.Style.FILL);
-        mInnerPaint.setStyle(Paint.Style.FILL);
+	@SuppressWarnings("unused")
+	public static final String TAG = TooltipOverlay.class.getSimpleName();
+	public static final float ALPHA_MAX = 255f;
+	public static final double FADEOUT_START_DELAY = 0.55;
+	public static final double FADEIN_DURATION = 0.3;
+	public static final double SECOND_ANIM_START_DELAY = 0.25;
+	private Paint mOuterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private Paint mInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private float mOuterRadius;
+	private float mInnerRadius = 0;
+	private AnimatorSet mFirstAnimatorSet;
+	private AnimatorSet mSecondAnimatorSet;
+	private ValueAnimator mFirstAnimator;
+	private ValueAnimator mSecondAnimator;
+	private int mRepeatIndex;
+	private boolean mStarted;
+	private int mOuterAlpha;
+	private int mInnerAlpha;
+	private int mRepeatCount = 1;
+	private long mDuration = 400;
 
-        final TypedArray array =
-            context.getTheme().obtainStyledAttributes(defStyleResId, R.styleable.TooltipOverlay);
+	public TooltipOverlayDrawable(Context context, int defStyleResId) {
+		mOuterPaint.setStyle(Paint.Style.FILL);
+		mInnerPaint.setStyle(Paint.Style.FILL);
 
-        for (int i = 0; i < array.getIndexCount(); i++) {
-            int index = array.getIndex(i);
+		final TypedArray array = context.getTheme().obtainStyledAttributes(defStyleResId, R.styleable.TooltipOverlay);
 
-            if (index == R.styleable.TooltipOverlay_android_color) {
-                int color = array.getColor(index, 0);
-                mOuterPaint.setColor(color);
-                mInnerPaint.setColor(color);
+		for (int i = 0; i < array.getIndexCount(); i++) {
+			int index = array.getIndex(i);
 
-            } else if (index == R.styleable.TooltipOverlay_ttlm_repeatCount) {
-                mRepeatCount = array.getInt(index, 1);
+			if (index == R.styleable.TooltipOverlay_android_color) {
+				int color = array.getColor(index, 0);
+				mOuterPaint.setColor(color);
+				mInnerPaint.setColor(color);
 
-            } else if (index == R.styleable.TooltipOverlay_android_alpha) {
-                int alpha = (int) (array.getFloat(index, mInnerPaint.getAlpha() / ALPHA_MAX) * 255);
-                mInnerPaint.setAlpha(alpha);
-                mOuterPaint.setAlpha(alpha);
+			} else if (index == R.styleable.TooltipOverlay_ttlm_repeatCount) {
+				mRepeatCount = array.getInt(index, 1);
 
-            } else if (index == R.styleable.TooltipOverlay_ttlm_duration) {
-                mDuration = array.getInt(index, 400);
-            }
-        }
+			} else if (index == R.styleable.TooltipOverlay_android_alpha) {
+				int alpha = (int) (array.getFloat(index, mInnerPaint.getAlpha() / ALPHA_MAX) * 255);
+				mInnerPaint.setAlpha(alpha);
+				mOuterPaint.setAlpha(alpha);
 
-        array.recycle();
+			} else if (index == R.styleable.TooltipOverlay_ttlm_duration) {
+				mDuration = array.getInt(index, 400);
+			}
+		}
 
-        mOuterAlpha = getOuterAlpha();
-        mInnerAlpha = getInnerAlpha();
+		array.recycle();
 
-        // first
-        Animator fadeIn = ObjectAnimator.ofInt(this, "outerAlpha", 0, mOuterAlpha);
-        fadeIn.setDuration((long) (mDuration * FADEIN_DURATION));
+		mOuterAlpha = getOuterAlpha();
+		mInnerAlpha = getInnerAlpha();
 
-        Animator fadeOut = ObjectAnimator.ofInt(this, "outerAlpha", mOuterAlpha, 0, 0);
-        fadeOut.setStartDelay((long) (mDuration * FADEOUT_START_DELAY));
-        fadeOut.setDuration((long) (mDuration * (1.0 - FADEOUT_START_DELAY)));
+		// first
+		Animator fadeIn = ObjectAnimator.ofInt(this, "outerAlpha", 0, mOuterAlpha);
+		fadeIn.setDuration((long) (mDuration * FADEIN_DURATION));
 
-        mFirstAnimator = ObjectAnimator.ofFloat(this, "outerRadius", 0, 1);
-        mFirstAnimator.setDuration(mDuration);
+		Animator fadeOut = ObjectAnimator.ofInt(this, "outerAlpha", mOuterAlpha, 0, 0);
+		fadeOut.setStartDelay((long) (mDuration * FADEOUT_START_DELAY));
+		fadeOut.setDuration((long) (mDuration * (1.0 - FADEOUT_START_DELAY)));
 
-        mFirstAnimatorSet = new AnimatorSet();
-        mFirstAnimatorSet.playTogether(fadeIn, mFirstAnimator, fadeOut);
-        mFirstAnimatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        mFirstAnimatorSet.setDuration(mDuration);
+		mFirstAnimator = ObjectAnimator.ofFloat(this, "outerRadius", 0, 1);
+		mFirstAnimator.setDuration(mDuration);
 
-        // second
-        fadeIn = ObjectAnimator.ofInt(this, "innerAlpha", 0, mInnerAlpha);
-        fadeIn.setDuration((long) (mDuration * FADEIN_DURATION));
+		mFirstAnimatorSet = new AnimatorSet();
+		mFirstAnimatorSet.playTogether(fadeIn, mFirstAnimator, fadeOut);
+		mFirstAnimatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+		mFirstAnimatorSet.setDuration(mDuration);
 
-        fadeOut = ObjectAnimator.ofInt(this, "innerAlpha", mInnerAlpha, 0, 0);
-        fadeOut.setStartDelay((long) (mDuration * FADEOUT_START_DELAY));
-        fadeOut.setDuration((long) (mDuration * (1.0 - FADEOUT_START_DELAY)));
+		// second
+		fadeIn = ObjectAnimator.ofInt(this, "innerAlpha", 0, mInnerAlpha);
+		fadeIn.setDuration((long) (mDuration * FADEIN_DURATION));
 
-        mSecondAnimator = ObjectAnimator.ofFloat(this, "innerRadius", 0, 1);
-        mSecondAnimator.setDuration(mDuration);
+		fadeOut = ObjectAnimator.ofInt(this, "innerAlpha", mInnerAlpha, 0, 0);
+		fadeOut.setStartDelay((long) (mDuration * FADEOUT_START_DELAY));
+		fadeOut.setDuration((long) (mDuration * (1.0 - FADEOUT_START_DELAY)));
 
-        mSecondAnimatorSet = new AnimatorSet();
-        mSecondAnimatorSet.playTogether(fadeIn, mSecondAnimator, fadeOut);
-        mSecondAnimatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
-        mSecondAnimatorSet.setStartDelay((long) (mDuration * SECOND_ANIM_START_DELAY));
-        mSecondAnimatorSet.setDuration(mDuration);
+		mSecondAnimator = ObjectAnimator.ofFloat(this, "innerRadius", 0, 1);
+		mSecondAnimator.setDuration(mDuration);
 
-        mFirstAnimatorSet.addListener(new AnimatorListenerAdapter() {
-            boolean cancelled;
+		mSecondAnimatorSet = new AnimatorSet();
+		mSecondAnimatorSet.playTogether(fadeIn, mSecondAnimator, fadeOut);
+		mSecondAnimatorSet.setInterpolator(new AccelerateDecelerateInterpolator());
+		mSecondAnimatorSet.setStartDelay((long) (mDuration * SECOND_ANIM_START_DELAY));
+		mSecondAnimatorSet.setDuration(mDuration);
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                super.onAnimationCancel(animation);
-                cancelled = true;
-            }
+		mFirstAnimatorSet.addListener(new AnimatorListenerAdapter() {
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!cancelled && isVisible() && ++mRepeatIndex < mRepeatCount) {
-                    mFirstAnimatorSet.start();
-                }
-            }
-        });
+			boolean cancelled;
 
-        mSecondAnimatorSet.addListener(new AnimatorListenerAdapter() {
-            boolean cancelled;
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				super.onAnimationCancel(animation);
+				cancelled = true;
+			}
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                super.onAnimationCancel(animation);
-                cancelled = true;
-            }
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (!cancelled && isVisible() && ++mRepeatIndex < mRepeatCount) {
+					mFirstAnimatorSet.start();
+				}
+			}
+		});
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (!cancelled && isVisible() && mRepeatIndex < mRepeatCount) {
-                    mSecondAnimatorSet.setStartDelay(0);
-                    mSecondAnimatorSet.start();
-                }
-            }
-        });
+		mSecondAnimatorSet.addListener(new AnimatorListenerAdapter() {
 
-    }
+			boolean cancelled;
 
-    public int getOuterAlpha() {
-        return mOuterPaint.getAlpha();
-    }
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				super.onAnimationCancel(animation);
+				cancelled = true;
+			}
 
-    @SuppressWarnings ("unused")
-    public void setOuterAlpha(final int value) {
-        mOuterPaint.setAlpha(value);
-        invalidateSelf();
-    }
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (!cancelled && isVisible() && mRepeatIndex < mRepeatCount) {
+					mSecondAnimatorSet.setStartDelay(0);
+					mSecondAnimatorSet.start();
+				}
+			}
+		});
+	}
 
-    public int getInnerAlpha() {
-        return mInnerPaint.getAlpha();
-    }
+	public int getOuterAlpha() {
+		return mOuterPaint.getAlpha();
+	}
 
-    @SuppressWarnings ("unused")
-    public void setInnerAlpha(final int value) {
-        mInnerPaint.setAlpha(value);
-        invalidateSelf();
-    }
+	@SuppressWarnings("unused")
+	public void setOuterAlpha(final int value) {
+		mOuterPaint.setAlpha(value);
+		invalidateSelf();
+	}
 
-    @Override
-    public void draw(Canvas canvas) {
-        Rect bounds = getBounds();
-        int centerX = bounds.width() / 2;
-        int centerY = bounds.height() / 2;
-        canvas.drawCircle(centerX, centerY, mOuterRadius, mOuterPaint);
-        canvas.drawCircle(centerX, centerY, mInnerRadius, mInnerPaint);
+	public int getInnerAlpha() {
+		return mInnerPaint.getAlpha();
+	}
 
-    }
+	@SuppressWarnings("unused")
+	public void setInnerAlpha(final int value) {
+		mInnerPaint.setAlpha(value);
+		invalidateSelf();
+	}
 
-    @Override
-    public void setAlpha(int i) {
+	@Override
+	public void draw(Canvas canvas) {
+		Rect bounds = getBounds();
+		int centerX = bounds.width() / 2;
+		int centerY = bounds.height() / 2;
+		canvas.drawCircle(centerX, centerY, mOuterRadius, mOuterPaint);
+		canvas.drawCircle(centerX, centerY, mInnerRadius, mInnerPaint);
+	}
 
-    }
+	@Override
+	public void setAlpha(int i) {
 
-    @Override
-    public void setColorFilter(ColorFilter colorFilter) {
+	}
 
-    }
+	@Override
+	public void setColorFilter(ColorFilter colorFilter) {
 
-    @Override
-    public boolean setVisible(boolean visible, boolean restart) {
-        boolean changed = isVisible() != visible;
+	}
 
-        if (visible) {
-            if (restart || !mStarted) {
-                replay();
-            }
-        } else {
-            stop();
-        }
+	@Override
+	public boolean setVisible(boolean visible, boolean restart) {
+		boolean changed = isVisible() != visible;
 
-        return changed;
-    }
+		if (visible) {
+			if (restart || !mStarted) {
+				replay();
+			}
+		} else {
+			stop();
+		}
 
-    @Override
-    public int getOpacity() {
-        return PixelFormat.TRANSLUCENT;
-    }
+		return changed;
+	}
 
-    @Override
-    protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
-        mOuterRadius = Math.min(bounds.width(), bounds.height()) / 2;
-        mFirstAnimator.setFloatValues(0, mOuterRadius);
-        mSecondAnimator.setFloatValues(0, mOuterRadius);
-    }
+	@Override
+	public int getOpacity() {
+		return PixelFormat.TRANSLUCENT;
+	}
 
-    @Override
-    public int getIntrinsicWidth() {
-        return 96;
-    }
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
+		mOuterRadius = Math.min(bounds.width(), bounds.height()) / 2;
+		mFirstAnimator.setFloatValues(0, mOuterRadius);
+		mSecondAnimator.setFloatValues(0, mOuterRadius);
+	}
 
-    @Override
-    public int getIntrinsicHeight() {
-        return 96;
-    }
+	@Override
+	public int getIntrinsicWidth() {
+		return 96;
+	}
 
-    public void play() {
-        mRepeatIndex = 0;
-        mStarted = true;
-        mFirstAnimatorSet.start();
-        mSecondAnimatorSet.setStartDelay((long) (mDuration * SECOND_ANIM_START_DELAY));
-        mSecondAnimatorSet.start();
-    }
+	@Override
+	public int getIntrinsicHeight() {
+		return 96;
+	}
 
-    public void replay() {
-        stop();
-        play();
-    }
+	public void play() {
+		mRepeatIndex = 0;
+		mStarted = true;
+		mFirstAnimatorSet.start();
+		mSecondAnimatorSet.setStartDelay((long) (mDuration * SECOND_ANIM_START_DELAY));
+		mSecondAnimatorSet.start();
+	}
 
-    public void stop() {
-        mFirstAnimatorSet.cancel();
-        mSecondAnimatorSet.cancel();
+	public void replay() {
+		stop();
+		play();
+	}
 
-        mRepeatIndex = 0;
-        mStarted = false;
+	public void stop() {
+		mFirstAnimatorSet.cancel();
+		mSecondAnimatorSet.cancel();
 
-        setInnerRadius(0);
-        setOuterRadius(0);
-    }
+		mRepeatIndex = 0;
+		mStarted = false;
 
-    @SuppressWarnings ("unused")
-    public float getInnerRadius() {
-        return mInnerRadius;
-    }
+		setInnerRadius(0);
+		setOuterRadius(0);
+	}
 
-    @SuppressWarnings ("unused")
-    public void setInnerRadius(final float rippleRadius) {
-        mInnerRadius = rippleRadius;
-        invalidateSelf();
-    }
+	@SuppressWarnings("unused")
+	public float getInnerRadius() {
+		return mInnerRadius;
+	}
 
-    @SuppressWarnings ("unused")
-    public float getOuterRadius() {
-        return mOuterRadius;
-    }
+	@SuppressWarnings("unused")
+	public void setInnerRadius(final float rippleRadius) {
+		mInnerRadius = rippleRadius;
+		invalidateSelf();
+	}
 
-    @SuppressWarnings ("unused")
-    public void setOuterRadius(final float value) {
-        mOuterRadius = value;
-        invalidateSelf();
-    }
+	@SuppressWarnings("unused")
+	public float getOuterRadius() {
+		return mOuterRadius;
+	}
+
+	@SuppressWarnings("unused")
+	public void setOuterRadius(final float value) {
+		mOuterRadius = value;
+		invalidateSelf();
+	}
 }

@@ -1,54 +1,52 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app.rest;
 
 public class ApiVersionException extends Exception {
-    private String appUrl;
-    private String version;
 
-    public ApiVersionException() {
-        super();
-    }
+	private String appUrl;
+	private String version;
 
-    public ApiVersionException(String message) {
-        super(message);
-    }
+	public ApiVersionException() {
+		super();
+	}
 
-    public ApiVersionException(String message, String appUrl, String version) {
-        super(message);
-        this.appUrl = appUrl;
-        this.version = version;
-    }
+	public ApiVersionException(String message) {
+		super(message);
+	}
 
-    public ApiVersionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public ApiVersionException(String message, String appUrl, String version) {
+		super(message);
+		this.appUrl = appUrl;
+		this.version = version;
+	}
 
-    public ApiVersionException(Throwable cause) {
-        super(cause);
-    }
+	public ApiVersionException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    public String getAppUrl() {
-        return appUrl;
-    }
+	public ApiVersionException(Throwable cause) {
+		super(cause);
+	}
 
-    public String getVersion() {
-        return version;
-    }
+	public String getAppUrl() {
+		return appUrl;
+	}
+
+	public String getVersion() {
+		return version;
+	}
 }

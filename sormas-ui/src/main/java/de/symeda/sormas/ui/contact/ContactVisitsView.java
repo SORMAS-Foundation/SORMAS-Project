@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.contact;
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
@@ -157,8 +156,7 @@ public class ContactVisitsView extends AbstractContactView {
 //	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null

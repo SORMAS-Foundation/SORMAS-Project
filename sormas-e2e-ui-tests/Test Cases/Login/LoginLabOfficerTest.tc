@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>check login and loaded menu points</description>
+   <name>LoginLabOfficerTest</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>3479417d-ae3a-425e-a466-aae2295d69d6</testCaseGuid>
+</TestCaseEntity>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Checks filtering of contact status and making sure that the sum of all filters equals all</description>
+   <name>FilterContactStatus</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>fc9a06f0-64fe-4813-9d56-f5066798b66f</testCaseGuid>
+</TestCaseEntity>

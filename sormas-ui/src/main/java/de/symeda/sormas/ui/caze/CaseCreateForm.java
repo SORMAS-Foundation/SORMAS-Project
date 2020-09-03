@@ -79,7 +79,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			+ fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
 			+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
 			+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-					fluidRowLocs(PersonDto.SEX))
+			fluidRowLocs(PersonDto.SEX))
+			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
 			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE);
 	//@formatter:on
 
@@ -107,6 +108,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, OptionGroup.class);
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -333,6 +336,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	public String getPersonLastName() {
 		return (String) getField(PersonDto.LAST_NAME).getValue();
+	}
+
+	public String getNationalHealthId() {
+		return (String) getField(PersonDto.NATIONAL_HEALTH_ID).getValue();
+	}
+
+	public String getPassportNumber() {
+		return (String) getField(PersonDto.PASSPORT_NUMBER).getValue();
 	}
 
 	public Integer getBirthdateDD() {

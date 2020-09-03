@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -94,7 +97,7 @@ public class PathogenTest extends CoreAdo {
 		this.testedDisease = testedDisease;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTestedDiseaseDetails() {
 		return testedDiseaseDetails;
 	}
@@ -113,7 +116,7 @@ public class PathogenTest extends CoreAdo {
 		this.testType = testType;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getTestTypeText() {
 		return testTypeText;
 	}
@@ -142,7 +145,7 @@ public class PathogenTest extends CoreAdo {
 		this.lab = lab;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getLabDetails() {
 		return labDetails;
 	}
@@ -171,7 +174,7 @@ public class PathogenTest extends CoreAdo {
 		this.testResult = testResult;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_BIG)
 	public String getTestResultText() {
 		return testResultText;
 	}
@@ -198,7 +201,7 @@ public class PathogenTest extends CoreAdo {
 		this.fourFoldIncreaseAntibodyTiter = fourFoldIncreaseAntibodyTiter;
 	}
 
-	@Column(length = 255)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getSerotype() {
 		return serotype;
 	}
@@ -215,4 +218,5 @@ public class PathogenTest extends CoreAdo {
 	public void setCqValue(Float cqValue) {
 		this.cqValue = cqValue;
 	}
+
 }

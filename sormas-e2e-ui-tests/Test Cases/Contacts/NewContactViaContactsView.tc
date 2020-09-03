@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks the creation of a new contact in the contacts view</description>
+   <name>NewContactViaContactsView</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>b0d4b7f7-a7de-4292-8468-c2b977ca4875</testCaseGuid>
+</TestCaseEntity>

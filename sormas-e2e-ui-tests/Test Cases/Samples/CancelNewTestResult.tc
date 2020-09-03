@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>checks that the cancellation of a new testresult has no effect</description>
+   <name>CancelNewTestResult</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>a8bab8d1-6818-45c5-927f-63cb63d7fd08</testCaseGuid>
+</TestCaseEntity>

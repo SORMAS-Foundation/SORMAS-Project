@@ -241,7 +241,7 @@ public final class DateHelper {
 
 	/**
 	 * Returns a list for days in the specified month and year. The list is empty
-	 * when the month is null and contains default values (i.e. 28 days in February)
+	 * when the month is null and contains default values (i.e. 29 days in February)
 	 * when the year is null, but a month is provided. Months should start from 1,
 	 * i.e. January is 1 and December is 12.
 	 */
@@ -253,8 +253,8 @@ public final class DateHelper {
 
 		Calendar calendar = new GregorianCalendar();
 		if (year == null) {
-			// 2010 is not a leap year
-			calendar.set(Calendar.YEAR, 2010);
+			// Be tolerant and assume that it might be a leap year
+			calendar.set(Calendar.YEAR, 2020);
 		} else {
 			calendar.set(Calendar.YEAR, year);
 		}

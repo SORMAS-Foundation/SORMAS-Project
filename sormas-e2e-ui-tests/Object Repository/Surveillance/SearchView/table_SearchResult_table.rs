@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebElementEntity>
+   <description></description>
+   <name>table_SearchResult_table</name>
+   <tag></tag>
+   <elementGuidId>d94725cf-a573-4dc2-9ed4-5c81599a3499</elementGuidId>
+   <selectorCollection>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table</value>
+      </entry>
+   </selectorCollection>
+   <selectorMethod>XPATH</selectorMethod>
+   <useRalativeImagePath>false</useRalativeImagePath>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>tag</name>
+      <type>Main</type>
+      <value>div</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>class</name>
+      <type>Main</type>
+      <value>v-grid-tablewrapper</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>text</name>
+      <type>Main</type>
+      <value>Case IDEPID numberDiseaseCase classificationOutcome of caseInvestigation statusFirst nameLast nameDistrictHealth Facility NamePoint of entryDate of reportCompletenessWQV4P7BER-BER-20-358COVID-19Not yet classifiedNo Outcome YetInvestigation pendingHildegard von BingenBerlinNachos Hospital17/02/2020 00:0040 %Q5WT3TBER-BER-20-357COVID-19Confirmed caseNo Outcome YetInvestigation doneJannikReineckeBerlinHome or other place - Wohnhaus09/03/2020 00:0080 %WUBSFPBER-BER-20-356COVID-19Not yet classifiedNo Outcome YetInvestigation pendingjohnmorkosBerlinBerlin Nation Hospital25/03/2020 00:0025 %THZKI4BER-BER-20-355COVID-19Not yet classifiedNo Outcome YetInvestigation pendingJohnpeteBerlinOther health facility - berlin central hospital16/03/2020 00:000 %WZZOULBER-BER-20-354COVID-19Not yet classifiedDeceasedInvestigation pendingAkBerlinHome or other place - Spandau27/03/2020 00:0010 %TNWEK2BER-BER-20-353COVID-19Not yet classifiedNo Outcome YetInvestigation doneMimselDingselBerlinBerlin Nation Hospital21/03/2020 00:0055 %U5LSSWNIE-ABS-EZA-20-003COVID-19Confirmed caseRecoveredInvestigation doneRoyBushBerlinNachos Hospital30/01/2020 18:2885 %QMD2PZBER-BER-20-350COVID-19Not yet classifiedNo Outcome YetInvestigation pendingTestTestBerlinBerlin Nation HospitalOther seaport - mAIN23/03/2020 00:0015 %RVVHT6NIE-SOS-TBW-20-001COVID-19Confirmed caseNo Outcome YetInvestigation doneFirstyLastyTambuwalR/Liman DispensaryOther airport - Lagos10/03/2020 00:0050 %S5ILHLBER-BER-20-348COVID-19Suspect caseNo Outcome YetInvestigation doneWernerBockwurstBerlinOther health facility - Vinzenzkrankenhaus21/03/2020 00:0080 %</value>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath</name>
+      <type>Main</type>
+      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-crud-main-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget crud-main-layout v-verticallayout-crud-main-layout v-has-width v-has-height v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-grid v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-grid-tablewrapper&quot;]</value>
+   </webElementProperties>
+   <webElementXpaths>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:idRelative</name>
+      <type>Main</type>
+      <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table</value>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:position</name>
+      <type>Main</type>
+      <value>//div[3]/div/div[3]/table</value>
+   </webElementXpaths>
+</WebElementEntity>

@@ -70,7 +70,7 @@
     <string name="action_new_case">Nouveau Cas</string>
     <string name="action_new_contact">Nouveau Contact</string>
     <string name="action_new_event">Nouvel événement</string>
-    <string name="action_new_sample">Nouveau échantillon</string>
+    <string name="action_new_sample">Nouvel échantillon</string>
     <string name="action_new_task">Nouvelle tâche</string>
     <string name="action_not_executable">Non exécutable</string>
     <string name="action_ok">OK</string>
@@ -118,7 +118,7 @@
     <string name="caption_case_contacts">Contacts de cas</string>
     <string name="caption_case_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_case_fatality_rate">Taux de Fatalité de Cas</string>
-    <string name="caption_case_health_conditions">Conditions Préexistantes</string>
+    <string name="caption_case_health_conditions">Antécédents médicaux</string>
     <string name="caption_case_hospitalization">Infos sur l\'hospitalisation</string>
     <string name="caption_case_information">Informations sur le cas</string>
     <string name="caption_case_maternal_history">Histoire maternelle</string>
@@ -139,6 +139,7 @@
     <string name="caption_confirmed_events">Événements confirmés</string>
     <string name="caption_contact_information">Informations de contact</string>
     <string name="caption_contact_tasks">Tâches de contact</string>
+    <string name="caption_contact_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_contact_visits">Informations de suivi</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
@@ -156,7 +157,7 @@
     <string name="caption_sex">Sexe</string>
     <string name="caption_inadequate_specimen">Spécimen Inadéquat</string>
     <string name="caption_indeterminate">Indéterminé</string>
-    <string name="caption_informant_reports">Rapports informants</string>
+    <string name="caption_informant_reports">Rapports d\'informateurs</string>
     <string name="caption_issued_on">Émis le </string>
     <string name="caption_last_case">Dernier cas</string>
     <string name="caption_last_name">Nom De Famille</string>
@@ -294,7 +295,7 @@
     <string name="heading_gps_permission">Autoriser l\'accès GPS</string>
     <string name="heading_health_conditions">Conditions Préexistantes</string>
     <string name="heading_help">Aide</string>
-    <string name="heading_informant_reports">Rapports informants</string>
+    <string name="heading_informant_reports">Rapports d\'informateurs</string>
     <string name="heading_install_app">Prêt à installer</string>
     <string name="heading_install_app_failed">L\'installation de l\'application a échoué</string>
     <string name="heading_location">Localisation</string>
@@ -330,7 +331,7 @@
     <string name="heading_social_events">Événements sociaux</string>
     <string name="heading_source_case">Cas source</string>
     <string name="heading_source_of_information">Source d\'information</string>
-    <string name="heading_surveillance_outbreak">Épidémie de surveillance</string>
+    <string name="heading_surveillance_outbreak">Surveillance épidémiologique</string>
     <string name="heading_symptoms">Symptoms</string>
     <string name="heading_sync_conflicts">Conflit de synchronisation</string>
     <string name="heading_synchronization">Synchronisation</string>
@@ -504,6 +505,7 @@
     <string name="validation_error_required">Une valeur est requise pour ce champ. Veuillez vous assurer de saisir ou de sélectionner une valeur avant de continuer.</string>
     <string name="validation_soft_add_list_entry">Veuillez ajouter une entrée à la liste si vous disposez de données.</string>
     <string name="validation_soft_case_classification">Ce cas devrait être classé dès que les renseignements requis seront disponibles.</string>
+    <string name="validation_case_classification">La classification du cas ne correspond pas aux résultats de laboratoire et aux symptômes du cas.</string>
     <string name="validation_soft_case_epid_number">Le numéro EPID ne correspond pas au modèle requis. Vous pouvez toujours enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_soft_case_epid_number_empty">Un numéro EPID doit être fourni. Vous pouvez encore enregistrer le cas et entrer le numéro correct plus tard.</string>
     <string name="validation_symptoms_fever">La température se situe dans la marge de la fièvre. La fièvre doit être réglée sur \"Oui\".</string>

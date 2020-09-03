@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>CreateContactForCase</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>d0b79dde-7752-4591-9478-0203c1ecc682</testCaseGuid>
+   <variable>
+      <defaultValue>true</defaultValue>
+      <description></description>
+      <id>5a78a083-bb40-479c-b5d6-782720dd0530</id>
+      <masked>false</masked>
+      <name>isStandalone</name>
+   </variable>
+</TestCaseEntity>

@@ -1,37 +1,23 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.app;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
 
 import de.symeda.sormas.api.utils.InfoProvider;
-import de.symeda.sormas.app.backend.caze.Case;
-import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.event.Event;
-import de.symeda.sormas.app.backend.sample.Sample;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -43,75 +29,73 @@ import okhttp3.ResponseBody;
  */
 public class TestEnvironmentInterceptor implements Interceptor {
 
-    @Override
-    public Response intercept(Chain chain) {
-        Response response = null;
-        String responseString;
-        final URI uri = chain.request().url().uri();
+	@Override
+	public Response intercept(Chain chain) {
+		Response response = null;
+		String responseString;
+		final URI uri = chain.request().url().uri();
 
-        // API version
-        if (uri.getPath().endsWith("version")) {
-            responseString = "\""+InfoProvider.get().getVersion()+"\"";
-        } else if (uri.getPath().contains("persons/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("persons/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("cases/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("cases/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("contacts/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("contacts/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("events/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("events/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("eventparticipants/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("eventparticipants/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("visits/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("visits/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("samples/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("samples/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("sampletests/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("sampletests/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("tasks/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("tasks/push")) {
-            responseString = "0";
-        } else if (uri.getPath().contains("regions/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("districts/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("communities/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("facilities/all")) {
-            responseString = "[]";
-        } else if (uri.getPath().contains("users/all")) {
-            responseString = "[]";
-        } else {
-            responseString = "";
-        }
+		// API version
+		if (uri.getPath().endsWith("version")) {
+			responseString = "\"" + InfoProvider.get().getVersion() + "\"";
+		} else if (uri.getPath().contains("persons/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("persons/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("cases/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("cases/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("contacts/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("contacts/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("events/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("events/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("eventparticipants/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("eventparticipants/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("visits/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("visits/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("samples/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("samples/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("sampletests/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("sampletests/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("tasks/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("tasks/push")) {
+			responseString = "0";
+		} else if (uri.getPath().contains("regions/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("districts/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("communities/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("facilities/all")) {
+			responseString = "[]";
+		} else if (uri.getPath().contains("users/all")) {
+			responseString = "[]";
+		} else {
+			responseString = "";
+		}
 
-        response = new Response.Builder()
-                .code(200)
-                .message("OK")
-                .request(chain.request())
-                .protocol(Protocol.HTTP_1_1)
-                .body(ResponseBody.create(MediaType.parse("application/json"), responseString))
-                .addHeader("content-type", "application/json")
-                .build();
+		response = new Response.Builder().code(200)
+			.message("OK")
+			.request(chain.request())
+			.protocol(Protocol.HTTP_1_1)
+			.body(ResponseBody.create(MediaType.parse("application/json"), responseString))
+			.addHeader("content-type", "application/json")
+			.build();
 
-        return response;
-    }
-
+		return response;
+	}
 }

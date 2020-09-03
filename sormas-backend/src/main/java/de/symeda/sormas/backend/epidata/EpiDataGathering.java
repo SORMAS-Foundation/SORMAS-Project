@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.epidata;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -60,7 +62,7 @@ public class EpiDataGathering extends AbstractDomainObject {
 		this.epiData = epiData;
 	}
 
-	@Column(length = 512)
+	@Column(length = COLUMN_LENGTH_DEFAULT)
 	public String getDescription() {
 		return description;
 	}
@@ -89,4 +91,5 @@ public class EpiDataGathering extends AbstractDomainObject {
 	public void setGatheringAddress(Location gatheringAddress) {
 		this.gatheringAddress = gatheringAddress;
 	}
+
 }

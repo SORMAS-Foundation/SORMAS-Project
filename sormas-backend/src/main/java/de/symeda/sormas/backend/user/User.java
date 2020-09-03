@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -38,6 +40,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -106,7 +109,7 @@ public class User extends AbstractDomainObject {
 
 	private Language language;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getUserName() {
 		return userName;
 	}
@@ -145,7 +148,7 @@ public class User extends AbstractDomainObject {
 		this.active = active;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
 		return firstName;
 	}
@@ -154,7 +157,7 @@ public class User extends AbstractDomainObject {
 		this.firstName = firstName;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getLastName() {
 		return lastName;
 	}
@@ -312,5 +315,10 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
+	}
+
+	@Transient
+	public JurisdictionLevel getJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 }

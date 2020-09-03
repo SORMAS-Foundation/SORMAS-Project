@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -61,10 +61,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	@Override
 	public void deleteAdditionalTest(String additionalTestUuid) {
 
-		User user = userService.getCurrentUser();
-		// TODO replace this with a proper user right call #944
-		if (!user.getUserRoles().contains(UserRole.ADMIN)) {
-			throw new UnsupportedOperationException("Only admins are allowed to delete entities");
+		if (!userService.hasRight(UserRight.ADDITIONAL_TEST_DELETE)) {
+			throw new UnsupportedOperationException("Your user is not allowed to delete additional tests");
 		}
 
 		AdditionalTest additionalTest = service.getByUuid(additionalTestUuid);

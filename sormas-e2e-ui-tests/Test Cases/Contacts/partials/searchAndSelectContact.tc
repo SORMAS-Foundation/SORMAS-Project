@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description></description>
+   <name>searchAndSelectContact</name>
+   <tag></tag>
+   <comment></comment>
+   <testCaseGuid>52457c0f-6458-421a-96f2-f1d490db4951</testCaseGuid>
+   <variable>
+      <defaultValue>''</defaultValue>
+      <description></description>
+      <id>8f32b8ce-3030-47de-899e-403c1a5f0081</id>
+      <masked>false</masked>
+      <name>key</name>
+   </variable>
+</TestCaseEntity>

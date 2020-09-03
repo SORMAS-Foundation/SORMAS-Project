@@ -1,19 +1,16 @@
 package de.symeda.sormas.api.sample;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -21,6 +18,12 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SampleExportDto implements Serializable {
 
@@ -33,7 +36,12 @@ public class SampleExportDto implements Serializable {
 	private String labSampleID;
 	private String epidNumber;
 	private AssociatedCase associatedCase;
+	private ContactReferenceDto associatedContact;
+	private EventParticipantReferenceDto associatedEventParticipant;
+	private String contactRegion;
+	private String contactDistrict;
 	private String disease;
+	private Date sampleReportDate;
 	private Date sampleDateTime;
 	private String sampleMaterial;
 	private String samplePurpose;
@@ -56,9 +64,10 @@ public class SampleExportDto implements Serializable {
 	private String comment;
 	private String referredToUuid;
 	private String caseUuid;
-	private String caseAge;
-	private Sex caseSex;
-	private CasePersonAddress caseAddress;
+	private final String contactUuid;
+	private String personAge;
+	private Sex personSex;
+	private final SampleExportPersonAddress personAddress;
 	private Date caseReportDate;
 	private CaseClassification caseClassification;
 	private CaseOutcome caseOutcome;
@@ -83,23 +92,34 @@ public class SampleExportDto implements Serializable {
 	private String otherPathogenTestsDetails = "";
 	private AdditionalTestDto additionalTest;
 	private String otherAdditionalTestsDetails = "";
+	private final Date contactReportDate;
+	private final Date lastContactDate;
+	private final ContactClassification contactClassification;
+	private final ContactStatus contactStatus;
 
 	private CaseJurisdictionDto associatedCaseJurisdiction;
 	private ContactJurisdictionDto associatedContactJurisdiction;
 
 	//@formatter:off
-	public SampleExportDto(long id, String uuid, String labSampleId, String epidNumber, String casePersonFirstName, String casePersonLastName,
-						   Disease disease, String diseaseDetails, Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
+	public SampleExportDto(long id, String uuid, String labSampleId, Date sampleReportDate, String epidNumber,
+						   String casePersonFirstName, String casePersonLastName, String contactPersonFirstName, String contactPersonLastName, String eventParticipantFirstName, String eventParticipantLastName,
+						   Disease caseDisease, String caseDiseaseDetails, Disease contactDisease, String contactDiseaseDetails, Disease eventDisease, String eventDiseaseDetails,
+						   Date sampleDateTime, SampleMaterial sampleMaterial, String sampleMaterialDetails, SamplePurpose samplePurpose,
 						   SampleSource sampleSource, String laboratoryUuid, String laboratory, String laboratoryDetails,
 						   PathogenTestResultType pathogenTestResult, Boolean pathogenTestingRequested, String requestedPathogenTests, String requestedOtherPathogenTests,
 						   Boolean additionalTestingRequested, String requestedAdditionalTests, String requestedOtherAdditionalTests, boolean shipped, Date shipmentDate,
 						   String shipmentDetails, boolean received, Date receivedDate, SpecimenCondition specimenCondition,
-						   String noTestPossibleReason, String comment, String referredToUuid, String caseUuid, Integer approximateAge,
-						   ApproximateAgeType approximateAgeType, Sex caseSex,
+						   String noTestPossibleReason, String comment, String referredToUuid,
+						   String caseUuid, String contactUuid, String eventParticipantUuid,
+						   Integer casePersonApproximateAge, ApproximateAgeType casePersonApproximateAgeType, Sex casePersonSex,
+						   Integer contactPersonApproximateAge, ApproximateAgeType contactPersonApproximateAgeType, Sex contactPersonSex,
+						   Integer eventParticipantApproximateAge, ApproximateAgeType eventParticipantApproximateAgeType, Sex eventParticipantSex,
 						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressAddress,
-						   Date caseReportDate,
-						   CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
-						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails,
+						   String contactAddressRegion, String contactAddressDistrict, String contactAddressCommunity, String contactAddressCity, String contactAddressAddress,
+						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressAddress,
+						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
+						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict,
+						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
 						   String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid,
 						   String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid
@@ -110,6 +130,7 @@ public class SampleExportDto implements Serializable {
 		this.uuid = uuid;
 		this.labSampleID = labSampleId;
 		this.epidNumber = epidNumber;
+		this.sampleReportDate = sampleReportDate;
 
 		if (caseUuid != null) {
 			this.associatedCase = new AssociatedCase(
@@ -130,7 +151,8 @@ public class SampleExportDto implements Serializable {
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
 		}
-		if (contactReportingUserUuid != null) {
+		if (contactUuid != null) {
+			this.associatedContact = new ContactReferenceDto(contactUuid, contactPersonFirstName, contactPersonLastName, null, null);
 			CaseJurisdictionDto contactCaseJurisdiction = contactCaseReportingUserUuid == null
 				? null
 				: new CaseJurisdictionDto(
@@ -142,9 +164,19 @@ public class SampleExportDto implements Serializable {
 					contactCasePointOfEntryUuid);
 			this.associatedContactJurisdiction =
 				new ContactJurisdictionDto(contactReportingUserUuid, contactRegionUuid, contactDistrictUuid, contactCaseJurisdiction);
+			this.contactRegion = contactRegion;
+			this.contactDistrict = contactDistrict;
+		}
+		if (eventParticipantUuid != null) {
+			this.associatedEventParticipant =
+				new EventParticipantReferenceDto(eventParticipantUuid, eventParticipantFirstName, eventParticipantLastName);
 		}
 
-		this.disease = DiseaseHelper.toString(disease, diseaseDetails);
+		this.disease = caseUuid != null
+			? DiseaseHelper.toString(caseDisease, caseDiseaseDetails)
+			: contactUuid != null
+				? DiseaseHelper.toString(contactDisease, contactDiseaseDetails)
+				: DiseaseHelper.toString(eventDisease, eventDiseaseDetails);
 		this.sampleDateTime = sampleDateTime;
 		this.sampleMaterial = SampleMaterial.toString(sampleMaterial, sampleMaterialDetails);
 		if (samplePurpose != null)
@@ -178,12 +210,35 @@ public class SampleExportDto implements Serializable {
 		this.comment = comment;
 		this.referredToUuid = referredToUuid;
 		this.caseUuid = caseUuid;
-		this.caseAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
-		this.caseSex = caseSex;
-		this.caseAddress = new CasePersonAddress(caseAddressRegion, caseAddressDistrict, caseAddressCommunity, caseAddressCity, caseAddressAddress);
+		this.contactUuid = contactUuid;
+		this.personAge = caseUuid != null
+			? ApproximateAgeHelper.formatApproximateAge(casePersonApproximateAge, casePersonApproximateAgeType)
+			: contactUuid != null
+				? ApproximateAgeHelper.formatApproximateAge(contactPersonApproximateAge, contactPersonApproximateAgeType)
+				: ApproximateAgeHelper.formatApproximateAge(eventParticipantApproximateAge, eventParticipantApproximateAgeType);
+		this.personSex = caseUuid != null ? casePersonSex : contactUuid != null ? contactPersonSex : eventParticipantSex;
+		this.personAddress = caseUuid != null
+			? new SampleExportPersonAddress(caseAddressRegion, caseAddressDistrict, caseAddressCommunity, caseAddressCity, caseAddressAddress)
+			: contactUuid != null
+				? new SampleExportPersonAddress(
+					contactAddressRegion,
+					contactAddressDistrict,
+					contactAddressCommunity,
+					contactAddressCity,
+					contactAddressAddress)
+				: new SampleExportPersonAddress(
+					eventAddressRegion,
+					eventAddressDistrict,
+					eventAddressCommunity,
+					eventAddressCity,
+					eventAddressAddress);
 		this.caseReportDate = caseReportDate;
 		this.caseClassification = caseClassification;
 		this.caseOutcome = caseOutcome;
+		this.contactReportDate = contactReportDate;
+		this.lastContactDate = lastContactDate;
+		this.contactClassification = contactClassification;
+		this.contactStatus = contactStatus;
 	}
 
 	@Order(0)
@@ -226,14 +281,26 @@ public class SampleExportDto implements Serializable {
 		return associatedCase;
 	}
 
+	public ContactReferenceDto getAssociatedContact() {
+		return associatedContact;
+	}
+
+	public EventParticipantReferenceDto getAssociatedEventParticipant() {
+		return associatedEventParticipant;
+	}
+
 	@Order(4)
 	public String getFirstName() {
-		return associatedCase != null ? associatedCase.getFirstName() : null;
+		return associatedCase != null
+			? associatedCase.getFirstName()
+			: associatedContact != null ? associatedContact.getContactName().getFirstName() : associatedEventParticipant.getFirstName();
 	}
 
 	@Order(5)
 	public String getLastName() {
-		return associatedCase != null ? associatedCase.getLastName() : null;
+		return associatedCase != null
+			? associatedCase.getLastName()
+			: associatedContact != null ? associatedContact.getContactName().getLastName() : associatedEventParticipant.getLastName();
 	}
 
 	@Order(6)
@@ -434,7 +501,35 @@ public class SampleExportDto implements Serializable {
 		this.referredToUuid = referredToUuid;
 	}
 
-	@Order(35)
+	@Order(40)
+	public String getPersonAddressCaption() {
+		return LocationReferenceDto
+			.buildCaption(personAddress.region, personAddress.district, personAddress.community, personAddress.city, personAddress.address);
+	}
+
+	public SampleExportPersonAddress getPersonAddress() {
+		return personAddress;
+	}
+
+	@Order(41)
+	public String getPersonAge() {
+		return personAge;
+	}
+
+	public void setPersonAge(String personAge) {
+		this.personAge = personAge;
+	}
+
+	@Order(42)
+	public Sex getPersonSex() {
+		return personSex;
+	}
+
+	public void setPersonSex(Sex personSex) {
+		this.personSex = personSex;
+	}
+
+	@Order(50)
 	public String getCaseUuid() {
 		return caseUuid;
 	}
@@ -443,35 +538,7 @@ public class SampleExportDto implements Serializable {
 		this.caseUuid = caseUuid;
 	}
 
-	@Order(36)
-	public String getCaseAge() {
-		return caseAge;
-	}
-
-	public void setCaseAge(String caseAge) {
-		this.caseAge = caseAge;
-	}
-
-	@Order(37)
-	public Sex getCaseSex() {
-		return caseSex;
-	}
-
-	public void setCaseSex(Sex caseSex) {
-		this.caseSex = caseSex;
-	}
-
-	@Order(42)
-	public String getCaseAddressCaption() {
-		return LocationReferenceDto
-			.buildCaption(caseAddress.region, caseAddress.district, caseAddress.community, caseAddress.city, caseAddress.address);
-	}
-
-	public CasePersonAddress getCaseAddress() {
-		return caseAddress;
-	}
-
-	@Order(43)
+	@Order(51)
 	public Date getCaseReportDate() {
 		return caseReportDate;
 	}
@@ -480,7 +547,7 @@ public class SampleExportDto implements Serializable {
 		this.caseReportDate = caseReportDate;
 	}
 
-	@Order(44)
+	@Order(52)
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -489,7 +556,7 @@ public class SampleExportDto implements Serializable {
 		this.caseClassification = caseClassification;
 	}
 
-	@Order(45)
+	@Order(53)
 	public CaseOutcome getCaseOutcome() {
 		return caseOutcome;
 	}
@@ -498,27 +565,62 @@ public class SampleExportDto implements Serializable {
 		this.caseOutcome = caseOutcome;
 	}
 
-	@Order(46)
+	@Order(54)
 	public String getCaseRegion() {
 		return associatedCase != null ? associatedCase.getRegion() : null;
 	}
 
-	@Order(47)
+	@Order(55)
 	public String getCaseDistrict() {
 		return associatedCase != null ? associatedCase.getDistrict() : null;
 	}
 
-	@Order(48)
+	@Order(56)
 	public String getCaseCommunity() {
 		return associatedCase != null ? associatedCase.getCommunity() : null;
 	}
 
-	@Order(49)
+	@Order(57)
 	public String getCaseFacility() {
 		return associatedCase != null ? associatedCase.getFacility() : null;
 	}
 
-	@Order(51)
+	@Order(60)
+	public String getContactUuid() {
+		return contactUuid;
+	}
+
+	@Order(61)
+	public Date getContactReportDate() {
+		return contactReportDate;
+	}
+
+	@Order(62)
+	public Date getLastContactDate() {
+		return lastContactDate;
+	}
+
+	@Order(63)
+	public ContactClassification getContactClassification() {
+		return contactClassification;
+	}
+
+	@Order(64)
+	public ContactStatus getContactStatus() {
+		return contactStatus;
+	}
+
+	@Order(65)
+	public String getContactRegion() {
+		return contactRegion;
+	}
+
+	@Order(66)
+	public String getContactDistrict() {
+		return contactDistrict;
+	}
+
+	@Order(71)
 	public String getPathogenTestType1() {
 		return pathogenTestType1;
 	}
@@ -527,7 +629,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType1 = pathogenTestType1;
 	}
 
-	@Order(52)
+	@Order(72)
 	public String getPathogenTestDisease1() {
 		return pathogenTestDisease1;
 	}
@@ -536,7 +638,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease1 = pathogenTestDisease1;
 	}
 
-	@Order(53)
+	@Order(73)
 	public Date getPathogenTestDateTime1() {
 		return pathogenTestDateTime1;
 	}
@@ -545,7 +647,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime1 = pathogenTestDateTime1;
 	}
 
-	@Order(54)
+	@Order(74)
 	public String getPathogenTestLab1() {
 		return pathogenTestLab1;
 	}
@@ -554,7 +656,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab1 = pathogenTestLab1;
 	}
 
-	@Order(55)
+	@Order(75)
 	public PathogenTestResultType getPathogenTestResult1() {
 		return pathogenTestResult1;
 	}
@@ -563,7 +665,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult1 = pathogenTestResult1;
 	}
 
-	@Order(56)
+	@Order(76)
 	public Boolean getPathogenTestVerified1() {
 		return pathogenTestVerified1;
 	}
@@ -572,7 +674,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified1 = pathogenTestVerified1;
 	}
 
-	@Order(61)
+	@Order(81)
 	public String getPathogenTestType2() {
 		return pathogenTestType2;
 	}
@@ -581,7 +683,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType2 = pathogenTestType2;
 	}
 
-	@Order(62)
+	@Order(82)
 	public String getPathogenTestDisease2() {
 		return pathogenTestDisease2;
 	}
@@ -590,7 +692,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease2 = pathogenTestDisease2;
 	}
 
-	@Order(63)
+	@Order(83)
 	public Date getPathogenTestDateTime2() {
 		return pathogenTestDateTime2;
 	}
@@ -599,7 +701,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime2 = pathogenTestDateTime2;
 	}
 
-	@Order(64)
+	@Order(84)
 	public String getPathogenTestLab2() {
 		return pathogenTestLab2;
 	}
@@ -608,7 +710,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab2 = pathogenTestLab2;
 	}
 
-	@Order(65)
+	@Order(85)
 	public PathogenTestResultType getPathogenTestResult2() {
 		return pathogenTestResult2;
 	}
@@ -617,7 +719,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult2 = pathogenTestResult2;
 	}
 
-	@Order(66)
+	@Order(86)
 	public Boolean getPathogenTestVerified2() {
 		return pathogenTestVerified2;
 	}
@@ -626,7 +728,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified2 = pathogenTestVerified2;
 	}
 
-	@Order(71)
+	@Order(91)
 	public String getPathogenTestType3() {
 		return pathogenTestType3;
 	}
@@ -635,7 +737,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestType3 = pathogenTestType3;
 	}
 
-	@Order(72)
+	@Order(92)
 	public String getPathogenTestDisease3() {
 		return pathogenTestDisease3;
 	}
@@ -644,7 +746,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDisease3 = pathogenTestDisease3;
 	}
 
-	@Order(73)
+	@Order(93)
 	public Date getPathogenTestDateTime3() {
 		return pathogenTestDateTime3;
 	}
@@ -653,7 +755,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestDateTime3 = pathogenTestDateTime3;
 	}
 
-	@Order(74)
+	@Order(94)
 	public String getPathogenTestLab3() {
 		return pathogenTestLab3;
 	}
@@ -662,7 +764,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestLab3 = pathogenTestLab3;
 	}
 
-	@Order(75)
+	@Order(95)
 	public PathogenTestResultType getPathogenTestResult3() {
 		return pathogenTestResult3;
 	}
@@ -671,7 +773,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestResult3 = pathogenTestResult3;
 	}
 
-	@Order(76)
+	@Order(96)
 	public Boolean getPathogenTestVerified3() {
 		return pathogenTestVerified3;
 	}
@@ -680,7 +782,7 @@ public class SampleExportDto implements Serializable {
 		this.pathogenTestVerified3 = pathogenTestVerified3;
 	}
 
-	@Order(77)
+	@Order(97)
 	public String getOtherPathogenTestsDetails() {
 		return otherPathogenTestsDetails;
 	}
@@ -689,7 +791,7 @@ public class SampleExportDto implements Serializable {
 		this.otherPathogenTestsDetails = otherPathogenTestsDetails;
 	}
 
-	@Order(81)
+	@Order(101)
 	public AdditionalTestDto getAdditionalTest() {
 		return additionalTest;
 	}
@@ -698,13 +800,22 @@ public class SampleExportDto implements Serializable {
 		this.additionalTest = additionalTest;
 	}
 
-	@Order(82)
+	@Order(102)
 	public String getOtherAdditionalTestsDetails() {
 		return otherAdditionalTestsDetails;
 	}
 
 	public void setOtherAdditionalTestsDetails(String otherAdditionalTestsDetails) {
 		this.otherAdditionalTestsDetails = otherAdditionalTestsDetails;
+	}
+
+	@Order(103)
+	public Date getSampleReportDate() {
+		return sampleReportDate;
+	}
+
+	public void setSampleReportDate(Date sampleReportDate) {
+		this.sampleReportDate = sampleReportDate;
 	}
 
 	public CaseJurisdictionDto getAssociatedCaseJurisdiction() {
@@ -719,12 +830,12 @@ public class SampleExportDto implements Serializable {
 
 		private static final long serialVersionUID = 4890448385381706557L;
 
-		private String region;
-		private String district;
+		private final String region;
+		private final String district;
 		@PersonalData
-		private String community;
+		private final String community;
 		@PersonalData
-		private String facility;
+		private final String facility;
 
 		public AssociatedCase(
 			String uuid,
@@ -762,20 +873,20 @@ public class SampleExportDto implements Serializable {
 		}
 	}
 
-	public static class CasePersonAddress implements Serializable {
+	public static class SampleExportPersonAddress implements Serializable {
 
 		private static final long serialVersionUID = 466724930802680895L;
 
-		private String region;
-		private String district;
+		private final String region;
+		private final String district;
 		@PersonalData
-		private String community;
+		private final String community;
 		@PersonalData
-		private String city;
+		private final String city;
 		@PersonalData
-		private String address;
+		private final String address;
 
-		public CasePersonAddress(String region, String district, String community, String city, String address) {
+		public SampleExportPersonAddress(String region, String district, String community, String city, String address) {
 			this.region = region;
 			this.district = district;
 			this.community = community;
