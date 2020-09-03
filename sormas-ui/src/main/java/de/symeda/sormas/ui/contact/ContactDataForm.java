@@ -721,8 +721,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
-					originalContact.setQuarantineExtended(true);
-					originalContact.setQuarantineReduced(false);
 					quarantineExtendedCheckbox.setValue(true);
 					quarantineReducedCheckbox.setValue(false);
 					setVisible(true, ContactDto.QUARANTINE_EXTENDED);
@@ -746,10 +744,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						originalContact.setFollowUpUntil(quarantineEnd);
-						followUpUntil.setReadOnly(false);
-						followUpUntil.setValue(quarantineEnd);
-						followUpUntil.setReadOnly(true);
+						if (followUpUntil.isReadOnly()) {
+							followUpUntil.setReadOnly(false);
+							followUpUntil.setValue(quarantineEnd);
+							followUpUntil.setReadOnly(true);
+						} else {
+							followUpUntil.setValue(quarantineEnd);
+						}
 					}
 				});
 		}
@@ -769,8 +770,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
-					originalContact.setQuarantineExtended(false);
-					originalContact.setQuarantineReduced(true);
 					quarantineExtendedCheckbox.setValue(false);
 					quarantineReducedCheckbox.setValue(true);
 					setVisible(false, ContactDto.QUARANTINE_EXTENDED);

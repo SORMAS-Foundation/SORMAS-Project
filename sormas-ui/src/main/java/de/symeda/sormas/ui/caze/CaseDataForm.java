@@ -955,7 +955,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					} else if (newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, oldQuarantineEnd);
 					}
-				} else if (followUpDate != null) {
+				} else if (caseFollowUpEnabled && followUpDate != null) {
 					if (newQuarantineEnd.compareTo(followUpDate) > 0) {
 						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, followUpDate, followUpUntilField);
 					} else if (newQuarantineEnd.compareTo(followUpDate) < 0) {
@@ -985,13 +985,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
-					originalCase.setQuarantineExtended(true);
-					originalCase.setQuarantineReduced(false);
 					quarantineExtendedCheckbox.setValue(true);
 					quarantineReducedCheckbox.setValue(false);
 					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
 					setVisible(false, CaseDataDto.QUARANTINE_REDUCED);
-					if (originalCase.getFollowUpUntil() != null) {
+					if (caseFollowUpEnabled && originalCase.getFollowUpUntil() != null) {
 						confirmExtendFollowUpPeriod(originalCase, quarantineEndField.getValue(), followUpUntil);
 					}
 				} else {
@@ -1010,10 +1008,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				640,
 				confirmed -> {
 					if (confirmed) {
-						originalCase.setFollowUpUntil(quarantineEnd);
-						followUpUntil.setReadOnly(false);
-						followUpUntil.setValue(quarantineEnd);
-						followUpUntil.setReadOnly(true);
+						if (followUpUntil.isReadOnly()) {
+							followUpUntil.setReadOnly(false);
+							followUpUntil.setValue(quarantineEnd);
+							followUpUntil.setReadOnly(true);
+						} else {
+							followUpUntil.setValue(quarantineEnd);
+						}
 					}
 				});
 		}
@@ -1033,8 +1034,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			640,
 			confirmed -> {
 				if (confirmed) {
-					originalCase.setQuarantineExtended(false);
-					originalCase.setQuarantineReduced(true);
 					quarantineExtendedCheckbox.setValue(false);
 					quarantineReducedCheckbox.setValue(true);
 					setVisible(false, CaseDataDto.QUARANTINE_EXTENDED);
@@ -1229,7 +1228,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CaseDataDto caze = this.getValue();
 		if (caze != null) {
 			if (caze.getQuarantineTo() == null) {
-				quarantineTo.setValue(caze.getFollowUpUntil());
+				if (caseFollowUpEnabled) {
+					quarantineTo.setValue(caze.getFollowUpUntil());
+				}
 			}
 			if (caze.isQuarantineExtended()) {
 				setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);

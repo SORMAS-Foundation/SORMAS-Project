@@ -232,7 +232,6 @@ public class CaseExportDto implements Serializable {
 						 QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
 						 boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate,
 						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended, boolean quarantineReduced,
-						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
 						 boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
@@ -720,6 +719,16 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineExtended() {
 		return quarantineExtended;
+	}
+
+	@Order(137)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE,
+			CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
 	}
 
 	@Order(44)
@@ -1249,16 +1258,6 @@ public class CaseExportDto implements Serializable {
 	@ExportGroup(ExportGroupType.FOLLOW_UP)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
-	}
-
-	@Order(137)
-	@ExportTarget(caseExportTypes = {
-		CaseExportType.CASE_SURVEILLANCE,
-		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
-	@ExportGroup(ExportGroupType.ADDITIONAL)
-	public boolean isQuarantineReduced() {
-		return quarantineReduced;
 	}
 
 	public void setCountry(String country) {
