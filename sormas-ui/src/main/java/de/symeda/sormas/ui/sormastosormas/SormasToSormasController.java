@@ -38,15 +38,15 @@ public class SormasToSormasController {
 	}
 
 	public void shareCaseToSormas(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent);
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent, true);
 	}
 
 	public void shareContactToSormas(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent);
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent, false);
 	}
 
-	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent) {
-		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm();
+	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent, boolean isForCase) {
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(isForCase);
 		optionsForm.setValue(new SormasToSormasOptionsDto());
 
 		CommitDiscardWrapperComponent<SormasToSormasOptionsForm> optionsCommitDiscard =

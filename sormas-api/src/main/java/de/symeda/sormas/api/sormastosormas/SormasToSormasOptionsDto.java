@@ -27,6 +27,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String PSEUDONYMIZE_SENSITIVE_DATA = "pseudonymizeSensitiveData";
 	public static final String COMMENT = "comment";
 
+	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
+
 	private HealthDepartmentServerAccessData healthDepartment;
 
 	private boolean handOverOwnership;
@@ -36,6 +38,8 @@ public class SormasToSormasOptionsDto implements Serializable {
 	private boolean pseudonymizeSensitiveData;
 
 	private String comment;
+
+	private boolean withAssociatedContacts;
 
 	public HealthDepartmentServerAccessData getHealthDepartment() {
 		return healthDepartment;
@@ -75,5 +79,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
 	}
 }

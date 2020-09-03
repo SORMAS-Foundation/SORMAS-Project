@@ -224,7 +224,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
-	@PersonalData
+	@PersonalData(mandatoryField = true)
+	@SensitiveData(mandatoryField = true)
 	private FacilityType facilityType;
 	@Outbreaks
 	@Required

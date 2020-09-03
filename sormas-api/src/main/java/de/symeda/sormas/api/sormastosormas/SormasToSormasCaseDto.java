@@ -16,8 +16,10 @@
 package de.symeda.sormas.api.sormastosormas;
 
 import java.io.Serializable;
+import java.util.List;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 
 public class SormasToSormasCaseDto implements Serializable {
@@ -28,12 +30,17 @@ public class SormasToSormasCaseDto implements Serializable {
 
 	private CaseDataDto caze;
 
+	private List<AssociatedContactDto> associatedContacts;
+
+	private SormasToSormasOriginInfoDto originInfo;
+
 	public SormasToSormasCaseDto() {
 	}
 
-	public SormasToSormasCaseDto(PersonDto person, CaseDataDto caze) {
+	public SormasToSormasCaseDto(PersonDto person, CaseDataDto caze, SormasToSormasOriginInfoDto originInfo) {
 		this.person = person;
 		this.caze = caze;
+		this.originInfo = originInfo;
 	}
 
 	public PersonDto getPerson() {
@@ -42,5 +49,54 @@ public class SormasToSormasCaseDto implements Serializable {
 
 	public CaseDataDto getCaze() {
 		return caze;
+	}
+
+	public List<AssociatedContactDto> getAssociatedContacts() {
+		return associatedContacts;
+	}
+
+	public void setAssociatedContacts(List<AssociatedContactDto> associatedContacts) {
+		this.associatedContacts = associatedContacts;
+	}
+
+	public SormasToSormasOriginInfoDto getOriginInfo() {
+		return originInfo;
+	}
+
+	public void setOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+		this.originInfo = originInfo;
+	}
+
+	public static final class AssociatedContactDto implements Serializable {
+
+		private static final long serialVersionUID = 1398270981748143566L;
+
+		private PersonDto person;
+
+		private ContactDto contact;
+
+		public AssociatedContactDto() {
+		}
+
+		public AssociatedContactDto(PersonDto person, ContactDto contact) {
+			this.person = person;
+			this.contact = contact;
+		}
+
+		public PersonDto getPerson() {
+			return person;
+		}
+
+		public void setPerson(PersonDto person) {
+			this.person = person;
+		}
+
+		public ContactDto getContact() {
+			return contact;
+		}
+
+		public void setContact(ContactDto contact) {
+			this.contact = contact;
+		}
 	}
 }
