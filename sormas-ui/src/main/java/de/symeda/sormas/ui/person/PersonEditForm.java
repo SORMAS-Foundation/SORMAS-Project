@@ -69,6 +69,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -135,6 +136,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     ) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
 
+					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
+
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
@@ -164,7 +167,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).add(new OutbreakFieldVisibilityChecker(viewMode)),
+			FieldVisibilityCheckers.withDisease(disease)
+				.add(new OutbreakFieldVisibilityChecker(viewMode))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			UiFieldAccessCheckers.withCheckers(
 				isInJurisdiction,
 				FieldHelper.createPersonalDataFieldAccessChecker(),
@@ -255,6 +260,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.EMAIL_ADDRESS,
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.NATIONAL_HEALTH_ID);
+
+		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);

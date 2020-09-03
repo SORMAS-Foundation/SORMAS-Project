@@ -5223,4 +5223,13 @@ ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (246, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
 
+-- 2020-09-03 - Add "Has COVID app" and "COVID Code generated and delivered" fields on person
+ALTER TABLE person ADD COLUMN hasCovidApp boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN hasCovidApp boolean DEFAULT false;
+
+ALTER TABLE person ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
+
 -- *** Insert new sql commands BEFORE this line ***

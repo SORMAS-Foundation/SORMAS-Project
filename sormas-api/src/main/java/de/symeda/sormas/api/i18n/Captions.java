@@ -989,6 +989,7 @@ public interface Captions {
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
+	String Person_covidCodeDelivered = "Person.covidCodeDelivered";
 	String Person_deathDate = "Person.deathDate";
 	String Person_deathPlaceDescription = "Person.deathPlaceDescription";
 	String Person_deathPlaceType = "Person.deathPlaceType";
@@ -999,6 +1000,7 @@ public interface Captions {
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
+	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";

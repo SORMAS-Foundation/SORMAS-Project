@@ -487,6 +487,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+
 		return target;
 	}
 
@@ -646,6 +649,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 
 		return target;
 	}
