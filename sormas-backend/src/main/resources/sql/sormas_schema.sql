@@ -4177,9 +4177,9 @@ ALTER TABLE symptoms_history ADD COLUMN lossofsmell varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (205, 'Added symptoms loss of taste and loss of smell #1936');
 
--- 2020-09-02 changed column name from coughWithHeamoptysis to coughWithHemoptysis #2758
+-- 2020-05-05 Add new symptoms and health conditions #1824
 ALTER TABLE symptoms ADD COLUMN coughWithSputum varchar(255);
-ALTER TABLE symptoms ADD COLUMN coughWithHemoptysis varchar(255);
+ALTER TABLE symptoms ADD COLUMN coughWithHeamoptysis varchar(255);
 ALTER TABLE symptoms ADD COLUMN lymphadenopathy varchar(255);
 ALTER TABLE symptoms ADD COLUMN wheezing varchar(255);
 ALTER TABLE symptoms ADD COLUMN skinUlcers varchar(255);
@@ -4188,7 +4188,7 @@ ALTER TABLE symptoms ADD COLUMN inDrawingOfChestWall varchar(255);
 ALTER TABLE symptoms ADD COLUMN otherComplications varchar(255);
 ALTER TABLE symptoms ADD COLUMN otherComplicationsText varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN coughWithSputum varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN coughWithHemoptysis varchar(255);
+ALTER TABLE symptoms_history ADD COLUMN coughWithHeamoptysis varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN lymphadenopathy varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN wheezing varchar(255);
 ALTER TABLE symptoms_history ADD COLUMN skinUlcers varchar(255);
