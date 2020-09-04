@@ -68,15 +68,14 @@ public abstract class AbstractDashboardView extends AbstractView {
 		}
 		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SAMPLE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SAMPLES);
-			dashboardSwitcher.setItemCaption(DashboardType.SAMPLES,
-					I18nProperties.getEnumCaption(DashboardType.SAMPLES));
+			dashboardSwitcher.setItemCaption(DashboardType.SAMPLES, I18nProperties.getEnumCaption(DashboardType.SAMPLES));
 		}
 		dashboardSwitcher.setValue(dashboardType);
 		dashboardSwitcher.addValueChangeListener(e -> {
 			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
 			if (DashboardType.SURVEILLANCE.equals(e.getProperty().getValue())) {
 				SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
-			} else if(DashboardType.CONTACTS.equals(e.getProperty().getValue())){
+			} else if (DashboardType.CONTACTS.equals(e.getProperty().getValue())) {
 				SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
 			} else {
 				SormasUI.get().getNavigator().navigateTo(SamplesDashboardView.VIEW_NAME);

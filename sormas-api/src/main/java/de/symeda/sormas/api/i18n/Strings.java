@@ -198,8 +198,8 @@ public interface Strings {
 	String headingContactsDeleted = "headingContactsDeleted";
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
-	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateBulkTests = "headingCreateBulkTests";
+	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
@@ -302,8 +302,8 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
-	String headingNoEventFound = "headingNoEventFound";
 	String headingNoDiseasesSelected = "headingNoDiseasesSelected";
+	String headingNoEventFound = "headingNoEventFound";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";

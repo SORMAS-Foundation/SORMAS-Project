@@ -24,7 +24,7 @@ public enum DashboardType {
 	SURVEILLANCE,
 	CONTACTS,
 	SAMPLES;
-	
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
