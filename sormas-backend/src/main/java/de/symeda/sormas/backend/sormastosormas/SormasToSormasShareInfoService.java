@@ -27,6 +27,7 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.contact.Contact;
 
 @Stateless
 @LocalBean
@@ -54,5 +55,18 @@ public class SormasToSormasShareInfoService extends AbstractAdoService<SormasToS
 		}
 
 		return filter;
+	}
+
+	public boolean isCaseOwnershipHandedOver(Case caze) {
+		return exists(
+			(cb, root) -> cb
+				.and(cb.equal(root.get(SormasToSormasShareInfo.CAZE), caze), cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
+	}
+
+	public boolean isContactOwnershipHandedOver(Contact contact) {
+		return exists(
+			(cb, root) -> cb.and(
+				cb.equal(root.get(SormasToSormasShareInfo.CONTACT), contact),
+				cb.isTrue(root.get(SormasToSormasShareInfo.OWNERSHIP_HANDED_OVER))));
 	}
 }

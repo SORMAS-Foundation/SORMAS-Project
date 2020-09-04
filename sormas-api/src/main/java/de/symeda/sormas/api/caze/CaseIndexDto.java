@@ -29,9 +29,9 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Serializable, Cloneable {
+public class CaseIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7764607075875188799L;
 
@@ -110,15 +110,46 @@ public class CaseIndexDto implements WithJurisdiction<CaseJurisdictionDto>, Seri
 			Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex, Date quarantineTo,
 			Float completeness, FollowUpStatus followUpStatus, Date followUpUntil) {
 		//@formatter:on
-		this(id, uuid, epidNumber, externalID,personFirstName, personLastName, disease,
-				diseaseDetails, caseClassification, investigationStatus,
-				presentCondition, reportDate, reportingUserUuid, creationDate, regionUuid,
-				districtUuid, districtName, communityUuid, healthFacilityUuid, healthFacilityName, healthFacilityDetails,
-				pointOfEntryUuid, pointOfEntryName, pointOfEntryDetails, surveillanceOfficerUuid, outcome,
-				age, ageType, birthdateDD, birthdateMM, birthdateYYYY, sex, quarantineTo,
-				completeness, followUpStatus, followUpUntil, null
-				);
+		this(
+			id,
+			uuid,
+			epidNumber,
+			externalID,
+			personFirstName,
+			personLastName,
+			disease,
+			diseaseDetails,
+			caseClassification,
+			investigationStatus,
+			presentCondition,
+			reportDate,
+			reportingUserUuid,
+			creationDate,
+			regionUuid,
+			districtUuid,
+			districtName,
+			communityUuid,
+			healthFacilityUuid,
+			healthFacilityName,
+			healthFacilityDetails,
+			pointOfEntryUuid,
+			pointOfEntryName,
+			pointOfEntryDetails,
+			surveillanceOfficerUuid,
+			outcome,
+			age,
+			ageType,
+			birthdateDD,
+			birthdateMM,
+			birthdateYYYY,
+			sex,
+			quarantineTo,
+			completeness,
+			followUpStatus,
+			followUpUntil,
+			null);
 	}
+
 	//@formatter:off
 	public CaseIndexDto(long id, String uuid, String epidNumber, String externalID, String personFirstName, String personLastName, Disease disease,
 						String diseaseDetails, CaseClassification caseClassification, InvestigationStatus investigationStatus,

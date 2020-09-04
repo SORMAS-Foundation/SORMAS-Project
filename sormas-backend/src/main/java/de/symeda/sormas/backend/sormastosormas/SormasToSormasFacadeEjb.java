@@ -22,6 +22,7 @@ import java.net.ConnectException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
@@ -77,9 +79,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -114,7 +116,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
-	private SormasToSormasSourceService sormasToSormasSourceService;
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 	@EJB
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
@@ -138,7 +140,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	@EJB
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@Inject
-	private SormasToSormasClient sormasToSormasClient;
+	private SormasToSormasRestClient sormasToSormasRestClient;
 
 	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
 	static {
@@ -155,13 +157,28 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	public void saveSharedCase(SormasToSormasCaseDto shareCaseDto) {
 		PersonDto person = shareCaseDto.getPerson();
 		CaseDataDto caze = shareCaseDto.getCaze();
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = shareCaseDto.getAssociatedContacts();
+		SormasToSormasOriginInfoDto originInfo = shareCaseDto.getOriginInfo();
 
 		validateCase(caze);
 
-		processCaseData(caze, person);
+		processOriginInfo(originInfo);
+		processCaseData(caze, person, associatedContacts, originInfo);
 
 		personFacade.savePerson(person);
-		caseFacade.saveCase(caze);
+		CaseDataDto savedCase = caseFacade.saveCase(caze);
+
+		if (associatedContacts != null) {
+			associatedContacts.forEach(associatedContact -> {
+				personFacade.savePerson(associatedContact.getPerson());
+
+				ContactDto contact = associatedContact.getContact();
+				// set the persisted origin info to avoid outdated entity issue
+				contact.setSormasToSormasOriginInfo(savedCase.getSormasToSormasOriginInfo());
+
+				contactFacade.saveContact(contact);
+			});
+		}
 	}
 
 	@Override
@@ -187,11 +204,19 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(caze.getPerson(), pseudonymizer, options);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
-		cazeDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
+		SormasToSormasOriginInfoDto originInfo = createSormasToSormasOriginInfo(currentUser, options);
 
-		sendEntityToSormas(new SormasToSormasCaseDto(personDto, cazeDto), SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
+		SormasToSormasCaseDto entityToSend = new SormasToSormasCaseDto(personDto, cazeDto, originInfo);
+		List<Contact> associatedContacts = Collections.emptyList();
+		if (options.isWithAssociatedContacts()) {
+			associatedContacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), userService.getCurrentUser());
+			entityToSend.setAssociatedContacts(getAssociatedContactDtos(associatedContacts, pseudonymizer, options));
+		}
+
+		sendEntityToSormas(entityToSend, SormasToSormasApiConstants.SAVE_SHARED_CASE_ENDPOINT, options);
 
 		saveNewShareInfo(currentUser.toReference(), options, caze, null);
+		associatedContacts.forEach((contact) -> saveNewShareInfo(currentUser.toReference(), options, null, contact));
 	}
 
 	@Override
@@ -203,7 +228,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
 		ContactDto contactDto = getContactDto(contact, pseudonymizer);
-		contactDto.setSormasToSormasSource(createSormasToSormasSource(currentUser, options));
+		contactDto.setSormasToSormasOriginInfo(createSormasToSormasOriginInfo(currentUser, options));
 
 		sendEntityToSormas(new SormasToSormasContactDto(personDto, contactDto), SormasToSormasApiConstants.SAVE_SHARED_CONTACT_ENDPOINT, options);
 
@@ -268,7 +293,23 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return contactDto;
 	}
 
-	private void processCaseData(CaseDataDto caze, PersonDto person) {
+	private List<SormasToSormasCaseDto.AssociatedContactDto> getAssociatedContactDtos(
+		List<Contact> associatedContacts,
+		Pseudonymizer pseudonymizer,
+		SormasToSormasOptionsDto options) {
+		return associatedContacts.stream().map(contact -> {
+			PersonDto personDto = getPersonDto(contact.getPerson(), pseudonymizer, options);
+			ContactDto contactDto = getContactDto(contact, pseudonymizer);
+
+			return new SormasToSormasCaseDto.AssociatedContactDto(personDto, contactDto);
+		}).collect(Collectors.toList());
+	}
+
+	private void processCaseData(
+		CaseDataDto caze,
+		PersonDto person,
+		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts,
+		SormasToSormasOriginInfoDto originInfo) {
 		processPerson(person);
 
 		caze.setPerson(person.toReference());
@@ -288,9 +329,21 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		caze.setHealthFacility(infrastructure.facility);
 		caze.setPointOfEntry(infrastructure.pointOfEntry);
 
-		// init uuids
-		caze.getSormasToSormasSource().setUuid(DataHelper.createUuid());
+		processEmbeddedObjects(caze);
 
+		caze.setSormasToSormasOriginInfo(originInfo);
+
+		if (associatedContacts != null) {
+			associatedContacts.forEach(associatedContact -> {
+				ContactDto contact = associatedContact.getContact();
+				processContactData(contact, associatedContact.getPerson());
+
+				contact.setSormasToSormasOriginInfo(originInfo);
+			});
+		}
+	}
+
+	private void processEmbeddedObjects(CaseDataDto caze) {
 		if (caze.getHospitalization() != null) {
 			caze.getHospitalization().setUuid(DataHelper.createUuid());
 			caze.getHospitalization().getPreviousHospitalizations().forEach(ph -> {
@@ -379,8 +432,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		contact.setCommunity(infrastructure.community);
 
 		// init uuids
-		contact.getSormasToSormasSource().setUuid(DataHelper.createUuid());
-
 		if (contact.getEpiData() != null) {
 			processEpiData(contact.getEpiData());
 		}
@@ -486,8 +537,6 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (caseFacade.exists(caze.getUuid())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasCaseExists));
 		}
-
-		validateSource(caze.getSormasToSormasSource());
 	}
 
 	private void validateContact(ContactDto contact) throws ValidationRuntimeException {
@@ -499,46 +548,50 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasContactCaseNotExists));
 		}
 
-		validateSource(contact.getSormasToSormasSource());
+		processOriginInfo(contact.getSormasToSormasOriginInfo());
 	}
 
-	private void validateSource(SormasToSormasSourceDto source) {
-		if (source == null) {
+	private void processOriginInfo(SormasToSormasOriginInfoDto originInfo) {
+		if (originInfo == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
 		}
 
-		if (source.getHealthDepartment() == null) {
+		if (originInfo.getHealthDepartment() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasSenderHealthDepartmentMissing));
 		}
 
-		if (DataHelper.isNullOrEmpty(source.getSenderName())) {
+		if (DataHelper.isNullOrEmpty(originInfo.getSenderName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasSenderNameMissing));
 		}
+
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setChangeDate(new Date());
 	}
 
 	private Pseudonymizer createPseudonymizer(SormasToSormasOptionsDto options) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
 
 		if (options.isPseudonymizePersonalData()) {
-			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess());
+			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess(), PersonalDataFieldAccessChecker.forcedNoAccess());
 		}
 		if (options.isPseudonymizeSensitiveData()) {
-			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess());
+			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess(), SensitiveDataFieldAccessChecker.forcedNoAccess());
 		}
 
 		return pseudonymizer;
 	}
 
-	private SormasToSormasSourceDto createSormasToSormasSource(User currentUser, SormasToSormasOptionsDto options) {
-		SormasToSormasSourceDto sormasToSormasSource = new SormasToSormasSourceDto();
+	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User currentUser, SormasToSormasOptionsDto options) {
+		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
 
-		sormasToSormasSource.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
-		sormasToSormasSource.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
-		sormasToSormasSource.setSenderEmail(currentUser.getUserEmail());
-		sormasToSormasSource.setSenderPhoneNumber(currentUser.getPhone());
-		sormasToSormasSource.setComment(options.getComment());
+		sormasToSormasOriginInfo.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
+		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
+		sormasToSormasOriginInfo.setSenderEmail(currentUser.getUserEmail());
+		sormasToSormasOriginInfo.setSenderPhoneNumber(currentUser.getPhone());
+		sormasToSormasOriginInfo.setOwnershipHandedOver(options.isHandOverOwnership());
+		sormasToSormasOriginInfo.setComment(options.getComment());
 
-		return sormasToSormasSource;
+		return sormasToSormasOriginInfo;
 	}
 
 	private void saveNewShareInfo(UserReferenceDto sender, SormasToSormasOptionsDto options, Case caze, Contact contact) {
@@ -547,6 +600,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setCreationDate(new Timestamp(new Date().getTime()));
 		shareInfo.setHealthDepartment(options.getHealthDepartment().getId());
+		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 		shareInfo.setSender(userService.getByReferenceDto(sender));
 		shareInfo.setComment(options.getComment());
 
@@ -570,7 +624,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		Response response;
 		try {
 			response =
-				sormasToSormasClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
+				sormasToSormasRestClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
@@ -607,14 +661,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
 	}
 
-	public SormasToSormasSource fromSormasToSormasSourceDto(SormasToSormasSourceDto source) {
+	public SormasToSormasOriginInfo fromSormasToSormasOriginInfoDto(SormasToSormasOriginInfoDto source) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasSource target = sormasToSormasSourceService.getByUuid(source.getUuid());
+		SormasToSormasOriginInfo target = sormasToSormasOriginInfoService.getByUuid(source.getUuid());
 		if (target == null) {
-			target = new SormasToSormasSource();
+			target = new SormasToSormasOriginInfo();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
@@ -626,17 +680,18 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;
 	}
 
-	public static SormasToSormasSourceDto toSormasTsoSormasSourceDto(SormasToSormasSource source) {
+	public static SormasToSormasOriginInfoDto toSormasToSormasOriginInfoDto(SormasToSormasOriginInfo source) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasSourceDto target = new SormasToSormasSourceDto();
+		SormasToSormasOriginInfoDto target = new SormasToSormasOriginInfoDto();
 
 		DtoHelper.fillDto(target, source);
 
@@ -647,6 +702,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;
@@ -670,6 +726,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
 
 		target.setSender(source.getSender().toReference());
+		target.setOwnershipHandedOver(source.isOwnershipHandedOver());
 		target.setComment(source.getComment());
 
 		return target;

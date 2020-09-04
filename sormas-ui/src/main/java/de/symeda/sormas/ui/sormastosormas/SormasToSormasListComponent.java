@@ -32,9 +32,9 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -53,11 +53,11 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		sormasToSormasList = new SormasToSormasList(
 			new SormasToSormasShareInfoCriteria().caze(caseRef),
-			caze.getSormasToSormasSource() == null,
+			caze.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared);
 
 		initLayout(
-			caze.getSormasToSormasSource(),
+			caze.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
 			e -> ControllerProvider.getSormasToSormasController().shareCaseToSormas(caseRef, this));
 	}
@@ -67,16 +67,16 @@ public class SormasToSormasListComponent extends VerticalLayout {
 
 		sormasToSormasList = new SormasToSormasList(
 			new SormasToSormasShareInfoCriteria().contact(contactRef),
-			contact.getSormasToSormasSource() == null,
+			contact.getSormasToSormasOriginInfo() == null,
 			Captions.sormasToSormasCaseNotShared);
 
 		initLayout(
-			contact.getSormasToSormasSource(),
+			contact.getSormasToSormasOriginInfo(),
 			sormasToSormasList,
 			e -> ControllerProvider.getSormasToSormasController().shareContactToSormas(contactRef, this));
 	}
 
-	private void initLayout(SormasToSormasSourceDto sormasSource, SormasToSormasList sormasToSormasList, Button.ClickListener clickListener) {
+	private void initLayout(SormasToSormasOriginInfoDto originInfo, SormasToSormasList sormasToSormasList, Button.ClickListener clickListener) {
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -87,8 +87,8 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		if (sormasSource != null) {
-			addComponent(buildSormasSourceInfo(sormasSource));
+		if (originInfo != null) {
+			addComponent(buildSormasOriginInfo(originInfo));
 		}
 
 		addComponent(sormasToSormasList);
@@ -186,32 +186,32 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		}
 	}
 
-	private VerticalLayout buildSormasSourceInfo(SormasToSormasSourceDto sormasSource) {
+	private VerticalLayout buildSormasOriginInfo(SormasToSormasOriginInfoDto originInfo) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
 		layout.setSpacing(false);
 		layout.setStyleName(CssStyles.VSPACE_3);
 
 		Label healthDepartmentLabel =
-			new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + sormasSource.getHealthDepartment());
+			new Label(I18nProperties.getCaption(Captions.sormasToSormasSentFrom) + " " + originInfo.getHealthDepartment());
 		healthDepartmentLabel.addStyleName(CssStyles.LABEL_BOLD);
 		layout.addComponent(healthDepartmentLabel);
-		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + sormasSource.getSenderName()));
+		layout.addComponent(new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + originInfo.getSenderName()));
 
-		if (sormasSource.getSenderEmail() != null) {
-			layout.addComponent(new Label(sormasSource.getSenderEmail()));
+		if (originInfo.getSenderEmail() != null) {
+			layout.addComponent(new Label(originInfo.getSenderEmail()));
 		}
 
-		if (sormasSource.getSenderPhoneNumber() != null) {
-			layout.addComponent(new Label(sormasSource.getSenderPhoneNumber()));
+		if (originInfo.getSenderPhoneNumber() != null) {
+			layout.addComponent(new Label(originInfo.getSenderPhoneNumber()));
 		}
 
 		Label shareDateLabel = new Label(
-			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(sormasSource.getCreationDate()));
+			I18nProperties.getCaption(Captions.sormasToSormasSharedDate) + ": " + DateFormatHelper.formatDate(originInfo.getCreationDate()));
 		layout.addComponent(shareDateLabel);
 
-		if (!DataHelper.isNullOrEmpty(sormasSource.getComment())) {
-			layout.addComponent(new Label(sormasSource.getComment()));
+		if (!DataHelper.isNullOrEmpty(originInfo.getComment())) {
+			layout.addComponent(new Label(originInfo.getComment()));
 		}
 
 		return layout;

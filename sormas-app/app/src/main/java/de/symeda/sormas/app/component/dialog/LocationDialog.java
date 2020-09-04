@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.component.Item;
@@ -33,7 +34,6 @@ import de.symeda.sormas.app.component.controls.ControlButtonType;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.DialogLocationLayoutBinding;
-import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.InfrastructureHelper;
 import de.symeda.sormas.app.util.LocationService;
@@ -47,7 +47,7 @@ public class LocationDialog extends FormDialog {
 
 	// Constructor
 
-	public LocationDialog(final FragmentActivity activity, Location location, AppFieldAccessCheckers fieldAccessCheckers) {
+	public LocationDialog(final FragmentActivity activity, Location location, UiFieldAccessCheckers fieldAccessCheckers) {
 		this(activity, location, true, fieldAccessCheckers);
 	}
 
@@ -55,7 +55,7 @@ public class LocationDialog extends FormDialog {
 		final FragmentActivity activity,
 		Location location,
 		boolean closeOnPositiveButtonClick,
-		AppFieldAccessCheckers fieldAccessCheckers) {
+		UiFieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,

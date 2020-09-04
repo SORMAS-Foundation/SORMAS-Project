@@ -13,9 +13,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils.jurisdiction;
+package de.symeda.sormas.backend.sormastosormas;
 
-public interface WithJurisdiction<T> {
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 
-	T getJurisdiction();
+import de.symeda.sormas.backend.common.AbstractAdoService;
+
+@Stateless
+@LocalBean
+public class SormasToSormasOriginInfoService extends AbstractAdoService<SormasToSormasOriginInfo> {
+
+	public SormasToSormasOriginInfoService() {
+		super(SormasToSormasOriginInfo.class);
+	}
+
+	@Override
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SormasToSormasOriginInfo, SormasToSormasOriginInfo> from) {
+		return null;
+	}
+
 }

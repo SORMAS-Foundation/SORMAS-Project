@@ -27,12 +27,10 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -87,12 +85,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					EventJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
 		}
 

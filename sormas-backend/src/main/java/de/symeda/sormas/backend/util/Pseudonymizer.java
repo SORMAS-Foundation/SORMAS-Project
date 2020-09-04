@@ -17,44 +17,51 @@ package de.symeda.sormas.backend.util;
 
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.pseudonymization.DtoPseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.user.User;
 
 public class Pseudonymizer extends DtoPseudonymizer {
 
 	public static Pseudonymizer getDefault(RightCheck rightCheck) {
-		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), "", true);
+		return new Pseudonymizer(createDefaultFieldAccessCheckers(true, rightCheck), createDefaultFieldAccessCheckers(false, rightCheck), "", true);
 	}
 
 	public static Pseudonymizer getDefault(RightCheck rightCheck, String stringValuePlaceholder) {
-		return new Pseudonymizer(createDefaultFieldAccessCheckers(rightCheck), stringValuePlaceholder, true);
+		return new Pseudonymizer(
+			createDefaultFieldAccessCheckers(true, rightCheck),
+			createDefaultFieldAccessCheckers(false, rightCheck),
+			stringValuePlaceholder,
+			true);
 	}
 
 	public static Pseudonymizer getDefaultNoCheckers(boolean pseudonymizeMandatoryFields) {
-		return new Pseudonymizer(new FieldAccessCheckers(), "", pseudonymizeMandatoryFields);
+		return new Pseudonymizer(new FieldAccessCheckers(), new FieldAccessCheckers(), "", pseudonymizeMandatoryFields);
 	}
 
-	public Pseudonymizer(FieldAccessCheckers fieldAccessCheckers, String stringValuePlaceholder, boolean pseudonymizeMandatoryFields) {
-		super(fieldAccessCheckers, stringValuePlaceholder, pseudonymizeMandatoryFields);
+	public Pseudonymizer(
+		FieldAccessCheckers inJurisdictionCheckers,
+		FieldAccessCheckers outsideJurisdictionCheckers,
+		String stringValuePlaceholder,
+		boolean pseudonymizeMandatoryFields) {
+		super(inJurisdictionCheckers, outsideJurisdictionCheckers, stringValuePlaceholder, pseudonymizeMandatoryFields);
 	}
 
-	private SensitiveDataFieldAccessChecker getSensitiveDataFieldAccessChecker() {
-		return this.fieldAccessCheckers.getCheckerByType(SensitiveDataFieldAccessChecker.class);
+	private SensitiveDataFieldAccessChecker getSensitiveDataFieldAccessChecker(boolean inJurisdiction) {
+		return getFieldAccessCheckers(inJurisdiction).getCheckerByType(SensitiveDataFieldAccessChecker.class);
 	}
 
 	public void pseudonymizeUser(User dtoUser, User currentUser, Consumer<UserReferenceDto> setPseudonymizedValue) {
 		boolean isInJurisdiction = dtoUser == null || isUserInJurisdiction(dtoUser, currentUser);
 
-		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker();
-		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight(isInJurisdiction)) {
+		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
+		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight()) {
 			setPseudonymizedValue.accept(null);
 		}
 	}
@@ -67,8 +74,8 @@ public class Pseudonymizer extends DtoPseudonymizer {
 
 		boolean isInJurisdiction = originalDtoUser == null || isUserInJurisdiction(originalDtoUser, currentUser);
 
-		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker();
-		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight(isInJurisdiction) || dto.isPseudonymized()) {
+		SensitiveDataFieldAccessChecker sensitiveDataFieldAccessChecker = getSensitiveDataFieldAccessChecker(isInJurisdiction);
+		if (sensitiveDataFieldAccessChecker != null && !sensitiveDataFieldAccessChecker.hasRight() || dto.isPseudonymized()) {
 			setPseudonymizedValue.accept(originalDtoUser != null ? originalDtoUser.toReference() : null);
 		}
 	}
@@ -98,20 +105,15 @@ public class Pseudonymizer extends DtoPseudonymizer {
 		return true;
 	}
 
-	private static FieldAccessCheckers createDefaultFieldAccessCheckers(final RightCheck rightCheck) {
-		return FieldAccessCheckers.withCheckers(PersonalDataFieldAccessChecker.create(new PersonalDataFieldAccessChecker.RightCheck() {
+	private static FieldAccessCheckers createDefaultFieldAccessCheckers(boolean inJurisdiction, final RightCheck rightCheck) {
+		PersonalDataFieldAccessChecker personalFieldAccessChecker = inJurisdiction
+			? PersonalDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight)
+			: PersonalDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight);
+		SensitiveDataFieldAccessChecker sensitiveFieldAccessChecker = inJurisdiction
+			? SensitiveDataFieldAccessChecker.inJurisdiction(rightCheck::hasRight)
+			: SensitiveDataFieldAccessChecker.outsideJurisdiction(rightCheck::hasRight);
 
-			@Override
-			public boolean check(UserRight userRight) {
-				return rightCheck.hasRight(userRight);
-			}
-		}), SensitiveDataFieldAccessChecker.create(new SensitiveDataFieldAccessChecker.RightCheck() {
-
-			@Override
-			public boolean check(UserRight userRight) {
-				return rightCheck.hasRight(userRight);
-			}
-		}));
+		return FieldAccessCheckers.withCheckers(personalFieldAccessChecker, sensitiveFieldAccessChecker);
 	}
 
 }

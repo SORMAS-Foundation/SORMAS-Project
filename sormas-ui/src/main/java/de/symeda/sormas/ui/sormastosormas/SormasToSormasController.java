@@ -28,6 +28,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -37,15 +38,15 @@ public class SormasToSormasController {
 	}
 
 	public void shareCaseToSormas(CaseReferenceDto caze, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent);
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareCase(caze.getUuid(), options), listComponent, true);
 	}
 
 	public void shareContactToSormas(ContactReferenceDto contact, SormasToSormasListComponent listComponent) {
-		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent);
+		shareToSormas((options) -> FacadeProvider.getSormasToSormasFacade().shareContact(contact.getUuid(), options), listComponent, false);
 	}
 
-	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent) {
-		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm();
+	private void shareToSormas(HandleShareWithOptions handleShareWithOptions, SormasToSormasListComponent listComponent, boolean isForCase) {
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(isForCase);
 		optionsForm.setValue(new SormasToSormasOptionsDto());
 
 		CommitDiscardWrapperComponent<SormasToSormasOptionsForm> optionsCommitDiscard =
@@ -62,7 +63,12 @@ public class SormasToSormasController {
 				handleShareWithOptions.handle(options);
 
 				optionsPopup.close();
-				listComponent.reloadList();
+
+				if (options.isHandOverOwnership()) {
+					SormasUI.refreshView();
+				} else {
+					listComponent.reloadList();
+				}
 			} catch (SormasToSormasException ex) {
 				Label messageLabel = new Label(ex.getMessage(), ContentMode.HTML);
 				messageLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);

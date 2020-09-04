@@ -7,9 +7,9 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventParticipantIndexDto extends PseudonymizableIndexDto implements Serializable {
 
 	private static final long serialVersionUID = 1136399297437006739L;
 
@@ -132,7 +132,6 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 		this.involvementDescription = involvementDescription;
 	}
 
-	@Override
 	public EventJurisdictionDto getJurisdiction() {
 		return eventJurisdiction;
 	}

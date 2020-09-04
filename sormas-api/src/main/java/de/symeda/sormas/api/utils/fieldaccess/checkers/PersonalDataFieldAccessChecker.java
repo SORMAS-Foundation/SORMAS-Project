@@ -23,30 +23,26 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.PersonalData;
 
-public class PersonalDataFieldAccessChecker extends RightBasedFieldAccessChecker {
+public class PersonalDataFieldAccessChecker extends AnnotationBasedFieldAccessChecker {
 
-	private PersonalDataFieldAccessChecker(final boolean hasRightInJurisdiction, final boolean harRightOutsideJurisdiction) {
-		super(PersonalData.class, EmbeddedPersonalData.class, new RightBasedFieldAccessChecker.RightCheck() {
-
-			@Override
-			public boolean check(boolean inJurisdiction) {
-				return inJurisdiction ? hasRightInJurisdiction : harRightOutsideJurisdiction;
-			}
-		});
+	private PersonalDataFieldAccessChecker(final boolean hasRight) {
+		super(PersonalData.class, EmbeddedPersonalData.class, hasRight);
 	}
 
-	public static PersonalDataFieldAccessChecker create(RightCheck rightCheck) {
-		return new PersonalDataFieldAccessChecker(
-			rightCheck.check(UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION),
-			rightCheck.check(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION));
+	public static PersonalDataFieldAccessChecker inJurisdiction(RightCheck rightCheck) {
+		return new PersonalDataFieldAccessChecker(rightCheck.check(UserRight.SEE_PERSONAL_DATA_IN_JURISDICTION));
+	}
+
+	public static PersonalDataFieldAccessChecker outsideJurisdiction(RightCheck rightCheck) {
+		return new PersonalDataFieldAccessChecker(rightCheck.check(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION));
 	}
 
 	public static PersonalDataFieldAccessChecker forcedNoAccess() {
-		return new PersonalDataFieldAccessChecker(false, false);
+		return new PersonalDataFieldAccessChecker(false);
 	}
 
 	@Override
-	boolean isAnnotatedFieldMandatory(Field annotatedField) {
+	protected boolean isAnnotatedFieldMandatory(Field annotatedField) {
 		return annotatedField.getAnnotation(PersonalData.class).mandatoryField();
 	}
 

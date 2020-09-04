@@ -20,7 +20,6 @@ package de.symeda.sormas.api.contact;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
@@ -29,7 +28,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasSourceDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
@@ -37,6 +36,7 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
@@ -201,7 +201,8 @@ public class ContactDto extends PseudonymizableDto {
 	private String additionalDetails;
 	private EpiDataDto epiData;
 	private HealthConditionsDto healthConditions;
-	private SormasToSormasSourceDto sormasToSormasSource;
+	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	private boolean ownershipHandedOver;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -691,11 +692,19 @@ public class ContactDto extends PseudonymizableDto {
 		this.healthConditions = healthConditions;
 	}
 
-	public SormasToSormasSourceDto getSormasToSormasSource() {
-		return sormasToSormasSource;
+	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
+		return sormasToSormasOriginInfo;
 	}
 
-	public void setSormasToSormasSource(SormasToSormasSourceDto sormasToSormasSource) {
-		this.sormasToSormasSource = sormasToSormasSource;
+	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
+		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
+	}
+
+	public boolean isOwnershipHandedOver() {
+		return ownershipHandedOver;
+	}
+
+	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
+		this.ownershipHandedOver = ownershipHandedOver;
 	}
 }

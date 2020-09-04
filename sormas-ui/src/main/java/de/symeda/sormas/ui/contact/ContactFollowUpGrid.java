@@ -24,12 +24,10 @@ import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.jurisdiction.ContactJurisdictionHelper;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
-import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -61,20 +59,13 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		((Column<ContactFollowUpDto, String>) getColumn(ContactFollowUpDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ContactFollowUpDto, Date>) getColumn(ContactFollowUpDto.LAST_CONTACT_DATE))
 			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<ContactFollowUpDto, Date>) getColumn(FollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.withCheckers(
-					getBeanType(),
-					column.getId(),
-					ContactJurisdictionHelper::isInJurisdictionOrOwned,
-					FieldHelper.createPersonalDataFieldAccessChecker(),
-					FieldHelper.createSensitiveDataFieldAccessChecker()));
+				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 		}
 
 		addItemClickListener(

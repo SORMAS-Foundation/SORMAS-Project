@@ -332,7 +332,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		districtField.setEnabled(false);
 
 		ComboBox communityField = (ComboBox) getField(CaseDataDto.COMMUNITY);
-		districtField.setEnabled(false);
+		communityField.setEnabled(false);
 
 		UserDto user = UserProvider.getCurrent().getUser();
 

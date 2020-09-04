@@ -12,29 +12,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+package de.symeda.sormas.api.utils.pseudonymization;
 
-package de.symeda.sormas.backend.sormastosormas;
+import de.symeda.sormas.api.EntityDto;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Predicate;
+public abstract class PseudonymizableDto extends EntityDto implements Pseudonymizable {
 
-import de.symeda.sormas.backend.common.AbstractAdoService;
+	private static final long serialVersionUID = 4181307802683421947L;
 
-@Stateless
-@LocalBean
-public class SormasToSormasSourceService extends AbstractAdoService<SormasToSormasSource> {
+	private boolean pseudonymized;
 
-	public SormasToSormasSourceService() {
-		super(SormasToSormasSource.class);
+	public boolean isPseudonymized() {
+		return pseudonymized;
 	}
 
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<SormasToSormasSource, SormasToSormasSource> from) {
-		return null;
+	public void setPseudonymized(boolean pseudonymized) {
+		this.pseudonymized = pseudonymized;
 	}
-
 }

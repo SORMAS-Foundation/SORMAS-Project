@@ -22,11 +22,16 @@ public class SormasToSormasOptionsDto implements Serializable {
 	public static final String I18N_PREFIX = "SormasToSormasOptions";
 
 	public static final String HEALTH_DEPARTMENT = "healthDepartment";
+	public static final String HAND_OVER_OWNERSHIP = "handOverOwnership";
 	public static final String PSEUDONYMIZE_PERSONAL_DATA = "pseudonymizePersonalData";
 	public static final String PSEUDONYMIZE_SENSITIVE_DATA = "pseudonymizeSensitiveData";
 	public static final String COMMENT = "comment";
 
+	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
+
 	private HealthDepartmentServerAccessData healthDepartment;
+
+	private boolean handOverOwnership;
 
 	private boolean pseudonymizePersonalData;
 
@@ -34,12 +39,22 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private String comment;
 
+	private boolean withAssociatedContacts;
+
 	public HealthDepartmentServerAccessData getHealthDepartment() {
 		return healthDepartment;
 	}
 
 	public void setHealthDepartment(HealthDepartmentServerAccessData healthDepartment) {
 		this.healthDepartment = healthDepartment;
+	}
+
+	public boolean isHandOverOwnership() {
+		return handOverOwnership;
+	}
+
+	public void setHandOverOwnership(boolean handOverOwnership) {
+		this.handOverOwnership = handOverOwnership;
 	}
 
 	public boolean isPseudonymizePersonalData() {
@@ -64,5 +79,13 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public boolean isWithAssociatedContacts() {
+		return withAssociatedContacts;
+	}
+
+	public void setWithAssociatedContacts(boolean withAssociatedContacts) {
+		this.withAssociatedContacts = withAssociatedContacts;
 	}
 }

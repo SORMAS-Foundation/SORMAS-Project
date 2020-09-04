@@ -26,5 +26,5 @@ public interface FieldAccessChecker {
 
 	boolean isEmbedded(Field field);
 
-	boolean hasRight(boolean inJurisdiction);
+	boolean hasRight();
 }

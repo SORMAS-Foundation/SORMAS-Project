@@ -32,12 +32,20 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.HEALTH_DEPARTMENT)
+		+ fluidRowLocs(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)
+		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
-	public SormasToSormasOptionsForm() {
-		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX);
+	private final boolean forCase;
+
+	public SormasToSormasOptionsForm(boolean isForCase) {
+		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
+
+		this.forCase = isForCase;
+
+		addFields();
 
 		setWidthUndefined();
 		hideValidationUntilNextCommit();
@@ -58,10 +66,16 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			healthDepartmentField.setItemCaption(hd, hd.getName());
 		});
 
+		if (forCase) {
+			addField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS);
+		}
+
+		addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
+
 		addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
 
 		CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-		pseudonymizeSensitiveData.addStyleNames(CssStyles.FORCE_CAPTION, CssStyles.VSPACE_2);
+		pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
 
 		TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 		comment.setRows(3);

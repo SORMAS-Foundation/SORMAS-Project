@@ -28,11 +28,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Alternative
-public class SormasToSormasClient {
+public class SormasToSormasRestClient {
 
 	private final ObjectMapper mapper;
 
-	public SormasToSormasClient() {
+	public SormasToSormasRestClient() {
 		mapper = new ObjectMapper();
 		mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
 		mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
