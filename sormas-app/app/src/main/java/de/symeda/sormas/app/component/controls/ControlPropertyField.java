@@ -567,4 +567,10 @@ public abstract class ControlPropertyField<T> extends LinearLayout {
 			field.setVisibility(GONE);
 		}
 	}
+
+	@BindingAdapter(value = {
+		"labelCaption" })
+	public static void setLabelCaption(ControlPropertyField field, String labelCaption) {
+		field.setCaption(labelCaption);
+	}
 }
