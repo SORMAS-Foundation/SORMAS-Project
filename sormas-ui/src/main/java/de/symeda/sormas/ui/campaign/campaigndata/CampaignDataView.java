@@ -99,7 +99,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			} else {
 				campaignFormElementImportance.setVisible(true);
 				if (campaignFormElementImportance.getValue() == null) {
-					campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
+					campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
 				}
 			}
 		});
