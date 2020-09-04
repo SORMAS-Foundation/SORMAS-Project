@@ -23,7 +23,6 @@ package de.symeda.sormas.backend.campaign.data;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -53,7 +52,8 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
-import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.region.AreaReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -66,6 +66,7 @@ import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.region.Area;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
@@ -293,41 +294,55 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 		for (CampaignDiagramSeries diagramSeries : diagramSeriesList) {
 
-			// TODO check data type of field
-			// - int: as-is
-			// - yes-no/other: CampaignDiagramSeries.fieldValue should be defined -> count the number of form data that match the value
-
 			//@formatter:off
+			final AreaReferenceDto area = campaignDiagramCriteria.getArea();
 			final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
 			final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 			final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
+			
+			final String areaFilter = area != null ? " AND " + Area.TABLE_NAME + "." + Area.UUID + " = '" + area.getUuid() + "'": "";
 			final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = '" + region.getUuid() + "'": "";
 			final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = '" + district.getUuid() + "'" : "";
 			final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = '" + campaign.getUuid() +  "'" : "";
 			final String jurisdictionGrouping =
-					district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
-					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "";
+					(district != null ? ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME + "." + Community.NAME :
+					region != null ? ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME + "." + District.NAME : "")
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME;
+			
 			Query seriesDataQuery = em.createNativeQuery(
-					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + " as campaignFormUuid," + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
-							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
-							+ ", sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
-							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME
+					"SELECT " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + " as formUuid,"
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " as formId"
+							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "' as fieldId"
+							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "' as fieldCaption"
+							+ ", CASE"
+							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum((jsonData->>'" + CampaignFormDataEntry.VALUE + "')\\:\\:int)"
+							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "')"
+		      				+ " END as sumValue"
+							+ ", " + Region.TABLE_NAME + "." + Region.UUID
+							+ ", " + Region.TABLE_NAME + "." + Region.NAME
 							+ " FROM " + CampaignFormData.TABLE_NAME
 							+ " LEFT JOIN " + CampaignFormMeta.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN_FORM_META + "_id = " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.ID
 							+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
+							+ " LEFT JOIN " + Area.TABLE_NAME + " ON " + Region.AREA + "_id = " + Area.TABLE_NAME + "." + Area.ID
 							+ " LEFT JOIN " + District.TABLE_NAME + " ON " + CampaignFormData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
 							+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN + "_id = " + Campaign.TABLE_NAME + "." + Campaign.ID
-							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") jsonData"
-							+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
+							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") as jsonData"
+							+ ", json_array_elements(" + CampaignFormMeta.CAMPAIGN_FORM_ELEMENTS + ") as jsonMeta"
+					+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
 							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
 							+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = jsonMeta->>'" + CampaignFormElement.ID + "'"
+							+ areaFilter
 							+ regionFilter
 							+ districtFilter
-							+ campaignFilter
-							+ " GROUP BY " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + "," + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
+							+ campaignFilter 
+					+ " GROUP BY " 
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.UUID  + "," 
+							+ CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID
 							+ ", jsonData->>'" + CampaignFormDataEntry.ID + "'"
-							+ jurisdictionGrouping
-							+ ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "." + Region.NAME);
+							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "'"
+							+ ", jsonMeta->>'" + CampaignFormElement.TYPE + "'"
+							+ jurisdictionGrouping);
 			//@formatter:on
 
 			@SuppressWarnings("unchecked")
@@ -340,25 +355,12 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							(String) result[0],
 							(String) result[1],
 							(String) result[2],
-							(Object) result[3],
-							(String) result[4],
-							(String) result[5]))
+							(String) result[3],
+							(Object) result[4],
+							(String) result[5],
+							(String) result[6]))
 					.collect(Collectors.toList()));
 		}
-
-		// TODO: 21/08/2020 extract caption directly from json with query 
-		resultData.forEach(campaignDiagramDataDto -> {
-			final CampaignFormMetaDto formMeta = campaignFormMetaFacade.getCampaignFormMetaByUuid(campaignDiagramDataDto.getFormMetaUuid());
-			final String fieldId = campaignDiagramDataDto.getFieldId();
-			final Optional<CampaignFormElement> optionalCampaignFormElement =
-				formMeta.getCampaignFormElements().stream().filter(campaignFormElement -> campaignFormElement.getId().equals(fieldId)).findFirst();
-			if (optionalCampaignFormElement.isPresent()) {
-
-				campaignDiagramDataDto.setFieldCaption(optionalCampaignFormElement.get().getCaption());
-			} else {
-				campaignDiagramDataDto.setFieldCaption(fieldId);
-			}
-		});
 		return resultData;
 	}
 

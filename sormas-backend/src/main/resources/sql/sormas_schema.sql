@@ -5216,4 +5216,12 @@ DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
+-- 2020-07-29 Campaign diagram visualisation refinement
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
+ALTER TABLE campaignformmeta_history ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (246, 'Campaign diagram visualization refinement #2753');
 -- *** Insert new sql commands BEFORE this line ***
