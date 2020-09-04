@@ -5173,7 +5173,7 @@ INSERT INTO epidataburial (SELECT * FROM t_epidataburial);
 INSERT INTO epidatagathering (SELECT * FROM t_epidatagathering);
 INSERT INTO epidatatravel (SELECT * FROM t_epidatatravel);
 
-UPDATE cases SET epidata_id = (SELECT new_id FROM t_id_map WHERE cases.epidata_id = old_id);
+UPDATE cases SET epidata_id = m.new_id FROM t_id_map m WHERE cases.epidata_id = m.old_id;
 
 -- EPI DATA END
 
@@ -5197,7 +5197,7 @@ uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
 
 INSERT INTO symptoms (SELECT * FROM t_symptoms);
 
-UPDATE cases SET symptoms_id = (SELECT new_id FROM t_id_map WHERE cases.symptoms_id = old_id);
+UPDATE cases SET symptoms_id = m.new_id FROM t_id_map m WHERE cases.symptoms_id = m.old_id;
 
 -- SYMPTOMS END
 
@@ -5216,6 +5216,13 @@ DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
+
+-- 2020-09-01 - Store the status of the PIA account for a person
+ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
+ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (246, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
+
 -- 2020-07-29 Campaign diagram visualisation refinement
 
 ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
@@ -5223,5 +5230,5 @@ ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USI
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
 ALTER TABLE campaignformmeta_history ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (246, 'Campaign diagram visualization refinement #2753');
+INSERT INTO schema_version (version_number, comment) VALUES (247, 'Campaign diagram visualization refinement #2753');
 -- *** Insert new sql commands BEFORE this line ***

@@ -60,6 +60,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -309,6 +310,14 @@ public class PersonFacadeEjb implements PersonFacade {
 		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
 	}
 
+	@Override
+	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
+		PersonDto person = getPersonByUuid(personUuid);;
+		person.setSymptomJournalStatus(status);
+		savePerson(person);
+		return true;
+	}
+
 	/**
 	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
 	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
@@ -476,6 +485,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
 		return target;
 	}
@@ -635,6 +645,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setNationalHealthId(source.getNationalHealthId());
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
 		return target;
 	}
