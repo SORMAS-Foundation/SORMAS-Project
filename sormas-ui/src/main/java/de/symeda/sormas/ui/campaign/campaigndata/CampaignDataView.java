@@ -91,15 +91,18 @@ public class CampaignDataView extends AbstractCampaignView {
 	public CampaignFormDataFilterForm createFilterBar() {
 		filterForm = new CampaignFormDataFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
-				grid.reload();
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
 			}
 		});
-
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
+			if (!navigateTo(criteria, false)) {
+				grid.reload();
+			}
 		});
 
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());

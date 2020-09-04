@@ -4,8 +4,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.div;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.Component;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -37,11 +42,13 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	public static final String FILTER_ITEM_STYLE = "filter-item";
 
 	private static final String RESET_BUTTON_ID = "reset";
+	protected static final String APPLY_BUTTON_ID = "apply";
 	private static final String EXPAND_COLLAPSE_ID = "expandCollapse";
 	private static final String MORE_FILTERS_ID = "moreFilters";
 
 	private CustomLayout moreFiltersLayout;
 	private boolean skipChangeEvents;
+	private boolean hasFilter;
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix) {
 
@@ -59,12 +66,21 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			addMoreFilters(moreFiltersLayout);
 		}
 
+		this.addValueChangeListener(e -> {
+			hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
+			getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
+			Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
+			if (applyButton != null) {
+				applyButton.setVisible(hasFilter);
+			}
+		});
+
 		addDefaultButtons();
 	}
 
 	@Override
 	protected String createHtmlLayout() {
-		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID)) + loc(MORE_FILTERS_ID));
+		return div(filterLocs(ArrayUtils.addAll(getMainFilterLocators(), EXPAND_COLLAPSE_ID, RESET_BUTTON_ID, APPLY_BUTTON_ID)) + loc(MORE_FILTERS_ID));
 	}
 
 	protected abstract String[] getMainFilterLocators();
@@ -80,8 +96,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	protected void addDefaultButtons() {
 
 		Button resetButton = ButtonHelper.createButton(Captions.actionResetFilters, null, FILTER_ITEM_STYLE);
-
 		getContent().addComponent(resetButton, RESET_BUTTON_ID);
+
+		Button applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, null, FILTER_ITEM_STYLE);
+		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+		getContent().addComponent(applyButton, APPLY_BUTTON_ID);
 
 		if (moreFiltersLayout != null) {
 			String showMoreCaption = I18nProperties.getCaption(Captions.actionShowMoreFilters);
@@ -133,6 +152,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		((Button) getContent().getComponent(RESET_BUTTON_ID)).addClickListener(resetHandler);
 	}
 
+	public void addApplyHandler(Button.ClickListener applyHandler) {
+		((Button) getContent().getComponent(APPLY_BUTTON_ID)).addClickListener(applyHandler);
+	}
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected void applyFieldConfiguration(FieldConfiguration configuration, Field field) {
@@ -151,18 +174,11 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 
 			applyDependenciesOnNewValue(newFieldValue);
 
-			updateResetButtonState();
 			if (moreFiltersLayout != null) {
 				boolean hasExpandedFilter = streamFieldsForEmptyCheck(moreFiltersLayout).anyMatch(f -> !f.isEmpty());
 				moreFiltersLayout.setVisible(hasExpandedFilter);
 			}
 		});
-	}
-
-	public void updateResetButtonState() {
-		boolean hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
-
-		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -244,6 +260,10 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		} else {
 			field.setCaption(caption);
 		}
+	}
+
+	public boolean hasFilter() {
+		return hasFilter;
 	}
 
 	interface Callable {

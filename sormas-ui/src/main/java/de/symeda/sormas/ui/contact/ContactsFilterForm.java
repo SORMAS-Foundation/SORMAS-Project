@@ -353,7 +353,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			ContactDateType.REPORT_DATE);
+			null);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
