@@ -279,6 +279,7 @@ public class PersonDto extends PseudonymizableDto {
 
 	private SymptomJournalStatus symptomJournalStatus;
 	@SensitiveData
+	@HideForCountriesExcept(countries = "de")
 	private String externalId;
 
 	public Integer getBirthdateDD() {
