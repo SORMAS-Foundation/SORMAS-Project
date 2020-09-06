@@ -329,7 +329,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.CAUSE_OF_DEATH,
 			PersonDto.CAUSE_OF_DEATH_DETAILS,
 			PersonDto.CAUSE_OF_DEATH_DISEASE);
-		setVisible(isGermanServer(), PersonDto.EXTERNAL_ID);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), PersonDto.EDUCATION_DETAILS, PersonDto.EDUCATION_TYPE, Arrays.asList(EducationType.OTHER), true);
 
