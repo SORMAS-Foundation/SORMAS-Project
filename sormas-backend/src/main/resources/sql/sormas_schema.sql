@@ -5321,10 +5321,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quar
 ALTER TABLE person ADD COLUMN externalid varchar(255);
 ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
-<<<<<<< HEAD
-INSERT INTO schema_version (version_number, comment) VALUES (251, 'Add new field externalId as per feature #2670');
-=======
-INSERT INTO schema_version (version_number, comment) VALUES (244, 'Add new field externalId as per feature #2670');
->>>>>>> Fix on Schema and update on Data Dictionary document
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add new field externalId as per feature #2670');
 
 -- *** Insert new sql commands BEFORE this line ***
