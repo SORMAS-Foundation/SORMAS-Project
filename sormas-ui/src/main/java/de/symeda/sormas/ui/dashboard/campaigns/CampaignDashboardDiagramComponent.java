@@ -85,9 +85,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ " enabled: true,"
 				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
 				+ "},"
-				+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
+				+ "legend: { backgroundColor: 'transparent', margin: 30 },"
 				+ "colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
-				+ "title:{ text: '" + title + "',");
+				+ "title:{ text: '" + title + "'},");
 		//@formatter:on
 
 		Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeriesList()
