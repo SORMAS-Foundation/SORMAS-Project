@@ -5242,16 +5242,16 @@ ALTER TABLE cases_history  ADD COLUMN casePhoneNumber varchar(255);
 ALTER TABLE cases_history ADD COLUMN caseEmail varchar(255);
 
 
-/*ALTER TABLE contact ADD COLUMN contactPhoneNumber varchar(255);
+ALTER TABLE contact ADD COLUMN contactPhoneNumber varchar(255);
 ALTER TABLE contact ADD COLUMN contactEmail varchar(255);
 
 ALTER TABLE contact_history  ADD COLUMN contactPhoneNumber varchar(255);
 ALTER TABLE contact_history ADD COLUMN contactEmail varchar(255);
-*/
+
 ALTER TABLE eventparticipant ADD COLUMN participantPhoneNumber varchar(255);
 ALTER TABLE eventparticipant ADD COLUMN participantEmail varchar(255);
 
 ALTER TABLE eventparticipant_history  ADD COLUMN participantPhoneNumber varchar(255);
 ALTER TABLE eventparticipant_history ADD COLUMN participantEmail varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (245, 'added email and phoneNumber to case, contact and event participant #2743');
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'added email and phoneNumber to case, contact and event participant #2743');
