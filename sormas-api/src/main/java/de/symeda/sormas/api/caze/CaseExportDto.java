@@ -89,10 +89,10 @@ public class CaseExportDto implements Serializable {
 	public static final String NUMBER_OF_CLINICAL_VISITS = "numberOfClinicalVisits";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String QUARANTINE_INFORMATION = "quarantineInformation";
-//	public static final String NUMBER_OF_VISITS = "numberOfVisits";
-//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
-//	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
-//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
+	public static final String NUMBER_OF_VISITS = "numberOfVisits";
+	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
+	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
+	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
 
 	private String country;
 	private long id;
@@ -208,10 +208,10 @@ public class CaseExportDto implements Serializable {
 
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
-//	private int numberOfVisits;
-//	private YesNoUnknown lastCooperativeVisitSymptomatic;
-//	private Date lastCooperativeVisitDate;
-//	private String lastCooperativeVisitSymptoms;
+	private int numberOfVisits;
+	private YesNoUnknown lastCooperativeVisitSymptomatic;
+	private Date lastCooperativeVisitDate;
+	private String lastCooperativeVisitSymptoms;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -1174,41 +1174,41 @@ public class CaseExportDto implements Serializable {
 		return followUpUntil;
 	}
 
-//	@Order(133)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public int getNumberOfVisits() {
-//		return numberOfVisits;
-//	}
-//
-//	@Order(134)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
-//		return lastCooperativeVisitSymptomatic;
-//	}
-//
-//	@Order(135)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public Date getLastCooperativeVisitDate() {
-//		return lastCooperativeVisitDate;
-//	}
-//
-//	@Order(136)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public String getLastCooperativeVisitSymptoms() {
-//		return lastCooperativeVisitSymptoms;
-//	}
+	@Order(133)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public int getNumberOfVisits() {
+		return numberOfVisits;
+	}
+
+	@Order(134)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
+		return lastCooperativeVisitSymptomatic;
+	}
+
+	@Order(135)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public Date getLastCooperativeVisitDate() {
+		return lastCooperativeVisitDate;
+	}
+
+	@Order(136)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public String getLastCooperativeVisitSymptoms() {
+		return lastCooperativeVisitSymptoms;
+	}
 
 	public void setCountry(String country) {
 		this.country = country;
@@ -1491,19 +1491,19 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 	}
 
-//	public void setNumberOfVisits(int numberOfVisits) {
-//		this.numberOfVisits = numberOfVisits;
-//	}
-//
-//	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
-//		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
-//	}
-//
-//	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
-//		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
-//	}
-//
-//	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
-//		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
-//	}
+	public void setNumberOfVisits(int numberOfVisits) {
+		this.numberOfVisits = numberOfVisits;
+	}
+
+	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
+		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
+	}
+
+	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
+		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
+	}
+
+	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
+		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
+	}
 }

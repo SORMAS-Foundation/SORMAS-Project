@@ -42,6 +42,7 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
+	String confirmationAlsoExtendQuarantine = "confirmationAlsoExtendQuarantine";
 	String confirmationArchiveArea = "confirmationArchiveArea";
 	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";

@@ -5223,6 +5223,15 @@ ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (246, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
 
+-- 2020-09-03 - Add "Has COVID app" and "COVID Code generated and delivered" fields on person
+ALTER TABLE person ADD COLUMN hasCovidApp boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN hasCovidApp boolean DEFAULT false;
+
+ALTER TABLE person ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
+
 -- 2020-07-29 Campaign diagram visualisation refinement
 
 ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
@@ -5230,5 +5239,5 @@ ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USI
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
 ALTER TABLE campaignformmeta_history ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (247, 'Campaign diagram visualization refinement #2753');
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Campaign diagram visualization refinement #2753');
 -- *** Insert new sql commands BEFORE this line ***

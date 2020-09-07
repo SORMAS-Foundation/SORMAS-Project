@@ -142,6 +142,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private CheckBox quarantineOrderedOfficialDocument;
 	private ComboBox cbDisease;
 	private OptionGroup contactCategory;
+	private boolean quarantineChangedByFollowUpUntilChange = false;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isInJurisdiction) {
 		super(
@@ -463,6 +464,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						minimumFollowUpUntilDate,
 						null,
 						Resolution.DAY));
+				dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended));
 			}
 		});
 
@@ -638,29 +640,55 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		return HTML_LAYOUT;
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
-		Property<Date> quarantineEndField = valueChangeEvent.getProperty();
-		Date newQuarantineEnd = quarantineEndField.getValue();
-		ContactDto originalContact = getInternalValue();
-		Date oldQuarantineEnd = originalContact.getQuarantineTo();
-		if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox) {
+		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
+		Date followUpUntil = followUpUntilField.getValue();
+		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendQuarantine),
-				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
 					if (confirmed) {
-						if (!originalContact.isQuarantineExtended()) {
-							quarantineExtendedCheckbox.setValue(true);
+						quarantineChangedByFollowUpUntilChange = true;
+						quarantineTo.setValue(followUpUntil);
+						if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
+							quarantineExtendedCheckBox.setValue(true);
 						}
-					} else {
-						quarantineEndField.setValue(oldQuarantineEnd);
 					}
 				});
-		} else if (!originalContact.isQuarantineExtended()) {
-			quarantineExtendedCheckbox.setValue(false);
+		}
+	}
+
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+		if (quarantineChangedByFollowUpUntilChange) {
+			quarantineChangedByFollowUpUntilChange = false;
+		} else {
+			Property<Date> quarantineEndField = valueChangeEvent.getProperty();
+			Date newQuarantineEnd = quarantineEndField.getValue();
+			ContactDto originalContact = getInternalValue();
+			Date oldQuarantineEnd = originalContact.getQuarantineTo();
+			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingExtendQuarantine),
+					new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							if (!originalContact.isQuarantineExtended()) {
+								quarantineExtendedCheckbox.setValue(true);
+							}
+						} else {
+							quarantineEndField.setValue(oldQuarantineEnd);
+						}
+					});
+			} else if (!originalContact.isQuarantineExtended()) {
+				quarantineExtendedCheckbox.setValue(false);
+			}
 		}
 	}
 }

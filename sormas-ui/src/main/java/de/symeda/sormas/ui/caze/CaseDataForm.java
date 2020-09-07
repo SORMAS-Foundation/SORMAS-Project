@@ -208,6 +208,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private OptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
+	private boolean quarantineChangedByFollowUpUntilChange = false;
 
 	public CaseDataForm(String caseUuid, PersonDto person, Disease disease, SymptomsDto symptoms, ViewMode viewMode, boolean isInJurisdiction) {
 
@@ -507,6 +508,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			addField(CaseDataDto.FOLLOW_UP_STATUS, ComboBox.class);
 			addField(CaseDataDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(1);
 			dfFollowUpUntil = addDateField(CaseDataDto.FOLLOW_UP_UNTIL, DateField.class, -1);
+			dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, quarantineTo, quarantineExtended));
 			addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS);
@@ -886,29 +888,55 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		});
 	}
 
-	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
-		Property<Date> quarantineEndField = valueChangeEvent.getProperty();
-		Date newQuarantineEnd = quarantineEndField.getValue();
-		CaseDataDto originalCase = getInternalValue();
-		Date oldQuarantineEnd = originalCase.getQuarantineTo();
-		if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+	private void onFollowUpUntilChanged(Property.ValueChangeEvent valueChangeEvent, DateField quarantineTo, CheckBox quarantineExtendedCheckBox) {
+		Property<Date> followUpUntilField = valueChangeEvent.getProperty();
+		Date followUpUntil = followUpUntilField.getValue();
+		if (quarantineTo.getValue() != null && (followUpUntil == null || followUpUntil.compareTo(quarantineTo.getValue()) != 0)) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendQuarantine),
-				new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+				new Label(I18nProperties.getString(Strings.confirmationAlsoExtendQuarantine)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				640,
 				confirmed -> {
 					if (confirmed) {
-						if (!originalCase.isQuarantineExtended()) {
-							quarantineExtendedCheckbox.setValue(true);
+						quarantineChangedByFollowUpUntilChange = true;
+						quarantineTo.setValue(followUpUntil);
+						if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
+							quarantineExtendedCheckBox.setValue(true);
 						}
-					} else {
-						quarantineEndField.setValue(oldQuarantineEnd);
 					}
 				});
-		} else if (!originalCase.isQuarantineExtended()) {
-			quarantineExtendedCheckbox.setValue(false);
+		}
+	}
+
+	private void onQuarantineEndChange(Property.ValueChangeEvent valueChangeEvent, CheckBox quarantineExtendedCheckbox) {
+		if (quarantineChangedByFollowUpUntilChange) {
+			quarantineChangedByFollowUpUntilChange = false;
+		} else {
+			Property<Date> quarantineEndField = valueChangeEvent.getProperty();
+			Date newQuarantineEnd = quarantineEndField.getValue();
+			CaseDataDto originalCase = getInternalValue();
+			Date oldQuarantineEnd = originalCase.getQuarantineTo();
+			if (oldQuarantineEnd != null && newQuarantineEnd != null && newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+				VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getString(Strings.headingExtendQuarantine),
+					new Label(I18nProperties.getString(Strings.confirmationExtendQuarantine)),
+					I18nProperties.getString(Strings.yes),
+					I18nProperties.getString(Strings.no),
+					640,
+					confirmed -> {
+						if (confirmed) {
+							if (!originalCase.isQuarantineExtended()) {
+								quarantineExtendedCheckbox.setValue(true);
+							}
+						} else {
+							quarantineEndField.setValue(oldQuarantineEnd);
+						}
+					});
+			} else if (!originalCase.isQuarantineExtended()) {
+				quarantineExtendedCheckbox.setValue(false);
+			}
 		}
 	}
 
