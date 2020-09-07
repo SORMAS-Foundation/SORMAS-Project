@@ -5237,7 +5237,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-Ap
 ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
 ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
-ALTER TABLE campaignformmeta_history ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (248, 'Campaign diagram visualization refinement #2753');
 -- *** Insert new sql commands BEFORE this line ***
