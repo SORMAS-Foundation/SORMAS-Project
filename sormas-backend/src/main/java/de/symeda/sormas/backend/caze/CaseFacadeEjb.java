@@ -2823,17 +2823,20 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsJoin.get(Visit.VISIT_STATUS),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
+
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, CaseFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
-			resultMap.values().stream().forEach(contactFollowUpDto -> {
-				contactFollowUpDto.initVisitSize(interval + 1);
 
-//				pseudonymizationService.pseudonymizeDto(
-//					PersonReferenceDto.class,
-//					contactFollowUpDto.getPerson(),
-//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
-//					null);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+			resultMap.values().stream().forEach(caseFollowUpDto -> {
+				caseFollowUpDto.initVisitSize(interval + 1);
+
+				boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caseFollowUpDto.getJurisdiction());
+				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, isInJurisdiction, null);
 			});
+
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
 				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);

@@ -746,6 +746,8 @@ public class ContactFacadeEjb implements ContactFacade {
 				visitsJoin.get(Visit.VISIT_STATUS),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
 
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
+
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, ContactFollowUpDto> resultMap =
 				resultList.stream().collect(Collectors.toMap(ContactFollowUpDto::getUuid, Function.identity()));
