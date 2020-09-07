@@ -27,9 +27,9 @@
   * **Linux**: https://docs.azul.com/zulu/zuludocs/#ZuluUserGuide/PrepareZuluPlatform/AttachAPTRepositoryUbuntuOrDebianSys.htm
         
 		sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-		sudo apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main'
+		sudo apt-add-repository 'deb https://repos.azul.com/zulu/deb/ stable main'
 		sudo apt-get update
-		sudo apt-get install zulu-11
+		sudo apt-get install zulu11
   * **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 * You can check your Java version from the shell/command line using: ``java -version``
 
@@ -239,7 +239,7 @@ This can be conveniently accomplished by executing the R setup script from the S
 ## SORMAS to SORMAS Certificate Setup
 
 To be able to communicate with other SORMAS instances, there are some additional steps which need to be taken, in order to set
-up the certificate and the truststore. Please see the [related guide](GUIDE_CREATE_CERTIFICATE.md) for detailed instructions regarding
+up the certificate and the truststore. Please see the [related guide](GUIDE_SORMAS2SORMAS_CERTIFICATE.md) for detailed instructions regarding
 SORMAS to SORMAS setup.
 <br/>
 

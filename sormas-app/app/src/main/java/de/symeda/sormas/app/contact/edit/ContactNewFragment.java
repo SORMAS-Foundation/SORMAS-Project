@@ -104,7 +104,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			if (ConfigProvider.isGermanServer()) {
+			if (ConfigProvider.isConfiguredServer("de")) {
 				contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 				contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 			}
@@ -113,7 +113,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 		});
 
-		if (ConfigProvider.isGermanServer()) {
+		if (ConfigProvider.isConfiguredServer("de")) {
 			contentBinding.contactContactProximity.addValueChangedListener(
 				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
 		} else {

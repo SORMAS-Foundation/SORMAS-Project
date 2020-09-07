@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import java.util.function.Consumer;
+
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -30,8 +33,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
-
-import java.util.function.Consumer;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormDataCriteria> {
 
@@ -70,8 +72,12 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				200));
 		cbCampaignForm.addItems(FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 
+		FieldHelper.addSoftRequiredStyle(cbCampaign, cbCampaignForm);
+
 		if (formMetaChangedCallback != null) {
-			cbCampaignForm.addValueChangeListener(e -> formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue()));
+			cbCampaignForm.addValueChangeListener(e -> {
+				formMetaChangedCallback.accept((CampaignFormMetaReferenceDto) e.getProperty().getValue());
+			});
 		}
 
 		UserDto user = UserProvider.getCurrent().getUser();

@@ -47,10 +47,7 @@ public class VisitSummaryExportDetails {
 		String caseHealthFacilityUuid,
 		String casePointOfEntryUuid) {
 
-		this.contactId = contactId;
-		this.visitDateTime = visitDateTime;
-		this.visitStatus = visitStatus;
-		this.symptoms = symptoms;
+		this(contactId, visitDateTime, visitStatus, symptoms);
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -62,6 +59,13 @@ public class VisitSummaryExportDetails {
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+	}
+
+	public VisitSummaryExportDetails(Long contactId, Date visitDateTime, VisitStatus visitStatus, Symptoms symptoms) {
+		this.contactId = contactId;
+		this.visitDateTime = visitDateTime;
+		this.visitStatus = visitStatus;
+		this.symptoms = symptoms;
 	}
 
 	public Long getContactId() {

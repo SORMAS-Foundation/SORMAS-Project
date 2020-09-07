@@ -112,13 +112,13 @@ public class CaseReadFragment extends BaseReadFragment<FragmentCaseReadLayoutBin
 			contentBinding.caseButtonsPanel.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer("de")) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer("de")) {
 			contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);

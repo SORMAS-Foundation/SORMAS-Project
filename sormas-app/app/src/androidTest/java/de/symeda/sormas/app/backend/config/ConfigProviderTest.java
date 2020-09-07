@@ -109,10 +109,10 @@ public class ConfigProviderTest {
 		assertNotNull(ConfigProvider.getServerLocale());
 		ConfigProvider.setServerLocale("de");
 		assertThat(ConfigProvider.getServerLocale(), is("de"));
-		assertTrue(ConfigProvider.isGermanServer());
+		assertTrue(ConfigProvider.isConfiguredServer("de"));
 		ConfigProvider.setServerLocale("en");
 		assertThat(ConfigProvider.getServerLocale(), is("en"));
-		assertFalse(ConfigProvider.isGermanServer());
+		assertFalse(ConfigProvider.isConfiguredServer("de"));
 	}
 
 	@Test

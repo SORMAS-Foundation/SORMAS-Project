@@ -1,27 +1,5 @@
 package de.symeda.sormas.backend.caze;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
-
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -37,6 +15,27 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Stateless
 @LocalBean
@@ -219,7 +218,9 @@ public class CaseListCriteriaBuilder {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
-		case CaseIndexDetailedDto.ADDRESS:
+		case CaseIndexDetailedDto.STREET:
+		case CaseIndexDetailedDto.HOUSE_NUMBER:
+		case CaseIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case CaseIndexDetailedDto.POSTAL_CODE:
 			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:

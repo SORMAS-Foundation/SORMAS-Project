@@ -109,7 +109,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CATEGORY, 140));
 		}
 
@@ -200,7 +200,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
 		birthDateDD.setWidth(140, Unit.PIXELS);
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -353,7 +353,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			ContactDateType.REPORT_DATE);
+			null);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
