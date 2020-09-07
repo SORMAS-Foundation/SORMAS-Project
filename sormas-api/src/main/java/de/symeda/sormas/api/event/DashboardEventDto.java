@@ -22,10 +22,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
 public class DashboardEventDto implements Serializable {
 
@@ -41,17 +37,9 @@ public class DashboardEventDto implements Serializable {
 	private Disease disease;
 	private String diseaseDetails;
 	private Date eventDate;
-	@SensitiveData
-	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double reportLat;
-	@SensitiveData
-	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double reportLon;
-	@SensitiveData
-	@Pseudonymizer(LatitudePseudonymizer.class)
 	private Double locationLat;
-	@SensitiveData
-	@Pseudonymizer(LongitudePseudonymizer.class)
 	private Double locationLon;
 	private DistrictReferenceDto district;
 

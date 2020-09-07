@@ -57,9 +57,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -83,7 +80,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -219,11 +216,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
-			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID),
-			eventLocation.join(Location.REGION, JoinType.LEFT).get(Region.UUID),
-			eventLocation.join(Location.DISTRICT, JoinType.LEFT).get(District.UUID),
-			eventLocation.join(Location.COMMUNITY, JoinType.LEFT).get(Community.UUID));
+			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);
@@ -273,7 +266,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		pseudonymizer.pseudonymizeDtoCollection(
 			EventParticipantIndexDto.class,
 			indexList,
-			p -> eventJurisdictionChecker.isInJurisdictionOrOwned(p.getJurisdiction()),
+			p -> eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(p.getJurisdiction()),
 			null);
 
 		return indexList;
@@ -305,6 +298,13 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return new EventParticipantReferenceDto(eventParticipant.getUuid());
 	}
 
+	@Override
+	public boolean isEventParticipantEditAllowed(String uuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+
+		return eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(eventParticipant);
+	}
+
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
 
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
@@ -316,6 +316,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			}
 		}
 		DtoHelper.validateDto(source, target);
+
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		}
 
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
@@ -335,7 +339,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
-			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(source.getEvent());
+			boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 		}
@@ -352,7 +356,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 				EventParticipantDto.class,
 				dto,
 				originalDto,
-				eventJurisdictionChecker.isInJurisdictionOrOwned(originalEventParticipant.getEvent()));
+				eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(originalEventParticipant));
 		}
 	}
 
@@ -374,6 +378,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		EventParticipantDto target = new EventParticipantDto();
 		DtoHelper.fillDto(target, source);
+
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(source.getReportingUser().toReference());
+		}
 
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));

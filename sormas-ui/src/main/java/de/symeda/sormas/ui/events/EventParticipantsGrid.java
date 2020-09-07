@@ -27,7 +27,7 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.jurisdiction.EventJurisdictionHelper;
+import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -41,8 +41,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
 
 	private static final String CASE_ID = Captions.EventParticipant_caseUuid;
+	private static final String NO_CASE_CREATE = null;
 
-	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
 
 		super(EventParticipantIndexDto.class);
@@ -63,13 +63,26 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
 				return entry.getCaseUuid();
-			} else {
-				return "";
 			}
+
+			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
+				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
+				UserProvider.getCurrent().getUser(),
+				entry.getJurisdiction());
+			if (!isInJurisdiction) {
+				return NO_CASE_CREATE;
+			}
+
+			return "";
 		});
 		caseIdColumn.setId(CASE_ID);
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
-		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
+		caseIdColumn.setRenderer(
+			new CaseUuidRenderer(
+				uuid -> {
+					// '!=' check is ok because the converter returns the constant when no case creation is allowed
+					return NO_CASE_CREATE != uuid;
+				}));
 
 		setColumns(
 			EventParticipantIndexDto.UUID,
@@ -90,7 +103,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				FieldAccessColumnStyleGenerator.withCheckers(
 					getBeanType(),
 					column.getId(),
-					EventJurisdictionHelper::isInJurisdictionOrOwned,
+					EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
 					FieldHelper.createPersonalDataFieldAccessChecker(),
 					FieldHelper.createSensitiveDataFieldAccessChecker()));
 

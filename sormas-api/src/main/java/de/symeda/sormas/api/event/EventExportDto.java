@@ -20,7 +20,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EventExportDto implements Serializable {
@@ -34,35 +33,22 @@ public class EventExportDto implements Serializable {
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	@SensitiveData
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private String region;
 	private String district;
-	@SensitiveData
 	private String community;
-	@SensitiveData
 	private String city;
-	@SensitiveData
 	private String street;
-	@SensitiveData
 	private String houseNumber;
-	@SensitiveData
 	private String additionalInformation;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcEmail;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
-	@SensitiveData
 	private String srcMediaDetails;
 	private Date reportDateTime;
 

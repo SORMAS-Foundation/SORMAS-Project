@@ -153,7 +153,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), cazePerson);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), cazePerson, user.toReference());
 		SampleDto sampleOfEventParticipant = creator.createSample(
 			eventParticipant.toReference(),
 			DateHelper.subtractDays(new Date(), 2),

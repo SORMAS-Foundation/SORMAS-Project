@@ -153,7 +153,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			p.getAddress().setCity("Test City");
 		});
 
-		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr");
+		return creator.createEventParticipant(event.toReference(), person, "Test involvement descr", user.toReference());
 	}
 
 	private void assertNotPseudonymized(EventParticipantDto eventParticipant) {
