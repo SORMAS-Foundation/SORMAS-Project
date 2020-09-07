@@ -39,14 +39,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		headerLayout.setSpacing(true);
 		CssStyles.style(headerLayout, CssStyles.VSPACE_4);
 
-//		Label headerLabel = new Label(diagramDefinition.getDiagramCaption());
-//		headerLabel.setSizeUndefined();
-//		CssStyles.style(headerLabel, CssStyles.H2, CssStyles.VSPACE_4, CssStyles.VSPACE_TOP_NONE);
-//
-//		headerLayout.addComponent(headerLabel);
-//		headerLayout.setComponentAlignment(headerLabel, Alignment.BOTTOM_LEFT);
-//		headerLayout.setExpandRatio(headerLabel, 1);
-
 		addComponent(headerLayout);
 
 		setWidth(100, Unit.PERCENTAGE);
@@ -84,19 +76,18 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				+ "chart:{ "
 				+ " type: 'column', "
 				+ " backgroundColor: 'transparent', "
-				+ " borderColor: 'grey', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
 				+ " spacing: [20, 20, 20, 20], "
-				+ " color: 'grey', "
 				+ "},"
 				+ "credits:{ enabled: false },"
 				+ "exporting:{ "
 				+ " enabled: true,"
 				+ " buttons:{ contextButton:{ theme:{ fill: 'transparent' } } }"
 				+ "},"
-				+ "legend: { margin: 30, itemStyle: { color: 'grey' },itemHoverStyle:{color: 'darkgrey'}},"
-				+ "title:{ text: '" + title + "', style: {  color: 'grey'} },");
+				+ "legend: { verticalAlign: 'top', backgroundColor: 'transparent', align: 'left', borderWidth: 0, shadow: false, margin: 30, padding: 0 },"
+				+ "colors: ['#FF0000','#6691C4','#ffba08','#519e8a','#ed254e','#39a0ed','#FF8C00','#344055','#D36135','#82d173'],"
+				+ "title:{ text: '" + title + "',");
 		//@formatter:on
 
 		Map<String, Long> stackMap = diagramDefinition.getCampaignDiagramSeriesList()
