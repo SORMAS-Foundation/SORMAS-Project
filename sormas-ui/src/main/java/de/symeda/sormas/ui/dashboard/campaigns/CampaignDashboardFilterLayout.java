@@ -83,7 +83,6 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		if (UserProvider.getCurrent().getUser().getRegion() == null) {
 			regionFilter.setWidth(200, Unit.PIXELS);
 			regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptRegion));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 			regionFilter.addValueChangeListener(e -> {
 				final Object value = regionFilter.getValue();
 				dashboardDataProvider.setRegion((RegionReferenceDto) value);
@@ -95,11 +94,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		}
 
 		// District filter
-		if (UserProvider.getCurrent().getUser().getRegion() != null && UserProvider.getCurrent().getUser().getDistrict() == null) {
+		if (UserProvider.getCurrent().getUser().getDistrict() == null) {
 			districtFilter.setWidth(200, Unit.PIXELS);
 			districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptDistrict));
-			districtFilter
-				.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(UserProvider.getCurrent().getUser().getRegion().getUuid()));
 			districtFilter.addValueChangeListener(e -> {
 				dashboardDataProvider.setDistrict((DistrictReferenceDto) districtFilter.getValue());
 				dashboardView.refreshDashboard();
@@ -112,6 +109,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private void setFilterVisibilitiesBasedOnRegion(Object value) {
 		if (value != null) {
 			districtFilter.setVisible(true);
+			districtFilter.removeAllItems();
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(((RegionReferenceDto) value).getUuid()));
 		} else {
 			districtFilter.setVisible(false);
 			districtFilter.clear();
@@ -120,12 +119,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 	private void setFilterVisibilitiesBasedOnArea(Object value) {
 		if (value != null) {
+			regionFilter.removeAllItems();
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(((AreaReferenceDto) value).getUuid()));
 			regionFilter.setVisible(true);
-			districtFilter.setVisible(true);
 		} else {
 			regionFilter.setVisible(false);
-			districtFilter.setVisible(false);
 			regionFilter.clear();
+			districtFilter.setVisible(false);
 			districtFilter.clear();
 		}
 	}

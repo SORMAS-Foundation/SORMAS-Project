@@ -325,6 +325,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ " LEFT JOIN " + Region.TABLE_NAME + " ON " + CampaignFormData.REGION + "_id = " + Region.TABLE_NAME + "." + Region.ID
 							+ " LEFT JOIN " + Area.TABLE_NAME + " ON " + Region.AREA + "_id = " + Area.TABLE_NAME + "." + Area.ID
 							+ " LEFT JOIN " + District.TABLE_NAME + " ON " + CampaignFormData.DISTRICT + "_id = " + District.TABLE_NAME + "." + District.ID
+							+ " LEFT JOIN " + Community.TABLE_NAME + " ON " + CampaignFormData.COMMUNITY + "_id = " + Community.TABLE_NAME + "." + Community.ID
 							+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN + "_id = " + Campaign.TABLE_NAME + "." + Campaign.ID
 							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") as jsonData"
 							+ ", json_array_elements(" + CampaignFormMeta.CAMPAIGN_FORM_ELEMENTS + ") as jsonMeta"
