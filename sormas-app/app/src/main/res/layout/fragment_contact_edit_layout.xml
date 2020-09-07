@@ -209,6 +209,11 @@
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/contact_quarantineReduced"
+                    app:value="@={data.quarantineReduced}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/contact_quarantineOrderedVerbally"
                     app:value="@={data.quarantineOrderedVerbally}"
                     style="@style/ControlSingleColumnStyle" />
