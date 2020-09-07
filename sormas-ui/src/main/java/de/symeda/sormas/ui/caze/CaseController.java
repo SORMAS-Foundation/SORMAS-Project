@@ -384,11 +384,12 @@ public class CaseController {
 				if (convertedContact != null) {
 
 					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getFollowUpDuration(dto.getDisease());
-					List<VisitDto> visits = FacadeProvider.getVisitFacade().getVisitsByContactAndPeriod(
+					List<VisitDto> visits = FacadeProvider.getVisitFacade()
+						.getVisitsByContactAndPeriod(
 							convertedContact.toReference(),
 							DateHelper.subtractDays(dto.getReportDate(), incubationPeriod),
 							DateHelper.addDays(dto.getReportDate(), incubationPeriod));
-					for(VisitDto visit : visits) {
+					for (VisitDto visit : visits) {
 						SymptomsHelper.updateSymptoms(visit.getSymptoms(), dto.getSymptoms());
 					}
 
