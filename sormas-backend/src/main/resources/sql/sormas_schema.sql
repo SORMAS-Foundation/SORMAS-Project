@@ -5173,7 +5173,7 @@ INSERT INTO epidataburial (SELECT * FROM t_epidataburial);
 INSERT INTO epidatagathering (SELECT * FROM t_epidatagathering);
 INSERT INTO epidatatravel (SELECT * FROM t_epidatatravel);
 
-UPDATE cases SET epidata_id = (SELECT new_id FROM t_id_map WHERE cases.epidata_id = old_id);
+UPDATE cases SET epidata_id = m.new_id FROM t_id_map m WHERE cases.epidata_id = m.old_id;
 
 -- EPI DATA END
 
@@ -5197,7 +5197,7 @@ uuid = (SELECT new_uuid FROM t_id_map WHERE ts.id = old_id);
 
 INSERT INTO symptoms (SELECT * FROM t_symptoms);
 
-UPDATE cases SET symptoms_id = (SELECT new_id FROM t_id_map WHERE cases.symptoms_id = old_id);
+UPDATE cases SET symptoms_id = m.new_id FROM t_id_map m WHERE cases.symptoms_id = m.old_id;
 
 -- SYMPTOMS END
 
@@ -5215,5 +5215,21 @@ DROP TABLE IF EXISTS t_edbl_id_map;
 DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
+
+
+-- 2020-09-01 - Store the status of the PIA account for a person
+ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
+ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (246, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
+
+-- 2020-09-03 - Add "Has COVID app" and "COVID Code generated and delivered" fields on person
+ALTER TABLE person ADD COLUMN hasCovidApp boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN hasCovidApp boolean DEFAULT false;
+
+ALTER TABLE person ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
 
 -- *** Insert new sql commands BEFORE this line ***

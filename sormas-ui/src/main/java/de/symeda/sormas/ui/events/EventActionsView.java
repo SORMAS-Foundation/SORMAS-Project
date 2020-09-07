@@ -92,9 +92,8 @@ public class EventActionsView extends AbstractEventView {
 		filterLayout.setSizeUndefined();
 
 		filterForm = new EventActionFilterForm();
-		filterForm.addValueChangeListener(e -> navigateTo(criteria));
 		filterForm.addResetHandler(e -> navigateTo(null));
-
+		filterForm.addApplyHandler(e -> navigateTo(criteria));
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;

@@ -109,6 +109,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
 import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -176,6 +177,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -530,52 +532,6 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 
 		if (!resultList.isEmpty()) {
-
-			// TODO implement export of visit information for case
-			// only include when CASE_VISITS feature is enabled
-//			if (exportConfiguration == null
-//				|| exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_VISITS)
-//				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
-//				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
-//				|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
-//				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
-//				Root<Case> visitsCqRoot = visitsCq.from(Case.class);
-//				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
-//				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
-//
-//				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
-//
-//				visitsCq.where(
-//					CaseService.and(cb, caseRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
-//				visitsCq.multiselect(
-//					visitsCqRoot.get(AbstractDomainObject.ID),
-//					visitsJoin.get(Visit.VISIT_DATE_TIME),
-//					visitsJoin.get(Visit.VISIT_STATUS),
-//					visitSymptomsJoin);
-//
-//				List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
-//
-//				// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
-//				// doesn't seem to be possible and using a native query is not an option because of user filters
-//				for (CaseExportDto exportCase : resultList) {
-//					List<VisitSummaryExportDetails> visits =
-//						visitSummaries.stream().filter(v -> v.getContactId() == exportCase.getId()).collect(Collectors.toList());
-//
-//					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
-//						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
-//						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
-//						.orElse(null);
-//
-//					exportCase.setNumberOfVisits(visits.size());
-//					if (lastCooperativeVisit != null) {
-//						exportCase.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-//						exportCase.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
-//						exportCase.setLastCooperativeVisitSymptomatic(
-//							lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
-//					}
-//				}
-//			}
-
 			Map<Long, Symptoms> symptoms = null;
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
 				List<Symptoms> symptomsList = null;
@@ -690,9 +646,36 @@ public class CaseFacadeEjb implements CaseFacade {
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
 
+			List<VisitSummaryExportDetails> visitSummaries = null;
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
+				&& (exportConfiguration == null
+					|| exportConfiguration.getProperties().contains(CaseExportDto.NUMBER_OF_VISITS)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
+					|| exportConfiguration.getProperties().contains(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS))) {
+				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+				Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+				Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+				List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+				visitsCq.where(
+					CaseService.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
+				visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin);
+
+				visitSummaries = em.createQuery(visitsCq).getResultList();
+			}
+
 			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			for (CaseExportDto exportDto : resultList) {
+				final boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
 				}
@@ -771,7 +754,9 @@ public class CaseFacadeEjb implements CaseFacade {
 						for (Sample sample : caseSamples) {
 							CaseExportDto.CaseExportSampleDto sampleDto = new CaseExportDto.CaseExportSampleDto(
 								sample.getSampleDateTime(),
-								FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails()),
+								sample.getLab() != null
+									? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
+									: null,
 								sample.getPathogenTestResult());
 
 							switch (++count) {
@@ -790,7 +775,28 @@ public class CaseFacadeEjb implements CaseFacade {
 						}
 					});
 				}
-				boolean inJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(exportDto.getJurisdiction());
+
+				if (visitSummaries != null) {
+					List<VisitSummaryExportDetails> visits =
+						visitSummaries.stream().filter(v -> v.getContactId() == exportDto.getId()).collect(Collectors.toList());
+
+					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
+						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
+						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
+						.orElse(null);
+
+					exportDto.setNumberOfVisits(visits.size());
+					if (lastCooperativeVisit != null) {
+						exportDto.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+
+						SymptomsDto visitSymptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
+						pseudonymizer.pseudonymizeDto(SymptomsDto.class, visitSymptoms, inJurisdiction, null);
+
+						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
+						exportDto.setLastCooperativeVisitSymptomatic(visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+					}
+				}
+
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
 					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample1(), inJurisdiction, null);
@@ -1416,6 +1422,11 @@ public class CaseFacadeEjb implements CaseFacade {
 				newCase.setReportLat(facility.getLatitude());
 				newCase.setReportLon(facility.getLongitude());
 			}
+		}
+
+		// Clear facility type if no facility or home was selected
+		if (newCase.getHealthFacility() == null || FacilityDto.NONE_FACILITY_UUID.equals(newCase.getHealthFacility().getUuid())) {
+			newCase.setFacilityType(null);
 		}
 
 		// Generate epid number if missing or incomplete

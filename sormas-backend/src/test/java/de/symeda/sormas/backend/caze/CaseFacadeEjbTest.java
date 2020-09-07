@@ -90,6 +90,8 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -1020,6 +1022,40 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 5. Different disease and different epid number
 		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
+	}
+
+	@Test
+	public void testSymptomsUpdatedByVisit() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
+		CaseDataDto caze =
+				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		caze.getSymptoms().setChestPain(SymptomState.YES);
+
+		// Add a new visit to the case
+		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE);
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		visit.getSymptoms().setChestPain(SymptomState.NO);
+
+		getCaseFacade().saveCase(caze);
+		getVisitFacade().saveVisit(visit);
+		CaseDataDto updatedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getChestPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAbdominalPain());
+
+		// Update an existing visit
+		visit.getSymptoms().setAcuteRespiratoryDistressSyndrome(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		updatedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getChestPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAbdominalPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAcuteRespiratoryDistressSyndrome());
+		assertTrue(updatedCase.getSymptoms().getSymptomatic());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

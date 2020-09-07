@@ -3,6 +3,7 @@ package de.symeda.sormas.rest;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
+import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 import javax.annotation.security.RolesAllowed;
@@ -28,6 +29,16 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/person/{personUuid}/isValid")
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
+	}
+
+	@POST
+	@Path("/person/{personUuid}/status")
+	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, PersonSymptomJournalStatusDto statusDto) {
+		try {
+			return FacadeProvider.getPersonFacade().setSymptomJournalStatus(personUuid, statusDto.getStatus());
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	@POST
