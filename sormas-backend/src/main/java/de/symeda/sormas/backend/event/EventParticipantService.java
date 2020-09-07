@@ -32,6 +32,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.person.Person;
@@ -138,9 +140,34 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, CriteriaBuilder cb, Root<EventParticipant> from) {
 
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
+		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
+		}
+
+		if (criteria.getFreeText() != null) {
+			String[] textFilters = criteria.getFreeText().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = formatForLike(textFilters[i]);
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+
+		if (criteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY()));
+		}
+		if (criteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM()));
+		}
+		if (criteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
 		}
 
 		filter = and(cb, filter, createDefaultFilter(cb, from));

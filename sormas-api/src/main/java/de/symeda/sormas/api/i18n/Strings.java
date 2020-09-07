@@ -714,6 +714,7 @@ public interface Strings {
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
+	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
 	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
