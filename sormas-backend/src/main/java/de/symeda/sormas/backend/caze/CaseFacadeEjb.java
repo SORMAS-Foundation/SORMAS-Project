@@ -153,6 +153,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -245,6 +246,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "CaseFacade")
@@ -269,6 +272,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private UserService userService;
 	@EJB
 	private VisitService visitService;
+	@EJB
+	private VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
@@ -2667,6 +2672,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				clinicalVisitService.ensurePersisted(clinicalVisit);
 			}
 		}
+
+		// 5 Attach otherCase visits to leadCase
+		// (set the person and the disease of the visit, saveVisit does the rest)
+		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+			otherVisit.setPerson(leadCaseData.getPerson());
+			otherVisit.setDisease(leadCaseData.getDisease());
+			visitFacade.saveVisit(otherVisit);
+		}
 	}
 
 	@Override
@@ -2822,6 +2835,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+			// Sort by visit date so that we'll have the latest visit of each day
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
 
 			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
 

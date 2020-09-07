@@ -651,7 +651,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 	private void updateCaseVisitAssociations(VisitDto existingVisit, Visit visit) {
 
-		if (existingVisit != null && existingVisit.getVisitDateTime() == visit.getVisitDateTime()) {
+		if (existingVisit != null
+			&& existingVisit.getVisitDateTime() == visit.getVisitDateTime()
+			&& existingVisit.getPerson().equals(visit.getPerson())) {
 			// No need to update the associations
 			return;
 		}
