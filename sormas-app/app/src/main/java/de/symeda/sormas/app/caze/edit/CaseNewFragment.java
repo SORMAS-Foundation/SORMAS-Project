@@ -28,6 +28,7 @@ import de.symeda.sormas.api.caze.DengueFeverType;
 import de.symeda.sormas.api.caze.PlagueType;
 import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -209,6 +210,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataCommunity.setRequired(false);
 			contentBinding.caseDataHealthFacility.setEnabled(false);
 			contentBinding.caseDataHealthFacility.setRequired(false);
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			contentBinding.facilityOrHome.setEnabled(false);
+			contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
+			contentBinding.facilityTypeGroup.setEnabled(false);
+			contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
+			contentBinding.caseDataFacilityType.setEnabled(false);
 		}
 
 		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
@@ -287,6 +294,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		record.setRegion(lastCase.getRegion());
 		record.setDistrict(lastCase.getDistrict());
 		record.setCommunity(lastCase.getCommunity());
+		record.setFacilityType(lastCase.getFacilityType());
 		record.setHealthFacility(lastCase.getHealthFacility());
 		record.setHealthFacilityDetails(lastCase.getHealthFacilityDetails());
 		record.setPointOfEntry(lastCase.getPointOfEntry());
