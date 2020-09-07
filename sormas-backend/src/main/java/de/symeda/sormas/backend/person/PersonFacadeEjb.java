@@ -42,6 +42,7 @@ import javax.validation.constraints.NotNull;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -245,6 +246,28 @@ public class PersonFacadeEjb implements PersonFacade {
 			.map(u -> personService.getByUuid(u))
 			.map(p -> convertToDto(pseudonymizer, p, isPersonInJurisdiction(p)))
 			.orElse(null);
+	}
+
+	@Override
+	public PersonDto getPersonForJournal(String Uuid) {
+		PersonDto detailedPerson = getPersonByUuid(Uuid);
+		//only specific attributes of the person shall be returned:
+		if (detailedPerson != null) {
+			PersonDto exportPerson = new PersonDto();
+			exportPerson.setUuid(detailedPerson.getUuid());
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
+			exportPerson.setPhone(detailedPerson.getPhone());
+			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
+			exportPerson.setFirstName(detailedPerson.getFirstName());
+			exportPerson.setLastName(detailedPerson.getLastName());
+			exportPerson.setBirthdateYYYY(detailedPerson.getBirthdateYYYY());
+			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
+			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
+			exportPerson.setSex(detailedPerson.getSex());
+			return exportPerson;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
