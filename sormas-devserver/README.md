@@ -6,7 +6,16 @@ The server installation is located in the project build directory (`target/cargo
 directories (`target/sormasfolders`).
 
 ## Prerequisites
-This setup requires a working Java, maven, and docker(-compose) environment. 
+This setup requires a working Java, maven, and docker(-compose) environment.
+
+## Configuration
+The port used by the sormas-postgres docker container and other ports used by the cargo server can be configured
+in file `.env`.
+
+To run the cargo server against an existing database, configure `SORMAS_POSTGRES_PORT` in `.env` and
+skip the `docker-compose` step in the server setup.
+
+After adjusting the configuration, (re)run `mvn install` and (re)start the server.
 
 ## Build the project
 

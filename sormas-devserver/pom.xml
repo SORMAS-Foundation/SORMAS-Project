@@ -59,6 +59,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>.env</filter>
+                            </filters>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <resources>
                                 <resource>
@@ -67,6 +70,10 @@
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources/layout</directory>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources/domain</directory>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
@@ -125,7 +132,7 @@
                                 <todir>sormas</todir>
                             </configfile>
                             <configfile>
-                                <file>${basedir}/domain.xml</file>
+                                <file>${project.build.directory}/domain.xml</file>
                                 <todir>sormas/config/</todir>
                             </configfile>
                         </configfiles>

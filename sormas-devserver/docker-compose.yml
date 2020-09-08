@@ -14,4 +14,4 @@ services:
     volumes:
       - ./target/psql-payara-dev:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${SORMAS_POSTGRES_PORT}:5432"

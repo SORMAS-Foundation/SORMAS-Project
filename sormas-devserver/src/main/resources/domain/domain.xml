@@ -51,7 +51,7 @@
             <property name="databaseName" value="sormas_db"/>
             <property name="serverName" value="localhost"/>
             <property name="user" value="sormas_user"/>
-            <property name="portNumber" value="5432"/>
+            <property name="portNumber" value="${SORMAS_POSTGRES_PORT}"/>
         </jdbc-connection-pool>
         <jdbc-resource pool-name="sormasDataPool" jndi-name="jdbc/sormasDataPool"/>
         <jdbc-connection-pool datasource-classname="org.postgresql.xa.PGXADataSource" name="sormasAuditlogPool" validation-classname="org.glassfish.api.jdbc.validation.PostgresConnectionValidation" is-connection-validation-required="true" connection-validation-method="custom-validation" res-type="javax.sql.XADataSource">
@@ -59,7 +59,7 @@
             <property name="databaseName" value="sormas_audit_db"/>
             <property name="serverName" value="localhost"/>
             <property name="user" value="sormas_user"/>
-            <property name="portNumber" value="5432"/>
+            <property name="portNumber" value="${SORMAS_POSTGRES_PORT}"/>
         </jdbc-connection-pool>
         <jdbc-resource pool-name="sormasAuditlogPool" jndi-name="jdbc/AuditlogPool"/>
         <mail-resource auth="false" host="localhost" from="nail@example.com" user="user" jndi-name="mail/MailSession"/>
@@ -95,17 +95,17 @@
             </http-service>
             <iiop-service>
                 <orb use-thread-pool-ids="thread-pool-1"/>
-                <iiop-listener address="0.0.0.0" port="6037" lazy-init="true" id="orb-listener-1"/>
+                <iiop-listener address="0.0.0.0" port="${SORMAS_IIOP_PORT}" lazy-init="true" id="orb-listener-1"/>
                 <ssl/>
-                <iiop-listener address="0.0.0.0" port="6038" id="SSL" security-enabled="true">
+                <iiop-listener address="0.0.0.0" port="${SORMAS_IIOP_SSL_PORT}" id="SSL" security-enabled="true">
                     <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"/>
                 </iiop-listener>
-                <iiop-listener address="0.0.0.0" port="6039" id="SSL_MUTUALAUTH" security-enabled="true">
+                <iiop-listener address="0.0.0.0" port="${SORMAS_IIOP_SSL_MUTUALAUTH_PORT}" id="SSL_MUTUALAUTH" security-enabled="true">
                     <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as" client-auth-enabled="true"/>
                 </iiop-listener>
             </iiop-service>
             <admin-service system-jmx-connector-name="system" type="das-and-server">
-                <jmx-connector address="0.0.0.0" port="6086" name="system" auth-realm-name="admin-realm" security-enabled="false"/>
+                <jmx-connector address="0.0.0.0" port="${SORMAS_JMX_CONNECTOR_PORT}" name="system" auth-realm-name="admin-realm" security-enabled="false"/>
                 <property name="adminConsoleContextRoot" value="/admin"/>
                 <property name="adminConsoleDownloadLocation" value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war"/>
                 <property name="ipsRoot" value="${com.sun.aas.installRoot}/.."/>
@@ -274,9 +274,9 @@
                     </protocol>
                 </protocols>
                 <network-listeners>
-                    <network-listener protocol="http-listener-1" port="6080" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"/>
-                    <network-listener protocol="http-listener-2" port="6081" name="http-listener-2" thread-pool="http-thread-pool" transport="tcp"/>
-                    <network-listener protocol="admin-listener" port="6048" name="admin-listener" thread-pool="admin-thread-pool" transport="tcp"/>
+                    <network-listener protocol="http-listener-1" port="${SORMAS_HTTP_PORT}" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"/>
+                    <network-listener protocol="http-listener-2" port="${SORMAS_HTTP_SSL_PORT}" name="http-listener-2" thread-pool="http-thread-pool" transport="tcp"/>
+                    <network-listener protocol="admin-listener" port="${SORMAS_HTTP_ADMIN_PORT}" name="admin-listener" thread-pool="admin-thread-pool" transport="tcp"/>
                 </network-listeners>
                 <transports>
                     <transport name="tcp"/>
