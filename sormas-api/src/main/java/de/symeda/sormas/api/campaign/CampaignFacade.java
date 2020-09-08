@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.campaign;
 
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.utils.SortProperty;
 
 import javax.ejb.Remote;
@@ -18,10 +19,11 @@ public interface CampaignFacade {
 
 	CampaignDto getByUuid(String uuid);
 
+	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid);
+
 	boolean isArchived(String uuid);
 
 	void deleteCampaign(String uuid);
 
 	void archiveOrDearchiveCampaign(String campaignUuid, boolean archive);
-
 }

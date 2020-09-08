@@ -5240,4 +5240,11 @@ ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (248, 'Campaign diagram visualization refinement #2753');
+
+-- 2020-09-07 Campaign dashboard element
+
+ALTER TABLE campaigns ADD COLUMN dashboardElements json;
+ALTER TABLE campaigns_history ADD COLUMN dashboardElements json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Campaign dashboard element #2527');
 -- *** Insert new sql commands BEFORE this line ***

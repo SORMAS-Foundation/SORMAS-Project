@@ -22,7 +22,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	private CampaignDiagramDefinitionDto diagramDefinition;
 
-	private List<CampaignDiagramDataDto> diagramDataList;
 	private Map<String, Map<Object, CampaignDiagramDataDto>> diagramDataBySeriesAndXAxis = new HashMap<String, Map<Object, CampaignDiagramDataDto>>();
 	private List<Object> axisKeys = new ArrayList<Object>();
 	private Map<Object, String> axisCaptions = new HashMap<Object, String>();
@@ -32,14 +31,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	public CampaignDashboardDiagramComponent(CampaignDiagramDefinitionDto diagramDefinition, List<CampaignDiagramDataDto> diagramDataList) {
 
 		this.diagramDefinition = diagramDefinition;
-		this.diagramDataList = diagramDataList;
-
-		HorizontalLayout headerLayout = new HorizontalLayout();
-		headerLayout.setWidth(100, Unit.PERCENTAGE);
-		headerLayout.setSpacing(true);
-		CssStyles.style(headerLayout, CssStyles.VSPACE_4);
-
-		addComponent(headerLayout);
 
 		setWidth(100, Unit.PERCENTAGE);
 
