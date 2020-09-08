@@ -659,13 +659,6 @@
 			</modules>
 		</profile>
 
-		<profile>
-			<id>with-dep-poms</id>
-			<modules>
-				<module>./dependencies/serverlibs.pom</module>
-			</modules>
-		</profile>
-
 	</profiles>
 
 	<modules>
@@ -675,7 +668,7 @@
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
-		<module>../sormas-serverlibs</module>
+		<module>./dependencies/serverlibs.pom</module>
 		<module>../sormas-devserver</module>
 	</modules>
 </project>
