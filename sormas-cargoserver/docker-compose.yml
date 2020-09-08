@@ -2,7 +2,7 @@ version: '2.3'
 services:
 
   postgres:
-    image: hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION:-2.9.1}
+    image: hzibraunschweig/sormas-postgres:${SORMAS_DOCKER_VERSION:-latest}
     command: -c 'config_file=/etc/postgresql/postgresql.conf'
     environment:
       - POSTGRES_PASSWORD=sormas
