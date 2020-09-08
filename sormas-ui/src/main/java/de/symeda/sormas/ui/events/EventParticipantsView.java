@@ -25,7 +25,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -73,7 +72,7 @@ public class EventParticipantsView extends AbstractEventView {
 			navigateTo(criteria);
 		});
 		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
+			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
 
