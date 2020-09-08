@@ -47,12 +47,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto activeCase = creator.createCase(user.toReference(), person1.toReference(), rdcf);
 		creator.createContact(user.toReference(), person2.toReference(), activeCase);
 		EventDto activeEvent = creator.createEvent(user.toReference());
-		creator.createEventParticipant(activeEvent.toReference(), person3);
+		creator.createEventParticipant(activeEvent.toReference(), person3, user.toReference());
 
 		CaseDataDto inactiveCase = creator.createCase(user.toReference(), person5.toReference(), rdcf);
 		creator.createContact(user.toReference(), person6.toReference(), inactiveCase);
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
-		creator.createEventParticipant(inactiveEvent.toReference(), person7);
+		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
 		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), true);
 		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), true);

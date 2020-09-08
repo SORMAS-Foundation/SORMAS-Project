@@ -9,7 +9,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventParticipantIndexDto implements WithJurisdiction<EventParticipantJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 1136399297437006739L;
 
@@ -36,7 +36,7 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 	@SensitiveData
 	private String involvementDescription;
 
-	private EventJurisdictionDto eventJurisdiction;
+	private EventParticipantJurisdictionDto eventJurisdiction;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -49,11 +49,7 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 		Integer approximateAge,
 		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
-		String eventReportingUserUuid,
-		String eventSurveillanceOfficerUuid,
-		String eventRegionUuid,
-		String eventDsitrictUuid,
-		String eventCommunityUuid) {
+		String reportingUserUuid) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
@@ -64,8 +60,7 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.involvementDescription = involvementDescription;
 
-		this.eventJurisdiction =
-			new EventJurisdictionDto(eventReportingUserUuid, eventSurveillanceOfficerUuid, eventRegionUuid, eventDsitrictUuid, eventCommunityUuid);
+		this.eventJurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
 
 	public String getUuid() {
@@ -133,7 +128,7 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 	}
 
 	@Override
-	public EventJurisdictionDto getJurisdiction() {
+	public EventParticipantJurisdictionDto getJurisdiction() {
 		return eventJurisdiction;
 	}
 }

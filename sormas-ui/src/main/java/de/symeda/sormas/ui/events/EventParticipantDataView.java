@@ -130,6 +130,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
 		}
+
+		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
+		if (!isEditAllowed) {
+			container.setEnabled(false);
+		}
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 			activityRootData,
 			new FieldVisibilityCheckers(),
 			AppFieldAccessCheckers.withCheckers(
-				EventEditAuthorization.isEventEditAllowed(activityRootData.getEvent()),
+				EventEditAuthorization.isEventParticipantEditAllowed(activityRootData),
 				FieldHelper.createPersonalDataFieldAccessChecker(),
 				FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}

@@ -97,19 +97,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
+	private final boolean isInJutisdiction;
 
 	public EventDataForm(boolean create, boolean inJurisdiction) {
-		super(
-			EventDto.class,
-			EventDto.I18N_PREFIX,
-			false,
-			new FieldVisibilityCheckers(),
-			UiFieldAccessCheckers.withCheckers(
-				inJurisdiction,
-				FieldHelper.createSensitiveDataFieldAccessChecker(),
-				FieldHelper.createPersonalDataFieldAccessChecker()));
+		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(inJurisdiction, inJurisdiction));
 
 		isCreateForm = create;
+		this.isInJutisdiction = inJurisdiction;
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
@@ -119,6 +113,17 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
 
 		addFields();
+	}
+
+	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean inJurisdiction, boolean withPersonalAndSensitive) {
+		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers(inJurisdiction);
+
+		if (withPersonalAndSensitive) {
+			fieldAccessCheckers.add(FieldHelper.createSensitiveDataFieldAccessChecker());
+			fieldAccessCheckers.add(FieldHelper.createPersonalDataFieldAccessChecker());
+		}
+
+		return fieldAccessCheckers;
 	}
 
 	@Override
@@ -172,7 +177,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
 		srcMediaDetails.setRows(2);
 
-		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
+		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isInJutisdiction, false)))
+			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
 		if (isCreateForm) {
