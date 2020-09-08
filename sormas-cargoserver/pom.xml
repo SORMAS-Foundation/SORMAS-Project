@@ -51,16 +51,12 @@
                 <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
+                        <id>copy-resources-1</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <filters>
-                                <filter>.env</filter>
-                            </filters>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <resources>
                                 <resource>
@@ -70,6 +66,21 @@
                                 <resource>
                                     <directory>src/main/resources/layout</directory>
                                 </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-resources-2</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>.env</filter>
+                            </filters>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
                                 <resource>
                                     <directory>src/main/resources/domain</directory>
                                     <filtering>true</filtering>
@@ -85,12 +96,29 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
+                        <id>generate-env</id>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <concat destfile="${basedir}/.env">
+                                    <fileset file="${basedir}/src/main/resources/env/.env" />
+                                    <fileset file="${basedir}/custom.env" />
+                                </concat>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate-properties</id>
                         <phase>process-resources</phase>
                         <configuration>
                             <target>
                                 <concat destfile="${project.build.directory}/sormas.properties">
                                     <fileset file="${basedir}/../sormas-base/setup/sormas.properties" />
                                     <fileset file="${project.build.directory}/cargoserver.properties" />
+                                    <fileset file="${basedir}/custom.properties" />
                                 </concat>
                             </target>
                         </configuration>
