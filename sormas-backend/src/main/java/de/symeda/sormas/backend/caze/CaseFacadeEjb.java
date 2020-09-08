@@ -2798,7 +2798,11 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.get(Case.DISEASE));
 		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze);
+		Predicate filter = AbstractAdoService
+				.and(
+						cb,
+						caseService.createUserFilter(cb, cq, caze),
+						caseService.createCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);
