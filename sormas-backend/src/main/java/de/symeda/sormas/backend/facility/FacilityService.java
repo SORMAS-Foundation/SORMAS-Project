@@ -17,19 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.facility;
 
-import java.util.List;
-import java.util.function.BiFunction;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.facility.FacilityCriteria;
 import de.symeda.sormas.api.facility.FacilityDto;
@@ -41,6 +28,18 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.user.UserService;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.List;
+import java.util.function.BiFunction;
 
 @Stateless
 @LocalBean
@@ -167,19 +166,20 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		Predicate filter = cb.or(
 			cb.equal(cb.trim(from.get(Facility.NAME)), name.trim()),
 			cb.equal(cb.lower(cb.trim(from.get(Facility.NAME))), name.trim().toLowerCase()));
-		if (type != null) {
-			filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
-		}
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
 
-		// Don't check for district and community equality when searching for constant facilities
+		// Don't check for district and community equality or type equality when searching for constant facilities
 		if (!FacilityDto.OTHER_FACILITY.equals(name.trim()) && !FacilityDto.NO_FACILITY.equals(name.trim())) {
 			if (community != null) {
 				filter = cb.and(filter, cb.equal(from.get(Facility.COMMUNITY), community));
 			} else if (district != null) {
 				filter = cb.and(filter, cb.equal(from.get(Facility.DISTRICT), district));
+			}
+
+			if (type != null) {
+				filter = cb.and(filter, cb.equal(from.get(Facility.TYPE), type));
 			}
 		}
 
