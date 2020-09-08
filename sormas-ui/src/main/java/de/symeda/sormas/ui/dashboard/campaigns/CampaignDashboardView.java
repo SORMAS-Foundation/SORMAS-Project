@@ -9,6 +9,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,15 +60,29 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			.forEach(campaignDashboardDiagramComponents -> diagramsLayout.removeComponent(campaignDashboardDiagramComponents));
 		campaignDashboardDiagramComponents.clear();
 		dataProvider.refreshData();
-		Map<CampaignDiagramDefinitionDto, List<CampaignDiagramDataDto>> campaignFormDataMap = dataProvider.getCampaignFormDataMap();
-		List<LayoutUtil.FluidColumn> fluidColumns = campaignFormDataMap.keySet().stream().map(campaignDiagramDefinitionDto -> LayoutUtil.fluidColumnLoc(6, 0, 12, 0, campaignDiagramDefinitionDto.getDiagramId())).collect(Collectors.toList());
-		diagramsLayout.setTemplateContents(
-				LayoutUtil.fluidRow(fluidColumns.toArray(new LayoutUtil.FluidColumn[fluidColumns.size()])));
-		campaignFormDataMap.forEach((campaignDiagramDefinitionDto, diagramData) -> {
+		Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>> campaignFormDataMap = dataProvider.getCampaignFormDataMap();
+		List<LayoutUtil.FluidColumn> fluidColumns = campaignFormDataMap.keySet()
+			.stream()
+			.sorted((o1, o2) -> o1.getCampaignDashboardElement().getOrder() < o2.getCampaignDashboardElement().getOrder() ? -1 : 1)
+			.map(campaignDashboardDiagramDto -> {
+				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
+				final CampaignDashboardElement campaignDashboardElement = campaignDashboardDiagramDto.getCampaignDashboardElement();
+				return LayoutUtil
+					.fluidColumnLoc(widthToSpan(campaignDashboardElement.getWidth()), 0, 0, 0, campaignDiagramDefinitionDto.getDiagramId());
+			})
+			.collect(Collectors.toList());
+		diagramsLayout.setTemplateContents(LayoutUtil.fluidRow(fluidColumns.toArray(new LayoutUtil.FluidColumn[fluidColumns.size()])));
+		campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
+			final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 			final CampaignDashboardDiagramComponent diagramComponent =
 				new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, diagramData);
+			diagramComponent.setHeight(campaignDashboardDiagramDto.getCampaignDashboardElement().getHeight(), Unit.PERCENTAGE);
 			campaignDashboardDiagramComponents.add(diagramComponent);
 			diagramsLayout.addComponent(diagramComponent, campaignDiagramDefinitionDto.getDiagramId());
 		});
+	}
+
+	private int widthToSpan(Integer width) {
+		return (int) (width / 8.33);
 	}
 }
