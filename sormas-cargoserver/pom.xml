@@ -13,8 +13,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <payara.version>5.201</payara.version>
-        <!-- <payara.version>5.192</payara.version> -->
+        <payara.version>5.194</payara.version>
     </properties>
 
     <dependencies>
@@ -104,7 +103,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.7.16</version>
+                <version>1.8.0</version>
                 <configuration>
                     <container>
                         <containerId>payara</containerId>
