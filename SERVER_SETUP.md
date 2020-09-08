@@ -3,6 +3,8 @@
 # Installing a SORMAS Server
 **Note: This guide explains how to set up a SORMAS server on Linux and Windows systems, the latter only being intended for usage on development systems. Please also note that certain parts of the setup script will not be executed on Windows.**
 
+This is the manual guide to install SORMAS for development. Please consider the more automated [Dev-Setup](DEVELOPMENT_ENVIRONMENT.md)
+
 ## Content
 * [Prerequisites](#prerequisites)
   * [Java 11](#java-11)
