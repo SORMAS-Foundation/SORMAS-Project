@@ -235,12 +235,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 					break;
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
+				case EventParticipantIndexDto.LAST_NAME:
+				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
-					break;
-				case EventParticipantIndexDto.NAME:
-					expression = person.get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = person.get(Person.FIRST_NAME);
 					break;
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = resultingCase.get(Case.UUID);
