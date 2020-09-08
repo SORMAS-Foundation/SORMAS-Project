@@ -24,6 +24,9 @@ import javax.ejb.Remote;
 @Remote
 public interface ConfigFacade {
 
+	public static final String COUNTRY_CODE_GERMANY = "de";
+	public static final String COUNTRY_CODE_SWITZERLAND = "ch";
+
 	String getCountryName();
 
 	String getCountryLocale();

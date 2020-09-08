@@ -19,6 +19,7 @@ import static android.view.View.GONE;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
@@ -65,7 +66,7 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 			contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isConfiguredServer("de")) {
+		if (!ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);

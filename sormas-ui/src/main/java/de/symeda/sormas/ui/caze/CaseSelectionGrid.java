@@ -55,7 +55,7 @@ public class CaseSelectionGrid extends Grid {
 			CaseIndexDto.CASE_CLASSIFICATION,
 			CaseIndexDto.OUTCOME);
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry("de")) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(ConfigFacade.COUNTRY_CODE_GERMANY)) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);
