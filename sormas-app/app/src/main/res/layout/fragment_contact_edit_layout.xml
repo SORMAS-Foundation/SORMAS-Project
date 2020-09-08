@@ -198,6 +198,7 @@
                         app:dependencyParentField="@{contactQuarantine}"
                         app:dependencyParentValue="@{QuarantineType.HOME}"
                         app:dependencyParentValue2="@{QuarantineType.INSTITUTIONELL}"
+                        app:dependencyParentClearOnHide="@{false}"
                         app:value="@={data.quarantineTo}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -269,9 +270,9 @@
                         app:value="@{data.followUpStatus}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                    <de.symeda.sormas.app.component.controls.ControlTextReadField
+                    <de.symeda.sormas.app.component.controls.ControlDateField
                         android:id="@+id/contact_followUpUntil"
-                        app:value="@{data.followUpUntil}"
+                        app:value="@={data.followUpUntil}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
                 </LinearLayout>

@@ -90,29 +90,11 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 	}
 
 	private void setUpControlListeners(FragmentContactEditLayoutBinding contentBinding) {
-		contentBinding.createCase.setOnClickListener(new View.OnClickListener() {
+		contentBinding.createCase.setOnClickListener(v -> CaseNewActivity.startActivityFromContact(getContext(), record.getUuid()));
 
-			@Override
-			public void onClick(View v) {
-				CaseNewActivity.startActivityFromContact(getContext(), record.getUuid());
-			}
-		});
+		contentBinding.openSourceCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid(), true));
 
-		contentBinding.openSourceCase.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				CaseReadActivity.startActivity(getActivity(), sourceCase.getUuid(), true);
-			}
-		});
-
-		contentBinding.openResultingCase.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				CaseReadActivity.startActivity(getActivity(), record.getResultingCaseUuid(), true);
-			}
-		});
+		contentBinding.openResultingCase.setOnClickListener(v -> CaseReadActivity.startActivity(getActivity(), record.getResultingCaseUuid(), true));
 	}
 
 	private void setUpFieldVisibilities(FragmentContactEditLayoutBinding contentBinding) {
@@ -186,6 +168,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
 		contactIdentificationSources = DataUtils.getEnumItems(ContactIdentificationSource.class, true);
 		tracingApps = DataUtils.getEnumItems(TracingApp.class, true);
+
+		if (record.getQuarantineTo() == null) {
+			record.setQuarantineTo(record.getFollowUpUntil());
+		}
 	}
 
 	@Override
@@ -227,10 +213,12 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				}
 
 				contentBinding.contactQuarantineExtended.setVisibility(VISIBLE);
+				contentBinding.contactQuarantineReduced.setVisibility(VISIBLE);
 			} else {
 				contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
 				contentBinding.contactQuarantineExtended.setVisibility(GONE);
+				contentBinding.contactQuarantineReduced.setVisibility(GONE);
 			}
 		});
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
@@ -244,33 +232,78 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		}
 
 		contentBinding.contactQuarantineExtended.setEnabled(false);
+		contentBinding.contactQuarantineReduced.setEnabled(false);
+		contentBinding.contactFollowUpUntil.setEnabled(false);
 
 		contentBinding.contactQuarantineTo.addValueChangedListener(new ValueChangeListener() {
 
 			private Date currentQuarantineTo = record.getQuarantineTo();
 			private boolean currentQuarantineExtended = record.isQuarantineExtended();
+			private boolean currentQuarantineReduced = record.isQuarantineReduced();
 
 			@Override
 			public void onChange(ControlPropertyField e) {
 				Date newQuarantineTo = (Date) e.getValue();
 
 				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) > 0) {
-					final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
-						getActivity(),
-						R.string.heading_extend_quarantine,
-						R.string.confirmation_extend_quarantine,
-						R.string.yes,
-						R.string.no);
-
-					confirmationDialog.setPositiveCallback(() -> {
-						contentBinding.contactQuarantineExtended.setValue(true);
-					});
-					confirmationDialog.setNegativeCallback(() -> contentBinding.contactQuarantineTo.setValue(currentQuarantineTo));
-
-					confirmationDialog.show();
+					extendQuarantine(newQuarantineTo);
 				} else if (!currentQuarantineExtended) {
 					contentBinding.contactQuarantineExtended.setValue(false);
 				}
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) < 0) {
+					reduceQuarantine();
+				} else if (!currentQuarantineReduced) {
+					contentBinding.contactQuarantineReduced.setValue(false);
+				}
+			}
+
+			private void extendQuarantine(Date newQuarantineTo) {
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					getActivity(),
+					R.string.heading_extend_quarantine,
+					R.string.confirmation_extend_quarantine,
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					contentBinding.contactQuarantineExtended.setValue(true);
+					contentBinding.contactQuarantineReduced.setValue(false);
+					if (newQuarantineTo.compareTo(record.getFollowUpUntil()) > 0) {
+						extendFollowUpPeriod(newQuarantineTo);
+					}
+				});
+				confirmationDialog.setNegativeCallback(() -> contentBinding.contactQuarantineTo.setValue(currentQuarantineTo));
+				confirmationDialog.show();
+			}
+
+			private void extendFollowUpPeriod(Date newQuarantineTo) {
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					getActivity(),
+					R.string.heading_extend_followup,
+					R.string.confirmation_extend_followup,
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					contentBinding.contactFollowUpUntil.setValue(newQuarantineTo);
+				});
+				confirmationDialog.show();
+			}
+
+			private void reduceQuarantine() {
+				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+					getActivity(),
+					R.string.heading_reduce_quarantine,
+					R.string.confirmation_reduce_quarantine,
+					R.string.yes,
+					R.string.no);
+
+				confirmationDialog.setPositiveCallback(() -> {
+					contentBinding.contactQuarantineExtended.setValue(false);
+					contentBinding.contactQuarantineReduced.setValue(true);
+				});
+				confirmationDialog.setNegativeCallback(() -> contentBinding.contactQuarantineTo.setValue(currentQuarantineTo));
+				confirmationDialog.show();
 			}
 		});
 
