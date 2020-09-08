@@ -669,6 +669,6 @@
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
 		<module>./dependencies/serverlibs.pom</module>
-		<module>../sormas-devserver</module>
+		<module>../sormas-cargoserver</module>
 	</modules>
 </project>

@@ -26,13 +26,13 @@ cd sormas-base && mvn install
 ### Start SORMAS-PostgreSQL docker container
 
 ```
-cd sormas-devserver && docker-compose up -d
+cd sormas-cargoserver && docker-compose up -d
 ```
 
 ## Start local SORMAS server
 
 ```
-cd sormas-devserver && mvn cargo:run
+cd sormas-cargoserver && mvn cargo:run
 ```
 
 ## Visit
@@ -43,11 +43,11 @@ password `sadmin`.
 ## Stop local SORMAS server
 
 ```
-cd sormas-devserver && mvn cargo:stop
+cd sormas-cargoserver && mvn cargo:stop
 ```
 
 ## Stop DB SORMAS-PostgreSQL docker container
 
 ```
-cd sormas-devserver && docker-compose down
+cd sormas-cargoserver && docker-compose down
 ```

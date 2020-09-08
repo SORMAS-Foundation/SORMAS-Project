@@ -8,7 +8,7 @@
         <relativePath>../sormas-base</relativePath>
     </parent>
 
-    <artifactId>sormas-devserver</artifactId>
+    <artifactId>sormas-cargoserver</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
