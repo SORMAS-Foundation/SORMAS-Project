@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Sin permiso de cámara</string>
     <string name="permission_camera_rationale">El acceso a la cámara es necesario para la detección</string>
     <string name="scan_field_sample_id">Escanear id de muestra de campo</string>
-    <string name="caption_facility_type_group">Grupo de tipos de instalaciones</string>
+    <string name="caption_facility_type_group">Categoría de instalación</string>
     <string name="caption_facility_type">Tipo de instalación</string>
 </resources>
