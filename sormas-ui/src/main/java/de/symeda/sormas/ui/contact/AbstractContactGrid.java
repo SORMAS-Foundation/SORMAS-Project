@@ -22,6 +22,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -118,7 +119,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 		pendingTasksColumn.setSortable(false);
 
 		setColumns(getColumnList().toArray(String[]::new));
-		if (!FacadeProvider.getConfigFacade().isConfiguredCountry("de")) {
+		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(ContactIndexDto.CONTACT_CATEGORY).setHidden(true);
 		}
 		getColumn(ContactIndexDto.CONTACT_PROXIMITY).setWidth(200);

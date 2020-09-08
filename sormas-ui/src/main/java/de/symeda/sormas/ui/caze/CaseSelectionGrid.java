@@ -5,6 +5,7 @@ import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.DateRenderer;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -55,7 +56,7 @@ public class CaseSelectionGrid extends Grid {
 			CaseIndexDto.CASE_CLASSIFICATION,
 			CaseIndexDto.OUTCOME);
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry("de")) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);

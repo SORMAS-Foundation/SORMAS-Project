@@ -5232,4 +5232,13 @@ ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
 
+-- 2020-09-07 - Add reporting user on event participant
+ALTER TABLE eventparticipant ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant  #2789');
+
 -- *** Insert new sql commands BEFORE this line ***
