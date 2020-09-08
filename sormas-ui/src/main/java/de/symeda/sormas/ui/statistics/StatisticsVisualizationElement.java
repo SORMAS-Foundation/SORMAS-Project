@@ -82,34 +82,36 @@ public class StatisticsVisualizationElement extends HorizontalLayout {
 
 			// Add attributes belonging to the current group
 			for (StatisticsCaseAttribute attribute : attributeGroup.getAttributes()) {
-				Command attributeCommand = selectedItem -> {
-					resetSubAttributeDropdown();
-					this.attribute = attribute;
-					this.subAttribute = null;
-					displayedAttributeItem.setText(attribute.toString());
-					removeSelections(displayedAttributeItem);
-					selectedItem.setStyleName("selected-filter");
+				if (attribute.isUsedForVisualisation()) {
+					Command attributeCommand = selectedItem -> {
+						resetSubAttributeDropdown();
+						this.attribute = attribute;
+						this.subAttribute = null;
+						displayedAttributeItem.setText(attribute.toString());
+						removeSelections(displayedAttributeItem);
+						selectedItem.setStyleName("selected-filter");
 
-					// Build sub attribute dropdown
-					if (attribute.getSubAttributes().length > 0) {
-						for (StatisticsCaseSubAttribute subAttribute : attribute.getSubAttributes()) {
-							if (subAttribute.isUsedForGrouping()) {
-								Command subAttributeCommand = selectedSubItem -> {
-									this.subAttribute = subAttribute;
-									displayedSubAttributeItem.setText(subAttribute.toString());
-									removeSelections(displayedSubAttributeItem);
-									selectedSubItem.setStyleName("selected-filter");
-								};
+						// Build sub attribute dropdown
+						if (attribute.getSubAttributes().length > 0) {
+							for (StatisticsCaseSubAttribute subAttribute : attribute.getSubAttributes()) {
+								if (subAttribute.isUsedForGrouping()) {
+									Command subAttributeCommand = selectedSubItem -> {
+										this.subAttribute = subAttribute;
+										displayedSubAttributeItem.setText(subAttribute.toString());
+										removeSelections(displayedSubAttributeItem);
+										selectedSubItem.setStyleName("selected-filter");
+									};
 
-								displayedSubAttributeItem.addItem(subAttribute.toString(), subAttributeCommand);
+									displayedSubAttributeItem.addItem(subAttribute.toString(), subAttributeCommand);
+								}
 							}
+
+							addComponent(displayedSubAttributeDropdown);
 						}
+					};
 
-						addComponent(displayedSubAttributeDropdown);
-					}
-				};
-
-				displayedAttributeItem.addItem(attribute.toString(), attributeCommand);
+					displayedAttributeItem.addItem(attribute.toString(), attributeCommand);
+				}
 			}
 		}
 
