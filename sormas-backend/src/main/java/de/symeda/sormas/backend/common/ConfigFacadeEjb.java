@@ -58,6 +58,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String CUSTOM_BRANDING = "custombranding";
 	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
 	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
+	public static final String CUSTOM_BRANDING_USE_LOGIN_SIDEBAR = "custombranding.useloginsidebar";
+	public static final String CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH = "custombranding.loginbackground.path";
 
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
@@ -208,6 +210,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomBrandingLogoPath() {
 		return getProperty(CUSTOM_BRANDING_LOGO_PATH, null);
+	}
+
+	@Override
+	public boolean isUseLoginSidebar() {
+		return getBoolean(CUSTOM_BRANDING_USE_LOGIN_SIDEBAR, true);
+	}
+
+	@Override
+	public String getLoginBackgroundPath() {
+		return getProperty(CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH, null);
 	}
 
 	@Override
