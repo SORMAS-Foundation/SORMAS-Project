@@ -22,7 +22,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
-import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
@@ -152,7 +152,7 @@ public abstract class AbstractCaseGrid<IndexDto extends CaseIndexDto> extends Fi
 
 		setColumns(getGridColumns().toArray(String[]::new));
 
-		if (FacadeProvider.getConfigFacade().isConfiguredCountry(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);

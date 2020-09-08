@@ -110,11 +110,11 @@ public class ConfigProviderTest {
 		ConfigProvider.setServerLocale(null);
 		assertNotNull(ConfigProvider.getServerLocale());
 		ConfigProvider.setServerLocale("de");
-		assertThat(ConfigProvider.getServerLocale(), is(ConfigFacade.COUNTRY_CODE_GERMANY));
-		assertTrue(ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY));
+		assertThat(ConfigProvider.getServerLocale(), is(CountryHelper.COUNTRY_CODE_GERMANY));
+		assertTrue(ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY));
 		ConfigProvider.setServerLocale("en");
 		assertThat(ConfigProvider.getServerLocale(), is("en"));
-		assertFalse(ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY));
+		assertFalse(ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY));
 	}
 
 	@Test

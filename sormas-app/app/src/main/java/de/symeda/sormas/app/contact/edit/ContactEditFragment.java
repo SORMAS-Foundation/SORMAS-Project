@@ -25,6 +25,7 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -137,7 +138,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.createCase.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
@@ -219,7 +220,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue())
 				|| QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
 			if (visible) {
-				if (ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
@@ -274,7 +275,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				contentBinding.contactTracingAppDetails.setValue("");
 			}
 		});
-		if (ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(
 				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
 		} else {

@@ -27,6 +27,7 @@ import android.webkit.WebView;
 import androidx.fragment.app.FragmentActivity;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -184,7 +185,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseButtonsPanel.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 			contentBinding.caseDataReportingType.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
@@ -242,7 +243,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
-		if (!ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_NO_SYMPTOMS.toString(), CaseClassification.CONFIRMED_NO_SYMPTOMS));
 			caseClassificationList
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
@@ -346,7 +347,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			boolean visible = QuarantineType.HOME.equals(contentBinding.caseDataQuarantine.getValue())
 				|| QuarantineType.INSTITUTIONELL.equals(contentBinding.caseDataQuarantine.getValue());
 			if (visible) {
-				if (ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 					contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
@@ -359,7 +360,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				contentBinding.caseDataQuarantineExtended.setVisibility(GONE);
 			}
 		});
-		if (!ConfigProvider.isConfiguredServer(ConfigFacade.COUNTRY_CODE_GERMANY)) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
