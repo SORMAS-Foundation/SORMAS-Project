@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -27,8 +28,6 @@ import java.util.regex.Pattern;
 public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
 	private final String countryLocale;
-
-	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	public CountryFieldVisibilityChecker(String countryLocale) {
 		this.countryLocale = countryLocale;
@@ -41,7 +40,7 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 			for (String country : countries) {
 				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
 				// otherwise check the first (language) part
-				if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
 					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
 						return false;
 					}
@@ -60,7 +59,7 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 			for (String country : countries) {
 				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
 				// otherwise check the first (language) part
-				if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
 					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
 						return true;
 					}

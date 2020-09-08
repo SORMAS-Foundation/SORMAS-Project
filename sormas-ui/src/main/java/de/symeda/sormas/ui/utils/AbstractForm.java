@@ -1,11 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
@@ -16,8 +10,12 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-
 import de.symeda.sormas.api.FacadeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -328,8 +326,8 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return propertyI18nPrefix;
 	}
 
-	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
+	protected boolean isConfiguredServer(String countryCode) {
+		return FacadeProvider.getConfigFacade().isConfiguredCountry(countryCode);
 	}
 
 	private static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {

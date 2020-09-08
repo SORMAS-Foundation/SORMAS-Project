@@ -55,7 +55,6 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
@@ -549,7 +548,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		contactPerson.getAddress().setCity("City");
-		contactPerson.getAddress().setAddress("Street Address");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
 		getPersonFacade().savePerson(contactPerson);
 
@@ -567,7 +568,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
 		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
 		assertEquals("City", exportDto.getCity());
-		assertEquals("Street Address", exportDto.getAddress());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());

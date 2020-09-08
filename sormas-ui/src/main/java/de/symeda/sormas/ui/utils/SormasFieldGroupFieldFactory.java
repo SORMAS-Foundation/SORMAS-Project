@@ -29,6 +29,7 @@ import de.symeda.sormas.ui.epidata.EpiDataGatheringsField;
 import de.symeda.sormas.ui.epidata.EpiDataTravelsField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.person.LocationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
@@ -114,6 +115,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new EpiDataGatheringsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (EpiDataTravelsField.class.isAssignableFrom(fieldType)) {
 			return (T) new EpiDataTravelsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
+			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (fieldType.equals(Field.class)) {
 			// no specific field type defined -> fallbacks
 			if (Date.class.isAssignableFrom(type)) {

@@ -95,7 +95,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		participant.setInvolvementDescription(null);
 		participant.getPerson().setFirstName(null);
 		participant.getPerson().setLastName(null);
-		participant.getPerson().getAddress().setAddress(null);
+		participant.getPerson().getAddress().setStreet(null);
+		participant.getPerson().getAddress().setHouseNumber(null);
+		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
 		getEventParticipantFacade().saveEventParticipant(participant);
@@ -105,7 +107,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(saved.getInvolvementDescription(), is("Test involvement descr"));
 		assertThat(saved.getPerson().getFirstName(), is("John"));
 		assertThat(saved.getPerson().getLastName(), is("Smith"));
-		assertThat(saved.getPerson().getAddress().getAddress(), is("Test Address"));
+		assertThat(saved.getPerson().getAddress().getStreet(), is("Test Street"));
+		assertThat(saved.getPerson().getAddress().getHouseNumber(), is("Test Number"));
+		assertThat(saved.getPerson().getAddress().getAdditionalInformation(), is("Test Information"));
 		assertThat(saved.getPerson().getAddress().getCity(), is("Test City"));
 	}
 
@@ -117,7 +121,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		participant.setInvolvementDescription(null);
 		participant.getPerson().setFirstName(null);
 		participant.getPerson().setLastName(null);
-		participant.getPerson().getAddress().setAddress(null);
+		participant.getPerson().getAddress().setStreet(null);
+		participant.getPerson().getAddress().setHouseNumber(null);
+		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
 		getEventParticipantFacade().saveEventParticipant(participant);
@@ -127,7 +133,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(saved.getInvolvementDescription(), is("Test involvement descr"));
 		assertThat(saved.getPerson().getFirstName(), is("John"));
 		assertThat(saved.getPerson().getLastName(), is("Smith"));
-		assertThat(saved.getPerson().getAddress().getAddress(), is("Test Address"));
+		assertThat(saved.getPerson().getAddress().getStreet(), is("Test Street"));
+		assertThat(saved.getPerson().getAddress().getHouseNumber(), is("Test Number"));
+		assertThat(saved.getPerson().getAddress().getAdditionalInformation(), is("Test Information"));
 		assertThat(saved.getPerson().getAddress().getCity(), is("Test City"));
 	}
 
@@ -139,7 +147,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		});
 
 		PersonDto person = creator.createPerson("John", "Smith", Sex.MALE, null, null, 23, p -> {
-			p.getAddress().setAddress("Test Address");
+			p.getAddress().setStreet("Test Street");
+			p.getAddress().setHouseNumber("Test Number");
+			p.getAddress().setAdditionalInformation("Test Information");
 			p.getAddress().setCity("Test City");
 		});
 
@@ -150,7 +160,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(eventParticipant.getInvolvementDescription(), is("Test involvement descr"));
 		assertThat(eventParticipant.getPerson().getFirstName(), is("John"));
 		assertThat(eventParticipant.getPerson().getLastName(), is("Smith"));
-		assertThat(eventParticipant.getPerson().getAddress().getAddress(), is("Test Address"));
+		assertThat(eventParticipant.getPerson().getAddress().getStreet(), is("Test Street"));
+		assertThat(eventParticipant.getPerson().getAddress().getHouseNumber(), is("Test Number"));
+		assertThat(eventParticipant.getPerson().getAddress().getAdditionalInformation(), is("Test Information"));
 		assertThat(eventParticipant.getPerson().getAddress().getCity(), is("Test City"));
 	}
 
@@ -158,7 +170,9 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(eventParticipant.getInvolvementDescription(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getFirstName(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getLastName(), isEmptyString());
-		assertThat(eventParticipant.getPerson().getAddress().getAddress(), isEmptyString());
+		assertThat(eventParticipant.getPerson().getAddress().getStreet(), isEmptyString());
+		assertThat(eventParticipant.getPerson().getAddress().getHouseNumber(), isEmptyString());
+		assertThat(eventParticipant.getPerson().getAddress().getAdditionalInformation(), isEmptyString());
 		assertThat(eventParticipant.getPerson().getAddress().getCity(), isEmptyString());
 
 	}

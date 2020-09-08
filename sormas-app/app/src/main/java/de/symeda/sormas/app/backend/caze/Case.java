@@ -78,6 +78,8 @@ public class Case extends PseudonymizableAdo {
 	public static final String PERSON = "person_id";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String EPI_DATA = "epiData";
+	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String REPORTING_USER = "reportingUser_id";
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 	public static final String OUTCOME = "outcome";

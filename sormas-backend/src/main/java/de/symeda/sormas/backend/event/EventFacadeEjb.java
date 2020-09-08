@@ -241,7 +241,9 @@ public class EventFacadeEjb implements EventFacade {
 			community.get(Community.UUID),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
-			location.get(Location.ADDRESS),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.ADDITIONAL_INFORMATION),
 			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
@@ -307,12 +309,11 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer
-			.pseudonymizeDtoCollection(
-				EventIndexDto.class,
-				indexList,
-				e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
-				null);
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventIndexDto.class,
+			indexList,
+			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
+			null);
 
 		return indexList;
 	}
@@ -344,7 +345,9 @@ public class EventFacadeEjb implements EventFacade {
 			community.get(Community.UUID),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
-			location.get(Location.ADDRESS),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.ADDITIONAL_INFORMATION),
 			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
@@ -376,12 +379,11 @@ public class EventFacadeEjb implements EventFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer
-			.pseudonymizeDtoCollection(
-				EventExportDto.class,
-				exportList,
-				e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
-				null);
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventExportDto.class,
+			exportList,
+			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
+			null);
 
 		return exportList;
 	}

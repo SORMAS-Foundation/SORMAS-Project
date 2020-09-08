@@ -1312,7 +1312,7 @@ class EpiDataTravelGenerator extends BaseDataGenerator {
 			data1.setUuid(getRandomUuid());
 			//data1.setEpiData(EpiDataGenerator.getSingle());
 			data1.setTravelType(getRandomTravelType());
-			data1.setTravelDestination(getRandomAddress());
+			data1.setTravelDestination(getRandomStreet());
 			data1.setTravelDateFrom(getRandomDate());
 			data1.setTravelDateTo(getRandomDate());
 
@@ -1653,7 +1653,9 @@ class LocationGenerator extends BaseDataGenerator {
 		for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
 			Location data1 = new Location();
 			data1.setUuid(getRandomUuid());
-			data1.setAddress(getRandomAddress());
+			data1.setStreet(getRandomStreet());
+			data1.setHouseNumber(getRandomHouseNumber());
+			data1.setAdditionalInformation(getRandomAdditionalInformation());
 			data1.setDetails(getRandomSentence());
 			data1.setCity(getRandomCityName());
 			data1.setRegion(RegionGenerator.getSingle());
@@ -2040,30 +2042,66 @@ abstract class BaseDataGenerator {
 		"cred",
 		"mur" };
 
-	private static List<String> addressList = new ArrayList<String>() {
+	private static List<String> streetList = new ArrayList<String>() {
 
 		{
-			add("196 Woodside Circle Mobile, FL 36602");
-			add("3756 Preston Street Wichita, KS 67213");
-			add("1635 Franklin Street Montgomery, AL 36104");
-			add("2595 Pearlman Avenue Sudbury, MA 01776 ");
-			add("508 Virginia Street Chicago, IL 60653");
-			add("1516 Holt Street West Palm Beach, FL 33401");
-			add("123 6th St. Melbourne, FL 32904");
-			add("71 Pilgrim Avenue Chevy Chase, MD 20815");
-			add("70 Bowman St. South Windsor, CT 06074");
-			add("4 Goldfield Rd. Honolulu, HI 96815");
-			add("44 Shirley Ave. West Chicago, IL 60185");
-			add("514 S. Magnolia St. Orlando, FL 32806");
-			add("9467 East San Pablo Street Bountiful, UT 84010");
-			add("7550 North Baker Lane Perrysburg, OH 43551");
-			add("30 Anderson Street Quincy, MA 02169");
-			add("984 Fifth Drive West Springfield, MA 01089");
-			add("642 Prince St. Nashville, TN 37205");
-			add("9560 West Beach Lane Desoto, TX 75115");
-			add("1 West 8th Ave. Allison Park, PA 15101");
-			add("12 High Ridge Drive Longwood, FL 32779");
-			add("60 Augusta Drive Hagerstown, MD 21740");
+			add("Woodside Circle Mobile");
+			add("Preston Street Wichita");
+			add("Franklin Street Montgomery");
+			add("Pearlman Avenue Sudbury");
+			add("Virginia Street Chicago");
+			add("Holt Street West Palm Beach");
+			add("6th St. Melbourne");
+			add("Pilgrim Avenue Chevy Chase");
+			add("Bowman St. South Windsor");
+			add("Goldfield Rd. Honolulu");
+			add("Shirley Ave. West Chicago");
+			add("S. Magnolia St. Orlando");
+			add("East San Pablo Street Bountiful");
+			add("North Baker Lane Perrysburg");
+			add("Anderson Street Quincy");
+			add("Fifth Drive West Springfield");
+			add("Prince St. Nashville");
+			add("West Beach Lane Desoto");
+			add("West 8th Ave. Allison Park");
+			add("High Ridge Drive Longwood");
+			add("Augusta Drive Hagerstown");
+		}
+	};
+
+	private static List<String> houseNumberList = new ArrayList<String>() {
+
+		{
+			add("12");
+			add("435");
+			add("3b");
+			add("24a");
+			add("1");
+			add("2a");
+			add("4");
+			add("5");
+			add("6");
+			add("7");
+			add("8D");
+			add("9");
+			add("10 A");
+			add("11");
+			add("13");
+			add("14");
+			add("15");
+			add("16");
+			add("17");
+			add("18");
+			add("19");
+		}
+	};
+
+	private static List<String> additionalInformationList = new ArrayList<String>() {
+
+		{
+			add("5th door left hand");
+			add("Entrance 3");
+			add("Entrance behind the building");
 		}
 	};
 
@@ -2191,8 +2229,16 @@ abstract class BaseDataGenerator {
 		return randomItem(sentenceList);
 	}
 
-	public static String getRandomAddress() {
-		return randomItem(addressList);
+	public static String getRandomStreet() {
+		return randomItem(streetList);
+	}
+
+	public static String getRandomHouseNumber() {
+		return randomItem(houseNumberList);
+	}
+
+	public static String getRandomAdditionalInformation() {
+		return randomItem(additionalInformationList);
 	}
 
 	public static String getRandomUserName() {

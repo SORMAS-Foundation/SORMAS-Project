@@ -78,7 +78,9 @@ import de.symeda.sormas.backend.util.ModelConstants;
 @Stateless(name = "VisualizationFacade")
 public class VisualizationFacadeEjb implements VisualizationFacade {
 
-//	private static final String TRANSMISSION_CHAIN_SCRIPT = "transmission_chain.r";
+	static final String SORMAS_DATA_POOL_JNDI = "jdbc/sormasDataPool";
+	
+	//	private static final String TRANSMISSION_CHAIN_SCRIPT = "transmission_chain.r";
 	private static final String TRANSMISSION_CHAIN_SCRIPT = "transform_contact.R";
 	private static final String[] REQUIRED_SCRIPTS = {
 		"encodeGraphic.R",
@@ -222,7 +224,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 				}
 				pb.directory(tempDir.toFile());
 
-				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, "sormasDataPool");
+				Map<String, String> poolProperties = getConnectionPoolProperties(domainXmlPath, SORMAS_DATA_POOL_JNDI);
 				Map<String, String> env = pb.environment();
 
 				EnvParam.DB_USER.putFrom(env, poolProperties);
@@ -353,14 +355,16 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 		return string.replace("\"", "\\\"");
 	}
 
-	static Map<String, String> getConnectionPoolProperties(Path domPath, String poolName) throws IOException {
+	static Map<String, String> getConnectionPoolProperties(Path domPath, String jndiName) throws IOException {
 		final Parser parser = Parser.xmlParser();
 		final org.jsoup.nodes.Document doc;
 		try (Reader rd = Files.newBufferedReader(domPath)) {
 			doc = parser.parseInput(rd, "");
 		}
 
-		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=" + poolName + "] > property")
+		String poolName = doc.selectFirst("jdbc-resource[jndi-name=\"" + jndiName + "\"]").attr("pool-name");
+
+		Map<String, String> dbProperties = doc.select("jdbc-connection-pool[name=\"" + poolName + "\"] > property")
 			.stream()
 			.collect(Collectors.toMap(e -> e.attr("name"), e -> e.attr("value")));
 		return dbProperties;

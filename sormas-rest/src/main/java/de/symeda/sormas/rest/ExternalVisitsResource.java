@@ -2,7 +2,9 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
+import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 import javax.annotation.security.RolesAllowed;
@@ -31,6 +33,16 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	}
 
 	@POST
+	@Path("/person/{personUuid}/status")
+	public boolean postSymptomJournalStatus(@PathParam("personUuid") String personUuid, PersonSymptomJournalStatusDto statusDto) {
+		try {
+			return FacadeProvider.getPersonFacade().setSymptomJournalStatus(personUuid, statusDto.getStatus());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	@POST
 	@Path("/")
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
@@ -47,6 +59,12 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/quarantineEndDates/{since}")
 	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(@PathParam("since") long since) {
 		return FacadeProvider.getPersonFacade().getLatestQuarantineEndDates(new Date(since));
+	}
+
+	@GET
+	@Path("/followUpEndDates/{since}")
+	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(@PathParam("since") long since) {
+		return FacadeProvider.getPersonFacade().getLatestFollowUpEndDates(new Date(since), true);
 	}
 
 	@Override

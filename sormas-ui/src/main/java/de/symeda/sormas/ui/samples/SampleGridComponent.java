@@ -108,16 +108,19 @@ public class SampleGridComponent extends VerticalLayout {
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
-				grid.reload();
+			if (!filterForm.hasFilter()) {
+				samplesView.navigateTo(null);
 			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 			samplesView.navigateTo(null, true);
 		});
-
+		filterForm.addApplyHandler(e -> {
+			if (!samplesView.navigateTo(criteria, false)) {
+				grid.reload();
+			}
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;

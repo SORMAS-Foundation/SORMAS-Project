@@ -156,7 +156,7 @@
     <string name="caption_event_participants">Personnes impliquées</string>
     <string name="caption_event_tasks">Tâches d\'événement</string>
     <string name="caption_executed_by">Exécuté par</string>
-    <string name="caption_facility_or_home">Place of stay</string>
+    <string name="caption_facility_or_home">Lieu du séjour</string>
     <string name="caption_fatalities">Fatalité</string>
     <string name="caption_first_name">Prénom</string>
     <string name="caption_sex">Sexe</string>
@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Pas de permission caméra</string>
     <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour la détection</string>
     <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
-    <string name="caption_facility_type_group">Facility type group</string>
-    <string name="caption_facility_type">Facility type</string>
+    <string name="caption_facility_type_group">Catégorie d\'établissement</string>
+    <string name="caption_facility_type">Type d\'établissement</string>
 </resources>

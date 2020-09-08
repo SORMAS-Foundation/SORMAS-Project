@@ -129,9 +129,9 @@ public class SampleExportDto implements Serializable {
 						   Integer casePersonApproximateAge, ApproximateAgeType casePersonApproximateAgeType, Sex casePersonSex,
 						   Integer contactPersonApproximateAge, ApproximateAgeType contactPersonApproximateAgeType, Sex contactPersonSex,
 						   Integer eventParticipantApproximateAge, ApproximateAgeType eventParticipantApproximateAgeType, Sex eventParticipantSex,
-						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressAddress,
-						   String contactAddressRegion, String contactAddressDistrict, String contactAddressCommunity, String contactAddressCity, String contactAddressAddress,
-						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressAddress,
+						   String caseAddressRegion, String caseAddressDistrict, String caseAddressCommunity, String caseAddressCity, String caseAddressStreet, String caseAddressHouseNumber, String caseAddressAdditionalInformation,
+						   String contactAddressRegion, String contactAddressDistrict, String contactAddressCommunity, String contactAddressCity, String contactAddressStreet, String contactAddressHouseNumber, String contactAddressAdditionalInformation,
+						   String eventAddressRegion, String eventAddressDistrict, String eventAddressCommunity, String eventAddressCity, String eventAddressStreet, String eventAddressHouseNumber, String eventAddressAdditionalInformation,
 						   Date caseReportDate, CaseClassification caseClassification, CaseOutcome caseOutcome, String caseRegion, String caseDistrict,
 						   String caseCommunity, String caseHealthFacility, String caseFacilityDetails, String contactRegion, String contactDistrict, String contactCommunity,
 						   Date contactReportDate, Date lastContactDate, ContactClassification contactClassification, ContactStatus contactStatus,
@@ -218,20 +218,31 @@ public class SampleExportDto implements Serializable {
 				: ApproximateAgeHelper.formatApproximateAge(eventParticipantApproximateAge, eventParticipantApproximateAgeType);
 		this.personSex = caseUuid != null ? casePersonSex : contactUuid != null ? contactPersonSex : eventParticipantSex;
 		this.personAddress = caseUuid != null
-			? new SampleExportPersonAddress(caseAddressRegion, caseAddressDistrict, caseAddressCommunity, caseAddressCity, caseAddressAddress)
+			? new SampleExportPersonAddress(
+				caseAddressRegion,
+				caseAddressDistrict,
+				caseAddressCommunity,
+				caseAddressCity,
+				caseAddressStreet,
+				caseAddressHouseNumber,
+				caseAddressAdditionalInformation)
 			: contactUuid != null
 				? new SampleExportPersonAddress(
 					contactAddressRegion,
 					contactAddressDistrict,
 					contactAddressCommunity,
 					contactAddressCity,
-					contactAddressAddress)
+					contactAddressStreet,
+					contactAddressHouseNumber,
+					contactAddressAdditionalInformation)
 				: new SampleExportPersonAddress(
 					eventAddressRegion,
 					eventAddressDistrict,
 					eventAddressCommunity,
 					eventAddressCity,
-					eventAddressAddress);
+					eventAddressStreet,
+					eventAddressHouseNumber,
+					eventAddressAdditionalInformation);
 		this.caseReportDate = caseReportDate;
 		this.caseClassification = caseClassification;
 		this.caseOutcome = caseOutcome;
@@ -262,13 +273,12 @@ public class SampleExportDto implements Serializable {
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			associatedContactJurisdiction =
-				new ContactJurisdictionDto(
-					contactReportingUserUuid,
-					contactRegionUuid,
-					contactDistrictUuid,
-					contactCommunityUuid,
-					contactCaseJurisdiction);
+			associatedContactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 			this.contactRegion = contactRegion;
 			this.contactDistrict = contactDistrict;
 		}
@@ -549,8 +559,14 @@ public class SampleExportDto implements Serializable {
 
 	@Order(40)
 	public String getPersonAddressCaption() {
-		return LocationReferenceDto
-			.buildCaption(personAddress.region, personAddress.district, personAddress.community, personAddress.city, personAddress.address);
+		return LocationReferenceDto.buildCaption(
+			personAddress.region,
+			personAddress.district,
+			personAddress.community,
+			personAddress.city,
+			personAddress.street,
+			personAddress.houseNumber,
+			personAddress.additionalInformation);
 	}
 
 	public SampleExportPersonAddress getPersonAddress() {
@@ -913,14 +929,29 @@ public class SampleExportDto implements Serializable {
 		private final String city;
 		@PersonalData
 		@SensitiveData
-		private final String address;
+		private String street;
+		@PersonalData
+		@SensitiveData
+		private String houseNumber;
+		@PersonalData
+		@SensitiveData
+		private String additionalInformation;
 
-		public SampleExportPersonAddress(String region, String district, String community, String city, String address) {
+		public SampleExportPersonAddress(
+			String region,
+			String district,
+			String community,
+			String city,
+			String street,
+			String houseNumber,
+			String additionalInformation) {
 			this.region = region;
 			this.district = district;
 			this.community = community;
 			this.city = city;
-			this.address = address;
+			this.street = street;
+			this.houseNumber = houseNumber;
+			this.additionalInformation = additionalInformation;
 		}
 	}
 

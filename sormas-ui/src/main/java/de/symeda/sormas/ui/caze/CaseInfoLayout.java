@@ -68,7 +68,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 			caseIdLabel.setId("caseIdLabel");
 			caseIdLabel.setDescription(caseDto.getUuid());
 
-			if (FacadeProvider.getConfigFacade().isGermanServer()) {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry("de")) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.EXTERNAL_ID,

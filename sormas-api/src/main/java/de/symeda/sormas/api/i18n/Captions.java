@@ -27,6 +27,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
+	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
 	String actionBackToNationOverview = "actionBackToNationOverview";
@@ -881,14 +882,18 @@ public interface Captions {
 	String lineListingSharedInformation = "lineListingSharedInformation";
 	String linkEventToCase = "linkEventToCase";
 	String Location = "Location";
-	String Location_address = "Location.address";
+	String Location_additionalInformation = "Location.additionalInformation";
+	String Location_addressType = "Location.addressType";
+	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
 	String Location_details = "Location.details";
+	String Location_houseNumber = "Location.houseNumber";
 	String Location_latitude = "Location.latitude";
 	String Location_latLon = "Location.latLon";
 	String Location_latLonAccuracy = "Location.latLonAccuracy";
 	String Location_longitude = "Location.longitude";
 	String Location_postalCode = "Location.postalCode";
+	String Location_street = "Location.street";
 	String Login_doLogIn = "Login.doLogIn";
 	String Login_login = "Login.login";
 	String Login_password = "Login.password";
@@ -968,6 +973,7 @@ public interface Captions {
 	String PathogenTests = "PathogenTests";
 	String Person = "Person";
 	String Person_address = "Person.address";
+	String Person_addresses = "Person.addresses";
 	String Person_ageAndBirthDate = "Person.ageAndBirthDate";
 	String Person_approximateAge = "Person.approximateAge";
 	String Person_approximateAgeReferenceDate = "Person.approximateAgeReferenceDate";
@@ -985,6 +991,7 @@ public interface Captions {
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
+	String Person_covidCodeDelivered = "Person.covidCodeDelivered";
 	String Person_deathDate = "Person.deathDate";
 	String Person_deathPlaceDescription = "Person.deathPlaceDescription";
 	String Person_deathPlaceType = "Person.deathPlaceType";
@@ -995,6 +1002,7 @@ public interface Captions {
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
+	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
@@ -1023,6 +1031,7 @@ public interface Captions {
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
+	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";

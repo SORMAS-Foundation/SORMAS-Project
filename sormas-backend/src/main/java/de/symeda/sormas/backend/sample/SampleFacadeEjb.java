@@ -411,12 +411,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer
-			.pseudonymizeDtoCollection(
-				SampleIndexDto.class,
-				samples,
-				s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
-				null);
+		pseudonymizer.pseudonymizeDtoCollection(
+			SampleIndexDto.class,
+			samples,
+			s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
+			null);
 
 		return samples;
 	}
@@ -556,17 +555,23 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCasePersonAddressDistrict().get(District.NAME),
 				joins.getCasePersonAddressCommunity().get(Community.NAME),
 				joins.getCasePersonAddress().get(Location.CITY),
-				joins.getCasePersonAddress().get(Location.ADDRESS),
+				joins.getCasePersonAddress().get(Location.STREET),
+				joins.getCasePersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getCasePersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getContactPersonAddressRegion().get(Region.NAME),
 				joins.getContactPersonAddressDistrict().get(District.NAME),
 				joins.getContactPersonAddressCommunity().get(Community.NAME),
 				joins.getContactPersonAddress().get(Location.CITY),
-				joins.getContactPersonAddress().get(Location.ADDRESS),
+				joins.getContactPersonAddress().get(Location.STREET),
+				joins.getContactPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getContactPersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getEventRegion().get(Region.NAME),
 				joins.getEventDistrict().get(District.NAME),
 				joins.getEventCommunity().get(Community.NAME),
 				joins.getEventLocation().get(Location.CITY),
-				joins.getEventLocation().get(Location.ADDRESS),
+				joins.getEventLocation().get(Location.STREET),
+				joins.getEventLocation().get(Location.HOUSE_NUMBER),
+				joins.getEventLocation().get(Location.ADDITIONAL_INFORMATION),
 				joins.getCaze().get(Case.REPORT_DATE),
 				joins.getCaze().get(Case.CASE_CLASSIFICATION),
 				joins.getCaze().get(Case.OUTCOME),

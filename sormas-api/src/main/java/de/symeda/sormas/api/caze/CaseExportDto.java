@@ -89,10 +89,10 @@ public class CaseExportDto implements Serializable {
 	public static final String NUMBER_OF_CLINICAL_VISITS = "numberOfClinicalVisits";
 	public static final String SAMPLE_INFORMATION = "sampleInformation";
 	public static final String QUARANTINE_INFORMATION = "quarantineInformation";
-//	public static final String NUMBER_OF_VISITS = "numberOfVisits";
-//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
-//	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
-//	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
+	public static final String NUMBER_OF_VISITS = "numberOfVisits";
+	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMATIC = "lastCooperativeVisitSymptomatic";
+	public static final String LAST_COOPERATIVE_VISIT_DATE = "lastCooperativeVisitDate";
+	public static final String LAST_COOPERATIVE_VISIT_SYMPTOMS = "lastCooperativeVisitSymptoms";
 
 	private String country;
 	private long id;
@@ -151,7 +151,13 @@ public class CaseExportDto implements Serializable {
 	private String city;
 	@PersonalData
 	@SensitiveData
-	private String address;
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
@@ -202,10 +208,10 @@ public class CaseExportDto implements Serializable {
 
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntil;
-//	private int numberOfVisits;
-//	private YesNoUnknown lastCooperativeVisitSymptomatic;
-//	private Date lastCooperativeVisitDate;
-//	private String lastCooperativeVisitSymptoms;
+	private int numberOfVisits;
+	private YesNoUnknown lastCooperativeVisitSymptomatic;
+	private Date lastCooperativeVisitDate;
+	private String lastCooperativeVisitSymptoms;
 
 	private CaseJurisdictionDto jurisdiction;
 
@@ -226,7 +232,7 @@ public class CaseExportDto implements Serializable {
 						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
-						 String addressRegion, String addressDistrict, String city, String address, String postalCode,
+						 String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 						 String phone, String phoneOwner, EducationType educationType, String educationDetails,
 						 OccupationType occupationType, String occupationDetails, String occupationFacility,
 						 String occupationFacilityUuid, String occupationFacilityDetails, YesNoUnknown traveled,
@@ -283,7 +289,9 @@ public class CaseExportDto implements Serializable {
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
 		this.city = city;
-		this.address = address;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.educationType = PersonHelper.buildEducationString(educationType, educationDetails);
@@ -805,13 +813,33 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(LocationDto.ADDRESS)
+	@ExportProperty(LocationDto.STREET)
 	@ExportGroup(ExportGroupType.SENSITIVE)
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
 	}
 
 	@Order(60)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(LocationDto.HOUSE_NUMBER)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	@Order(61)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(LocationDto.ADDITIONAL_INFORMATION)
+	@ExportGroup(ExportGroupType.SENSITIVE)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	@Order(62)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -821,7 +849,7 @@ public class CaseExportDto implements Serializable {
 		return postalCode;
 	}
 
-	@Order(61)
+	@Order(63)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -831,7 +859,7 @@ public class CaseExportDto implements Serializable {
 		return addressGpsCoordinates;
 	}
 
-	@Order(62)
+	@Order(64)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -841,7 +869,7 @@ public class CaseExportDto implements Serializable {
 		return phone;
 	}
 
-	@Order(63)
+	@Order(65)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -855,7 +883,7 @@ public class CaseExportDto implements Serializable {
 		this.educationType = educationType;
 	}
 
-	@Order(64)
+	@Order(66)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1146,41 +1174,41 @@ public class CaseExportDto implements Serializable {
 		return followUpUntil;
 	}
 
-//	@Order(133)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public int getNumberOfVisits() {
-//		return numberOfVisits;
-//	}
-//
-//	@Order(134)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
-//		return lastCooperativeVisitSymptomatic;
-//	}
-//
-//	@Order(135)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public Date getLastCooperativeVisitDate() {
-//		return lastCooperativeVisitDate;
-//	}
-//
-//	@Order(136)
-//	@ExportTarget(caseExportTypes = {
-//			CaseExportType.CASE_SURVEILLANCE })
-//	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
-//	@ExportGroup(ExportGroupType.FOLLOW_UP)
-//	public String getLastCooperativeVisitSymptoms() {
-//		return lastCooperativeVisitSymptoms;
-//	}
+	@Order(133)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.NUMBER_OF_VISITS)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public int getNumberOfVisits() {
+		return numberOfVisits;
+	}
+
+	@Order(134)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
+		return lastCooperativeVisitSymptomatic;
+	}
+
+	@Order(135)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_DATE)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public Date getLastCooperativeVisitDate() {
+		return lastCooperativeVisitDate;
+	}
+
+	@Order(136)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)
+	@ExportGroup(ExportGroupType.FOLLOW_UP)
+	public String getLastCooperativeVisitSymptoms() {
+		return lastCooperativeVisitSymptoms;
+	}
 
 	public void setCountry(String country) {
 		this.country = country;
@@ -1463,19 +1491,19 @@ public class CaseExportDto implements Serializable {
 		this.followUpUntil = followUpUntil;
 	}
 
-//	public void setNumberOfVisits(int numberOfVisits) {
-//		this.numberOfVisits = numberOfVisits;
-//	}
-//
-//	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
-//		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
-//	}
-//
-//	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
-//		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
-//	}
-//
-//	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
-//		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
-//	}
+	public void setNumberOfVisits(int numberOfVisits) {
+		this.numberOfVisits = numberOfVisits;
+	}
+
+	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
+		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
+	}
+
+	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
+		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
+	}
+
+	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
+		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
+	}
 }

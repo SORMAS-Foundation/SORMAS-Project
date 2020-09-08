@@ -51,24 +51,19 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -81,6 +76,7 @@ import de.symeda.sormas.ui.caze.importer.CaseImportLayout;
 import de.symeda.sormas.ui.caze.importer.LineListingImportLayout;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CaseDownloadUtil;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
@@ -161,9 +157,7 @@ public class CasesView extends AbstractView {
 			grid = new CaseFollowUpGrid(criteria, new Date(), followUpRangeInterval, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
-			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType())
-					? new CaseGridDetailed(criteria)
-					: new CaseGrid(criteria);
+			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);
 		}
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
@@ -193,8 +187,7 @@ public class CasesView extends AbstractView {
 
 		if (caseFollowUpEnabled) {
 			casesViewSwitcher.addItem(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW);
-			casesViewSwitcher
-					.setItemCaption(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW, I18nProperties.getCaption(Captions.caseFollowupVisitsView));
+			casesViewSwitcher.setItemCaption(CasesViewType.FOLLOW_UP_VISITS_OVERVIEW, I18nProperties.getCaption(Captions.caseFollowupVisitsView));
 		}
 
 		casesViewSwitcher.setValue(viewConfiguration.getViewType());
@@ -277,34 +270,9 @@ public class CasesView extends AbstractView {
 			}
 
 			{
-				StreamResource exportStreamResource = DownloadUtil.createCsvExportStreamResource(
-					CaseExportDto.class,
-					CaseExportType.CASE_SURVEILLANCE,
-					(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-						.getExportList(
-							grid.getCriteria(),
-							CaseExportType.CASE_SURVEILLANCE,
-							start,
-							max,
-							detailedExportConfiguration,
-							I18nProperties.getUserLanguage()),
-					(propertyId, type) -> {
-						String caption = I18nProperties.findPrefixCaption(
-							propertyId,
-							CaseExportDto.I18N_PREFIX,
-							CaseDataDto.I18N_PREFIX,
-							PersonDto.I18N_PREFIX,
-							LocationDto.I18N_PREFIX,
-							SymptomsDto.I18N_PREFIX,
-							EpiDataDto.I18N_PREFIX,
-							HospitalizationDto.I18N_PREFIX);
-						if (Date.class.isAssignableFrom(type)) {
-							caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-						}
-						return caption;
-					},
-					createFileNameWithCurrentDate("sormas_cases_", ".csv"),
-					detailedExportConfiguration);
+				StreamResource exportStreamResource =
+					CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), CaseExportType.CASE_SURVEILLANCE, detailedExportConfiguration);
+
 				addExportButton(
 					exportStreamResource,
 					exportPopupButton,
@@ -360,31 +328,7 @@ public class CasesView extends AbstractView {
 					Window customExportWindow = VaadinUiUtil.createPopupWindow();
 					CaseExportConfigurationsLayout customExportsLayout = new CaseExportConfigurationsLayout(customExportWindow::close);
 					customExportsLayout.setExportCallback((exportConfig) -> {
-						Page.getCurrent()
-							.open(
-								DownloadUtil.createCsvExportStreamResource(
-									CaseExportDto.class,
-									null,
-									(Integer start, Integer max) -> FacadeProvider.getCaseFacade()
-										.getExportList(grid.getCriteria(), null, start, max, exportConfig, I18nProperties.getUserLanguage()),
-									(propertyId, type) -> {
-										String caption = I18nProperties.findPrefixCaption(
-											propertyId,
-											CaseExportDto.I18N_PREFIX,
-											CaseDataDto.I18N_PREFIX,
-											PersonDto.I18N_PREFIX,
-											SymptomsDto.I18N_PREFIX,
-											EpiDataDto.I18N_PREFIX,
-											HospitalizationDto.I18N_PREFIX);
-										if (Date.class.isAssignableFrom(type)) {
-											caption += " (" + DateFormatHelper.getDateFormatPattern() + ")";
-										}
-										return caption;
-									},
-									createFileNameWithCurrentDate("sormas_cases_", ".csv"),
-									exportConfig),
-								null,
-								true);
+						Page.getCurrent().open(CaseDownloadUtil.createCaseExportResource(grid.getCriteria(), null, exportConfig), null, true);
 					});
 					customExportWindow.setWidth(1024, Unit.PIXELS);
 					customExportWindow.setCaption(I18nProperties.getCaption(Captions.exportCaseCustom));
@@ -553,18 +497,22 @@ public class CasesView extends AbstractView {
 
 		filterForm = new CaseFilterForm();
 		filterForm.addValueChangeListener(e -> {
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
+			}
+		});
+		filterForm.addResetHandler(e -> {
+			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
+			navigateTo(null, true);
+		});
+		filterForm.addApplyHandler(e -> {
 			if (!navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
 				if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 					((CaseFollowUpGrid) grid).reload();
 				} else {
 					((AbstractCaseGrid<?>) grid).reload();
 				}
 			}
-		});
-		filterForm.addResetHandler(e -> {
-			ViewModelProviders.of(CasesView.class).remove(CaseCriteria.class);
-			navigateTo(null, true);
 		});
 		filterLayout.addComponent(filterForm);
 

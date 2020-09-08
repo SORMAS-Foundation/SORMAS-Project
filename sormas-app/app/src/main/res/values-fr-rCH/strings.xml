@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Pas de permission caméra</string>
     <string name="permission_camera_rationale">L\'accès à la caméra est nécessaire pour la détection</string>
     <string name="scan_field_sample_id">Scannez l\'id du champ d\'échantillon</string>
-    <string name="caption_facility_type_group">Groupe de type d\'établissement</string>
+    <string name="caption_facility_type_group">Type de l\'établissement</string>
     <string name="caption_facility_type">Type d\'établissement</string>
 </resources>

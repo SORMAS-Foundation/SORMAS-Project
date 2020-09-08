@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -42,6 +43,10 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		setDataProvider();
 		setCriteria(criteria);
 
+		addDefaultColumns();
+	}
+
+	protected void addDefaultColumns() {
 		addEditColumn(e -> {
 			ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
 		});
@@ -89,6 +94,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			addColumn(e -> e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
 		newColumn.setSortable(false);
 		newColumn.setCaption(caption);
+		newColumn.setId(property);
 	}
 
 }

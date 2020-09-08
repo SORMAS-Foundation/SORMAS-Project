@@ -34,6 +34,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -90,6 +91,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitCriteria;
+import de.symeda.sormas.api.visit.VisitDto;
+import de.symeda.sormas.api.visit.VisitIndexDto;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -806,7 +811,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Thread.sleep(10L);
 
 		PersonDto cazePerson = getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-		cazePerson.getAddress().setAddress("new Address");
+		cazePerson.getAddress().setStreet("new Street");
+		cazePerson.getAddress().setHouseNumber("new Number");
+		cazePerson.getAddress().setAdditionalInformation("new Information");
 		getPersonFacade().savePerson(cazePerson);
 
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(date).size());
@@ -888,6 +895,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			leadRdcf);
 		leadCase.setClinicianEmail("mail");
 		getCaseFacade().saveCase(leadCase);
+		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
+		leadVisit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
+		getVisitFacade().saveVisit(leadVisit);
 
 		// Create otherCase
 		UserDto otherUser = creator.createUser("", "", "", "", "");
@@ -928,6 +938,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PrescriptionDto prescription = creator.createPrescription(otherCase);
 		ClinicalVisitDto visit = creator.createClinicalVisit(otherCase);
 		getCaseFacade().saveCase(otherCase);
+		VisitDto otherVisit = creator.createVisit(otherCase.getDisease(), otherCase.getPerson(), otherCase.getReportDate());
+		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(otherVisit);
 
 		// 2. Merge
 
@@ -993,6 +1006,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<String> visitUuids = new ArrayList<String>();
 		visitUuids.add(visit.getUuid());
 		assertEquals(leadCase.getClinicalCourse().getUuid(), getClinicalVisitFacade().getByUuids(visitUuids).get(0).getClinicalCourse().getUuid());
+
+		// 4.7 Visits;
+		List<String> mergedVisits = getVisitFacade().getIndexList(new VisitCriteria().caze(mergedCase.toReference()), null, null, null)
+				.stream().map(VisitIndexDto::getUuid).collect(Collectors.toList());
+		assertEquals(2, mergedVisits.size());
+		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
+		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
+		// and symptoms
+		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAbdominalPain());
+		assertEquals(SymptomState.YES, mergedCase.getSymptoms().getAnorexiaAppetiteLoss());
+		assertTrue(mergedCase.getSymptoms().getSymptomatic());
 	}
 
 	@Test
@@ -1018,6 +1042,40 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 5. Different disease and different epid number
 		assertFalse(getCaseFacade().doesEpidNumberExist("def", "abc", Disease.ANTHRAX));
+	}
+
+	@Test
+	public void testSymptomsUpdatedByVisit() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto cazePerson = creator.createPerson("Foo", "Bar").toReference();
+		CaseDataDto caze =
+				creator.createCase(user, cazePerson, Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED, InvestigationStatus.PENDING, new Date(), rdcf);
+		caze.getSymptoms().setChestPain(SymptomState.YES);
+
+		// Add a new visit to the case
+		VisitDto visit = creator.createVisit(caze.getDisease(), caze.getPerson(), caze.getReportDate(), VisitStatus.COOPERATIVE);
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		visit.getSymptoms().setChestPain(SymptomState.NO);
+
+		getCaseFacade().saveCase(caze);
+		getVisitFacade().saveVisit(visit);
+		CaseDataDto updatedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getChestPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAbdominalPain());
+
+		// Update an existing visit
+		visit.getSymptoms().setAcuteRespiratoryDistressSyndrome(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		updatedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getChestPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAbdominalPain());
+		assertEquals(SymptomState.YES, updatedCase.getSymptoms().getAcuteRespiratoryDistressSyndrome());
+		assertTrue(updatedCase.getSymptoms().getSymptomatic());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
