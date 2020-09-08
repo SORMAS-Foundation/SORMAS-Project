@@ -2,6 +2,7 @@ package de.symeda.sormas.rest;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonSymptomJournalStatusDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
@@ -58,6 +59,12 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/quarantineEndDates/{since}")
 	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(@PathParam("since") long since) {
 		return FacadeProvider.getPersonFacade().getLatestQuarantineEndDates(new Date(since));
+	}
+
+	@GET
+	@Path("/followUpEndDates/{since}")
+	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(@PathParam("since") long since) {
+		return FacadeProvider.getPersonFacade().getLatestFollowUpEndDates(new Date(since), true);
 	}
 
 	@Override

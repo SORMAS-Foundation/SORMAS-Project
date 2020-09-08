@@ -38,6 +38,7 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -188,10 +189,9 @@ public class PathogenTestController {
 			facade.savePathogenTest(dto);
 			final EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-
 			Runnable eventParticipantConvertToCaseCallback = () -> {
 				if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified().booleanValue() == true) {
-					showConvertEventParticipantToCaseDialog(eventParticipant);
+					showConvertEventParticipantToCaseDialog(eventParticipant, dto.getTestedDisease());
 				}
 			};
 
@@ -203,16 +203,25 @@ public class PathogenTestController {
 		}
 	}
 
-	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant) {
+	public void showConvertEventParticipantToCaseDialog(EventParticipantDto eventParticipant, Disease testedDisease) {
+		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
+		final boolean differentDiseases = !event.getDisease().equals(testedDisease);
+		Label dialogContent = differentDiseases
+			? new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCaseDifferentDiseases))
+			: new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase));
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getCaption(Captions.convertEventParticipantToCase),
-			new Label(I18nProperties.getString(Strings.messageConvertEventParticipantToCase)),
+				dialogContent,
 			I18nProperties.getString(Strings.yes),
 			I18nProperties.getString(Strings.no),
 			800,
 			e -> {
 				if (e.booleanValue() == true) {
-					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+					if (differentDiseases) {
+						ControllerProvider.getCaseController().createFromEventParticipantDifferentDisease(eventParticipant, testedDisease);
+					} else {
+						ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+					}
 				}
 			});
 	}

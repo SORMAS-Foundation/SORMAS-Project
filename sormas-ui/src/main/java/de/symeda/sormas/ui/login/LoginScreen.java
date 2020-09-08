@@ -78,6 +78,12 @@ public class LoginScreen extends CssLayout {
 
 	private void buildUI() {
 		addStyleName(CssStyles.LOGINSCREEN_BACK);
+
+		if (isCustomBranding && FacadeProvider.getConfigFacade().getLoginBackgroundPath() != null) {
+			Page.Styles styles = Page.getCurrent().getStyles();
+			styles.add(
+				".v-app .login-screen-back { background-image: url(" + FacadeProvider.getConfigFacade().getLoginBackgroundPath() + ") !important; }");
+		}
 		CssLayout layout = new CssLayout();
 		layout.addStyleName(CssStyles.LOGINSCREEN);
 		addComponent(layout);
@@ -85,8 +91,10 @@ public class LoginScreen extends CssLayout {
 		layout.addComponent(buildLoginLayout());
 
 		// custom html layout
-		Layout loginSidebarLayout = buildLoginSidebarLayout();
-		layout.addComponent(loginSidebarLayout);
+		if (!isCustomBranding || FacadeProvider.getConfigFacade().isUseLoginSidebar()) {
+			Layout loginSidebarLayout = buildLoginSidebarLayout();
+			layout.addComponent(loginSidebarLayout);
+		}
 	}
 
 	private Component buildLoginLayout() {

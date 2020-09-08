@@ -36,7 +36,6 @@ import com.vaadin.ui.renderers.DateRenderer;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
-import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.followup.FollowUpDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -61,19 +60,13 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 		Date fromDate = DateHelper.subtractDays(referenceDate, interval - 1);
 		criteria.followUpUntilFrom(DateHelper.getStartOfDay(fromDate));
 
-		setColumns(
-				FollowUpDto.UUID,
-				FollowUpDto.PERSON,
-				FollowUpDto.REPORT_DATE,
-				FollowUpDto.FOLLOW_UP_UNTIL);
+		setColumns(FollowUpDto.UUID, FollowUpDto.PERSON, FollowUpDto.REPORT_DATE, FollowUpDto.FOLLOW_UP_UNTIL);
 
 		setVisitColumns(referenceDate, interval, criteria);
 
 		((Column<CaseFollowUpDto, String>) getColumn(CaseFollowUpDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.REPORT_DATE))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
-		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.FOLLOW_UP_UNTIL))
-			.setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.REPORT_DATE)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
+		((Column<CaseFollowUpDto, Date>) getColumn(CaseFollowUpDto.FOLLOW_UP_UNTIL)).setRenderer(new DateRenderer(DateFormatHelper.getDateFormat()));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(FollowUpDto.I18N_PREFIX, column.getId(), column.getCaption()));
@@ -102,19 +95,11 @@ public class CaseFollowUpGrid extends FilteredGrid<CaseFollowUpDto, CaseCriteria
 			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<CaseFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
-				return getVisitResultCssStyle(
-					visitResult,
-					date,
-					CaseLogic.getStartDate(item.getSymptomsOnsetDate(), item.getReportDate()),
-					item.getFollowUpUntil());
+				return getVisitResultCssStyle(visitResult, date, item.getReportDate(), item.getFollowUpUntil());
 			}).setDescriptionGenerator((DescriptionGenerator<CaseFollowUpDto>) item -> {
 				final VisitResult visitResult = item.getVisitResults()[index];
 				final Date date = dates.get(index);
-				return getVisitResultDescription(
-					visitResult,
-					date,
-					CaseLogic.getStartDate(item.getSymptomsOnsetDate(), item.getReportDate()),
-					item.getFollowUpUntil());
+				return getVisitResultDescription(visitResult, date, item.getReportDate(), item.getFollowUpUntil());
 			});
 		}
 	}

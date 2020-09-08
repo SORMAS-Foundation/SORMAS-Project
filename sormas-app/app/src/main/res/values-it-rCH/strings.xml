@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Non hai il permesso di accedere alla fotocamera</string>
     <string name="permission_camera_rationale">L\'accesso alla fotocamera è necessario per la rilevazione</string>
     <string name="scan_field_sample_id">Scansiona id campione di campo</string>
-    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
 </resources>

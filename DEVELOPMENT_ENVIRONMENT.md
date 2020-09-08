@@ -2,7 +2,8 @@
 # SORMAS Development Environment
 
 ## Server
-- Install [your local server](SERVER_SETUP.md) or [a more dev specific one](SERVER_DEV_SETUP.md) (Docker is needed to run Postgresql image)
+- Install [your local server](SERVER_SETUP.md).
+- Alternatively [SERVER_DEV_SETUP.md](SERVER_DEV_SETUP.md) could be used (at this time not recommended)
 
 ## Git
 - Install [Git for your OS](https://git-scm.com/downloads)
