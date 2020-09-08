@@ -87,7 +87,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		setColumns(
 			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
-			EventParticipantIndexDto.NAME,
+			EventParticipantIndexDto.FIRST_NAME,
+			EventParticipantIndexDto.LAST_NAME,
 			EventParticipantIndexDto.SEX,
 			EventParticipantIndexDto.APPROXIMATE_AGE,
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,

@@ -19,7 +19,8 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventParticipa
 	public static final String PERSON_UUID = "personUuid";
 	public static final String CASE_UUID = "caseUuid";
 	public static final String EVENT_UUID = "eventUuid";
-	public static final String NAME = "name";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
 	public static final String SEX = "sex";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
@@ -30,7 +31,9 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventParticipa
 	private String eventUuid;
 	@PersonalData
 	@SensitiveData
-	private String name;
+	private String firstName;
+	@SensitiveData
+	private String lastName;
 	private Sex sex;
 	private String approximateAge;
 	@SensitiveData
@@ -55,7 +58,8 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventParticipa
 		this.personUuid = personUuid;
 		this.caseUuid = caseUuid;
 		this.eventUuid = eventUuid;
-		this.name = firstName + " " + lastName;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.involvementDescription = involvementDescription;
@@ -95,12 +99,20 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventParticipa
 		this.eventUuid = eventUuid;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public Sex getSex() {
