@@ -92,16 +92,6 @@ public class EventParticipantsView extends AbstractEventView {
 
 			topLayout.addComponent(bulkOperationsDropdown);
 			topLayout.setComponentAlignment(bulkOperationsDropdown, Alignment.TOP_RIGHT);
-			topLayout.setExpandRatio(bulkOperationsDropdown, 1);
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
-			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
-				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
-			}, ValoTheme.BUTTON_PRIMARY);
-
-			topLayout.addComponent(addButton);
-			topLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
 		}
 
 		topLayout.addStyleName(CssStyles.VSPACE_3);
@@ -150,6 +140,15 @@ public class EventParticipantsView extends AbstractEventView {
 		statusAll.setCaptionAsHtml(true);
 		statusFilterLayout.addComponent(statusAll);
 		activeStatusButton = statusAll;
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
+			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
+				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
+			}, ValoTheme.BUTTON_PRIMARY);
+
+			statusFilterLayout.addComponent(addButton);
+			statusFilterLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
+		}
 
 		return statusFilterLayout;
 	}
