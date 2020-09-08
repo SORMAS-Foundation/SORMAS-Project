@@ -50,9 +50,10 @@ import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 	private static final long serialVersionUID = 4265377973842591202L;
+	private static final String CONTACT_PERSON_PHONE_NUMBER_LOC = "contactPersonPhoneNumberLoc";
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(VisitDto.VISIT_STATUS, VisitDto.PERSON) + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
+		fluidRowLocs(VisitDto.VISIT_STATUS, CONTACT_PERSON_PHONE_NUMBER_LOC)  + fluidRowLocs(VisitDto.VISIT_DATE_TIME, VisitDto.VISIT_REMARKS) + fluidRowLocs(VisitDto.SYMPTOMS);
 
 	private final Disease disease;
 	private final ContactDto contact;
@@ -111,10 +112,11 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 			return;
 		}
 
-		TextField textFieldPhone = addCustomField(VisitDto.PERSON, String.class, TextField.class);
-		textFieldPhone.setCaption(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
+		TextField textFieldPhone = new TextField(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
+		textFieldPhone.setWidth(100, Unit.PERCENTAGE);
 		textFieldPhone.setValue(this.person.getPhone());
 		textFieldPhone.setReadOnly(true);
+		getContent().addComponent(textFieldPhone, CONTACT_PERSON_PHONE_NUMBER_LOC);
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
