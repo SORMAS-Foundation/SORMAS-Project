@@ -21,6 +21,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -68,7 +69,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 			caseIdLabel.setId("caseIdLabel");
 			caseIdLabel.setDescription(caseDto.getUuid());
 
-			if (FacadeProvider.getConfigFacade().isGermanServer()) {
+			if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.EXTERNAL_ID,

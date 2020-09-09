@@ -1,20 +1,20 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
 import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.DateRenderer;
-
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AgeAndBirthDateDtoConverterV7;
 import de.symeda.sormas.ui.utils.V7UuidRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class CaseSelectionGrid extends Grid {
@@ -56,7 +56,7 @@ public class CaseSelectionGrid extends Grid {
 			CaseIndexDto.CASE_CLASSIFICATION,
 			CaseIndexDto.OUTCOME);
 
-		if (FacadeProvider.getConfigFacade().isGermanServer()) {
+		if (FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			getColumn(CaseIndexDto.EPID_NUMBER).setHidden(true);
 		} else {
 			getColumn(CaseIndexDto.EXTERNAL_ID).setHidden(true);

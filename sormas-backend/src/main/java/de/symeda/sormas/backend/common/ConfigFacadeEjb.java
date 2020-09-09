@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.common;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -45,7 +46,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String COUNTRY_NAME = "country.name";
 	public static final String COUNTRY_LOCALE = "country.locale";
-	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 	public static final String COUNTRY_EPID_PREFIX = "country.epidprefix";
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
@@ -58,6 +58,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String CUSTOM_BRANDING = "custombranding";
 	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
 	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
+	public static final String CUSTOM_BRANDING_USE_LOGIN_SIDEBAR = "custombranding.useloginsidebar";
+	public static final String CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH = "custombranding.loginbackground.path";
 
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
@@ -167,20 +169,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isGermanServer() {
-		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
-			return getCountryLocale().toLowerCase().endsWith("de");
+	public boolean isConfiguredCountry(String countryCode) {
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
+			return getCountryLocale().toLowerCase().endsWith(countryCode.toLowerCase());
 		} else {
-			return getCountryLocale().toLowerCase().startsWith("de");
-		}
-	}
-
-	@Override
-	public boolean isSwissServer() {
-		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
-			return getCountryLocale().toLowerCase().endsWith("ch");
-		} else {
-			return getCountryLocale().toLowerCase().startsWith("ch");
+			return getCountryLocale().toLowerCase().startsWith(countryCode.toLowerCase());
 		}
 	}
 
@@ -217,6 +210,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomBrandingLogoPath() {
 		return getProperty(CUSTOM_BRANDING_LOGO_PATH, null);
+	}
+
+	@Override
+	public boolean isUseLoginSidebar() {
+		return getBoolean(CUSTOM_BRANDING_USE_LOGIN_SIDEBAR, true);
+	}
+
+	@Override
+	public String getLoginBackgroundPath() {
+		return getProperty(CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH, null);
 	}
 
 	@Override

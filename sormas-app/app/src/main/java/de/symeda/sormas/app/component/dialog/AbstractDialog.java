@@ -68,7 +68,14 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	// Constructor
 
-	public AbstractDialog(final FragmentActivity activity, int rootLayoutId, int contentLayoutResourceId, int buttonPanelLayoutResourceId, int headingResourceId, int subHeadingResourceId, boolean closeOnPositiveButtonClick) {
+	public AbstractDialog(
+		final FragmentActivity activity,
+		int rootLayoutId,
+		int contentLayoutResourceId,
+		int buttonPanelLayoutResourceId,
+		int headingResourceId,
+		int subHeadingResourceId,
+		boolean closeOnPositiveButtonClick) {
 		this.builder = new AlertDialog.Builder(activity);
 		this.activity = activity;
 		this.rootLayoutId = rootLayoutId;
@@ -439,5 +446,9 @@ public abstract class AbstractDialog implements NotificationContext {
 
 	public void setCancelable(boolean cancelable) {
 		this.builder.setCancelable(cancelable);
+	}
+
+	public void setCloseOnPositiveButtonClick(boolean closeOnPositiveButtonClick) {
+		this.closeOnPositiveButtonClick = closeOnPositiveButtonClick;
 	}
 }

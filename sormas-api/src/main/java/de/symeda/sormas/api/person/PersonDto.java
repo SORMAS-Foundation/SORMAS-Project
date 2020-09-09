@@ -34,6 +34,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
@@ -104,6 +105,11 @@ public class PersonDto extends PseudonymizableDto {
 	public static final String OCCUPATION_FACILITY_TYPE = "occupationFacilityType";
 	public static final String PLACE_OF_BIRTH_FACILITY_TYPE = "placeOfBirthFacilityType";
 	public static final String ADDRESSES = "addresses";
+
+	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
+
+	public static final String HAS_COVID_APP = "hasCovidApp";
+	public static final String COVID_CODE_DELIVERED = "covidCodeDelivered";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -262,6 +268,15 @@ public class PersonDto extends PseudonymizableDto {
 	@SensitiveData
 	private String nationalHealthId;
 	private List<LocationDto> addresses = new ArrayList<>();
+
+	@Diseases(Disease.CORONAVIRUS)
+	@HideForCountriesExcept(countries = "ch")
+	private boolean hasCovidApp;
+	@Diseases(Disease.CORONAVIRUS)
+	@HideForCountriesExcept(countries = "ch")
+	private boolean covidCodeDelivered;
+
+	private SymptomJournalStatus symptomJournalStatus;
 
 	public Integer getBirthdateDD() {
 		return birthdateDD;
@@ -654,6 +669,30 @@ public class PersonDto extends PseudonymizableDto {
 
 	public void setAddresses(List<LocationDto> addresses) {
 		this.addresses = addresses;
+	}
+
+	public SymptomJournalStatus getSymptomJournalStatus() {
+		return symptomJournalStatus;
+	}
+
+	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
+		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
+	public boolean isHasCovidApp() {
+		return hasCovidApp;
+	}
+
+	public void setHasCovidApp(boolean hasCovidApp) {
+		this.hasCovidApp = hasCovidApp;
+	}
+
+	public boolean isCovidCodeDelivered() {
+		return covidCodeDelivered;
+	}
+
+	public void setCovidCodeDelivered(boolean covidCodeDelivered) {
+		this.covidCodeDelivered = covidCodeDelivered;
 	}
 
 	@Override

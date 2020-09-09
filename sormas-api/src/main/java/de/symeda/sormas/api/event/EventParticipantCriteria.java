@@ -9,7 +9,16 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	private static final long serialVersionUID = 5981720569585071845L;
 
+	public static final String FREE_TEXT = "freeText";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
+
 	private EventReferenceDto event;
+	private String freeText;
+	private Integer birthdateYYYY;
+	private Integer birthdateMM;
+	private Integer birthdateDD;
 
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
@@ -19,5 +28,43 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	public EventParticipantCriteria event(EventReferenceDto event) {
 		this.event = event;
 		return this;
+	}
+
+	public EventParticipantCriteria freeText(String freeText) {
+		this.freeText = freeText;
+		return this;
+	}
+
+	public void setFreeText(String freeText) {
+		this.freeText = freeText;
+	}
+
+	@IgnoreForUrl
+	public String getFreeText() {
+		return freeText;
+	}
+
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public Integer getBirthdateDD() {
+		return birthdateDD;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 }

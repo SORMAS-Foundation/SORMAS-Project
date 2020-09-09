@@ -33,7 +33,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.samples.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -129,6 +129,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 
 			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+		}
+
+		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
+		if (!isEditAllowed) {
+			container.setEnabled(false);
 		}
 	}
 

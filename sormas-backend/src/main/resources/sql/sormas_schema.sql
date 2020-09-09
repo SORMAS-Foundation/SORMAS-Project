@@ -5216,4 +5216,51 @@ DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
+
+-- 2020-09-01 - Store the status of the PIA account for a person
+ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
+ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (246, 'Add SymptomJournalStatus to allow status exchange with external journals. #1970');
+
+-- 2020-09-03 - Add "Has COVID app" and "COVID Code generated and delivered" fields on person
+ALTER TABLE person ADD COLUMN hasCovidApp boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN hasCovidApp boolean DEFAULT false;
+
+ALTER TABLE person ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
+
+-- 2020-09-07 - Add reporting user on event participant
+ALTER TABLE eventparticipant ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant #2789');
+
+-- 2020-09-08 - Add "Official order sent" and corresponding date to cases and contacts #2847
+ALTER TABLE cases ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+ALTER TABLE contact ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
+
+-- 2020-07-29 Campaign diagram visualisation refinement
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
+
 -- *** Insert new sql commands BEFORE this line ***

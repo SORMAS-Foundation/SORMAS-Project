@@ -27,6 +27,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
+	String actionApplyFilters = "actionApplyFilters";
 	String actionArchive = "actionArchive";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
 	String actionBackToNationOverview = "actionBackToNationOverview";
@@ -221,6 +222,8 @@ public interface Captions {
 	String CaseData_quarantineHomePossibleComment = "CaseData.quarantineHomePossibleComment";
 	String CaseData_quarantineHomeSupplyEnsured = "CaseData.quarantineHomeSupplyEnsured";
 	String CaseData_quarantineHomeSupplyEnsuredComment = "CaseData.quarantineHomeSupplyEnsuredComment";
+	String CaseData_quarantineOfficialOrderSent = "CaseData.quarantineOfficialOrderSent";
+	String CaseData_quarantineOfficialOrderSentDate = "CaseData.quarantineOfficialOrderSentDate";
 	String CaseData_quarantineOrderedOfficialDocument = "CaseData.quarantineOrderedOfficialDocument";
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
@@ -422,6 +425,8 @@ public interface Captions {
 	String Contact_quarantineHomePossibleComment = "Contact.quarantineHomePossibleComment";
 	String Contact_quarantineHomeSupplyEnsured = "Contact.quarantineHomeSupplyEnsured";
 	String Contact_quarantineHomeSupplyEnsuredComment = "Contact.quarantineHomeSupplyEnsuredComment";
+	String Contact_quarantineOfficialOrderSent = "Contact.quarantineOfficialOrderSent";
+	String Contact_quarantineOfficialOrderSentDate = "Contact.quarantineOfficialOrderSentDate";
 	String Contact_quarantineOrderedOfficialDocument = "Contact.quarantineOrderedOfficialDocument";
 	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
 	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
@@ -989,6 +994,7 @@ public interface Captions {
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
 	String Person_causeOfDeathDiseaseDetails = "Person.causeOfDeathDiseaseDetails";
+	String Person_covidCodeDelivered = "Person.covidCodeDelivered";
 	String Person_deathDate = "Person.deathDate";
 	String Person_deathPlaceDescription = "Person.deathPlaceDescription";
 	String Person_deathPlaceType = "Person.deathPlaceType";
@@ -999,6 +1005,7 @@ public interface Captions {
 	String Person_fathersName = "Person.fathersName";
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
+	String Person_hasCovidApp = "Person.hasCovidApp";
 	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
@@ -1027,6 +1034,7 @@ public interface Captions {
 	String Person_presentCondition = "Person.presentCondition";
 	String Person_sex = "Person.sex";
 	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
+	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String personCreateNew = "personCreateNew";
 	String personFindMatching = "personFindMatching";
