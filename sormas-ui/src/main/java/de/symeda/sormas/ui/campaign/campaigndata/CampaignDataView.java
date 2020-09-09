@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
-import static com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import static de.symeda.sormas.ui.utils.FilteredGrid.EDIT_BTN_ID;
 
 import java.util.List;
@@ -24,6 +23,7 @@ import java.util.function.Consumer;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -94,14 +94,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		filterForm.getField(CampaignFormDataCriteria.CAMPAIGN_FORM_META).addValueChangeListener(e -> {
 			Object value = e.getProperty().getValue();
-			if (value == null) {
-				campaignFormElementImportance.setVisible(false);
-			} else {
-				campaignFormElementImportance.setVisible(true);
-				if (campaignFormElementImportance.getValue() == null) {
-					campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
-				}
-			}
+			campaignFormElementImportance.setVisible(value != null);
 		});
 
 		campaignFormElementImportance.addValueChangeListener(e -> {
@@ -174,6 +167,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignFormElementImportance
 			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 
+		campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
 		campaignFormElementImportance.setVisible(false);
 	}
 
@@ -247,7 +241,11 @@ public class CampaignDataView extends AbstractCampaignView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
+
+		applyingCriteria = true;
 		filterForm.setValue(criteria);
+		applyingCriteria = false;
+
 		grid.reload();
 
 		super.enter(event);
