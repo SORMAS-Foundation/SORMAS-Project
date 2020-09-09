@@ -1756,13 +1756,6 @@ public class CaseFacadeEjb implements CaseFacade {
 					// attention: this may lead to infinite recursion when not properly implemented
 					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
 				}
-			}else if(newCase.getOutcome()==CaseOutcome.UNKNOWN) {
-				if (newCase.getPerson().getPresentCondition() != PresentCondition.UNKNOWN) {
-					PersonDto existingPerson = PersonFacadeEjb.toDto(newCase.getPerson());
-					newCase.getPerson().setPresentCondition(PresentCondition.UNKNOWN);
-
-					personFacade.onPersonChanged(existingPerson, newCase.getPerson());
-				}
 			}
 		}
 	}

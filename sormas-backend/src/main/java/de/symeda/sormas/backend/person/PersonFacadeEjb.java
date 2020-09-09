@@ -92,6 +92,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("EjbClassBasicInspection")
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
 
@@ -349,7 +350,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	 */
 	private void cleanUp(Person person) {
 
-		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE) {
+		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE ||
+			person.getPresentCondition() == PresentCondition.UNKNOWN) {
 			person.setDeathDate(null);
 			person.setCauseOfDeath(null);
 			person.setCauseOfDeathDisease(null);
@@ -362,16 +364,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			person.setBurialPlaceDescription(null);
 			person.setBurialConductor(null);
 
-		}if(person.getPresentCondition()==PresentCondition.UNKNOWN){
-			person.setDeathDate(null);
-			person.setCauseOfDeath(null);
-			person.setCauseOfDeathDisease(null);
-			person.setCauseOfDeathDetails(null);
-			person.setDeathPlaceType(null);
-			person.setDeathPlaceDescription(null);
-			person.setBurialDate(null);
-			person.setBurialPlaceDescription(null);
-			person.setBurialConductor(null);
 		}
 	}
 
