@@ -22,11 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
 
 public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
@@ -54,21 +50,13 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	@SensitiveData
 	private String eventDesc;
-	@EmbeddedSensitiveData
-	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
 	private Date reportDateTime;
 	private EventJurisdictionDto jurisdiction;
@@ -267,15 +255,10 @@ public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Se
 
 		private String regionName;
 		private String districtName;
-		@SensitiveData
 		private String communityName;
-		@SensitiveData
 		private String city;
-		@SensitiveData
 		private String street;
-		@SensitiveData
 		private String houseNumber;
-		@SensitiveData
 		private String additionalInformation;
 
 		public EventIndexLocation(

@@ -199,6 +199,10 @@ public class Contact extends PseudonymizableAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
+	@DatabaseField
+	private boolean quarantineOfficialOrderSent;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOfficialOrderSentDate;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
 
@@ -654,6 +658,22 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
 	public String getAdditionalDetails() {

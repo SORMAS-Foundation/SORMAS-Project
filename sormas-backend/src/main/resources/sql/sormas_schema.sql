@@ -5232,6 +5232,28 @@ ALTER TABLE person_history ADD COLUMN covidCodeDelivered boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (247, 'SwissCOVID-App fields (for Switzerland and COVID only), #2725');
 
+-- 2020-09-07 - Add reporting user on event participant
+ALTER TABLE eventparticipant ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
+ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant #2789');
+
+-- 2020-09-08 - Add "Official order sent" and corresponding date to cases and contacts #2847
+ALTER TABLE cases ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+ALTER TABLE contact ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
+
 -- 2020-07-29 Campaign diagram visualisation refinement
 
 ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
@@ -5239,12 +5261,13 @@ ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USI
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (248, 'Campaign diagram visualization refinement #2753');
+INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
+
 
 -- 2020-09-07 Campaign dashboard element
 
 ALTER TABLE campaigns ADD COLUMN dashboardElements json;
 ALTER TABLE campaigns_history ADD COLUMN dashboardElements json;
 
-INSERT INTO schema_version (version_number, comment) VALUES (249, 'Campaign dashboard element #2527');
+INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
 -- *** Insert new sql commands BEFORE this line ***
