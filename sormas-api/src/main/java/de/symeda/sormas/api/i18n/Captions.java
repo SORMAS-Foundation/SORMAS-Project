@@ -222,6 +222,8 @@ public interface Captions {
 	String CaseData_quarantineHomePossibleComment = "CaseData.quarantineHomePossibleComment";
 	String CaseData_quarantineHomeSupplyEnsured = "CaseData.quarantineHomeSupplyEnsured";
 	String CaseData_quarantineHomeSupplyEnsuredComment = "CaseData.quarantineHomeSupplyEnsuredComment";
+	String CaseData_quarantineOfficialOrderSent = "CaseData.quarantineOfficialOrderSent";
+	String CaseData_quarantineOfficialOrderSentDate = "CaseData.quarantineOfficialOrderSentDate";
 	String CaseData_quarantineOrderedOfficialDocument = "CaseData.quarantineOrderedOfficialDocument";
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
@@ -423,6 +425,8 @@ public interface Captions {
 	String Contact_quarantineHomePossibleComment = "Contact.quarantineHomePossibleComment";
 	String Contact_quarantineHomeSupplyEnsured = "Contact.quarantineHomeSupplyEnsured";
 	String Contact_quarantineHomeSupplyEnsuredComment = "Contact.quarantineHomeSupplyEnsuredComment";
+	String Contact_quarantineOfficialOrderSent = "Contact.quarantineOfficialOrderSent";
+	String Contact_quarantineOfficialOrderSentDate = "Contact.quarantineOfficialOrderSentDate";
 	String Contact_quarantineOrderedOfficialDocument = "Contact.quarantineOrderedOfficialDocument";
 	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
 	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
