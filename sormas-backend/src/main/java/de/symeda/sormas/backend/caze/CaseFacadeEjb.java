@@ -492,6 +492,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
 				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 				caseRoot.get(Case.QUARANTINE_EXTENDED),
+				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT),
+				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 
 				joins.getHospitalization().get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY), joins.getHospitalization().get(Hospitalization.ADMISSION_DATE),
 				joins.getHospitalization().get(Hospitalization.DISCHARGE_DATE), joins.getHospitalization().get(Hospitalization.LEFT_AGAINST_ADVICE),
@@ -1933,6 +1935,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -2196,6 +2200,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -2798,11 +2804,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.get(Case.DISEASE));
 		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
-		Predicate filter = AbstractAdoService
-				.and(
-						cb,
-						caseService.createUserFilter(cb, cq, caze),
-						caseService.createCriteriaFilter(caseCriteria, cb, cq, caze));
+		Predicate filter =
+			AbstractAdoService.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);

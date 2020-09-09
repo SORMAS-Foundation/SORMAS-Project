@@ -67,15 +67,20 @@ public class ContactReadFragment extends BaseReadFragment<FragmentContactReadLay
 			contentBinding.contactCaseOrEventInformation.setVisibility(GONE);
 		}
 
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+			contentBinding.contactQuarantineOfficialOrderSent.setVisibility(GONE);
+			contentBinding.contactQuarantineOfficialOrderSentDate.setVisibility(GONE);
+		}
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
 			contentBinding.contactExternalID.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
 			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 		}
 	}

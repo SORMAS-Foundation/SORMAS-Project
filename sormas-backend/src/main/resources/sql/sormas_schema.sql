@@ -5239,6 +5239,19 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id
 ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
 ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant  #2789');
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant #2789');
+
+-- 2020-09-08 - Add "Official order sent" and corresponding date to cases and contacts #2847
+ALTER TABLE cases ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+ALTER TABLE contact ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
 
 -- *** Insert new sql commands BEFORE this line ***
