@@ -3,8 +3,8 @@ library(visNetwork)
 library(dplyr)
 
 envDefaults = c(
-  "DB_USER" = "sormas_user", "DB_PASS" = "sormas_db",
-  "DB_HOST" = "127.0.0.1", "DB_PORT" = "5432", "DB_NAME" = "sormas_db",
+  "DB_USER" = "sormas_user", "DB_PASS" = "sormas_user",
+  "DB_HOST" = "0.0.0.0", "DB_PORT" = "5432", "DB_NAME" = "sormas_db3",
   "CONTACT_IDS" = "",
   "OUTFILE" = "sormas_contact.html",
   "HIERARCHICAL" = "FALSE"
@@ -60,7 +60,9 @@ where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
   idContString = CONTACT_IDS
 }
 #guards against syntax exception due to empty id list
-if (idContString == "") idContString = "NULL"
+if (length(idContString) == 0) idContString = "NULL"
+
+print(idContString)
 
 #query all relevant contacts
 sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
@@ -105,6 +107,10 @@ order by person_id, uuid is null, reportdate, uuid"
 nodeTable = dbGetQuery(con, sprintf(sql_node, idContString))
 
 dbDisconnect(con)
+
+if(is.null(edgeTable) | is.null(nodeTable)){
+  quit()
+}
 
 elist = data.frame(from = edgeTable$case_pid, to = edgeTable$contact_pid, contactproximity = edgeTable$contactproximity)
 
