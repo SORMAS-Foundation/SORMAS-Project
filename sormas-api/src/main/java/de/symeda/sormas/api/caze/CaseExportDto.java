@@ -721,7 +721,7 @@ public class CaseExportDto implements Serializable {
 		return quarantineExtended;
 	}
 
-	@Order(137)
+	@Order(42)
 	@ExportTarget(caseExportTypes = {
 			CaseExportType.CASE_SURVEILLANCE,
 			CaseExportType.CASE_MANAGEMENT })
