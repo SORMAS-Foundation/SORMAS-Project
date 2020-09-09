@@ -22,6 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -49,8 +52,8 @@ public class ServerAccessDataFacadeEjb implements ServerAccessDataFacade {
 	@Override
 	public List<ServerAccessDataDto> getServerAccessDataList() {
 		Sormas2SormasConfig config = configFacade.getSormas2SormasConfig();
-		File inputFile = Paths.get(config.getFilePath(), SERVER_LIST_FILE_NAME).toFile();
-		try (Reader reader = new InputStreamReader(new FileInputStream(inputFile), "UTF-8");
+		Path inputFile = Paths.get(config.getFilePath(), SERVER_LIST_FILE_NAME);
+		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
 			return csvReader.readAll().stream()
 					.map(this::getServerAccessDataDto)

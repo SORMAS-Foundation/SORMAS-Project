@@ -18,11 +18,15 @@
 package de.symeda.sormas.backend.sormas2sormas;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.ejb.EJB;
@@ -46,36 +50,38 @@ public class Sormas2SormasEncryptionService {
 	public String encrypt(String data, String instanceID) throws Exception {
 		Sormas2SormasConfig config = configFacade.getSormas2SormasConfig();
 		Path keystorePath = Paths.get(config.getFilePath(), config.getKeystoreName());
-		KeyStore keystore = KeyStore.getInstance("pkcs12");
-		keystore.load(new FileInputStream(keystorePath.toFile()), config.getKeystorePass().toCharArray());
+		KeyStore keystore = getKeyStore(keystorePath, config.getKeystorePass());
 		X509Certificate signerCertificate = (X509Certificate) keystore.getCertificate(config.getKeyAlias());
 		PrivateKey privateKey = (PrivateKey) keystore.getKey(config.getKeyAlias(), config.getKeystorePass().toCharArray());
 
 		Path truststorePath = Paths.get(config.getFilePath(), config.getTruststoreName());
-		KeyStore truststore = KeyStore.getInstance("pkcs12");
-		truststore.load(new FileInputStream(truststorePath.toFile()), config.getTruststorePass().toCharArray());
+		KeyStore truststore = getKeyStore(truststorePath, config.getTruststorePass());
 		X509Certificate recipientCertificate = (X509Certificate) truststore.getCertificate(instanceID);
 
 		byte[] encryptedBytes =
 			CmsCreator.signAndEncrypt(data.getBytes(StandardCharsets.UTF_8), signerCertificate, privateKey, recipientCertificate, true);
-		return new String(encryptedBytes, StandardCharsets.UTF_8);
+		return new String(encryptedBytes);
 	}
 
 	public String decrypt(String data, String instanceID) throws Exception {
 		Sormas2SormasConfig config = configFacade.getSormas2SormasConfig();
 		Path keystorePath = Paths.get(config.getFilePath(), config.getKeystoreName());
-		KeyStore keystore = KeyStore.getInstance("pkcs12");
-		keystore.load(new FileInputStream(keystorePath.toFile()), config.getKeystorePass().toCharArray());
+		KeyStore keystore = getKeyStore(keystorePath, config.getKeystorePass());
 		X509Certificate recipientCertificate = (X509Certificate) keystore.getCertificate(config.getKeyAlias());
 		PrivateKey recipientPrivateKey = (PrivateKey) keystore.getKey(config.getKeyAlias(), config.getKeystorePass().toCharArray());
 
 		Path truststorePath = Paths.get(config.getFilePath(), config.getTruststoreName());
-		KeyStore truststore = KeyStore.getInstance("pkcs12");
-		truststore.load(new FileInputStream(truststorePath.toFile()), config.getTruststorePass().toCharArray());
+		KeyStore truststore = getKeyStore(truststorePath, config.getTruststorePass());
 		X509Certificate singatureCert = (X509Certificate) truststore.getCertificate(instanceID);
 
-		byte[] encryptedBytes =
+		byte[] decryptedBytes =
 			CmsReader.decryptAndVerify(data.getBytes(StandardCharsets.UTF_8), Lists.newArrayList(singatureCert), recipientCertificate, recipientPrivateKey);
-		return new String(encryptedBytes, StandardCharsets.UTF_8);
+		return new String(decryptedBytes, StandardCharsets.UTF_8);
+	}
+
+	private KeyStore getKeyStore(Path keystorePath, String keystorePass) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+		KeyStore keystore = KeyStore.getInstance("pkcs12");
+		keystore.load(new FileInputStream(keystorePath.toFile()), keystorePass.toCharArray());
+		return keystore;
 	}
 }

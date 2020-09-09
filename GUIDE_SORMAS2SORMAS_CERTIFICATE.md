@@ -49,7 +49,7 @@ the path to the ``sormas.properties`` file.
 
 ### Adding a new certificate to the Truststore
 
-To enable other SORMAS instances to request data from this instance, their certificate must be added to the 
+To enable other SORMAS instances to send and receive data from this instance, their certificate must be added to the 
 truststore of this instance. Furthermore, the access data of other instances must be added to the local server
 list. To complete this setup, please follow the next steps:
 1. Run ``bash ./import-to-truststore.sh``

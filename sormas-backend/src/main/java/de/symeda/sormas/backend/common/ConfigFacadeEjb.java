@@ -346,7 +346,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public Sormas2SormasConfig getSormas2SormasConfig() {
 		Sormas2SormasConfig config = new Sormas2SormasConfig();
-		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, "/opt/sormas/sormas2sormas/"));
+		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
 		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
 		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
