@@ -92,6 +92,7 @@ import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseFacadeEjb.DiseaseFacadeEjbLocal;
+import de.symeda.sormas.backend.docgeneration.TemplateEngineService;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -431,11 +432,12 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFacadeEjbLocal.class);
 	}
 
-	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);}
+	public CampaignDiagramDefinitionFacade getCampaignDiagramDefinitionFacade() {
+		return getBean(CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal.class);
+	}
 
 	protected UserDto useNationalUserLogin() {
-		UserDto natUser =
-			creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 
 		return natUser;
@@ -445,4 +447,7 @@ public class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PathogenTestService.class);
 	}
 
+	public TemplateEngineService getTemplateEngineService() {
+		return getBean(TemplateEngineService.class);
+	}
 }

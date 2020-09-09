@@ -1,10 +1,7 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import fr.opensagres.xdocreport.core.XDocReportException;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.velocity.runtime.parser.ParseException;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,12 +9,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.velocity.runtime.parser.ParseException;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TemplateEngineServiceTest {
+import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import fr.opensagres.xdocreport.core.XDocReportException;
 
-	private TemplateEngineService templateEngineService = new TemplateEngineService();
+public class TemplateEngineServiceTest extends AbstractBeanTest {
+
+	private TemplateEngineService templateEngineService;
+
+	@Before
+	public void setup() {
+		templateEngineService = getTemplateEngineService();
+	}
 
 	@Test
 	public void readVariablesFromDocxDocument() throws IOException, XDocReportException, ParseException {
@@ -50,5 +60,11 @@ public class TemplateEngineServiceTest {
 		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(outDocument);
 		String docxText = xwpfWordExtractor.getText();
 		assertEquals("Hello World Max Mustermann\n" + "Quarantäne von 2020/09/17 bis 2020/09/03\n", docxText);
+	}
+
+	@Test
+	public void getTempPath() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, ".");
+		System.out.println(templateEngineService.getTempDir());
 	}
 }
