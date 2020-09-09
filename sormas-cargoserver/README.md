@@ -79,3 +79,8 @@ password `sadmin`.
 ```
 (cd sormas-cargoserver && docker-compose down)
 ```
+
+## Troubeshooting
+If starting the sormas-postgres docker container fails due to docker permission issues (e.g., the docker logs
+shows `FATAL: data directory "/var/lib/postgresql/data" has wrong ownership`), choose another location for the docker
+volume, where docker has write permissions (see (#configuration)).
