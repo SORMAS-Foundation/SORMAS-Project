@@ -74,4 +74,8 @@ public class TemplateEngineService {
 
 		return outputFile;
 	}
+
+	public String getTempDir() {
+		return configFacade.getCustomFilesPath();
+	}
 }
