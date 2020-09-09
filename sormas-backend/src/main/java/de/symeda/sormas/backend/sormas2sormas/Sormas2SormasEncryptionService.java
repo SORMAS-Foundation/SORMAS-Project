@@ -47,7 +47,7 @@ public class Sormas2SormasEncryptionService {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	public String encrypt(String data, String instanceID) throws Exception {
+	public byte[] encrypt(byte[] data, String instanceID) throws Exception {
 		Sormas2SormasConfig config = configFacade.getSormas2SormasConfig();
 		Path keystorePath = Paths.get(config.getFilePath(), config.getKeystoreName());
 		KeyStore keystore = getKeyStore(keystorePath, config.getKeystorePass());
@@ -58,12 +58,10 @@ public class Sormas2SormasEncryptionService {
 		KeyStore truststore = getKeyStore(truststorePath, config.getTruststorePass());
 		X509Certificate recipientCertificate = (X509Certificate) truststore.getCertificate(instanceID);
 
-		byte[] encryptedBytes =
-			CmsCreator.signAndEncrypt(data.getBytes(StandardCharsets.UTF_8), signerCertificate, privateKey, recipientCertificate, true);
-		return new String(encryptedBytes);
+		return CmsCreator.signAndEncrypt(data, signerCertificate, privateKey, recipientCertificate, true);
 	}
 
-	public String decrypt(String data, String instanceID) throws Exception {
+	public byte[] decrypt(byte[] data, String instanceID) throws Exception {
 		Sormas2SormasConfig config = configFacade.getSormas2SormasConfig();
 		Path keystorePath = Paths.get(config.getFilePath(), config.getKeystoreName());
 		KeyStore keystore = getKeyStore(keystorePath, config.getKeystorePass());
@@ -74,9 +72,7 @@ public class Sormas2SormasEncryptionService {
 		KeyStore truststore = getKeyStore(truststorePath, config.getTruststorePass());
 		X509Certificate singatureCert = (X509Certificate) truststore.getCertificate(instanceID);
 
-		byte[] decryptedBytes =
-			CmsReader.decryptAndVerify(data.getBytes(StandardCharsets.UTF_8), Lists.newArrayList(singatureCert), recipientCertificate, recipientPrivateKey);
-		return new String(decryptedBytes, StandardCharsets.UTF_8);
+		return CmsReader.decryptAndVerify(data, Lists.newArrayList(singatureCert), recipientCertificate, recipientPrivateKey);
 	}
 
 	private KeyStore getKeyStore(Path keystorePath, String keystorePass) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
