@@ -11,6 +11,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.ConfigFacade;
+
 public class ConfigProviderTest {
 
 	@Test
@@ -108,11 +110,11 @@ public class ConfigProviderTest {
 		ConfigProvider.setServerLocale(null);
 		assertNotNull(ConfigProvider.getServerLocale());
 		ConfigProvider.setServerLocale("de");
-		assertThat(ConfigProvider.getServerLocale(), is("de"));
-		assertTrue(ConfigProvider.isConfiguredServer("de"));
+		assertThat(ConfigProvider.getServerLocale(), is(CountryHelper.COUNTRY_CODE_GERMANY));
+		assertTrue(ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY));
 		ConfigProvider.setServerLocale("en");
 		assertThat(ConfigProvider.getServerLocale(), is("en"));
-		assertFalse(ConfigProvider.isConfiguredServer("de"));
+		assertFalse(ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY));
 	}
 
 	@Test

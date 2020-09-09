@@ -522,14 +522,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		}
 	}
 
-	public void setPersonalDetailsReadOnly(boolean readOnly) {
+	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
 
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
-		getField(PersonDto.SEX).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
-		getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
+		if (getField(PersonDto.SEX).getValue() != null) {
+			getField(PersonDto.SEX).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_MM).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
+		}
+		if (getField(PersonDto.BIRTH_DATE_DD).getValue() != null) {
+			getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
+		}
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {

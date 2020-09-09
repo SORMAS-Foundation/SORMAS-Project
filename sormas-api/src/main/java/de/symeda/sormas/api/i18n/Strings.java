@@ -516,6 +516,7 @@ public interface Strings {
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageConvertContactToCase = "messageConvertContactToCase";
 	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
+	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageCopyPassword = "messageCopyPassword";
 	String messageCountEventsNotDeleted = "messageCountEventsNotDeleted";
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
@@ -715,6 +716,7 @@ public interface Strings {
 	String promptEventDateTo = "promptEventDateTo";
 	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
 	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
+	String promptEventParticipantsSearchField = "promptEventParticipantsSearchField";
 	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";

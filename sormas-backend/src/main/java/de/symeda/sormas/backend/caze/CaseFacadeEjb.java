@@ -153,6 +153,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResult;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
@@ -245,6 +246,8 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "CaseFacade")
@@ -269,6 +272,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private UserService userService;
 	@EJB
 	private VisitService visitService;
+	@EJB
+	private VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
@@ -487,6 +492,8 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.QUARANTINE_ORDERED_VERBALLY_DATE),
 				caseRoot.get(Case.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 				caseRoot.get(Case.QUARANTINE_EXTENDED),
+				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT),
+				caseRoot.get(Case.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
 
 				joins.getHospitalization().get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY), joins.getHospitalization().get(Hospitalization.ADMISSION_DATE),
 				joins.getHospitalization().get(Hospitalization.DISCHARGE_DATE), joins.getHospitalization().get(Hospitalization.LEFT_AGAINST_ADVICE),
@@ -1344,6 +1351,22 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
+	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
+		final Case caze = caseService.getByUuid(cazeRef.getUuid());
+		final Disease disease = caze.getDisease();
+		eventParticipant.getSamples()
+			.stream()
+			.filter(sample -> sampleContainsTestForDisease(sample, disease))
+			.forEach(sample -> sample.setAssociatedCase(caze));
+
+	}
+
+	private boolean sampleContainsTestForDisease(Sample sample, Disease disease) {
+		return sample.getPathogenTests().stream().anyMatch(test -> test.getTestedDisease().equals(disease));
+	}
+
+	@Override
 	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in
@@ -1912,6 +1935,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -2175,6 +2200,8 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
@@ -2667,6 +2694,14 @@ public class CaseFacadeEjb implements CaseFacade {
 				clinicalVisitService.ensurePersisted(clinicalVisit);
 			}
 		}
+
+		// 5 Attach otherCase visits to leadCase
+		// (set the person and the disease of the visit, saveVisit does the rest)
+		for (VisitDto otherVisit : otherCase.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList())) {
+			otherVisit.setPerson(leadCaseData.getPerson());
+			otherVisit.setDisease(leadCaseData.getDisease());
+			visitFacade.saveVisit(otherVisit);
+		}
 	}
 
 	@Override
@@ -2769,7 +2804,8 @@ public class CaseFacadeEjb implements CaseFacade {
 			caze.get(Case.DISEASE));
 		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caze);
+		Predicate filter =
+			AbstractAdoService.and(cb, caseService.createUserFilter(cb, cq, caze), caseService.createCriteriaFilter(caseCriteria, cb, cq, caze));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -2822,18 +2858,23 @@ public class CaseFacadeEjb implements CaseFacade {
 				visitsJoin.get(Visit.VISIT_DATE_TIME),
 				visitsJoin.get(Visit.VISIT_STATUS),
 				visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+			// Sort by visit date so that we'll have the latest visit of each day
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)));
+
+			visitsCq.orderBy(cb.asc(visitsJoin.get(Visit.VISIT_DATE_TIME)), cb.asc(visitsJoin.get(Visit.CREATION_DATE)));
 
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, CaseFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
-			resultMap.values().stream().forEach(contactFollowUpDto -> {
-				contactFollowUpDto.initVisitSize(interval + 1);
 
-//				pseudonymizationService.pseudonymizeDto(
-//					PersonReferenceDto.class,
-//					contactFollowUpDto.getPerson(),
-//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
-//					null);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+
+			resultMap.values().stream().forEach(caseFollowUpDto -> {
+				caseFollowUpDto.initVisitSize(interval + 1);
+
+				boolean isInJurisdiction = caseJurisdictionChecker.isInJurisdictionOrOwned(caseFollowUpDto.getJurisdiction());
+				pseudonymizer.pseudonymizeDto(CaseFollowUpDto.class, caseFollowUpDto, isInJurisdiction, null);
 			});
+
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
 				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);

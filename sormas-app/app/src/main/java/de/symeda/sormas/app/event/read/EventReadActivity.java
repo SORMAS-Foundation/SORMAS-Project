@@ -100,7 +100,8 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 		final Event selectedEvent = DatabaseHelper.getEventDao().getByReferenceDto(referenceDto);
 
 		if (editMenu != null) {
-			if (EventEditAuthorization.isEventEditAllowed(selectedEvent)) {
+			if (EventEditAuthorization.isEventEditAllowed(selectedEvent)
+				|| (getActiveFragment() != null && getActiveFragment() instanceof EventReadPersonsInvolvedListFragment)) {
 				editMenu.setVisible(true);
 			} else {
 				editMenu.setVisible(false);

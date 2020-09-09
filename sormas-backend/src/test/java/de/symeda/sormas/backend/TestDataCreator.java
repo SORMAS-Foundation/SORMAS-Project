@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
@@ -608,13 +609,17 @@ public class TestDataCreator {
 		return event;
 	}
 
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson) {
-		return createEventParticipant(event, eventPerson, "Description");
+	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, UserReferenceDto reportingUser) {
+		return createEventParticipant(event, eventPerson, "Description", reportingUser);
 	}
 
-	public EventParticipantDto createEventParticipant(EventReferenceDto event, PersonDto eventPerson, String involvementDescription) {
+	public EventParticipantDto createEventParticipant(
+		EventReferenceDto event,
+		PersonDto eventPerson,
+		String involvementDescription,
+		UserReferenceDto reportingUser) {
 
-		EventParticipantDto eventParticipant = EventParticipantDto.build(event);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(event, reportingUser);
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 

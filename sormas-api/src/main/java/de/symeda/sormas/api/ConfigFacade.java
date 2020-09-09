@@ -68,6 +68,10 @@ public interface ConfigFacade {
 
 	String getCustomBrandingLogoPath();
 
+	boolean isUseLoginSidebar();
+
+	String getLoginBackgroundPath();
+
 	String getSormasInstanceName();
 
 	double getNameSimilarityThreshold();

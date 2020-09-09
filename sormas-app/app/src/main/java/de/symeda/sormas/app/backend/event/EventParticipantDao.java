@@ -25,6 +25,7 @@ import android.util.Log;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
@@ -40,6 +41,16 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 	@Override
 	public String getTableName() {
 		return EventParticipant.TABLE_NAME;
+	}
+
+	@Override
+	public EventParticipant build() {
+
+		EventParticipant eventParticipant = super.build();
+
+		eventParticipant.setReportingUser(ConfigProvider.getUser());
+
+		return eventParticipant;
 	}
 
 	public List<EventParticipant> getByEvent(Event event) {
