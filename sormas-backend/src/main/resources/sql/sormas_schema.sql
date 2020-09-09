@@ -5254,4 +5254,13 @@ ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp
 
 INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
 
+-- 2020-07-29 Campaign diagram visualisation refinement
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
+
 -- *** Insert new sql commands BEFORE this line ***
