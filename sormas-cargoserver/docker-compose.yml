@@ -12,6 +12,6 @@ services:
       - SORMAS_POSTGRES_USER=sormas_user
       - TZ=Europe/Berlin
     volumes:
-      - ./target/psql-payara-dev:/var/lib/postgresql/data
+      - ${SORMAS_POSTGRES_DATA_VOLUME}:/var/lib/postgresql/data
     ports:
       - "${SORMAS_POSTGRES_PORT}:5432"

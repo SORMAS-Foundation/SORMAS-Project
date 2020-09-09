@@ -27,6 +27,14 @@ SORMAS_POSTGRES_PORT=<database-port>
 ```
 in file `custom.env` and skip the `docker-compose` step in the server setup.
 
+To run the sormas-postgres docker container with a permanent `psqldata` volume or to avoid permission issues
+concerning the docker user, configure an alternative volume location by adding the following line to
+`custom.env`, where `<pathToVolume>` is a location of your choice where docker has write permissions:
+```
+SORMAS_POSTGRES_DATA_VOLUME=<pathToVolume>/psqldata
+```
+(default volume location is `./target/psqldata`)
+
 To add properties to the generated `sormas.properties`, configure e.g.
 ```
 custombranding=true
