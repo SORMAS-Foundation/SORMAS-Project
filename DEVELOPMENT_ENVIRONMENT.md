@@ -28,7 +28,8 @@
 - Run "Maven install" on the sormas-base project: `(cd sormas-base && mvn install -DskipTests=true)`
 - Install and configure Payara to set up the domain `(cd sormas-cargoserver && mvn cargo:configure)`
     - More details on this setup in [sormas-cargoserver](sormas-cargoserver/README.md)
-    
+    - on unix like systems (Linux/MacOS) you'll have to change permissions of the binaries: `chmod -R +x sormas-cargoserver/target/cargo/installs/payara-*/payara5/bin sormas-cargoserver/target/cargo/installs/payara-*/payara5/glassfish/bin`
+
 # IDE
 
 This is enough for CLI based development using `mvn` and friends.
@@ -38,7 +39,7 @@ experience.
  * [Eclipse](#Eclipse)
  * [Intellij](#IntelliJ)
         
-## Eclipse *(outdated)*
+## Eclipse
 - Install the latest Eclipse version
 - Set the default JRE of Eclipse to the installed Zulu Java SDK: [Assigning the default JRE for the workbench ](https://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-assign_default_jre.htm)
 - Clone the SORMAS-Open repository and import the projects to Eclipse
@@ -46,21 +47,19 @@ experience.
 	- If you've cloned the repository from the command line or a Git client, you obviously only need to perform the last step
 - Install [Payara Tools](https://marketplace.eclipse.org/content/payara-tools)
 - Install the [Vaadin Plugin for Eclipse](https://marketplace.eclipse.org/content/vaadin-plugin-eclipse) (no need to install the commercial UI designer)
-- Add a Payara server to Eclipse and enter the credentials you specified when setting up the server
+- Add a Payara server to Eclipse 
+    - In the **Servers**-Tab create a new server and select **Payara/Payara**
+    - Add a **Server runtime environment** 
+        - **Payara location** is `sormas-cargoserver/target/cargo/installs/payara-5.194/payara5`
+        - **Java location** has to point to a **JDK 8** home path!
+    - Set **Domain path** to `sormas-cargoserver/target/cargo/configurations/payara/sormas`
+    - **Admin password** is `adminadmin` and go to the next page
+    - Add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui` to **Configured** and **finish** the setup
+    - In the Server's **Launch configuration** add the serverlibs to the classpath: `sormas-base/dependencies/target/sormas-serverlibs-serverlibsjar.jar`
 - Configure automatic code formatting ("Window -> Preferences"):
     - Go to "Java -> Code Style -> Formatter", import ``sormas-base/java-formatter-profile.xml`` and apply.
     - Go to "Java -> Code Style -> Organize Imports", import ``sormas-base/java-importorder-profile.importorder``, "Number of imports needed for .*" = ``99``, "Number of static imports needed for .*" = ``99``, "Do not create import for types starting with a lowercase letter" = ``checked`` and apply.
     - Go to "Java -> Editor -> Save Actions", activate "Perform the selected actions on save", "Format source code" with "Format all lines", "Organize imports" and apply.
-
-##### Additional Steps
-- Make a copy of "build.properties.example" contained in "sormas-base", rename it to "build.properties" and set "glassfish.domain.root" to the location of the sormas domain located in the "glassfish/domains" folder inside your payara installation
-- Drag the "build.xml" file contained in "sormas-base" into the Ant view in Eclipse
-  - Either: Run "Maven install" on the sormas-base project
-  - Or: Execute the "install [default]" ant script (this needs a maven installation on your system with the M2_HOME variable set)
-  - Then: Execute the "deploy-serverlibs" ant script
-- Highlight all Eclipse projects and choose "Maven -> Update Project" from the right click menu; perform the update for all projects
-- Start the Glassfish server and deploy "sormas-ear", "sormas-rest" and "sormas-ui" by dragging the respective projects onto it, or use the "Add and Remove..."-function by right clicking on the server.
-- Open your browser and type in "http://localhost:6080/sormas-ui" or "https://localhost:6081/sormas-ui" to test whether everything has been set up correctly (and to use the application)
 
 ## IntelliJ
 - Install the latest Ultimate edition IntelliJ
@@ -79,7 +78,6 @@ experience.
     - specify **credentials**. Default are username: `admin` and password: `adminadmin`
 	- under **Deployment tab** add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui`
 	- under **Logs tab** add new log with location pointing to the domain log (e.g.: `sormas-cargoserver/target/cargo/configurations/payara/sormas/logs/server.log`)
-	- on unix like systems (Linux/MacOS) you'll have to change permissions of the binaries: `chmod -R +x sormas-cargoserver/target/cargo/installs/payara-*/payara5/bin sormas-cargoserver/target/cargo/installs/payara-*/payara5/glassfish/bin`
 	- the sormas server requires a running postgres database. Find more about the PG setup in [sormas-cargoserver](sormas-cargoserver/README.md)
 - Configure code formatting:
 	- install Eclipse Code Formatter for IntelliJ (https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter)
