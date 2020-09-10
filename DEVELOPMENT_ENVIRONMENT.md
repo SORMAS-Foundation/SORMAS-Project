@@ -21,6 +21,8 @@
 		sudo apt-get install zulu11
   - **Windows**: For testing and development environments we suggest to download and run the installer of the Java 11 **JDK** for 32 or 64 bit client systems (depending on your system).
 
+###### SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just use Java 8 language features for now.
+
 ### Payara (Application Server)
 
 - Run "Maven install" on the sormas-base project: `(cd sormas-base && mvn install -DskipTests=true)`
