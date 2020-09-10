@@ -17,13 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -38,6 +31,13 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
+import javax.ejb.Remote;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@SuppressWarnings("EjbInterfaceMethodInspection")
 @Remote
 public interface CaseFacade {
 

@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-
 import de.symeda.sormas.api.Disease;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public final class CssStyles {
 
@@ -143,6 +142,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_CRITICAL = "background-critical";
 	public static final String BACKGROUND_DARKER = "background-darker";
 
+
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";
 	public static final String BUTTON_CRITICAL = "critical";
@@ -158,6 +158,8 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
 	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
+	public static final String BUTTONS_LAYOUT_MARGIN="custom-margin";
+
 
 	// List styles
 	public static final String SORMAS_LIST = "s-list";
@@ -189,6 +191,7 @@ public final class CssStyles {
 
 	public static final String ALIGN_CENTER = "align-center";
 	public static final String ALIGN_RIGHT = "align-right";
+
 
 	public static final String OPTIONGROUP_HORIZONTAL_SUBTLE = "horizontal-subtle";
 	public static final String OPTIONGROUP_HORIZONTAL_PRIMARY = "horizontal-primary";

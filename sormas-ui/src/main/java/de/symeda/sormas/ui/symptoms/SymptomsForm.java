@@ -17,24 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.symptoms;
 
-import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
-import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -51,7 +33,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -80,6 +61,23 @@ import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.utils.ViewMode;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static de.symeda.sormas.api.symptoms.SymptomsDto.*;
+import static de.symeda.sormas.ui.utils.CssStyles.H3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
+import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
+
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 	private static final long serialVersionUID = 1L;
@@ -104,10 +102,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					loc(SIGNS_AND_SYMPTOMS_HEADING_LOC) +
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
-							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
-							fluidColumn(4, 0, locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
+							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
+					fluidRow(fluidColumn(3,0, loc(BUTTONS_LOC)))+
 					fluidRow(
-							fluidColumn(6, 0,
+							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
 											GENERAL_SIGNS_OF_DISEASE, ABDOMINAL_PAIN, ABNORMAL_LUNG_XRAY_FINDINGS,
 											ACUTE_RESPIRATORY_DISTRESS_SYNDROME, HEARINGLOSS, ANOREXIA_APPETITE_LOSS,
@@ -761,62 +759,15 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 		}, ValoTheme.BUTTON_LINK);
 
+		//setting symptoms to No button
+		Button setEmptyToNoButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToNo,SymptomState.NO);
 
-		Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
-			for (Object symptomId : unconditionalSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : lesionsFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-			for (Object symptomId : monkeypoxImageFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.NO);
-				}
-			}
-		}, ValoTheme.BUTTON_LINK);
 
 
 		//setting symptoms to unknown button
-		Button setEmptyToUnknownButton = ButtonHelper.createButton(Captions.symptomsSetClearedToUnknown, event -> {
-			for (Object symptomId : unconditionalSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.UNKNOWN);
-				}
-			}
-			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.UNKNOWN);
-				}
-			}
-			for (Object symptomId : lesionsFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.UNKNOWN);
-				}
-			}
-			for (Object symptomId : monkeypoxImageFieldIds) {
-				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && symptom.getValue() == null) {
-					symptom.setValue(SymptomState.UNKNOWN);
-				}
-			}
-		}, ValoTheme.BUTTON_LINK);
+		Button setEmptyToUnknownButton = createButtonSetClearedToSymptomState(Captions.symptomsSetClearedToUnknown,SymptomState.UNKNOWN);
+
+
 
 		// Complications heading - not displayed for Rubella (dirty, should be made generic)
 		Label complicationsHeading = new Label(I18nProperties.getString(Strings.headingComplications));
@@ -830,7 +781,9 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.addComponent(setEmptyToNoButton);
 		buttonsLayout.addComponent(setEmptyToUnknownButton);
 		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-		buttonsLayout.setWidth(100,Unit.PERCENTAGE);
+		buttonsLayout.addStyleName(CssStyles.BUTTONS_LAYOUT_MARGIN);
+		buttonsLayout.setMargin(true);
+
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
 	}
 
@@ -1078,4 +1031,39 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	public List<String> getUnconditionalSymptomFieldIds() {
 		return unconditionalSymptomFieldIds;
 	}
+
+
+	//Abstraction of method to avoid duplicate code
+	public Button createButtonSetClearedToSymptomState(String caption, SymptomState symptomState){
+
+		Button button = ButtonHelper.createButton(caption, event -> {
+			for (Object symptomId : unconditionalSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : lesionsFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+			for (Object symptomId : monkeypoxImageFieldIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				if (symptom.isVisible() && symptom.getValue() == null) {
+					symptom.setValue(symptomState);
+				}
+			}
+		}, ValoTheme.BUTTON_LINK);
+
+		return button;
+	}
+
 }
