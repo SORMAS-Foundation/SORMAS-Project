@@ -25,6 +25,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -32,12 +33,14 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -232,5 +235,44 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 		return cb.isFalse(root.get(PathogenTest.DELETED));
+	}
+
+	public Predicate buildPathogenCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, Root<PathogenTest> pathogenJoins) {
+
+		Predicate filter = null;
+		From<Sample, Sample> sampleJoin = pathogenJoins.join(PathogenTest.SAMPLE, JoinType.LEFT);
+		SampleJoins joins = new SampleJoins(sampleJoin);
+
+		if (criteria.getRegion() != null) {
+			Expression<Object> regionExpression = cb.selectCase()
+				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.UUID))
+				.otherwise(
+					cb.selectCase()
+						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
+						.otherwise(
+							cb.selectCase()
+								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(Region.UUID))
+								.otherwise(joins.getEventRegion().get(Region.UUID))));
+			filter = and(cb, filter, cb.equal(regionExpression, criteria.getRegion().getUuid()));
+		}
+
+		if (criteria.getPathogenTestResult() != null) {
+			filter = and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.TEST_RESULT), criteria.getPathogenTestResult()));
+		}
+
+		if (criteria.getDisease() != null) {
+			filter = and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.TESTED_DISEASE), criteria.getDisease()));
+		}
+
+		if (criteria.getSampleDateFrom() != null && criteria.getSampleDateTo() != null) {
+			filter =
+				and(cb, filter, cb.between(pathogenJoins.get(PathogenTest.TEST_DATE_TIME), criteria.getSampleDateFrom(), criteria.getSampleDateTo()));
+		}
+
+		if (criteria.getDeleted() != null) {
+			filter = and(cb, filter, cb.equal(pathogenJoins.get(PathogenTest.DELETED), criteria.getDeleted()));
+		}
+
+		return filter;
 	}
 }
