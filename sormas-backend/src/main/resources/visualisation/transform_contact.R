@@ -3,8 +3,8 @@ library(visNetwork)
 library(dplyr)
 
 envDefaults = c(
-  "DB_USER" = "sormas_user", "DB_PASS" = "sormas_user",
-  "DB_HOST" = "0.0.0.0", "DB_PORT" = "5432", "DB_NAME" = "sormas_db3",
+  "DB_USER" = "sormas_user", "DB_PASS" = "sormas_db",
+  "DB_HOST" = "127.0.0.1", "DB_PORT" = "5432", "DB_NAME" = "sormas_db",
   "CONTACT_IDS" = "",
   "OUTFILE" = "sormas_contact.html",
   "HIERARCHICAL" = "FALSE"
@@ -60,14 +60,12 @@ where ct.deleted = FALSE and ct.contactclassification != 'NO_CONTACT'
   idContString = CONTACT_IDS
 }
 #guards against syntax exception due to empty id list
-if (length(idContString) == 0) idContString = "NULL"
-
-print(idContString)
+if (idContString == "") idContString = "NULL"
 
 #query all relevant contacts
 sql_edge = "select distinct cs.person_id case_pid, ct.person_id contact_pid,
 	'ContactProximity.' || ct.contactproximity as contactproximity, 'ContactStatus.' || ct.contactstatus as contactstatus
-from public.contact ct 
+from public.contact ct
 	join public.cases cs on ct.caze_id = cs.id
 where ct.id in (%s)"
 
@@ -82,7 +80,7 @@ sql_node = "with clean_ct as (
 clean_cs as (
 	select *
 	from public.cases
-	where deleted = FALSE 
+	where deleted = FALSE
 		and caseclassification != 'NO_CASE'
 ),
 node as (
@@ -94,7 +92,7 @@ node as (
 union
 	--caze
 	select distinct p.id, cs.reportdate, cs.uuid, cs.caseclassification
-	from clean_ct ct 
+	from clean_ct ct
 		join public.cases cs on ct.caze_id = cs.id
 		join public.person p on cs.person_id = p.id
 )
@@ -107,10 +105,6 @@ order by person_id, uuid is null, reportdate, uuid"
 nodeTable = dbGetQuery(con, sprintf(sql_node, idContString))
 
 dbDisconnect(con)
-
-if(is.null(edgeTable) | is.null(nodeTable)){
-  quit()
-}
 
 elist = data.frame(from = edgeTable$case_pid, to = edgeTable$contact_pid, contactproximity = edgeTable$contactproximity)
 
