@@ -776,30 +776,32 @@ public class SampleFacadeEjb implements SampleFacade {
 		Date to) {
 		long total =
 			count((new SampleCriteria()).region(regionRef).district(districtRef).disease(disease).reportDateBetween(from, to, DateFilterOption.DATE));
-		long indeterminateCount = count(
+
+		long indeterminateCount = pathogenTestFacade.count(
 			(new SampleCriteria()).region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.reportDateBetween(from, to, DateFilterOption.DATE)
 				.pathogenTestResult(PathogenTestResultType.INDETERMINATE));
-		long pendingCount = count(
+		long pendingCount = pathogenTestFacade.count(
 			(new SampleCriteria()).region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.reportDateBetween(from, to, DateFilterOption.DATE)
 				.pathogenTestResult(PathogenTestResultType.PENDING));
-		long negativeCount = count(
+		long negativeCount = pathogenTestFacade.count(
 			(new SampleCriteria()).region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.reportDateBetween(from, to, DateFilterOption.DATE)
 				.pathogenTestResult(PathogenTestResultType.NEGATIVE));
-		long positiveCount = count(
+		long positiveCount = pathogenTestFacade.count(
 			(new SampleCriteria()).region(regionRef)
 				.district(districtRef)
 				.disease(disease)
 				.reportDateBetween(from, to, DateFilterOption.DATE)
 				.pathogenTestResult(PathogenTestResultType.POSITIVE));
+
 		long adequateCount = count(
 			(new SampleCriteria()).region(regionRef)
 				.district(districtRef)
