@@ -27,6 +27,7 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -98,8 +99,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		for (Column<EventParticipantIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
 
 		}
 

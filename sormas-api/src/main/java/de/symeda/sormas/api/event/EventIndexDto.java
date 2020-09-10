@@ -22,7 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class EventIndexDto extends PseudonymizableIndexDto implements Serializable {
 

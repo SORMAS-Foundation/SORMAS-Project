@@ -5303,6 +5303,6 @@ ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_ca
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_contact_id FOREIGN KEY (contact_id) REFERENCES contact (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 ALTER TABLE sormastosormasshareinfo ADD CONSTRAINT fk_sormastosormasshareinfo_sender_id FOREIGN KEY (sender_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-INSERT INTO schema_version (version_number, comment) VALUES (244, 'Store Sormas 2 Sormas sharing information #2624');
+INSERT INTO schema_version (version_number, comment) VALUES (251, 'Store Sormas 2 Sormas sharing information #2624');
 
 -- *** Insert new sql commands BEFORE this line ***

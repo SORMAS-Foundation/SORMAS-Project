@@ -95,7 +95,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			field.setNullSelectionAllowed(true);
 			return (T) field;
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
-			return (T) new LocationEditForm(fieldVisibilityCheckers, new UiFieldAccessCheckers(true));
+			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationEditForm.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationEditForm(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (HealthConditionsForm.class.isAssignableFrom(fieldType)) {

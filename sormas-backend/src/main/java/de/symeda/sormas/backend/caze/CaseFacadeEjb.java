@@ -2880,7 +2880,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
 			Map<String, CaseFollowUpDto> resultMap = resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
 
-			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			resultMap.values().stream().forEach(caseFollowUpDto -> {
 				caseFollowUpDto.initVisitSize(interval + 1);

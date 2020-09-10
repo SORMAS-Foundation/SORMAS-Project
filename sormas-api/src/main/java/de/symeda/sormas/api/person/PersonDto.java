@@ -23,7 +23,6 @@ import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationDto;

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
-import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;

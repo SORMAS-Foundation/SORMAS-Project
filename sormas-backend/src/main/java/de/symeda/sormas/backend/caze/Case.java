@@ -17,6 +17,28 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
@@ -59,26 +81,6 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = "cases")
 @Audited

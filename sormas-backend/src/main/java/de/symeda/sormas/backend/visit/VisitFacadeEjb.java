@@ -176,7 +176,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@Override
 	public List<VisitDto> getVisitsByContactAndPeriod(ContactReferenceDto contactRef, Date begin, Date end) {
 		Contact contact = contactService.getByReferenceDto(contactRef);
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 
 		return contact.getVisits()
 			.stream()

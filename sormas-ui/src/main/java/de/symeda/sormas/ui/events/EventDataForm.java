@@ -95,21 +95,19 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
 
-	private final VerticalLayout statusChangeLayout;
-	private Boolean isCreateForm = null;
-	private final boolean isInJutisdiction;
+	private final Boolean isCreateForm;
+	private final boolean isPseudonymized;
 
 	public EventDataForm(boolean create, boolean isPseudonymized) {
-		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(inJurisdiction, inJurisdiction));
-	public EventDataForm(boolean create, boolean isPseudonymized) {
-		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getDefault(isPseudonymized));
+		super(EventDto.class, EventDto.I18N_PREFIX, false, new FieldVisibilityCheckers(), createFieldAccessCheckers(isPseudonymized, true));
 
 		isCreateForm = create;
-		this.isInJutisdiction = inJurisdiction;
+		this.isPseudonymized = isPseudonymized;
+
 		if (create) {
 			hideValidationUntilNextCommit();
 		}
-		statusChangeLayout = new VerticalLayout();
+		VerticalLayout statusChangeLayout = new VerticalLayout();
 		statusChangeLayout.setSpacing(false);
 		statusChangeLayout.setMargin(false);
 		getContent().addComponent(statusChangeLayout, STATUS_CHANGE);
@@ -117,15 +115,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addFields();
 	}
 
-	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean inJurisdiction, boolean withPersonalAndSensitive) {
-		UiFieldAccessCheckers fieldAccessCheckers = new UiFieldAccessCheckers(inJurisdiction);
-
+	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
 		if (withPersonalAndSensitive) {
-			fieldAccessCheckers.add(FieldHelper.createSensitiveDataFieldAccessChecker());
-			fieldAccessCheckers.add(FieldHelper.createPersonalDataFieldAccessChecker());
+			return UiFieldAccessCheckers.getDefault(isPseudonymized);
 		}
 
-		return fieldAccessCheckers;
+		return UiFieldAccessCheckers.getNoop();
 	}
 
 	@Override
@@ -179,7 +174,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextArea srcMediaDetails = addField(EventDto.SRC_MEDIA_DETAILS, TextArea.class);
 		srcMediaDetails.setRows(2);
 
-		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isInJutisdiction, false)))
+		addField(EventDto.EVENT_LOCATION, new LocationEditForm(fieldVisibilityCheckers, createFieldAccessCheckers(isPseudonymized, false)))
 			.setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
