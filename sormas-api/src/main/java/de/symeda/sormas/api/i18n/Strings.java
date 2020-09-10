@@ -298,6 +298,7 @@ public interface Strings {
 	String headingMissingDateFilter = "headingMissingDateFilter";
 	String headingMissingEpiWeekFilter = "headingMissingEpiWeekFilter";
 	String headingMyTasks = "headingMyTasks";
+	String headingNewAccount = "headingNewAccount";
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
@@ -455,6 +456,7 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String max = "max";
+	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
@@ -591,6 +593,7 @@ public interface Strings {
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
 	String messageOutbreakSaved = "messageOutbreakSaved";
+	String messagePasswordReset = "messagePasswordReset";
 	String messagePathogenTestSaved = "messagePathogenTestSaved";
 	String messagePathogenTestSavedShort = "messagePathogenTestSavedShort";
 	String messagePathogenTestsDeleted = "messagePathogenTestsDeleted";

@@ -168,7 +168,8 @@ public class UserController {
 					UserDto dto = createForm.getValue();
 					dto = FacadeProvider.getUserFacade().saveUser(dto);
 					refreshView();
-					makeNewPassword(dto.getUuid());
+					makeInitialPassword(dto.getUuid());
+					showAccountCreatedSuccessful();
 				}
 			}
 		});
@@ -179,17 +180,24 @@ public class UserController {
 		return FacadeProvider.getUserFacade().isLoginUnique(uuid, userName);
 	}
 
+	public void makeInitialPassword(String userUuid) {
+		if (isSormasAuthentication) {
+			String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
+			showPasswordResetInternalSuccessPopup(newPassword);
+		}
+	}
+
 	public void makeNewPassword(String userUuid) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
 		if (isSormasAuthentication) {
-			showPasswordResetWithPasswordPopup(newPassword);
+			showPasswordResetInternalSuccessPopup(newPassword);
 		} else {
-			showPasswordResetNoPasswordPopup();
+			showPasswordResetExternalSuccessPopup();
 		}
 	}
 
-	private void showPasswordResetWithPasswordPopup(String newPassword) {
+	private void showPasswordResetInternalSuccessPopup(String newPassword) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
 		Label passwordLabel = new Label(newPassword);
@@ -200,12 +208,21 @@ public class UserController {
 		layout.setMargin(true);
 	}
 
-	private void showPasswordResetNoPasswordPopup() {
+	private void showAccountCreatedSuccessful() {
 		VerticalLayout layout = new VerticalLayout();
-		//TODO: set internationalized message
-		layout.addComponent(new Label("You password was updated successfully"));
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messageActivateAccount)));
+		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
+		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewAccount));
+		popupWindow.setWidth(350, Unit.PIXELS);
+		layout.setMargin(true);
+	}
+
+	private void showPasswordResetExternalSuccessPopup() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponent(new Label(I18nProperties.getString(Strings.messagePasswordReset)));
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
+		popupWindow.setWidth(350, Unit.PIXELS);
 		layout.setMargin(true);
 	}
 
