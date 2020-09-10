@@ -76,6 +76,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
+import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 
 public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
@@ -103,7 +104,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
-					fluidRow(fluidColumn(3,0, loc(BUTTONS_LOC)))+
+					fluidRow(fluidColumn(3,0, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
 					fluidRow(
 							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
