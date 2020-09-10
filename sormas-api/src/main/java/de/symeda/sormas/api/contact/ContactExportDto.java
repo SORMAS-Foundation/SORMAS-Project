@@ -435,81 +435,86 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(40)
+	public boolean isQuarantineReduced() {
+		return quarantineReduced;
+	}
+
+	@Order(41)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(41)
+	@Order(42)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(42)
+	@Order(43)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(43)
+	@Order(44)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(44)
+	@Order(45)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(45)
+	@Order(46)
 	public String getStreet() {
 		return street;
 	}
 
-	@Order(46)
+	@Order(47)
 	public String getHouseNumber() {
 		return houseNumber;
 	}
 
-	@Order(47)
+	@Order(48)
 	public String getAdditionalInformation() {
 		return additionalInformation;
 	}
 
-	@Order(48)
+	@Order(49)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(49)
+	@Order(50)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(50)
+	@Order(51)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(51)
+	@Order(52)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(52)
+	@Order(53)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(53)
+	@Order(54)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(54)
+	@Order(55)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
 	}
 
-	@Order(55)
+	@Order(56)
 	public YesNoUnknown getTraveled() {
 		return traveled;
 	}
@@ -518,7 +523,7 @@ public class ContactExportDto implements Serializable {
 		this.traveled = traveled;
 	}
 
-	@Order(56)
+	@Order(57)
 	public String getTravelHistory() {
 		return travelHistory;
 	}
@@ -527,7 +532,7 @@ public class ContactExportDto implements Serializable {
 		this.travelHistory = travelHistory;
 	}
 
-	@Order(57)
+	@Order(58)
 	public YesNoUnknown getBurialAttended() {
 		return burialAttended;
 	}
@@ -536,7 +541,7 @@ public class ContactExportDto implements Serializable {
 		this.burialAttended = burialAttended;
 	}
 
-	@Order(58)
+	@Order(59)
 	public YesNoUnknown getDirectContactConfirmedCase() {
 		return directContactConfirmedCase;
 	}
@@ -545,7 +550,7 @@ public class ContactExportDto implements Serializable {
 		this.directContactConfirmedCase = directContactConfirmedCase;
 	}
 
-	@Order(59)
+	@Order(60)
 	public YesNoUnknown getDirectContactProbableCase() {
 		return directContactProbableCase;
 	}
@@ -554,14 +559,9 @@ public class ContactExportDto implements Serializable {
 		this.directContactProbableCase = directContactProbableCase;
 	}
 
-	@Order(60)
+	@Order(61)
 	public YesNoUnknown getContactWithRodent() {
 		return contactWithRodent;
-	}
-
-	@Order(61)
-	public boolean isQuarantineReduced() {
-		return quarantineReduced;
 	}
 
 	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
