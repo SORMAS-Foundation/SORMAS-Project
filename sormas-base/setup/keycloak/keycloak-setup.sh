@@ -64,7 +64,7 @@ if [[ -z "$PORT_ADMIN" ]]; then
 fi
 if [[ -z "$PAYARA_HOME" ]]; then
   PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
-  echo "Using default PAYARA_HOME ${$PAYARA_HOME}"
+  echo "Using default PAYARA_HOME ${PAYARA_HOME}"
 fi
 if [[ -z "$DOMAINS_HOME" ]]; then
   DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
@@ -152,7 +152,11 @@ KEYCLOAK_DOCKER_CMD+="-e DB_ADDR=${KEYCLOAK_DB_HOST} "
 KEYCLOAK_DOCKER_CMD+="-e DB_PORT=${KEYCLOAK_DB_PORT} "
 KEYCLOAK_DOCKER_CMD+="-e DB_USER=${KEYCLOAK_DB_USER} "
 KEYCLOAK_DOCKER_CMD+="-e DB_PASSWORD=${KEYCLOAK_DB_PASSWORD} "
-KEYCLOAK_DOCKER_CMD+="-e DB_PASSWORD=${KEYCLOAK_DB_PASSWORD} "
+KEYCLOAK_DOCKER_CMD+="-e PROXY_ADDRESS_FORWARDING=true "
+KEYCLOAK_DOCKER_CMD+="-e SORMAS_SERVER_URL=${SORMAS_SERVER_URL} "
+KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_UI_SECRET=${KEYCLOAK_SORMAS_UI_SECRET} "
+KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_REST_SECRET=${KEYCLOAK_SORMAS_REST_SECRET} "
+KEYCLOAK_DOCKER_CMD+="-e KEYCLOAK_SORMAS_BACKEND_SECRET=${KEYCLOAK_SORMAS_BACKEND_SECRET} "
 KEYCLOAK_DOCKER_CMD+="-p ${KEYCLOAK_PORT}:8080 "
 #TODO replace public keycloak image with somras keycloak image
 KEYCLOAK_DOCKER_CMD+="jboss/keycloak:${KEYCLOAK_VERSION}"
@@ -171,12 +175,12 @@ fi
 
 docker cp ./SORMAS.json sormas_keycloak:/tmp/SORMAS.json
 docker cp ./themes sormas_keycloak:/opt/jboss/keycloak/themes
+docker exec -i sormas_keycloak sh -c sed -i 's/${SORMAS_SERVER_URL}/'"${SORMAS_SERVER_URL}"'/' /tmp/SORMAS.json
+docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_REST_SECRET}/'"${KEYCLOAK_SORMAS_REST_SECRET}"'/' /tmp/SORMAS.json
+docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_UI_SECRET}/'"${KEYCLOAK_SORMAS_UI_SECRET}"'/' /tmp/SORMAS.json
+docker exec -i sormas_keycloak sh -c sed -i 's/${KEYCLOAK_SORMAS_BACKEND_SECRET}/'"${KEYCLOAK_SORMAS_BACKEND_SECRET}"'/' /tmp/SORMAS.json
 docker exec -i sormas_keycloak sh -c "${KCADM} config credentials --server http://localhost:8080/auth --user ${KEYCLOAK_ADMIN_USER} --password ${KEYCLOAK_ADMIN_PASSWORD} --realm master"
 docker exec -i sormas_keycloak sh -c "${KCADM} create realms -f /tmp/SORMAS.json"
-docker exec -i sormas_keycloak sh -c "${KCADM} update clients/818e39a2-a344-4d98-a330-de92291372a8 -s secret=${KEYCLOAK_SORMAS_UI_SECRET} -r SORMAS"
-docker exec -i sormas_keycloak sh -c "${KCADM} update clients/818e39a2-a344-4d98-a330-de92291372a8 -s rootUrl=http://localhost:${PORT_BASE} -r SORMAS"
-docker exec -i sormas_keycloak sh -c "${KCADM} update clients/ef769125-96d5-4aa8-8ff6-178b7b2b9c7e -s secret=${KEYCLOAK_SORMAS_REST_SECRET} -r SORMAS"
-docker exec -i sormas_keycloak sh -c "${KCADM} update clients/ef769125-96d5-4aa8-8ff6-178b7b2b9c7e -s secret=${REST_CLIENT_URL} -r SORMAS"
 
 echo "Updating Payara with Keycloak configurations"
 

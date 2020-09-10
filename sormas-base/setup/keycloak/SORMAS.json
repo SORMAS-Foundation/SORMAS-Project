@@ -810,7 +810,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "************",
+      "secret": "${KEYCLOAK_SORMAS_BACKEND_SECRET}",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -906,7 +906,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "************",
+      "secret": "${KEYCLOAK_SORMAS_REST_SECRET}",
       "redirectUris": [
         "*"
       ],
@@ -973,12 +973,12 @@
     {
       "id": "818e39a2-a344-4d98-a330-de92291372a8",
       "clientId": "sormas-ui",
-      "rootUrl": "",
+      "rootUrl": "https://${SORMAS_SERVER_URL}",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "************",
+      "secret": "${KEYCLOAK_SORMAS_UI_SECRET}",
       "redirectUris": [
         "/sormas-ui/*"
       ],
