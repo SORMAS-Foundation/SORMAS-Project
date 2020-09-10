@@ -112,6 +112,7 @@ public class EpiDataGatheringDialog extends FormDialog {
 			return;
 		}
 
+		super.setCloseOnPositiveButtonClick(true);
 		super.onPositiveClick();
 	}
 

@@ -114,6 +114,7 @@ public class EpiDataBurialDialog extends FormDialog {
 			return;
 		}
 
+		super.setCloseOnPositiveButtonClick(true);
 		super.onPositiveClick();
 	}
 

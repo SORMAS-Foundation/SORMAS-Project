@@ -14,10 +14,18 @@ public class CampaignDiagramDataDto implements Serializable {
 	private Object groupingKey;
 	private String groupingCaption;
 
-	public CampaignDiagramDataDto(String formMetaUuid, String formId, String fieldId, Object valueSum, Object groupingKey, String groupingCaption) {
+	public CampaignDiagramDataDto(
+		String formMetaUuid,
+		String formId,
+		String fieldId,
+		String fieldCaption,
+		Object valueSum,
+		Object groupingKey,
+		String groupingCaption) {
 		this.formMetaUuid = formMetaUuid;
 		this.formId = formId;
 		this.fieldId = fieldId;
+		this.fieldCaption = fieldCaption;
 		this.valueSum = valueSum;
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;

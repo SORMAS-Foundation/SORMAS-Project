@@ -1,13 +1,5 @@
 package de.symeda.sormas.ui.contact;
 
-import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
-import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -15,7 +7,6 @@ import com.vaadin.ui.DescriptionGenerator;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.renderers.DateRenderer;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
@@ -32,10 +23,19 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultCssStyle;
+import static de.symeda.sormas.ui.utils.FollowUpUtils.getVisitResultDescription;
+
 @SuppressWarnings("serial")
 public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, ContactCriteria> {
 
 	private List<Date> dates = new ArrayList<>();
+	private List<String> dateColumnIds = new ArrayList<>();
 
 	@SuppressWarnings("unchecked")
 	public <V extends View> ContactFollowUpGrid(ContactCriteria criteria, Date referenceDate, int interval, Class<V> viewClass) {
@@ -64,8 +64,10 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(ContactFollowUpDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
-			column.setStyleGenerator(
-				FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			if (!dateColumnIds.contains(column.getId())) {
+				column.setStyleGenerator(
+					FieldAccessColumnStyleGenerator.getDefault(getBeanType(), column.getId()));
+			}
 		}
 
 		addItemClickListener(
@@ -79,12 +81,12 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 		dates.forEach(date -> removeColumn(DateFormatHelper.formatDate(date)));
 
 		setDates(referenceDate, interval);
+		dateColumnIds.clear();
 
 		for (int i = 0; i < interval; i++) {
 			String columnId = DateFormatHelper.formatDate(dates.get(i));
-			addComponentColumn(followUpDto -> {
-				return new Label("");
-			}).setId(columnId);
+			dateColumnIds.add(columnId);
+			addComponentColumn(followUpDto -> new Label("")).setId(columnId);
 
 			final int index = i;
 			getColumn(columnId).setCaption(columnId).setSortable(false).setStyleGenerator((StyleGenerator<ContactFollowUpDto>) item -> {

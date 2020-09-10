@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import de.symeda.sormas.api.PseudonymizableDto;
+import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -35,7 +37,6 @@ public class LocationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Location";
 
-	public static final String ADDRESS = "address";
 	public static final String DETAILS = "details";
 	public static final String CITY = "city";
 	public static final String AREA_TYPE = "areaType";
@@ -46,15 +47,17 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String LONGITUDE = "longitude";
 	public static final String LAT_LON_ACCURACY = "latLonAccuracy";
 	public static final String POSTAL_CODE = "postalCode";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
+	public static final String ADDRESS_TYPE = "addressType";
+	public static final String ADDRESS_TYPE_DETAILS = "addressTypeDetails";
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	@PersonalData
 	@SensitiveData
 	private CommunityReferenceDto community;
-	@PersonalData
-	@SensitiveData
-	private String address;
 	@PersonalData
 	@SensitiveData
 	private String details;
@@ -77,14 +80,17 @@ public class LocationDto extends PseudonymizableDto {
 	@SensitiveData()
 	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	@PersonalData
+	@SensitiveData
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
+	private PersonAddressType addressType;
+	private String addressTypeDetails;
 
 	public String getDetails() {
 		return details;
@@ -150,32 +156,6 @@ public class LocationDto extends PseudonymizableDto {
 		this.longitude = longitude;
 	}
 
-	@Override
-	public String toString() {
-
-		return LocationReferenceDto.buildCaption(
-			region != null ? region.getCaption() : null,
-			district != null ? district.getCaption() : null,
-			community != null ? community.getCaption() : null,
-			city,
-			address);
-	}
-
-	public LocationReferenceDto toReference() {
-
-		return new LocationReferenceDto(
-			getUuid(),
-			region != null ? region.getCaption() : null,
-			district != null ? district.getCaption() : null,
-			community != null ? community.getCaption() : null,
-			city,
-			address);
-	}
-
-	public boolean isEmptyLocation() {
-		return address == null && details == null && city == null && areaType == null && region == null && district == null && community == null;
-	}
-
 	public Float getLatLonAccuracy() {
 		return latLonAccuracy;
 	}
@@ -192,10 +172,92 @@ public class LocationDto extends PseudonymizableDto {
 		this.postalCode = postalCode;
 	}
 
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	public PersonAddressType getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(PersonAddressType addressType) {
+		this.addressType = addressType;
+	}
+
+	public String getAddressTypeDetails() {
+		return addressTypeDetails;
+	}
+
+	public void setAddressTypeDetails(String addressTypeDetails) {
+		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	@Override
+	public String toString() {
+
+		return LocationReferenceDto.buildCaption(
+			region != null ? region.getCaption() : null,
+			district != null ? district.getCaption() : null,
+			community != null ? community.getCaption() : null,
+			city,
+			street,
+			houseNumber,
+			additionalInformation);
+	}
+
+	public LocationReferenceDto toReference() {
+
+		return new LocationReferenceDto(
+			getUuid(),
+			region != null ? region.getCaption() : null,
+			district != null ? district.getCaption() : null,
+			community != null ? community.getCaption() : null,
+			city,
+			street,
+			houseNumber,
+			additionalInformation);
+	}
+
+	public boolean isEmptyLocation() {
+		return details == null
+			&& city == null
+			&& areaType == null
+			&& region == null
+			&& district == null
+			&& community == null
+			&& street == null
+			&& houseNumber == null
+			&& additionalInformation == null;
+	}
+
 	public static LocationDto build() {
 
 		LocationDto location = new LocationDto();
 		location.setUuid(DataHelper.createUuid());
 		return location;
+	}
+
+	public static String buildStreetAndHouseNumberCaption(String street, String houseNumber) {
+		return street + " " + houseNumber;
 	}
 }

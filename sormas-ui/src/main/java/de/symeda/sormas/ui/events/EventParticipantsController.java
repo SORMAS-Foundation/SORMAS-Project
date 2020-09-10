@@ -54,7 +54,8 @@ public class EventParticipantsController {
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
 
 	public void createEventParticipant(EventReferenceDto eventRef, Consumer<EventParticipantReferenceDto> doneConsumer) {
-		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef);
+		EventParticipantDto eventParticipant = EventParticipantDto.build(eventRef, UserProvider.getCurrent().getUserReference());
+
 		EventParticipantCreateForm createForm = new EventParticipantCreateForm();
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantCreateForm> createComponent =

@@ -1,10 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.vaadin.ui.renderers.TextRenderer;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -12,6 +8,9 @@ import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 
@@ -39,7 +38,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 				CaseIndexDetailedDto.AGE_AND_BIRTH_DATE,
 				CaseIndexDetailedDto.SEX,
 				CaseIndexDetailedDto.CITY,
-				CaseIndexDetailedDto.ADDRESS,
+				CaseIndexDetailedDto.STREET,
+				CaseIndexDetailedDto.HOUSE_NUMBER,
+				CaseIndexDetailedDto.ADDITIONAL_INFORMATION,
 				CaseIndexDetailedDto.POSTAL_CODE,
 				CaseIndexDetailedDto.PHONE));
 	}
@@ -53,7 +54,9 @@ public class CaseGridDetailed extends AbstractCaseGrid<CaseIndexDetailedDto> {
 		getColumn(CaseIndexDetailedDto.SEX).setWidth(80);
 		getColumn(CaseIndexDetailedDto.AGE_AND_BIRTH_DATE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.CITY).setWidth(150);
-		getColumn(CaseIndexDetailedDto.ADDRESS).setWidth(200);
+		getColumn(CaseIndexDetailedDto.STREET).setWidth(150);
+		getColumn(CaseIndexDetailedDto.HOUSE_NUMBER).setWidth(50);
+		getColumn(CaseIndexDetailedDto.ADDITIONAL_INFORMATION).setWidth(200);
 		getColumn(CaseIndexDetailedDto.POSTAL_CODE).setWidth(100);
 		getColumn(CaseIndexDetailedDto.PHONE).setWidth(100);
 

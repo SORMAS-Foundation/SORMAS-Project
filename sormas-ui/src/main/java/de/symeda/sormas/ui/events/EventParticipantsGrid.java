@@ -39,8 +39,8 @@ import de.symeda.sormas.ui.utils.UuidRenderer;
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
 
 	private static final String CASE_ID = Captions.EventParticipant_caseUuid;
+	private static final String NO_CASE_CREATE = null;
 
-	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
 
 		super(EventParticipantIndexDto.class);
@@ -61,18 +61,32 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
 				return entry.getCaseUuid();
-			} else {
-				return "";
 			}
+
+			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
+				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
+				UserProvider.getCurrent().getUser(),
+				entry.getJurisdiction());
+			if (!isInJurisdiction) {
+				return NO_CASE_CREATE;
+			}
+
+			return "";
 		});
 		caseIdColumn.setId(CASE_ID);
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
-		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
+		caseIdColumn.setRenderer(
+			new CaseUuidRenderer(
+				uuid -> {
+					// '!=' check is ok because the converter returns the constant when no case creation is allowed
+					return NO_CASE_CREATE != uuid;
+				}));
 
 		setColumns(
 			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
-			EventParticipantIndexDto.NAME,
+			EventParticipantIndexDto.FIRST_NAME,
+			EventParticipantIndexDto.LAST_NAME,
 			EventParticipantIndexDto.SEX,
 			EventParticipantIndexDto.APPROXIMATE_AGE,
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,

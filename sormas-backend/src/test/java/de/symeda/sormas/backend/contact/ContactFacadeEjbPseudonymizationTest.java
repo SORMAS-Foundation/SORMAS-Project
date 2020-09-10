@@ -199,14 +199,18 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index1.getFirstName(), is("James"));
 		assertThat(index1.getLastName(), is("Smith"));
 		assertThat(index1.getCity(), is("Test City"));
-		assertThat(index1.getAddress(), is("Test address"));
+		assertThat(index1.getStreet(), is("Test street"));
+		assertThat(index1.getHouseNumber(), is("Test number"));
+		assertThat(index1.getAdditionalInformation(), is("Test information"));
 		assertThat(index1.getPostalCode(), is("12345"));
 
 		ContactExportDto index2 = exportList.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get();
 		assertThat(index2.getFirstName(), is("Confidential"));
 		assertThat(index2.getLastName(), is("Confidential"));
 		assertThat(index2.getCity(), is("Confidential"));
-		assertThat(index2.getAddress(), is("Confidential"));
+		assertThat(index2.getStreet(), is("Confidential"));
+		assertThat(index2.getHouseNumber(), is("Confidential"));
+		assertThat(index2.getAdditionalInformation(), is("Confidential"));
 		assertThat(index2.getPostalCode(), is("123"));
 	}
 
@@ -398,7 +402,9 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);
 		address.setCity("Test City");
-		address.setAddress("Test address");
+		address.setStreet("Test street");
+		address.setHouseNumber("Test number");
+		address.setAdditionalInformation("Test information");
 		address.setPostalCode("12345");
 		address.setAreaType(AreaType.URBAN);
 		address.setDetails("Test address details");

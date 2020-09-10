@@ -21,6 +21,8 @@ import org.joda.time.DateTimeComparator;
 
 import android.view.View;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.GermanCaseClassificationValidator;
@@ -44,7 +46,7 @@ final class CaseValidator {
 		Case caze,
 		CaseClassification caseClassification,
 		FragmentCaseEditLayoutBinding contentBinding) {
-		if (ConfigProvider.isGermanServer()) {
+		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			final CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 			final CaseDataDto caseDataDto = caseDtoHelper.adoToDto(caze);
 			final boolean hasPositiveTestResult = DatabaseHelper.getSampleDao().hasPositiveTestResult(caze);

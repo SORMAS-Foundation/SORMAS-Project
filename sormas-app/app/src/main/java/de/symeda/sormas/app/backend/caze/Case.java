@@ -79,6 +79,8 @@ public class Case extends PseudonymizableAdo {
 	public static final String PERSON = "person_id";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String SYMPTOMS = "symptoms";
+	public static final String EPI_DATA = "epiData";
+	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String REPORTING_USER = "reportingUser_id";
 	public static final String HEALTH_FACILITY = "healthFacility_id";
 	public static final String OUTCOME = "outcome";
@@ -294,6 +296,10 @@ public class Case extends PseudonymizableAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
+	@DatabaseField
+	private boolean quarantineOfficialOrderSent;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOfficialOrderSentDate;
 	@Enumerated(EnumType.STRING)
 	private ReportingType reportingType;
 	@Enumerated(EnumType.STRING)
@@ -932,6 +938,22 @@ public class Case extends PseudonymizableAdo {
 
 	public void setQuarantineHomeSupplyEnsuredComment(String quarantineHomeSupplyEnsuredComment) {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
+	}
+
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
 	public ReportingType getReportingType() {

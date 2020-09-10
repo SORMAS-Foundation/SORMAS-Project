@@ -115,7 +115,8 @@ public class EventController {
 	public void createEventParticipantWithCase(EventReferenceDto eventReferenceDto, CaseDataDto caseDataDto, CaseReferenceDto caseRef) {
 		PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(caseDataDto.getPerson().getUuid());
 		EventParticipantDto eventParticipantDto;
-		eventParticipantDto = new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto);
+		eventParticipantDto =
+			new EventParticipantDto().buildFromCase(caseRef, personDto, eventReferenceDto, UserProvider.getCurrent().getUserReference());
 		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
 	}
 

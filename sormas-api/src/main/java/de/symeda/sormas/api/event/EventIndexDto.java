@@ -22,11 +22,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
-import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
-import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
-import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
 public class EventIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -54,21 +50,13 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	@SensitiveData
 	private String eventDesc;
-	@EmbeddedSensitiveData
-	@Pseudonymizer(EmptyValuePseudonymizer.class)
 	private EventIndexLocation eventLocation;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
 	private Date reportDateTime;
 	private EventJurisdictionDto jurisdiction;
@@ -88,7 +76,9 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		String communityUuid,
 		String communityName,
 		String city,
-		String address,
+		String street,
+		String houseNumber,
+		String additionalInformation,
 		EventSourceType srcType,
 		String srcFirstName,
 		String srcLastName,
@@ -106,7 +96,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.eventDesc = eventDesc;
-		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, address);
+		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
@@ -265,24 +255,32 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		private String regionName;
 		private String districtName;
-		@SensitiveData
 		private String communityName;
-		@SensitiveData
 		private String city;
-		@SensitiveData
-		private String address;
+		private String street;
+		private String houseNumber;
+		private String additionalInformation;
 
-		public EventIndexLocation(String regionName, String districtName, String communityName, String city, String address) {
+		public EventIndexLocation(
+			String regionName,
+			String districtName,
+			String communityName,
+			String city,
+			String street,
+			String houseNumber,
+			String additionalInformation) {
 			this.regionName = regionName;
 			this.districtName = districtName;
 			this.communityName = communityName;
 			this.city = city;
-			this.address = address;
+			this.street = street;
+			this.houseNumber = houseNumber;
+			this.additionalInformation = additionalInformation;
 		}
 
 		@Override
 		public String toString() {
-			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, address);
+			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		}
 	}
 }

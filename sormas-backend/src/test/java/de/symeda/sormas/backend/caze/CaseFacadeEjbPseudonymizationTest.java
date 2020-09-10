@@ -196,7 +196,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex1.getPointOfEntry(), is("Confidential"));
 		assertThat(caseIndex1.getFirstName(), is("Confidential"));
 		assertThat(caseIndex1.getLastName(), is("Confidential"));
-		assertThat(caseIndex1.getAddress(), is("Confidential"));
+		assertThat(caseIndex1.getStreet(), is("Confidential"));
+		assertThat(caseIndex1.getHouseNumber(), is("Confidential"));
+		assertThat(caseIndex1.getAdditionalInformation(), is("Confidential"));
 		assertThat(caseIndex1.getPostalCode(), is("123"));
 		assertThat(caseIndex1.getAddressGpsCoordinates(), is("Confidential"));
 		assertThat(caseIndex1.getBurialInfo().getBurialPlaceDescription(), is("Confidential"));
@@ -208,7 +210,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caseIndex2.getPointOfEntry(), is("Point of entry 2 - Test point of entry details"));
 		assertThat(caseIndex2.getFirstName(), is("James"));
 		assertThat(caseIndex2.getLastName(), is("Smith"));
-		assertThat(caseIndex2.getAddress(), is("Test address"));
+		assertThat(caseIndex2.getStreet(), is("Test street"));
+		assertThat(caseIndex2.getHouseNumber(), is("Test number"));
+		assertThat(caseIndex2.getAdditionalInformation(), is("Test information"));
 		assertThat(caseIndex2.getPostalCode(), is("12345"));
 		assertThat(caseIndex2.getAddressGpsCoordinates(), is("26.533, 46.233 +-10m"));
 		assertThat(caseIndex2.getBurialInfo().getBurialPlaceDescription(), is("Burial place desc"));
@@ -291,7 +295,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);
 		address.setCity("Test City");
-		address.setAddress("Test address");
+		address.setStreet("Test street");
+		address.setHouseNumber("Test number");
+		address.setAdditionalInformation("Test information");
 		address.setPostalCode("12345");
 		address.setAreaType(AreaType.URBAN);
 		address.setDetails("Test address details");

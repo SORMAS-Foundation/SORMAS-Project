@@ -1271,9 +1271,6 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (residenceElement.getPostcode() != null) {
 					caseCriteria.setPersonPostcode(residenceElement.getPostcode());
 				}
-				if (residenceElement.getAddress() != null) {
-					caseCriteria.setPersonAddress(residenceElement.getAddress());
-				}
 				break;
 			case REPORTING_USER_ROLE:
 				if (filterElement.getSelectedValues() != null) {

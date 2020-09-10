@@ -18,7 +18,6 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 
 import org.vaadin.hene.popupbutton.PopupButton;
@@ -41,7 +40,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.SormasUI;
 
 public abstract class AbstractView extends VerticalLayout implements View {
@@ -214,6 +212,6 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	}
 
 	protected String createFileNameWithCurrentDate(String fileNamePrefix, String fileExtension) {
-		return fileNamePrefix + DateHelper.formatDateForExport(new Date()) + fileExtension;
+		return DownloadUtil.createFileNameWithCurrentDate(fileNamePrefix, fileExtension);
 	}
 }

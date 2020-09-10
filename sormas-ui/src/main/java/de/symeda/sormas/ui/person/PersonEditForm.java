@@ -70,6 +70,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ApproximateAgeValidator;
@@ -86,10 +87,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String PERSON_INFORMATION_HEADING_LOC = "personInformationHeadingLoc";
 	private static final String OCCUPATION_HEADER = "occupationHeader";
 	private static final String ADDRESS_HEADER = "addressHeader";
+	private static final String ADDRESSES_HEADER = "addressesHeader";
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 
 	private Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
 	private Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
 	private Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
 
 	private Disease disease;
@@ -106,6 +109,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
+					fluidRowLocs(PersonDto.UUID, "")+
                     fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
                     fluidRow(
                             fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
@@ -132,6 +136,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                     ) +
                     fluidRowLocs(PersonDto.PASSPORT_NUMBER, PersonDto.NATIONAL_HEALTH_ID) +
 
+					fluidRowLocs(PersonDto.HAS_COVID_APP, PersonDto.COVID_CODE_DELIVERED) +
+
                     loc(OCCUPATION_HEADER) +
                     divsCss(VSPACE_3,
                             fluidRowLocs(PersonDto.OCCUPATION_TYPE, PersonDto.OCCUPATION_DETAILS),
@@ -142,6 +148,9 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
                     loc(ADDRESS_HEADER) +
                     divsCss(VSPACE_3, fluidRowLocs(PersonDto.ADDRESS)) +
+
+					loc(ADDRESSES_HEADER) +
+					fluidRowLocs(PersonDto.ADDRESSES) +
 
                     loc(CONTACT_INFORMATION_HEADER) +
                     divsCss(
@@ -158,18 +167,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withDisease(disease).add(new OutbreakFieldVisibilityChecker(viewMode)),
+			FieldVisibilityCheckers.withDisease(disease)
+				.add(new OutbreakFieldVisibilityChecker(viewMode))
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.viewMode = viewMode;
 
-		occupationHeader.addStyleName(CssStyles.H3);
-		addressHeader.addStyleName(CssStyles.H3);
-		contactInformationHeader.addStyleName(CssStyles.H3);
+		CssStyles.style(CssStyles.H3, occupationHeader, addressHeader, addressesHeader, contactInformationHeader);
 		getContent().addComponent(occupationHeader, OCCUPATION_HEADER);
 		getContent().addComponent(addressHeader, ADDRESS_HEADER);
+		getContent().addComponent(addressesHeader, ADDRESSES_HEADER);
 		getContent().addComponent(contactInformationHeader, CONTACT_INFORMATION_HEADER);
 
 		addFields();
@@ -182,6 +192,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personInformationHeadingLabel.addStyleName(H3);
 		getContent().addComponent(personInformationHeadingLabel, PERSON_INFORMATION_HEADING_LOC);
 
+		addField(PersonDto.UUID).setReadOnly(true);
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 		ComboBox sex = addField(PersonDto.SEX, ComboBox.class);
@@ -234,6 +245,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -246,11 +258,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.NATIONAL_HEALTH_ID);
 
+		addField(PersonDto.HAS_COVID_APP).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		addField(PersonDto.COVID_CODE_DELIVERED).addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+
 		ComboBox cbPlaceOfBirthRegion = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_REGION);
 		ComboBox cbPlaceOfBirthDistrict = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_DISTRICT);
 		ComboBox cbPlaceOfBirthCommunity = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_COMMUNITY);
 		ComboBox placeOfBirthFacilityType = addField(PersonDto.PLACE_OF_BIRTH_FACILITY_TYPE);
 		FieldHelper.removeItems(placeOfBirthFacilityType);
+		placeOfBirthFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		placeOfBirthFacilityType.addItems(FacilityType.getPlaceOfBirthTypes());
 
 		cbPlaceOfBirthFacility = addInfrastructureField(PersonDto.PLACE_OF_BIRTH_FACILITY);
@@ -270,6 +286,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		facilityCommunity.setNullSelectionAllowed(true);
 		ComboBox occupationFacilityType = addField(PersonDto.OCCUPATION_FACILITY_TYPE);
 		FieldHelper.removeItems(occupationFacilityType);
+		occupationFacilityType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
 		occupationFacilityType.addItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY));
 		occupationFacility = addInfrastructureField(PersonDto.OCCUPATION_FACILITY);
 		occupationFacility.setImmediate(true);
@@ -325,6 +342,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			occupationHeader.setVisible(false);
 		if (!getField(PersonDto.ADDRESS).isVisible())
 			addressHeader.setVisible(false);
+		if (!getField(PersonDto.ADDRESSES).isVisible())
+			addressesHeader.setVisible(false);
 
 		// Add listeners
 

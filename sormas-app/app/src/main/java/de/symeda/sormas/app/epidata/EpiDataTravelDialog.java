@@ -94,6 +94,7 @@ public class EpiDataTravelDialog extends FormDialog {
 			return;
 		}
 
+		super.setCloseOnPositiveButtonClick(true);
 		super.onPositiveClick();
 	}
 

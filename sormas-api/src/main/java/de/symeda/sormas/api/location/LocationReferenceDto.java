@@ -37,12 +37,27 @@ public class LocationReferenceDto extends ReferenceDto {
 		this.setCaption(caption);
 	}
 
-	public LocationReferenceDto(String uuid, String regionName, String districtName, String communityName, String city, String address) {
+	public LocationReferenceDto(
+		String uuid,
+		String regionName,
+		String districtName,
+		String communityName,
+		String city,
+		String street,
+		String houseNumber,
+		String additionalInformation) {
 		this.setUuid(uuid);
-		this.setCaption(buildCaption(regionName, districtName, communityName, city, address));
+		this.setCaption(buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation));
 	}
 
-	public static String buildCaption(String regionName, String districtName, String communityName, String city, String address) {
+	public static String buildCaption(
+		String regionName,
+		String districtName,
+		String communityName,
+		String city,
+		String street,
+		String houseNumber,
+		String additionalInformation) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 
@@ -65,11 +80,23 @@ public class LocationReferenceDto extends ReferenceDto {
 			}
 			stringBuilder.append(city);
 		}
-		if (!DataHelper.isNullOrEmpty(address)) {
+		if (!DataHelper.isNullOrEmpty(street)) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(", ");
 			}
-			stringBuilder.append(address);
+			stringBuilder.append(street);
+		}
+		if (!DataHelper.isNullOrEmpty(houseNumber)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(houseNumber);
+		}
+		if (!DataHelper.isNullOrEmpty(additionalInformation)) {
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(", ");
+			}
+			stringBuilder.append(additionalInformation);
 		}
 		return stringBuilder.toString();
 	}

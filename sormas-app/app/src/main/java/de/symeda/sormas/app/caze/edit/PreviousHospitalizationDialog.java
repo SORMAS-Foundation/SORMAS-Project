@@ -133,6 +133,7 @@ public class PreviousHospitalizationDialog extends FormDialog {
 			return;
 		}
 
+		super.setCloseOnPositiveButtonClick(true);
 		super.onPositiveClick();
 	}
 

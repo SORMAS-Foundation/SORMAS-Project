@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Ei lupaa kameran käyttöön</string>
     <string name="permission_camera_rationale">Tunnistaminen vaatii käyttöoikeuden kameraan</string>
     <string name="scan_field_sample_id">Skannaa kenttänäytteen ID</string>
-    <string name="caption_facility_type_group">Facility type group</string>
+    <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
 </resources>

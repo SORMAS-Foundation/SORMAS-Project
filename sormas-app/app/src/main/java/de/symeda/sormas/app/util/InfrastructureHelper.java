@@ -254,7 +254,13 @@ public final class InfrastructureHelper {
 				if (initialCommunity != null && selectedDistrict.equals(initialCommunity.getDistrict()) && !newCommunities.contains(communityItem)) {
 					newCommunities.add(communityItem);
 				}
-				if (typeField.getValue() != null) {
+				if (typeField == null) {
+					List<Item> newFacilities = loadFacilities(selectedDistrict, null, FacilityType.HOSPITAL);
+					if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
+						newFacilities.add(facilityItem);
+					}
+					facilityField.setSpinnerData(newFacilities, facilityField.getValue());
+				} else if (typeField.getValue() != null) {
 					List<Item> newFacilities = loadFacilities(selectedDistrict, null, (FacilityType) typeField.getValue());
 					if (initialFacility != null && selectedDistrict.equals(initialFacility.getDistrict()) && !newFacilities.contains(facilityItem)) {
 						newFacilities.add(facilityItem);
@@ -284,9 +290,23 @@ public final class InfrastructureHelper {
 
 		communityField.initializeSpinner(communities, field -> {
 			Community selectedCommunity = (Community) field.getValue();
-			if (selectedCommunity != null && typeField.getValue() != null) {
+			if (selectedCommunity != null && typeField == null) {
+				List<Item> newFacilities = loadFacilities(null, selectedCommunity, FacilityType.HOSPITAL);
+				if (initialFacility != null && selectedCommunity.equals(initialFacility.getCommunity()) && !newFacilities.contains(facilityItem)) {
+					newFacilities.add(facilityItem);
+				}
+				facilityField.setSpinnerData(newFacilities);
+			} else if (selectedCommunity != null && typeField.getValue() != null) {
 				List<Item> newFacilities = loadFacilities(null, selectedCommunity, (FacilityType) typeField.getValue());
 				if (initialFacility != null && selectedCommunity.equals(initialFacility.getCommunity()) && !newFacilities.contains(facilityItem)) {
+					newFacilities.add(facilityItem);
+				}
+				facilityField.setSpinnerData(newFacilities);
+			} else if (districtField.getValue() != null && typeField == null) {
+				List<Item> newFacilities = loadFacilities((District) districtField.getValue(), null, FacilityType.HOSPITAL);
+				if (initialFacility != null
+					&& districtField.getValue().equals(initialFacility.getDistrict())
+					&& !newFacilities.contains(facilityItem)) {
 					newFacilities.add(facilityItem);
 				}
 				facilityField.setSpinnerData(newFacilities);
@@ -337,15 +357,17 @@ public final class InfrastructureHelper {
 			});
 		}
 
-		typeField.initializeSpinner(types, field -> {
-			FacilityType selectedType = (FacilityType) field.getValue();
-			if (selectedType != null) {
-				facilityField
-					.setSpinnerData(loadFacilities((District) districtField.getValue(), (Community) communityField.getValue(), selectedType));
-			} else {
-				facilityField.setSpinnerData(null);
-			}
-		});
+		if (typeField != null) {
+			typeField.initializeSpinner(types, field -> {
+				FacilityType selectedType = (FacilityType) field.getValue();
+				if (selectedType != null) {
+					facilityField
+						.setSpinnerData(loadFacilities((District) districtField.getValue(), (Community) communityField.getValue(), selectedType));
+				} else {
+					facilityField.setSpinnerData(null);
+				}
+			});
+		}
 
 		facilityField.setSpinnerData(facilities);
 

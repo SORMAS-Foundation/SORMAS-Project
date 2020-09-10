@@ -28,7 +28,7 @@ public interface ConfigFacade {
 
 	String getCountryLocale();
 
-	boolean isGermanServer();
+	boolean isConfiguredCountry(String countryCode);
 
 	String getEpidPrefix();
 
@@ -67,6 +67,10 @@ public interface ConfigFacade {
 	String getCustomBrandingName();
 
 	String getCustomBrandingLogoPath();
+
+	boolean isUseLoginSidebar();
+
+	String getLoginBackgroundPath();
 
 	String getSormasInstanceName();
 
