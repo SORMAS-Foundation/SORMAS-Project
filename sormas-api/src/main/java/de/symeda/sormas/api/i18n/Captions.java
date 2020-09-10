@@ -1486,7 +1486,7 @@ public interface Captions {
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";
 //	String View_dashboard_contacts = "View.dashboard.contacts";
-//	String View_dashboard_sample = "View.dashboard.sample";
+//	String View_dashboard_sample = "View.dashboard.samples";
 //	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_events = "View.events";
 	String View_events_archive = "View.events.archive";
