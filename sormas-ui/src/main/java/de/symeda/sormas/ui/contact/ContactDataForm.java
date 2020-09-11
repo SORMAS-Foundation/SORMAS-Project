@@ -689,13 +689,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					if (newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
 						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntilField);
 					} else if (newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd);
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}
 				} else if (followUpDate != null) {
 					if (newQuarantineEnd.compareTo(followUpDate) > 0) {
 						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, followUpDate, followUpUntilField);
 					} else if (newQuarantineEnd.compareTo(followUpDate) < 0) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, followUpDate);
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, followUpDate);
 					}
 				}
 			} else if (!originalContact.isQuarantineExtended() && !originalContact.isQuarantineReduced()) {
@@ -760,7 +760,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		CheckBox quarantineExtendedCheckbox,
 		CheckBox quarantineReducedCheckbox,
 		Property<Date> quarantineEndField,
-		ContactDto originalContact,
 		Date oldQuarantineEnd) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingReduceQuarantine),
