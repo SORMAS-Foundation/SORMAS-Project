@@ -471,7 +471,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			I18nProperties.getString(Strings.infoCaseDate),
 			NewCaseDateType.class,
 			I18nProperties.getString(Strings.promptNewCaseDateType),
-			NewCaseDateType.MOST_RELEVANT);
+			null);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));

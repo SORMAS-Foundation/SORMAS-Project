@@ -43,10 +43,10 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
@@ -171,6 +171,9 @@ public class Person extends AbstractDomainObject {
 	private Date changeDateOfEmbeddedLists;
 
 	private SymptomJournalStatus symptomJournalStatus;
+
+	private boolean hasCovidApp;
+	private boolean covidCodeDelivered;
 
 	@Column(nullable = false, length = COLUMN_LENGTH_DEFAULT)
 	public String getFirstName() {
@@ -623,6 +626,24 @@ public class Person extends AbstractDomainObject {
 
 	public void setSymptomJournalStatus(SymptomJournalStatus symptomJournalStatus) {
 		this.symptomJournalStatus = symptomJournalStatus;
+	}
+
+	@Column
+	public boolean isHasCovidApp() {
+		return hasCovidApp;
+	}
+
+	public void setHasCovidApp(boolean hasCovidApp) {
+		this.hasCovidApp = hasCovidApp;
+	}
+
+	@Column
+	public boolean isCovidCodeDelivered() {
+		return covidCodeDelivered;
+	}
+
+	public void setCovidCodeDelivered(boolean covidCodeDelivered) {
+		this.covidCodeDelivered = covidCodeDelivered;
 	}
 
 	@Override

@@ -54,6 +54,7 @@ import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -311,6 +312,32 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		if (since != null) {
+			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
+		}
+
+		if (forSymptomJournal) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+
+		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+	}
+
+	@Override
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);;
 		person.setSymptomJournalStatus(status);
@@ -487,6 +514,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
 
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
+
 		return target;
 	}
 
@@ -498,9 +528,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private PersonDto convertToDto(Pseudonymizer pseudonymizer, Person p, boolean hasJurisdiction) {
 		final PersonDto personDto = toDto(p);
-		if (!hasJurisdiction) {
-			pseudonymizeDto(false, personDto, pseudonymizer);
-		}
+		pseudonymizeDto(hasJurisdiction, personDto, pseudonymizer);
 		return personDto;
 	}
 
@@ -646,6 +674,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setOccupationFacilityType(source.getOccupationFacilityType());
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 
 		return target;
 	}

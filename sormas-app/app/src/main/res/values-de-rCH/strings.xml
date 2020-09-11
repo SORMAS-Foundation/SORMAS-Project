@@ -576,6 +576,6 @@
     <string name="no_camera_permission">Keine Kameraberechtigung</string>
     <string name="permission_camera_rationale">Zugriff auf die Kamera wird für die Erkennung benötigt</string>
     <string name="scan_field_sample_id">ID der Feldprobe einscannen</string>
-    <string name="caption_facility_type_group">Gruppe des Einrichtungstyps </string>
+    <string name="caption_facility_type_group">Kategorie der Einrichtung</string>
     <string name="caption_facility_type">Art der Einrichtung</string>
 </resources>

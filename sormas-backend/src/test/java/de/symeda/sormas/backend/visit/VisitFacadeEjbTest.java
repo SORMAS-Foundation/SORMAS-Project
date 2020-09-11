@@ -6,8 +6,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -335,6 +337,33 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(new Date(), 1));
 
 		assertThat(getVisitFacade().getLastVisitByContact(contact.toReference()), is(visit));
+	}
+
+	@Test
+	public void testGetVisitsByContactAndPeriod() {
+
+		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+
+		PersonDto person = creator.createPerson();
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+
+		Date reportDate = new Date();
+		int incubationPeriod = 10;
+		Date begin = DateHelper.subtractDays(reportDate, incubationPeriod);
+		Date end = DateHelper.addDays(reportDate, incubationPeriod);
+		// Add 2 visits : during incubation period
+		VisitDto visitIn1 = creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(reportDate, 1));
+		VisitDto visitIn2 = creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(reportDate, 2));
+		VisitDto visitIn3 = creator.createVisit(Disease.EVD, person.toReference(), DateHelper.addDays(reportDate, 2));
+		// Add 1 visit : outside incubation period
+		VisitDto visitOut = creator.createVisit(Disease.EVD, person.toReference(), DateHelper.subtractDays(reportDate, 12));
+
+		List<VisitDto> visits = getVisitFacade().getVisitsByContactAndPeriod(contact.toReference(), begin, end);
+
+		assertTrue(visits.contains(visitIn1));
+		assertTrue(visits.contains(visitIn2));
+		assertTrue(visits.contains(visitIn3));
+		assertFalse(visits.contains(visitOut));
 	}
 
 	@Test

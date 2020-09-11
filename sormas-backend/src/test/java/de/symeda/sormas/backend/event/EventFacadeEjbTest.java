@@ -106,7 +106,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		ActionDto action = creator.createAction(event.toReference());
 
 		// Database should contain the created event and event participant
@@ -219,7 +219,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1

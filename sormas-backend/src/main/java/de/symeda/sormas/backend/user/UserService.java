@@ -17,27 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -51,6 +30,26 @@ import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.util.PasswordHelper;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -328,6 +327,10 @@ public class UserService extends AbstractAdoService<User> {
 		return null;
 	}
 
+	/**
+	 * Caution: Because this filter joins the users_userroles table, using it can result in duplicate results if the
+	 * user in question has more than one user role.
+	 */
 	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
 			return null;
@@ -336,7 +339,7 @@ public class UserService extends AbstractAdoService<User> {
 		User currentUser = getCurrentUser();
 
 		Predicate regionalOrNationalFilter =
-			from.join(User.USER_ROLES, JoinType.LEFT).in(UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION, JurisdictionLevel.REGION));
+			from.join(User.USER_ROLES, JoinType.LEFT).in(UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION));
 
 		Predicate jurisdictionFilter = cb.conjunction();
 		if (currentUser.getHealthFacility() != null) {

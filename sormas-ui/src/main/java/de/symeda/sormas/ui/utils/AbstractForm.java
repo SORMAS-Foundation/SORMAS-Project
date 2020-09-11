@@ -1,5 +1,11 @@
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextArea;
@@ -10,12 +16,8 @@ import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
-import de.symeda.sormas.api.FacadeProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.symeda.sormas.api.FacadeProvider;
 
 public abstract class AbstractForm<T> extends CustomField<T> {
 
@@ -178,13 +180,28 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return addField(getContent(), propertyId, fieldType);
 	}
 
+	protected <F extends Field> F addField(String propertyId, F field) {
+		return addField(getContent(), propertyId, field);
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected <F extends Field> F addField(CustomLayout layout, String propertyId, Class<F> fieldType) {
 		F field = createField(propertyId, fieldType);
+		return addFieldToLayout(layout, propertyId, field);
+	}
+
+	protected <F extends Field> F addField(CustomLayout layout, String propertyId, F field) {
+		getFieldGroup().bind(field, propertyId);
+
+		return addFieldToLayout(layout, propertyId, field);
+	}
+
+	private <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
 		addDefaultAdditionalValidators(field, null);
+
 		return field;
 	}
 

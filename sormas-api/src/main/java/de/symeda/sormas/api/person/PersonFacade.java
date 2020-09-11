@@ -61,5 +61,8 @@ public interface PersonFacade {
 
 	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
 
+	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
+
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
+
 }

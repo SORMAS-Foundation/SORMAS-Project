@@ -24,6 +24,8 @@ import java.util.List;
 
 import android.view.View;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -136,7 +138,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			contentBinding.createCase.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isConfiguredServer("de")) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactImmunosuppressiveTherapyBasicDisease.setVisibility(GONE);
 			contentBinding.contactImmunosuppressiveTherapyBasicDiseaseDetails.setVisibility(GONE);
 			contentBinding.contactCareForPeopleOver60.setVisibility(GONE);
@@ -218,7 +220,8 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			boolean visible = QuarantineType.HOME.equals(contentBinding.contactQuarantine.getValue())
 				|| QuarantineType.INSTITUTIONELL.equals(contentBinding.contactQuarantine.getValue());
 			if (visible) {
-				if (ConfigProvider.isConfiguredServer("de")) {
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					|| ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 					contentBinding.contactQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
@@ -227,10 +230,18 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			} else {
 				contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
-
 				contentBinding.contactQuarantineExtended.setVisibility(GONE);
 			}
 		});
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
+			contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
+			contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+			contentBinding.contactQuarantineOfficialOrderSent.setVisibility(GONE);
+			contentBinding.contactQuarantineOfficialOrderSentDate.setVisibility(GONE);
+		}
 
 		contentBinding.contactQuarantineExtended.setEnabled(false);
 
@@ -273,17 +284,13 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 				contentBinding.contactTracingAppDetails.setValue("");
 			}
 		});
-		if (ConfigProvider.isConfiguredServer("de")) {
+		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(
 				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
 		} else {
 			contentBinding.contactContactIdentificationSource.setVisibility(GONE);
 			contentBinding.contactContactProximityDetails.setVisibility(GONE);
 			contentBinding.contactContactCategory.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedVerbally.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedVerballyDate.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedOfficialDocument.setVisibility(GONE);
-			contentBinding.contactQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
 		}
 
 		if (record.getCaseUuid() != null) {
@@ -351,6 +358,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactQuarantineTo.initializeDateField(getFragmentManager());
 		contentBinding.contactQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.contactQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
+		contentBinding.contactQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
 	}
 
 	@Override
