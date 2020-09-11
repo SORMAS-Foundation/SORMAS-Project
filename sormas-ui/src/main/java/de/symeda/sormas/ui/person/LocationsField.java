@@ -72,10 +72,14 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 
 		table.addGeneratedColumn(STREET, (Table.ColumnGenerator) (source, itemId, columnId) -> {
 			LocationDto locationDto = (LocationDto) itemId;
-			StringBuilder streetBuilder = new StringBuilder();
-			streetBuilder.append(locationDto.getStreet() != null ? locationDto.getStreet() + " " : "");
-			streetBuilder.append(locationDto.getHouseNumber() != null ? locationDto.getHouseNumber() : "");
-			return streetBuilder.toString();
+			if (!locationDto.isPseudonymized()) {
+				StringBuilder streetBuilder = new StringBuilder();
+				streetBuilder.append(locationDto.getStreet() != null ? locationDto.getStreet() + " " : "");
+				streetBuilder.append(locationDto.getHouseNumber() != null ? locationDto.getHouseNumber() : "");
+				return streetBuilder.toString();
+			} else {
+				return I18nProperties.getCaption(Captions.inaccessibleValue);
+			}
 		});
 
 		table.setVisibleColumns(
@@ -140,5 +144,13 @@ public class LocationsField extends AbstractTableField<LocationDto> {
 			return true;
 
 		return false;
+	}
+
+	@Override
+	protected boolean isAccessible(Object columnId) {
+		if (STREET.equals(columnId)) {
+			columnId = LocationDto.STREET;
+		}
+		return fieldAccessCheckers.isAccessible(getEntryType(), columnId.toString());
 	}
 }

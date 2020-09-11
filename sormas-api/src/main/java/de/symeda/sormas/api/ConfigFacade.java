@@ -99,4 +99,6 @@ public interface ConfigFacade {
 	String getSormasToSormasUserPassword();
 
 	void validateExternalUrls();
+
+	Sormas2SormasConfig getSormas2SormasConfig();
 }
