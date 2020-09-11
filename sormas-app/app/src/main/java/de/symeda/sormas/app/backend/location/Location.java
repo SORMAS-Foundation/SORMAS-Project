@@ -22,9 +22,13 @@ import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import android.app.Person;
 
 import androidx.databinding.Bindable;
 
@@ -47,6 +51,7 @@ public class Location extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "location";
 	public static final String I18N_PREFIX = "Location";
 	public static final String COMMUNITY = "community";
+	public static final String PERSON = "person";
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String details;
@@ -81,6 +86,8 @@ public class Location extends PseudonymizableAdo {
 	private PersonAddressType addressType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String addressTypeDetails;
+	@Column
+	private Person person;
 
 	@Bindable
 	public String getDetails() {
@@ -325,5 +332,15 @@ public class Location extends PseudonymizableAdo {
 
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
+	}
+
+	@ManyToOne
+	@JoinColumn
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 }
