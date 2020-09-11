@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.app.backend.person;
+package de.symeda.sormas.app.backend.person;cd
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
@@ -184,6 +184,9 @@ public class Person extends PseudonymizableAdo {
 	private String nationalHealthId;
 
 	private List<Location> addresses = new ArrayList<>();
+
+	@Column
+	private String externalId;
 
 	public Person() {
 	}
@@ -595,4 +598,8 @@ public class Person extends PseudonymizableAdo {
 	public void setAddresses(List<Location> addresses) {
 		this.addresses = addresses;
 	}
+
+	public String getExternalId() { return externalId; }
+
+	public void setExternalId(String externalId) { this.externalId = externalId; }
 }
