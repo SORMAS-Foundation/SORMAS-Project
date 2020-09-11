@@ -40,6 +40,6 @@ The project consists of the following modules:
 
 ## Server Management
 
-* [Installing a SORMAS server](SERVER_SETUP.md)
-* [Updating a SORMAS server](SERVER_UPDATE.md)
-* [Customizing a SORMAS server](SERVER_CUSTOMIZATION.md)
+* [Installing a SORMAS server](docs/SERVER_SETUP.md)
+* [Updating a SORMAS server](docs/SERVER_UPDATE.md)
+* [Customizing a SORMAS server](docs/SERVER_CUSTOMIZATION.md)

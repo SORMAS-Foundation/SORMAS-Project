@@ -50,22 +50,22 @@ When submitting a change request or a feature request, describing the feature yo
 
 Even as a non-developer, there are a lot of things that you can help us with. If there is something you would like to do that you don't find instructions about here, make sure to contact us at sormas@helmholtz-hzi.de and let us know how we can assist you!
 
-* [Translating SORMAS](I18N.md)
-* [Defining new diseases](SOP_DISEASES.md)
+* [Translating SORMAS](docs/I18N.md)
+* [Defining new diseases](docs/SOP_DISEASES.md)
 
 ## Contributing to the Code
 
 If you're interested in participating in the development of SORMAS, you can use the following guides to get started. If you have problems setting up your development environment or don't know what you can work on, don't hesitate to contact us at sormas@helmholtz-hzi.de!
 
-* [Setting up your local environment](DEVELOPMENT_ENVIRONMENT.md)
-* [Performing load tests on a SORMAS server](LOAD_TESTING.md)
-* [Adding license headers](ADDING_LICENSE.md)
-* [How to add a new disease?](GUIDE_ADD_NEW_DISEASE.md)
-* [How to add a new field?](GUIDE_ADD_NEW_FIELD.md)
+* [Setting up your local environment](docs/DEVELOPMENT_ENVIRONMENT.md)
+* [Performing load tests on a SORMAS server](docs/LOAD_TESTING.md)
+* [Adding license headers](docs/ADDING_LICENSE.md)
+* [How to add a new disease?](docs/GUIDE_ADD_NEW_DISEASE.md)
+* [How to add a new field?](docs/GUIDE_ADD_NEW_FIELD.md)
 
 ### Development Contributing Guidelines 
 
-1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project. To not forget this, use save actions [for your IDE](DEVELOPMENT_ENVIRONMENT.md).
+1. Use the eclipse code formatter (Ctrl+Shift+F) and the Android Studio code formatter for the **sormas-app** project. To not forget this, use save actions [for your IDE](docs/DEVELOPMENT_ENVIRONMENT.md).
 2. Rules for blank lines (which cannot be enforced by automatic formatting):
     - Use one blank line after method definition (but usually not for one liners like getters/setters or delegation).
 	- Use one blank line to separate statements within a code block from each other when you start a new logical block.
