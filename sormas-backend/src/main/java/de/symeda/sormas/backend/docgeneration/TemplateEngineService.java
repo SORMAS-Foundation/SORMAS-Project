@@ -1,23 +1,19 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.velocity.runtime.RuntimeInstance;
-import org.apache.velocity.runtime.parser.ParseException;
-import org.apache.velocity.runtime.parser.Token;
-import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,44 +31,49 @@ import fr.opensagres.xdocreport.template.TemplateEngineKind;
 public class TemplateEngineService {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static Pattern variablePattern = Pattern.compile("([{] *([A-Za-z0-9.]+) *[}]| *([A-Za-z0-9.]+) *)");
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	public Set<String> getPlaceholders(String templatePath) throws IOException, XDocReportException, ParseException {
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(new FileInputStream(templatePath), TemplateEngineKind.Velocity);
+	public Set<String> extractTemplateVariables(InputStream templateFile) throws IOException, XDocReportException {
+		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
+
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		report.extractFields(extractor);
 
-		RuntimeInstance runtimeInstance = new RuntimeInstance();
-
-		Set<String> placeholders = new HashSet<>();
+		Set<String> variables = new HashSet<>();
 		for (FieldExtractor field : extractor.getFields()) {
 			String fieldName = field.getName();
-			SimpleNode fieldNode = runtimeInstance.parse(new StringReader("$" + fieldName), "");
-			System.out.println(fieldNode.getClass().getSimpleName());
-			System.out.println(fieldNode.toString());
-			Token token = fieldNode.getFirstToken().next;
-			System.out.println(token.toString());
-			placeholders.add(fieldName);
+			Matcher matcher = variablePattern.matcher(fieldName);
+			if (matcher.matches()) {
+				String withBrackets = matcher.group(2);
+				String withoutBrackets = matcher.group(3);
+				if (withBrackets != null) {
+					variables.add(withBrackets);
+				} else if (withoutBrackets != null) {
+					variables.add(withoutBrackets);
+				}
+			}
 		}
-		return placeholders;
+		return variables;
 	}
 
-	public String generateDocument(Map<String, String> replacements, String templatePath, String outputDirectory)
-		throws IOException, XDocReportException {
-		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(new FileInputStream(templatePath), TemplateEngineKind.Velocity);
+	public InputStream generateDocument(Properties properties, InputStream templateFile) throws IOException, XDocReportException {
+		IXDocReport report = XDocReportRegistry.getRegistry().loadReport(templateFile, TemplateEngineKind.Velocity);
 
 		IContext context = report.createContext();
-		for (String key : replacements.keySet()) {
-			context.put(key, replacements.get(key));
+		for (String key : properties.stringPropertyNames()) {
+
+			String property = properties.getProperty(key);
+			if (property != null && !property.isEmpty()) {
+				context.put(key, property);
+			}
 		}
 
-		String outputFile = outputDirectory + File.separator + "Out_" + FilenameUtils.getBaseName(templatePath) + ".docx";
-		File file = new File(outputFile);
-		report.process(context, new FileOutputStream(file));
-
-		return outputFile;
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		report.process(context, outputStream);
+		return new ByteArrayInputStream(outputStream.toByteArray());
 	}
 
 	public String getTempDir() {

@@ -3,21 +3,23 @@ package de.symeda.sormas.backend.docgeneration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.velocity.runtime.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
+
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import fr.opensagres.xdocreport.core.XDocReportException;
 
 public class TemplateEngineServiceTest extends AbstractBeanTest {
@@ -30,41 +32,45 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void readVariablesFromDocxDocument() throws IOException, XDocReportException, ParseException {
-		String filePath = TemplateEngineServiceTest.class.getResource("/DocumentTemplate.docx").getPath();
-		Set<String> placeholders = templateEngineService.getPlaceholders(filePath);
-		for (String placeholder : placeholders) {
-			System.out.println(placeholder);
+	public void genericTestCasesTest() throws IOException, XDocReportException {
+		String testCasesDirPath = TemplateEngineServiceTest.class.getResource("/docgeneration/testcases").getPath();
+		File testCasesDir = new File(testCasesDirPath);
+		File[] testcasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(".docx"));
+
+		for (File testcaseDocx : testcasesDocx) {
+			System.out.println("Processing " + testcaseDocx.getName() + "...");
+
+			String testcaseBasename = FilenameUtils.getBaseName(testcaseDocx.getName());
+			File testcaseProperties = new File(testCasesDirPath + File.separator + testcaseBasename + ".properties");
+			File testcaseCmpText = new File(testCasesDirPath + File.separator + testcaseBasename + ".txt");
+
+			if (testcaseProperties.exists()) {
+				Set<String> variables = templateEngineService.extractTemplateVariables(new FileInputStream(testcaseDocx));
+
+				Properties properties = new Properties();
+				properties.load(new FileInputStream(testcaseProperties));
+
+				assertEquals(properties.stringPropertyNames().size(), variables.size());
+				for (String key : properties.stringPropertyNames()) {
+					assertTrue("Property not extracted: " + key, variables.contains(key));
+				}
+
+				System.out.println("  variables extracted.");
+
+				if (testcaseCmpText.exists()) {
+					InputStream generatedFile = templateEngineService.generateDocument(properties, new FileInputStream(testcaseDocx));
+
+					XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
+					XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);
+					String docxText = xwpfWordExtractor.getText();
+
+					StringWriter writer = new StringWriter();
+					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
+
+					assertEquals(writer.toString(), docxText);
+					System.out.println("  document generated.");
+				}
+			}
 		}
-
-		assertTrue(placeholders.contains("{name}"));
-		assertTrue(placeholders.contains("{quarantine.to}"));
-		assertTrue(placeholders.contains("{quarantine.from}"));
-
-		// What to do with this???
-		assertTrue(placeholders.contains("{___NoEscapeStylesGenerator.generateAllStyles($___DefaultStyle)}"));
-	}
-
-	@Test
-	public void processDocxTemplate() throws IOException, XDocReportException {
-		String filePath = TemplateEngineServiceTest.class.getResource("/DocumentTemplate.docx").getPath();
-
-		Map<String, String> context = new HashMap<>();
-		context.put("name", "Max Mustermann");
-		context.put("quarantine.to", "2020/09/03");
-		context.put("quarantine.from", "2020/09/17");
-
-		String outFile = templateEngineService.generateDocument(context, filePath, ".");
-
-		XWPFDocument outDocument = new XWPFDocument(new FileInputStream(outFile));
-		XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(outDocument);
-		String docxText = xwpfWordExtractor.getText();
-		assertEquals("Hello World Max Mustermann\n" + "Quarantäne von 2020/09/17 bis 2020/09/03\n", docxText);
-	}
-
-	@Test
-	public void getTempPath() {
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, ".");
-		System.out.println(templateEngineService.getTempDir());
 	}
 }
