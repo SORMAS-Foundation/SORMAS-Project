@@ -5269,7 +5269,7 @@ ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
 
--- changed column name from coughWithHeamoptysis to coughWithHemoptysis #2758
+-- 2020-09-11 changed column name from coughWithHeamoptysis to coughWithHemoptysis #2758
 ALTER TABLE symptoms RENAME COLUMN coughWithHeamoptysis TO coughWithHemoptysis;
 
 -- *** Insert new sql commands BEFORE this line ***
