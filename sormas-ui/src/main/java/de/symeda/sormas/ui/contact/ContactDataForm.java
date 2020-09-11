@@ -141,6 +141,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private CheckBox quarantineExtended;
+	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private ComboBox cbDisease;
@@ -226,6 +228,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
 		quarantine = addField(ContactDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> onValueChange());
 		quarantineFrom = addField(ContactDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(ContactDto.QUARANTINE_TO, DateField.class, -1);
 
@@ -246,12 +249,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		CheckBox quarantineExtended = addField(ContactDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended = addField(ContactDto.QUARANTINE_EXTENDED, CheckBox.class);
 		quarantineExtended.setEnabled(false);
 		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
 
-		CheckBox quarantineReduced = addField(ContactDto.QUARANTINE_REDUCED, CheckBox.class);
+		quarantineReduced = addField(ContactDto.QUARANTINE_REDUCED, CheckBox.class);
 		quarantineReduced.setEnabled(false);
 		quarantineReduced.setVisible(false);
 		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
@@ -268,7 +271,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_EXTENDED, ContactDto.QUARANTINE_HELP_NEEDED),
+			Arrays.asList(ContactDto.QUARANTINE_FROM, ContactDto.QUARANTINE_TO, ContactDto.QUARANTINE_HELP_NEEDED),
 			ContactDto.QUARANTINE,
 			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
 			true);
@@ -683,19 +686,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Date newQuarantineEnd = quarantineEndField.getValue();
 			ContactDto originalContact = getInternalValue();
 			Date oldQuarantineEnd = originalContact.getQuarantineTo();
-			Date followUpDate = originalContact.getFollowUpUntil();
 			if (newQuarantineEnd != null) {
 				if (oldQuarantineEnd != null) {
-					if (newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
+					if (newQuarantineEnd.after(oldQuarantineEnd)) {
 						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, oldQuarantineEnd, followUpUntilField);
-					} else if (newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
+					} else if (newQuarantineEnd.before(oldQuarantineEnd)) {
 						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
-					}
-				} else if (followUpDate != null) {
-					if (newQuarantineEnd.compareTo(followUpDate) > 0) {
-						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalContact, followUpDate, followUpUntilField);
-					} else if (newQuarantineEnd.compareTo(followUpDate) < 0) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, followUpDate);
 					}
 				}
 			} else if (!originalContact.isQuarantineExtended() && !originalContact.isQuarantineReduced()) {
@@ -735,7 +731,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	private void confirmExtendFollowUpPeriod(ContactDto originalContact, Date quarantineEnd, DateField followUpUntil) {
-		if (quarantineEnd.compareTo(originalContact.getFollowUpUntil()) > 0) {
+		if (quarantineEnd.after(originalContact.getFollowUpUntil())) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingExtendFollowUp),
 				new Label(I18nProperties.getString(Strings.confirmationExtendFollowUp)),
@@ -780,17 +776,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	}
 
 	private void onValueChange() {
-		ContactDto contact = this.getValue();
-		if (contact != null) {
-			if (contact.getQuarantineTo() == null) {
-				quarantineTo.setValue(contact.getFollowUpUntil());
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			ContactDto contact = this.getInternalValue();
+			if (contact != null) {
+				quarantineFrom.setValue(contact.getQuarantineFrom());
+				if (contact.getQuarantineTo() == null) {
+					quarantineTo.setValue(contact.getFollowUpUntil());
+				} else {
+					quarantineTo.setValue(contact.getQuarantineTo());
+				}
+				if (contact.isQuarantineExtended()) {
+					quarantineExtended.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+				}
+				if (contact.isQuarantineReduced()) {
+					quarantineReduced.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
+				}
 			}
-			if (contact.isQuarantineExtended()) {
-				setVisible(true, ContactDto.QUARANTINE_EXTENDED);
-			}
-			if (contact.isQuarantineReduced()) {
-				setVisible(true, ContactDto.QUARANTINE_REDUCED);
-			}
+		} else {
+			quarantineFrom.clear();
+			quarantineTo.clear();
+			quarantineExtended.setValue(false);
+			quarantineReduced.setValue(false);
+			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
 	}
 }

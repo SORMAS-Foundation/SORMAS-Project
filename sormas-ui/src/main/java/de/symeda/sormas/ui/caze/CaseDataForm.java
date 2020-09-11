@@ -204,6 +204,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField quarantineTo;
+	private CheckBox quarantineExtended;
+	private CheckBox quarantineReduced;
 	private CheckBox quarantineOrderedVerbally;
 	private CheckBox quarantineOrderedOfficialDocument;
 	private OptionGroup facilityOrHome;
@@ -303,6 +305,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.CASE_ORIGIN, TextField.class);
 
 		quarantine = addField(CaseDataDto.QUARANTINE);
+		quarantine.addValueChangeListener(e -> onValueChange());
 		quarantineFrom = addField(CaseDataDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(CaseDataDto.QUARANTINE_TO, DateField.class, -1);
 
@@ -337,12 +340,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Collections.singletonList(Boolean.TRUE),
 			true);
 
-		CheckBox quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
+		quarantineExtended = addField(CaseDataDto.QUARANTINE_EXTENDED, CheckBox.class);
 		quarantineExtended.setEnabled(false);
 		quarantineExtended.setVisible(false);
 		CssStyles.style(quarantineExtended, CssStyles.FORCE_CAPTION);
 
-		CheckBox quarantineReduced = addField(CaseDataDto.QUARANTINE_REDUCED, CheckBox.class);
+		quarantineReduced = addField(CaseDataDto.QUARANTINE_REDUCED, CheckBox.class);
 		quarantineReduced.setEnabled(false);
 		quarantineReduced.setVisible(false);
 		CssStyles.style(quarantineReduced, CssStyles.FORCE_CAPTION);
@@ -360,7 +363,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
 			Arrays
-				.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_EXTENDED, CaseDataDto.QUARANTINE_HELP_NEEDED),
+				.asList(CaseDataDto.QUARANTINE_FROM, CaseDataDto.QUARANTINE_TO, CaseDataDto.QUARANTINE_HELP_NEEDED),
 			CaseDataDto.QUARANTINE,
 			Arrays.asList(QuarantineType.HOME, QuarantineType.INSTITUTIONELL),
 			true);
@@ -947,19 +950,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			Date newQuarantineEnd = quarantineEndField.getValue();
 			CaseDataDto originalCase = getInternalValue();
 			Date oldQuarantineEnd = originalCase.getQuarantineTo();
-			Date followUpDate = originalCase.getFollowUpUntil();
 			if (newQuarantineEnd != null) {
 				if (oldQuarantineEnd != null) {
 					if (newQuarantineEnd.compareTo(oldQuarantineEnd) > 0) {
 						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, oldQuarantineEnd, followUpUntilField);
 					} else if (newQuarantineEnd.compareTo(oldQuarantineEnd) < 0) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, oldQuarantineEnd);
-					}
-				} else if (caseFollowUpEnabled && followUpDate != null) {
-					if (newQuarantineEnd.compareTo(followUpDate) > 0) {
-						confirmQuarantineEndExtended(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, followUpDate, followUpUntilField);
-					} else if (newQuarantineEnd.compareTo(followUpDate) < 0) {
-						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, originalCase, followUpDate);
+						confirmQuarantineEndReduced(quarantineExtendedCheckBox, quarantineReducedCheckBox, quarantineEndField, oldQuarantineEnd);
 					}
 				}
 			} else if (!originalCase.isQuarantineExtended() && !originalCase.isQuarantineReduced()) {
@@ -1024,7 +1020,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		CheckBox quarantineExtendedCheckbox,
 		CheckBox quarantineReducedCheckbox,
 		Property<Date> quarantineEndField,
-		CaseDataDto originalCase,
 		Date oldQuarantineEnd) {
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingReduceQuarantine),
@@ -1180,8 +1175,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		private static final long serialVersionUID = -5339850320902885768L;
 
 		private final AbstractSelect diseaseField;
-		private final Disease currentDisease;
 
+		private final Disease currentDisease;
 		DiseaseChangeListener(AbstractSelect diseaseField, Disease currentDisease) {
 			this.diseaseField = diseaseField;
 			this.currentDisease = currentDisease;
@@ -1222,22 +1217,37 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangeCaseDisease));
 			}
 		}
+
 	}
 
 	private void onValueChange() {
-		CaseDataDto caze = this.getValue();
-		if (caze != null) {
-			if (caze.getQuarantineTo() == null) {
-				if (caseFollowUpEnabled) {
-					quarantineTo.setValue(caze.getFollowUpUntil());
+		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
+		if (QuarantineType.HOME.equals(quarantineType) || QuarantineType.INSTITUTIONELL.equals(quarantineType)) {
+			CaseDataDto caze = this.getInternalValue();
+			if (caze != null) {
+				quarantineFrom.setValue(caze.getQuarantineFrom());
+				if (caze.getQuarantineTo() == null) {
+					if (caseFollowUpEnabled) {
+						quarantineTo.setValue(caze.getFollowUpUntil());
+					}
+				} else {
+					quarantineTo.setValue(caze.getQuarantineTo());
+				}
+				if (caze.isQuarantineExtended()) {
+					quarantineExtended.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
+				}
+				if (caze.isQuarantineReduced()) {
+					quarantineReduced.setValue(true);
+					setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
 				}
 			}
-			if (caze.isQuarantineExtended()) {
-				setVisible(true, CaseDataDto.QUARANTINE_EXTENDED);
-			}
-			if (caze.isQuarantineReduced()) {
-				setVisible(true, CaseDataDto.QUARANTINE_REDUCED);
-			}
+		} else {
+			quarantineFrom.clear();
+			quarantineTo.clear();
+			quarantineExtended.setValue(false);
+			quarantineReduced.setValue(false);
+			setVisible(false, CaseDataDto.QUARANTINE_REDUCED, CaseDataDto.QUARANTINE_EXTENDED);
 		}
 	}
 }
