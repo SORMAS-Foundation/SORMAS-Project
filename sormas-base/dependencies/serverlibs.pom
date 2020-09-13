@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sormas-base</artifactId>
         <groupId>de.symeda.sormas</groupId>
-        <version>1.48.0-SNAPSHOT</version>
+        <version>1.49.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -64,6 +64,12 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

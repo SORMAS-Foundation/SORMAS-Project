@@ -5239,6 +5239,34 @@ ALTER TABLE eventparticipant ADD CONSTRAINT fk_eventparticipant_reportingUser_id
 ALTER TABLE eventparticipant_history ADD COLUMN reportingUser_id bigint;
 ALTER TABLE eventparticipant_history ADD CONSTRAINT fk_eventparticipant_history_reportingUser_id FOREIGN KEY (reportingUser_id) REFERENCES users(id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant  #2789');
+INSERT INTO schema_version (version_number, comment) VALUES (248, 'Add reporting user on event participant #2789');
+
+-- 2020-09-08 - Add "Official order sent" and corresponding date to cases and contacts #2847
+ALTER TABLE cases ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE cases_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+ALTER TABLE contact ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantineofficialordersentdate timestamp;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersent boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantineofficialordersentdate timestamp;
+
+INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official order sent" and corresponding date to cases and contacts #2847');
+
+-- 2020-07-29 Campaign diagram visualisation refinement
+
+-- Hotfix additions to avoid errors for servers older than 2 months
+ALTER TABLE campaignformmeta DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta_history DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta ADD COLUMN campaignformtranslations json;
+-- End of hotfix additions
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformelements TYPE json USING campaignformelements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformtranslations TYPE json USING campaignformtranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformelements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
 
 -- *** Insert new sql commands BEFORE this line ***

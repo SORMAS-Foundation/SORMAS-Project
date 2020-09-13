@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class CampaignFormElement implements Serializable {
 
+	public static final String ID = "id";
+	public static final String TYPE = "type";
+	public static final String CAPTION = "caption";
+
 	private static final long serialVersionUID = 5553496750859734167L;
 
 	public static final String[] VALID_TYPES = {

@@ -528,9 +528,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private PersonDto convertToDto(Pseudonymizer pseudonymizer, Person p, boolean hasJurisdiction) {
 		final PersonDto personDto = toDto(p);
-		if (!hasJurisdiction) {
-			pseudonymizeDto(false, personDto, pseudonymizer);
-		}
+		pseudonymizeDto(hasJurisdiction, personDto, pseudonymizer);
 		return personDto;
 	}
 

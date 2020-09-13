@@ -12,6 +12,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 
 public class ConfigProviderTest {
 

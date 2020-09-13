@@ -97,4 +97,6 @@ public interface ConfigFacade {
 	String getSymptomJournalSecret();
 
 	void validateExternalUrls();
+
+	Sormas2SormasConfig getSormas2SormasConfig();
 }
