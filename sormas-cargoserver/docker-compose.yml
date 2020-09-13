@@ -12,6 +12,9 @@ services:
       - SORMAS_POSTGRES_USER=sormas_user
       - TZ=Europe/Berlin
     volumes:
-      - ${SORMAS_POSTGRES_DATA_VOLUME}:/var/lib/postgresql/data
+      - psqldata_cargoserver:/var/lib/postgresql/data
     ports:
       - "${SORMAS_POSTGRES_PORT}:5432"
+
+volumes:
+  psqldata_cargoserver:

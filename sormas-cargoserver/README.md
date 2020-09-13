@@ -25,15 +25,7 @@ To run the cargo server against an existing database, configure
 SORMAS_POSTGRES_SERVER=<database-server>
 SORMAS_POSTGRES_PORT=<database-port>
 ```
-in file `custom.env` and skip the `docker-compose` step in the server setup.
-
-To run the sormas-postgres docker container with a permanent `psqldata` volume or to avoid permission issues
-concerning the docker user, configure an alternative volume location by adding the following line to
-`custom.env`, where `<pathToVolume>` is a location of your choice where docker has write permissions:
-```
-SORMAS_POSTGRES_DATA_VOLUME=<pathToVolume>/psqldata
-```
-(default volume location is `./target/psqldata`)
+in file `custom.env` and skip the `docker-compose` step in the server setup (see file `custom.env.example`).
 
 To add properties to the generated `sormas.properties`, configure e.g.
 ```
@@ -41,7 +33,7 @@ custombranding=true
 custombranding.name=<name>
 custombranding.logo.path=<logopath>
 ```
-in file `custom.properties`.
+in file `custom.properties` (see file `custom.properties.example`).
 
 After adjusting the configurations, (re)run `mvn install` and (re)start the server.
 
@@ -80,7 +72,16 @@ password `sadmin`.
 (cd sormas-cargoserver && docker-compose down)
 ```
 
-## Troubleshooting
-If starting the sormas-postgres docker container fails due to docker permission issues (e.g., the docker logs
-shows `FATAL: data directory "/var/lib/postgresql/data" has wrong ownership`), choose another location for the docker
-volume, where docker has write permissions (see [Configuration](#configuration)).
+## Remove docker volume (if intended)
+
+The SORMAS-PostgreSQL docker container uses a named docker volume:
+```
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               sormas-cargoserver_psqldata_cargoserver
+```
+
+To remove this docker volume:
+```
+$ sudo docker volume rm sormas-cargoserver_psqldata_cargoserver
+```
