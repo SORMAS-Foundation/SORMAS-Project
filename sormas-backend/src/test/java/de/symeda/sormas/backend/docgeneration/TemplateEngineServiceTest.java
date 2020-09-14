@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.Set;
 
@@ -31,8 +30,6 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 		String testCasesDirPath = TemplateEngineServiceTest.class.getResource("/docgeneration/testcases").getPath();
 		File testCasesDir = new File(testCasesDirPath);
 		File[] testcasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(".docx"));
-
-		String defaultCharset = Charset.defaultCharset().toString();
 
 		for (File testcaseDocx : testcasesDocx) {
 			System.out.println("Processing " + testcaseDocx.getName() + "...");
@@ -62,7 +59,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 					String docxText = xwpfWordExtractor.getText();
 
 					StringWriter writer = new StringWriter();
-					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, defaultCharset);
+					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
 
 					assertEquals(writer.toString(), docxText);
 					System.out.println("  document generated.");
