@@ -42,10 +42,11 @@ public class CountsTileViewLayout2 extends CssLayout {
 
 	public void refresh() {
 		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCount();
+		Map<SampleCountType, Long> sampleCountDifference = dashboardDataProvider.getSampleCountDifference();
 		this.removeAllComponents();
 		for (SampleCountType type : SampleCountType.values()) {
 			if (sampleCount.get(type) != null) {
-				CountTileComponent tile = new CountTileComponent(type, sampleCount.get(type));
+				CountTileComponent tile = new CountTileComponent(type, sampleCount.get(type), sampleCountDifference.get(type));
 				tile.setWidth(230, Unit.PIXELS);
 				addComponent(tile);
 			}
