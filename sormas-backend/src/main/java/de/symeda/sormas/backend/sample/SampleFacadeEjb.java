@@ -832,6 +832,12 @@ public class SampleFacadeEjb implements SampleFacade {
 				.disease(disease)
 				.reportDateBetween(from, to, DateFilterOption.DATE)
 				.received(true));
+		long notReceivedCount = count(
+			(new SampleCriteria()).region(regionRef)
+				.district(districtRef)
+				.disease(disease)
+				.reportDateBetween(from, to, DateFilterOption.DATE)
+				.received(false));
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.TOTAL, total);
@@ -844,6 +850,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		map.put(SampleCountType.SHIPPED, shippedCount);
 		map.put(SampleCountType.NOT_SHIPED, notShippedCount);
 		map.put(SampleCountType.RECEIVED, receivedCount);
+		map.put(SampleCountType.NOT_RECEIVED, notReceivedCount);
 
 		return map;
 	}
