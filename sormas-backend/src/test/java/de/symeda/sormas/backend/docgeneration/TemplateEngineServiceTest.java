@@ -1,26 +1,21 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Properties;
-import java.util.Set;
-
+import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import fr.opensagres.xdocreport.core.XDocReportException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Properties;
+import java.util.Set;
 
-import de.symeda.sormas.backend.AbstractBeanTest;
-import fr.opensagres.xdocreport.core.XDocReportException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TemplateEngineServiceTest extends AbstractBeanTest {
 
@@ -36,6 +31,8 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 		String testCasesDirPath = TemplateEngineServiceTest.class.getResource("/docgeneration/testcases").getPath();
 		File testCasesDir = new File(testCasesDirPath);
 		File[] testcasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(".docx"));
+
+		String defaultCharset = Charset.defaultCharset().toString();
 
 		for (File testcaseDocx : testcasesDocx) {
 			System.out.println("Processing " + testcaseDocx.getName() + "...");
@@ -65,7 +62,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 					String docxText = xwpfWordExtractor.getText();
 
 					StringWriter writer = new StringWriter();
-					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
+					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, defaultCharset);
 
 					assertEquals(writer.toString(), docxText);
 					System.out.println("  document generated.");
