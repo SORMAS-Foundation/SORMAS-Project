@@ -2,121 +2,163 @@
 @mixin sormas-sample-count-styles {
 
   .background-sample-count-total {
-  	background-color: #00E0A1;
-  	fill: #00E0A1;
+  background-color: #00b3b3;
+  fill: #00b3b3;
   	
   	&.background-darker {
-  		background-color: #00B582;
-  		fill: #00B582;
+  background-color: #008B8B;
+  fill: #008B8B;
   	}
   }
   .background-sample-count-adequate {
-  	background-color: #FEBA01;
-  	fill: #FEBA01;
+  background-color: #40bf79;
+  fill: #40bf79;
   	
   	&.background-darker {
-  		background-color: #E5A701;
-  		fill: #E5A701;
-  	}
+  background-color: #2d8655;
+  fill: #2d8655;
+  }
   }
   .background-sample-count-inadequate{
-  	background-color: #59BDEF;
-  	fill: #59BDEF;
-  	
+  background-color: #EF5A6C;
+  fill: #EF5A6C;
+
   	&.background-darker {
-  		background-color: #50AAD7;
-  		fill: #50AAD7;
-  	}
+  background-color: #E04A5B;
+  fill: #E04A5B;
+  }
   }
   .background-sample-count-positives {
-  	background-color: #44BEC7;
-  	fill: #44BEC7;
+  background-color: #EF5A6C;
+  fill: #EF5A6C;
   	
   	&.background-darker {
-  		background-color: #3DABB3;
-  		fill: #3DABB3;
-  	}
+  background-color: #E04A5B;
+  fill: #E04A5B;
+  }
   }
   .background-sample-count-negatives {
-  	background-color: #8C45AD;
-  	fill: #8C45AD;
+  background-color: #40BF79;
+  fill: #40BF79;
+
+  &.background-darker {
+  background-color: #2D8655;
+  fill: #2D8655;
+  }
+  }
+  .background-sample-count-indeterminate{
+  background-color: #888888;
+  fill: #888888;
   	
   	&.background-darker {
-  		background-color: #7E3E9C;
-  		fill: #7E3E9C;
-  	}
+  background-color: #6D6D6D;
+  fill: #6D6D6D;
+  }
   }
   .background-sample-count-pendings {
-  	background-color: #3FD100;
-  	fill: #3FD100;
+  background-color: #d2691e;
+  fill: #d2691e;
   	
   	&.background-darker {
-  		background-color: #38BA00;
-  		fill: #38BA00;
+  background-color: #BE6900;
+  fill: #BE6900;
   	}
   }
   .background-sample-count-shipped {
-  	background-color: #EA579B;
-  	fill: #EA579B;
+  background-color: #40BF79;
+  fill: #40BF79;
   	
   	&.background-darker {
-  		background-color: #D34E8B;
-  		fill: #D34E8B;
-  	}
+  background-color: #2D8655;
+  fill: #2D8655;
+  }
   }
   .background-sample-count-not-shipped {
-  	background-color: #66AD45;
-  	fill: #66AD45;
-  	
-  	&.background-darker {
-  		background-color: #5C9C3E;
-  		fill: #5C9C3E;
-  	}
+  background-color: #EF5A6C;
+  fill: #EF5A6C;
+
+  &.background-darker {
+  background-color: #E04A5B;
+  fill: #E04A5B;
   }
-  .background-sample-count-recieved {
-  	background-color: #FF9299;
-  	fill: #FF9299;
-  	
-  	&.background-darker {
-  		background-color: #E5838A;
-  		fill: #E5838A;
-  	}
   }
-  .background-sample-count-not-recieved  {
-  	background-color: #4550AC;
-  	fill: #4550AC;
-  	
-  	&.background-darker {
-  		background-color: #3E489B;
-  		fill: #3E489B;
-  	}
+  .background-sample-count-received {
+  background-color: #40BF79;
+  fill: #40BF79;
+
+  &.background-darker {
+  background-color: #2D8655;
+  fill: #2D8655;
   }
- /* .background-disease-plague {
+  }
+  .background-sample-count-not-received  {
+  background-color: #EF5A6C;
+  fill: #EF5A6C;
+
+  &.background-darker {
+  background-color: #E04A5B;
+  fill: #E04A5B;
+  }
+  }
+ /*
+  .background-sample-count-inadequate{
+  background-color: #eb2d53;
+  fill: #eb2d53;
+  	&.background-darker {
+  background-color: #DC143C;
+  fill: #DC143C;
+  }
+  }
+  .background-sample-count-positives {
+  background-color: #eb2d53;
+  fill: #eb2d53;
+  &.background-darker {
+  background-color: #DC143C;
+  fill: #DC143C;
+  }
+  }
+  .background-sample-count-not-shipped {
+  background-color: #eb2d53;
+  fill: #eb2d53;
+
+  &.background-darker {
+  background-color: #DC143C;
+  fill: #DC143C;
+  }
+  }
+
+  .background-sample-count-not-received  {
+  background-color: #eb2d53;
+  fill: #eb2d53;
+  &.background-darker {
+  background-color: #DC143C;
+  fill: #DC143C;
+  }
+  }
+
+  .background-disease-plague {
   	background-color: #8270CC;
   	fill: #8270CC;
-  	
   	&.background-darker {
-  		background-color: #7565B8;
-  		fill: #7565B8;
+  background-color: #7565B8;
+  fill: #7565B8;
   	}
   }
   .background-disease-polio {
   	background-color: #A6E300;
   	fill: #A6E300;
-  	
   	&.background-darker {
-  		background-color: #96CC00;
-  		fill: #96CC00;
+  background-color: #96CC00;
+  fill: #96CC00;
   	}
   }
   .background-disease-unspecified-vhf {
   	background-color: #448282;
   	fill: #448282;
-  	
   	&.background-darker {
-  		background-color: #2F4F4F;
-  		fill: #2F4F4F;
-  	}
+  background-color: #2F4F4F;
+  fill: #2F4F4F;
+  }
   }
   .background-disease-west-nile-fever {
   	background-color: #87CEFA;
