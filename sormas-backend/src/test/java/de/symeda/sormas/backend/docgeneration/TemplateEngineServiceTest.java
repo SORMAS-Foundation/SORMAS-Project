@@ -57,6 +57,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 					XWPFDocument generatedDocument = new XWPFDocument(generatedFile);
 					XWPFWordExtractor xwpfWordExtractor = new XWPFWordExtractor(generatedDocument);
 					String docxText = xwpfWordExtractor.getText();
+					docxText.replaceAll("\\r\\n?", "\n");
 
 					StringWriter writer = new StringWriter();
 					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
