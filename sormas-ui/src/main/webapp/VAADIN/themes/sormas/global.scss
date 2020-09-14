@@ -339,13 +339,4 @@
     font-style: italic;
     opacity: 0.5;
   }
-
-  ////ADDED IN REGARDS TO ISSUE #2584
-  .custom-margin{
-    &.v-margin-left   {padding-left:   500px;}
-    &.v-margin-right  {padding-right:  0px;}
-    &.v-margin-top    {padding-top:    10px;}
-    &.v-margin-bottom {padding-bottom: 30px;}
-
-  }
 }

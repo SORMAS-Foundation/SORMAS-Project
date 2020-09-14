@@ -158,7 +158,6 @@ public final class CssStyles {
 	public static final String BUTTON_FILTER_ENABLED = "filter-enabled";
 	public static final String BUTTON_FILTER_DISABLED = "filter-disabled";
 	public static final String BUTTON_FONT_SIZE_LARGE = "font-size-large";
-	public static final String BUTTONS_LAYOUT_MARGIN="custom-margin";
 
 
 	// List styles

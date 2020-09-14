@@ -104,7 +104,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					fluidRowCss(VSPACE_3,
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC))) +
-					fluidRow(fluidColumn(3,0, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
+					fluidRow(fluidColumn(6,6, locCss(CssStyles.ALIGN_RIGHT,BUTTONS_LOC)))+
 					fluidRow(
 							fluidColumn(6, -1,
 									locsCss(VSPACE_3,
@@ -781,8 +781,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		buttonsLayout.addComponent(clearAllButton);
 		buttonsLayout.addComponent(setEmptyToNoButton);
 		buttonsLayout.addComponent(setEmptyToUnknownButton);
-		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
-		buttonsLayout.addStyleName(CssStyles.BUTTONS_LAYOUT_MARGIN);
+		buttonsLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		buttonsLayout.setMargin(true);
 
 		getContent().addComponent(buttonsLayout, BUTTONS_LOC);
