@@ -62,7 +62,8 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 					StringWriter writer = new StringWriter();
 					IOUtils.copy(new FileInputStream(testcaseCmpText), writer, "UTF-8");
 
-					assertEquals(writer.toString(), docxText);
+					String expected = writer.toString().replaceAll("\\r\\n?", "\n");
+					assertEquals(expected, docxText);
 					System.out.println("  document generated.");
 				}
 			}
