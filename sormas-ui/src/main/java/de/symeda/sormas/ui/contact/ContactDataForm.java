@@ -670,7 +670,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 						if (confirmed) {
 							quarantineChangedByFollowUpUntilChange = true;
 							quarantineTo.setValue(followUpUntil);
-							if (followUpUntil.compareTo(getInternalValue().getFollowUpUntil()) > 0) {
+							if (followUpUntil.after(getInternalValue().getFollowUpUntil())) {
 								quarantineExtendedCheckBox.setValue(true);
 							}
 						}

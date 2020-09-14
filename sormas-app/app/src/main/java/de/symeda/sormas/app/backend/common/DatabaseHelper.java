@@ -1577,7 +1577,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOfficialOrderSentDate timestamp;");
 				getDao(Case.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOfficialOrderSent SMALLINT DEFAULT 0;");
 				getDao(Case.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOfficialOrderSentDate timestamp;");
-				
+
 			case 226:
 				currentVersion = 226;
 				getDao(Contact.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineReduced boolean DEFAULT false;");

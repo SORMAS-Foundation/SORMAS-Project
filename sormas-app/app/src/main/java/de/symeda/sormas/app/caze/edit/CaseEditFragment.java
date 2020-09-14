@@ -25,7 +25,6 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -188,6 +187,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		} else {
 			contentBinding.caseDataEpidNumber.setVisibility(GONE);
 		}
+
+		contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE);
+		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 	}
 
 	private void setUpButtonListeners(FragmentCaseEditLayoutBinding contentBinding) {
@@ -346,9 +348,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
-
-				contentBinding.caseDataQuarantineExtended.setVisibility(VISIBLE);
-				contentBinding.caseDataQuarantineReduced.setVisibility(VISIBLE);
 			} else {
 				contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
@@ -379,13 +378,12 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			public void onChange(ControlPropertyField e) {
 				Date newQuarantineTo = (Date) e.getValue();
 
-				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) > 0) {
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.after(currentQuarantineTo)) {
 					extendQuarantine();
 				} else if (!currentQuarantineExtended) {
 					contentBinding.caseDataQuarantineExtended.setValue(false);
 				}
-
-				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.compareTo(currentQuarantineTo) < 0) {
+				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.before(currentQuarantineTo)) {
 					reduceQuarantine();
 				} else if (!currentQuarantineReduced) {
 					contentBinding.caseDataQuarantineReduced.setValue(false);
@@ -402,10 +400,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 
 				confirmationDialog.setPositiveCallback(() -> {
 					contentBinding.caseDataQuarantineExtended.setValue(true);
-					contentBinding.caseDataQuarantineExtended.setValue(false);
+					contentBinding.caseDataQuarantineReduced.setValue(false);
 				});
 				confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
-
 				confirmationDialog.show();
 			}
 
@@ -422,10 +419,14 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					contentBinding.caseDataQuarantineReduced.setValue(true);
 				});
 				confirmationDialog.setNegativeCallback(() -> contentBinding.caseDataQuarantineTo.setValue(currentQuarantineTo));
-
 				confirmationDialog.show();
 			}
 		});
+
+		contentBinding.caseDataQuarantineExtended
+			.addValueChangedListener(e -> contentBinding.caseDataQuarantineExtended.setVisibility(record.isQuarantineExtended() ? VISIBLE : GONE));
+		contentBinding.caseDataQuarantineReduced
+			.addValueChangedListener(e -> contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE));
 	}
 
 	@Override
