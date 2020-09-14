@@ -534,7 +534,6 @@ public interface Strings {
 	String messageErrorReportNotAvailable = "messageErrorReportNotAvailable";
 	String messageEventArchived = "messageEventArchived";
 	String messageEventCreated = "messageEventCreated";
-	String messageEventDatabaseEmpty = "messageEventDatabaseEmpty";
 	String messageEventDearchived = "messageEventDearchived";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";

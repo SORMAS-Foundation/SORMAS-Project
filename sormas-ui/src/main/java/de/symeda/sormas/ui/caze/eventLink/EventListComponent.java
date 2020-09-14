@@ -28,13 +28,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.ui.Notification;
-
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -42,8 +39,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
-
-import java.util.List;
 
 public class EventListComponent extends VerticalLayout {
 
@@ -54,12 +49,13 @@ public class EventListComponent extends VerticalLayout {
 
 		createEventListComponent(new EventList(caseRef), e -> {
 
+			EventCriteria eventCriteria=new EventCriteria();
+
 			//check if there are active events in the database
-			List<String> events = FacadeProvider.getEventFacade().getAllActiveUuids();
-			if (!events.isEmpty()) {
+			long events = FacadeProvider.getEventFacade().count(eventCriteria);
+			if (events>0) {
 				ControllerProvider.getEventController().selectOrCreateEvent(caseRef);
 			} else {
-				Notification.show(I18nProperties.getString(Strings.messageEventDatabaseEmpty), Type.WARNING_MESSAGE);
 				ControllerProvider.getEventController().create(caseRef);
 
 			}
