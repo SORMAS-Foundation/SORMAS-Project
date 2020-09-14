@@ -17,13 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.sample.SampleCountType;
-
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.sample.SampleCountType;
 
 public final class CssStyles {
 
@@ -392,7 +393,7 @@ public final class CssStyles {
 		case TOTAL:
 			return "background-sample-count-total";
 		case INDETERMINATE:
-			return "background-sample-count-adequate";
+			return "background-sample-count-indeterminate";
 		case ADEQUATE:
 			return "background-sample-count-adequate";
 		case INADEQUATE:
@@ -408,9 +409,9 @@ public final class CssStyles {
 		case NOT_SHIPED:
 			return "background-sample-count-not-shipped";
 		case RECEIVED:
-			return "background-sample-count-recieved";
+			return "background-sample-count-received";
 		case NOT_RECEIVED:
-			return "background-sample-count-not-recieved";
+			return "background-sample-count-not-received";
 		default:
 			throw new IllegalArgumentException(count.toString());
 		}
