@@ -17,27 +17,29 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
+import java.util.Locale;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.SormasToSormasConfig;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.Sormas2SormasConfig;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.regex.Pattern;
 
 /**
  * Provides the application configuration settings
@@ -358,8 +360,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public Sormas2SormasConfig getSormas2SormasConfig() {
-		Sormas2SormasConfig config = new Sormas2SormasConfig();
+	public SormasToSormasConfig getSormasToSormasConfig() {
+		SormasToSormasConfig config = new SormasToSormasConfig();
 		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
 		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
 		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));

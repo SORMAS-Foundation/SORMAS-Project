@@ -127,4 +127,20 @@ if [[ ${NEW_TRUSTSTORE} = true ]]; then
   } >> "${SORMAS_PROPERTIES}"
 fi
 
+echo "Updating server list CSV"
+
+# get new certificate organization
+ORG=$(openssl x509 -noout -subject -nameopt multiline -in "${CRT_FILE}" | sed -n 's/ *organizationName *= //p')
+
+while [[ -z "${REST_URL}" ]]; do
+  read -p "Please provide the url for the REST interface: " REST_URL
+done
+
+while [[ -z "${REST_PASSWORD}" ]]; do
+  read -sp "Please provide the password for the REST interface: " REST_PASSWORD
+done
+
+echo -e "\"${ALIAS}\",\"${ORG}\",\"${REST_URL}\",\"${REST_PASSWORD}\",\n" > "${SERVER_LIST_FILE}"
+
+echo ""
 echo "The script finished executing. Please check for any errors."

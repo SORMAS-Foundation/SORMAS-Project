@@ -60,7 +60,7 @@ public class HealthDepartmentServerAccessData implements Serializable {
 		this.url = url;
 	}
 
-	public HealthDepartmentServerReferenceDto toReferenceDto() {
-		return new HealthDepartmentServerReferenceDto(id, name);
+	public ServerAccessDataReferenceDto toReferenceDto() {
+		return new ServerAccessDataReferenceDto(id, name);
 	}
 }

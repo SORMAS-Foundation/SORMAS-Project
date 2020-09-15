@@ -83,6 +83,11 @@ while [[ -z "${SORMAS_S2S_CERT_ORG}" ]]; do
   read -p "Please provide an Organization (O) for the certificate: " SORMAS_S2S_CERT_ORG
 done
 
+while [[ -z "${SORMAS_S2S_REST_PASSWORD}" ]] || [[ ${#SORMAS_S2S_REST_PASSWORD} -lt 6 ]]; do
+  read -sp "Please provide a password for the REST interface (at least 6 characters): " SORMAS_S2S_REST_PASSWORD
+  echo
+done
+
 if [[ ${LINUX} = true ]]; then
   CERT_SUBJ="/CN=${SORMAS_S2S_CERT_CN}/OU=SORMAS/O=${SORMAS_S2S_CERT_ORG}"
 else
@@ -93,7 +98,8 @@ echo "CN=${SORMAS_S2S_CERT_CN},OU=SORMAS,O=${SORMAS_S2S_CERT_ORG}"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 
 PEM_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
-P12_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
+P12_FILE_NAME=sormas2sormas.keystore.p12
+P12_FILE=${SORMAS2SORMAS_DIR}/${P12_FILE_NAME}
 CRT_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
 CSV_FILE=${SORMAS2SORMAS_DIR}/server-access-data.csv
 
@@ -106,10 +112,11 @@ openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${S
 rm "${PEM_FILE}"
 
 echo "Generating server access data CSV"
-echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\n" > "${CSV_FILE}"
+echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\"${SORMAS_S2S_REST_PASSWORD}\",\n" > "${CSV_FILE}"
 
 # remove existing properties and empty spaces at end of file
 sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.path/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
 sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
@@ -118,8 +125,9 @@ sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
 {
   echo;
   echo "# Key data for the generated SORMAS to SORMAS certificate";
+  echo "sormas2sormas.path=${SORMAS2SORMAS_DIR}"
   echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
-  echo "sormas2sormas.keystoreName=${P12_FILE}"
+  echo "sormas2sormas.keystoreName=${P12_FILE_NAME}"
   echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
 } >> "${SORMAS_PROPERTIES}"
 

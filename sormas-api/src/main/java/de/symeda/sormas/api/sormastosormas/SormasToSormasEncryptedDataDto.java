@@ -15,26 +15,37 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import java.util.List;
+import java.io.Serializable;
 
-import javax.ejb.Remote;
+public class SormasToSormasEncryptedDataDto implements Serializable {
 
-@Remote
-public interface SormasToSormasFacade {
+	private static final long serialVersionUID = 8658507076136806951L;
 
-	void saveSharedCase(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException;
+	private String senderId;
 
-	void saveSharedContact(SormasToSormasEncryptedDataDto sharedContact) throws SormasToSormasException;
+	private byte[] data;
 
-	void shareCase(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public SormasToSormasEncryptedDataDto() {
+	}
 
-	void shareContact(String uuid, SormasToSormasOptionsDto options) throws SormasToSormasException;
+	public SormasToSormasEncryptedDataDto(String senderId, byte[] data) {
+		this.senderId = senderId;
+		this.data = data;
+	}
 
-	List<ServerAccessDataReferenceDto> getAvailableHealthDepartments();
+	public String getSenderId() {
+		return senderId;
+	}
 
-	List<SormasToSormasShareInfoDto> getShareInfoIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
+	public void setSenderId(String senderId) {
+		this.senderId = senderId;
+	}
 
-	boolean isFeatureEnabled();
+	public byte[] getData() {
+		return data;
+	}
 
-	ServerAccessDataReferenceDto getServerAccessDataRef(String healthDepartmentId);
+	public void setData(byte[] data) {
+		this.data = data;
+	}
 }

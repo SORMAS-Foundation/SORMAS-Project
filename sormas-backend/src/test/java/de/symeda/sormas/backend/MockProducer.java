@@ -37,8 +37,8 @@ import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasClientProducer;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClient;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasRestClientProducer;
 
 /**
  * Creates mocks for resources needed in bean test / external services. <br />
@@ -136,7 +136,7 @@ public class MockProducer {
 	}
 
 	@Specializes
-	public static class MockClientBuilderProducer extends SormasToSormasClientProducer {
+	public static class MockRestClientBuilderProducer extends SormasToSormasRestClientProducer {
 
 		@Override
 		@Produces

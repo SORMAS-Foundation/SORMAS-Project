@@ -3,7 +3,6 @@ package de.symeda.sormas.app.backend.sormastosormas;
 import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
@@ -38,7 +37,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 
 	@Override
 	protected void fillInnerFromDto(SormasToSormasOriginInfo sormasToSormasOriginInfo, SormasToSormasOriginInfoDto dto) {
-		sormasToSormasOriginInfo.setHealthDepartment(dto.getHealthDepartment().getUuid());
+		sormasToSormasOriginInfo.setHealthDepartment(dto.getHealthDepartmentId());
 		sormasToSormasOriginInfo.setOwnershipHandedOver(dto.isOwnershipHandedOver());
 		sormasToSormasOriginInfo.setSenderName(dto.getSenderName());
 		sormasToSormasOriginInfo.setSenderEmail(dto.getSenderEmail());
@@ -48,7 +47,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 
 	@Override
 	protected void fillInnerFromAdo(SormasToSormasOriginInfoDto dto, SormasToSormasOriginInfo sormasToSormasOriginInfo) {
-		dto.setHealthDepartment(new HealthDepartmentServerReferenceDto(sormasToSormasOriginInfo.getHealthDepartment()));
+		dto.setHealthDepartmentId(sormasToSormasOriginInfo.getHealthDepartment());
 		dto.setOwnershipHandedOver(sormasToSormasOriginInfo.isOwnershipHandedOver());
 		dto.setSenderName(sormasToSormasOriginInfo.getSenderName());
 		dto.setSenderEmail(sormasToSormasOriginInfo.getSenderEmail());

@@ -70,11 +70,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
-import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerAccessData;
-import de.symeda.sormas.api.sormastosormas.HealthDepartmentServerReferenceDto;
+import de.symeda.sormas.api.sormastosormas.ServerAccessDataReferenceDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasContactDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
@@ -141,20 +141,23 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private PointOfEntryFacadeEjbLocal pointOfEntryFacade;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
+	@EJB
+	private ServerAccessDataService serverAccessDataService;
+	@EJB
+	protected SormasToSormasEncryptionService encryptionService;
 
-	private static final List<HealthDepartmentServerAccessData> MOCK_HEALTH_DEPARTMENTS = new ArrayList<>(2);
-	static {
-		MOCK_HEALTH_DEPARTMENTS
-			.add(new HealthDepartmentServerAccessData("healthDepMain", "Gesundheitsamt Hamburg", "http://localhost:8080/sormas-rest"));
-		MOCK_HEALTH_DEPARTMENTS
-			.add(new HealthDepartmentServerAccessData("healtsDep1", "Gesundheitsamt Charlottenburg (A)", "http://localhost:8080/sormas-rest"));
-		MOCK_HEALTH_DEPARTMENTS
-			.add(new HealthDepartmentServerAccessData("healtsDep2", "Gesundheitsamt Friedrichshain (B)", "http://localhost:8080/sormas-rest"));
+	private final ObjectMapper objectMapper;
+
+	public SormasToSormasFacadeEjb() {
+		objectMapper = new ObjectMapper();
+		objectMapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
+		objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 	}
 
 	@Override
 	@Transactional
-	public void saveSharedCase(SormasToSormasCaseDto shareCaseDto) {
+	public void saveSharedCase(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException {
+		SormasToSormasCaseDto shareCaseDto = decryptSharedData(encryptedData, SormasToSormasCaseDto.class);
 		PersonDto person = shareCaseDto.getPerson();
 		CaseDataDto caze = shareCaseDto.getCaze();
 		List<SormasToSormasCaseDto.AssociatedContactDto> associatedContacts = shareCaseDto.getAssociatedContacts();
@@ -183,7 +186,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	@Transactional
-	public void saveSharedContact(SormasToSormasContactDto sharedContact) {
+	public void saveSharedContact(SormasToSormasEncryptedDataDto sharedData) throws SormasToSormasException {
+		SormasToSormasContactDto sharedContact = decryptSharedData(sharedData, SormasToSormasContactDto.class);
+
 		PersonDto person = sharedContact.getPerson();
 		ContactDto contact = sharedContact.getContact();
 
@@ -236,8 +241,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public List<HealthDepartmentServerAccessData> getAvailableHealthDepartments() {
-		return new ArrayList<>(MOCK_HEALTH_DEPARTMENTS.subList(1, MOCK_HEALTH_DEPARTMENTS.size()));
+	public List<ServerAccessDataReferenceDto> getAvailableHealthDepartments() {
+		return serverAccessDataService.getServerList().stream().map(ServerAccessListItem::toReference).collect(Collectors.toList());
 	}
 
 	@Override
@@ -259,6 +264,16 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 
 		return resultList.stream().map(this::toSormasToSormasShareInfoDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean isFeatureEnabled() {
+		return serverAccessDataService.getServerList().size() > 0;
+	}
+
+	@Override
+	public ServerAccessDataReferenceDto getServerAccessDataRef(String healthDepartmentId) {
+		return getServerAccessListItem(healthDepartmentId).map(ServerAccessListItem::toReference).orElseGet(null);
 	}
 
 	private PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, SormasToSormasOptionsDto options) {
@@ -556,7 +571,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasShareInfoMissing));
 		}
 
-		if (originInfo.getHealthDepartment() == null) {
+		if (originInfo.getHealthDepartmentId() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.sormasToSormasSenderHealthDepartmentMissing));
 		}
 
@@ -581,10 +596,12 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		return pseudonymizer;
 	}
 
-	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User currentUser, SormasToSormasOptionsDto options) {
-		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
+	private SormasToSormasOriginInfoDto createSormasToSormasOriginInfo(User currentUser, SormasToSormasOptionsDto options)
+		throws SormasToSormasException {
+		ServerAccessData serverAccessData = getServerAccessData();
 
-		sormasToSormasOriginInfo.setHealthDepartment(new HealthDepartmentServerReferenceDto("healthDepMain", "Gesundheitsamt Hamburg"));
+		SormasToSormasOriginInfoDto sormasToSormasOriginInfo = new SormasToSormasOriginInfoDto();
+		sormasToSormasOriginInfo.setHealthDepartmentId(serverAccessData.getHealthDepartmentId());
 		sormasToSormasOriginInfo.setSenderName(String.format("%s %s", currentUser.getFirstName(), currentUser.getLastName()));
 		sormasToSormasOriginInfo.setSenderEmail(currentUser.getUserEmail());
 		sormasToSormasOriginInfo.setSenderPhoneNumber(currentUser.getPhone());
@@ -599,7 +616,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		shareInfo.setUuid(DataHelper.createUuid());
 		shareInfo.setCreationDate(new Timestamp(new Date().getTime()));
-		shareInfo.setHealthDepartment(options.getHealthDepartment().getId());
+		shareInfo.setHealthDepartment(options.getHealthDepartment().getUuid());
 		shareInfo.setOwnershipHandedOver(options.isHandOverOwnership());
 		shareInfo.setSender(userService.getByReferenceDto(sender));
 		shareInfo.setComment(options.getComment());
@@ -611,20 +628,20 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	private void sendEntityToSormas(Object entity, String endpoint, SormasToSormasOptionsDto options) throws SormasToSormasException {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-
-		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + "sormas2SORMAS";
-
-		HealthDepartmentServerAccessData target =
-			getHealthDepartmentServerAccessData(options.getHealthDepartment().getId()).filter(ad -> !StringUtils.isEmpty(ad.getUrl()))
+		String healthDepartmentId = getServerAccessData().getHealthDepartmentId();
+		ServerAccessListItem targetServer =
+			getServerAccessListItem(options.getHealthDepartment().getUuid()).filter(ad -> !StringUtils.isEmpty(ad.getUrl()))
 				.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasServerAccess)));
+
+		String userCredentials = StartupShutdownService.SORMAS_TO_SORMAS_USER_NAME + ":" + targetServer.getRestUserPassword();
 
 		Response response;
 		try {
-			response =
-				sormasToSormasRestClient.post(target.getUrl() + endpoint, new String(Base64.getEncoder().encode(userCredentials.getBytes())), entity);
+			byte[] encryptedEntity = encryptionService.encrypt(objectMapper.writeValueAsBytes(entity), targetServer.getHealthDepartmentId());
+			response = sormasToSormasRestClient.post(
+				targetServer.getUrl() + endpoint,
+				new String(Base64.getEncoder().encode(userCredentials.getBytes())),
+				new SormasToSormasEncryptedDataDto(healthDepartmentId, encryptedEntity));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("Unable to send data sormas", e);
 			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasSend));
@@ -646,7 +663,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (statusCode < 200 || statusCode >= 400) {
 			String errorMessage = response.readEntity(String.class);
 			try {
-				SormasToSormasErrorResponse errorResponse = mapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
+				SormasToSormasErrorResponse errorResponse = objectMapper.readValue(errorMessage, SormasToSormasErrorResponse.class);
 				errorMessage = errorResponse.getMessage();
 			} catch (IOException e) {
 				// do nothing, keep the unparsed response as error message
@@ -657,8 +674,24 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 	}
 
-	private static Optional<HealthDepartmentServerAccessData> getHealthDepartmentServerAccessData(String id) {
-		return MOCK_HEALTH_DEPARTMENTS.stream().filter(hd -> hd.getId().equals(id)).findFirst();
+	private <T> T decryptSharedData(SormasToSormasEncryptedDataDto encryptedData, Class<T> dataType) throws SormasToSormasException {
+		try {
+			byte[] decryptedData = encryptionService.decrypt(encryptedData.getData(), encryptedData.getSenderId());
+
+			return objectMapper.readValue(decryptedData, dataType);
+		} catch (IOException e) {
+			LOGGER.error("Can't parse shared data", e);
+			throw new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasDecrypt));
+		}
+	}
+
+	private ServerAccessData getServerAccessData() throws SormasToSormasException {
+		return serverAccessDataService.getServerAccessData()
+			.orElseThrow(() -> new SormasToSormasException(I18nProperties.getString(Strings.errorSormasToSormasCertNotGenerated)));
+	}
+
+	private Optional<ServerAccessListItem> getServerAccessListItem(String id) {
+		return serverAccessDataService.getServerListItemByCommonName(id);
 	}
 
 	public SormasToSormasOriginInfo fromSormasToSormasOriginInfoDto(SormasToSormasOriginInfoDto source) {
@@ -676,7 +709,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setHealthDepartment(source.getHealthDepartment().getUuid());
+		target.setHealthDepartment(source.getHealthDepartmentId());
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
@@ -695,10 +728,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		DtoHelper.fillDto(target, source);
 
-		HealthDepartmentServerAccessData serverAccessData = getHealthDepartmentServerAccessData(source.getHealthDepartment())
-			.orElseGet(() -> new HealthDepartmentServerAccessData(source.getHealthDepartment(), source.getHealthDepartment(), null));
-		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
-
+		target.setHealthDepartmentId(source.getHealthDepartment());
 		target.setSenderName(source.getSenderName());
 		target.setSenderEmail(source.getSenderEmail());
 		target.setSenderPhoneNumber(source.getSenderPhoneNumber());
@@ -721,9 +751,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			target.setContact(source.getContact().toReference());
 		}
 
-		HealthDepartmentServerAccessData serverAccessData = getHealthDepartmentServerAccessData(source.getHealthDepartment())
-			.orElseGet(() -> new HealthDepartmentServerAccessData(source.getHealthDepartment(), source.getHealthDepartment(), null));
-		target.setHealthDepartment(new HealthDepartmentServerReferenceDto(serverAccessData.getId(), serverAccessData.getName()));
+		ServerAccessListItem serverAccessData = getServerAccessListItem(source.getHealthDepartment())
+			.orElseGet(() -> new ServerAccessListItem(source.getHealthDepartment(), source.getHealthDepartment(), null));
+		target.setHealthDepartment(serverAccessData.toReference());
 
 		target.setSender(source.getSender().toReference());
 		target.setOwnershipHandedOver(source.isOwnershipHandedOver());

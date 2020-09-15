@@ -29,7 +29,7 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	public static final String WITH_ASSOCIATED_CONTACTS = "withAssociatedContacts";
 
-	private HealthDepartmentServerAccessData healthDepartment;
+	private ServerAccessDataReferenceDto healthDepartment;
 
 	private boolean handOverOwnership;
 
@@ -41,11 +41,11 @@ public class SormasToSormasOptionsDto implements Serializable {
 
 	private boolean withAssociatedContacts;
 
-	public HealthDepartmentServerAccessData getHealthDepartment() {
+	public ServerAccessDataReferenceDto getHealthDepartment() {
 		return healthDepartment;
 	}
 
-	public void setHealthDepartment(HealthDepartmentServerAccessData healthDepartment) {
+	public void setHealthDepartment(ServerAccessDataReferenceDto healthDepartment) {
 		this.healthDepartment = healthDepartment;
 	}
 

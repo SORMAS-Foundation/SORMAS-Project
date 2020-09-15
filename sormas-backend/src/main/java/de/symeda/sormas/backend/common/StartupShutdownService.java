@@ -79,6 +79,7 @@ import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.Region;
 import de.symeda.sormas.backend.region.RegionService;
+import de.symeda.sormas.backend.sormastosormas.ServerAccessDataService;
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -150,6 +151,8 @@ public class StartupShutdownService {
 	private DiseaseConfigurationService diseaseConfigurationService;
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
+	@EJB
+	private ServerAccessDataService serverAccessDataService;
 
 	@PostConstruct
 	public void startup() {
@@ -420,22 +423,26 @@ public class StartupShutdownService {
 	}
 
 	private void createSormasToSormasUser() {
-		User sormasToSormas = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
-		String sormasToSormasUserPassword = configFacade.getSormasToSormasUserPassword();
-		if (sormasToSormas == null) {
-			if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
-				sormasToSormas = MockDataGenerator.createUser(UserRole.REST_USER, "Sormas", "Sormas", sormasToSormasUserPassword);
-				sormasToSormas.setUserName(SORMAS_TO_SORMAS_USER_NAME);
+		final User sormasToSormasUser = userService.getByUserName(SORMAS_TO_SORMAS_USER_NAME);
 
-				userService.persist(sormasToSormas);
+		serverAccessDataService.getServerAccessData().ifPresent((serverAccessData -> {
+			String sormasToSormasUserPassword = serverAccessData.getRestUserPassword();
+
+			if (sormasToSormasUser == null) {
+				if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
+					User newUser = MockDataGenerator.createUser(UserRole.REST_USER, "Sormas", "Sormas", sormasToSormasUserPassword);
+					newUser.setUserName(SORMAS_TO_SORMAS_USER_NAME);
+
+					userService.persist(newUser);
+				}
+			} else if (DataHelper
+				.equal(sormasToSormasUser.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()))) {
+				sormasToSormasUser.setSeed(PasswordHelper.createPass(16));
+				sormasToSormasUser.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()));
+
+				userService.persist(sormasToSormasUser);
 			}
-		} else if (DataHelper
-			.equal(sormasToSormas.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormas.getSeed()))) {
-			sormasToSormas.setSeed(PasswordHelper.createPass(16));
-			sormasToSormas.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormas.getSeed()));
-
-			userService.persist(sormasToSormas);
-		}
+		}));
 	}
 
 	/**

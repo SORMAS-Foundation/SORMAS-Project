@@ -3,7 +3,10 @@ package de.symeda.sormas.api;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Sormas2SormasConfig implements Serializable, Cloneable {
+import javax.enterprise.inject.Alternative;
+
+@Alternative
+public class SormasToSormasConfig implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7981351672462016280L;
 
@@ -68,7 +71,7 @@ public class Sormas2SormasConfig implements Serializable, Cloneable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		Sormas2SormasConfig that = (Sormas2SormasConfig) o;
+		SormasToSormasConfig that = (SormasToSormasConfig) o;
 		return Objects.equals(filePath, that.filePath)
 			&& Objects.equals(keyAlias, that.keyAlias)
 			&& Objects.equals(keystorePass, that.keystorePass)
@@ -82,9 +85,9 @@ public class Sormas2SormasConfig implements Serializable, Cloneable {
 	}
 
 	@Override
-	public Sormas2SormasConfig clone() {
+	public SormasToSormasConfig clone() {
 		try {
-			return (Sormas2SormasConfig) super.clone();
+			return (SormasToSormasConfig) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException("Clone failed", e);
 		}

@@ -18,8 +18,8 @@ See [Installing Java](SERVER_SETUP.md#java-11)
 3. If the ``SORMAS_PROPERTIES`` environment variable is not available, the script will search for the ``sormas.properties`` 
 file in ``/opt/domains/sormas/sormas.properties`` by default. If it is not found there, you will be prompted to provide 
 the path to the ``sormas.properties`` file.
-4. For the generation of the certificate, the following data is needed: a password, a *Common Name* (CN) 
-    and an *Organization* (O). These may be set in environment variables (recommended), or provided 
+4. For the generation of the certificate, the following data is needed: a password for the certificate key store, a *Common Name* (CN), 
+    an *Organization* (O) and a password for the REST user to be used when sharing data through the REST api. These may be set in environment variables (recommended), or provided 
     manually as the script executes.
     * The password environment variable should be named ``SORMAS_S2S_CERT_PASS``. Please note that the password has to be 
     at least 6 characters, or you will be prompted for a new one.
@@ -30,15 +30,16 @@ the path to the ``sormas.properties`` file.
     **Important**: for Germany, this value should be the name of the Health Department (Gesundheitsamt) 
     to which the SORMAS instance will be assigned. <br/>
     E.g. *GA Braunschweig*
+    * the REST user password environment variable should be named ``SORMAS_S2S_REST_PASSWORD``.
+    Please note that the password has to be at least 6 characters, or you will be prompted for a new one.
+    
 5. After providing the requested data, the certificate files will be generated. <br/>
    The generated certificate has a validity of 3 years. 
    The certificate files will be available in the root SORMAS directory, in the folder ``/sormas2sormas``.
 6. A CSV file containing the access data for this instance will also be generated in the folder ``/sormas2sormas``.
    It will be named ``server-access-data.csv``.
    The file will contain on the first two columns of the first row the Common Name and the Organization, as provided
-   when creating the certificate. <br/>
-   **Please fill in on the third column the full URL of the server.** <br/>
-   You will also have to set up a user for communicating with other SORMAS instances.
+   when creating the certificate and the REST user password as the third column.<br/>
 7. The generated ``.p12`` file should not be shared with third parties. <br/>
    The generated ``.crt`` file will be verified and shared with other SORMAS instances, from which this instance
    will be able to request data. Conversely, in order to enable other SORMAS instances to request data from this 
@@ -67,9 +68,11 @@ list. To complete this setup, please follow the next steps:
 6. You will be prompted to provide the file name of the certificate to be imported. This certificate should be located
 in the ``/sormas2sormas`` folder. Please provide the name including the extension. E.g ``mycert.crt``
 7. After providing the requested data, the certificate will be imported to the truststore.
-8. You should have also received a CSV file with the server access data. From this file, copy the line corresponding to the
-    instance you would like to communicate with and add it to the local server address list file. This file is named
-    ``server-list.csv`` and is located in the ``/sormas2sormas`` folder. <br/>
-    *Note*: You may check that the Common Name and the Organization of the certificate match the ones corresponding to 
-    the server in the CSV file.
-9. You may now delete the ``.crt`` file.
+8. Next you will be prompted to provide the `URL` and the `user password` of the **REST** api the certificate belongs too.
+    > The `user password` should be provided together with the certificate. 
+    It should be the same password that is requested while generating the certificate. 
+9. The new server information will be added to the ``server-list.csv`` file, then you will be able to select the new server in the application to share data with it.
+10. You may now delete the ``.crt`` file.
+
+### SORMAS to SORMAS Feature
+In the application the sharing feature will get enabled after the certificate is generated end at least one other certificate is imported.  
