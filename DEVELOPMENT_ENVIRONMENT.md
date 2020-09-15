@@ -25,7 +25,7 @@
 ###### SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just use Java 8 language features for now.
 
 ### Payara (Application Server)
-
+- Instead of a locally installed maven, you can also use the maven wrapper: `./mvnw`
 - Run "Maven install" on the sormas-base project: `(cd sormas-base && mvn install -DskipTests=true)`
 - Install and configure Payara to set up the domain `(cd sormas-cargoserver && mvn cargo:configure)`
     - More details on this setup in [sormas-cargoserver](sormas-cargoserver/README.md)
