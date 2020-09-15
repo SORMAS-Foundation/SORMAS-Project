@@ -26,3 +26,7 @@ bin
 
 # Exclude maven wrapper
 !/.mvn/wrapper/maven-wrapper.jar
+
+/sormas-cargoserver/.env
+/sormas-cargoserver/custom.env
+/sormas-cargoserver/custom.properties

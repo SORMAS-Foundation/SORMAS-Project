@@ -51,7 +51,8 @@ public class EventParticipantResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<EventParticipantDto> getAllEventParticipantsAfter(@PathParam("since") long since) {
-		return FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+		List<EventParticipantDto> result = FacadeProvider.getEventParticipantFacade().getAllActiveEventParticipantsAfter(new Date(since));
+		return result;
 	}
 
 	@POST

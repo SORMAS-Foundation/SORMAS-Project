@@ -20,7 +20,6 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.Order;
-import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EventExportDto implements Serializable {
@@ -30,39 +29,27 @@ public class EventExportDto implements Serializable {
 	private String uuid;
 	private String externalId;
 	private EventStatus eventStatus;
+	private int participantsCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
 	private Date endDate;
-	@SensitiveData
 	private String eventDesc;
 	private YesNoUnknown nosocomial;
 	private String region;
 	private String district;
-	@SensitiveData
 	private String community;
-	@SensitiveData
 	private String city;
-	@SensitiveData
 	private String street;
-	@SensitiveData
 	private String houseNumber;
-	@SensitiveData
 	private String additionalInformation;
 	private EventSourceType srcType;
-	@SensitiveData
 	private String srcFirstName;
-	@SensitiveData
 	private String srcLastName;
-	@SensitiveData
 	private String srcTelNo;
-	@SensitiveData
 	private String srcEmail;
-	@SensitiveData
 	private String srcMediaWebsite;
-	@SensitiveData
 	private String srcMediaName;
-	@SensitiveData
 	private String srcMediaDetails;
 	private Date reportDateTime;
 
@@ -72,6 +59,7 @@ public class EventExportDto implements Serializable {
 		String uuid,
 		String externalId,
 		EventStatus eventStatus,
+		int participantsCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -102,6 +90,7 @@ public class EventExportDto implements Serializable {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.eventStatus = eventStatus;
+		this.participantsCount = participantsCount;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -318,6 +307,15 @@ public class EventExportDto implements Serializable {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	@Order(25)
+	public int getParticipantsCount() {
+		return participantsCount;
+	}
+
+	public void setParticipantsCount(int participantsCount) {
+		this.participantsCount = participantsCount;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {

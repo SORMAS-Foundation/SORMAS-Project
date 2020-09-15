@@ -29,13 +29,14 @@ else
 	LINUX=false
 fi
 
+# DIRECTORIES
 if [[ ${LINUX} = true ]]; then
 	ROOT_PREFIX=
 else
 	ROOT_PREFIX=/c
 fi
 
-if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+if [[ -z "${SORMAS2SORMAS_DIR}" ]]; then
   DEFAULT_SORMAS2SORMAS_DIR="${ROOT_PREFIX}/opt/sormas2sormas"
   if [[ -d "${DEFAULT_SORMAS2SORMAS_DIR}" ]]; then
     SORMAS2SORMAS_DIR="${DEFAULT_SORMAS2SORMAS_DIR}"
@@ -45,10 +46,32 @@ if [[ -z "${SORMAS2SORMAS_DIR}" ]] || [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
 	  done
 	  export SORMAS2SORMAS_DIR
   fi
+else
+  if [[ ! -d "${SORMAS2SORMAS_DIR}" ]]; then
+    echo "sormas2sormas directory not found: ${SORMAS2SORMAS_DIR}"
+    exit 1
+  fi
 fi
 
-while [[ -z "${SORMAS_S2S_CERT_PASS}" ]]; do
-  read -sp "Please provide a password for the certificate: " SORMAS_S2S_CERT_PASS
+if [[ -z "${SORMAS_PROPERTIES}" ]]; then
+  DEFAULT_SORMAS_PROPERTIES_PATH="${ROOT_PREFIX}/opt/domains/sormas/sormas.properties"
+  if [[ -f "${DEFAULT_SORMAS_PROPERTIES_PATH}" ]]; then
+    SORMAS_PROPERTIES="${DEFAULT_SORMAS_PROPERTIES_PATH}"
+  else
+    while [[ ! -f "${SORMAS_PROPERTIES}" ]]; do
+		  read -r -p "Please specify a valid sormas properties path: " SORMAS_PROPERTIES
+	  done
+	  export SORMAS_PROPERTIES
+  fi
+else
+  if [[ ! -f "${SORMAS_PROPERTIES}" ]]; then
+    echo "sormas properties file not found: ${SORMAS_PROPERTIES}"
+    exit 1
+  fi
+fi
+
+while [[ -z "${SORMAS_S2S_CERT_PASS}" ]] || [[ ${#SORMAS_S2S_CERT_PASS} -lt 6 ]]; do
+  read -sp "Please provide a password for the certificate (at least 6 characters): " SORMAS_S2S_CERT_PASS
   echo
 done
 
@@ -69,31 +92,35 @@ echo "The certificate will be generated with the following subject:"
 echo "CN=${SORMAS_S2S_CERT_CN},OU=SORMAS,O=${SORMAS_S2S_CERT_ORG}"
 read -p "Press [Enter] to continue or [Ctrl+C] to cancel."
 
-PEM_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
-P12_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
-CRT_NAME=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
+PEM_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.privkey.pem
+P12_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.keystore.p12
+CRT_FILE=${SORMAS2SORMAS_DIR}/sormas2sormas.cert.crt
+CSV_FILE=${SORMAS2SORMAS_DIR}/server-access-data.csv
 
 # generate private key and self signed certificate
-openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_NAME}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_NAME}"
+openssl req -sha256 -newkey rsa:4096 -passout pass:"${SORMAS_S2S_CERT_PASS}" -keyout "${PEM_FILE}" -x509 -passin pass:"${SORMAS_S2S_CERT_PASS}" -days 1095 -subj "${CERT_SUBJ}" -out "${CRT_FILE}"
 
 # add to encrypted keystore
-openssl pkcs12 -export -inkey "${PEM_NAME}" -out "${P12_NAME}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -in "${CRT_NAME}"
+openssl pkcs12 -export -inkey "${PEM_FILE}" -out "${P12_FILE}" -passin pass:"${SORMAS_S2S_CERT_PASS}" -password pass:"${SORMAS_S2S_CERT_PASS}" -name "${SORMAS_S2S_CERT_CN}" -in "${CRT_FILE}"
 
-rm "${PEM_NAME}"
+rm "${PEM_FILE}"
 
-#update properties
-if [[ -z ${SORMAS_PROPERTIES} ]]; then
-	echo "sormas.properties file was not found."
-  echo "Please add the following properties to the sormas.properties file:"
-  echo "sormas2sormas.keyAlias=${CRT_NAME}"
-  echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}"
-else
-  {
+echo "Generating server access data CSV"
+echo -e "\"${SORMAS_S2S_CERT_CN}\",\"${SORMAS_S2S_CERT_ORG}\",\n" > "${CSV_FILE}"
+
+# remove existing properties and empty spaces at end of file
+sed -i "/^# Key data for the generated SORMAS to SORMAS certificate/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keyAlias/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keystoreName/d" "${SORMAS_PROPERTIES}"
+sed -i "/^sormas2sormas\.keystorePass/d" "${SORMAS_PROPERTIES}"
+sed -i -e :a -e '/^\n*$/{$d;N;};/\n$/ba' "${SORMAS_PROPERTIES}"
+# add new properties
+{
   echo;
   echo "# Key data for the generated SORMAS to SORMAS certificate";
-  echo "sormas2sormas.keyAlias=${CRT_NAME}";
-  echo "sormas2sormas.keyPassword=${SORMAS_S2S_CERT_PASS}";
-  } >> "${SORMAS_PROPERTIES}"
-fi
+  echo "sormas2sormas.keyAlias=${SORMAS_S2S_CERT_CN}"
+  echo "sormas2sormas.keystoreName=${P12_FILE}"
+  echo "sormas2sormas.keystorePass=${SORMAS_S2S_CERT_PASS}"
+} >> "${SORMAS_PROPERTIES}"
 
 echo "The script finished executing. Please check for any errors."

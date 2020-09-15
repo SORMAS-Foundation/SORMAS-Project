@@ -25,6 +25,7 @@ import android.util.Log;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 
 public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 
@@ -42,6 +43,16 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 		return EventParticipant.TABLE_NAME;
 	}
 
+	@Override
+	public EventParticipant build() {
+
+		EventParticipant eventParticipant = super.build();
+
+		eventParticipant.setReportingUser(ConfigProvider.getUser());
+
+		return eventParticipant;
+	}
+
 	public List<EventParticipant> getByEvent(Event event) {
 
 		if (event.isSnapshot()) {
@@ -52,6 +63,18 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 			return queryBuilder().where().eq(EventParticipant.EVENT + "_id", event).and().eq(AbstractDomainObject.SNAPSHOT, false).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getByEvent on EventParticipant");
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Long countByEvent(Event event) {
+		if (event.isSnapshot()) {
+			throw new IllegalArgumentException("Does not support snapshot entities");
+		}
+		try {
+			return queryBuilder().where().eq(EventParticipant.EVENT + "_id", event).and().eq(AbstractDomainObject.SNAPSHOT, false).countOf();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform countByEvent on EventParticipant");
 			throw new RuntimeException(e);
 		}
 	}

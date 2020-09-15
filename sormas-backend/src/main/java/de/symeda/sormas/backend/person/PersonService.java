@@ -41,6 +41,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.person.PersonNameDto;
@@ -55,7 +57,6 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
@@ -269,10 +270,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
 		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
-		final Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(eventJoin),
-			cb.and(cb.isNotNull(eventJoin.get(Event.REPORTING_USER)), cb.equal(eventJoin.get(Event.REPORTING_USER), getCurrentUser())));
+			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
+			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
 		eventParticipantJurisdictionSubQuery
 			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
@@ -402,17 +403,14 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		Predicate filter = null;
 
-		if (criteria.getFirstName() != null && criteria.getLastName() != null) {
+		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
 			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
 			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
 
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
 			double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
-			filter = and(
-				cb,
-				filter,
-				cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
+			filter = and(cb, filter, cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
 		}
 
 		if (criteria.getSex() != null) {
@@ -438,7 +436,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
-		if (criteria.getNationalHealthId() != null) {
+		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
 			filter = and(
 				cb,
 				filter,
@@ -446,7 +444,7 @@ public class PersonService extends AbstractAdoService<Person> {
 					cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)),
 					cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId())));
 		}
-		if (criteria.getPassportNumber() != null) {
+		if (!StringUtils.isBlank(criteria.getPassportNumber())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 

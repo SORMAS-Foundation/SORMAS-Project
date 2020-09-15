@@ -28,9 +28,9 @@ echo "# Welcome to the SORMAS server setup routine. This script will guide you t
 echo "# If anything goes wrong, please consult the server setup guide or get in touch with the developers."
 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
-#AS_JAVA_NATIVE='C:\zulu-8'
-#AS_JAVA_NATIVE='/opt/zulu-8'
-#AS_JAVA_NATIVE=/usr/lib/jvm/zulu-8-amd64/
+#AS_JAVA_NATIVE='C:\zulu-11'
+#AS_JAVA_NATIVE='/opt/zulu-11'
+#AS_JAVA_NATIVE=/usr/lib/jvm/zulu11/
 
 PAYARA_VERSION=5.192
 
@@ -177,26 +177,27 @@ else
 fi
 
 # Check Java JDK
+JAVA_JDK_VERSION=11
 JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/^.\+ //;s/^1\.//;s/[^0-9].*//')
 if [[ ! "${JAVA_VERSION}" =~ ^[0-9]+$ ]]; then
 	if [[ -z "${PAYARA_ZIP_FILE}" ]]; then
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
+			echo "ERROR: No Java JDK found. Please install a Java ${JAVA_JDK_VERSION} JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
 		else
 			echo "ERROR: No Java JDK found in the path specified in ${ASENV_PATH}. Please adjust the value of the AS_JAVA entry."
 		fi
 	else
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
+			echo "ERROR: No Java JDK found. Please install a Java ${JAVA_JDK_VERSION} JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
 		else
 			echo "ERROR: No Java JDK found in the path specified in this script. Please adjust the value of the AS_JAVA_NATIVE variable."
 		fi
 	fi
 	exit 1
-elif [[ "${JAVA_VERSION}" -eq 8 ]]; then
+elif [[ "${JAVA_VERSION}" -eq "${JAVA_JDK_VERSION}" ]]; then
 	echo "Found Java ${JAVA_VERSION} JDK."
-elif [[ "${JAVA_VERSION}" -gt 8 ]]; then
-	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
+elif [[ "${JAVA_VERSION}" -gt "${JAVA_JDK_VERSION}" ]]; then
+	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java ${JAVA_JDK_VERSION} JDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
 else
 	echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
 	exit 1

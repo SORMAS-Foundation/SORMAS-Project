@@ -2000,6 +2000,7 @@ public class SymptomsDto extends PseudonymizableDto {
 	@DependantOn(OTHER_COMPLICATIONS)
 	@Complication
 	@HideForCountries
+	@SensitiveData
 	public String otherComplicationsText;
 
 	@Diseases({
