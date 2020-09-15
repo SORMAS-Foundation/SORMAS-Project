@@ -9,7 +9,8 @@
 ### Git
 - Install [Git for your OS](https://git-scm.com/downloads)
 - Recommended: Install a Git client such as [TortoiseGit](https://tortoisegit.org/) if you don't want to handle version control from the command line or separately for the Eclipse and Android Studio projects
-- Open the Git Bash and execute the command <code>git config --global branch.development.rebase true</code> (which ensures that rebase is used when pulling rather than merge)
+- Open the Git Bash and execute the command `git config --global branch.development.rebase true` (which ensures that rebase is used when pulling rather than merge)
+- On Windows it's strongly recommended to set line endings to auto: `git config --global core.autocrlf true`
 
 ### Java
 - Download and install the Java 11 **JDK** (not JRE) for your operating system. We suggest to use Zulu OpenJDK: https://www.azul.com/downloads/zulu/
