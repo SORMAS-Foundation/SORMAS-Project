@@ -243,6 +243,10 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			public void onChange(ControlPropertyField e) {
 				Date newQuarantineTo = (Date) e.getValue();
 
+				if (newQuarantineTo == null) {
+					contentBinding.contactQuarantineExtended.setValue(false);
+					contentBinding.contactQuarantineReduced.setValue(false);
+				}
 				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.after(currentQuarantineTo)) {
 					extendQuarantine(newQuarantineTo);
 				} else if (!currentQuarantineExtended) {

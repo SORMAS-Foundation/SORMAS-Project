@@ -378,6 +378,10 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			public void onChange(ControlPropertyField e) {
 				Date newQuarantineTo = (Date) e.getValue();
 
+				if (newQuarantineTo == null) {
+					contentBinding.caseDataQuarantineExtended.setValue(false);
+					contentBinding.caseDataQuarantineReduced.setValue(false);
+				}
 				if (currentQuarantineTo != null && newQuarantineTo != null && newQuarantineTo.after(currentQuarantineTo)) {
 					extendQuarantine();
 				} else if (!currentQuarantineExtended) {
