@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.dashboard.campaigns;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class CampaignDashboardDataProvider {
 
 		final List<CampaignDashboardDiagramDto> campaignDashboardDiagramDtos = new ArrayList<>();
 
-		campaignDashboardElements.forEach(campaignDashboardElement -> {
+		campaignDashboardElements.stream().sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder)).forEach(campaignDashboardElement -> {
 			final Optional<CampaignDiagramDefinitionDto> first = campaignDiagramDefinitions.stream()
 				.filter(campaignDiagramDefinitionDto -> campaignDiagramDefinitionDto.getDiagramId().equals(campaignDashboardElement.getDiagramId()))
 				.findFirst();
@@ -51,6 +52,10 @@ public class CampaignDashboardDataProvider {
 					new CampaignDiagramCriteria(campaign, area, region, district));
 			campaignFormDataMap.put(campaignDashboardDiagramDto, diagramData);
 		});
+	}
+
+	public CampaignReferenceDto getLastStartedCampaign() {
+		return FacadeProvider.getCampaignFacade().getLastStartedCampaign();
 	}
 
 	public CampaignReferenceDto getCampaign() {

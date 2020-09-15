@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -18,7 +19,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.ui.highcharts.HighChart;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class CampaignDashboardDiagramComponent extends VerticalLayout {
+public class CampaignDashboardDiagramComponent extends CssLayout {
 
 	private CampaignDiagramDefinitionDto diagramDefinition;
 
@@ -32,12 +33,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		this.diagramDefinition = diagramDefinition;
 
-		setWidth(100, Unit.PERCENTAGE);
-
 		campaignColumnChart = new HighChart();
 
+		campaignColumnChart.setSizeFull();
+
 		addComponent(campaignColumnChart);
-		setExpandRatio(campaignColumnChart, 1);
+//		setExpandRatio(campaignColumnChart, 1);
 
 		for (CampaignDiagramDataDto diagramData : diagramDataList) {
 			if (!axisKeys.contains(diagramData.getGroupingKey())) {
@@ -66,6 +67,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		hcjs.append("var options = {"
 				+ "chart:{ "
 				+ " type: 'column', "
+				+ " width: $(\"#container\").height(), "
+				+ " height: $(\"#container\").width(), "
 				+ " backgroundColor: 'transparent', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
@@ -138,6 +141,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		hcjs.append("]");
 		hcjs.append("}");
+
 
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}

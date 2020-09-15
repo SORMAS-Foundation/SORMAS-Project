@@ -10,6 +10,17 @@ public class CampaignDashboardElement implements Serializable {
     private Integer width;
     private Integer height;
 
+    public CampaignDashboardElement() {
+    }
+
+    public CampaignDashboardElement(String diagramId, String tabId, Integer order, Integer width, Integer height) {
+        this.diagramId = diagramId;
+        this.tabId = tabId;
+        this.order = order;
+        this.width = width;
+        this.height = height;
+    }
+
     public String getDiagramId() {
         return diagramId;
     }

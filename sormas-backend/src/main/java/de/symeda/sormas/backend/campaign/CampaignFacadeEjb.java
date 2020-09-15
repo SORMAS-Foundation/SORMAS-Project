@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.campaign;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -103,6 +105,22 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	}
 
 	@Override
+	public CampaignReferenceDto getLastStartedCampaign() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Campaign> query = cb.createQuery(Campaign.class);
+		final Root<Campaign> from = query.from(Campaign.class);
+		query.select(from);
+		query.where(cb.greaterThanOrEqualTo(from.get(Campaign.START_DATE), new Date()));
+		query.orderBy(cb.desc(from.get(Campaign.START_DATE)));
+
+		final TypedQuery<Campaign> q = em.createQuery(query);
+		final Campaign lastStartedCampaign = q.getResultList().stream().findFirst().orElse(null);
+
+		return toReferenceDto(lastStartedCampaign);
+	}
+
+	@Override
 	public long count(CampaignCriteria campaignCriteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -177,9 +195,16 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
 		final List<CampaignDashboardElement> result = new ArrayList<>();
 		if (campaignUuid != null) {
-			result.addAll(campaignService.getByUuid(campaignUuid).getDashboardElements());
+			List<CampaignDashboardElement> dashboardElements = campaignService.getByUuid(campaignUuid).getDashboardElements();
+			if (dashboardElements != null) {
+				result.addAll(dashboardElements);
+			}
 		} else {
-			campaignService.getAll().forEach(campaign -> result.addAll(campaign.getDashboardElements()));
+			campaignService.getAll().forEach(campaign -> {
+				if (campaign.getDashboardElements() != null) {
+					result.addAll(campaign.getDashboardElements());
+				}
+			});
 		}
 		return result;
 	}

@@ -13,6 +13,8 @@ public interface CampaignFacade {
 
 	List<CampaignReferenceDto> getAllCampaignsAsReference();
 
+	CampaignReferenceDto getLastStartedCampaign();
+
 	long count(CampaignCriteria campaignCriteria);
 
 	CampaignDto saveCampaign(CampaignDto dto);
