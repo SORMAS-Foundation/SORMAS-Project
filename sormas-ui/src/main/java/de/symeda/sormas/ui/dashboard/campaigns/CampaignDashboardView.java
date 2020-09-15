@@ -28,7 +28,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
 	public static final String GRID_AREA = "grid-area";
-	public static final String DIAGRAM_GRID_CONTAINER = "grid-container";
+	public static final String GRID_CONTAINER = "grid-container";
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
@@ -107,7 +107,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			diagramsLayout.setWidth(100, Unit.PERCENTAGE);
 			diagramsLayout.setHeight(100, Unit.PERCENTAGE);
 			final String tabString = tabId.replaceAll("[^a-zA-Z]+", "");
-			diagramsLayout.setStyleName(tabString + DIAGRAM_GRID_CONTAINER);
+			diagramsLayout.setStyleName(tabString + GRID_CONTAINER);
 
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
 			diagramsWrapper.setMargin(new MarginInfo(false, true, false, true));
@@ -141,9 +141,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	}
 
 	private String createDiagramGridStyle(String tabString, List<CampaignDashboardElement> dashboardElements) {
-		return "." + tabString + DIAGRAM_GRID_CONTAINER + "{\n display: grid;\n grid-gap:20px;\n grid-auto-columns: 1fr; \n grid-auto-rows: 1fr;\n"
-			+ " grid-template-areas:\n" + gridTemplateAreaCreator.createGridTemplate(dashboardElements) + ";}" + "." + tabString
-			+ DIAGRAM_GRID_CONTAINER + " > div {\n" + " text-align: center;\n}";
+		return "." + tabString + GRID_CONTAINER + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr;"
+			+ " grid-template-areas:" + gridTemplateAreaCreator.createGridTemplate(dashboardElements) + "; }";
 	}
 
 	private String createDiagramStyle(String diagramId) {
