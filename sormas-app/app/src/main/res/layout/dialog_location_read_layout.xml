@@ -44,107 +44,94 @@
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:id="@+id/main_content">
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_addressType"
                 style="@style/ControlSingleColumnStyle"
-                android:visibility="gone"
-                app:required="true"
-                app:value="@={data.addressType}" />
+                app:value="@{data.addressType}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_addressTypeDetails"
                 style="@style/ControlSingleColumnStyle"
-                android:visibility="gone"
-                app:value="@={data.addressTypeDetails}"
+                app:value="@{data.addressTypeDetails}"
                 app:dependencyParentField="@{locationAddressType}"
                 app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_region"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.region}" />
+                app:value="@{data.region}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_district"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.district}" />
+                app:value="@{data.district}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_community"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.community}" />
+                app:value="@{data.community}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_postalCode"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.postalCode}" />
+                app:value="@{data.postalCode}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_city"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.city}" />
+                app:value="@{data.city}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_street"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.street}" />
+                app:value="@{data.street}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_houseNumber"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.houseNumber}" />
+                app:value="@{data.houseNumber}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_additionalInformation"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.additionalInformation}" />
+                app:value="@{data.additionalInformation}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_areaType"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.areaType}" />
+                app:value="@{data.areaType}" />
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_details"
                 style="@style/ControlSingleColumnStyle"
-                app:value="@={data.details}" />
+                app:value="@{data.details}" />
 
             <ImageView style="@style/FullHorizontalDividerStyle" />
-
-            <de.symeda.sormas.app.component.controls.ControlButton
-                android:id="@+id/pick_gps_coordinates"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/buttonControlMarginBottom"
-                app:slim="true"
-                app:iconStart="@drawable/ic_gps_fixed_black_24dp"
-                app:buttonType="@{ControlButtonType.SECONDARY}"
-                android:text="@string/action_pick_gps" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/location_latitude"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:inputType="numberDecimal"
-                    app:value="@={data.latitude}" />
+                    app:value="@{data.latitude}" />
 
-                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/location_longitude"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:inputType="numberDecimal"
-                    app:value="@={data.longitude}" />
+                    app:value="@{data.longitude}" />
 
             </LinearLayout>
 
-            <de.symeda.sormas.app.component.controls.ControlTextEditField
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/location_latLonAccuracy"
                 style="@style/ControlSingleColumnStyle"
                 app:inputType="numberDecimal"
-                app:value="@={data.latLonAccuracy}" />
+                app:value="@{data.latLonAccuracy}" />
 
         </LinearLayout>
 

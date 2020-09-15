@@ -22,13 +22,9 @@ import java.text.DecimalFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-
-import android.app.Person;
 
 import androidx.databinding.Bindable;
 
@@ -36,7 +32,9 @@ import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.JoinTableReference;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -86,7 +84,12 @@ public class Location extends PseudonymizableAdo {
 	private PersonAddressType addressType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String addressTypeDetails;
-	@Column
+
+	/**
+	 * Dirty fix for person-location association; doing this with a JoinTable is not
+	 * easy in SQLite
+	 */
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Person person;
 
 	@Bindable
@@ -204,6 +207,15 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	@JoinTableReference
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public String getCompleteString() {
@@ -334,13 +346,4 @@ public class Location extends PseudonymizableAdo {
 		this.latLonAccuracy = latLonAccuracy;
 	}
 
-	@ManyToOne
-	@JoinColumn
-	public Person getPerson() {
-		return person;
-	}
-
-	public void setPerson(Person person) {
-		this.person = person;
-	}
 }

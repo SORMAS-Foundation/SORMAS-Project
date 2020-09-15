@@ -411,9 +411,13 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				updateAddresses();
 			});
 
-			dialog.setDeleteCallback(() -> removeAddress(address));
+			dialog.setDeleteCallback(() -> {
+				removeAddress(address);
+				dialog.dismiss();
+			});
 
 			dialog.show();
+			dialog.configureAsPersonAddressDialog(true);
 		};
 
 		getContentBinding().btnAddAddress.setOnClickListener(v -> {
@@ -425,6 +429,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			dialog.setDeleteCallback(() -> removeAddress(address));
 
 			dialog.show();
+			dialog.configureAsPersonAddressDialog(false);
 		});
 	}
 
@@ -469,6 +474,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			throw new UnsupportedOperationException(
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonEditFragment");
 		}
+
+		DatabaseHelper.getPersonDao().initLocations(record);
 	}
 
 	@Override

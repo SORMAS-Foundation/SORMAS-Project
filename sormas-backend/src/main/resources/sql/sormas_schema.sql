@@ -5216,7 +5216,6 @@ DROP TABLE IF EXISTS t_edgl_id_map;
 
 INSERT INTO schema_version (version_number, comment) VALUES (245, 'Clone symptoms and epi data linked to cases and contacts/visits at the same time #2735');
 
-
 -- 2020-09-01 - Store the status of the PIA account for a person
 ALTER TABLE person ADD COLUMN symptomjournalstatus varchar(255);
 ALTER TABLE person_history ADD COLUMN symptomjournalstatus varchar(255);
@@ -5262,5 +5261,28 @@ ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
+
+-- 2020-09-14 Add person_locations table and remove person reference from locations #2746
+CREATE TABLE person_locations(
+	person_id bigint NOT NULL,
+	location_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE person_locations OWNER TO sormas_user;
+ALTER TABLE ONLY person_locations ADD CONSTRAINT unq_person_locations_0 UNIQUE (person_id, location_id);
+ALTER TABLE ONLY person_locations ADD CONSTRAINT fk_person_locations_person_id FOREIGN KEY (person_id) REFERENCES person(id);
+ALTER TABLE ONLY person_locations ADD CONSTRAINT fk_person_locations_location_id FOREIGN KEY (location_id) REFERENCES location(id);
+
+CREATE TABLE person_locations_history (LIKE person_locations);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON person_locations
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
+ALTER TABLE person_locations_history OWNER TO sormas_user;
+
+INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id FROM location l WHERE l.person_id IS NOT NULL;
+
+ALTER TABLE location DROP COLUMN person_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (251, 'Add person_locations table and remove person reference from locations #2746');
 
 -- *** Insert new sql commands BEFORE this line ***
