@@ -46,14 +46,14 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String address, String postalCode, String phone,
 								   String reportingUserFirstName, String reportingUserLastName,
-								   int visitCount) {
+								   Long id, Date creationDate, Float completeness, int visitCount) {
 	//@formatter:on
 
 		//@formatter:off
 		super(uuid, personFirstName, personLastName, cazeUuid, disease, diseaseDetails, caseFirstName, caseLastName, regionUuid, districtUuid,
 				lastContactDate, contactCategory, contactProximity, contactClassification, contactStatus, followUpStatus, followUpUntil,
 				contactOfficerUuid, reportingUserUuid, reportDateTime, caseClassification,
-				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, visitCount);
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid, id, creationDate, completeness,visitCount);
 		//@formatter:on
 
 		this.sex = sex;

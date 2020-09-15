@@ -119,4 +119,12 @@ public interface ContactFacade {
 	boolean isContactEditAllowed(String contactUuid);
 
 	boolean exists(String uuid);
+
+	List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String caseUuid);
+
+	public void mergeContact(String leadUuid, String otherUuid);
+
+	public void deleteContactAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 }

@@ -379,6 +379,8 @@ public interface Captions {
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	String Contact_uuid = "Contact.uuid";
 	String Contact_visits = "Contact.visits";
+	String Contact_completeness = "Contact.completeness";
+	String contactBackToDirectory = "contactBackToDirectory";
 	String contactActiveContacts = "contactActiveContacts";
 	String contactAllContacts = "contactAllContacts";
 	String contactArchivedContacts = "contactArchivedContacts";
@@ -1424,6 +1426,7 @@ public interface Captions {
 	String View_contacts_person = "View.contacts.person";
 	String View_contacts_sub = "View.contacts.sub";
 	String View_contacts_visits = "View.contacts.visits";
+	String View_contacts_merge = "View.contacts.merge";
 	String View_dashboard_contacts = "View.dashboard.contacts";
 	String View_dashboard_surveillance = "View.dashboard.surveillance";
 	String View_events = "View.events";

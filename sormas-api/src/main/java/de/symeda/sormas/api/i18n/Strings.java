@@ -97,6 +97,8 @@ public interface Strings {
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
+	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String day = "day";
 	String done = "done";
 	String edit = "edit";

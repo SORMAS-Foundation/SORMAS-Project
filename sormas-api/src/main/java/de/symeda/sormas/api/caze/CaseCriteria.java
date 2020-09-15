@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -85,6 +86,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
+	private ContactReferenceDto contact;
 
 	@Override
 	public CaseCriteria clone() {
@@ -402,5 +404,13 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+
+
+	public ContactReferenceDto getContact() { return contact; }
+
+	public CaseCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
 	}
 }

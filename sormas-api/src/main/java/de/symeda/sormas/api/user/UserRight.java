@@ -399,6 +399,9 @@ public enum UserRight {
 			CONTACT_SUPERVISOR,
 			CONTACT_OFFICER
 	),
+	CONTACT_MERGE(
+			ADMIN
+	),
 	// users that are allowed to convert a contact to a case need to be allowed to create a case
 	CONTACT_CONVERT(
 			ADMIN,
