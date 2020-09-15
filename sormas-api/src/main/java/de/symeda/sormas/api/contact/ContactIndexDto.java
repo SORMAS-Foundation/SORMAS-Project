@@ -128,6 +128,14 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 		}
 
 		this.disease = disease;
+		this.diseaseDetails = diseaseDetails;
+		this.lastContactDate = lastContactDate;
+		this.contactCategory = contactCategory;
+		this.contactProximity = contactProximity;
+		this.contactClassification = contactClassification;
+		this.contactStatus = contactStatus;
+		this.followUpStatus = followUpStatus;
+		this.followUpUntil = followUpUntil;
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
