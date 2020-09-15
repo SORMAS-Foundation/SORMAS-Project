@@ -95,7 +95,11 @@ public class ContactController {
 	}
 
 	public void registerViews(Navigator navigator) {
+		UserProvider userProvider = UserProvider.getCurrent();
 		navigator.addView(ContactsView.VIEW_NAME, ContactsView.class);
+		if (userProvider.hasUserRight(UserRight.CONTACT_MERGE)) {
+			navigator.addView(MergeContactsView.VIEW_NAME, MergeContactsView.class);
+		}
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
@@ -600,5 +604,16 @@ public class ContactController {
 		});
 
 		return editView;
+	}
+
+
+	public void navigateToMergeContactsView() {
+		String navigationState = MergeContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public void navigateToIndex() {
+		String navigationState = ContactsView.VIEW_NAME;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 }

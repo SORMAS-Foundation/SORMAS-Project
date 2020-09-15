@@ -106,6 +106,8 @@ public interface Strings {
 	String confirmationReduceQuarantine = "confirmationReduceQuarantine";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
+	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String day = "day";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";

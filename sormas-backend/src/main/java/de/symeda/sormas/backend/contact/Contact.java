@@ -17,6 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
@@ -134,6 +155,7 @@ public class Contact extends CoreAdo {
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
+	public static final String COMPLETENESS = "completeness";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -166,6 +188,7 @@ public class Contact extends CoreAdo {
 	private User contactOfficer;
 	private String description;
 	private String externalID;
+	private Float completeness;
 
 	private Case resultingCase;
 	private User resultingCaseUser;
@@ -202,6 +225,7 @@ public class Contact extends CoreAdo {
 
 	private String additionalDetails;
 	private EpiData epiData;
+	private Contact duplicateOf;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
@@ -799,4 +823,15 @@ public class Contact extends CoreAdo {
 	public void setHealthConditions(HealthConditions healthConditions) {
 		this.healthConditions = healthConditions;
 	}
+
+
+	public Float getCompleteness() { return completeness; }
+
+	public void setCompleteness(Float completeness) { this.completeness = completeness; }
+
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Contact getDuplicateOf() { return duplicateOf; }
+
+	public void setDuplicateOf(Contact duplicateOf) { this.duplicateOf = duplicateOf; }
 }
