@@ -105,7 +105,7 @@
                 <de.symeda.sormas.app.component.controls.ControlTextReadField
                     android:id="@+id/event_participants"
                     style="@style/ControlFirstOfTwoColumnsStyle"
-                    app:labelCaption="@{I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.PARTICIPANT_COUNT)}"
+                    app:labelCaption="@{I18nProperties.getPrefixCaption(EventDto.I18N_PREFIX, EventDto.PARTICIPANTS_COUNT)}"
                     app:value="@{participantCount}" />
 
             </LinearLayout>
