@@ -42,6 +42,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -55,6 +56,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -214,9 +216,15 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -309,10 +317,16 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
