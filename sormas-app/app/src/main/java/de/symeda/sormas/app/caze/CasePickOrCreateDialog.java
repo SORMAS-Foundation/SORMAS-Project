@@ -83,9 +83,7 @@ public class CasePickOrCreateDialog extends AbstractDialog {
 			-1);
 
 		CaseCriteria caseCriteria = new CaseCriteria().setRegion(newCase.getRegion()).setDisease(newCase.getDisease());
-		this.criteria = new CaseSimilarityCriteria().setCaseCriteria(caseCriteria)
-			.setFirstName(newCase.getPerson().getFirstName())
-			.setLastName(newCase.getPerson().getLastName())
+		this.criteria = new CaseSimilarityCriteria().setCaseCriteria(caseCriteria).setPersonUuid(newCase.getPerson().getUuid())
 			.setReportDate(newCase.getReportDate());
 
 		this.setSelectedCase(null);

@@ -32,23 +32,28 @@ import com.j256.ormlite.table.DatabaseTable;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.OrderMeans;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = Contact.TABLE_NAME)
 @DatabaseTable(tableName = Contact.TABLE_NAME)
-public class Contact extends AbstractDomainObject {
+public class Contact extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -7799607075875188799L;
 
@@ -61,6 +66,10 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 	public static final String REPORTING_USER = "reportingUser";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
+	public static final String CONTACT_IDENTIFICATION_SOURCE = "contactIdentificationSource";
+	public static final String CONTACT_IDENTIFICATION_SOURCE_DETAILS = "contactIdentificationSourceDetails";
+	public static final String TRACING_APP = "tracingApp";
+	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
 	public static final String FOLLOW_UP_STATUS = "followUpStatus";
@@ -73,6 +82,8 @@ public class Contact extends AbstractDomainObject {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
+	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
@@ -89,6 +100,8 @@ public class Contact extends AbstractDomainObject {
 	private Region region;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private District district;
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Community community;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
 	@DatabaseField
@@ -99,6 +112,14 @@ public class Contact extends AbstractDomainObject {
 	private String diseaseDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date lastContactDate;
+	@Enumerated(EnumType.STRING)
+	private ContactIdentificationSource contactIdentificationSource;
+	@DatabaseField
+	private String contactIdentificationSourceDetails;
+	@Enumerated(EnumType.STRING)
+	private TracingApp tracingApp;
+	@DatabaseField
+	private String tracingAppDetails;
 	@Enumerated(EnumType.STRING)
 	private ContactProximity contactProximity;
 	@Enumerated(EnumType.STRING)
@@ -138,6 +159,8 @@ public class Contact extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private QuarantineType quarantine;
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	private String quarantineTypeDetails;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date quarantineFrom;
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
@@ -166,6 +189,8 @@ public class Contact extends AbstractDomainObject {
 	private Date quarantineOrderedVerballyDate;
 	@DatabaseField(dataType = DataType.DATE_LONG)
 	private Date quarantineOrderedOfficialDocumentDate;
+	@DatabaseField
+	private boolean quarantineExtended;
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown quarantineHomePossible;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
@@ -174,8 +199,18 @@ public class Contact extends AbstractDomainObject {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
+	@DatabaseField
+	private boolean quarantineOfficialOrderSent;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOfficialOrderSentDate;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private EpiData epiData;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private HealthConditions healthConditions;
 
 	public Person getPerson() {
 		return person;
@@ -207,6 +242,38 @@ public class Contact extends AbstractDomainObject {
 
 	public void setLastContactDate(Date lastContactDate) {
 		this.lastContactDate = lastContactDate;
+	}
+
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public ContactProximity getContactProximity() {
@@ -399,6 +466,14 @@ public class Contact extends AbstractDomainObject {
 		this.district = district;
 	}
 
+	public Community getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Community community) {
+		this.community = community;
+	}
+
 	public boolean isHighPriority() {
 		return highPriority;
 	}
@@ -437,6 +512,14 @@ public class Contact extends AbstractDomainObject {
 
 	public void setQuarantine(QuarantineType quarantine) {
 		this.quarantine = quarantine;
+	}
+
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
 	}
 
 	public Date getQuarantineFrom() {
@@ -537,6 +620,14 @@ public class Contact extends AbstractDomainObject {
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 	}
 
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
+	}
+
 	public YesNoUnknown getQuarantineHomePossible() {
 		return quarantineHomePossible;
 	}
@@ -569,11 +660,43 @@ public class Contact extends AbstractDomainObject {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
 
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
+	}
+
+	public EpiData getEpiData() {
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
+	}
+
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

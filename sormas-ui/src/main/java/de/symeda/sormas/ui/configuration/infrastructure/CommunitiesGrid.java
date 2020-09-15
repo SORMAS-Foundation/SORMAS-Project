@@ -58,7 +58,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getItem().getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

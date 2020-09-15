@@ -18,66 +18,12 @@
 package de.symeda.sormas.api.person;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import de.symeda.sormas.api.Language;
 
 public class PersonHelperTest {
-
-	@Test
-	public void testNameSimilarityExceedsThreshold() {
-
-		String firstName = "Thomas Miller";
-		String secondName = "Tomas Miller";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Thomas Miller";
-		secondName = "Miller Thomas";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Thomas Jake Miller";
-		secondName = "Thomas Miller";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Thomas Jake Miller";
-		secondName = "Thomas Jacob Miller";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Dan Brown";
-		secondName = "Dan Browning";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Dan Van";
-		secondName = "Gan Van";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
-	}
-
-	@Test
-	public void testNameSimilarityDeceedsThreshold() {
-		String firstName = "Thomas Miller";
-		String secondName = "Tomislav Millerton";
-
-		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Jonathan Lee Sterling";
-		secondName = "John Lee Langston";
-
-		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-
-		firstName = "Gan Zan";
-		secondName = "Don Van";
-
-		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
-	}
 
 	@Test
 	public void testFormatBirthdateEN() throws Exception {

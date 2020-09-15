@@ -21,9 +21,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -47,37 +49,38 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonNameDto;
 import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.event.EventJurisdictionChecker;
-import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.District;
@@ -89,7 +92,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "PersonFacade")
 public class PersonFacadeEjb implements PersonFacade {
@@ -106,8 +109,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private EventParticipantService eventParticipantSerice;
-	@EJB
 	private FacilityService facilityService;
 	@EJB
 	private RegionService regionService;
@@ -118,25 +119,15 @@ public class PersonFacadeEjb implements PersonFacade {
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
+	private LocationService locationService;
+	@EJB
 	private UserService userService;
-	@EJB
-	private ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private PseudonymizationService pseudonymizationService;
-	@EJB
-	private CaseJurisdictionChecker caseJurisdictionChecker;
-	@EJB
-	private ContactJurisdictionChecker contactJurisdictionChecker;
-	@EJB
-	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<String> getAllUuids() {
-
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
-
 		return personService.getAllUuids();
 	}
 
@@ -148,17 +139,17 @@ public class PersonFacadeEjb implements PersonFacade {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<PersonNameDto>(personService.getMatchingNameDtos(user, criteria));
+		return new ArrayList<>(personService.getMatchingNameDtos(user, criteria));
 	}
 
 	@Override
-	public List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids) {
+	public List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids) {
 
 		List<Person> persons = personService.getByUuids(personUuids);
 		if (persons == null) {
 			return new ArrayList<>();
 		} else {
-			return persons.stream().map(c -> toIndexDto(c)).collect(Collectors.toList());
+			return persons.stream().map(c -> toSimilarPersonDto(c)).collect(Collectors.toList());
 		}
 	}
 
@@ -228,35 +219,26 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<PersonDto> getPersonsAfter(Date date) {
-
-		User user = userService.getCurrentUser();
+		final User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		List<PersonDto> result = personService.getAllAfter(date, user).stream().map(this::convertToDto).collect(Collectors.toList());
-		return result;
+		return toPseudonymizedDtos(personService.getAllAfter(date, user));
 	}
 
 	@Override
 	public List<PersonDto> getByUuids(List<String> uuids) {
-		return personService.getByUuids(uuids).stream().map(this::convertToDto).collect(Collectors.toList());
+		return toPseudonymizedDtos(personService.getByUuids(uuids));
 	}
 
 	@Override
 	public List<PersonDto> getDeathsBetween(Date fromDate, Date toDate, DistrictReferenceDto districtRef, Disease disease) {
-
-		User user = userService.getCurrentUser();
-		District district = districtService.getByReferenceDto(districtRef);
-
+		final User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
-
-		return personService.getDeathsBetween(fromDate, toDate, district, disease, user)
-			.stream()
-			.map(this::convertToDto)
-			.collect(Collectors.toList());
+		final District district = districtService.getByReferenceDto(districtRef);
+		return toPseudonymizedDtos(personService.getDeathsBetween(fromDate, toDate, district, disease, user));
 	}
 
 	@Override
@@ -266,29 +248,34 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public PersonDto getPersonByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(this::convertToDto).orElse(null);
+		final Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return Optional.of(uuid)
+			.map(u -> personService.getByUuid(u))
+			.map(p -> convertToDto(pseudonymizer, p, isPersonInJurisdiction(p)))
+			.orElse(null);
 	}
 
 	@Override
 	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
 
 		Person person = personService.getByUuid(source.getUuid());
+		Set<Location> existingAddresses = new HashSet<>();
+		if (person != null) {
+			existingAddresses = person.getAddresses();
+		}
 		PersonDto existingPerson = toDto(person);
 
-//		if (person != null && existingPerson != null) {
-//			boolean isInJurisdiction = isPersonInJurisdiction(person);
-//			pseudonymizationService.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
-//			pseudonymizationService.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
-//		}
+		restorePseudonymizedDto(source, person, existingPerson);
 
 		validate(source);
 
 		person = fillOrBuildEntity(source, person);
+
 		personService.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person);
 
-		return convertToDto(person);
+		return convertToDto(new Pseudonymizer(userService::hasRight), person, isPersonInJurisdiction(person));
 	}
 
 	@Override
@@ -300,12 +287,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		if (StringUtils.isEmpty(source.getLastName())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyLastName));
 		}
-	}
-
-	@Override
-	public String getPIAAccountCreationUrl(PersonDto person) {
-		return configFacade.getPIAUrl() + "#" + "firstname=" + person.getFirstName() + "&lastname=" + person.getLastName() + "&email="
-			+ person.getEmailAddress() + "&uuid=" + person.getUuid() + "&userUuid=" + userService.getCurrentUser().getUuid();
 	}
 
 	@Override
@@ -328,6 +309,40 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.QUARANTINE_TO)));
 
 		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+	}
+
+	@Override
+	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PersonFollowUpEndDto> cq = cb.createQuery(PersonFollowUpEndDto.class);
+		Root<Contact> contactRoot = cq.from(Contact.class);
+		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
+
+		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		if (since != null) {
+			filter = PersonService.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
+		}
+
+		if (forSymptomJournal) {
+			filter = PersonService.and(cb, filter, cb.equal(personJoin.get(Person.SYMPTOM_JOURNAL_STATUS), SymptomJournalStatus.ACCEPTED));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.multiselect(personJoin.get(Person.UUID), contactRoot.get(Contact.FOLLOW_UP_UNTIL));
+		cq.orderBy(cb.asc(personJoin.get(Person.UUID)), cb.desc(contactRoot.get(Contact.FOLLOW_UP_UNTIL)));
+
+		return em.createQuery(cq).getResultList().stream().distinct().collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
+		PersonDto person = getPersonByUuid(personUuid);;
+		person.setSymptomJournalStatus(status);
+		savePerson(person);
+		return true;
 	}
 
 	/**
@@ -420,13 +435,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		cleanUp(newPerson);
 	}
 
-	@Override
-	public PersonIndexDto getIndexDto(String uuid) {
-
-		Person person = personService.getByUuid(uuid);
-		return toIndexDto(person);
-	}
-
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target) {
 
 		if (target == null) {
@@ -465,6 +473,17 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(locationFacade.fromDto(source.getAddress()));
+		List<Location> locations = new ArrayList<>();
+		for (LocationDto locationDto : source.getAddresses()) {
+			Location location = locationFacade.fromDto(locationDto);
+			location.setPerson(target);
+			locations.add(location);
+		}
+		if (!DataHelper.equal(target.getAddresses(), locations)) {
+			target.setChangeDateOfEmbeddedLists(new Date());
+		}
+		target.getAddresses().clear();
+		target.getAddresses().addAll(locations);
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
@@ -491,44 +510,55 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setOccupationFacilityType(source.getOccupationFacilityType());
+		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 
 		return target;
 	}
 
-	private PersonDto convertToDto(Person person) {
+	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
+		final Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		final List<Long> inJurisdictionIDs = personService.getInJurisdictionIDs(persons);
+		return persons.stream().map(p -> convertToDto(pseudonymizer, p, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
+	}
 
-		PersonDto dto = toDto(person);
+	private PersonDto convertToDto(Pseudonymizer pseudonymizer, Person p, boolean hasJurisdiction) {
+		final PersonDto personDto = toDto(p);
+		pseudonymizeDto(hasJurisdiction, personDto, pseudonymizer);
+		return personDto;
+	}
 
-//		if (dto != null) {
-//			boolean isInJurisdiction = isPersonInJurisdiction(person);
-//
-//			pseudonymizationService.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
-//				pseudonymizationService.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
-//			});
-//		}
+	private void pseudonymizeDto(boolean isInJurisdiction, PersonDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			pseudonymizer.pseudonymizeDto(PersonDto.class, dto, isInJurisdiction, p -> {
+				pseudonymizer.pseudonymizeDto(LocationDto.class, p.getAddress(), isInJurisdiction, null);
+				p.getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, isInJurisdiction, null));
+			});
+		}
+	}
 
-		return dto;
+	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
+		if (person != null && existingPerson != null) {
+			boolean isInJurisdiction = isPersonInJurisdiction(person);
+			Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
+			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
+			source.getAddresses()
+				.forEach(
+					l -> pseudonymizer.restorePseudonymizedValues(
+						LocationDto.class,
+						l,
+						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+						isInJurisdiction));
+		}
 	}
 
 	private boolean isPersonInJurisdiction(Person person) {
-
-		return true;
-
-		// @TODO This code is extremely slow; we need to replace this
-		/*
-		 * List<Case> personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(person.getUuid())), true);
-		 * boolean isInJurisdiction = personCases.stream().anyMatch(c -> caseJurisdictionChecker.isInJurisdiction(c));
-		 * if (!isInJurisdiction) {
-		 * List<Contact> personContacts = contactService.findBy(new ContactCriteria().person(new PersonReferenceDto(person.getUuid())),
-		 * null);
-		 * isInJurisdiction = personContacts.stream().anyMatch(c -> contactJurisdictionChecker.isInJurisdiction(c));
-		 * }
-		 * if (!isInJurisdiction) {
-		 * List<EventParticipant> personEventParticipants = eventParticipantSerice.getAllByPerson(person);
-		 * isInJurisdiction = personEventParticipants.stream().anyMatch(p -> eventJurisdictionChecker.isInJurisdiction(p.getEvent()));
-		 * }
-		 * return isInJurisdiction;
-		 */
+		return !personService.getInJurisdictionIDs(Collections.singletonList(person)).isEmpty();
 	}
 
 	public static PersonReferenceDto toReferenceDto(Person entity) {
@@ -540,25 +570,21 @@ public class PersonFacadeEjb implements PersonFacade {
 		return dto;
 	}
 
-	public static PersonIndexDto toIndexDto(Person entity) {
+	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
 
-		PersonIndexDto dto = new PersonIndexDto(
+		SimilarPersonDto dto = new SimilarPersonDto(
 			entity.getUuid(),
-			entity.getSex(),
 			entity.getFirstName(),
 			entity.getLastName(),
-			entity.getPresentCondition(),
-			entity.getBirthdateDD(),
-			entity.getBirthdateMM(),
-			entity.getBirthdateYYYY(),
-			entity.getApproximateAge(),
-			entity.getApproximateAgeType(),
-			entity.getDeathDate(),
 			entity.getNickname(),
-			entity.getAddress().getRegion() != null ? entity.getAddress().getRegion().getName() : null,
+			entity.getApproximateAge(),
+			entity.getSex(),
+			entity.getPresentCondition(),
 			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
 			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity());
+			entity.getAddress().getCity(),
+			entity.getNationalHealthId(),
+			entity.getPassportNumber());
 		return dto;
 	}
 
@@ -613,6 +639,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setPhone(source.getPhone());
 		target.setPhoneOwner(source.getPhoneOwner());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
+		List<LocationDto> locations = new ArrayList<>();
+		for (Location location : source.getAddresses()) {
+			LocationDto locationDto = LocationFacadeEjb.toDto(location);
+			locations.add(locationDto);
+		}
+		target.setAddresses(locations);
 
 		target.setEducationType(source.getEducationType());
 		target.setEducationDetails(source.getEducationDetails());
@@ -639,6 +671,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		target.setEmailAddress(source.getEmailAddress());
 		target.setPassportNumber(source.getPassportNumber());
 		target.setNationalHealthId(source.getNationalHealthId());
+		target.setOccupationFacilityType(source.getOccupationFacilityType());
+		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
+		target.setSymptomJournalStatus(source.getSymptomJournalStatus());
+
+		target.setHasCovidApp(source.isHasCovidApp());
+		target.setCovidCodeDelivered(source.isCovidCodeDelivered());
 
 		return target;
 	}

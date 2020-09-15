@@ -17,12 +17,13 @@ public class ContactJurisdictionChecker {
 	@EJB
 	private UserService userService;
 
-	public boolean isInJurisdiction(Contact contact) {
-		return isInJurisdiction(JurisdictionHelper.createContactJurisdictionDto(contact));
+	public boolean isInJurisdictionOrOwned(Contact contact) {
+		return isInJurisdictionOrOwned(JurisdictionHelper.createContactJurisdictionDto(contact));
 	}
 
-	public boolean isInJurisdiction(ContactJurisdictionDto contactJurisdiction) {
+	public boolean isInJurisdictionOrOwned(ContactJurisdictionDto contactJurisdiction) {
 		final User user = userService.getCurrentUser();
-		return ContactJurisdictionHelper.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), contactJurisdiction);
+		return ContactJurisdictionHelper
+			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), contactJurisdiction);
 	}
 }

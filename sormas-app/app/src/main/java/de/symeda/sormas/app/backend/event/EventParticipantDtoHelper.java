@@ -25,6 +25,7 @@ import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
+import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
@@ -60,6 +61,12 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
 	@Override
 	public void fillInnerFromDto(EventParticipant target, EventParticipantDto source) {
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(DatabaseHelper.getUserDao().queryUuid(source.getReportingUser().getUuid()));
+		} else {
+			target.setReportingUser(null);
+		}
+
 		if (source.getEvent() != null) {
 			target.setEvent(DatabaseHelper.getEventDao().queryUuid(source.getEvent().getUuid()));
 		} else {
@@ -74,10 +81,19 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
 		target.setResultingCaseUuid(source.getResultingCase() != null ? source.getResultingCase().getUuid() : null);
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	@Override
 	public void fillInnerFromAdo(EventParticipantDto target, EventParticipant source) {
+
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(UserDtoHelper.toReferenceDto(source.getReportingUser()));
+		} else {
+			target.setReportingUser(null);
+		}
+
 		if (source.getEvent() != null) {
 			Event event = DatabaseHelper.getEventDao().queryForId(source.getEvent().getId());
 			target.setEvent(EventDtoHelper.toReferenceDto(event));
@@ -100,6 +116,8 @@ public class EventParticipantDtoHelper extends AdoDtoHelper<EventParticipant, Ev
 		}
 
 		target.setInvolvementDescription(source.getInvolvementDescription());
+
+		target.setPseudonymized(source.isPseudonymized());
 	}
 
 	public static EventParticipantReferenceDto toReferenceDto(EventParticipant ado) {

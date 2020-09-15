@@ -160,6 +160,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setExternalID(source.getExternalID());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
@@ -167,14 +168,20 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+
+		target.setPseudonymized(source.isPseudonymized());
+		target.setFacilityType(source.getFacilityType());
 	}
 
 	@Override
@@ -340,6 +347,7 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setExternalID(source.getExternalID());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
@@ -347,14 +355,20 @@ public class CaseDtoHelper extends AdoDtoHelper<Case, CaseDataDto> {
 		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
 		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
 		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineExtended(source.isQuarantineExtended());
 		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
 		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setReportingType(source.getReportingType());
 
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+
+		target.setPseudonymized(source.isPseudonymized());
+		target.setFacilityType(source.getFacilityType());
 	}
 
 	public static CaseReferenceDto toReferenceDto(Case ado) {

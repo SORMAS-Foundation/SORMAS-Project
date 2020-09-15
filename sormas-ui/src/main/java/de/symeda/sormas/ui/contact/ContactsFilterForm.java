@@ -16,6 +16,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -27,10 +28,13 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDateType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.region.DistrictReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -51,13 +55,19 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private static final String DISTRICT_INFO_LABEL_ID = "infoContactsViewRegionDistrictFilter";
 	private static final String WEEK_AND_DATE_FILTER = "moreFilters";
 
+	private static final String CHECKBOX_STYLE = CssStyles.CHECKBOX_FILTER_INLINE + " " + CssStyles.VSPACE_3;
+
 	private static final String MORE_FILTERS_HTML = filterLocs(
 		ContactCriteria.REGION,
 		ContactCriteria.DISTRICT,
+		ContactCriteria.COMMUNITY,
 		DISTRICT_INFO_LABEL_ID,
 		ContactCriteria.CONTACT_OFFICER,
 		ContactCriteria.REPORTING_USER_ROLE,
-		ContactCriteria.FOLLOW_UP_UNTIL_TO)
+		ContactCriteria.FOLLOW_UP_UNTIL_TO,
+		ContactCriteria.BIRTHDATE_YYYY,
+		ContactCriteria.BIRTHDATE_MM,
+		ContactCriteria.BIRTHDATE_DD)
 		+ filterLocs(
 			ContactCriteria.QUARANTINE_TYPE,
 			ContactDto.QUARANTINE_TO,
@@ -65,7 +75,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
-			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS)
+			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
+			ContactCriteria.WITH_EXTENDED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -98,7 +109,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		ComboBox caseClassificationField = addField(FieldConfiguration.pixelSized(ContactIndexDto.CASE_CLASSIFICATION, 140));
 		caseClassificationField.setDescription(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CASE_CLASSIFICATION));
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(FieldConfiguration.pixelSized(ContactIndexDto.CONTACT_CATEGORY, 140));
 		}
 
@@ -120,7 +131,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				moreFiltersContainer,
 				FieldConfiguration.withCaptionAndPixelSized(
 					ContactCriteria.REGION,
-					I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.REGION_UUID),
+					I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.REGION_UUID),
 					240));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 		}
@@ -129,9 +140,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(
 				ContactCriteria.DISTRICT,
-				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.DISTRICT_UUID),
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID),
 				240));
 		districtField.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
+
+		ComboBox communityField = addField(
+			moreFiltersContainer,
+			FieldConfiguration.withCaptionAndPixelSized(
+				ContactCriteria.COMMUNITY,
+				I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.COMMUNITY_UUID),
+				240));
 
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
@@ -169,8 +187,20 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_TO),
 				140));
 		quarantineTo.removeAllValidators();
+		ComboBox birthDateYYYY = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_YYYY, ComboBox.class);
+		birthDateYYYY.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_YYYY));
+		birthDateYYYY.setWidth(140, Unit.PIXELS);
+		birthDateYYYY.addItems(DateHelper.getYearsToNow());
+		birthDateYYYY.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID_TOSTRING);
+		ComboBox birthDateMM = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_MM, ComboBox.class);
+		birthDateMM.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_MM));
+		birthDateMM.setWidth(140, Unit.PIXELS);
+		birthDateMM.addItems(DateHelper.getMonthsInYear());
+		ComboBox birthDateDD = addField(moreFiltersContainer, ContactCriteria.BIRTHDATE_DD, ComboBox.class);
+		birthDateDD.setInputPrompt(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE_DD));
+		birthDateDD.setWidth(140, Unit.PIXELS);
 
-		if (isGermanServer()) {
+		if (isConfiguredServer("de")) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -178,7 +208,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_VERBALLY,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_VERBALLY),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -186,7 +216,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT,
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,
@@ -194,7 +224,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 					ContactCriteria.QUARANTINE_NOT_ORDERED,
 					I18nProperties.getCaption(Captions.contactQuarantineNotOrdered),
 					null,
-					CssStyles.CHECKBOX_FILTER_INLINE));
+					CHECKBOX_STYLE));
 		}
 
 		addField(
@@ -204,7 +234,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 				I18nProperties.getCaption(Captions.contactOnlyQuarantineHelpNeeded),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
 		addField(
 			moreFiltersContainer,
 			CheckBox.class,
@@ -212,7 +242,16 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
 				I18nProperties.getCaption(Captions.contactOnlyHighPriorityContacts),
 				null,
-				CssStyles.CHECKBOX_FILTER_INLINE));
+				CHECKBOX_STYLE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_EXTENDED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithExtendedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
+				CHECKBOX_STYLE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
 	}
@@ -223,6 +262,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		switch (propertyId) {
 		case ContactCriteria.REGION: {
 			getField(ContactCriteria.DISTRICT).setValue(null);
+			getField(ContactCriteria.COMMUNITY).setValue(null);
+			break;
+		}
+		case ContactCriteria.DISTRICT: {
+			getField(ContactCriteria.COMMUNITY).setValue(null);
 			break;
 		}
 		case ContactCriteria.FOLLOW_UP_UNTIL_TO: {
@@ -235,22 +279,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	@Override
 	protected void applyDependenciesOnNewValue(ContactCriteria newValue) {
 
-		UserDto user = UserProvider.getCurrent().getUser();
-
 		RegionReferenceDto region = newValue.getRegion();
+		DistrictReferenceDto district = newValue.getDistrict();
+		applyRegionAndDistrictFilterDependency(region, district);
 
-		ComboBox districtField = (ComboBox) getField(ContactCriteria.DISTRICT);
-		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-			districtField.setEnabled(true);
-		} else {
-			if (region != null) {
-				districtField.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				districtField.setEnabled(true);
-			} else {
-				districtField.setEnabled(false);
-			}
-		}
+		UserDto user = UserProvider.getCurrent().getUser();
 
 		ComboBox officerField = (ComboBox) getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
@@ -259,6 +292,17 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
 		} else {
 			officerField.removeAllItems();
+		}
+		ComboBox birthDateDD = (ComboBox) getField(ContactCriteria.BIRTHDATE_DD);
+		if (getField(ContactCriteria.BIRTHDATE_YYYY).getValue() != null && getField(ContactCriteria.BIRTHDATE_MM).getValue() != null) {
+			birthDateDD.addItems(
+				DateHelper.getDaysInMonth(
+					(Integer) getField(ContactCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(ContactCriteria.BIRTHDATE_YYYY).getValue()));
+			birthDateDD.setEnabled(true);
+		} else {
+			birthDateDD.clear();
+			birthDateDD.setEnabled(false);
 		}
 
 		// Date/Epi week filter
@@ -299,10 +343,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 
-	private boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
-	}
-
 	private HorizontalLayout buildWeekAndDateFilter() {
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
@@ -313,7 +353,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			ContactDateType.REPORT_DATE);
+			null);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));

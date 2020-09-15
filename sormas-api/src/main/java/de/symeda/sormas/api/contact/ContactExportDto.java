@@ -17,11 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -31,9 +29,16 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class ContactExportDto implements Serializable {
 
@@ -55,8 +60,15 @@ public class ContactExportDto implements Serializable {
 	@PersonalData
 	private String lastName;
 	private Sex sex;
+	private BirthDateDto birthdate;
 	private String approximateAge;
 	private Date reportDate;
+	private ContactIdentificationSource contactIdentificationSource;
+	@SensitiveData
+	private String contactIdentificationSourceDetails;
+	private TracingApp tracingApp;
+	@SensitiveData
+	private String tracingAppDetails;
 	private ContactProximity contactProximity;
 	private ContactStatus contactStatus;
 	private FollowUpStatus followUpStatus;
@@ -66,11 +78,22 @@ public class ContactExportDto implements Serializable {
 	private String addressRegion;
 	private String addressDistrict;
 	@PersonalData
+	@SensitiveData
 	private String city;
 	@PersonalData
-	private String address;
+	@SensitiveData
+	private String street;
 	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
 	private String postalCode;
+	@SensitiveData
 	private String phone;
 	private String occupationType;
 	private int numberOfVisits;
@@ -79,26 +102,48 @@ public class ContactExportDto implements Serializable {
 	private String lastCooperativeVisitSymptoms;
 	private String region;
 	private String district;
+	private String community;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
+	@SensitiveData
 	private String quarantineHelpNeeded;
+	private long epiDataId;
+	private YesNoUnknown traveled;
+	private String travelHistory;
+	private YesNoUnknown burialAttended;
+	private YesNoUnknown directContactConfirmedCase;
+	private YesNoUnknown directContactProbableCase;
+	private YesNoUnknown contactWithRodent;
+
+	private boolean quarantineOrderedVerbally;
+	private boolean quarantineOrderedOfficialDocument;
+	private Date quarantineOrderedVerballyDate;
+	private Date quarantineOrderedOfficialDocumentDate;
+	private boolean quarantineExtended;
+	private boolean quarantineOfficialOrderSent;
+	private Date quarantineOfficialOrderSentDate;
 
 	private ContactJurisdictionDto jurisdiction;
 
 	//@formatter:off
 	public ContactExportDto(long id, long personId, String uuid, String sourceCaseUuid, CaseClassification caseClassification, Disease disease, String diseaseDetails,
 							ContactClassification contactClassification, Date lastContactDate, String firstName, String lastName, Sex sex,
-							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactProximity contactProximity,
+							Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY,
+							Integer approximateAge, ApproximateAgeType approximateAgeType, Date reportDate, ContactIdentificationSource contactIdentificationSource, String contactIdentificationSourceDetails, TracingApp tracingApp, String tracingAppDetails, ContactProximity contactProximity,
 							ContactStatus contactStatus, FollowUpStatus followUpStatus, Date followUpUntil,
-							QuarantineType quarantine, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo, String quarantineHelpNeeded,
+							boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
+							boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 							PresentCondition presentCondition, Date deathDate,
-							String addressRegion, String addressDistrict, String city, String address, String postalCode,
+							String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
 							String phone, String phoneOwner, OccupationType occupationType, String occupationDetails,
 							String occupationFacility, String occupationFacilityUuid, String occupationFacilityDetails,
-							String region, String district,
-							String reportingUserUuid, String regionUuid, String districtUuid,
+							String region, String district, String community,
+							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase, YesNoUnknown contactWithRodent,
+							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
 							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
@@ -115,22 +160,37 @@ public class ContactExportDto implements Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
+		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.reportDate = reportDate;
+		this.contactIdentificationSource = contactIdentificationSource;
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+		this.tracingApp = tracingApp;
+		this.tracingAppDetails = tracingAppDetails;
 		this.contactProximity = contactProximity;
 		this.contactStatus = contactStatus;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
 		this.quarantine = quarantine;
+		this.quarantineTypeDetails = quarantineTypeDetails;
 		this.quarantineFrom = quarantineFrom;
 		this.quarantineTo = quarantineTo;
 		this.quarantineHelpNeeded = quarantineHelpNeeded;
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+		this.quarantineExtended = quarantineExtended;
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
 		this.city = city;
-		this.address = address;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = PersonHelper.buildPhoneString(phone, phoneOwner);
 		this.occupationType = PersonHelper.buildOccupationString(
@@ -139,6 +199,13 @@ public class ContactExportDto implements Serializable {
 			FacilityHelper.buildFacilityString(occupationFacilityUuid, occupationFacility, occupationFacilityDetails));
 		this.region = region;
 		this.district = district;
+		this.community = community;
+		this.epiDataId = epiDataId;
+		this.traveled = traveled;
+		this.burialAttended = burialAttended;
+		this.directContactConfirmedCase = directContactConfirmedCase;
+		this.directContactProbableCase = directContactProbableCase;
+		this.contactWithRodent = contactWithRodent;
 
 		CaseJurisdictionDto caseJurisdiction = caseReportingUserUuid != null
 			? null
@@ -149,7 +216,7 @@ public class ContactExportDto implements Serializable {
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
 
 	public ContactReferenceDto toReference() {
@@ -166,6 +233,10 @@ public class ContactExportDto implements Serializable {
 
 	public Disease getInternalDisease() {
 		return internalDisease;
+	}
+
+	public long getEpiDataId() {
+		return epiDataId;
 	}
 
 	@Order(0)
@@ -214,128 +285,280 @@ public class ContactExportDto implements Serializable {
 	}
 
 	@Order(13)
+	public BirthDateDto getBirthdate() {
+		return birthdate;
+	}
+
+	@Order(14)
 	public String getApproximateAge() {
 		return approximateAge;
 	}
 
-	@Order(14)
+	@Order(15)
 	public Date getReportDate() {
 		return reportDate;
 	}
 
-	@Order(15)
+	@Order(16)
 	public String getRegion() {
 		return region;
 	}
 
-	@Order(16)
+	@Order(17)
 	public String getDistrict() {
 		return district;
 	}
 
+	@Order(17)
+	public String getCommunity() {
+		return community;
+	}
+
 	@Order(20)
+	public ContactIdentificationSource getContactIdentificationSource() {
+		return contactIdentificationSource;
+	}
+
+	@Order(21)
+	public String getContactIdentificationSourceDetails() {
+		return contactIdentificationSourceDetails;
+	}
+
+	@Order(22)
+	public TracingApp getTracingApp() {
+		return tracingApp;
+	}
+
+	@Order(23)
+	public String getTracingAppDetails() {
+		return tracingAppDetails;
+	}
+
+	@Order(24)
 	public ContactProximity getContactProximity() {
 		return contactProximity;
 	}
 
-	@Order(21)
+	@Order(25)
 	public ContactStatus getContactStatus() {
 		return contactStatus;
 	}
 
-	@Order(22)
+	@Order(26)
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
 
-	@Order(23)
+	@Order(27)
 	public Date getFollowUpUntil() {
 		return followUpUntil;
 	}
 
-	@Order(24)
+	@Order(28)
 	public QuarantineType getQuarantine() {
 		return quarantine;
 	}
 
-	@Order(25)
+	@Order(29)
+	public String getQuarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	@Order(30)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
 	}
 
-	@Order(26)
+	@Order(31)
 	public Date getQuarantineTo() {
 		return quarantineTo;
 	}
 
-	@Order(27)
+	@Order(32)
 	public String getQuarantineHelpNeeded() {
 		return quarantineHelpNeeded;
 	}
 
-	@Order(28)
+	@Order(33)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public boolean isQuarantineOrderedVerbally() {
+		return quarantineOrderedVerbally;
+	}
+
+	@Order(34)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public boolean isQuarantineOrderedOfficialDocument() {
+		return quarantineOrderedOfficialDocument;
+	}
+
+	@Order(35)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public Date getQuarantineOrderedVerballyDate() {
+		return quarantineOrderedVerballyDate;
+	}
+
+	@Order(36)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public Date getQuarantineOrderedOfficialDocumentDate() {
+		return quarantineOrderedOfficialDocumentDate;
+	}
+
+	@Order(37)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	@Order(38)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	@Order(39)
+	public boolean isQuarantineExtended() {
+		return quarantineExtended;
+	}
+
+	@Order(40)
 	public PresentCondition getPresentCondition() {
 		return presentCondition;
 	}
 
-	@Order(29)
+	@Order(41)
 	public Date getDeathDate() {
 		return deathDate;
 	}
 
-	@Order(30)
+	@Order(42)
 	public String getAddressRegion() {
 		return addressRegion;
 	}
 
-	@Order(31)
+	@Order(43)
 	public String getAddressDistrict() {
 		return addressDistrict;
 	}
 
-	@Order(32)
+	@Order(44)
 	public String getCity() {
 		return city;
 	}
 
-	@Order(33)
-	public String getAddress() {
-		return address;
+	@Order(45)
+	public String getStreet() {
+		return street;
 	}
 
-	@Order(34)
+	@Order(46)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	@Order(47)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	@Order(48)
 	public String getPostalCode() {
 		return postalCode;
 	}
 
-	@Order(35)
+	@Order(49)
 	public String getPhone() {
 		return phone;
 	}
 
-	@Order(36)
+	@Order(50)
 	public String getOccupationType() {
 		return occupationType;
 	}
 
-	@Order(37)
+	@Order(51)
 	public int getNumberOfVisits() {
 		return numberOfVisits;
 	}
 
-	@Order(38)
+	@Order(52)
 	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
 		return lastCooperativeVisitSymptomatic;
 	}
 
-	@Order(39)
+	@Order(53)
 	public Date getLastCooperativeVisitDate() {
 		return lastCooperativeVisitDate;
 	}
 
-	@Order(40)
+	@Order(54)
 	public String getLastCooperativeVisitSymptoms() {
 		return lastCooperativeVisitSymptoms;
+	}
+
+	@Order(55)
+	public YesNoUnknown getTraveled() {
+		return traveled;
+	}
+
+	public void setTraveled(YesNoUnknown traveled) {
+		this.traveled = traveled;
+	}
+
+	@Order(56)
+	public String getTravelHistory() {
+		return travelHistory;
+	}
+
+	public void setTravelHistory(String travelHistory) {
+		this.travelHistory = travelHistory;
+	}
+
+	@Order(57)
+	public YesNoUnknown getBurialAttended() {
+		return burialAttended;
+	}
+
+	public void setBurialAttended(YesNoUnknown burialAttended) {
+		this.burialAttended = burialAttended;
+	}
+
+	@Order(58)
+	public YesNoUnknown getDirectContactConfirmedCase() {
+		return directContactConfirmedCase;
+	}
+
+	public void setDirectContactConfirmedCase(YesNoUnknown directContactConfirmedCase) {
+		this.directContactConfirmedCase = directContactConfirmedCase;
+	}
+
+	@Order(59)
+	public YesNoUnknown getDirectContactProbableCase() {
+		return directContactProbableCase;
+	}
+
+	public void setDirectContactProbableCase(YesNoUnknown directContactProbableCase) {
+		this.directContactProbableCase = directContactProbableCase;
+	}
+
+	@Order(60)
+	public YesNoUnknown getContactWithRodent() {
+		return contactWithRodent;
+	}
+
+	public void setContactWithRodent(YesNoUnknown contactWithRodent) {
+		this.contactWithRodent = contactWithRodent;
 	}
 
 	public void setId(long id) {
@@ -388,6 +611,22 @@ public class ContactExportDto implements Serializable {
 
 	public void setReportDate(Date reportDate) {
 		this.reportDate = reportDate;
+	}
+
+	public void setContactIdentificationSource(ContactIdentificationSource contactIdentificationSource) {
+		this.contactIdentificationSource = contactIdentificationSource;
+	}
+
+	public void setContactIdentificationSourceDetails(String contactIdentificationSourceDetails) {
+		this.contactIdentificationSourceDetails = contactIdentificationSourceDetails;
+	}
+
+	public void setTracingApp(TracingApp tracingApp) {
+		this.tracingApp = tracingApp;
+	}
+
+	public void setTracingAppDetails(String tracingAppDetails) {
+		this.tracingAppDetails = tracingAppDetails;
 	}
 
 	public void setContactProximity(ContactProximity contactProximity) {
@@ -446,6 +685,14 @@ public class ContactExportDto implements Serializable {
 		this.district = district;
 	}
 
+	public void setCommunity(String community) {
+		this.community = community;
+	}
+
+	public void setEpiDataId(long epiDataId) {
+		this.epiDataId = epiDataId;
+	}
+
 	public String getReportingUserUuid() {
 		return jurisdiction.getReportingUserUuid();
 	}
@@ -456,6 +703,10 @@ public class ContactExportDto implements Serializable {
 
 	public String getDistrictUuid() {
 		return jurisdiction.getDistrictUuid();
+	}
+
+	public String getCommunityUuid() {
+		return jurisdiction.getCommunityUuid();
 	}
 
 	public ContactJurisdictionDto getJurisdiction() {

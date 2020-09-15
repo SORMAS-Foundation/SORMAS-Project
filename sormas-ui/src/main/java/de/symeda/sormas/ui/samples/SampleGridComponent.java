@@ -108,16 +108,19 @@ public class SampleGridComponent extends VerticalLayout {
 
 		filterForm = new SampleGridFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			if (!samplesView.navigateTo(criteria, false)) {
-				filterForm.updateResetButtonState();
-				grid.reload();
+			if (!filterForm.hasFilter()) {
+				samplesView.navigateTo(null);
 			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(SamplesView.class).remove(SampleCriteria.class);
 			samplesView.navigateTo(null, true);
 		});
-
+		filterForm.addApplyHandler(e -> {
+			if (!samplesView.navigateTo(criteria, false)) {
+				grid.reload();
+			}
+		});
 		filterLayout.addComponent(filterForm);
 
 		return filterLayout;
@@ -200,6 +203,8 @@ public class SampleGridComponent extends VerticalLayout {
 			sampleTypeFilter.setItemCaption(SampleAssociationType.ALL, I18nProperties.getEnumCaption(SampleAssociationType.ALL));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CASE, I18nProperties.getEnumCaption(SampleAssociationType.CASE));
 			sampleTypeFilter.setItemCaption(SampleAssociationType.CONTACT, I18nProperties.getEnumCaption(SampleAssociationType.CONTACT));
+			sampleTypeFilter
+				.setItemCaption(SampleAssociationType.EVENT_PARTICIPANT, I18nProperties.getEnumCaption(SampleAssociationType.EVENT_PARTICIPANT));
 			sampleTypeFilter.addValueChangeListener(e -> {
 				criteria.sampleAssociationType(((SampleAssociationType) e.getProperty().getValue()));
 				samplesView.navigateTo(criteria);

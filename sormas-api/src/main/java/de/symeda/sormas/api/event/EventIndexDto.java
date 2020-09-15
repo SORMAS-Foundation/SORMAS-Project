@@ -22,8 +22,9 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.location.LocationReferenceDto;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventIndexDto implements Serializable {
+public class EventIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 8322646404033924938L;
 
@@ -31,11 +32,14 @@ public class EventIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String EVENT_STATUS = "eventStatus";
+	public static final String PARTICIPANT_COUNT = "participantCount";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
-	public static final String EVENT_DATE = "eventDate";
+	public static final String START_DATE = "startDate";
+	public static final String END_DATE = "endDate";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String EVENT_LOCATION = "eventLocation";
+	public static final String SRC_TYPE = "srcType";
 	public static final String SRC_FIRST_NAME = "srcFirstName";
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
@@ -43,45 +47,68 @@ public class EventIndexDto implements Serializable {
 
 	private String uuid;
 	private EventStatus eventStatus;
+	private int participantCount;
 	private Disease disease;
 	private String diseaseDetails;
-	private Date eventDate;
+	private Date startDate;
+	private Date endDate;
 	private String eventDesc;
-	private LocationReferenceDto eventLocation;
+	private EventIndexLocation eventLocation;
+	private EventSourceType srcType;
 	private String srcFirstName;
 	private String srcLastName;
 	private String srcTelNo;
+	private String srcMediaWebsite;
+	private String srcMediaName;
 	private Date reportDateTime;
+	private EventJurisdictionDto jurisdiction;
 
 	public EventIndexDto(
 		String uuid,
 		EventStatus eventStatus,
+		Integer participantCount,
 		Disease disease,
 		String diseaseDetails,
-		Date eventDate,
+		Date startDate,
+		Date endDate,
 		String eventDesc,
-		String locationUuid,
+		String regionUuid,
 		String regionName,
+		String districtUuid,
 		String districtName,
+		String communityUuid,
 		String communityName,
 		String city,
-		String address,
+		String street,
+		String houseNumber,
+		String additionalInformation,
+		EventSourceType srcType,
 		String srcFirstName,
 		String srcLastName,
 		String srcTelNo,
-		Date reportDateTime) {
+		String srcMediaWebsite,
+		String srcMediaName,
+		Date reportDateTime,
+		String reportingUserUuid,
+		String surveillanceOfficerUuid) {
 
 		this.uuid = uuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.eventDate = eventDate;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.eventDesc = eventDesc;
-		this.eventLocation = new LocationReferenceDto(locationUuid, regionName, districtName, communityName, city, address);
+		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
+		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
 		this.srcTelNo = srcTelNo;
+		this.srcMediaWebsite = srcMediaWebsite;
+		this.srcMediaName = srcMediaName;
 		this.reportDateTime = reportDateTime;
+		this.jurisdiction = new EventJurisdictionDto(reportingUserUuid, surveillanceOfficerUuid, regionUuid, districtUuid, communityUuid);
+		this.participantCount = participantCount;
 	}
 
 	public String getUuid() {
@@ -116,12 +143,20 @@ public class EventIndexDto implements Serializable {
 		this.diseaseDetails = diseaseDetails;
 	}
 
-	public Date getEventDate() {
-		return eventDate;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public String getEventDesc() {
@@ -132,12 +167,16 @@ public class EventIndexDto implements Serializable {
 		this.eventDesc = eventDesc;
 	}
 
-	public LocationReferenceDto getEventLocation() {
+	public EventIndexLocation getEventLocation() {
 		return eventLocation;
 	}
 
-	public void setEventLocation(LocationReferenceDto eventLocation) {
-		this.eventLocation = eventLocation;
+	public EventSourceType getSrcType() {
+		return srcType;
+	}
+
+	public void setSrcType(EventSourceType srcType) {
+		this.srcType = srcType;
 	}
 
 	public String getSrcFirstName() {
@@ -164,6 +203,22 @@ public class EventIndexDto implements Serializable {
 		this.srcTelNo = srcTelNo;
 	}
 
+	public String getSrcMediaWebsite() {
+		return srcMediaWebsite;
+	}
+
+	public void setSrcMediaWebsite(String srcMediaWebsite) {
+		this.srcMediaWebsite = srcMediaWebsite;
+	}
+
+	public String getSrcMediaName() {
+		return srcMediaName;
+	}
+
+	public void setSrcMediaName(String srcMediaName) {
+		this.srcMediaName = srcMediaName;
+	}
+
 	public Date getReportDateTime() {
 		return reportDateTime;
 	}
@@ -172,7 +227,72 @@ public class EventIndexDto implements Serializable {
 		this.reportDateTime = reportDateTime;
 	}
 
+	public int getParticipantCount() {
+		return participantCount;
+	}
+
+	public void setParticipantCount(int participantCount) {
+		this.participantCount = participantCount;
+	}
+
 	public EventReferenceDto toReference() {
-		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getEventDate());
+		return new EventReferenceDto(getUuid(), getDisease(), getDiseaseDetails(), getEventStatus(), getStartDate());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		EventIndexDto that = (EventIndexDto) o;
+
+		return uuid.equals(that.uuid);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		return result;
+	}
+
+	public EventJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
+
+	public static class EventIndexLocation implements Serializable {
+
+		private String regionName;
+		private String districtName;
+		private String communityName;
+		private String city;
+		private String street;
+		private String houseNumber;
+		private String additionalInformation;
+
+		public EventIndexLocation(
+			String regionName,
+			String districtName,
+			String communityName,
+			String city,
+			String street,
+			String houseNumber,
+			String additionalInformation) {
+			this.regionName = regionName;
+			this.districtName = districtName;
+			this.communityName = communityName;
+			this.city = city;
+			this.street = street;
+			this.houseNumber = houseNumber;
+			this.additionalInformation = additionalInformation;
+		}
+
+		@Override
+		public String toString() {
+			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
+		}
 	}
 }

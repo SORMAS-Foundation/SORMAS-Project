@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.crypto.Cipher;
@@ -78,6 +79,8 @@ public final class ConfigProvider {
 	private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 	private static String SERVER_LOCALE = "locale";
 	private static String INITIAL_SYNC_REQUIRED = "initialSyncRequired";
+
+	private static final String FULL_COUNTRY_LOCALE_PATTERN = "[a-zA-Z]*-[a-zA-Z]*";
 
 	public static ConfigProvider instance = null;
 
@@ -644,8 +647,12 @@ public final class ConfigProvider {
 		return instance.serverLocale;
 	}
 
-	public static boolean isGermanServer() {
-		return getServerLocale().toLowerCase().startsWith("de");
+	public static boolean isConfiguredServer(String countryCode) {
+		if (Pattern.matches(FULL_COUNTRY_LOCALE_PATTERN, getServerLocale())) {
+			return getServerLocale().toLowerCase().endsWith(countryCode.toLowerCase());
+		} else {
+			return getServerLocale().toLowerCase().startsWith(countryCode.toLowerCase());
+		}
 	}
 
 	/**

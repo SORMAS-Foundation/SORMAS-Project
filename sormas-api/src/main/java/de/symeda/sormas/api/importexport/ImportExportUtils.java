@@ -17,6 +17,19 @@
  *******************************************************************************/
 package de.symeda.sormas.api.importexport;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.utils.DataHelper.Pair;
+import de.symeda.sormas.api.utils.Order;
+
 public final class ImportExportUtils {
 
 	private ImportExportUtils() {
@@ -25,4 +38,50 @@ public final class ImportExportUtils {
 
 	public static final String FILE_PREFIX = "sormas";
 	public static final String TEMP_FILE_PREFIX = "sormas_temp";
+
+	public static List<Pair<String, ExportGroupType>> getCaseExportProperties(boolean withFollowUp, boolean withCaseManagement) {
+		List<Method> readMethods = new ArrayList<>();
+		for (Method method : CaseExportDto.class.getDeclaredMethods()) {
+			if ((!method.getName().startsWith("get") && !method.getName().startsWith("is")) || !method.isAnnotationPresent(ExportGroup.class)) {
+				continue;
+			}
+			readMethods.add(method);
+		}
+		Collections.sort(readMethods, new Comparator<Method>() {
+			@Override public int compare(Method m1, Method m2) {
+				return Integer.compare(getOrderValue(m1), getOrderValue(m2));
+			}
+		});
+
+		Set<String> combinedProperties = new HashSet<>();
+		List<Pair<String, ExportGroupType>> properties = new ArrayList<>();
+		for (Method method : readMethods) {
+			ExportGroupType groupType = method.getAnnotation(ExportGroup.class).value();
+
+			if (ExportGroupType.CASE_MANAGEMENT == groupType && !withCaseManagement) {
+				continue;
+			}
+			if (ExportGroupType.FOLLOW_UP == groupType && !withFollowUp) {
+				continue;
+			}
+			String property = method.getAnnotation(ExportProperty.class).value();
+			if (method.getAnnotation(ExportProperty.class).combined()) {
+				if (!combinedProperties.add(property)) {
+					continue;
+				}
+			}
+			properties.add(Pair.createPair(property, groupType));
+		}
+		return properties;
+	}
+
+	private static int getOrderValue(Method method) {
+		for (Annotation annotation : method.getAnnotations()) {
+			if (annotation.annotationType() == Order.class) {
+				return ((Order) annotation).value();
+			}
+		}
+		// XXX throw an exception ?
+		return -1;
+	}
 }

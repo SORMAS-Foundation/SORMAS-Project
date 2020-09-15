@@ -314,6 +314,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			Notification errorNotification = null;
 			for (StatisticsFilterComponent filterComponent : filterComponents) {
 				if (filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.JURISDICTION
+				    && filterComponent.getSelectedAttribute() != StatisticsCaseAttribute.PLACE_OF_RESIDENCE
 					&& (filterComponent.getSelectedAttribute() == null
 						|| filterComponent.getSelectedAttribute().getSubAttributes().length > 0
 							&& filterComponent.getSelectedSubAttribute() == null)) {
@@ -547,7 +548,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				});
 
 				if (appendUnknownXAxisCaption) {
-					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.UNKNOWN)).append("'");
+					hcjs.append("'").append(getEscapedFragment(StatisticsHelper.NOT_SPECIFIED)).append("'");
 				}
 			} else if (seriesAttribute != null) {
 				hcjs.append("'").append(seriesSubAttribute != null ? seriesSubAttribute.toString() : seriesAttribute.toString()).append("'");
@@ -669,7 +670,7 @@ public class StatisticsView extends AbstractStatisticsView {
 					if (StatisticsHelper.isNullOrUnknown(rowSeriesKey)) {
 						seriesKey = StatisticsHelper.VALUE_UNKNOWN;
 						unknownSeriesString.append("{ name: '")
-							.append(getEscapedFragment(StatisticsHelper.UNKNOWN))
+							.append(getEscapedFragment(StatisticsHelper.NOT_SPECIFIED))
 							.append("', dataLabels: { allowOverlap: false }, data: [");
 					} else if (rowSeriesKey.equals(StatisticsHelper.TOTAL)) {
 						seriesKey = StatisticsHelper.TOTAL;
@@ -1087,7 +1088,7 @@ public class StatisticsView extends AbstractStatisticsView {
 			if (filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.SEX
 				|| filterComponent.getSelectedAttribute() == StatisticsCaseAttribute.AGE_INTERVAL_5_YEARS) {
 				for (TokenizableValue selectedValue : filterComponent.getFilterElement().getSelectedValues()) {
-					if (selectedValue.getValue().toString().equals(I18nProperties.getString(Strings.unknown))) {
+					if (selectedValue.getValue().toString().equals(I18nProperties.getString(Strings.notSpecified))) {
 						return true;
 					}
 				}
@@ -1149,7 +1150,7 @@ public class StatisticsView extends AbstractStatisticsView {
 				if (filterElement.getSelectedValues() != null) {
 					List<Sex> sexes = new ArrayList<>();
 					for (TokenizableValue tokenizableValue : filterElement.getSelectedValues()) {
-						if (tokenizableValue.getValue().equals(I18nProperties.getString(Strings.unknown))) {
+						if (tokenizableValue.getValue().equals(I18nProperties.getString(Strings.notSpecified))) {
 							caseCriteria.sexUnknown(true);
 						} else {
 							sexes.add((Sex) tokenizableValue.getValue());
@@ -1239,6 +1240,36 @@ public class StatisticsView extends AbstractStatisticsView {
 						facilities.add((FacilityReferenceDto) tokenizableValue.getValue());
 					}
 					caseCriteria.healthFacilities(facilities);
+				}
+				break;
+			case PLACE_OF_RESIDENCE:
+				StatisticsFilterResidenceElement residenceElement = (StatisticsFilterResidenceElement) filterElement;
+				if (residenceElement.getSelectedRegions() != null) {
+					List<RegionReferenceDto> regions = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedRegions()) {
+						regions.add((RegionReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personRegions(regions);
+				}
+				if (residenceElement.getSelectedDistricts() != null) {
+					List<DistrictReferenceDto> districts = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedDistricts()) {
+						districts.add((DistrictReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personDistricts(districts);
+				}
+				if (residenceElement.getSelectedCommunities() != null) {
+					List<CommunityReferenceDto> communities = new ArrayList<>();
+					for (TokenizableValue tokenizableValue : residenceElement.getSelectedCommunities()) {
+						communities.add((CommunityReferenceDto) tokenizableValue.getValue());
+					}
+					caseCriteria.personCommunities(communities);
+				}
+				if (residenceElement.getCity() != null) {
+					caseCriteria.setPersonCity(residenceElement.getCity());
+				}
+				if (residenceElement.getPostcode() != null) {
+					caseCriteria.setPersonPostcode(residenceElement.getPostcode());
 				}
 				break;
 			case REPORTING_USER_ROLE:

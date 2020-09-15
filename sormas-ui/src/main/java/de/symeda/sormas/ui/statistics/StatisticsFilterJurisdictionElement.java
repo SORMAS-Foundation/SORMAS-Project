@@ -17,15 +17,22 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
@@ -33,6 +40,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 @SuppressWarnings("serial")
 public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement {
@@ -40,7 +48,8 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 	StatisticsFilterValuesElement regionElement;
 	StatisticsFilterValuesElement districtElement;
 	StatisticsFilterValuesElement communityElement;
-	StatisticsFilterValuesElement healthFacilityElement;
+	StatisticsFilterValuesElement facilityElement;
+	private ComboBox type;
 
 	public StatisticsFilterJurisdictionElement(int rowIndex) {
 		setSpacing(true);
@@ -68,17 +77,30 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 			StatisticsCaseSubAttribute.COMMUNITY,
 			this,
 			rowIndex);
-		healthFacilityElement = new StatisticsFilterValuesElement(
+		HorizontalLayout facilityTypeFilterLayout = new HorizontalLayout();
+		facilityTypeFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		ComboBox typeGroup = new ComboBox();
+		typeGroup.setId("typeGroup");
+		typeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
+		typeGroup.setWidth(100, Unit.PERCENTAGE);
+		typeGroup.addItems(FacilityTypeGroup.values());
+		type = new ComboBox();
+		type.setId("type");
+		type.setCaption(I18nProperties.getPrefixCaption(FacilityDto.I18N_PREFIX, FacilityDto.TYPE));
+		type.setWidth(100, Unit.PERCENTAGE);
+		facilityTypeFilterLayout.addComponents(typeGroup, type);
+		facilityElement = new StatisticsFilterValuesElement(
 			I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY),
 			StatisticsCaseAttribute.JURISDICTION,
-			StatisticsCaseSubAttribute.HEALTH_FACILITY,
+			StatisticsCaseSubAttribute.FACILITY,
 			this,
 			rowIndex);
 
 		firstColumnLayout.addComponent(regionElement);
 		secondColumnLayout.addComponent(districtElement);
 		firstColumnLayout.addComponent(communityElement);
-		secondColumnLayout.addComponent(healthFacilityElement);
+		secondColumnLayout.addComponent(facilityTypeFilterLayout);
+		secondColumnLayout.addComponent(facilityElement);
 
 		addComponent(firstColumnLayout);
 		addComponent(secondColumnLayout);
@@ -103,7 +125,7 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 
 		districtElement.setValueChangeListener(e -> {
 			communityElement.updateDropdownContent();
-			healthFacilityElement.updateDropdownContent();
+			facilityElement.updateDropdownContent();
 			// Remove values from community/health facility token fields if the respective district is no longer selected
 			if (districtElement.getSelectedValues() != null) {
 				List<TokenizableValue> districtValues = districtElement.getSelectedValues();
@@ -121,35 +143,63 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 							communityElement.getTokenField().removeTokenizable(c);
 						});
 				}
-				if (healthFacilityElement.getSelectedValues() != null) {
-					List<TokenizableValue> facilityValues = healthFacilityElement.getSelectedValues();
+				if (facilityElement.getSelectedValues() != null) {
+					List<TokenizableValue> facilityValues = facilityElement.getSelectedValues();
 					Map<String, String> facilityDistrictsMap = FacadeProvider.getFacilityFacade()
 						.getDistrictUuidsForFacilities(
 							facilityValues.stream().map(f -> (FacilityReferenceDto) f.getValue()).collect(Collectors.toList()));
 					facilityValues.stream()
 						.filter(f -> !districtUuids.contains(facilityDistrictsMap.get(((FacilityReferenceDto) f.getValue()).getUuid())))
 						.forEach(f -> {
-							healthFacilityElement.getTokenField().removeTokenizable(f);
+							facilityElement.getTokenField().removeTokenizable(f);
 						});
 				}
 			}
 		});
 
 		communityElement.setValueChangeListener(e -> {
-			healthFacilityElement.updateDropdownContent();
+			facilityElement.updateDropdownContent();
 			// Remove values from health facility token field if the respective community is no longer selected
-			if (communityElement.getSelectedValues() != null && healthFacilityElement.getSelectedValues() != null) {
+			if (communityElement.getSelectedValues() != null && facilityElement.getSelectedValues() != null) {
 				List<TokenizableValue> communityValues = communityElement.getSelectedValues();
 				List<String> communityUuids =
 					communityValues.stream().map(c -> ((CommunityReferenceDto) c.getValue()).getUuid()).collect(Collectors.toList());
-				List<TokenizableValue> facilityValues = healthFacilityElement.getSelectedValues();
+				List<TokenizableValue> facilityValues = facilityElement.getSelectedValues();
 				Map<String, String> facilityCommunitiesMap = FacadeProvider.getFacilityFacade()
 					.getCommunityUuidsForFacilities(
 						facilityValues.stream().map(f -> (FacilityReferenceDto) f.getValue()).collect(Collectors.toList()));
 				facilityValues.stream()
 					.filter(f -> !communityUuids.contains(facilityCommunitiesMap.get(((FacilityReferenceDto) f.getValue()).getUuid())))
 					.forEach(f -> {
-						healthFacilityElement.getTokenField().removeTokenizable(f);
+						facilityElement.getTokenField().removeTokenizable(f);
+					});
+			}
+		});
+
+		typeGroup.addValueChangeListener(e -> {
+			FieldHelper.updateEnumData(type, FacilityType.getAccommodationTypes((FacilityTypeGroup) typeGroup.getValue()));
+		});
+
+		type.addValueChangeListener(e -> {
+			facilityElement.updateDropdownContent();
+			if (facilityElement.getSelectedValues() != null) {
+				List<TokenizableValue> facilityValues = facilityElement.getSelectedValues();
+				List<String> facilityUuids =
+					facilityValues.stream().map(c -> ((FacilityReferenceDto) c.getValue()).getUuid()).collect(Collectors.toList());
+				List<FacilityReferenceDto> facilities = new ArrayList<>();
+				for (TokenizableValue selectedCommunityTokenizable : communityElement.getSelectedValues()) {
+					CommunityReferenceDto selectedCommunity = (CommunityReferenceDto) selectedCommunityTokenizable.getValue();
+					facilities.addAll(
+						FacadeProvider.getFacilityFacade()
+							.getActiveFacilitiesByCommunityAndType(selectedCommunity, (FacilityType) type.getValue(), false, false));
+				}
+				Map<String, String> facilityCommunitiesMap = FacadeProvider.getFacilityFacade()
+					.getCommunityUuidsForFacilities(
+						facilityValues.stream().map(f -> (FacilityReferenceDto) f.getValue()).collect(Collectors.toList()));
+				facilityValues.stream()
+					.filter(f -> !facilityUuids.contains(facilityCommunitiesMap.get(((FacilityReferenceDto) f.getValue()).getUuid())))
+					.forEach(f -> {
+						facilityElement.getTokenField().removeTokenizable(f);
 					});
 			}
 		});
@@ -168,7 +218,11 @@ public class StatisticsFilterJurisdictionElement extends StatisticsFilterElement
 	}
 
 	public List<TokenizableValue> getSelectedHealthFacilities() {
-		return healthFacilityElement.getSelectedValues();
+		return facilityElement.getSelectedValues();
+	}
+
+	FacilityType getFacilityType() {
+		return (FacilityType) type.getValue();
 	}
 
 	@Override

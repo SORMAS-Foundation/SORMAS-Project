@@ -12,8 +12,8 @@
    <data>defaultCaseName American+User null</data>
    <data>caseName-A American+User casename+with+changeable+EpidNumber</data>
    <data>caseName-B British+User casename+with+changeable+EpidNumber</data>
-   <data>unchangable-epid-number-A TTZEQU-N57LT3-FSPVE2-GBKQSJUU null</data>
-   <data>unchangable-epid-number-B XU7LM3-HZ4UNH-FEPVLU-ZIF7CMNE null</data>
+   <data>unchangable-epid-number-A TTZEQU null</data>
+   <data>unchangable-epid-number-B XU7LM3 null</data>
    <data>userName-B UserB+test null</data>
    <internalDataColumns>
       <columnIndex>0</columnIndex>

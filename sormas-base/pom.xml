@@ -5,20 +5,18 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.43.0-SNAPSHOT</version>
-
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
+	<version>1.49.0-SNAPSHOT</version>
 
 	<properties>
-		<slf4j.version>1.7.21</slf4j.version>
+		<slf4j.version>1.7.30</slf4j.version>
 		<logback.version>1.1.7</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.8.3</vaadin.version>
+		<vaadin.version>8.11.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jersey.version>2.29.1</jersey.version>
 		<jackson.version>2.9.8</jackson.version>
+		<swagger.version>2.1.2</swagger.version>
+		<bouncycastle.version>1.66</bouncycastle.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -31,7 +29,7 @@
 	<dependencyManagement>
 		<dependencies>
 
-			<!-- Baseline for tests, so that in all projects in any case the test 
+			<!-- Baseline for tests, so that in all projects in any case the test
 				libs are available -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -64,21 +62,21 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>5.4.3.Final</version>
+				<version>5.4.18.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>6.0.16.Final</version>
+				<version>6.1.5.Final</version>
 				<scope>test</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.199</version>
+				<version>1.4.200</version>
 				<scope>test</scope>
 				<!-- In-memory-database for bean-test -->
 				<!-- better compatibility to PostgreSQL than HSQLDB -->
@@ -169,6 +167,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.glassfish.corba</groupId>
+				<artifactId>glassfish-corba-omgapi</artifactId>
+				<version>4.2.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
 				<version>${jersey.version}</version>
@@ -180,25 +185,25 @@
 				<version>${jersey.version}</version>
 				<scope>provided</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-module-jaxm-annotations</artifactId>
@@ -210,13 +215,13 @@
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
-			
+
 			<!-- serverlibs -->
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.6</version>
+				<version>42.2.14</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -327,11 +332,11 @@
 				<artifactId>opencsv</artifactId>
 				<version>4.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
-				<version>1.12.2</version>
+				<version>1.13.1</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -339,7 +344,14 @@
 			<dependency>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2</artifactId>
-				<version>2.1.2</version>
+				<version>${swagger.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+				<scope>provided</scope>
 			</dependency>
 
 		</dependencies>
@@ -381,6 +393,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
 			</plugin>
 
 			<plugin>
@@ -399,9 +412,10 @@
 
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
 					<configuration>
 						<!-- Deactivate javadoc validation (active by default since Java 1.8) -->
-						<additionalparam>-Xdoclint:none</additionalparam>
+						<additionalJOption>-Xdoclint:none</additionalJOption>
 					</configuration>
 				</plugin>
 
@@ -474,7 +488,7 @@
 
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.19.1</version>
+					<version>2.22.0</version>
 				</plugin>
 
 				<plugin>
@@ -540,7 +554,9 @@
 							<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
 							<versionTagPrefix>v</versionTagPrefix>
 						</flowInitContext>
+						<!--suppress MavenModelInspection -->
 						<username>${github.sormas.user}</username>
+						<!--suppress MavenModelInspection -->
 						<password>${github.sormas.password}</password>
 						<scmCommentPrefix>[GITFLOW]</scmCommentPrefix>
 						<pushReleases>true</pushReleases>
@@ -565,6 +581,14 @@
 							</goals>
 						</execution>
 					</executions>
+					<dependencies>
+						<!-- Currently necessary to get the latest bugfixes in swagger-core -->
+						<dependency>
+							<groupId>io.swagger.core.v3</groupId>
+							<artifactId>swagger-jaxrs2</artifactId>
+							<version>${swagger.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 
 			</plugins>
@@ -601,7 +625,7 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
-	</repositories>	
+	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -643,13 +667,6 @@
 			</modules>
 		</profile>
 
-		<profile>
-			<id>with-dep-poms</id>
-			<modules>
-				<module>./dependencies/serverlibs.pom</module>
-			</modules>
-		</profile>
-
 	</profiles>
 
 	<modules>
@@ -659,5 +676,7 @@
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
+		<module>./dependencies/serverlibs.pom</module>
+		<module>../sormas-cargoserver</module>
 	</modules>
 </project>

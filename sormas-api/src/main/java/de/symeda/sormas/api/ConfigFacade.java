@@ -17,9 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api;
 
-import javax.ejb.Remote;
-
 import de.symeda.sormas.api.region.GeoLatLon;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface ConfigFacade {
@@ -28,7 +28,7 @@ public interface ConfigFacade {
 
 	String getCountryLocale();
 
-	boolean isGermanServer();
+	boolean isConfiguredCountry(String countryCode);
 
 	String getEpidPrefix();
 
@@ -62,6 +62,18 @@ public interface ConfigFacade {
 
 	boolean isDevMode();
 
+	boolean isCustomBranding();
+
+	String getCustomBrandingName();
+
+	String getCustomBrandingLogoPath();
+
+	boolean isUseLoginSidebar();
+
+	String getLoginBackgroundPath();
+
+	String getSormasInstanceName();
+
 	double getNameSimilarityThreshold();
 
 	int getInfrastructureSyncThreshold();
@@ -76,7 +88,15 @@ public interface ConfigFacade {
 
 	String getGeocodingOsgtsEndpoint();
 
-	String getPIAUrl();
+	String getSymptomJournalUrl();
+
+	String getSymptomJournalAuthUrl();
+
+	String getSymptomJournalClientId();
+
+	String getSymptomJournalSecret();
 
 	void validateExternalUrls();
+
+	Sormas2SormasConfig getSormas2SormasConfig();
 }

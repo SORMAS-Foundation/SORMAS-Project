@@ -40,6 +40,7 @@ import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
+// FIXME: 06/08/2020 this should be refactored into two specific data providers for case and contact dashboards
 public class DashboardDataProvider {
 
 	private DashboardType dashboardType;

@@ -5,7 +5,7 @@
 
 ## Content
 * [Prerequisites](#prerequisites)
-  * [Java 8](#java-8)
+  * [Java 11](#java-11)
   * [ant](#ant)
   * [Postgres Database](#postgres-database)
 * [SORMAS Server](#sormas-server)
@@ -15,9 +15,11 @@
 
 ## Prerequisites
 
-### Java 8
+### Java 11
+See [Installing Java](SERVER_SETUP.md#java-11)
 
-See [Installing Java](SERVER_SETUP.md#java-8)
+SORMAS just recently moved to Java 11. We still need to support Java 8 for a transition period. Therefore, please just 
+use Java 8 language features for now.
 
 ### Ant
 
@@ -25,7 +27,7 @@ Download and install Ant, it can be done from [Ant site](https://ant.apache.org/
 
 ### Postgres Database
 
-See [Installing Postgresql](SERVER_SETUP.md#java-8)
+See [Installing Postgresql](SERVER_SETUP.md#postgres-database)
 
 Alternatively you can use the Docker image available in [SORMAS-Docker](https://github.com/hzi-braunschweig/SORMAS-Docker) repository.
 

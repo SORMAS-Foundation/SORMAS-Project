@@ -78,14 +78,16 @@ public class EventListAdapter extends BindingPagedListAdapter<Event, RowEventLis
 		Resources resources = imgEventStatusIcon.getContext().getResources();
 		Drawable drw = ContextCompat.getDrawable(imgEventStatusIcon.getContext(), R.drawable.indicator_status_circle);
 		switch (eventRecord.getEventStatus()) {
-		case POSSIBLE:
-			drw.setColorFilter(resources.getColor(R.color.indicatorPossibleEvent), PorterDuff.Mode.SRC_OVER);
+		case SIGNAL:
+			drw.setColorFilter(resources.getColor(R.color.indicatorSignal), PorterDuff.Mode.SRC_OVER);
 			break;
-		case CONFIRMED:
-			drw.setColorFilter(resources.getColor(R.color.indicatorConfirmedEvent), PorterDuff.Mode.SRC_OVER);
+		case EVENT:
+		case CLUSTER:
+		case SCREENING:
+			drw.setColorFilter(resources.getColor(R.color.indicatorEvent), PorterDuff.Mode.SRC_OVER);
 			break;
-		case NO_EVENT:
-			drw.setColorFilter(resources.getColor(R.color.indicatorNoEvent), PorterDuff.Mode.SRC_OVER);
+		case DROPPED:
+			drw.setColorFilter(resources.getColor(R.color.indicatorDroppedEvent), PorterDuff.Mode.SRC_OVER);
 			break;
 		}
 

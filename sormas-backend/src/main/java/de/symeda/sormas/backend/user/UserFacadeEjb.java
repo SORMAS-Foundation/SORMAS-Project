@@ -51,7 +51,10 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
@@ -92,6 +95,8 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private FacilityService facilityService;
 	@EJB
+	private CaseFacadeEjbLocal caseFacade;
+	@EJB
 	private CaseService caseService;
 	@EJB
 	private ContactService contactService;
@@ -104,17 +109,25 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
 
 		Region region = regionService.getByReferenceDto(regionRef);
-		return userService.getAllByRegionAndUserRoles(region, assignableRoles).stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return userService.getAllByRegionAndUserRolesInJurisdiction(region, assignableRoles)
+			.stream()
+			.map(f -> toReferenceDto(f))
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
 
 		District district = districtService.getByReferenceDto(districtRef);
-		return userService.getAllByDistrict(district, includeSupervisors, userRoles)
+		return userService.getAllByDistrictInJurisdiction(district, includeSupervisors, userRoles)
 			.stream()
 			.map(f -> toReferenceDto(f))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getAllUserRefs() {
+		return userService.getAllInJurisdiction().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -125,12 +138,6 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserDto> getAll(UserRole... roles) {
-
-		return userService.getAllByRegionAndUserRoles(null, roles).stream().map(f -> toDto(f)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<UserDto> getAllAfter(Date date) {
 		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
@@ -138,11 +145,6 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserDto> getByUuids(List<String> uuids) {
 		return userService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<UserReferenceDto> getAllAfterAsReference(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -163,11 +165,6 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public UserDto getByUserName(String userName) {
 		return toDto(userService.getByUserName(userName));
-	}
-
-	@Override
-	public UserReferenceDto getByUserNameAsReference(String userName) {
-		return toReferenceDto(userService.getByUserName(userName));
 	}
 
 	@Override
@@ -201,7 +198,11 @@ public class UserFacadeEjb implements UserFacade {
 		Predicate filter = userService.buildCriteriaFilter(userCriteria, cb, user);
 
 		if (filter != null) {
-			cq.where(filter).distinct(true);
+			/*
+			 * No preemptive distinct because this does collide with
+			 * ORDER BY User.location.address (which is not part of the SELECT clause).
+			 */
+			cq.where(filter);
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -224,7 +225,7 @@ public class UserFacadeEjb implements UserFacade {
 					expression = district.get(District.NAME);
 					break;
 				case UserDto.ADDRESS:
-					expression = address.get(Location.ADDRESS);
+					expression = address.get(Location.REGION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -367,6 +368,34 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void removeUserAsSurveillanceAndContactOfficer(String userUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> caseQuery = cb.createQuery(Case.class);
+		Root<Case> caseRoot = caseQuery.from(Case.class);
+		Join<Case, User> surveillanceOfficerJoin = caseRoot.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
+
+		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(User.UUID), userUuid));
+		List<Case> cases = em.createQuery(caseQuery).getResultList();
+		cases.forEach(c -> {
+			c.setSurveillanceOfficer(null);
+			caseFacade.setResponsibleSurveillanceOfficer(c);
+			caseService.ensurePersisted(c);
+			caseFacade.reassignTasks(c);
+		});
+
+		CriteriaQuery<Contact> contactQuery = cb.createQuery(Contact.class);
+		Root<Contact> contactRoot = contactQuery.from(Contact.class);
+		Join<Contact, User> contactOfficerJoin = contactRoot.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
+
+		contactQuery.where(cb.equal(contactOfficerJoin.get(User.UUID), userUuid));
+		List<Contact> contacts = em.createQuery(contactQuery).getResultList();
+		contacts.forEach(c -> {
+			c.setContactOfficer(null);
+			contactService.ensurePersisted(c);
+		});
 	}
 
 	@LocalBean

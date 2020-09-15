@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -52,6 +54,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 	private List<Item> relationshipList;
 	private List<Item> initialRegions;
 	private List<Item> initialDistricts;
+	private List<Item> initialCommunities;
 	private List<Item> diseaseList;
 	private List<Item> sexList;
 	private List<Item> categoryList;
@@ -79,6 +82,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 		relationshipList = DataUtils.getEnumItems(ContactRelation.class, true);
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
+		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
 		diseaseList = DataUtils.toItems(DiseaseConfigurationCache.getInstance().getAllDiseases(true, true, true));
 		sexList = DataUtils.getEnumItems(Sex.class, true);
 		categoryList = DataUtils.getEnumItems(ContactCategory.class, true);
@@ -95,14 +99,14 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			contentBinding.contactDistrict,
 			initialDistricts,
 			record.getDistrict(),
-			null,
-			null,
-			null);
+			contentBinding.contactCommunity,
+			initialCommunities,
+			record.getCommunity());
 
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			if (ConfigProvider.isGermanServer()) {
+			if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				contentBinding.contactContactProximityDetails.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 				contentBinding.contactContactCategory.setVisibility(e.getValue() == null ? GONE : VISIBLE);
 			}
@@ -111,7 +115,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 		});
 
-		if (ConfigProvider.isGermanServer()) {
+		if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.contactContactProximity.addValueChangedListener(
 				e -> updateContactCategory(contentBinding, (ContactProximity) contentBinding.contactContactProximity.getValue()));
 		} else {

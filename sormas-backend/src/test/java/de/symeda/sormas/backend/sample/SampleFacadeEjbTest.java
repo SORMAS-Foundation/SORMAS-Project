@@ -40,6 +40,10 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -60,7 +64,6 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -135,12 +138,37 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
-		assertEquals(3, getSampleFacade().count(new SampleCriteria()));
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 2),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), cazePerson, user.toReference());
+		SampleDto sampleOfEventParticipant = creator.createSample(
+			eventParticipant.toReference(),
+			DateHelper.subtractDays(new Date(), 2),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility);
+
+		long count = getSampleFacade().count(new SampleCriteria());
+		assertEquals(4, count);
 
 		final ArrayList<SortProperty> sortProperties = new ArrayList<>();
-		sortProperties.add(new SortProperty(SampleDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.SAMPLE_DATE_TIME));
+		sortProperties.add(new SortProperty(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT, false));
 		final List<SampleIndexDto> sampleList1 = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, sortProperties);
-		assertEquals(3, sampleList1.size());
+		assertEquals(4, sampleList1.size());
 
 		final SampleIndexDto sample11 = sampleList1.get(0);
 		Assert.assertEquals(cazeSample.getUuid(), sample11.getUuid());
@@ -157,10 +185,18 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
 		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
 
+		final SampleIndexDto sample14 = sampleList1.get(3);
+		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
+		Assert.assertEquals(eventParticipant.getUuid(), sample14.getAssociatedEventParticipant().getUuid());
+		Assert.assertEquals(rdcf.district, sample14.getDistrict());
+
 		assertEquals(
 			2,
 			getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CONTACT), 0, 100, null).size());
 		assertEquals(1, getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.CASE), 0, 100, null).size());
+		assertEquals(
+			1,
+			getSampleFacade().getIndexList(new SampleCriteria().sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT), 0, 100, null).size());
 	}
 
 	@Test
@@ -181,7 +217,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto contactPerson = creator.createPerson("Contact", "Person2");
 		ContactDto contact = creator.createContact(user.toReference(), contactPerson.toReference(), caze);
-		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference());
 		SampleDto cazeSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
 		cazeSample.setSampleDateTime(DateHelper.subtractDays(new Date(), 5));
 		getSampleFacade().saveSample(cazeSample);
@@ -202,9 +237,10 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		sample.setReferredTo(referredSample.toReference());
 		creator.createAdditionalTest(sample.toReference());
 
-		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact, visit);
+		CaseDataDto caseDataDto = CaseDataDto.buildFromContact(contact);
 		caseDataDto.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		caseDataDto.setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
+		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid()));
 		caseDataDto.setReportingUser(user.toReference());
 		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);

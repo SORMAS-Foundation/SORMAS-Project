@@ -17,25 +17,27 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.Sormas2SormasConfig;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Provides the application configuration settings
@@ -53,6 +55,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String VERSION_PLACEHOLER = "%version";
 
 	public static final String DEV_MODE = "devmode";
+
+	public static final String CUSTOM_BRANDING = "custombranding";
+	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
+	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
+	public static final String CUSTOM_BRANDING_USE_LOGIN_SIDEBAR = "custombranding.useloginsidebar";
+	public static final String CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH = "custombranding.loginbackground.path";
 
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
@@ -74,12 +82,22 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
 
-	public static final String INTERFACE_PIA_URL = "interface.pia.url";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_URL = "interface.symptomjournal.url";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_AUTH_URL = "interface.symptomjournal.authurl";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
+	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+
+	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	private static final String SORMAS2SORMAS_KEY_ALIAS = "sormas2sormas.keyAlias";
+	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
+	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -159,8 +177,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isGermanServer() {
-		return getCountryLocale().startsWith("de");
+	public boolean isConfiguredCountry(String countryCode) {
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
+			return getCountryLocale().toLowerCase().endsWith(countryCode.toLowerCase());
+		} else {
+			return getCountryLocale().toLowerCase().startsWith(countryCode.toLowerCase());
+		}
 	}
 
 	@Override
@@ -181,6 +203,36 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isDevMode() {
 		return getBoolean(DEV_MODE, false);
+	}
+
+	@Override
+	public boolean isCustomBranding() {
+		return getBoolean(CUSTOM_BRANDING, false);
+	}
+
+	@Override
+	public String getCustomBrandingName() {
+		return getProperty(CUSTOM_BRANDING_NAME, "SORMAS");
+	}
+
+	@Override
+	public String getCustomBrandingLogoPath() {
+		return getProperty(CUSTOM_BRANDING_LOGO_PATH, null);
+	}
+
+	@Override
+	public boolean isUseLoginSidebar() {
+		return getBoolean(CUSTOM_BRANDING_USE_LOGIN_SIDEBAR, true);
+	}
+
+	@Override
+	public String getLoginBackgroundPath() {
+		return getProperty(CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH, null);
+	}
+
+	@Override
+	public String getSormasInstanceName() {
+		return isCustomBranding() ? getCustomBrandingName() : "SORMAS";
 	}
 
 	@Override
@@ -250,7 +302,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public double getNameSimilarityThreshold() {
-		return getDouble(NAME_SIMILARITY_THRESHOLD, 0.4D);
+		return getDouble(NAME_SIMILARITY_THRESHOLD, PersonHelper.DEFAULT_NAME_SIMILARITY_THRESHOLD);
 	}
 
 	@Override
@@ -284,14 +336,41 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getPIAUrl() {
-		return getProperty(INTERFACE_PIA_URL, null);
+	public String getSymptomJournalUrl() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_URL, null);
+	}
+
+	@Override
+	public String getSymptomJournalAuthUrl() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_AUTH_URL, null);
+	}
+
+	@Override
+	public String getSymptomJournalClientId() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID, null);
+	}
+
+	@Override
+	public String getSymptomJournalSecret() {
+		return getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null);
+	}
+
+	@Override
+	public Sormas2SormasConfig getSormas2SormasConfig() {
+		Sormas2SormasConfig config = new Sormas2SormasConfig();
+		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
+		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
+		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
+		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
+		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
+		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		return config;
 	}
 
 	@Override
 	public void validateExternalUrls() {
 
-		String piaUrl = getPIAUrl();
+		String piaUrl = getSymptomJournalUrl();
 
 		if (StringUtils.isBlank(piaUrl)) {
 			return;
@@ -302,7 +381,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			new String[] {
 				"http",
 				"https" }).isValid(piaUrl)) {
-			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_PIA_URL + "' is not a valid URL");
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL + "' is not a valid URL");
 		}
 	}
 

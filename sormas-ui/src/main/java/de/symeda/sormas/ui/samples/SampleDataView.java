@@ -30,6 +30,9 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -37,9 +40,12 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
+import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -50,6 +56,7 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String EDIT_LOC = "edit";
 	public static final String CASE_LOC = "case";
 	public static final String CONTACT_LOC = "contact";
+	public static final String EVENT_PARTICIPANT_LOC = "eventParticipant";
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
 
@@ -66,6 +73,7 @@ public class SampleDataView extends AbstractSampleView {
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACT_LOC),
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
@@ -86,26 +94,59 @@ public class SampleDataView extends AbstractSampleView {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
 		if (associatedCase != null) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			boolean isInJurisdiction = FacadeProvider.getCaseFacade().isCaseEditAllowed(associatedCase.getUuid());
 
 			disease = caseDto.getDisease();
 
-			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(caseDto);
+			final CaseInfoLayout caseInfoLayout = new CaseInfoLayout(
+				caseDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 			caseInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(caseInfoLayout, CASE_LOC);
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+			boolean isInJurisdiction = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
 
 			disease = contactDto.getDisease();
 
-			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(contactDto);
+			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(
+				contactDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
+
+		}
+		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
+		if (associatedEventParticipant != null) {
+			final EventParticipantDto eventParticipantDto =
+				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
+			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
+			boolean isInJurisdiction = FacadeProvider.getEventFacade().isEventEditAllowed(eventDto.getUuid());
+
+			disease = eventDto.getDisease();
+
+			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(
+				eventParticipantDto,
+				eventDto,
+				UiFieldAccessCheckers.withCheckers(
+					isInJurisdiction,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
+
+			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
+			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
-			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid());
+			ControllerProvider.getSampleController().getSampleEditComponent(getSampleRef().getUuid(), isSampleEditAllowed());
 		editComponent.setMargin(new MarginInfo(false, false, true, false));
 		editComponent.setWidth(100, Unit.PERCENTAGE);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -122,6 +163,8 @@ public class SampleDataView extends AbstractSampleView {
 				if (pathogenTestDto.getTestResult() != componentSample.getPathogenTestResult()) {
 					ControllerProvider.getSampleController()
 						.showChangePathogenTestResultWindow(editComponent, componentSample.getUuid(), pathogenTestDto.getTestResult(), callback);
+				} else {
+					callback.run();
 				}
 			} else {
 				callback.run();
@@ -144,5 +187,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 		//}
+
+		setSampleEditPermission(container);
 	}
 }

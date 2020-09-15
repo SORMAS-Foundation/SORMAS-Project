@@ -36,11 +36,17 @@ import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.epidata.EpiData;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.app.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.user.User;
@@ -72,7 +78,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		try {
 			QueryBuilder qb = queryBuilder();
 			qb.where().eq(Contact.CASE_UUID, caze.getUuid()).and().eq(AbstractDomainObject.SNAPSHOT, false);
-			qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+			qb.orderBy(Contact.LOCAL_CHANGE_DATE, false);
 			return qb.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getByCase on Contact");
@@ -92,7 +98,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			if (disease != null) {
 				where.and(where, where.eq(Contact.DISEASE, disease));
 			}
-			qb.orderBy(Contact.LAST_CONTACT_DATE, false);
+			qb.orderBy(Contact.LOCAL_CHANGE_DATE, false);
 			return (int) qb.countOf();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getCountByPersonAndDisease on Contact");
@@ -114,6 +120,14 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 		if (user.getDistrict() != null) {
 			contact.setDistrict(user.getDistrict());
 		}
+		if (user.getCommunity() != null) {
+			contact.setCommunity(user.getCommunity());
+		}
+
+		// Epi Data
+		contact.setEpiData(DatabaseHelper.getEpiDataDao().build());
+
+		contact.setHealthConditions(DatabaseHelper.getHealthConditionsDao().build());
 
 		return contact;
 	}
@@ -173,7 +187,7 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 
 	public List<Contact> queryByCriteria(ContactCriteria criteria, long offset, long limit) {
 		try {
-			return buildQueryBuilder(criteria).orderBy(Contact.REPORT_DATE_TIME, true).offset(offset).limit(limit).query();
+			return buildQueryBuilder(criteria).orderBy(Contact.LOCAL_CHANGE_DATE, false).offset(offset).limit(limit).query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform queryByCriteria on Contact");
 			throw new RuntimeException(e);
@@ -263,5 +277,40 @@ public class ContactDao extends AbstractAdoDao<Contact> {
 			Log.e(getTableName(), "Could not perform getContactCountByCaseUuid on Contact");
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Date getLatestChangeDate() {
+		Date date = super.getLatestChangeDate();
+		if (date == null) {
+			return null;
+		}
+
+		Date epiDataDate = getLatestChangeDateJoin(EpiData.TABLE_NAME, Contact.EPI_DATA);
+		if (epiDataDate != null && epiDataDate.after(date)) {
+			date = epiDataDate;
+		}
+
+		Date epiDataBurialDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataBurial.TABLE_NAME);
+		if (epiDataBurialDate != null && epiDataBurialDate.after(date)) {
+			date = epiDataBurialDate;
+		}
+
+		Date epiDataGatheringDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataGathering.TABLE_NAME);
+		if (epiDataGatheringDate != null && epiDataGatheringDate.after(date)) {
+			date = epiDataGatheringDate;
+		}
+
+		Date epiDataTravelDate = getLatestChangeDateSubJoin(EpiData.TABLE_NAME, Contact.EPI_DATA, EpiDataTravel.TABLE_NAME);
+		if (epiDataTravelDate != null && epiDataTravelDate.after(date)) {
+			date = epiDataTravelDate;
+		}
+
+		Date healthConditionsDate = getLatestChangeDateJoin(HealthConditions.TABLE_NAME, Contact.HEALTH_CONDITIONS);
+		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
+			date = healthConditionsDate;
+		}
+
+		return date;
 	}
 }

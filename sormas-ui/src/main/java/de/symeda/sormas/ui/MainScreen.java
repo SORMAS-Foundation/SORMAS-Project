@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
+import static de.symeda.sormas.ui.UiUtil.permitted;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,27 +33,29 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
 import de.symeda.sormas.api.BaseCriteria;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.campaign.CampaignsView;
+import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
 import de.symeda.sormas.ui.configuration.infrastructure.CommunitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.DistrictsView;
-import de.symeda.sormas.ui.configuration.infrastructure.HealthFacilitiesView;
-import de.symeda.sormas.ui.configuration.infrastructure.LaboratoriesView;
+import de.symeda.sormas.ui.configuration.infrastructure.FacilitiesView;
 import de.symeda.sormas.ui.configuration.infrastructure.PointsOfEntryView;
 import de.symeda.sormas.ui.configuration.infrastructure.RegionsView;
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.contact.ContactsView;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
+import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
@@ -68,26 +72,40 @@ import de.symeda.sormas.ui.user.UsersView;
 public class MainScreen extends HorizontalLayout {
 
 	// Add new views to this set to make sure that the right error page is shown
-	private static final Set<String> KNOWN_VIEWS = new HashSet<>(
-		Arrays.asList(
-			SurveillanceDashboardView.VIEW_NAME,
-			ContactsDashboardView.VIEW_NAME,
-			TasksView.VIEW_NAME,
-			CasesView.VIEW_NAME,
-			ContactsView.VIEW_NAME,
-			EventsView.VIEW_NAME,
-			SamplesView.VIEW_NAME,
-			CampaignsView.VIEW_NAME,
-			ReportsView.VIEW_NAME,
-			StatisticsView.VIEW_NAME,
-			UsersView.VIEW_NAME,
-			OutbreaksView.VIEW_NAME,
-			RegionsView.VIEW_NAME,
-			DistrictsView.VIEW_NAME,
-			CommunitiesView.VIEW_NAME,
-			HealthFacilitiesView.VIEW_NAME,
-			LaboratoriesView.VIEW_NAME,
-			PointsOfEntryView.VIEW_NAME));
+	private static final Set<String> KNOWN_VIEWS = initKnownViews();
+
+	private static Set<String> initKnownViews() {
+		final Set<String> views = new HashSet<>(
+			Arrays.asList(
+				TasksView.VIEW_NAME,
+				CasesView.VIEW_NAME,
+				ContactsView.VIEW_NAME,
+				EventsView.VIEW_NAME,
+				SamplesView.VIEW_NAME,
+				CampaignsView.VIEW_NAME,
+				CampaignDataView.VIEW_NAME,
+				ReportsView.VIEW_NAME,
+				StatisticsView.VIEW_NAME,
+				UsersView.VIEW_NAME,
+				OutbreaksView.VIEW_NAME,
+				RegionsView.VIEW_NAME,
+				DistrictsView.VIEW_NAME,
+				CommunitiesView.VIEW_NAME,
+				FacilitiesView.VIEW_NAME,
+				PointsOfEntryView.VIEW_NAME));
+
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+			views.add(SurveillanceDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+			views.add(ContactsDashboardView.VIEW_NAME);
+		}
+		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			views.add(CampaignDashboardView.VIEW_NAME);
+		}
+
+		return views;
+	}
 
 	private Menu menu;
 
@@ -125,15 +143,21 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.DASHBOARD_VIEW)) {
 			ControllerProvider.getDashboardController().registerViews(navigator);
 		}
-		if (permitted(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			menu.addView(
 				SurveillanceDashboardView.class,
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
-		} else if (permitted(UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			menu.addView(
 				ContactsDashboardView.class,
+				AbstractDashboardView.ROOT_VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuDashboard),
+				VaadinIcons.DASHBOARD);
+		} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			menu.addView(
+				CampaignDashboardView.class,
 				AbstractDashboardView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuDashboard),
 				VaadinIcons.DASHBOARD);
@@ -159,6 +183,7 @@ public class MainScreen extends HorizontalLayout {
 		}
 		if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
+			navigator.addView(EventParticipantDataView.VIEW_NAME, EventParticipantDataView.class);
 			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
 		}
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
@@ -166,10 +191,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
 		}
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
-			ControllerProvider.getCampaignController().registerViews(navigator);
+			AbstractCampaignView.registerViews(navigator);
 			menu.addView(
 				CampaignsView.class,
-				CampaignsView.VIEW_NAME,
+				AbstractCampaignView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuCampaigns),
 				VaadinIcons.CLIPBOARD_CHECK);
 		}
@@ -247,7 +272,13 @@ public class MainScreen extends HorizontalLayout {
 				// redirect to default view
 				String defaultView;
 				if (permitted(UserRight.DASHBOARD_VIEW)) {
-					defaultView = SurveillanceDashboardView.VIEW_NAME;
+					if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+						defaultView = SurveillanceDashboardView.VIEW_NAME;
+					} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+						defaultView = ContactsDashboardView.VIEW_NAME;
+					} else {
+						defaultView = CampaignDashboardView.VIEW_NAME;
+					}
 				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(UserRight.TASK_VIEW)) {
@@ -267,12 +298,4 @@ public class MainScreen extends HorizontalLayout {
 		}
 	};
 
-	private static boolean permitted(FeatureType feature, UserRight userRight) {
-		return (feature == null || !FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(feature))
-			&& (userRight == null || UserProvider.getCurrent().hasUserRight(userRight));
-	}
-
-	private static boolean permitted(UserRight userRight) {
-		return permitted(null, userRight);
-	}
 }

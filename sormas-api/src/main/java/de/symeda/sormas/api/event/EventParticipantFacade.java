@@ -29,6 +29,8 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 
+	List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid);
+
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date);
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
@@ -50,4 +52,12 @@ public interface EventParticipantFacade {
 	void validate(EventParticipantDto eventParticipant);
 
 	long count(EventParticipantCriteria eventParticipantCriteria);
+
+	boolean exists(String uuid);
+
+	EventParticipantReferenceDto getReferenceByUuid(String uuid);
+
+	List<String> getDeletedUuidsSince(Date date);
+
+	boolean isEventParticipantEditAllowed(String uuid);
 }

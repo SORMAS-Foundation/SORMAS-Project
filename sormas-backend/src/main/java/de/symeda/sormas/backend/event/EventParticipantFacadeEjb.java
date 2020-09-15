@@ -44,14 +44,17 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
@@ -59,6 +62,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb implements EventParticipantFacade {
@@ -76,6 +80,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private CaseService caseService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private EventParticipantJurisdictionChecker eventParticipantJurisdictionChecker;
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -91,7 +97,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 
-		return eventParticipantService.getAllByEventAfter(date, event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventParticipantService.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -113,27 +120,50 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			return Collections.emptyList();
 		}
 
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user)
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
+		return deletedEventParticipants;
+	};
+
+	@Override
 	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-		return eventParticipantService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventParticipantService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return toDto(eventParticipantService.getByUuid(uuid));
+		return convertToDto(eventParticipantService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
 	public EventParticipantDto saveEventParticipant(EventParticipantDto dto) {
+		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
+		EventParticipantDto existingDto = toDto(existingParticipant);
+
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		restorePseudonymizedDto(dto, existingDto, existingParticipant, pseudonymizer);
 
 		validate(dto);
 
 		EventParticipant entity = fromDto(dto);
 		eventParticipantService.ensurePersisted(entity);
-		return toDto(entity);
+
+		return convertToDto(entity, pseudonymizer);
 	}
 
 	@Override
@@ -174,6 +204,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Person> person = eventParticipant.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<EventParticipant, Case> resultingCase = eventParticipant.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
 		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		Join<Event, Location> eventLocation = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
 
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
@@ -185,7 +216,8 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			person.get(Person.SEX),
 			person.get(Person.APPROXIMATE_AGE),
 			person.get(Person.APPROXIMATE_AGE_TYPE),
-			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION));
+			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
+			eventParticipant.join(EventParticipant.REPORTING_USER, JoinType.LEFT).get(User.UUID));
 
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, cb, eventParticipant);
 		cq.where(filter);
@@ -204,12 +236,9 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 					break;
 				case EventParticipantIndexDto.APPROXIMATE_AGE:
 				case EventParticipantIndexDto.SEX:
+				case EventParticipantIndexDto.LAST_NAME:
+				case EventParticipantIndexDto.FIRST_NAME:
 					expression = person.get(sortProperty.propertyName);
-					break;
-				case EventParticipantIndexDto.NAME:
-					expression = person.get(Person.LAST_NAME);
-					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
-					expression = person.get(Person.FIRST_NAME);
 					break;
 				case EventParticipantIndexDto.CASE_UUID:
 					expression = resultingCase.get(Case.UUID);
@@ -224,11 +253,21 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			cq.orderBy(cb.desc(person.get(Person.LAST_NAME)));
 		}
 
+		List<EventParticipantIndexDto> indexList;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			indexList = em.createQuery(cq).getResultList();
 		}
+
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(
+			EventParticipantIndexDto.class,
+			indexList,
+			p -> eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(p.getJurisdiction()),
+			null);
+
+		return indexList;
 	}
 
 	@Override
@@ -246,6 +285,24 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@Override
+	public boolean exists(String uuid) {
+		return eventParticipantService.exists(uuid);
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		return new EventParticipantReferenceDto(eventParticipant.getUuid());
+	}
+
+	@Override
+	public boolean isEventParticipantEditAllowed(String uuid) {
+		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+
+		return eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(eventParticipant);
+	}
+
 	public EventParticipant fromDto(@NotNull EventParticipantDto source) {
 
 		EventParticipant target = eventParticipantService.getByUuid(source.getUuid());
@@ -258,6 +315,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		}
+
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
 		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
@@ -266,14 +327,47 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		return target;
 	}
 
+	private EventParticipantDto convertToDto(EventParticipant source, Pseudonymizer pseudonymizer) {
+		EventParticipantDto dto = toDto(source);
+		pseudonymizeDto(source, dto, pseudonymizer);
+
+		return dto;
+	}
+
+	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+
+		if (source != null) {
+			boolean inJurisdiction = eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(source);
+
+			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
+			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
+		}
+	}
+
+	private void restorePseudonymizedDto(
+		EventParticipantDto dto,
+		EventParticipantDto originalDto,
+		EventParticipant originalEventParticipant,
+		Pseudonymizer pseudonymizer) {
+
+		if (originalDto != null) {
+			pseudonymizer.restorePseudonymizedValues(
+				EventParticipantDto.class,
+				dto,
+				originalDto,
+				eventParticipantJurisdictionChecker.isInJurisdictionOrOwned(originalEventParticipant));
+		}
+	}
+
 	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
 
 		if (entity == null) {
 			return null;
 		}
 
-		EventParticipantReferenceDto dto = new EventParticipantReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
+		Person person = entity.getPerson();
+
+		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
 	}
 
 	public static EventParticipantDto toDto(EventParticipant source) {
@@ -283,6 +377,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 		EventParticipantDto target = new EventParticipantDto();
 		DtoHelper.fillDto(target, source);
+
+		if (source.getReportingUser() != null) {
+			target.setReportingUser(source.getReportingUser().toReference());
+		}
 
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
 		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
@@ -297,4 +395,22 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
 
 	}
+
+	@Override
+	public List<EventParticipantDto> getAllActiveEventParticipantsByEvent(String eventUuid) {
+
+		User user = userService.getCurrentUser();
+		Event event = eventService.getByUuid(eventUuid);
+
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		if (event == null) {
+			return Collections.emptyList();
+		}
+
+		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+	}
+
 }

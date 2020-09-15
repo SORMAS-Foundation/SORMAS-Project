@@ -25,8 +25,10 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class ContactIndexDto implements Serializable, Cloneable  {
+public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable, Cloneable {
+
 
 	private static final long serialVersionUID = 7511900591141885152L;
 
@@ -38,8 +40,6 @@ public class ContactIndexDto implements Serializable, Cloneable  {
 	public static final String PERSON_LAST_NAME = "lastName";
 	public static final String CAZE = "caze";
 	public static final String DISEASE = "disease";
-	public static final String REGION_UUID = "regionUuid";
-	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String CONTACT_PROXIMITY = "contactProximity";
 	public static final String CONTACT_CLASSIFICATION = "contactClassification";
@@ -83,7 +83,7 @@ public class ContactIndexDto implements Serializable, Cloneable  {
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
@@ -140,9 +140,11 @@ public class ContactIndexDto implements Serializable, Cloneable  {
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
+
 		this.creationDate = creationDate;
 		this.completeness = completeness;
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
+		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+
 	}
 
 

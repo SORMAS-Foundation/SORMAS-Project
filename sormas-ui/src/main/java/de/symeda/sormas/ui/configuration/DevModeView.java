@@ -17,23 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.configuration;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
@@ -47,7 +30,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
@@ -81,6 +63,23 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateHelper8;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -460,6 +459,7 @@ public class DevModeView extends AbstractConfigurationView {
 			caze.setDistrict(healthFacility.getDistrict());
 			caze.setCommunity(healthFacility.getCommunity());
 			caze.setHealthFacility(healthFacility.toReference());
+			caze.setFacilityType(healthFacility.getType());
 			caze.setReportLat(healthFacility.getLatitude());
 			caze.setReportLon(healthFacility.getLongitude());
 

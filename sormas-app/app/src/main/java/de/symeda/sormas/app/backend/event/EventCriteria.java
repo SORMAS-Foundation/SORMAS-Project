@@ -17,11 +17,15 @@ package de.symeda.sormas.app.backend.event;
 
 import java.io.Serializable;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.app.backend.caze.Case;
 
 public class EventCriteria implements Serializable {
 
 	private EventStatus eventStatus;
+	private Case caze;
+	private Disease disease;
 
 	public EventCriteria eventStatus(EventStatus eventStatus) {
 		this.eventStatus = eventStatus;
@@ -30,5 +34,22 @@ public class EventCriteria implements Serializable {
 
 	public EventStatus getEventStatus() {
 		return eventStatus;
+	}
+
+	public Case getCaze() {
+		return caze;
+	}
+
+	public EventCriteria caze(Case caze) {
+		this.caze = caze;
+		return this;
+	}
+
+	public Disease getDisease() {
+		return disease;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
 	}
 }

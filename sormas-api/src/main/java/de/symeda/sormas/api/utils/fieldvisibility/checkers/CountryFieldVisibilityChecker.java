@@ -17,11 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
-import java.lang.reflect.Field;
-
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+
+import java.lang.reflect.AccessibleObject;
+import java.util.regex.Pattern;
 
 public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
@@ -32,23 +34,39 @@ public class CountryFieldVisibilityChecker implements FieldVisibilityCheckers.Fi
 	}
 
 	@Override
-	public boolean isVisible(Field field) {
-		if (field.isAnnotationPresent(HideForCountries.class)) {
-			String[] countries = field.getAnnotation(HideForCountries.class).countries();
+	public boolean isVisible(AccessibleObject accessibleObject) {
+		if (accessibleObject.isAnnotationPresent(HideForCountries.class)) {
+			String[] countries = accessibleObject.getAnnotation(HideForCountries.class).countries();
 			for (String country : countries) {
-				if (countryLocale.startsWith(country)) {
-					return false;
+				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
+				// otherwise check the first (language) part
+				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
+						return false;
+					}
+				} else {
+					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
+						return false;
+					}
 				}
 			}
 
 			return true;
 		}
 
-		if (field.isAnnotationPresent(HideForCountriesExcept.class)) {
-			String[] countries = field.getAnnotation(HideForCountriesExcept.class).countries();
+		if (accessibleObject.isAnnotationPresent(HideForCountriesExcept.class)) {
+			String[] countries = accessibleObject.getAnnotation(HideForCountriesExcept.class).countries();
 			for (String country : countries) {
-				if (countryLocale.startsWith(country)) {
-					return true;
+				// If the country locale is complete (e.g. de-DE), check the last (country) part; 
+				// otherwise check the first (language) part
+				if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, countryLocale)) {
+					if (countryLocale.toLowerCase().endsWith(country.toLowerCase())) {
+						return true;
+					}
+				} else {
+					if (countryLocale.toLowerCase().startsWith(country.toLowerCase())) {
+						return true;
+					}
 				}
 			}
 

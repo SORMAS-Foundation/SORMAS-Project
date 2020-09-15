@@ -17,16 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import static de.symeda.sormas.ui.UiUtil.permitted;
+
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
 import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.utils.AbstractView;
@@ -37,43 +39,29 @@ public abstract class AbstractDashboardView extends AbstractView {
 
 	public static final String ROOT_VIEW_NAME = "dashboard";
 
-	protected DashboardDataProvider dashboardDataProvider;
-
 	protected VerticalLayout dashboardLayout;
-	protected DashboardFilterLayout filterLayout;
+	protected OptionGroup dashboardSwitcher = new OptionGroup();
 
-	protected AbstractDashboardView(String viewName, DashboardType dashboardType) {
+	@SuppressWarnings("deprecation")
+	protected AbstractDashboardView(String viewName) {
+
 		super(viewName);
 
 		addStyleName(DashboardCssStyles.DASHBOARD_SCREEN);
 
-		dashboardDataProvider = new DashboardDataProvider();
-		if (dashboardDataProvider.getDashboardType() == null) {
-			dashboardDataProvider.setDashboardType(dashboardType);
-		}
-		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
-			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
-		}
-
-		OptionGroup dashboardSwitcher = new OptionGroup();
 		CssStyles.style(dashboardSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.SURVEILLANCE);
 			dashboardSwitcher.setItemCaption(DashboardType.SURVEILLANCE, I18nProperties.getEnumCaption(DashboardType.SURVEILLANCE));
 		}
-		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
 			dashboardSwitcher.addItem(DashboardType.CONTACTS);
 			dashboardSwitcher.setItemCaption(DashboardType.CONTACTS, I18nProperties.getEnumCaption(DashboardType.CONTACTS));
 		}
-		dashboardSwitcher.setValue(dashboardType);
-		dashboardSwitcher.addValueChangeListener(e -> {
-			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
-			if (DashboardType.SURVEILLANCE.equals(e.getProperty().getValue())) {
-				SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
-			} else {
-				SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
-			}
-		});
+		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			dashboardSwitcher.addItem(DashboardType.CAMPAIGNS);
+			dashboardSwitcher.setItemCaption(DashboardType.CAMPAIGNS, I18nProperties.getEnumCaption(DashboardType.CAMPAIGNS));
+		}
 		addHeaderComponent(dashboardSwitcher);
 
 		// Hide the dashboard switcher if only one dashboard is accessible to the user
@@ -88,19 +76,18 @@ public abstract class AbstractDashboardView extends AbstractView {
 		dashboardLayout.setSizeFull();
 		dashboardLayout.setStyleName("crud-main-layout");
 
-		// Filter bar
-		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
-		dashboardLayout.addComponent(filterLayout);
-
 		addComponent(dashboardLayout);
 	}
 
-	public void refreshDashboard() {
-		dashboardDataProvider.refreshData();
+	protected void navigateToDashboardView(Property.ValueChangeEvent e) {
+		if (DashboardType.SURVEILLANCE.equals(e.getProperty().getValue())) {
+			SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME);
+		} else if (DashboardType.CONTACTS.equals(e.getProperty().getValue())) {
+			SormasUI.get().getNavigator().navigateTo(ContactsDashboardView.VIEW_NAME);
+		} else {
+			SormasUI.get().getNavigator().navigateTo(CampaignDashboardView.VIEW_NAME);
+		}
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		refreshDashboard();
-	}
+	public abstract void refreshDashboard();
 }

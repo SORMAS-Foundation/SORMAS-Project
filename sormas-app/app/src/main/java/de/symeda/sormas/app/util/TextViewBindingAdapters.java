@@ -32,6 +32,7 @@ import androidx.databinding.ObservableList;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.facility.FacilityHelper;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -658,12 +659,18 @@ public class TextViewBindingAdapters {
 		if (person == null) {
 			textField.setText(defaultValue);
 		} else {
-			String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
-
-			if (valueFormat != null && !valueFormat.trim().equals("")) {
-				textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName().toUpperCase()));
+			if (person.isPseudonymized()) {
+				ViewHelper.formatInaccessibleTextView(textField);
 			} else {
-				textField.setText(person.toString());
+				ViewHelper.removeInaccessibleTextViewFormat(textField);
+
+				String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
+
+				if (valueFormat != null && !valueFormat.trim().equals("")) {
+					textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName()));
+				} else {
+					textField.setText(person.toString());
+				}
 			}
 		}
 	}
@@ -675,8 +682,6 @@ public class TextViewBindingAdapters {
 		if (sample == null) {
 			textField.setText(defaultValue);
 		} else {
-			String result = "";
-			String valueFormat = textField.getContext().getResources().getString(R.string.person_name_format);
 			Case assocCase = sample.getAssociatedCase();
 
 			if (assocCase == null) {
@@ -685,17 +690,7 @@ public class TextViewBindingAdapters {
 			}
 
 			Person person = assocCase.getPerson();
-
-			if (person == null) {
-				textField.setText(defaultValue);
-				return;
-			}
-
-			if (valueFormat != null && valueFormat.trim() != "") {
-				textField.setText(String.format(valueFormat, person.getFirstName(), person.getLastName().toUpperCase()));
-			} else {
-				textField.setText(person.toString());
-			}
+			setPersonValue(textField, person, defaultValue);
 		}
 	}
 
@@ -1139,19 +1134,15 @@ public class TextViewBindingAdapters {
 	}
 
 	private static String getDisease(Task record) {
-		String result = null;
-
-//        if (record.getCaze() != null && record.getCaze().getDisease() != null) {
-//            result = record.getCaze().getDisease().toShortString();
-//        } else if (record.getContact() != null && record.getContact().getCaze() != null && record.getContact().getCaze().getDisease() != null) {
-//            result = record.getContact().getCaze().getDisease().toShortString();
-//        } else if (record.getEvent() != null && record.getEvent().getDisease() != null){
-//            result = record.getEvent().getDisease().toShortString();
-//        } else {
-//            result = "";
-//        }
-
-		return result;
+		if (record.getCaze() != null && record.getCaze().getDisease() != null) {
+			return record.getCaze().getDisease().toShortString();
+		} else if (record.getContact() != null && record.getContact().getDisease() != null) {
+			return record.getContact().getDisease().toShortString();
+		} else if (record.getEvent() != null && record.getEvent().getDisease() != null) {
+			return record.getEvent().getDisease().toShortString();
+		} else {
+			return "";
+		}
 	}
 
 	private static String getDisease(Event record) {
@@ -1220,7 +1211,7 @@ public class TextViewBindingAdapters {
 		} else if (record.getEvent() != null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(record.getEvent().getEventStatus());
-			sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getEventDate()));
+			sb.append(", " + DateFormatHelper.formatLocalDate(record.getEvent().getStartDate()));
 			if (record.getEvent().getEventLocation().getCity() != null && !record.getEvent().getEventLocation().getCity().isEmpty()) {
 				sb.append(", " + record.getEvent().getEventLocation().getCity());
 			}

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.contact;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -48,14 +50,20 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactFacade;
-import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
+import de.symeda.sormas.api.epidata.TravelType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -524,11 +532,25 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE);
+		EpiDataDto epiData = contact.getEpiData();
+		epiData.setTraveled(YesNoUnknown.YES);
+		List<EpiDataTravelDto> travels = new ArrayList<>();
+		EpiDataTravelDto travel = EpiDataTravelDto.build();
+		travel.setTravelDateFrom(DateHelper.subtractDays(new Date(), 15));
+		travel.setTravelDateTo(DateHelper.subtractDays(new Date(), 7));
+		travel.setTravelDestination("Mallorca");
+		travel.setTravelType(TravelType.ABROAD);
+		travels.add(travel);
+		epiData.setTravels(travels);
+		contact.setEpiData(epiData);
+		getContactFacade().saveContact(contact);
 
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid()));
 		contactPerson.getAddress().setCity("City");
-		contactPerson.getAddress().setAddress("Street Address");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
 		contactPerson.getAddress().setPostalCode("1234");
 		getPersonFacade().savePerson(contactPerson);
 
@@ -546,12 +568,25 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
 		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
 		assertEquals("City", exportDto.getCity());
-		assertEquals("Street Address", exportDto.getAddress());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
-		assertEquals(exportDto.getLastCooperativeVisitSymptomatic(), YesNoUnknown.YES);
+		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
+
+		assertNotNull(exportDto.getEpiDataId());
+		assertEquals(YesNoUnknown.YES, exportDto.getTraveled());
+		assertEquals(
+			EpiDataTravelHelper.buildTravelString(
+				travel.getTravelType(),
+				travel.getTravelDestination(),
+				travel.getTravelDateFrom(),
+				travel.getTravelDateTo(),
+				Language.EN),
+			exportDto.getTravelHistory());
 	}
 
 	@Test
@@ -746,7 +781,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
 
 		// Changing the report date to a value beyond the threshold should remove the association
-		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 20));
+		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 20));
 		getContactFacade().saveContact(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), empty());
@@ -766,7 +801,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(
 			user.toReference(),
 			person.toReference(),
-			DateHelper.addDays(visit.getVisitDateTime(), ContactLogic.ALLOWED_CONTACT_DATE_OFFSET + 1));
+			DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 1));
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(2));
 
@@ -782,5 +817,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getContactFacade().saveContact(contact2);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
+	}
+
+	@Test
+	public void testSearchContactsWithExtendedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		ContactDto contact =
+			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+		contact.setQuarantineExtended(true);
+		getContactFacade().saveContact(contact);
+
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setWithExtendedQuarantine(true);
+
+		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
 	}
 }

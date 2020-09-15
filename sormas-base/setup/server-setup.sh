@@ -1,7 +1,7 @@
 
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2018 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2020 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,10 +49,15 @@ else
 fi
 
 # The Java JDK for the payara server (note that spaces in the path are not supported by payara at the moment)
-#AS_JAVA_NATIVE='C:\zulu-8'
-#AS_JAVA_NATIVE='/opt/zulu-8'
+#AS_JAVA_NATIVE='C:\zulu-11'
+#AS_JAVA_NATIVE='/opt/zulu-11'
 
-PAYARA_VERSION=5.192
+# Temporal workaround: Do not use newer version than 5.194 for developers to avoid redeployment issue, see https://github.com/hzi-braunschweig/SORMAS-Project/issues/2511
+if [[ ${DEV_SYSTEM} != true ]]; then
+	PAYARA_VERSION=5.2020.2
+else
+	PAYARA_VERSION=5.194
+fi
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -75,11 +80,13 @@ GENERATED_DIR=${ROOT_PREFIX}/opt/sormas/generated
 CUSTOM_DIR=${ROOT_PREFIX}/opt/sormas/custom
 PAYARA_HOME=${ROOT_PREFIX}/opt/payara5
 DOMAINS_HOME=${ROOT_PREFIX}/opt/domains
+SORMAS2SORMAS_DIR=${ROOT_PREFIX}/opt/sormas/sormas2sormas
 
 DOMAIN_NAME=sormas
 PORT_BASE=6000
 PORT_ADMIN=6048
 DOMAIN_DIR=${DOMAINS_HOME}/${DOMAIN_NAME}
+DOMAIN_XMX=4096m
 
 # DB
 DB_HOST=localhost
@@ -88,6 +95,7 @@ DB_NAME=sormas_db
 DB_NAME_AUDIT=sormas_audit_db
 # Name of the database user; DO NOT CHANGE THIS!
 DB_USER=sormas_user
+DB_JDBC_MAXPOOLSIZE=128
 
 # ------ Config END ------
 
@@ -109,6 +117,7 @@ echo "Directory for generated files: ${GENERATED_DIR}"
 echo "Directory for custom files: ${CUSTOM_DIR}"
 echo "Payara home: ${PAYARA_HOME}"
 echo "Domain directory: ${DOMAIN_DIR}"
+echo "SORMAS to SORMAS directory:" ${SORMAS2SORMAS_DIR}
 echo "Base port: ${PORT_BASE}"
 echo "Admin port: ${PORT_ADMIN}"
 echo "---"
@@ -127,6 +136,7 @@ mkdir -p "${DOMAINS_HOME}"
 mkdir -p "${TEMP_DIR}"
 mkdir -p "${GENERATED_DIR}"
 mkdir -p "${CUSTOM_DIR}"
+mkdir -p "${SORMAS2SORMAS_DIR}"
 
 if [[ ${LINUX} = true ]]; then
 	mkdir -p "${DOWNLOAD_DIR}"
@@ -136,6 +146,7 @@ if [[ ${LINUX} = true ]]; then
 	setfacl -m u:${USER_NAME}:rwx "${TEMP_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${GENERATED_DIR}"
 	setfacl -m u:${USER_NAME}:rwx "${CUSTOM_DIR}"
+	setfacl -m u:${USER_NAME}:rwx "${SORMAS2SORMAS_DIR}"
 
 	setfacl -m u:postgres:rwx "${TEMP_DIR}"
 	setfacl -m u:postgres:rwx "${GENERATED_DIR}"
@@ -201,26 +212,27 @@ else
 fi
 
 # Check Java JDK
+JAVA_JDK_VERSION=11
 JAVA_VERSION=$("${JAVAC}" -version 2>&1 | sed 's/^.\+ //;s/^1\.//;s/[^0-9].*//')
 if [[ ! "${JAVA_VERSION}" =~ ^[0-9]+$ ]]; then
 	if [[ -z "${PAYARA_ZIP_FILE}" ]]; then
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
+			echo "ERROR: No Java JDK found. Please install a Java ${JAVA_JDK_VERSION} JDK or specify the JDK you want to use by adding AS_JAVA={PATH_TO_YOUR_JAVA_DIRECTORY} to ${ASENV_PATH}."
 		else
 			echo "ERROR: No Java JDK found in the path specified in ${ASENV_PATH}. Please adjust the value of the AS_JAVA entry."
 		fi
 	else
 		if [[ -z "${AS_JAVA}" ]]; then
-			echo "ERROR: No Java JDK found. Please install a Java 8 JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
+			echo "ERROR: No Java JDK found. Please install a Java ${JAVA_JDK_VERSION} JDK or specify the JDK you want to use by specifying AS_JAVA_NATIVE variable in this script."
 		else
 			echo "ERROR: No Java JDK found in the path specified in this script. Please adjust the value of the AS_JAVA_NATIVE variable."
 		fi
 	fi
 	exit 1
-elif [[ "${JAVA_VERSION}" -eq 8 ]]; then
+elif [[ "${JAVA_VERSION}" -eq "${JAVA_JDK_VERSION}" ]]; then
 	echo "Found Java ${JAVA_VERSION} JDK."
-elif [[ "${JAVA_VERSION}" -gt 8 ]]; then
-	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java 8 SDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
+elif [[ "${JAVA_VERSION}" -gt "${JAVA_JDK_VERSION}" ]]; then
+	read -p "Found Java ${JAVA_VERSION} JDK - This version may be too new, SORMAS functionality cannot be guaranteed. Consider downgrading to Java ${JAVA_JDK_VERSION} JDK and restarting the script. Press [Enter] to continue or [Ctrl+C] to cancel."
 else
 	echo "ERROR: Found Java ${JAVA_VERSION} JDK - This version is too old."
 	exit 1
@@ -283,7 +295,7 @@ read -p "Database setup completed. Please check the output for any error. Press 
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
-"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword "${DOMAIN_NAME}"
+"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword --template ${PAYARA_HOME}/glassfish/common/templates/gf/production-domain.jar "${DOMAIN_NAME}"
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 if [[ ${LINUX} = true ]]; then
@@ -305,15 +317,18 @@ done
 echo "Configuring domain..."
 
 # General domain settings
-${ASADMIN} delete-jvm-options -Xmx512m
-${ASADMIN} create-jvm-options -Xmx4096m
+${ASADMIN} delete-jvm-options -Xms2g
+${ASADMIN} delete-jvm-options -Xmx2g
+${ASADMIN} create-jvm-options -Xmx${DOMAIN_XMX}
+${ASADMIN} set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
+${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
 
 # JDBC pool
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
-${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
+${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}DataPool jdbc/sormasDataPool
 
 # Pool for audit log
-${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
+${ASADMIN} create-jdbc-connection-pool --restype javax.sql.XADataSource --datasourceclassname org.postgresql.xa.PGXADataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME_AUDIT}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}AuditlogPool
 ${ASADMIN} create-jdbc-resource --connectionpoolid ${DOMAIN_NAME}AuditlogPool jdbc/AuditlogPool
 
 ${ASADMIN} create-javamail-resource --mailhost localhost --mailuser user --fromaddress "${MAIL_FROM}" mail/MailSession
@@ -329,6 +344,7 @@ if [[ ${DEV_SYSTEM} = true ]] && [[ ${LINUX} != true ]]; then
 	cp cacerts.jks.bin "${DOMAIN_DIR}/config/cacerts.jks"
 fi
 cp loginsidebar.html "${CUSTOM_DIR}"
+cp loginsidebar-header.html "${CUSTOM_DIR}"
 cp logindetails.html "${CUSTOM_DIR}"
 if [[ ${DEMO_SYSTEM} = true ]]; then
 	cp demologinmain.html "${CUSTOM_DIR}/loginmain.html"

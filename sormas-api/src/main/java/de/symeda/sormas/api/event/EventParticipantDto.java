@@ -17,13 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.Required;
+import de.symeda.sormas.api.utils.SensitiveData;
 
-public class EventParticipantDto extends EntityDto {
+public class EventParticipantDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
 
@@ -34,18 +37,44 @@ public class EventParticipantDto extends EntityDto {
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
 
+	private UserReferenceDto reportingUser;
 	@Required
 	private EventReferenceDto event;
 	@Required
+	@EmbeddedPersonalData
 	private PersonDto person;
+	@SensitiveData
 	private String involvementDescription;
 	private CaseReferenceDto resultingCase; // read-only
 
-	public static EventParticipantDto build(EventReferenceDto event) {
+	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setUuid(DataHelper.createUuid());
 		eventParticipant.setEvent(event);
+		eventParticipant.setReportingUser(reportingUser);
+
 		return eventParticipant;
+	}
+
+	public static EventParticipantDto buildFromCase(
+		CaseReferenceDto caseReferenceDto,
+		PersonDto person,
+		EventReferenceDto event,
+		UserReferenceDto reportingUser) {
+		EventParticipantDto eventParticipantDto = build(event, reportingUser);
+
+		eventParticipantDto.setPerson(person);
+		eventParticipantDto.setResultingCase(caseReferenceDto);
+
+		return eventParticipantDto;
+	}
+
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
 	}
 
 	public EventReferenceDto getEvent() {

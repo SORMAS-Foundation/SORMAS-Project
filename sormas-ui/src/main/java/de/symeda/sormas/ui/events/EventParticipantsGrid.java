@@ -27,18 +27,22 @@ import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.jurisdiction.EventParticipantJurisdictionHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
+import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
 
-	private static final String CASE_ID = Captions.EventParticipant_caseId;
+	private static final String CASE_ID = Captions.EventParticipant_caseUuid;
+	private static final String NO_CASE_CREATE = null;
 
-	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
 
 		super(EventParticipantIndexDto.class);
@@ -56,45 +60,68 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			setSelectionMode(SelectionMode.NONE);
 		}
 
-		addEditColumn(e -> ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid()));
-
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
 				return entry.getCaseUuid();
-			} else {
-				return "";
 			}
+
+			boolean isInJurisdiction = FieldAccessColumnStyleGenerator.callJurisdictionChecker(
+				EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
+				UserProvider.getCurrent().getUser(),
+				entry.getJurisdiction());
+			if (!isInJurisdiction) {
+				return NO_CASE_CREATE;
+			}
+
+			return "";
 		});
 		caseIdColumn.setId(CASE_ID);
 		caseIdColumn.setSortProperty(EventParticipantIndexDto.CASE_UUID);
-		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
+		caseIdColumn.setRenderer(
+			new CaseUuidRenderer(
+				uuid -> {
+					// '!=' check is ok because the converter returns the constant when no case creation is allowed
+					return NO_CASE_CREATE != uuid;
+				}));
 
 		setColumns(
-			EDIT_BTN_ID,
+			EventParticipantIndexDto.UUID,
 			EventParticipantIndexDto.PERSON_UUID,
-			EventParticipantIndexDto.NAME,
+			EventParticipantIndexDto.FIRST_NAME,
+			EventParticipantIndexDto.LAST_NAME,
 			EventParticipantIndexDto.SEX,
 			EventParticipantIndexDto.APPROXIMATE_AGE,
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
 			CASE_ID);
 
+		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
-		for (Column<?, ?> column : getColumns()) {
+		for (Column<EventParticipantIndexDto, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+
+			column.setStyleGenerator(
+				FieldAccessColumnStyleGenerator.withCheckers(
+					getBeanType(),
+					column.getId(),
+					EventParticipantJurisdictionHelper::isInJurisdictionOrOwned,
+					FieldHelper.createPersonalDataFieldAccessChecker(),
+					FieldHelper.createSensitiveDataFieldAccessChecker()));
+
 		}
 
-		addItemClickListener(e -> {
-			if (e.getColumn() != null && CASE_ID.equals(e.getColumn().getId())) {
-				if (e.getItem().getCaseUuid() != null) {
-					ControllerProvider.getCaseController().navigateToCase(e.getItem().getCaseUuid());
-				} else {
-					EventParticipantDto eventParticipant =
-						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
-					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
-				}
+		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
+			if (e.getCaseUuid() != null) {
+				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
+			} else {
+				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
+				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}
-		});
+		}));
+		addItemClickListener(
+			new ShowDetailsListener<>(
+				EventParticipantIndexDto.UUID,
+				e -> ControllerProvider.getEventParticipantController().navigateToData(e.getUuid())));
 	}
 
 	public void reload() {

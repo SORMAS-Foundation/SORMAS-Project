@@ -18,9 +18,13 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,7 +55,9 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
@@ -60,29 +66,23 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
-import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.epidata.EpiDataBurial;
-import de.symeda.sormas.backend.epidata.EpiDataGathering;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.HospitalizationService;
-import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -91,7 +91,6 @@ import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -100,11 +99,12 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
-import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Stateless
 @LocalBean
@@ -136,6 +136,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private PrescriptionService prescriptionService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -166,7 +168,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return resultList;
 	}
 
-	public List<Case> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters) {
+	public List<Case> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Case> cq = cb.createQuery(getElementClass());
@@ -451,6 +453,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, District> district = from.join(Case.DISTRICT, JoinType.LEFT);
 		Join<Case, Community> community = from.join(Case.COMMUNITY, JoinType.LEFT);
 		Join<Case, Facility> facility = from.join(Case.HEALTH_FACILITY, JoinType.LEFT);
+		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter =
@@ -470,6 +473,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 		if (caseCriteria.getCommunity() != null) {
 			filter = and(cb, filter, cb.equal(community.get(Community.UUID), caseCriteria.getCommunity().getUuid()));
+		}
+		if (caseCriteria.getFollowUpStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
+		}
+		if (caseCriteria.getFollowUpUntilFrom() != null && caseCriteria.getFollowUpUntilTo() != null) {
+			filter =
+				and(cb, filter, cb.between(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom(), caseCriteria.getFollowUpUntilTo()));
+		} else if (caseCriteria.getFollowUpUntilFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom()));
+		} else if (caseCriteria.getFollowUpUntilTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
+		}
+		if (caseCriteria.getReportDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();
@@ -583,6 +600,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (Boolean.TRUE.equals(caseCriteria.getWithoutResponsibleOfficer())) {
 			filter = and(cb, filter, cb.isNull(from.get(Case.SURVEILLANCE_OFFICER)));
 		}
+		if (Boolean.TRUE.equals(caseCriteria.getWithExtendedQuarantine())) {
+			filter = and(cb, filter, cb.isTrue(from.get(Case.QUARANTINE_EXTENDED)));
+		}
 		if (caseCriteria.getRelevanceStatus() != null) {
 			if (caseCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = and(cb, filter, cb.or(cb.equal(from.get(Case.ARCHIVED), false), cb.isNull(from.get(Case.ARCHIVED))));
@@ -596,7 +616,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getNameUuidEpidNumberLike() != null) {
 			String[] textFilters = caseCriteria.getNameUuidEpidNumberLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
@@ -604,7 +624,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(from.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(from.get(Case.EPID_NUMBER)), textFilter),
 						cb.like(cb.lower(facility.get(Facility.NAME)), textFilter),
-						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter));
+						cb.like(cb.lower(from.get(Case.HEALTH_FACILITY_DETAILS)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter),
+						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
+						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
@@ -612,7 +635,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getReportingUserLike() != null) {
 			String[] textFilters = caseCriteria.getReportingUserLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
@@ -625,7 +648,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getSourceCaseInfoLike() != null) {
 			String[] textFilters = caseCriteria.getSourceCaseInfoLike().split("\\s+");
 			for (int i = 0; i < textFilters.length; i++) {
-				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				String textFilter = formatForLike(textFilters[i]);
 				if (!DataHelper.isNullOrEmpty(textFilter)) {
 					Predicate likeFilters = cb.or(
 						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
@@ -637,6 +660,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				}
 			}
 		}
+		if (caseCriteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), caseCriteria.getBirthdateYYYY()));
+		}
+		if (caseCriteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), caseCriteria.getBirthdateMM()));
+		}
+		if (caseCriteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), caseCriteria.getBirthdateDD()));
+		}
+
 		return filter;
 	}
 
@@ -670,10 +703,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(contact);
 		}
 
-		caze.getSamples().stream().filter(sample -> sample.getAssociatedContact() == null).forEach(sample -> sampleService.delete(sample));
+		caze.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.delete(sample));
 
 		// Delete all tasks associated with this case
-		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())));
+		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())), true);
 		for (Task task : tasks) {
 			taskService.delete(task);
 		}
@@ -691,6 +727,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				.forEach(c -> clinicalVisitService.delete(c));
 		}
 
+		//Remove all events linked to case by removing the case_id from event participant
+		caze.getEventParticipants().stream().forEach(eventParticipant -> eventParticipant.setResultingCase(null));
+
 		// Mark the case as deleted
 		super.delete(caze);
 	}
@@ -700,68 +739,56 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return createChangeDateFilter(cb, casePath, date, false);
 	}
 
-	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, Boolean includeExtendedChangeDateFilters) {
+	/**
+	 * 
+	 * @param cb
+	 * @param casePath
+	 * @param date
+	 * @param includeExtendedChangeDateFilters
+	 *            additional change dates filters for: sample, pathogenTests, patient and location
+	 * @return
+	 */
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, boolean includeExtendedChangeDateFilters) {
 
-		Predicate dateFilter = greaterThanAndNotNull(cb, casePath.get(Case.CHANGE_DATE), date);
+		Builder<Predicate> filters = Stream.builder();
 
-		Join<Case, Symptoms> symptoms = casePath.join(Case.SYMPTOMS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, symptoms.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(changeDateFilter(cb, date, casePath));
+		filters.add(changeDateFilter(cb, date, casePath, Case.SYMPTOMS));
 
 		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, hospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(changeDateFilter(cb, date, hospitalization));
+		filters.add(changeDateFilter(cb, date, hospitalization, Hospitalization.PREVIOUS_HOSPITALIZATIONS));
 
-		Join<Hospitalization, PreviousHospitalization> previousHospitalization =
-			hospitalization.join(Hospitalization.PREVIOUS_HOSPITALIZATIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, previousHospitalization.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(epiDataService.createChangeDateFilter(cb, casePath.join(Contact.EPI_DATA, JoinType.LEFT), date));
 
-		Join<Case, EpiData> epiData = casePath.join(Case.EPI_DATA, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiData.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataTravel> epiDataTravels = epiData.join(EpiData.TRAVELS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataTravels.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataBurial> epiDataBurials = epiData.join(EpiData.BURIALS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataBurials.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-			dateFilter,
-			greaterThanAndNotNull(cb, epiDataBurials.join(EpiDataBurial.BURIAL_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-		Join<EpiData, EpiDataGathering> epiDataGatherings = epiData.join(EpiData.GATHERINGS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, epiDataGatherings.get(AbstractDomainObject.CHANGE_DATE), date));
-		dateFilter = cb.or(
-			dateFilter,
-			greaterThanAndNotNull(cb, epiDataGatherings.join(EpiDataGathering.GATHERING_ADDRESS, JoinType.LEFT).get(Location.CHANGE_DATE), date));
-
-		Join<Case, Therapy> therapy = casePath.join(Case.THERAPY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, therapy.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(changeDateFilter(cb, date, casePath, Case.THERAPY));
 
 		Join<Case, ClinicalCourse> clinicalCourse = casePath.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, clinicalCourse.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(changeDateFilter(cb, date, clinicalCourse));
+		filters.add(changeDateFilter(cb, date, clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS));
 
-		Join<ClinicalCourse, HealthConditions> healthConditions = clinicalCourse.join(ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, healthConditions.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<Case, MaternalHistory> maternalHistory = casePath.join(Case.MATERNAL_HISTORY, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, maternalHistory.get(AbstractDomainObject.CHANGE_DATE), date));
-
-		Join<Case, PortHealthInfo> portHealthInfo = casePath.join(Case.PORT_HEALTH_INFO, JoinType.LEFT);
-		dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, portHealthInfo.get(AbstractDomainObject.CHANGE_DATE), date));
+		filters.add(changeDateFilter(cb, date, casePath, Case.MATERNAL_HISTORY));
+		filters.add(changeDateFilter(cb, date, casePath, Case.PORT_HEALTH_INFO));
 
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, caseSampleJoin.get(AbstractDomainObject.CHANGE_DATE), date));
-
-			Join<Sample, PathogenTest> samplePathogenTestJoin = caseSampleJoin.join(Sample.PATHOGENTESTS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, samplePathogenTestJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+			filters.add(changeDateFilter(cb, date, caseSampleJoin));
+			filters.add(changeDateFilter(cb, date, caseSampleJoin, Sample.PATHOGENTESTS));
 
 			Join<Case, Person> casePersonJoin = casePath.join(Case.PERSON, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, casePersonJoin.get(AbstractDomainObject.CHANGE_DATE), date));
-
-			Join<Person, Location> personLocationJoin = casePersonJoin.join(Person.ADDRESS, JoinType.LEFT);
-			dateFilter = cb.or(dateFilter, greaterThanAndNotNull(cb, personLocationJoin.get(AbstractDomainObject.CHANGE_DATE), date));
+			filters.add(changeDateFilter(cb, date, casePersonJoin));
+			filters.add(changeDateFilter(cb, date, casePersonJoin, Person.ADDRESS));
 		}
 
-		return dateFilter;
+		return cb.or(filters.build().toArray(Predicate[]::new));
+	}
+
+	private <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
+		From<?, ?> parent = path;
+		for (int i = 0; i < joinFields.length; i++) {
+			parent = parent.join(joinFields[i], JoinType.LEFT);
+		}
+		return greaterThanAndNotNull(cb, parent.get(AbstractDomainObject.CHANGE_DATE), date);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -776,41 +803,41 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = null;
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
-			filterResponsible = cb.equal(casePath.join(Case.REPORTING_USER, JoinType.LEFT), currentUser);
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT), currentUser));
-			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.join(Case.CASE_OFFICER, JoinType.LEFT), currentUser));
+			filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
+			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
+			filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
 
 			switch (jurisdictionLevel) {
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION), region));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT), district));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case HEALTH_FACILITY:
 				final Facility healthFacility = currentUser.getHealthFacility();
 				if (healthFacility != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY), healthFacility));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.HEALTH_FACILITY).get(Facility.ID), healthFacility.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY), community));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			case POINT_OF_ENTRY:
 				final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
 				if (pointOfEntry != null) {
-					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY), pointOfEntry));
+					filter = or(cb, filter, cb.equal(casePath.get(Case.POINT_OF_ENTRY).get(PointOfEntry.ID), pointOfEntry.getId()));
 				}
 				break;
 			case LABORATORY:
@@ -822,7 +849,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				break;
 			default:
 			}
-
 
 			// get all cases based on the user's contact association
 			if (userFilterCriteria == null || !userFilterCriteria.isExcludeCasesFromContacts()) {
@@ -889,5 +915,161 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		return newCaseFilter;
+	}
+
+	public Predicate isInJurisdictionOrOwned(CriteriaBuilder cb, CaseJoins<Case> joins) {
+
+		final User currentUser = userService.getCurrentUser();
+
+		final Predicate reportedByCurrentUser =
+			cb.and(cb.isNotNull(joins.getReportingUser()), cb.equal(joins.getReportingUser().get(User.UUID), currentUser.getUuid()));
+
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		final Predicate jurisdictionPredicate;
+		switch (jurisdictionLevel) {
+		case NATION:
+			jurisdictionPredicate = cb.conjunction();
+			break;
+		case REGION:
+			jurisdictionPredicate = cb.equal(joins.getRegion().get(Region.ID), currentUser.getRegion().getId());
+			break;
+		case DISTRICT:
+			jurisdictionPredicate = cb.equal(joins.getDistrict().get(District.ID), currentUser.getDistrict().getId());
+			break;
+		case COMMUNITY:
+			jurisdictionPredicate = cb.equal(joins.getCommunity().get(Community.ID), currentUser.getCommunity().getId());
+			break;
+		case HEALTH_FACILITY:
+			jurisdictionPredicate = cb.equal(joins.getFacility().get(Facility.ID), currentUser.getHealthFacility().getId());
+			break;
+		case POINT_OF_ENTRY:
+			jurisdictionPredicate = cb.equal(joins.getPointOfEntry().get(PointOfEntry.ID), currentUser.getPointOfEntry().getId());
+			break;
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+		case NONE:
+		default:
+			jurisdictionPredicate = cb.disjunction();
+		}
+		return cb.or(reportedByCurrentUser, jurisdictionPredicate);
+	}
+
+	public Case getRelevantCaseForFollowUp(Person person, Disease disease, Date referenceDate) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> caseRoot = cq.from(Case.class);
+
+		Predicate filter =
+			and(cb, createDefaultFilter(cb, caseRoot), buildRelevantCasesFilterForFollowUp(person, disease, referenceDate, cb, caseRoot));
+		cq.where(filter);
+
+		return em.createQuery(cq).getResultStream().findFirst().orElse(null);
+	}
+
+	/**
+	 * Returns a filter that can be used to retrieve all cases with the specified
+	 * person and disease whose report date is before the reference date and,
+	 * if available, whose follow-up until date is after the reference date,
+	 * including an offset to allow some tolerance.
+	 */
+	private Predicate buildRelevantCasesFilterForFollowUp(Person person, Disease disease, Date referenceDate, CriteriaBuilder cb, Root<Case> from) {
+
+		Date referenceDateStart = DateHelper.getStartOfDay(referenceDate);
+		Date referenceDateEnd = DateHelper.getEndOfDay(referenceDate);
+
+		Predicate filter = and(cb, cb.equal(from.get(Case.PERSON), person), cb.equal(from.get(Case.DISEASE), disease));
+
+		filter = and(
+			cb,
+			filter,
+			cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), DateHelper.addDays(referenceDateEnd, FollowUpLogic.ALLOWED_DATE_OFFSET)));
+
+		filter = and(
+			cb,
+			filter,
+			or(
+				cb,
+				// If the case does not have a follow-up until date, use the case report date as a fallback
+				and(
+					cb,
+					cb.isNull(from.get(Case.FOLLOW_UP_UNTIL)),
+					cb.greaterThanOrEqualTo(
+						from.get(Case.REPORT_DATE),
+						DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))),
+				cb.greaterThanOrEqualTo(
+					from.get(Case.FOLLOW_UP_UNTIL),
+					DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))));
+
+		return filter;
+	}
+
+	/**
+	 * Calculates and sets the follow-up until date and status of the case. If
+	 * the date has been overwritten by a user, only the status changes and
+	 * extensions of the follow-up until date based on missed visits are executed.
+	 * <ul>
+	 * <li>Disease with no follow-up: Leave empty and set follow-up status to "No
+	 * follow-up"</li>
+	 * <li>Others: Use follow-up duration of the disease. Reference for calculation
+	 * is the reporting date If the last visit was not cooperative and happened
+	 * at the last date of case tracing, we need to do an additional visit.</li>
+	 * </ul>
+	 */
+	public void updateFollowUpUntilAndStatus(Case caze) {
+
+		Disease disease = caze.getDisease();
+		boolean changeStatus = caze.getFollowUpStatus() != FollowUpStatus.CANCELED && caze.getFollowUpStatus() != FollowUpStatus.LOST;
+
+		if (!diseaseConfigurationFacade.hasFollowUp(disease)) {
+			caze.setFollowUpUntil(null);
+			if (changeStatus) {
+				caze.setFollowUpStatus(FollowUpStatus.NO_FOLLOW_UP);
+			}
+		} else {
+			int followUpDuration = diseaseConfigurationFacade.getFollowUpDuration(disease);
+			LocalDate beginDate = DateHelper8.toLocalDate(caze.getReportDate());
+			LocalDate untilDate = caze.isOverwriteFollowUpUntil()
+				|| (caze.getFollowUpUntil() != null && DateHelper8.toLocalDate(caze.getFollowUpUntil()).isAfter(beginDate.plusDays(followUpDuration)))
+					? DateHelper8.toLocalDate(caze.getFollowUpUntil())
+					: beginDate.plusDays(followUpDuration);
+
+			Visit lastVisit;
+			boolean additionalVisitNeeded;
+			do {
+				additionalVisitNeeded = false;
+				lastVisit = caze.getVisits().stream().max(Comparator.comparing(Visit::getVisitDateTime)).orElse(null);
+				if (lastVisit != null) {
+					// if the last visit was not cooperative and happened at the last date of
+					// contact tracing ..
+					if (lastVisit.getVisitStatus() != VisitStatus.COOPERATIVE
+						&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(untilDate)) {
+						// .. we need to do an additional visit
+						additionalVisitNeeded = true;
+						untilDate = untilDate.plusDays(1);
+					}
+					// if the last visit was cooperative and happened at the last date of contact tracing,
+					// revert the follow-up until date back to the original
+					if (!caze.isOverwriteFollowUpUntil()
+						&& lastVisit.getVisitStatus() == VisitStatus.COOPERATIVE
+						&& DateHelper8.toLocalDate(lastVisit.getVisitDateTime()).isEqual(beginDate.plusDays(followUpDuration))) {
+						additionalVisitNeeded = false;
+						untilDate = beginDate.plusDays(followUpDuration);
+					}
+				}
+			}
+			while (additionalVisitNeeded);
+
+			caze.setFollowUpUntil(DateHelper8.toDate(untilDate));
+			if (changeStatus) {
+				if (lastVisit != null && DateHelper.isSameDay(lastVisit.getVisitDateTime(), DateHelper8.toDate(untilDate))) {
+					caze.setFollowUpStatus(FollowUpStatus.COMPLETED);
+				} else {
+					caze.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+				}
+			}
+		}
+
+		ensurePersisted(caze);
 	}
 }

@@ -67,6 +67,8 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 	 */
 	private StatisticsFilterJurisdictionElement jurisdictionElement;
 
+	private StatisticsFilterResidenceElement residenceElement;
+
 	public StatisticsFilterValuesElement(String caption, StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, int rowIndex) {
 
 		setSpacing(true);
@@ -93,6 +95,16 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		int rowIndex) {
 		this(caption, attribute, subAttribute, rowIndex);
 		this.jurisdictionElement = jurisdictionElement;
+	}
+
+	public StatisticsFilterValuesElement(
+		String caption,
+		StatisticsCaseAttribute attribute,
+		StatisticsCaseSubAttribute subAttribute,
+		StatisticsFilterResidenceElement residenceElement,
+		int rowIndex) {
+		this(caption, attribute, subAttribute, rowIndex);
+		this.residenceElement = residenceElement;
 	}
 
 	public void updateDropdownContent() {
@@ -123,7 +135,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 		return tokenField;
 	}
 
-	private VerticalLayout createUtilityButtonsLayout(int rowIndex) {
+	protected VerticalLayout createUtilityButtonsLayout(int rowIndex) {
 
 		VerticalLayout utilityButtonsLayout = new VerticalLayout();
 		utilityButtonsLayout.setMargin(false);
@@ -173,58 +185,55 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 				if (jurisdictionElement == null) {
 					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 				}
-
-				List<TokenizableValue> selectedRegionTokenizables = jurisdictionElement.getSelectedRegions();
-				if (CollectionUtils.isNotEmpty(selectedRegionTokenizables)) {
-					List<DistrictReferenceDto> districts = new ArrayList<>();
-					for (TokenizableValue selectedRegionTokenizable : selectedRegionTokenizables) {
-						RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
-						districts.addAll(FacadeProvider.getDistrictFacade().getAllActiveByRegion(selectedRegion.getUuid()));
-					}
-					return createTokens(districts);
-				} else {
-					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
-				}
+				return createDistrictTokens(jurisdictionElement.getSelectedRegions());
 			case COMMUNITY:
+				if (jurisdictionElement == null) {
+					return new ArrayList<>();
+				}
+				return createCommunityTokens(jurisdictionElement.getSelectedDistricts());
+			case FACILITY:
 				if (jurisdictionElement == null) {
 					return new ArrayList<>();
 				}
 
 				List<TokenizableValue> selectedDistrictTokenizables = jurisdictionElement.getSelectedDistricts();
-				if (CollectionUtils.isNotEmpty(selectedDistrictTokenizables)) {
-					List<CommunityReferenceDto> communities = new ArrayList<>();
-					for (TokenizableValue selectedDistrictTokenizable : selectedDistrictTokenizables) {
-						DistrictReferenceDto selectedDistrict = (DistrictReferenceDto) selectedDistrictTokenizable.getValue();
-						communities.addAll(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(selectedDistrict.getUuid()));
-					}
-					return createTokens(communities);
-				} else {
-					return new ArrayList<>();
-				}
-			case HEALTH_FACILITY:
-				if (jurisdictionElement == null) {
-					return new ArrayList<>();
-				}
-
-				selectedDistrictTokenizables = jurisdictionElement.getSelectedDistricts();
 				List<TokenizableValue> selectedCommunityTokenizables = jurisdictionElement.getSelectedCommunities();
 				if (CollectionUtils.isNotEmpty(selectedCommunityTokenizables)) {
 					List<FacilityReferenceDto> facilities = new ArrayList<>();
 					for (TokenizableValue selectedCommunityTokenizable : selectedCommunityTokenizables) {
 						CommunityReferenceDto selectedCommunity = (CommunityReferenceDto) selectedCommunityTokenizable.getValue();
-						facilities.addAll(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByCommunity(selectedCommunity, false));
+						facilities.addAll(
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByCommunityAndType(selectedCommunity, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else if (CollectionUtils.isNotEmpty(selectedDistrictTokenizables)) {
 					List<FacilityReferenceDto> facilities = new ArrayList<>();
 					for (TokenizableValue selectedDistrictTokenizable : selectedDistrictTokenizables) {
 						DistrictReferenceDto selectedDistrict = (DistrictReferenceDto) selectedDistrictTokenizable.getValue();
-						facilities.addAll(FacadeProvider.getFacilityFacade().getActiveHealthFacilitiesByDistrict(selectedDistrict, false));
+						facilities.addAll(
+							FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType(selectedDistrict, jurisdictionElement.getFacilityType(), false, false));
 					}
 					return createTokens(facilities);
 				} else {
 					return new ArrayList<>();
 				}
+			case PERSON_REGION:
+				return createTokens(FacadeProvider.getRegionFacade().getAllActiveAsReference());
+			case PERSON_DISTRICT:
+				if (residenceElement == null) {
+					return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
+				}
+				return createDistrictTokens(residenceElement.getSelectedRegions());
+			case PERSON_COMMUNITY:
+				if (residenceElement == null) {
+					return new ArrayList<>();
+				}
+				return createCommunityTokens(residenceElement.getSelectedDistricts());
+			case PERSON_CITY:
+			case PERSON_POSTCODE:
+				return new ArrayList<>();
 			default:
 				throw new IllegalArgumentException(this.toString());
 			}
@@ -232,7 +241,7 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			switch (attribute) {
 			case SEX:
 				List<TokenizableValue> tokens = createTokens(Sex.values());
-				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.unknown), tokens.size()));
+				tokens.add(new TokenizableValue(I18nProperties.getCaption(Captions.notSpecified), tokens.size()));
 				return tokens;
 			case AGE_INTERVAL_1_YEAR:
 			case AGE_INTERVAL_5_YEARS:
@@ -253,6 +262,32 @@ public class StatisticsFilterValuesElement extends StatisticsFilterElement {
 			default:
 				throw new IllegalArgumentException(this.toString());
 			}
+		}
+	}
+
+	private List<TokenizableValue> createCommunityTokens(List<TokenizableValue> selectedDistrictTokenizables) {
+		if (CollectionUtils.isNotEmpty(selectedDistrictTokenizables)) {
+			List<CommunityReferenceDto> communities = new ArrayList<>();
+			for (TokenizableValue selectedDistrictTokenizable : selectedDistrictTokenizables) {
+				DistrictReferenceDto selectedDistrict = (DistrictReferenceDto) selectedDistrictTokenizable.getValue();
+				communities.addAll(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(selectedDistrict.getUuid()));
+			}
+			return createTokens(communities);
+		} else {
+			return new ArrayList<>();
+		}
+	}
+
+	private List<TokenizableValue> createDistrictTokens(List<TokenizableValue> selectedResidenceRegionTokenizables) {
+		if (CollectionUtils.isNotEmpty(selectedResidenceRegionTokenizables)) {
+			List<DistrictReferenceDto> districts = new ArrayList<>();
+			for (TokenizableValue selectedRegionTokenizable : selectedResidenceRegionTokenizables) {
+				RegionReferenceDto selectedRegion = (RegionReferenceDto) selectedRegionTokenizable.getValue();
+				districts.addAll(FacadeProvider.getDistrictFacade().getAllActiveByRegion(selectedRegion.getUuid()));
+			}
+			return createTokens(districts);
+		} else {
+			return createTokens(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		}
 	}
 

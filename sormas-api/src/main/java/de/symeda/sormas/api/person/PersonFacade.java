@@ -47,8 +47,6 @@ public interface PersonFacade {
 
 	List<PersonDto> getByUuids(List<String> uuids);
 
-	PersonIndexDto getIndexDto(String uuid);
-
 	Map<Disease, Long> getDeathCountByDisease(CaseCriteria caseCriteria, boolean excludeSharedCases, boolean excludeCasesFromContacts);
 
 	/**
@@ -57,11 +55,14 @@ public interface PersonFacade {
 	 */
 	List<PersonNameDto> getMatchingNameDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
 
-	List<PersonIndexDto> getIndexDtosByUuids(List<String> personUuids);
+	List<SimilarPersonDto> getSimilarPersonsByUuids(List<String> personUuids);
 
 	Boolean isValidPersonUuid(String personUuid);
 
-	String getPIAAccountCreationUrl(PersonDto person);
-
 	List<PersonQuarantineEndDto> getLatestQuarantineEndDates(Date since);
+
+	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
+
+	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
+
 }

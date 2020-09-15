@@ -14,10 +14,20 @@ public class ClinicalCourseDto extends EntityDto {
 	private HealthConditionsDto healthConditions;
 
 	public static ClinicalCourseDto build() {
+		return build(null);
+	}
+
+	public static ClinicalCourseDto build(HealthConditionsDto healthConditions) {
 
 		ClinicalCourseDto clinicalCourse = new ClinicalCourseDto();
 		clinicalCourse.setUuid(DataHelper.createUuid());
-		clinicalCourse.setHealthConditions(HealthConditionsDto.build());
+
+		if (healthConditions == null) {
+			clinicalCourse.setHealthConditions(HealthConditionsDto.build());
+		} else {
+			clinicalCourse.setHealthConditions(healthConditions);
+		}
+
 		return clinicalCourse;
 	}
 

@@ -17,33 +17,51 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.user.User;
 
 @Entity
 @Audited
-public class EventParticipant extends AbstractDomainObject {
+public class EventParticipant extends CoreAdo {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
 	public static final String TABLE_NAME = "eventparticipant";
 
+	public static final String REPORTING_USER = "reportingUser";
 	public static final String EVENT = "event";
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE = "resultingCase";
 
+	private User reportingUser;
 	private Event event;
 	private Person person;
 	private String involvementDescription;
 	private Case resultingCase;
+	private Set<Sample> samples;
+
+	@ManyToOne(cascade = {})
+	public User getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
 	@ManyToOne(cascade = {})
 	public Event getEvent() {
@@ -87,4 +105,14 @@ public class EventParticipant extends AbstractDomainObject {
 	public void setResultingCase(Case resultingCase) {
 		this.resultingCase = resultingCase;
 	}
+
+	@OneToMany(mappedBy = Sample.ASSOCIATED_EVENT_PARTICIPANT, fetch = FetchType.LAZY)
+	public Set<Sample> getSamples() {
+		return samples;
+	}
+
+	public void setSamples(Set<Sample> samples) {
+		this.samples = samples;
+	}
+
 }

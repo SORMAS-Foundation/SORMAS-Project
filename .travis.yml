@@ -1,5 +1,9 @@
 language: java
 jdk:
-  - openjdk8
-before_install: cd sormas-base
-install: mvn test -B
+  - openjdk8 # FIXME remove after transition period (#2617)
+  - openjdk11
+before_install:
+  - cd sormas-base
+install: skip
+script:
+  - mvn install -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn

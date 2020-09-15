@@ -15,18 +15,22 @@
 
 package de.symeda.sormas.app.sample.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import java.util.List;
+
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.sample.Sample;
+import de.symeda.sormas.app.backend.sample.SampleEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.sample.SampleSection;
 import de.symeda.sormas.app.sample.ShipmentStatus;
@@ -93,6 +97,24 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 		boolean result = super.onCreateOptionsMenu(menu);
 		getEditMenu().setTitle(R.string.action_edit_sample);
 		return result;
+	}
+
+	@Override
+	protected void processActionbarMenu() {
+		super.processActionbarMenu();
+
+		final MenuItem editMenu = getEditMenu();
+
+		final ReferenceDto referenceDto = new SampleReferenceDto(getRootUuid());
+		final Sample selectedSample = DatabaseHelper.getSampleDao().getByReferenceDto(referenceDto);
+
+		if (editMenu != null) {
+			if (SampleEditAuthorization.isSampleEditAllowed(selectedSample)) {
+				editMenu.setVisible(true);
+			} else {
+				editMenu.setVisible(false);
+			}
+		}
 	}
 
 	@Override

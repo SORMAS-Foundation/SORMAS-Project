@@ -42,18 +42,21 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -69,6 +72,7 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb implements EventFacade {
@@ -84,6 +88,8 @@ public class EventFacadeEjb implements EventFacade {
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
+	private EventJurisdictionChecker eventJurisdictionChecker;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -93,7 +99,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveUuids(user);
+		return eventService.getAllActiveUuids();
 	}
 
 	@Override
@@ -104,12 +110,14 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveEventsAfter(date, user).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventService.getAllActiveEventsAfter(date).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventDto> getByUuids(List<String> uuids) {
-		return eventService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -120,31 +128,28 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getDeletedUuidsSince(user, since);
+		return eventService.getDeletedUuidsSince(since);
 	}
 
 	@Override
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getNewEventsForDashboard(eventCriteria, user);
+		return eventService.getNewEventsForDashboard(eventCriteria);
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getEventCountByDisease(eventCriteria, user);
+		return eventService.getEventCountByDisease(eventCriteria);
 	}
 
 	public Map<EventStatus, Long> getEventCountByStatus(EventCriteria eventCriteria) {
 
-		User user = userService.getCurrentUser();
-		return eventService.getEventCountByStatus(eventCriteria, user);
+		return eventService.getEventCountByStatus(eventCriteria);
 	}
 
 	@Override
 	public EventDto getEventByUuid(String uuid) {
-		return toDto(eventService.getByUuid(uuid));
+		return convertToDto(eventService.getByUuid(uuid), new Pseudonymizer(userService::hasRight));
 	}
 
 	@Override
@@ -155,9 +160,16 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public EventDto saveEvent(EventDto dto) {
 
+		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
+		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
+		EventDto existingDto = toDto(existingEvent);
+
+		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+
 		Event event = fromDto(dto);
 		eventService.ensurePersisted(event);
-		return toDto(event);
+
+		return convertToDto(event, pseudonymizer);
 	}
 
 	@Override
@@ -177,7 +189,11 @@ public class EventFacadeEjb implements EventFacade {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
 
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = null;
+
+		if (eventCriteria.getUserFilterIncluded()) {
+			eventService.createUserFilter(cb, cq, event);
+		}
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
@@ -200,25 +216,45 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.EVENT_DATE),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
 			event.get(Event.EVENT_DESC),
-			location.get(Location.UUID),
+			region.get(Region.UUID),
 			region.get(Region.NAME),
+			district.get(District.UUID),
 			district.get(District.NAME),
+			community.get(Community.UUID),
 			community.get(Community.NAME),
 			location.get(Location.CITY),
-			location.get(Location.ADDRESS),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.ADDITIONAL_INFORMATION),
+			event.get(Event.SRC_TYPE),
 			event.get(Event.SRC_FIRST_NAME),
 			event.get(Event.SRC_LAST_NAME),
 			event.get(Event.SRC_TEL_NO),
-			event.get(Event.REPORT_DATE_TIME));
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
+			event.get(Event.REPORT_DATE_TIME),
+			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
 
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = null;
+
+		if (eventCriteria.getUserFilterIncluded()) {
+			eventService.createUserFilter(cb, cq, event);
+		}
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
@@ -236,7 +272,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.EVENT_STATUS:
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
-				case EventIndexDto.EVENT_DATE:
+				case EventIndexDto.START_DATE:
 				case EventIndexDto.EVENT_DESC:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
@@ -261,11 +297,83 @@ public class EventFacadeEjb implements EventFacade {
 			cq.orderBy(cb.desc(event.get(Contact.CHANGE_DATE)));
 		}
 
+		List<EventIndexDto> indexList;
 		if (first != null && max != null) {
-			return em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+			indexList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 		} else {
-			return em.createQuery(cq).getResultList();
+			indexList = em.createQuery(cq).getResultList();
 		}
+
+		return indexList;
+	}
+
+	@Override
+	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Integer first, Integer max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
+		Root<Event> event = cq.from(Event.class);
+		Join<Event, Location> location = event.join(Event.EVENT_LOCATION, JoinType.LEFT);
+		Join<Location, Region> region = location.join(Location.REGION, JoinType.LEFT);
+		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
+
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
+		cq.multiselect(
+			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EVENT_STATUS),
+			participantCount,
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
+			event.get(Event.EVENT_DESC),
+			event.get(Event.NOSOCOMIAL),
+			region.get(Region.UUID),
+			region.get(Region.NAME),
+			district.get(District.UUID),
+			district.get(District.NAME),
+			community.get(Community.UUID),
+			community.get(Community.NAME),
+			location.get(Location.CITY),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.ADDITIONAL_INFORMATION),
+			event.get(Event.SRC_TYPE),
+			event.get(Event.SRC_FIRST_NAME),
+			event.get(Event.SRC_LAST_NAME),
+			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_EMAIL),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
+			event.get(Event.SRC_MEDIA_DETAILS),
+			event.get(Event.REPORT_DATE_TIME),
+			event.join(Event.REPORTING_USER, JoinType.LEFT).get(User.UUID),
+			event.join(Event.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID));
+
+		Predicate filter = eventService.createUserFilter(cb, cq, event);
+
+		if (eventCriteria != null) {
+			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, cb, event);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
+
+		List<EventExportDto> exportList;
+		if (first != null && max != null) {
+			exportList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
+		} else {
+			exportList = em.createQuery(cq).getResultList();
+		}
+
+		return exportList;
 	}
 
 	@Override
@@ -313,7 +421,7 @@ public class EventFacadeEjb implements EventFacade {
 			return Collections.emptyList();
 		}
 
-		return eventService.getArchivedUuidsSince(user, since);
+		return eventService.getArchivedUuidsSince(since);
 	}
 
 	public Event fromDto(@NotNull EventDto source) {
@@ -329,16 +437,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.validateDto(source, target);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEventLocation(locationFacade.fromDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
@@ -349,6 +464,32 @@ public class EventFacadeEjb implements EventFacade {
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
 		return target;
+	}
+
+	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
+		EventDto eventDto = toDto(source);
+
+		pseudonymizeDto(source, eventDto, pseudonymizer);
+
+		return eventDto;
+	}
+
+	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
+
+			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
+				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
+			});
+		}
+	}
+
+	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
+			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
+			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+		}
 	}
 
 	public static EventReferenceDto toReferenceDto(Event entity) {
@@ -370,16 +511,23 @@ public class EventFacadeEjb implements EventFacade {
 		DtoHelper.fillDto(target, source);
 
 		target.setEventStatus(source.getEventStatus());
+		target.setExternalId(source.getExternalId());
 		target.setEventDesc(source.getEventDesc());
-		target.setEventDate(source.getEventDate());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
 		target.setReportDateTime(source.getReportDateTime());
 		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
 		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
 		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setSrcType(source.getSrcType());
 		target.setSrcFirstName(source.getSrcFirstName());
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
@@ -445,5 +593,11 @@ public class EventFacadeEjb implements EventFacade {
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 
+	}
+
+	public Boolean isEventEditAllowed(String eventUuid) {
+
+		Event event = eventService.getByUuid(eventUuid);
+		return eventJurisdictionChecker.isInJurisdictionOrOwned(event);
 	}
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -32,7 +33,9 @@ import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ValueChangeListener;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentPathogenTestEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
@@ -51,7 +54,12 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	// Instance methods
 
 	public static PathogenTestEditFragment newInstance(PathogenTest activityRootData) {
-		return newInstance(PathogenTestEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			PathogenTestEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	// Overrides
@@ -83,16 +91,46 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 
 	@Override
 	public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
+		setFieldVisibilitiesAndAccesses(PathogenTestDto.class, contentBinding.mainContent);
+
 		// Initialize ControlSpinnerFields
-		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList);
+		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestType currentTestType = (PathogenTestType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == currentTestType
+					&& PathogenTestResultType.POSITIVE == contentBinding.pathogenTestTestResult.getValue())
+					|| PathogenTestType.CQ_VALUE_DETECTION == currentTestType) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
+			}
+		});
+
 		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
-		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList);
+		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
+
+			@Override
+			public void onChange(ControlPropertyField field) {
+				PathogenTestResultType currentPathogenTestResult = (PathogenTestResultType) field.getValue();
+				if ((PathogenTestType.PCR_RT_PCR == contentBinding.pathogenTestTestType.getValue()
+					&& PathogenTestResultType.POSITIVE == currentPathogenTestResult)
+					|| PathogenTestType.CQ_VALUE_DETECTION == contentBinding.pathogenTestTestType.getValue()) {
+					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
+				} else {
+					contentBinding.pathogenTestCqValue.hideField(true);
+				}
+			}
+		});
+
 		contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
 
 			@Override
 			public void onChange(ControlPropertyField field) {
 				Facility laboratory = (Facility) field.getValue();
-				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_LABORATORY_UUID)) {
+				if (laboratory != null && laboratory.getUuid().equals(FacilityDto.OTHER_FACILITY_UUID)) {
 					contentBinding.pathogenTestLabDetails.setVisibility(View.VISIBLE);
 				} else {
 					contentBinding.pathogenTestLabDetails.hideField(true);

@@ -41,7 +41,7 @@ if (create){
 	WebUI.click(findTestObject('Contacts/ContactInformationView/newTask_dlg_cancel_button'))
 }
 
-WebUI.click(findTestObject('Contacts/ContactInformationView/contact_view_kontaktliste_link'))
+WebUI.click(findTestObject('Contacts/ContactInformationView/div_Contacts list'))
 WebUI.delay(1)
 
 

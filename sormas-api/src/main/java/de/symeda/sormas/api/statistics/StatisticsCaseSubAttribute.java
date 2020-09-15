@@ -32,7 +32,12 @@ public enum StatisticsCaseSubAttribute {
 	REGION(false, true),
 	DISTRICT(false, true),
 	COMMUNITY(false, true),
-	HEALTH_FACILITY(false, true);
+	FACILITY(false, true),
+	PERSON_REGION(false, false),
+	PERSON_DISTRICT(false, false),
+	PERSON_COMMUNITY(false, false),
+	PERSON_CITY(false, false),
+	PERSON_POSTCODE(false, false);
 
 	private boolean usedForFilters;
 	private boolean usedForGrouping;

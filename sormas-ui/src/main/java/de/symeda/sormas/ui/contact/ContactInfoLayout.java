@@ -17,9 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,15 +27,18 @@ import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.UiFieldAccessCheckers;
 
 @SuppressWarnings("serial")
-public class ContactInfoLayout extends HorizontalLayout {
+public class ContactInfoLayout extends AbstractInfoLayout<ContactDto> {
 
 	private final ContactDto contactDto;
 
-	public ContactInfoLayout(ContactDto contactDto) {
+	public ContactInfoLayout(ContactDto contactDto, UiFieldAccessCheckers fieldAccessCheckers) {
+		super(ContactDto.class, fieldAccessCheckers);
 
 		this.contactDto = contactDto;
 		setSpacing(true);
@@ -59,10 +60,15 @@ public class ContactInfoLayout extends HorizontalLayout {
 		{
 			addDescLabel(
 				firstColumn,
+				ContactDto.UUID,
 				DataHelper.getShortUuid(contactDto.getUuid()),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.UUID)).setDescription(contactDto.getUuid());
 
-			addDescLabel(firstColumn, contactDto.getPerson(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
+			addDescLabel(
+				firstColumn,
+				ContactDto.PERSON,
+				contactDto.getPerson(),
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
@@ -70,16 +76,24 @@ public class ContactInfoLayout extends HorizontalLayout {
 				ageSexRow.setMargin(false);
 				ageSexRow.setSpacing(true);
 
-				addDescLabel(
+				addCustomDescLabel(
 					ageSexRow,
+					PersonDto.class,
+					PersonDto.APPROXIMATE_AGE,
 					ApproximateAgeHelper.formatApproximateAge(personDto.getApproximateAge(), personDto.getApproximateAgeType()),
 					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.APPROXIMATE_AGE));
 
-				addDescLabel(ageSexRow, personDto.getSex(), I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
+				addCustomDescLabel(
+					ageSexRow,
+					PersonDto.class,
+					PersonDto.SEX,
+					personDto.getSex(),
+					I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
 				firstColumn.addComponent(ageSexRow);
 
 				addDescLabel(
 					firstColumn,
+					ContactDto.CONTACT_OFFICER,
 					contactDto.getContactOfficer(),
 					I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_OFFICER));
 			}
@@ -92,27 +106,24 @@ public class ContactInfoLayout extends HorizontalLayout {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 
-			addDescLabel(secondColumn, contactDto.getDisease(), I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
+			addDescLabel(
+				secondColumn,
+				ContactDto.DISEASE,
+				contactDto.getDisease(),
+				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.DISEASE));
 
 			addDescLabel(
 				secondColumn,
+				ContactDto.CONTACT_CLASSIFICATION,
 				contactDto.getContactClassification(),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CONTACT_CLASSIFICATION));
 
 			addDescLabel(
 				secondColumn,
+				ContactDto.LAST_CONTACT_DATE,
 				DateFormatHelper.formatDate(contactDto.getLastContactDate()),
 				I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.LAST_CONTACT_DATE));
 		}
 		this.addComponent(secondColumn);
-	}
-
-	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
-
-		String contentString = content != null ? content.toString() : "";
-		Label label = new Label(contentString);
-		label.setCaption(caption);
-		layout.addComponent(label);
-		return label;
 	}
 }

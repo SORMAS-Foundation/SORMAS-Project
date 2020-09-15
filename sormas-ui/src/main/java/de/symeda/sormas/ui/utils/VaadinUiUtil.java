@@ -42,7 +42,6 @@ import com.vaadin.v7.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 public final class VaadinUiUtil {
 
@@ -61,6 +60,10 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showSimplePopupWindow(String caption, String contentText) {
+		return showSimplePopupWindow(caption, contentText, ContentMode.TEXT);
+	}
+
+	public static Window showSimplePopupWindow(String caption, String contentText, ContentMode contentMode) {
 		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
@@ -71,7 +74,7 @@ public final class VaadinUiUtil {
 		popupLayout.setMargin(true);
 		popupLayout.setSpacing(true);
 		popupLayout.setSizeUndefined();
-		Label contentLabel = new Label(contentText);
+		Label contentLabel = new Label(contentText, contentMode);
 		contentLabel.setWidth(100, Unit.PERCENTAGE);
 		popupLayout.addComponent(contentLabel);
 		Button okayButton = ButtonHelper.createButton(Captions.actionOkay, e -> {
@@ -109,17 +112,11 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
-
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
-		content.addDoneListener(new DoneListener() {
-
-			public void onDone() {
-				popupWindow.close();
-			}
-		});
+		content.addDoneListener(popupWindow::close);
 
 		return popupWindow;
 	}

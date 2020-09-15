@@ -17,12 +17,13 @@ public class CaseJurisdictionChecker {
 	@EJB
 	private UserService userService;
 
-	public Boolean isInJurisdiction(Case caze) {
-		return isInJurisdiction(JurisdictionHelper.createCaseJurisdictionDto(caze));
+	public Boolean isInJurisdictionOrOwned(Case caze) {
+		return isInJurisdictionOrOwned(JurisdictionHelper.createCaseJurisdictionDto(caze));
 	}
 
-	public Boolean isInJurisdiction(CaseJurisdictionDto caseJurisdictionDto) {
+	public Boolean isInJurisdictionOrOwned(CaseJurisdictionDto caseJurisdictionDto) {
 		final User user = userService.getCurrentUser();
-		return CaseJurisdictionHelper.isInJurisdiction(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), caseJurisdictionDto);
+		return CaseJurisdictionHelper
+			.isInJurisdictionOrOwned(user.getJurisdictionLevel(), JurisdictionHelper.createUserJurisdiction(user), caseJurisdictionDto);
 	}
 }

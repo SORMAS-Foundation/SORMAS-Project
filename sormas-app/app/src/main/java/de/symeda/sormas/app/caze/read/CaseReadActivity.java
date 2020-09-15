@@ -38,6 +38,7 @@ import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.caze.CaseSection;
 import de.symeda.sormas.app.caze.edit.CaseEditActivity;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.epidata.EpidemiologicalDataReadFragment;
 import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.symptoms.SymptomsReadFragment;
 import de.symeda.sormas.app.util.Bundler;
@@ -85,6 +86,9 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		if (caze != null && caze.isUnreferredPortHealthCase()) {
 			menuItems.set(CaseSection.SAMPLES.ordinal(), null);
 		}
+		if (caze != null && caze.isUnreferredPortHealthCase()) {
+			menuItems.set(CaseSection.EVENTS.ordinal(), null);
+		}
 		if (!ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW)
 			|| (caze != null && caze.isUnreferredPortHealthCase())
 			|| (caze != null && !DiseaseConfigurationCache.getInstance().hasFollowUp(caze.getDisease()))) {
@@ -130,13 +134,16 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 			fragment = SymptomsReadFragment.newInstance(activityRootData);
 			break;
 		case EPIDEMIOLOGICAL_DATA:
-			fragment = CaseReadEpidemiologicalDataFragment.newInstance(activityRootData);
+			fragment = EpidemiologicalDataReadFragment.newInstance(activityRootData);
 			break;
 		case CONTACTS:
 			fragment = CaseReadContactListFragment.newInstance(activityRootData);
 			break;
 		case SAMPLES:
 			fragment = CaseReadSampleListFragment.newInstance(activityRootData);
+			break;
+		case EVENTS:
+			fragment = CaseReadEventListFragment.newInstance(activityRootData);
 			break;
 		case PRESCRIPTIONS:
 			fragment = CaseReadPrescriptionListFragment.newInstance(activityRootData);

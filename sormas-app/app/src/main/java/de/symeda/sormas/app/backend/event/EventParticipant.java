@@ -23,12 +23,13 @@ import javax.persistence.Entity;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.user.User;
 
 @Entity(name = EventParticipant.TABLE_NAME)
 @DatabaseTable(tableName = EventParticipant.TABLE_NAME)
-public class EventParticipant extends AbstractDomainObject {
+public class EventParticipant extends PseudonymizableAdo {
 
 	private static final long serialVersionUID = -9006001699517297107L;
 
@@ -39,6 +40,9 @@ public class EventParticipant extends AbstractDomainObject {
 	public static final String PERSON = "person";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
 	public static final String RESULTING_CASE_UUID = "resultingCaseUuid";
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private User reportingUser;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
 	private Event event;
@@ -51,6 +55,14 @@ public class EventParticipant extends AbstractDomainObject {
 
 	@DatabaseField
 	private String resultingCaseUuid;
+
+	public User getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(User reportingUser) {
+		this.reportingUser = reportingUser;
+	}
 
 	public Event getEvent() {
 		return event;

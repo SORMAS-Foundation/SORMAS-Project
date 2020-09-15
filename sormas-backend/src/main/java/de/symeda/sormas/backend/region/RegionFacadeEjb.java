@@ -32,6 +32,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.region.RegionIndexDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -69,6 +72,19 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CommunityService communityService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
+	@EJB
+	private AreaService areaService;
+
+	@Override
+	public List<RegionReferenceDto> getAllActiveByArea(String areaUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
+		Root<Region> root = cq.from(Region.class);
+		cq.where(cb.and(cb.isFalse(root.get(InfrastructureAdo.ARCHIVED)), cb.equal(root.get(Region.AREA).get(Area.UUID), areaUuid)));
+		cq.orderBy(cb.asc(root.get(Region.NAME)));
+
+		return em.createQuery(cq).getResultList().stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
@@ -113,6 +129,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
 
 		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
 
@@ -130,6 +147,9 @@ public class RegionFacadeEjb implements RegionFacade {
 				case Region.GROWTH_RATE:
 				case Region.EXTERNAL_ID:
 					expression = region.get(sortProperty.propertyName);
+					break;
+				case Region.AREA:
+					expression = area.get(Area.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -260,6 +280,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 
 		return dto;
 	}
@@ -277,6 +298,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setExternalID(entity.getExternalID());
+		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 
 		return dto;
 	}
@@ -313,6 +335,7 @@ public class RegionFacadeEjb implements RegionFacade {
 		target.setGrowthRate(source.getGrowthRate());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setArea(areaService.getByReferenceDto(source.getArea()));
 
 		return target;
 	}

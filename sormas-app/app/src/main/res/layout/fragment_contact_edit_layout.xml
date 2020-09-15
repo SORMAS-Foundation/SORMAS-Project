@@ -31,6 +31,9 @@
         <import type="de.symeda.sormas.api.contact.ContactRelation" />
         <import type="de.symeda.sormas.api.utils.YesNoUnknown" />
         <import type="de.symeda.sormas.api.contact.QuarantineType" />
+        <import type="de.symeda.sormas.api.contact.ContactIdentificationSource" />
+        <import type="de.symeda.sormas.api.contact.TracingApp" />
+
 
         <variable name="data" type="de.symeda.sormas.app.backend.contact.Contact"/>
         <variable name="caze" type="de.symeda.sormas.app.backend.caze.Case"/>
@@ -117,6 +120,11 @@
 
                 </LinearLayout>
 
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_community"
+                    style="@style/ControlSingleColumnStyle"
+                    app:value="@={data.community}" />
+
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
                     android:id="@+id/contact_caseIdExternalSystem"
                     app:value="@={data.caseIdExternalSystem}"
@@ -164,6 +172,13 @@
                     app:value="@={data.quarantine}"
                     style="@style/ControlSingleColumnStyle" />
 
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_quarantineTypeDetails"
+                    app:dependencyParentField="@{contactQuarantine}"
+                    app:dependencyParentValue="@{QuarantineType.OTHER}"
+                    app:value="@={data.quarantineTypeDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -189,6 +204,11 @@
                 </LinearLayout>
 
                 <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/contact_quarantineExtended"
+                    app:value="@={data.quarantineExtended}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
                     android:id="@+id/contact_quarantineOrderedVerbally"
                     app:value="@={data.quarantineOrderedVerbally}"
                     style="@style/ControlSingleColumnStyle" />
@@ -210,6 +230,20 @@
                     app:dependencyParentField="@{contactQuarantineOrderedOfficialDocument}"
                     app:dependencyParentValue="@{true}"
                     app:value="@={data.quarantineOrderedOfficialDocumentDate}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlCheckBoxField
+                    android:id="@+id/contact_quarantineOfficialOrderSent"
+                    app:dependencyParentField="@{contactQuarantineOrderedOfficialDocument}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.quarantineOfficialOrderSent}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlDateField
+                    android:id="@+id/contact_quarantineOfficialOrderSentDate"
+                    app:dependencyParentField="@{contactQuarantineOfficialOrderSent}"
+                    app:dependencyParentValue="@{true}"
+                    app:value="@={data.quarantineOfficialOrderSentDate}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -262,8 +296,32 @@
                         app:value="@={data.reportDateTime}"
                         app:required="true"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
-
+                    
                 </LinearLayout>
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_contactIdentificationSource"
+                    app:value="@={data.contactIdentificationSource}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_contactIdentificationSourceDetails"
+                    app:dependencyParentField="@{contactContactIdentificationSource}"
+                    app:dependencyParentValue="@{ContactIdentificationSource.OTHER}"
+                    app:value="@={data.contactIdentificationSourceDetails}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                    android:id="@+id/contact_tracingApp"
+                    app:value="@={data.tracingApp}"
+                    style="@style/ControlSingleColumnStyle" />
+
+                <de.symeda.sormas.app.component.controls.ControlTextEditField
+                    android:id="@+id/contact_tracingAppDetails"
+                    app:dependencyParentField="@{contactTracingApp}"
+                    app:dependencyParentValue="@{TracingApp.OTHER}"
+                    app:value="@={data.tracingAppDetails}"
+                    style="@style/ControlSingleColumnStyle" />
 
                 <ImageView style="@style/FullHorizontalDividerStyle"/>
 

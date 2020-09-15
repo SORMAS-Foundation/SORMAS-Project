@@ -26,6 +26,7 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -38,6 +39,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
+	public static final String COMMUNITY = "community";
 	public static final String CONTACT_OFFICER = "contactOfficer";
 	public static final String REPORTING_USER_ROLE = "reportingUserRole";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
@@ -47,9 +49,16 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	public static final String QUARANTINE_NOT_ORDERED = "quarantineNotOrdered";
 	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
+
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
+
+	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
+	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
+	public static final String BIRTHDATE_MM = "birthdateMM";
+	public static final String BIRTHDATE_DD = "birthdateDD";
+
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -58,6 +67,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	private CaseReferenceDto caze;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
+	private CommunityReferenceDto community;
 	private UserReferenceDto contactOfficer;
 	private ContactClassification contactClassification;
 	private ContactStatus contactStatus;
@@ -91,7 +101,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	private Boolean quarantineOrderedVerbally;
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
+	private Boolean withExtendedQuarantine;
 	private PersonReferenceDto person;
+	private Integer birthdateYYYY;
+	private Integer birthdateMM;
+	private Integer birthdateDD;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -148,6 +162,19 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 
 	public ContactCriteria district(DistrictReferenceDto district) {
 		setDistrict(district);
+		return this;
+	}
+
+	public CommunityReferenceDto getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(CommunityReferenceDto community) {
+		this.community = community;
+	}
+
+	public ContactCriteria community(CommunityReferenceDto community) {
+		setCommunity(community);
 		return this;
 	}
 
@@ -377,6 +404,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 		this.quarantineNotOrdered = quarantineNotOrdered;
 	}
 
+	public Boolean getWithExtendedQuarantine() {
+		return withExtendedQuarantine;
+	}
+
+	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
+		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
 	public PersonReferenceDto getPerson() {
 		return person;
 	}
@@ -385,7 +420,6 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 		this.person = person;
 		return this;
 	}
-
 
 	public Date getCreationDateFrom() {
 		return creationDateFrom;
@@ -429,5 +463,28 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	@IgnoreForUrl
 	public String getReportingUserLike() {
 		return reportingUserLike;
+  }
+	public Integer getBirthdateYYYY() {
+		return birthdateYYYY;
+	}
+
+	public void setBirthdateYYYY(Integer birthdateYYYY) {
+		this.birthdateYYYY = birthdateYYYY;
+	}
+
+	public Integer getBirthdateMM() {
+		return birthdateMM;
+	}
+
+	public void setBirthdateMM(Integer birthdateMM) {
+		this.birthdateMM = birthdateMM;
+	}
+
+	public Integer getBirthdateDD() {
+		return birthdateDD;
+	}
+
+	public void setBirthdateDD(Integer birthdateDD) {
+		this.birthdateDD = birthdateDD;
 	}
 }

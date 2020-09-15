@@ -15,17 +15,26 @@
 
 package de.symeda.sormas.app.clinicalcourse.edit;
 
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisit;
+import de.symeda.sormas.app.core.FieldHelper;
 import de.symeda.sormas.app.databinding.FragmentClinicalVisitEditLayoutBinding;
+import de.symeda.sormas.app.util.AppFieldAccessCheckers;
 
 public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinicalVisitEditLayoutBinding, ClinicalVisit, ClinicalVisit> {
 
 	private ClinicalVisit record;
 
 	public static ClinicalVisitEditFragment newInstance(ClinicalVisit activityRootData) {
-		return newInstance(ClinicalVisitEditFragment.class, null, activityRootData);
+		return newInstanceWithFieldCheckers(
+			ClinicalVisitEditFragment.class,
+			null,
+			activityRootData,
+			null,
+			AppFieldAccessCheckers.withCheckers(!activityRootData.isPseudonymized(), FieldHelper.createSensitiveDataFieldAccessChecker()));
 	}
 
 	@Override
@@ -51,6 +60,8 @@ public class ClinicalVisitEditFragment extends BaseEditFragment<FragmentClinical
 	@Override
 	public void onAfterLayoutBinding(FragmentClinicalVisitEditLayoutBinding contentBinding) {
 		contentBinding.clinicalVisitVisitDateTime.initializeDateTimeField(getFragmentManager());
+
+		setFieldVisibilitiesAndAccesses(ClinicalVisitDto.class, contentBinding.mainContent);
 	}
 
 	@Override

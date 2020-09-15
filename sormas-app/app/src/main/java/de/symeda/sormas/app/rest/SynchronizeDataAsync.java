@@ -448,6 +448,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
 			}
 
+			//Event participants
+			List<String> eventParticipantUuids =
+				executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+			for (String eventParticipantUuid : eventParticipantUuids) {
+				DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
+			}
+
 			// Contacts
 			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
 			for (String contactUuid : contactUuids) {
