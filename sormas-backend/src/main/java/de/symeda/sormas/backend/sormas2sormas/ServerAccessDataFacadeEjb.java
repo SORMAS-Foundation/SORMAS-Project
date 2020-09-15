@@ -36,6 +36,7 @@ import javax.ejb.Stateless;
 
 import com.opencsv.CSVReader;
 
+import com.opencsv.exceptions.CsvException;
 import de.symeda.sormas.api.Sormas2SormasConfig;
 import de.symeda.sormas.api.sormas2sormas.ServerAccessDataDto;
 import de.symeda.sormas.api.sormas2sormas.ServerAccessDataFacade;
@@ -58,7 +59,7 @@ public class ServerAccessDataFacadeEjb implements ServerAccessDataFacade {
 			return csvReader.readAll().stream()
 					.map(this::getServerAccessDataDto)
 					.collect(Collectors.toList());
-		} catch (IOException e) {
+		} catch (IOException | CsvException e) {
 			return Collections.emptyList();
 		}
 	}
