@@ -91,7 +91,7 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 						   Long id,Date creationDate, Float completeness,int visitCount) {
 		this(uuid, personFirstName, personLastName, cazeUuid,
 				disease, diseaseDetails, caseFirstName, caseLastName, regionUuid,
-				districtUuid, lastContactDate, contactCategory, contactProximity,
+				districtUuid, communityUuid, lastContactDate, contactCategory, contactProximity,
 				contactClassification, contactStatus, followUpStatus,
 				followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime,
 				caseClassification,
@@ -104,7 +104,7 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
