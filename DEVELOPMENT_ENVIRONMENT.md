@@ -2,7 +2,7 @@
 # SORMAS Development Environment
 
 ## Server
-- Use this guide as Dev-Setup **or**  refer to [SERVER_SETUP](SERVER_SETUP.md) for a more production-like setup.
+- Use this guide as Dev-Setup **or** refer to [SERVER_SETUP](SERVER_SETUP.md) for a more production-like setup.
 
 ## Basics
 
