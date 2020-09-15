@@ -29,6 +29,7 @@ public class EventExportDto implements Serializable {
 	private String uuid;
 	private String externalId;
 	private EventStatus eventStatus;
+	private int participantsCount;
 	private Disease disease;
 	private String diseaseDetails;
 	private Date startDate;
@@ -58,6 +59,7 @@ public class EventExportDto implements Serializable {
 		String uuid,
 		String externalId,
 		EventStatus eventStatus,
+		int participantsCount,
 		Disease disease,
 		String diseaseDetails,
 		Date startDate,
@@ -88,6 +90,7 @@ public class EventExportDto implements Serializable {
 		this.uuid = uuid;
 		this.externalId = externalId;
 		this.eventStatus = eventStatus;
+		this.participantsCount = participantsCount;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.startDate = startDate;
@@ -304,6 +307,15 @@ public class EventExportDto implements Serializable {
 
 	public void setReportDateTime(Date reportDateTime) {
 		this.reportDateTime = reportDateTime;
+	}
+
+	@Order(25)
+	public int getParticipantsCount() {
+		return participantsCount;
+	}
+
+	public void setParticipantsCount(int participantsCount) {
+		this.participantsCount = participantsCount;
 	}
 
 	public EventJurisdictionDto getJurisdiction() {
