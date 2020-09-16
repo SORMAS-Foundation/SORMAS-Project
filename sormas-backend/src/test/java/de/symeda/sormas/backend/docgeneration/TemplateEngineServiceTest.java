@@ -1,20 +1,22 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
-import de.symeda.sormas.backend.AbstractBeanTest;
-import fr.opensagres.xdocreport.core.XDocReportException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.*;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.*;
-import java.util.Properties;
-import java.util.Set;
+import com.auth0.jwt.internal.org.apache.commons.io.IOUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import de.symeda.sormas.backend.AbstractBeanTest;
+import fr.opensagres.xdocreport.core.XDocReportException;
 
 public class TemplateEngineServiceTest extends AbstractBeanTest {
 
@@ -27,7 +29,7 @@ public class TemplateEngineServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void genericTestCasesTest() throws IOException, XDocReportException {
-		String testCasesDirPath = TemplateEngineServiceTest.class.getResource("/docgeneration/testcases").getPath();
+		String testCasesDirPath = getClass().getResource("/docgeneration/testcases").getPath();
 		File testCasesDir = new File(testCasesDirPath);
 		File[] testcasesDocx = testCasesDir.listFiles((d, name) -> name.endsWith(".docx"));
 
