@@ -50,7 +50,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		dashboardSwitcher.addValueChangeListener(e -> navigateToDashboardView(e));
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoCampaignsDashboard));
-		dashboardLayout.setHeightUndefined();
+		dashboardLayout.setExpandRatio(filterLayout, 0);
+		dashboardLayout.setSizeFull();
 	}
 
 	@Override
@@ -72,12 +73,14 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		tabLayout.setSpacing(false);
 		campaignDashboardDiagramComponents.add(tabLayout);
 		dashboardLayout.addComponent(tabLayout);
+		dashboardLayout.setExpandRatio(tabLayout, 1);
 
 		final OptionGroup tabSwitcher = new OptionGroup();
 		final VerticalLayout tabSwitcherLayout = new VerticalLayout(tabSwitcher);
 		tabSwitcherLayout.setMargin(new MarginInfo(false, false, false, true));
 		tabSwitcherLayout.setSpacing(false);
 		tabLayout.addComponent(tabSwitcherLayout);
+		tabLayout.setExpandRatio(tabSwitcherLayout, 0);
 
 		final Map<String, Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>>> campaignFormDataTabMap =
 			groupCampaignFormDataByTab(dataProvider.getCampaignFormDataMap());
@@ -118,7 +121,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			diagramsWrapper.setSizeFull();
 
 			final CssLayout diagramsLayout = new CssLayout();
-			diagramsLayout.setWidth(gridTemplateAreaCreator.getWidthsSum() < 100 ? gridTemplateAreaCreator.getWidthsSum() : 100, Unit.PERCENTAGE);
+			diagramsLayout
+				.setWidth(gridTemplateAreaCreator.getNrOfGridAreaColumns() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100, Unit.PERCENTAGE);
 			diagramsLayout.setHeight(gridTemplateAreaCreator.getGridContainerHeight(), Unit.PERCENTAGE);
 			final String gridCssClass = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
 
@@ -139,6 +143,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			diagramsWrapper.setVisible(false);
 			tabLayout.addComponent(diagramsWrapper);
+			tabLayout.setExpandRatio(diagramsWrapper, 1);
 		});
 
 		tabSwitcher.setValue(tabs.isEmpty() ? StringUtils.EMPTY : tabs.get(0));
