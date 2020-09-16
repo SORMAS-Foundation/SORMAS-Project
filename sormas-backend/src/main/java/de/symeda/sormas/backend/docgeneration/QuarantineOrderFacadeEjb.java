@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.docgeneration;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,6 +9,11 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -18,6 +22,8 @@ import fr.opensagres.xdocreport.core.XDocReportException;
 
 @Stateless(name = "QuarantineOrderFacade")
 public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -29,7 +35,7 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 	private TemplateEngineService templateEngineService;
 
 	@Override
-	public ByteArrayInputStream getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) {
+	public byte[] getGeneratedDocument(String templateName, String caseUuid, Properties extraProperties) {
 		// 1. Read template from custom directory
 		String workflowTemplateDir = configFacade.getCustomFilesPath() + File.separator + "docgeneration" + File.separator + "quarantine";
 		String templateFileName = workflowTemplateDir + File.separator + templateName;
@@ -66,8 +72,21 @@ public class QuarantineOrderFacadeEjb implements QuarantineOrderFacade {
 
 		// 3. merge extra properties
 
+		File testcaseProperties = new File(workflowTemplateDir + File.separator + FilenameUtils.getBaseName(templateName) + ".properties");
+		extraProperties = new Properties();
+		try {
+			extraProperties.load(new FileInputStream(testcaseProperties));
+		} catch (IOException e) {
+			logger.warn("Property file could not be read", e);
+		}
+
 		// 4. generate document
 
-		return null;
+		try {
+			return IOUtils.toByteArray(templateEngineService.generateDocument(extraProperties, new FileInputStream(templateFile)));
+		} catch (IOException | XDocReportException e) {
+			logger.warn("Error while generating document", e);
+			return null;
+		}
 	}
 }

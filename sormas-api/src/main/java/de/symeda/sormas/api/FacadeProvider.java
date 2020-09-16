@@ -35,6 +35,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitFacade;
 import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.api.disease.DiseaseFacade;
+import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
@@ -49,11 +50,7 @@ import de.symeda.sormas.api.infrastructure.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
-import de.symeda.sormas.api.region.AreaFacade;
-import de.symeda.sormas.api.region.CommunityFacade;
-import de.symeda.sormas.api.region.DistrictFacade;
-import de.symeda.sormas.api.region.GeoShapeProvider;
-import de.symeda.sormas.api.region.RegionFacade;
+import de.symeda.sormas.api.region.*;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -287,6 +284,10 @@ public class FacadeProvider {
 
 	public static AreaFacade getAreaFacade() {
 		return get().lookupEjbRemote(AreaFacade.class);
+	}
+
+	public static QuarantineOrderFacade getQuarantineOrderFacade() {
+		return get().lookupEjbRemote(QuarantineOrderFacade.class);
 	}
 
 	@SuppressWarnings("unchecked")
