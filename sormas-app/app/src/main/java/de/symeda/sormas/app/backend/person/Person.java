@@ -64,7 +64,6 @@ public class Person extends PseudonymizableAdo {
 
 	public static final String TABLE_NAME = "person";
 	public static final String I18N_PREFIX = "Person";
-	public static final String PERSON_LOCATIONS_TABLE_NAME = "person_locations";
 
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";

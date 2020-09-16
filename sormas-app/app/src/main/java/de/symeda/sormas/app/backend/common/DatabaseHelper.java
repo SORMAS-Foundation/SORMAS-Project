@@ -1581,6 +1581,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 226:
 				currentVersion = 226;
 				// Re-synchronize persons to retrieve new addresses
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN person_id bigint REFERENCES person(id);");
 				getDao(Person.class).executeRaw("UPDATE person SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
 				// ATTENTION: break should only be done after last version
