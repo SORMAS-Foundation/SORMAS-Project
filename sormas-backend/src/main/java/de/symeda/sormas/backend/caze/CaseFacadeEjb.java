@@ -87,6 +87,7 @@ import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.DashboardCaseDto;
+import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.PlagueType;
@@ -759,7 +760,7 @@ public class CaseFacadeEjb implements CaseFacade {
 					Optional.ofNullable(samples.get(exportDto.getId())).ifPresent(caseSamples -> {
 						int count = 0;
 						for (Sample sample : caseSamples) {
-							CaseExportDto.CaseExportSampleDto sampleDto = new CaseExportDto.CaseExportSampleDto(
+							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
 								sample.getSampleDateTime(),
 								sample.getLab() != null
 									? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
@@ -806,10 +807,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 				pseudonymizer.pseudonymizeDto(CaseExportDto.class, exportDto, inJurisdiction, (c) -> {
 					pseudonymizer.pseudonymizeDto(BirthDateDto.class, c.getBirthdate(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample1(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample2(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDto(CaseExportDto.CaseExportSampleDto.class, c.getSample3(), inJurisdiction, null);
-					pseudonymizer.pseudonymizeDtoCollection(CaseExportDto.CaseExportSampleDto.class, c.getOtherSamples(), s -> inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample1(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample2(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDto(EmbeddedSampleExportDto.class, c.getSample3(), inJurisdiction, null);
+					pseudonymizer.pseudonymizeDtoCollection(EmbeddedSampleExportDto.class, c.getOtherSamples(), s -> inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(BurialInfoDto.class, c.getBurialInfo(), inJurisdiction, null);
 					pseudonymizer.pseudonymizeDto(SymptomsDto.class, c.getSymptoms(), inJurisdiction, null);
 				});
