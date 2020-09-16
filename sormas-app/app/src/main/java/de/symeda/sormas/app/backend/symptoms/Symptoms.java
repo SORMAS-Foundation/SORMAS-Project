@@ -399,6 +399,31 @@ public class Symptoms extends PseudonymizableAdo {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String otherComplicationsText;
 
+	@Enumerated(EnumType.STRING)
+	private SymptomState feverishFeeling;
+	@Enumerated(EnumType.STRING)
+	private SymptomState weakness;
+	@Enumerated(EnumType.STRING)
+	private SymptomState fatigue;
+	@Enumerated(EnumType.STRING)
+	private SymptomState coughWithoutSputum;
+	@Enumerated(EnumType.STRING)
+	private SymptomState breathlessness;
+	@Enumerated(EnumType.STRING)
+	private SymptomState chestPressure;
+	@Enumerated(EnumType.STRING)
+	private SymptomState blueLips;
+	@Enumerated(EnumType.STRING)
+	private SymptomState bloodCirculationProblems;
+	@Enumerated(EnumType.STRING)
+	private SymptomState palpitations;
+	@Enumerated(EnumType.STRING)
+	private SymptomState dizzinessStandingUp;
+	@Enumerated(EnumType.STRING)
+	private SymptomState highOrLowBloodPressure;
+	@Enumerated(EnumType.STRING)
+	private SymptomState urinaryRetention;
+
 	@Override
 	public String getI18nPrefix() {
 		return I18N_PREFIX;
@@ -1738,5 +1763,101 @@ public class Symptoms extends PseudonymizableAdo {
 
 	public void setOxygenSaturationLower94(SymptomState oxygenSaturationLower94) {
 		this.oxygenSaturationLower94 = oxygenSaturationLower94;
+	}
+
+	public SymptomState getFeverishFeeling() {
+		return feverishFeeling;
+	}
+
+	public void setFeverishFeeling(SymptomState feverishFeeling) {
+		this.feverishFeeling = feverishFeeling;
+	}
+
+	public SymptomState getWeakness() {
+		return weakness;
+	}
+
+	public void setWeakness(SymptomState weakness) {
+		this.weakness = weakness;
+	}
+
+	public SymptomState getFatigue() {
+		return fatigue;
+	}
+
+	public void setFatigue(SymptomState fatigue) {
+		this.fatigue = fatigue;
+	}
+
+	public SymptomState getCoughWithoutSputum() {
+		return coughWithoutSputum;
+	}
+
+	public void setCoughWithoutSputum(SymptomState coughWithoutSputum) {
+		this.coughWithoutSputum = coughWithoutSputum;
+	}
+
+	public SymptomState getBreathlessness() {
+		return breathlessness;
+	}
+
+	public void setBreathlessness(SymptomState breathlessness) {
+		this.breathlessness = breathlessness;
+	}
+
+	public SymptomState getChestPressure() {
+		return chestPressure;
+	}
+
+	public void setChestPressure(SymptomState chestPressure) {
+		this.chestPressure = chestPressure;
+	}
+
+	public SymptomState getBlueLips() {
+		return blueLips;
+	}
+
+	public void setBlueLips(SymptomState blueLips) {
+		this.blueLips = blueLips;
+	}
+
+	public SymptomState getBloodCirculationProblems() {
+		return bloodCirculationProblems;
+	}
+
+	public void setBloodCirculationProblems(SymptomState bloodCirculationProblems) {
+		this.bloodCirculationProblems = bloodCirculationProblems;
+	}
+
+	public SymptomState getPalpitations() {
+		return palpitations;
+	}
+
+	public void setPalpitations(SymptomState palpitations) {
+		this.palpitations = palpitations;
+	}
+
+	public SymptomState getDizzinessStandingUp() {
+		return dizzinessStandingUp;
+	}
+
+	public void setDizzinessStandingUp(SymptomState dizzinessStandingUp) {
+		this.dizzinessStandingUp = dizzinessStandingUp;
+	}
+
+	public SymptomState getHighOrLowBloodPressure() {
+		return highOrLowBloodPressure;
+	}
+
+	public void setHighOrLowBloodPressure(SymptomState highOrLowBloodPressure) {
+		this.highOrLowBloodPressure = highOrLowBloodPressure;
+	}
+
+	public SymptomState getUrinaryRetention() {
+		return urinaryRetention;
+	}
+
+	public void setUrinaryRetention(SymptomState urinaryRetention) {
+		this.urinaryRetention = urinaryRetention;
 	}
 }

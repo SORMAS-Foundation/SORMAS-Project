@@ -19,6 +19,8 @@ package de.symeda.sormas.backend.common;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.Sormas2SormasConfig;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
@@ -35,6 +37,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Provides the application configuration settings
@@ -56,6 +59,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String CUSTOM_BRANDING = "custombranding";
 	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
 	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
+	public static final String CUSTOM_BRANDING_USE_LOGIN_SIDEBAR = "custombranding.useloginsidebar";
+	public static final String CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH = "custombranding.loginbackground.path";
 
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
@@ -88,6 +93,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
 	private static final String GEOCODING_OSGTS_ENDPOINT = "geocodingOsgtsEndpoint";
+
+	private static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
+	private static final String SORMAS2SORMAS_KEY_ALIAS = "sormas2sormas.keyAlias";
+	private static final String SORMAS2SORMAS_KEYSTORE_NAME = "sormas2sormas.keystoreName";
+	private static final String SORMAS2SORMAS_KEYSTORE_PASSWORD = "sormas2sormas.keystorePass";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_NAME = "sormas2sormas.truststoreName";
+	private static final String SORMAS2SORMAS_TRUSTSTORE_PASS = "sormas2sormas.truststorePass";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -167,8 +179,12 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public boolean isGermanServer() {
-		return getCountryLocale().startsWith("de");
+	public boolean isConfiguredCountry(String countryCode) {
+		if (Pattern.matches(I18nProperties.FULL_COUNTRY_LOCALE_PATTERN, getCountryLocale())) {
+			return getCountryLocale().toLowerCase().endsWith(countryCode.toLowerCase());
+		} else {
+			return getCountryLocale().toLowerCase().startsWith(countryCode.toLowerCase());
+		}
 	}
 
 	@Override
@@ -204,6 +220,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getCustomBrandingLogoPath() {
 		return getProperty(CUSTOM_BRANDING_LOGO_PATH, null);
+	}
+
+	@Override
+	public boolean isUseLoginSidebar() {
+		return getBoolean(CUSTOM_BRANDING_USE_LOGIN_SIDEBAR, true);
+	}
+
+	@Override
+	public String getLoginBackgroundPath() {
+		return getProperty(CUSTOM_BRANDING_LOGIN_BACKGROUND_PATH, null);
 	}
 
 	@Override
@@ -329,6 +355,18 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getSymptomJournalSecret() {
 		return getProperty(INTERFACE_SYMPTOM_JOURNAL_SECRET, null);
+	}
+
+	@Override
+	public Sormas2SormasConfig getSormas2SormasConfig() {
+		Sormas2SormasConfig config = new Sormas2SormasConfig();
+		config.setFilePath(getProperty(SORMAS2SORMAS_FILES_PATH, null));
+		config.setKeyAlias(getProperty(SORMAS2SORMAS_KEY_ALIAS, null));
+		config.setKeystoreName(getProperty(SORMAS2SORMAS_KEYSTORE_NAME, null));
+		config.setKeystorePass(getProperty(SORMAS2SORMAS_KEYSTORE_PASSWORD, null));
+		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
+		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
+		return config;
 	}
 
 	@Override

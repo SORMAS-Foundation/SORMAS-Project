@@ -1,7 +1,5 @@
 package de.symeda.sormas.api.caze;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -13,14 +11,18 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
+import java.util.Date;
+
 public class CaseIndexDetailedDto extends CaseIndexDto {
 
 	private static final long serialVersionUID = -3722694511897383913L;
 
 	public static final String SEX = "sex";
 	public static final String CITY = "city";
-	public static final String ADDRESS = "address";
+	public static final String STREET = "street";
+	public static final String HOUSE_NUMBER = "houseNumber";
 	public static final String POSTAL_CODE = "postalCode";
+	public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 	public static final String PHONE = "phone";
 	public static final String REPORTING_USER = "reportingUser";
 
@@ -29,7 +31,13 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 	private String city;
 	@PersonalData
 	@SensitiveData
-	private String address;
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
 	@PersonalData
 	@SensitiveData
 	@Pseudonymizer(PostalCodePseudonymizer.class)
@@ -48,7 +56,7 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 								String pointOfEntryUuid, String pointOfEntryName, String pointOfEntryDetails, String surveillanceOfficerUuid, CaseOutcome outcome,
 								Integer age, ApproximateAgeType ageType, Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, Sex sex,
 								Date quarantineTo, Float completeness, FollowUpStatus followUpStatus, Date followUpUntil,
-								String city, String address, String postalCode, String phone,
+								String city, String street, String houseNumber, String additionalInformation, String postalCode, String phone,
 								String reportingUserFirstName, String reportingUserLastName, int visitCount) {
 
 		super(id, uuid, epidNumber, externalID, personFirstName, personLastName, disease, diseaseDetails, caseClassification, investigationStatus,
@@ -59,7 +67,9 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		//@formatter:on
 
 		this.city = city;
-		this.address = address;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
 		this.phone = phone;
 		this.reportingUser = new UserReferenceDto(reportingUserUuid, reportingUserFirstName, reportingUserLastName, null);
@@ -69,8 +79,16 @@ public class CaseIndexDetailedDto extends CaseIndexDto {
 		return city;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
+	}
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
 	}
 
 	public String getPostalCode() {

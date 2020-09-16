@@ -59,7 +59,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		importer.runImport();
-		getFacilityFacade().getByName("Facility with ü", district, community, false).get(0);
+		getFacilityFacade().getByNameAndType("Facility with ü", district, community, null, false).get(0);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").getFile());
 		importer = new InfrastructureImporterExtension(facilityCsvFile, user.toReference(), InfrastructureType.FACILITY);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
-		assertEquals(2, getFacilityFacade().count(new FacilityCriteria()));
+		assertEquals(3, getFacilityFacade().count(new FacilityCriteria()));
 
 		// Import point of entry
 		File poeCsvFile = new File(getClass().getClassLoader().getResource("sormas_poe_import_test.csv").getFile());

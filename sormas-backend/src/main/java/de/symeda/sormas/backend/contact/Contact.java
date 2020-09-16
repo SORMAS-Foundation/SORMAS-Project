@@ -17,13 +17,32 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.contact.ContactCategory;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactIdentificationSource;
+import de.symeda.sormas.api.contact.ContactProximity;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.ContactRelation;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.contact.TracingApp;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.region.Community;
+import de.symeda.sormas.backend.region.District;
+import de.symeda.sormas.backend.region.Region;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.task.Task;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.visit.Visit;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,33 +57,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import de.symeda.auditlog.api.Audited;
-import de.symeda.auditlog.api.AuditedIgnore;
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.contact.ContactCategory;
-import de.symeda.sormas.api.contact.ContactClassification;
-import de.symeda.sormas.api.contact.ContactIdentificationSource;
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.contact.ContactRelation;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.contact.QuarantineType;
-import de.symeda.sormas.api.contact.TracingApp;
-import de.symeda.sormas.api.region.CommunityReferenceDto;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.CoreAdo;
-import de.symeda.sormas.backend.epidata.EpiData;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.region.Community;
-import de.symeda.sormas.backend.region.District;
-import de.symeda.sormas.backend.region.Region;
-import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.task.Task;
-import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.visit.Visit;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity
 @Audited
@@ -128,9 +127,12 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -193,12 +195,16 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineOfficialOrderSent;
+	private Date quarantineOfficialOrderSentDate;
+
 	private String additionalDetails;
 	private EpiData epiData;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+	private HealthConditions healthConditions;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -730,6 +736,24 @@ public class Contact extends CoreAdo {
 		this.quarantineExtended = quarantineExtended;
 	}
 
+	@Column
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
 	@Column(length = COLUMN_LENGTH_BIG)
 	public String getAdditionalDetails() {
 		return additionalDetails;
@@ -753,5 +777,15 @@ public class Contact extends CoreAdo {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

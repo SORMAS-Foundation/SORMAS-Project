@@ -17,12 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.contact;
 
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.PseudonymizableDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
@@ -32,11 +31,11 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
-import de.symeda.sormas.api.utils.Outbreaks;
-import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+
+import java.util.Date;
 
 public class ContactDto extends PseudonymizableDto {
 
@@ -97,8 +96,11 @@ public class ContactDto extends PseudonymizableDto {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	private CaseReferenceDto caze;
 	private String caseIdExternalSystem;
@@ -176,9 +178,21 @@ public class ContactDto extends PseudonymizableDto {
 
 	@SensitiveData
 	private String quarantineHelpNeeded;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private boolean quarantineOrderedVerbally;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private boolean quarantineOrderedOfficialDocument;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private Date quarantineOrderedVerballyDate;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	private Date quarantineOrderedOfficialDocumentDate;
 	@HideForCountriesExcept
 	private YesNoUnknown quarantineHomePossible;
@@ -191,9 +205,18 @@ public class ContactDto extends PseudonymizableDto {
 	@SensitiveData
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	private boolean quarantineOfficialOrderSent;
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	private Date quarantineOfficialOrderSentDate;
 	@SensitiveData
 	private String additionalDetails;
 	private EpiDataDto epiData;
+	private HealthConditionsDto healthConditions;
 
 	public static ContactDto build() {
 		return build(null, null, null);
@@ -215,6 +238,8 @@ public class ContactDto extends PseudonymizableDto {
 		contact.setContactStatus(ContactStatus.ACTIVE);
 
 		contact.setEpiData(EpiDataDto.build());
+
+		contact.setHealthConditions(HealthConditionsDto.build());
 
 		return contact;
 	}
@@ -657,6 +682,22 @@ public class ContactDto extends PseudonymizableDto {
 		this.quarantineExtended = quarantineExtended;
 	}
 
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
@@ -671,5 +712,13 @@ public class ContactDto extends PseudonymizableDto {
 
 	public void setEpiData(EpiDataDto epiData) {
 		this.epiData = epiData;
+	}
+
+	public HealthConditionsDto getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditionsDto healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

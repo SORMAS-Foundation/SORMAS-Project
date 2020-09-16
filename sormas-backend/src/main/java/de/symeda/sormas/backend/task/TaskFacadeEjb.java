@@ -17,31 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactJurisdictionDto;
@@ -94,6 +69,29 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -238,12 +236,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		pseudonymizer.pseudonymizeDto(TaskDto.class, target, taskJurisdictionChecker.isInJurisdictionOrOwned(task), t -> {
 			if (source.getCaze() != null) {
 				CaseJurisdictionDto caseJurisdiction = JurisdictionHelper.createCaseJurisdictionDto(source.getCaze());
-				pseudonymizer
-					.pseudonymizeDto(
-						CaseReferenceDto.class,
-						target.getCaze(),
-						caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
-						null);
+				pseudonymizer.pseudonymizeDto(
+					CaseReferenceDto.class,
+					target.getCaze(),
+					caseJurisdictionChecker.isInJurisdictionOrOwned(caseJurisdiction),
+					null);
 			}
 
 			if (source.getContact() != null) {
@@ -406,6 +403,9 @@ public class TaskFacadeEjb implements TaskFacade {
 			cq.where(filter);
 		}
 
+		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
+		cq.distinct(true);
+
 		List<Order> order = new ArrayList<Order>();
 		if (sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
@@ -498,11 +498,13 @@ public class TaskFacadeEjb implements TaskFacade {
 			contactJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction),
 			null);
 
-		pseudonymizer.pseudonymizeDto(
-			ContactReferenceDto.PersonName.class,
-			contactReference.getCaseName(),
-			caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
-			null);
+		if (contactReference.getCaseName() != null) {
+			pseudonymizer.pseudonymizeDto(
+				ContactReferenceDto.PersonName.class,
+				contactReference.getCaseName(),
+				caseJurisdictionChecker.isInJurisdictionOrOwned(contactJurisdiction.getCaseJurisdiction()),
+				null);
+		}
 	}
 
 	@Override

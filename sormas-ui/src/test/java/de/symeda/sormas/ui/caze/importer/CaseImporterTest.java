@@ -1,5 +1,19 @@
 package de.symeda.sormas.ui.caze.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
@@ -8,14 +22,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityInput;
 import de.symeda.sormas.ui.importer.CaseImportSimilarityResult;
 import de.symeda.sormas.ui.importer.ImportResultStatus;
 import de.symeda.sormas.ui.importer.ImportSimilarityResultOption;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +47,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 		TestDataCreator creator = new TestDataCreator();
 
-		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -214,7 +224,7 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testLineListingImport() throws IOException, InvalidColumnException, InterruptedException {
-		RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
+		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Abia", "Bende", "Bende Ward", "Bende Maternity Home");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 

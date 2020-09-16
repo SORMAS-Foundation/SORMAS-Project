@@ -17,21 +17,47 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.surveillance;
 
+import com.vaadin.navigator.ViewChangeListener;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.DashboardFilterLayout;
 import de.symeda.sormas.ui.dashboard.DashboardType;
+import de.symeda.sormas.ui.dashboard.campaigns.CampaignDashboardView;
+import de.symeda.sormas.ui.dashboard.contacts.ContactsDashboardView;
 
 @SuppressWarnings("serial")
 public class SurveillanceDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/surveillance";
 
+	protected DashboardDataProvider dashboardDataProvider;
+	protected DashboardFilterLayout filterLayout;
+
 	protected SurveillanceOverviewLayout surveillanceOverviewLayout;
 	protected SurveillanceDiseaseCarouselLayout diseaseCarouselLayout;
 
 	public SurveillanceDashboardView() {
-		super(VIEW_NAME, DashboardType.SURVEILLANCE);
+		super(VIEW_NAME);
+
+		dashboardDataProvider = new DashboardDataProvider();
+		if (dashboardDataProvider.getDashboardType() == null) {
+			dashboardDataProvider.setDashboardType(DashboardType.SURVEILLANCE);
+		}
+		if (DashboardType.CONTACTS.equals(dashboardDataProvider.getDashboardType())) {
+			dashboardDataProvider.setDisease(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
+		}
+		filterLayout = new DashboardFilterLayout(this, dashboardDataProvider);
+		dashboardLayout.addComponent(filterLayout);
+
+		dashboardSwitcher.setValue(DashboardType.SURVEILLANCE);
+		dashboardSwitcher.addValueChangeListener(e -> {
+			dashboardDataProvider.setDashboardType((DashboardType) e.getProperty().getValue());
+			navigateToDashboardView(e);
+		});
 
 		filterLayout.setInfoLabelText(I18nProperties.getString(Strings.infoSurveillanceDashboard));
 		dashboardLayout.setSpacing(false);
@@ -57,8 +83,13 @@ public class SurveillanceDashboardView extends AbstractDashboardView {
 		});
 	}
 
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		refreshDashboard();
+	}
+
 	public void refreshDashboard() {
-		super.refreshDashboard();
+		dashboardDataProvider.refreshData();
 
 		// Update disease burden
 		if (surveillanceOverviewLayout != null)

@@ -32,6 +32,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -39,6 +40,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -50,10 +53,10 @@ import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.location.Location;
@@ -70,6 +73,8 @@ public class PersonService extends AbstractAdoService<Person> {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
 
 	public PersonService() {
 		super(Person.class);
@@ -249,11 +254,8 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Subquery<Long> caseJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<Case> caseRoot = caseJurisdictionSubQuery.from(Case.class);
 		caseJurisdictionSubQuery.select(caseRoot.get(Case.ID));
-		caseJurisdictionSubQuery
-			.where(
-				cb.and(
-					cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId),
-					caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
+		caseJurisdictionSubQuery.where(
+			cb.and(cb.equal(caseRoot.get(Case.PERSON).get(Person.ID), personId), caseService.isInJurisdictionOrOwned(cb, new CaseJoins<>(caseRoot))));
 		final Predicate isCaseInJurisdiction = cb.exists(caseJurisdictionSubQuery);
 
 		final Subquery<Long> contactJurisdictionSubQuery = cq.subquery(Long.class);
@@ -268,10 +270,10 @@ public class PersonService extends AbstractAdoService<Person> {
 		final Subquery<Long> eventParticipantJurisdictionSubQuery = cq.subquery(Long.class);
 		final Root<EventParticipant> eventParticipantRoot = eventParticipantJurisdictionSubQuery.from(EventParticipant.class);
 		eventParticipantJurisdictionSubQuery.select(eventParticipantRoot.get(EventParticipant.ID));
-		final Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(eventJoin),
-			cb.and(cb.isNotNull(eventJoin.get(Event.REPORTING_USER)), cb.equal(eventJoin.get(Event.REPORTING_USER), getCurrentUser())));
+			cb.isNotNull(eventParticipantRoot.get(EventParticipant.REPORTING_USER)),
+			cb.equal(eventParticipantRoot.get(EventParticipant.REPORTING_USER), getCurrentUser()));
 		eventParticipantJurisdictionSubQuery
 			.where(cb.and(cb.equal(eventParticipantRoot.get(EventParticipant.PERSON).get(Person.ID), personId), reportedByCurrentUser));
 		final Predicate isEventParticipantInJurisdiction = cb.exists(eventParticipantJurisdictionSubQuery);
@@ -291,7 +293,7 @@ public class PersonService extends AbstractAdoService<Person> {
 
 		casePersonsQuery.multiselect(casePersonsJoin.get(Person.FIRST_NAME), casePersonsJoin.get(Person.LAST_NAME), casePersonsJoin.get(Person.UUID));
 
-		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsRoot.join(Case.PERSON, JoinType.LEFT));
+		Predicate casePersonsFilter = buildSimilarityCriteriaFilter(criteria, cb, casePersonsJoin);
 		Predicate activeCasesFilter = caseService.createActiveCasesFilter(cb, casePersonsRoot);
 		Predicate caseUserFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		casePersonsQuery.where(
@@ -397,9 +399,19 @@ public class PersonService extends AbstractAdoService<Person> {
 		return result;
 	}
 
-	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<Person, Person> personFrom) {
+	public Predicate buildSimilarityCriteriaFilter(PersonSimilarityCriteria criteria, CriteriaBuilder cb, From<?, Person> personFrom) {
 
 		Predicate filter = null;
+
+		if (!StringUtils.isBlank(criteria.getFirstName()) && !StringUtils.isBlank(criteria.getLastName())) {
+			Expression<String> nameExpr = cb.concat(personFrom.get(Person.FIRST_NAME), " ");
+			nameExpr = cb.concat(nameExpr, personFrom.get(Person.LAST_NAME));
+
+			String name = criteria.getFirstName() + " " + criteria.getLastName();
+
+			double nameSimilarityThreshold = configFacade.getNameSimilarityThreshold();
+			filter = and(cb, filter, cb.gt(cb.function("similarity", double.class, nameExpr, cb.literal(name)), nameSimilarityThreshold));
+		}
 
 		if (criteria.getSex() != null) {
 			filter = and(cb, filter, cb.or(cb.isNull(personFrom.get(Person.SEX)), cb.equal(personFrom.get(Person.SEX), criteria.getSex())));
@@ -424,7 +436,7 @@ public class PersonService extends AbstractAdoService<Person> {
 				filter,
 				cb.or(cb.isNull(personFrom.get(Person.BIRTHDATE_DD)), cb.equal(personFrom.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD())));
 		}
-		if (criteria.getNationalHealthId() != null) {
+		if (!StringUtils.isBlank(criteria.getNationalHealthId())) {
 			filter = and(
 				cb,
 				filter,
@@ -432,7 +444,7 @@ public class PersonService extends AbstractAdoService<Person> {
 					cb.isNull(personFrom.get(Person.NATIONAL_HEALTH_ID)),
 					cb.equal(personFrom.get(Person.NATIONAL_HEALTH_ID), criteria.getNationalHealthId())));
 		}
-		if (criteria.getPassportNumber() != null) {
+		if (!StringUtils.isBlank(criteria.getPassportNumber())) {
 			filter = or(cb, filter, cb.equal(personFrom.get(Person.PASSPORT_NUMBER), criteria.getPassportNumber()));
 		}
 

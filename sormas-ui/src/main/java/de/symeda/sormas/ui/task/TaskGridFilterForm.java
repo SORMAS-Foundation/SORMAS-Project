@@ -11,6 +11,7 @@ public class TaskGridFilterForm extends AbstractFilterForm<TaskCriteria> {
 
 	protected TaskGridFilterForm() {
 		super(TaskCriteria.class, TaskDto.I18N_PREFIX);
+		getContent().removeComponent(APPLY_BUTTON_ID);
 	}
 
 	@Override

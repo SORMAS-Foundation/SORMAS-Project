@@ -39,12 +39,12 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 
 	private static final long serialVersionUID = 4488941182432777837L;
 
-	public FacilitiesGrid(FacilityCriteria criteria, Class<? extends AbstractFacilitiesView> viewClass) {
+	public FacilitiesGrid(FacilityCriteria criteria) {
 
 		super(FacilityDto.class);
 		setSizeFull();
 
-		ViewConfiguration viewConfiguration = ViewModelProviders.of(viewClass).get(ViewConfiguration.class);
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(FacilitiesView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());
 
 		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
@@ -57,6 +57,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 
 		setColumns(
 			FacilityDto.NAME,
+			FacilityDto.TYPE,
 			FacilityDto.REGION,
 			FacilityDto.DISTRICT,
 			FacilityDto.COMMUNITY,
@@ -66,7 +67,7 @@ public class FacilitiesGrid extends FilteredGrid<FacilityDto, FacilityCriteria> 
 			FacilityDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editHealthFacility(e.getUuid()));
+			addEditColumn(e -> ControllerProvider.getInfrastructureController().editFacility(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

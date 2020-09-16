@@ -17,34 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -108,6 +80,32 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Stateless(name = "SampleFacade")
 public class SampleFacadeEjb implements SampleFacade {
@@ -335,6 +333,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		selections.addAll(getEventJurisdictionSelections(joins));
 
 		cq.multiselect(selections);
+		cq.distinct(true);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 
@@ -411,12 +410,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer
-			.pseudonymizeDtoCollection(
-				SampleIndexDto.class,
-				samples,
-				s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
-				null);
+		pseudonymizer.pseudonymizeDtoCollection(
+			SampleIndexDto.class,
+			samples,
+			s -> sampleJurisdictionChecker.isInJurisdictionOrOwned(s.getJurisdiction()),
+			null);
 
 		return samples;
 	}
@@ -556,17 +554,23 @@ public class SampleFacadeEjb implements SampleFacade {
 				joins.getCasePersonAddressDistrict().get(District.NAME),
 				joins.getCasePersonAddressCommunity().get(Community.NAME),
 				joins.getCasePersonAddress().get(Location.CITY),
-				joins.getCasePersonAddress().get(Location.ADDRESS),
+				joins.getCasePersonAddress().get(Location.STREET),
+				joins.getCasePersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getCasePersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getContactPersonAddressRegion().get(Region.NAME),
 				joins.getContactPersonAddressDistrict().get(District.NAME),
 				joins.getContactPersonAddressCommunity().get(Community.NAME),
 				joins.getContactPersonAddress().get(Location.CITY),
-				joins.getContactPersonAddress().get(Location.ADDRESS),
+				joins.getContactPersonAddress().get(Location.STREET),
+				joins.getContactPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getContactPersonAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getEventRegion().get(Region.NAME),
 				joins.getEventDistrict().get(District.NAME),
 				joins.getEventCommunity().get(Community.NAME),
 				joins.getEventLocation().get(Location.CITY),
-				joins.getEventLocation().get(Location.ADDRESS),
+				joins.getEventLocation().get(Location.STREET),
+				joins.getEventLocation().get(Location.HOUSE_NUMBER),
+				joins.getEventLocation().get(Location.ADDITIONAL_INFORMATION),
 				joins.getCaze().get(Case.REPORT_DATE),
 				joins.getCaze().get(Case.CASE_CLASSIFICATION),
 				joins.getCaze().get(Case.OUTCOME),
@@ -839,11 +843,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				sampleContact.getContactName(),
 				contactJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction()),
 				null);
-			pseudonymizer.pseudonymizeDto(
-				ContactReferenceDto.PersonName.class,
-				sampleContact.getCaseName(),
-				caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
-				null);
+
+			if (sampleContact.getCaseName() != null) {
+				pseudonymizer.pseudonymizeDto(
+					ContactReferenceDto.PersonName.class,
+					sampleContact.getCaseName(),
+					caseJurisdictionChecker.isInJurisdictionOrOwned(sampleJurisdiction.getContactJurisdiction().getCaseJurisdiction()),
+					null);
+			}
 		}
 
 		if (sampleEventParticipant != null) {

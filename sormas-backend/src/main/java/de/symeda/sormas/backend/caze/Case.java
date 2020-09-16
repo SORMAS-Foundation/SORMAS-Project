@@ -17,27 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.caze;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
@@ -56,6 +35,7 @@ import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
@@ -63,6 +43,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
@@ -76,6 +57,26 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_BIG;
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = "cases")
 @Audited
@@ -153,6 +154,8 @@ public class Case extends CoreAdo {
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED = "quarantineHomeSupplyEnsured";
 	public static final String QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT = "quarantineHomeSupplyEnsuredComment";
 	public static final String QUARANTINE_EXTENDED = "quarantineExtended";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT = "quarantineOfficialOrderSent";
+	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String REPORTING_TYPE = "reportingType";
 	public static final String POSTPARTUM = "postpartum";
 	public static final String TRIMESTER = "trimester";
@@ -162,6 +165,7 @@ public class Case extends CoreAdo {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String FACILITY_TYPE = "facilityType";
 
 	private Person person;
 	private String description;
@@ -192,6 +196,7 @@ public class Case extends CoreAdo {
 	private Region region;
 	private District district;
 	private Community community;
+	private FacilityType facilityType;
 	private Facility healthFacility;
 	private String healthFacilityDetails;
 
@@ -264,6 +269,9 @@ public class Case extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private boolean quarantineExtended;
+	private boolean quarantineOfficialOrderSent;
+	private Date quarantineOfficialOrderSentDate;
+
 	private ReportingType reportingType;
 
 	private FollowUpStatus followUpStatus;
@@ -277,6 +285,7 @@ public class Case extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+	private Set<EventParticipant> eventParticipants;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -749,7 +758,6 @@ public class Case extends CoreAdo {
 		this.tasks = tasks;
 	}
 
-
 	@AuditedIgnore
 	@OneToMany(mappedBy = Visit.CAZE, fetch = FetchType.LAZY)
 	public Set<Visit> getVisits() {
@@ -767,6 +775,15 @@ public class Case extends CoreAdo {
 
 	public void setSamples(Set<Sample> samples) {
 		this.samples = samples;
+	}
+
+	@OneToMany(cascade = {}, mappedBy = EventParticipant.RESULTING_CASE)
+	public Set<EventParticipant> getEventParticipants() {
+		return eventParticipants;
+	}
+
+	public void setEventParticipants(Set<EventParticipant> eventParticipants) {
+		this.eventParticipants = eventParticipants;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -1091,6 +1108,24 @@ public class Case extends CoreAdo {
 		this.quarantineExtended = quarantineExtended;
 	}
 
+	@Column
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public ReportingType getReportingType() {
 		return reportingType;
@@ -1152,5 +1187,14 @@ public class Case extends CoreAdo {
 
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public FacilityType getFacilityType() {
+		return facilityType;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
 	}
 }

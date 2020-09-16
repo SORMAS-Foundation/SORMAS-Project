@@ -42,6 +42,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.contact.TracingApp;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.person.Person;
@@ -81,6 +82,8 @@ public class Contact extends PseudonymizableAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String REPORT_LAT_LON_ACCURACY = "reportLatLonAccuracy";
+	public static final String EPI_DATA = "epiData";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	@DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
 	private Date reportDateTime;
@@ -196,11 +199,18 @@ public class Contact extends PseudonymizableAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String quarantineHomeSupplyEnsuredComment;
+	@DatabaseField
+	private boolean quarantineOfficialOrderSent;
+	@DatabaseField(dataType = DataType.DATE_LONG)
+	private Date quarantineOfficialOrderSentDate;
 	@Column(length = COLUMN_LENGTH_BIG)
 	private String additionalDetails;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private EpiData epiData;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private HealthConditions healthConditions;
 
 	public Person getPerson() {
 		return person;
@@ -650,6 +660,22 @@ public class Contact extends PseudonymizableAdo {
 		this.quarantineHomeSupplyEnsuredComment = quarantineHomeSupplyEnsuredComment;
 	}
 
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
 	public String getAdditionalDetails() {
 		return additionalDetails;
 	}
@@ -664,5 +690,13 @@ public class Contact extends PseudonymizableAdo {
 
 	public void setEpiData(EpiData epiData) {
 		this.epiData = epiData;
+	}
+
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 }

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.importer;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +32,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -208,6 +211,7 @@ public abstract class DataImporter {
 	 */
 	public ImportResultStatus runImport() throws IOException, InvalidColumnException, InterruptedException {
 		logger.debug("runImport - " + inputFile.getAbsolutePath());
+		Date methodDate = new Date();
 
 		CSVReader csvReader = null;
 		try {
@@ -255,6 +259,7 @@ public abstract class DataImporter {
 			}
 
 			logger.debug("runImport - done");
+			logger.debug("import took - " + (new Date().getTime() - methodDate.getTime()) / 1000d);
 
 			if (cancelAfterCurrent) {
 				if (!hasImportError) {
@@ -477,6 +482,18 @@ public abstract class DataImporter {
 		}
 
 		return dataHasImportError;
+	}
+
+	protected FacilityType getTypeOfFacility(String propertyName, Object currentElement)
+		throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+		String typeProperty;
+		if (CaseDataDto.class.equals(currentElement.getClass()) && CaseDataDto.HEALTH_FACILITY.equals(propertyName)) {
+			typeProperty = CaseDataDto.FACILITY_TYPE;
+		} else {
+			typeProperty = propertyName + "Type";
+		}
+		PropertyDescriptor pd = new PropertyDescriptor(typeProperty, currentElement.getClass());
+		return (FacilityType) pd.getReadMethod().invoke(currentElement);
 	}
 
 	protected void writeImportError(String[] errorLine, String message) throws IOException {

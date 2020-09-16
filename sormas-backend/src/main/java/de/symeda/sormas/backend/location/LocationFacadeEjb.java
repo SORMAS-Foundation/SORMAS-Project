@@ -17,14 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.location;
 
-import java.sql.Timestamp;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.region.CommunityFacadeEjb;
 import de.symeda.sormas.backend.region.CommunityService;
 import de.symeda.sormas.backend.region.DistrictFacadeEjb;
@@ -32,6 +27,11 @@ import de.symeda.sormas.backend.region.DistrictService;
 import de.symeda.sormas.backend.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.sql.Timestamp;
 
 @Stateless(name = "LocationFacade")
 public class LocationFacadeEjb implements LocationFacade {
@@ -44,6 +44,8 @@ public class LocationFacadeEjb implements LocationFacade {
 	private DistrictService districtService;
 	@EJB
 	private CommunityService communityService;
+	@EJB
+	private PersonService personService;
 
 	public Location fromDto(LocationDto source) {
 
@@ -61,7 +63,6 @@ public class LocationFacadeEjb implements LocationFacade {
 		}
 		DtoHelper.validateDto(source, target);
 
-		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
@@ -75,6 +76,11 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
 		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 
 		return target;
 	}
@@ -88,7 +94,6 @@ public class LocationFacadeEjb implements LocationFacade {
 		LocationDto target = new LocationDto();
 		DtoHelper.fillDto(target, source);
 
-		target.setAddress(source.getAddress());
 		target.setDetails(source.getDetails());
 		target.setCity(source.getCity());
 		target.setAreaType(source.getAreaType());
@@ -102,6 +107,11 @@ public class LocationFacadeEjb implements LocationFacade {
 		target.setLatLonAccuracy(source.getLatLonAccuracy());
 
 		target.setPostalCode(source.getPostalCode());
+		target.setStreet(source.getStreet());
+		target.setHouseNumber(source.getHouseNumber());
+		target.setAdditionalInformation(source.getAdditionalInformation());
+		target.setAddressType(source.getAddressType());
+		target.setAddressTypeDetails(source.getAddressTypeDetails());
 
 		return target;
 	}

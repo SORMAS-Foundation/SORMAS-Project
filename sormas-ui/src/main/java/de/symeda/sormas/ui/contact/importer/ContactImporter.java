@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import de.symeda.sormas.api.person.SimilarPersonDto;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Sizeable.Unit;
@@ -27,8 +26,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.region.CommunityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -209,7 +208,7 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
-					FacadeProvider.getContactFacade().saveContact(newContact);
+					FacadeProvider.getContactFacade().saveContact(newContact, false);
 
 					consumer.result = null;
 					return ImportLineResult.SUCCESS;
@@ -357,7 +356,12 @@ public class ContactImporter extends DataImporter {
 						Pair<DistrictReferenceDto, CommunityReferenceDto> infrastructureData =
 							ImporterPersonHelper.getPersonDistrictAndCommunity(pd.getName(), person);
 						List<FacilityReferenceDto> facility = FacadeProvider.getFacilityFacade()
-							.getByName(entry, infrastructureData.getElement0(), infrastructureData.getElement1(), false);
+							.getByNameAndType(
+								entry,
+								infrastructureData.getElement0(),
+								infrastructureData.getElement1(),
+								getTypeOfFacility(pd.getName(), currentElement),
+								false);
 						if (facility.isEmpty()) {
 							if (infrastructureData.getElement1() != null) {
 								throw new ImportErrorException(

@@ -26,6 +26,8 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.FragmentActivity;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -40,6 +42,9 @@ import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.Vaccination;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.contact.QuarantineType;
+import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.facility.FacilityDto;
+import de.symeda.sormas.api.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -91,6 +96,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 	private List<Item> initialFacilities;
 	private List<Item> quarantineList;
 	private List<Item> reportingTypeList;
+	private List<Item> facilityOrHomeList;
+	private List<Item> facilityTypeGroupList;
 
 	// Static methods
 
@@ -147,11 +154,16 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		// Port Health fields
 		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
-			contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 		} else {
 			if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
 				if (record.getHealthFacility() == null) {
-					contentBinding.healthFacilityFieldsLayout.setVisibility(GONE);
+					contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+					contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+					contentBinding.caseDataHealthFacility.setVisibility(GONE);
 					contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
 				}
 			} else {
@@ -173,7 +185,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseButtonsPanel.setVisibility(GONE);
 		}
 
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.caseDataExternalID.setVisibility(GONE);
 			contentBinding.caseDataReportingType.setVisibility(GONE);
 			contentBinding.caseDataClinicalConfirmation.setVisibility(GONE);
@@ -231,7 +243,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		caseClassificationList = DataUtils.getEnumItems(CaseClassification.class, true);
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			caseClassificationList.remove(new Item<>(CaseClassification.CONFIRMED_NO_SYMPTOMS.toString(), CaseClassification.CONFIRMED_NO_SYMPTOMS));
 			caseClassificationList
 				.remove(new Item<>(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS.toString(), CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
@@ -248,7 +260,9 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		initialRegions = InfrastructureHelper.loadRegions();
 		initialDistricts = InfrastructureHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity());
+		initialFacilities = InfrastructureHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
+		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.getTypesOfPlaceForCases(), true);
+		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);
 	}
 
 	@Override
@@ -303,6 +317,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			.initializeHealthFacilityDetailsFieldVisibility(contentBinding.caseDataHealthFacility, contentBinding.caseDataHealthFacilityDetails);
 
 		InfrastructureHelper.initializeFacilityFields(
+			record,
 			contentBinding.caseDataRegion,
 			initialRegions,
 			record.getRegion(),
@@ -312,9 +327,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataCommunity,
 			initialCommunities,
 			record.getCommunity(),
+			contentBinding.facilityOrHome,
+			facilityOrHomeList,
+			contentBinding.facilityTypeGroup,
+			facilityTypeGroupList,
+			contentBinding.caseDataFacilityType,
+			null,
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			record.getHealthFacility());
+			record.getHealthFacility(),
+			contentBinding.caseDataHealthFacilityDetails,
+			false);
 
 		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.caseDataHealthFacility.setRequired(false);
@@ -324,7 +347,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			boolean visible = QuarantineType.HOME.equals(contentBinding.caseDataQuarantine.getValue())
 				|| QuarantineType.INSTITUTIONELL.equals(contentBinding.caseDataQuarantine.getValue());
 			if (visible) {
-				if (ConfigProvider.isGermanServer()) {
+				if (ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+					|| ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 					contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(VISIBLE);
 					contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(VISIBLE);
 				}
@@ -333,15 +357,17 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			} else {
 				contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
-
 				contentBinding.caseDataQuarantineExtended.setVisibility(GONE);
 			}
 		});
-		if (!ConfigProvider.isGermanServer()) {
+		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& !ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
 			contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedVerballyDate.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
 			contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.setVisibility(GONE);
+			contentBinding.caseDataQuarantineOfficialOrderSent.setVisibility(GONE);
+			contentBinding.caseDataQuarantineOfficialOrderSentDate.setVisibility(GONE);
 		}
 
 		contentBinding.caseDataQuarantineExtended.setEnabled(false);
@@ -403,6 +429,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineTo.initializeDateField(getFragmentManager());
 		contentBinding.caseDataQuarantineOrderedVerballyDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataQuarantineOrderedOfficialDocumentDate.initializeDateField(getChildFragmentManager());
+		contentBinding.caseDataQuarantineOfficialOrderSentDate.initializeDateField(getChildFragmentManager());
 		contentBinding.caseDataReportingType.initializeSpinner(reportingTypeList);
 
 		// Replace classification user field with classified by field when case has been classified automatically
@@ -410,6 +437,18 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassificationUser.setVisibility(GONE);
 			contentBinding.caseDataClassifiedBy.setVisibility(VISIBLE);
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
+		}
+
+		if (record.getHealthFacility() == null) {
+			contentBinding.facilityOrHomeLayout.setVisibility(GONE);
+			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
+			contentBinding.caseDataHealthFacility.setVisibility(GONE);
+			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);
+		} else if (FacilityDto.NONE_FACILITY_UUID.equals(record.getHealthFacility().getUuid())) {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.HOME);
+		} else {
+			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
+			contentBinding.facilityTypeGroup.setValue(record.getFacilityType().getFacilityTypeGroup());
 		}
 	}
 

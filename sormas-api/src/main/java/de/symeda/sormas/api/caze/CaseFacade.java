@@ -27,8 +27,6 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -45,9 +43,10 @@ public interface CaseFacade {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
-	//Created for the SurvNet interface in order to track additional change dates.
-	//additional change dates filters for: sample, pathogenTests, patient and location.
-	List<CaseDataDto> getAllActiveCasesAfter(Date date, Boolean includeExtendedChangeDateFilters);
+	/**
+	 * Additional change dates filters for: sample, pathogenTests, patient and location.
+	 */
+	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
 
 	long count(CaseCriteria caseCriteria);
 
@@ -70,6 +69,8 @@ public interface CaseFacade {
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
 	void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
+
+	void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
 
 	void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
@@ -146,10 +147,10 @@ public interface CaseFacade {
 	boolean hasPositiveLabResult(String caseUuid);
 
 	List<CaseFollowUpDto> getCaseFollowUpList(
-			CaseCriteria caseCriteria,
-			Date referenceDate,
-			int interval,
-			Integer first,
-			Integer max,
-			List<SortProperty> sortProperties);
+		CaseCriteria caseCriteria,
+		Date referenceDate,
+		int interval,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
 }

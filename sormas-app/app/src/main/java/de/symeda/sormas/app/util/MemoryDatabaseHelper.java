@@ -42,7 +42,6 @@ import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
@@ -140,7 +139,6 @@ public class MemoryDatabaseHelper {
 		RegionGenerator.initialize();
 		DistrictGenerator.initialize();
 		CommunityGenerator.initialize();
-		FacilityGenerator.initialize();
 		LocationGenerator.initialize();
 		UserGenerator.initialize();
 		PersonGenerator.initialize();
@@ -365,16 +363,6 @@ public class MemoryDatabaseHelper {
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			communityList.addAll(CommunityGenerator.get(min));
 			return communityList;
-		}
-	}
-
-	public static class FACILITY {
-
-		public static List<Facility> getFacilities(int number) {
-			facilityList.clear();
-			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
-			facilityList.addAll(FacilityGenerator.get(min));
-			return facilityList;
 		}
 	}
 
@@ -1052,7 +1040,6 @@ class SampleGenerator extends BaseDataGenerator {
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setSampleMaterial(getRandomSampleMaterial());
 			data1.setSampleMaterialText(getRandomString());
-			data1.setLab(FacilityGenerator.getSingle());
 			data1.setShipmentDate(getRandomDate());
 			data1.setShipmentDetails(getRandomString());
 			data1.setReceivedDate(getRandomDate());
@@ -1121,7 +1108,6 @@ class PersonGenerator extends BaseDataGenerator {
 			data1.setBurialPlaceDescription(getRandomSentence());
 			data1.setOccupationType(getRandomOccupationType());
 			data1.setOccupationDetails(getRandomSentence());
-			data1.setOccupationFacility(FacilityGenerator.getSingle());
 
 			pool.add(data1);
 		}
@@ -1155,7 +1141,6 @@ class PreviousHospitalizationGenerator extends BaseDataGenerator {
 			data1.setRegion(RegionGenerator.getSingle());
 			data1.setDistrict(DistrictGenerator.getSingle());
 			data1.setCommunity(CommunityGenerator.getSingle());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			data1.setIsolated(getRandomYesNoUnknown());
 			data1.setDescription(getRandomSentence());
 			//data1.setHospitalization(HospitalizationGenerator.getSingle());
@@ -1327,7 +1312,7 @@ class EpiDataTravelGenerator extends BaseDataGenerator {
 			data1.setUuid(getRandomUuid());
 			//data1.setEpiData(EpiDataGenerator.getSingle());
 			data1.setTravelType(getRandomTravelType());
-			data1.setTravelDestination(getRandomAddress());
+			data1.setTravelDestination(getRandomStreet());
 			data1.setTravelDateFrom(getRandomDate());
 			data1.setTravelDateTo(getRandomDate());
 
@@ -1530,7 +1515,6 @@ class CaseGenerator extends BaseDataGenerator {
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setReportDate(getRandomDate());
 			data1.setInvestigatedDate(getRandomDate());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			data1.setHealthFacilityDetails(getRandomSentence());
 			data1.setSymptoms(SymptomsGenerator.getSingle());
 			data1.setSurveillanceOfficer(UserGenerator.getSingle());
@@ -1669,7 +1653,9 @@ class LocationGenerator extends BaseDataGenerator {
 		for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
 			Location data1 = new Location();
 			data1.setUuid(getRandomUuid());
-			data1.setAddress(getRandomAddress());
+			data1.setStreet(getRandomStreet());
+			data1.setHouseNumber(getRandomHouseNumber());
+			data1.setAdditionalInformation(getRandomAdditionalInformation());
 			data1.setDetails(getRandomSentence());
 			data1.setCity(getRandomCityName());
 			data1.setRegion(RegionGenerator.getSingle());
@@ -1788,57 +1774,6 @@ class DistrictGenerator extends BaseDataGenerator {
 	}
 }
 
-class FacilityGenerator extends BaseDataGenerator {
-
-	private static final List<Facility> pool = new ArrayList<Facility>();
-
-	public static void initialize() {
-		for (int i = 0; i < DEFAULT_RECORD_NUMBER; i++) {
-			Facility data1 = new Facility();
-			data1.setUuid(getRandomUuid());
-			data1.setName(getRandomFacilityName());
-			data1.setCity(getRandomCityName());
-			data1.setRegion(RegionGenerator.getSingle());
-			data1.setDistrict(DistrictGenerator.getSingle());
-			data1.setCommunity(CommunityGenerator.getSingle());
-			data1.setLatitude(getRandomDouble());
-			data1.setLongitude(getRandomDouble());
-			data1.setType(getFacilityType());
-			data1.setPublicOwnership(getRandomBoolean());
-
-			pool.add(data1);
-		}
-	}
-
-	public static List<Facility> get(int number) {
-		List<Facility> toReturn = new ArrayList<>();
-
-		for (int index = 0; index < number; index++) {
-			toReturn.add(pool.get(index));
-		}
-
-		return toReturn;
-	}
-
-	public static Facility getSingle() {
-		return randomItem(pool);
-	}
-
-	private static FacilityType getFacilityType() {
-		List<FacilityType> list = new ArrayList<FacilityType>() {
-
-			{
-				add(FacilityType.PRIMARY);
-				add(FacilityType.SECONDARY);
-				add(FacilityType.TERTIARY);
-				add(FacilityType.LABORATORY);
-			}
-		};
-
-		return randomItem(list);
-	}
-}
-
 class UserRoleGenerator extends BaseDataGenerator {
 
 	private static final List<UserRole> pool = new ArrayList<UserRole>();
@@ -1890,7 +1825,6 @@ class UserGenerator extends BaseDataGenerator {
 			data1.setAddress(LocationGenerator.getSingle());
 			data1.setRegion(RegionGenerator.getSingle());
 			data1.setDistrict(DistrictGenerator.getSingle());
-			data1.setHealthFacility(FacilityGenerator.getSingle());
 			//data1.setUserRoles(new HashSet<UserRole>() { UserRoleGenerator.getSingle() });
 			data1.setUserRoles(new HashSet<UserRole>());
 			//data1.setAssociatedOfficer(UserGenerator.getSingle());
@@ -2108,30 +2042,66 @@ abstract class BaseDataGenerator {
 		"cred",
 		"mur" };
 
-	private static List<String> addressList = new ArrayList<String>() {
+	private static List<String> streetList = new ArrayList<String>() {
 
 		{
-			add("196 Woodside Circle Mobile, FL 36602");
-			add("3756 Preston Street Wichita, KS 67213");
-			add("1635 Franklin Street Montgomery, AL 36104");
-			add("2595 Pearlman Avenue Sudbury, MA 01776 ");
-			add("508 Virginia Street Chicago, IL 60653");
-			add("1516 Holt Street West Palm Beach, FL 33401");
-			add("123 6th St. Melbourne, FL 32904");
-			add("71 Pilgrim Avenue Chevy Chase, MD 20815");
-			add("70 Bowman St. South Windsor, CT 06074");
-			add("4 Goldfield Rd. Honolulu, HI 96815");
-			add("44 Shirley Ave. West Chicago, IL 60185");
-			add("514 S. Magnolia St. Orlando, FL 32806");
-			add("9467 East San Pablo Street Bountiful, UT 84010");
-			add("7550 North Baker Lane Perrysburg, OH 43551");
-			add("30 Anderson Street Quincy, MA 02169");
-			add("984 Fifth Drive West Springfield, MA 01089");
-			add("642 Prince St. Nashville, TN 37205");
-			add("9560 West Beach Lane Desoto, TX 75115");
-			add("1 West 8th Ave. Allison Park, PA 15101");
-			add("12 High Ridge Drive Longwood, FL 32779");
-			add("60 Augusta Drive Hagerstown, MD 21740");
+			add("Woodside Circle Mobile");
+			add("Preston Street Wichita");
+			add("Franklin Street Montgomery");
+			add("Pearlman Avenue Sudbury");
+			add("Virginia Street Chicago");
+			add("Holt Street West Palm Beach");
+			add("6th St. Melbourne");
+			add("Pilgrim Avenue Chevy Chase");
+			add("Bowman St. South Windsor");
+			add("Goldfield Rd. Honolulu");
+			add("Shirley Ave. West Chicago");
+			add("S. Magnolia St. Orlando");
+			add("East San Pablo Street Bountiful");
+			add("North Baker Lane Perrysburg");
+			add("Anderson Street Quincy");
+			add("Fifth Drive West Springfield");
+			add("Prince St. Nashville");
+			add("West Beach Lane Desoto");
+			add("West 8th Ave. Allison Park");
+			add("High Ridge Drive Longwood");
+			add("Augusta Drive Hagerstown");
+		}
+	};
+
+	private static List<String> houseNumberList = new ArrayList<String>() {
+
+		{
+			add("12");
+			add("435");
+			add("3b");
+			add("24a");
+			add("1");
+			add("2a");
+			add("4");
+			add("5");
+			add("6");
+			add("7");
+			add("8D");
+			add("9");
+			add("10 A");
+			add("11");
+			add("13");
+			add("14");
+			add("15");
+			add("16");
+			add("17");
+			add("18");
+			add("19");
+		}
+	};
+
+	private static List<String> additionalInformationList = new ArrayList<String>() {
+
+		{
+			add("5th door left hand");
+			add("Entrance 3");
+			add("Entrance behind the building");
 		}
 	};
 
@@ -2259,8 +2229,16 @@ abstract class BaseDataGenerator {
 		return randomItem(sentenceList);
 	}
 
-	public static String getRandomAddress() {
-		return randomItem(addressList);
+	public static String getRandomStreet() {
+		return randomItem(streetList);
+	}
+
+	public static String getRandomHouseNumber() {
+		return randomItem(houseNumberList);
+	}
+
+	public static String getRandomAdditionalInformation() {
+		return randomItem(additionalInformationList);
 	}
 
 	public static String getRandomUserName() {

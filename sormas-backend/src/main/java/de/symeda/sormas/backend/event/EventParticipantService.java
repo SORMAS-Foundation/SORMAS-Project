@@ -32,14 +32,17 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class EventParticipantService extends AbstractAdoService<EventParticipant> {
+public class EventParticipantService extends AbstractCoreAdoService<EventParticipant> {
 
 	@EJB
 	private EventService eventService;
@@ -59,6 +62,8 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 
 		Predicate filter = cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)));
 
+		filter = cb.and(filter, createDefaultFilter(cb, from));
+
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
 			filter = AbstractAdoService.and(cb, filter, userFilter);
@@ -73,7 +78,8 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		cq.orderBy(cb.desc(from.get(EventParticipant.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -84,6 +90,8 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 
 		Predicate filter = cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)));
+
+		filter = cb.and(filter, createDefaultFilter(cb, from));
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -113,13 +121,56 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 		return resultList;
 	}
 
+	public List<EventParticipant> getAllActiveByEvent(Event event) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
+		Root<EventParticipant> from = cq.from(getElementClass());
+
+		Predicate filter = cb.equal(from.get(EventParticipant.EVENT), event);
+		filter = cb.and(filter, cb.equal(from.get(Event.DELETED), false));
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
+
+		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, CriteriaBuilder cb, Root<EventParticipant> from) {
 
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
+		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
 			filter = and(cb, filter, cb.equal(event.get(Event.UUID), criteria.getEvent().getUuid()));
 		}
+
+		if (criteria.getFreeText() != null) {
+			String[] textFilters = criteria.getFreeText().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = formatForLike(textFilters[i]);
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(person.get(Person.FIRST_NAME)), textFilter),
+						cb.like(cb.lower(person.get(Person.LAST_NAME)), textFilter),
+						phoneNumberPredicate(cb, person.get(Person.PHONE), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+
+		if (criteria.getBirthdateYYYY() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_YYYY), criteria.getBirthdateYYYY()));
+		}
+		if (criteria.getBirthdateMM() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_MM), criteria.getBirthdateMM()));
+		}
+		if (criteria.getBirthdateDD() != null) {
+			filter = and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
+		}
+
+		filter = and(cb, filter, createDefaultFilter(cb, from));
 
 		return filter;
 	}
@@ -177,5 +228,44 @@ public class EventParticipantService extends AbstractAdoService<EventParticipant
 			.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(eventParticipant);
+	}
+
+	public List<String> getDeletedUuidsSince(Date since, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
+		Join<EventParticipant, Event> event = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+		eventUserFilterCriteria.includeUserCaseFilter(true);
+		eventUserFilterCriteria.forceRegionJurisdiction(true);
+
+		Predicate filter =
+			eventService.createUserFilter(cb, cq, eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
+
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, eventParticipantRoot, since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate deletedFilter = cb.equal(eventParticipantRoot.get(EventParticipant.DELETED), true);
+		if (filter != null) {
+			filter = cb.and(filter, deletedFilter);
+		} else {
+			filter = deletedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(eventParticipantRoot.get(EventParticipant.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
+		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 }

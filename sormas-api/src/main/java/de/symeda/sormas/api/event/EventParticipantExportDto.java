@@ -1,0 +1,518 @@
+/*
+ * ******************************************************************************
+ * * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * *
+ * * This program is free software: you can redistribute it and/or modify
+ * * it under the terms of the GNU General Public License as published by
+ * * the Free Software Foundation, either version 3 of the License, or
+ * * (at your option) any later version.
+ * *
+ * * This program is distributed in the hope that it will be useful,
+ * * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * * GNU General Public License for more details.
+ * *
+ * * You should have received a copy of the GNU General Public License
+ * * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * ******************************************************************************
+ */
+
+package de.symeda.sormas.api.event;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.caze.BurialInfoDto;
+import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.importexport.ExportProperty;
+import de.symeda.sormas.api.person.ApproximateAgeType;
+import de.symeda.sormas.api.person.BurialConductor;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.Order;
+import de.symeda.sormas.api.utils.PersonalData;
+import de.symeda.sormas.api.utils.SensitiveData;
+import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
+import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+public class EventParticipantExportDto implements Serializable {
+
+	public static final String I18N_PREFIX = "EventParticipantExport";
+
+	public static final String EVENT_DISEASE = "eventDisease";
+	public static final String EVENT_TYPE_OF_PLACE = "eventTypeOfPlace";
+	public static final String EVENT_START_DATE = "eventStartDate";
+	public static final String EVENT_END_DATE = "eventEndDate";
+	public static final String EVENT_DESCRIPTION = "eventDescription";
+	public static final String EVENT_REGION = "eventRegion";
+	public static final String EVENT_DISTRICT = "eventDistrict";
+	public static final String EVENT_COMMUNITY = "eventCommunity";
+	public static final String EVENT_CITY = "eventCity";
+	public static final String EVENT_STREET = "eventStreet";
+	public static final String EVENT_HOUSE_NUMBER = "eventHouseNumber";
+	public static final String AGE_GROUP = "ageGroup";
+	public static final String ADDRESS_REGION = "addressRegion";
+	public static final String ADDRESS_DISTRICT = "addressDistrict";
+	public static final String ADDRESS_GPS_COORDINATES = "addressGpsCoordinates";
+	public static final String BURIAL_INFO = "burialInfo";
+	public static final String SAMPLE_INFORMATION = "sampleInformation";
+	public static final String PERSON_NATIONAL_HEALTH_ID = "personNationalHealthId";
+	public static final String EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION = "eventParticipantInvolvmentDescription";
+
+	private long id;
+	private long personId;
+	private long personAddressId;
+
+	private String eventUuid;
+
+	private final EventStatus eventStatus;
+	private final Disease eventDisease;
+	private TypeOfPlace typeOfPlace;
+	private final Date eventStartDate;
+	private final Date eventEndDate;
+	private final String eventDesc;
+
+	private final String eventRegion;
+	private final String eventDistrict;
+	private final String eventCommunity;
+	private final String eventCity;
+	private final String eventStreet;
+	private final String eventHouseNumber;
+
+	private final String personUuid;
+
+	private final String involvmentDescription;
+
+	@PersonalData
+	@SensitiveData
+	private String firstName;
+	@PersonalData
+	@SensitiveData
+	private String lastName;
+	private Sex sex;
+	private String approximateAge;
+	private String ageGroup;
+	private BirthDateDto birthdate;
+	private String personNationalHealthId;
+
+	private PresentCondition presentCondition;
+	private Date deathDate;
+	private BurialInfoDto burialInfo;
+	private String addressRegion;
+	private String addressDistrict;
+	@PersonalData
+	@SensitiveData
+	private String city;
+	@PersonalData
+	@SensitiveData
+	private String street;
+	@PersonalData
+	@SensitiveData
+	private String houseNumber;
+	@PersonalData
+	@SensitiveData
+	private String additionalInformation;
+	@PersonalData
+	@SensitiveData
+	@Pseudonymizer(PostalCodePseudonymizer.class)
+	private String postalCode;
+	@PersonalData
+	@SensitiveData
+	private String addressGpsCoordinates;
+	@SensitiveData
+	private String phone;
+
+	private String caseUuid;
+
+	private List<EmbeddedSampleExportDto> eventParticipantSamples = new ArrayList<>();
+
+	private EventParticipantJurisdictionDto jurisdiction;
+
+	//@formatter:off
+    public EventParticipantExportDto(long id, long personId, String personUuid, String personNationalHealthId, long personAddressId, String reportingUserUuid, String eventUuid, 
+									 
+									 EventStatus eventStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventDesc,
+									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
+									 String firstName, String lastName, Sex sex, String involvmentDescription, Integer approximateAge, ApproximateAgeType approximateAgeType, 
+									 Integer birthdateDD, Integer birthdateMM, Integer birthdateYYYY, PresentCondition presentCondition, Date deathDate, Date burialDate, 
+									 BurialConductor burialConductor, String burialPlaceDescription, String addressRegion, String addressDistrict, String city, String street, String houseNumber,
+									 String additionalInformation, String postalCode, String phone, String caseUuid) {
+    	//@formatter:on
+
+		this.id = id;
+		this.personId = personId;
+		this.personUuid = personUuid;
+		this.personNationalHealthId = personNationalHealthId;
+		this.personAddressId = personAddressId;
+		this.eventUuid = eventUuid;
+
+		this.eventStatus = eventStatus;
+		this.eventDisease = eventDisease;
+		this.typeOfPlace = typeOfPlace;
+		this.eventStartDate = eventStartDate;
+		this.eventEndDate = eventEndDate;
+		this.eventDesc = eventDesc;
+		this.eventRegion = eventRegion;
+		this.eventDistrict = eventDistrict;
+		this.eventCommunity = eventCommunity;
+		this.eventCity = eventCity;
+		this.eventStreet = eventStreet;
+		this.eventHouseNumber = eventHouseNumber;
+
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.sex = sex;
+		this.involvmentDescription = involvmentDescription;
+		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
+		this.ageGroup = ApproximateAgeType.ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
+		birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
+		this.presentCondition = presentCondition;
+		this.deathDate = deathDate;
+		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
+		this.addressRegion = addressRegion;
+		this.addressDistrict = addressDistrict;
+		this.city = city;
+		this.street = street;
+		this.houseNumber = houseNumber;
+		this.additionalInformation = additionalInformation;
+		this.postalCode = postalCode;
+		this.phone = phone;
+		this.caseUuid = caseUuid;
+
+		jurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
+	}
+
+	@Order(0)
+	@ExportProperty(EventDto.UUID)
+	public String getEventUuid() {
+		return eventUuid;
+	}
+
+	@Order(1)
+	@ExportProperty(EventDto.EVENT_STATUS)
+	public EventStatus getEventStatus() {
+		return eventStatus;
+	}
+
+	@Order(2)
+	@ExportProperty(EventParticipantExportDto.EVENT_DISEASE)
+	public Disease getEventDisease() {
+		return eventDisease;
+	}
+
+	@Order(3)
+	@ExportProperty(EventParticipantExportDto.EVENT_TYPE_OF_PLACE)
+	public TypeOfPlace getTypeOfPlace() {
+		return typeOfPlace;
+	}
+
+	@Order(4)
+	@ExportProperty(EventParticipantExportDto.EVENT_START_DATE)
+	public Date getEventStartDate() {
+		return eventStartDate;
+	}
+
+	@Order(5)
+	@ExportProperty(EventParticipantExportDto.EVENT_END_DATE)
+	public Date getEventEndDate() {
+		return eventEndDate;
+	}
+
+	@Order(6)
+	@ExportProperty(EventParticipantExportDto.EVENT_DESCRIPTION)
+	public String getEventDesc() {
+		return eventDesc;
+	}
+
+	@Order(7)
+	@ExportProperty(EventParticipantExportDto.EVENT_REGION)
+	public String getEventRegion() {
+		return eventRegion;
+	}
+
+	@Order(8)
+	@ExportProperty(EventParticipantExportDto.EVENT_DISTRICT)
+	public String getEventDistrict() {
+		return eventDistrict;
+	}
+
+	@Order(9)
+	@ExportProperty(EventParticipantExportDto.EVENT_COMMUNITY)
+	public String getEventCommunity() {
+		return eventCommunity;
+	}
+
+	@Order(10)
+	@ExportProperty(EventParticipantExportDto.EVENT_CITY)
+	public String getEventCity() {
+		return eventCity;
+	}
+
+	@Order(11)
+	@ExportProperty(EventParticipantExportDto.EVENT_STREET)
+	public String getEventStreet() {
+		return eventStreet;
+	}
+
+	@Order(12)
+	@ExportProperty(EventParticipantExportDto.EVENT_HOUSE_NUMBER)
+	public String getEventHouseNumber() {
+		return eventHouseNumber;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public long getPersonId() {
+		return personId;
+	}
+
+	public long getPersonAddressId() {
+		return personAddressId;
+	}
+
+	@Order(21)
+	public String getPersonUuid() {
+		return personUuid;
+	}
+
+	@Order(22)
+	@ExportProperty(EventParticipantExportDto.PERSON_NATIONAL_HEALTH_ID)
+	public String getPersonNationalHealthId() {
+		return personNationalHealthId;
+	}
+
+	@Order(23)
+	public String getFirstName() {
+		return firstName;
+	}
+
+	@Order(24)
+	public String getLastName() {
+		return lastName;
+	}
+
+	@Order(25)
+	public Sex getSex() {
+		return sex;
+	}
+
+	@Order(26)
+	@ExportProperty(EventParticipantExportDto.EVENT_PARTICIPANT_INVOLVMENT_DESCRIPTION)
+	public String getInvolvmentDescription() {
+		return involvmentDescription;
+	}
+
+	@Order(27)
+	public String getApproximateAge() {
+		return approximateAge;
+	}
+
+	@Order(28)
+	@ExportProperty(EventParticipantExportDto.AGE_GROUP)
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	@Order(29)
+	public BirthDateDto getBirthdate() {
+		return birthdate;
+	}
+
+	@Order(30)
+	public PresentCondition getPresentCondition() {
+		return presentCondition;
+	}
+
+	@Order(31)
+	public Date getDeathDate() {
+		return deathDate;
+	}
+
+	@Order(32)
+	@ExportProperty(EventParticipantExportDto.BURIAL_INFO)
+	public BurialInfoDto getBurialInfo() {
+		return burialInfo;
+	}
+
+	@Order(41)
+	@ExportProperty(EventParticipantExportDto.ADDRESS_REGION)
+	public String getAddressRegion() {
+		return addressRegion;
+	}
+
+	@Order(42)
+	@ExportProperty(EventParticipantExportDto.ADDRESS_DISTRICT)
+	public String getAddressDistrict() {
+		return addressDistrict;
+	}
+
+	@Order(43)
+	public String getCity() {
+		return city;
+	}
+
+	@Order(44)
+	public String getStreet() {
+		return street;
+	}
+
+	@Order(45)
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	@Order(46)
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	@Order(47)
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	@Order(48)
+	@ExportProperty(EventParticipantExportDto.ADDRESS_GPS_COORDINATES)
+	public String getAddressGpsCoordinates() {
+		return addressGpsCoordinates;
+	}
+
+	@Order(49)
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	@Order(50)
+	public String getPhone() {
+		return phone;
+	}
+
+	@Order(60)
+	public String getCaseUuid() {
+		return caseUuid;
+	}
+
+	public List<EmbeddedSampleExportDto> getEventParticipantSamples() {
+		return eventParticipantSamples;
+	}
+
+	public void addEventParticipantSample(EmbeddedSampleExportDto exportSampleDto) {
+		this.eventParticipantSamples.add(exportSampleDto);
+	}
+
+	@Order(61)
+	@ExportProperty(EventParticipantExportDto.SAMPLE_INFORMATION)
+	public String getOtherSamplesString() {
+		StringBuilder samples = new StringBuilder();
+		String separator = ", ";
+
+		for (EmbeddedSampleExportDto sample : eventParticipantSamples) {
+			samples.append(sample.formatString()).append(separator);
+		}
+
+		return samples.length() > 0 ? samples.substring(0, samples.length() - separator.length()) : "";
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public void setPersonId(long personId) {
+		this.personId = personId;
+	}
+
+	public void setPersonAddressId(long personAddressId) {
+		this.personAddressId = personAddressId;
+	}
+
+	public void setEventUuid(String eventUuid) {
+		this.eventUuid = eventUuid;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public void setSex(Sex sex) {
+		this.sex = sex;
+	}
+
+	public void setApproximateAge(String approximateAge) {
+		this.approximateAge = approximateAge;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
+	}
+
+	public void setBirthdate(BirthDateDto birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public void setPresentCondition(PresentCondition presentCondition) {
+		this.presentCondition = presentCondition;
+	}
+
+	public void setDeathDate(Date deathDate) {
+		this.deathDate = deathDate;
+	}
+
+	public void setBurialInfo(BurialInfoDto burialInfo) {
+		this.burialInfo = burialInfo;
+	}
+
+	public void setAddressRegion(String addressRegion) {
+		this.addressRegion = addressRegion;
+	}
+
+	public void setAddressDistrict(String addressDistrict) {
+		this.addressDistrict = addressDistrict;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public void setAddressGpsCoordinates(String addressGpsCoordinates) {
+		this.addressGpsCoordinates = addressGpsCoordinates;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setCaseUuid(String caseUuid) {
+		this.caseUuid = caseUuid;
+	}
+
+	public void setEventParticipantSamples(List<EmbeddedSampleExportDto> eventParticipantSamples) {
+		this.eventParticipantSamples = eventParticipantSamples;
+	}
+
+	public EventParticipantJurisdictionDto getJurisdiction() {
+		return jurisdiction;
+	}
+}

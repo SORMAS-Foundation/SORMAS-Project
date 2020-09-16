@@ -180,13 +180,28 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return addField(getContent(), propertyId, fieldType);
 	}
 
+	protected <F extends Field> F addField(String propertyId, F field) {
+		return addField(getContent(), propertyId, field);
+	}
+
 	@SuppressWarnings("rawtypes")
 	protected <F extends Field> F addField(CustomLayout layout, String propertyId, Class<F> fieldType) {
 		F field = createField(propertyId, fieldType);
+		return addFieldToLayout(layout, propertyId, field);
+	}
+
+	protected <F extends Field> F addField(CustomLayout layout, String propertyId, F field) {
+		getFieldGroup().bind(field, propertyId);
+
+		return addFieldToLayout(layout, propertyId, field);
+	}
+
+	private <F extends Field> F addFieldToLayout(CustomLayout layout, String propertyId, F field) {
 		formatField(field, propertyId);
 		field.setId(propertyId);
 		layout.addComponent(field, propertyId);
 		addDefaultAdditionalValidators(field, null);
+
 		return field;
 	}
 
@@ -328,8 +343,8 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		return propertyI18nPrefix;
 	}
 
-	protected boolean isGermanServer() {
-		return FacadeProvider.getConfigFacade().isGermanServer();
+	protected boolean isConfiguredServer(String countryCode) {
+		return FacadeProvider.getConfigFacade().isConfiguredCountry(countryCode);
 	}
 
 	private static class SormasBeanFieldGroup<T> extends BeanFieldGroup<T> {

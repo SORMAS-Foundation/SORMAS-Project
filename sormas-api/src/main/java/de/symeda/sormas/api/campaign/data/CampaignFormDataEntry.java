@@ -15,15 +15,17 @@
 
 package de.symeda.sormas.api.campaign.data;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-
-import java.io.Serializable;
-import java.util.Objects;
 
 public class CampaignFormDataEntry implements Serializable {
 
 	private static final long serialVersionUID = -3096020120349257398L;
+
+	public static final String ID = "id";
+	public static final String VALUE = "value";
 
 	private String id;
 	private Object value;
@@ -53,20 +55,21 @@ public class CampaignFormDataEntry implements Serializable {
 		this.value = value;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
-		return Objects.equals(id, that.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+	// does not make sense. Leads to hibernate not persisting any changes in value
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o)
+//			return true;
+//		if (o == null || getClass() != o.getClass())
+//			return false;
+//		CampaignFormDataEntry that = (CampaignFormDataEntry) o;
+//		return Objects.equals(id, that.id);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(id);
+//	}
 
 	@Override
 	public String toString() {
@@ -80,5 +83,4 @@ public class CampaignFormDataEntry implements Serializable {
 
 		return value.toString();
 	}
-
 }

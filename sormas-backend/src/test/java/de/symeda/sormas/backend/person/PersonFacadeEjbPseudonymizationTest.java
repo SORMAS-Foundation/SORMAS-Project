@@ -148,7 +148,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetEventParticipantPersonInSameJurisdiction() {
 
 		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user2.toReference());
 		assertNotPseudonymized(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
@@ -156,7 +156,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testGetEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user1.toReference());
 		assertPseudonymised(getPersonFacade().getPersonByUuid(person.getUuid()));
 	}
 
@@ -164,7 +164,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateEventParticipantPersonInJurisdiction() {
 
 		EventDto event = creator.createEvent(user2.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user2.toReference());
 		updatePerson(false);
 		assertPersonUpdated();
 	}
@@ -173,7 +173,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateEventParticipantPersonOutsideJurisdiction() {
 
 		EventDto event = creator.createEvent(user1.toReference());
-		creator.createEventParticipant(event.toReference(), person);
+		creator.createEventParticipant(event.toReference(), person, user1.toReference());
 		updatePerson(true);
 		assertPersonNotUpdated();
 	}
@@ -213,7 +213,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		address.setDistrict(rdcf1.district);
 		address.setCommunity(rdcf1.community);
 		address.setCity("Test City");
-		address.setAddress("Test address");
+		address.setStreet("Test street");
+		address.setHouseNumber("Test number");
+		address.setAdditionalInformation("Test information");
 		address.setPostalCode("12345");
 		address.setAreaType(AreaType.URBAN);
 		address.setDetails("Test address details");
@@ -244,7 +246,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		newAddress.setDistrict(rdcf1.district);
 		newAddress.setCommunity(rdcf1.community);
 		newAddress.setCity("New City");
-		newAddress.setAddress("New address");
+		newAddress.setStreet("New street");
+		newAddress.setHouseNumber("New number");
+		newAddress.setAdditionalInformation("New information");
 		newAddress.setPostalCode("938");
 		newAddress.setAreaType(AreaType.RURAL);
 		newAddress.setDetails("New address details");
@@ -270,7 +274,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		newAddress.setDistrict(rdcf1.district);
 		newAddress.setCommunity(null);
 		newAddress.setCity("");
-		newAddress.setAddress("");
+		newAddress.setStreet("");
+		newAddress.setHouseNumber("");
+		newAddress.setAdditionalInformation("");
 		newAddress.setPostalCode("");
 		newAddress.setAreaType(null);
 		newAddress.setDetails("");
@@ -294,7 +300,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getDistrict().getCaption(), is("District 1"));
 		assertThat(person.getAddress().getCommunity(), is(rdcf1.community));
 		assertThat(person.getAddress().getCity(), is("Test City"));
-		assertThat(person.getAddress().getAddress(), is("Test address"));
+		assertThat(person.getAddress().getStreet(), is("Test street"));
+		assertThat(person.getAddress().getHouseNumber(), is("Test number"));
+		assertThat(person.getAddress().getAdditionalInformation(), is("Test information"));
 		assertThat(person.getAddress().getPostalCode(), is("12345"));
 		assertThat(person.getAddress().getAreaType(), is(AreaType.URBAN));
 		assertThat(person.getAddress().getDetails(), is("Test address details"));
@@ -319,7 +327,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(person.getAddress().getDistrict().getCaption(), is("District 1"));
 		assertThat(person.getAddress().getCommunity(), is(nullValue()));
 		assertThat(person.getAddress().getCity(), isEmptyString());
-		assertThat(person.getAddress().getAddress(), isEmptyString());
+		assertThat(person.getAddress().getStreet(), isEmptyString());
+		assertThat(person.getAddress().getHouseNumber(), isEmptyString());
+		assertThat(person.getAddress().getAdditionalInformation(), isEmptyString());
 		assertThat(person.getAddress().getPostalCode(), is("123"));
 		assertThat(person.getAddress().getAreaType(), is(nullValue()));
 		assertThat(person.getAddress().getDetails(), isEmptyString());
@@ -344,7 +354,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getAddress().getDistrict().getName(), is(rdcf1.district.getCaption()));
 		assertThat(savedPerson.getAddress().getCommunity().getName(), is(rdcf1.community.getCaption()));
 		assertThat(savedPerson.getAddress().getCity(), is("New City"));
-		assertThat(savedPerson.getAddress().getAddress(), is("New address"));
+		assertThat(savedPerson.getAddress().getStreet(), is("New street"));
+		assertThat(savedPerson.getAddress().getHouseNumber(), is("New number"));
+		assertThat(savedPerson.getAddress().getAdditionalInformation(), is("New information"));
 		assertThat(savedPerson.getAddress().getPostalCode(), is("938"));
 		assertThat(savedPerson.getAddress().getAreaType(), is(AreaType.RURAL));
 		assertThat(savedPerson.getAddress().getDetails(), is("New address details"));
@@ -365,7 +377,9 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(savedPerson.getAddress().getDistrict().getName(), is("District 1"));
 		assertThat(savedPerson.getAddress().getCommunity().getName(), is("Community 1"));
 		assertThat(savedPerson.getAddress().getCity(), is("Test City"));
-		assertThat(savedPerson.getAddress().getAddress(), is("Test address"));
+		assertThat(savedPerson.getAddress().getStreet(), is("Test street"));
+		assertThat(savedPerson.getAddress().getHouseNumber(), is("Test number"));
+		assertThat(savedPerson.getAddress().getAdditionalInformation(), is("Test information"));
 		assertThat(savedPerson.getAddress().getPostalCode(), is("12345"));
 		assertThat(savedPerson.getAddress().getAreaType(), is(AreaType.URBAN));
 		assertThat(savedPerson.getAddress().getDetails(), is("Test address details"));
