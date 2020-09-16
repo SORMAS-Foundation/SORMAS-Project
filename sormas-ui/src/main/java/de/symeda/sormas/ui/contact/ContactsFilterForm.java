@@ -353,7 +353,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			null,
 			ContactDateType.class,
 			I18nProperties.getString(Strings.promptContactDateType),
-			null);
+			null,
+			this);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptContactDateFrom));
@@ -383,7 +384,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				}
 				criteria.dateFilterOption(dateFilterOption);
 
-				fireValueChange(true);
+				((Button) getContent().getComponent(APPLY_BUTTON_ID)).click();
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
 					Notification notification = new Notification(
