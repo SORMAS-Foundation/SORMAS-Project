@@ -112,4 +112,15 @@ public class GridTemplateAreaCreatorTest {
         final String expectedResult = "'d1 d1 d1 null null''d2 d2 d2 d2 d2'";
         Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
     }
+
+    @Test
+    public void testGridTemplateCreateForDiagramsCase10(){
+        final List<CampaignDashboardElement> dashboardElements = new ArrayList<>();
+        dashboardElements.add(new CampaignDashboardElement("d1", null, 1, 60, 80));
+        dashboardElements.add(new CampaignDashboardElement("d2", null, 2, 40, 40));
+        dashboardElements.add(new CampaignDashboardElement("d3", null, 3, 40, 40));
+
+        final String expectedResult = "'d1 d1 d1 d2 d2''d1 d1 d1 d3 d3'";
+        Assert.assertEquals(expectedResult, gridTemplateAreaCreator.createGridTemplate(dashboardElements));
+    }
 }

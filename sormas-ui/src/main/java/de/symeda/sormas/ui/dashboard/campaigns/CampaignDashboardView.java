@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.vaadin.navigator.ViewChangeListener;
@@ -27,13 +28,13 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigns";
 
-	public static final String GRID_AREA = "grid-area";
 	public static final String GRID_CONTAINER = "grid-container";
 
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
 
 	private List<VerticalLayout> campaignDashboardDiagramComponents = new ArrayList<>();
+	private List<String> campaignDashboardDiagramStyles = new ArrayList<>();
 
 	private GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator();
 
@@ -64,6 +65,9 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		campaignDashboardDiagramComponents
 			.forEach(campaignDashboardDiagramComponents -> dashboardLayout.removeComponent(campaignDashboardDiagramComponents));
 		campaignDashboardDiagramComponents.clear();
+		final Page page = Page.getCurrent();
+		campaignDashboardDiagramStyles.forEach(s -> page.getJavaScript().execute(removeStyles(s)));
+		campaignDashboardDiagramStyles.clear();
 		dataProvider.refreshData();
 
 		final VerticalLayout tabLayout = new VerticalLayout();
@@ -86,6 +90,9 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			tabSwitcher.addItem(tabId);
 			tabSwitcher.setItemCaption(tabId, tabId);
 		});
+		if (!(tabs.size() > 1)) {
+			tabSwitcherLayout.setVisible(false);
+		}
 		CssStyles.style(tabSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 
 		tabSwitcher.addValueChangeListener(e -> {
@@ -99,14 +106,15 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			});
 		});
 
-		final Page.Styles styles = Page.getCurrent().getStyles();
+		final Page.Styles styles = page.getStyles();
 
 		campaignFormDataTabMap.forEach((tabId, campaignFormDataMap) -> {
 
 			final CssLayout diagramsLayout = new CssLayout();
+			diagramsLayout.setId(tabId);
 			diagramsLayout.setWidth(100, Unit.PERCENTAGE);
 			diagramsLayout.setHeight(100, Unit.PERCENTAGE);
-			final String tabString = tabId.replaceAll("[^a-zA-Z]+", "");
+			final String tabString = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString();
 			diagramsLayout.setStyleName(tabString + GRID_CONTAINER);
 
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
@@ -125,28 +133,43 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
 				final CampaignDiagramDefinitionDto campaignDiagramDefinitionDto = campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto();
 				final String diagramId = campaignDiagramDefinitionDto.getDiagramId();
-				styles.add(createDiagramStyle(diagramId));
+				final String diagramGridClass = diagramId + generateRandomString();
+				styles.add(createDiagramStyle(diagramGridClass, diagramId));
 				final CampaignDashboardDiagramComponent diagramComponent =
 					new CampaignDashboardDiagramComponent(campaignDiagramDefinitionDto, diagramData);
-				diagramComponent.setStyleName(diagramId);
+				diagramComponent.setStyleName(diagramGridClass);
 				diagramsLayout.addComponent(diagramComponent);
 			});
 			diagramsWrapper.addComponent(diagramsLayout);
 
-			diagramsWrapper.setVisible(true);
+			diagramsWrapper.setVisible(false);
 			tabLayout.addComponent(diagramsWrapper);
 		});
 
 		tabSwitcher.setValue(tabs.isEmpty() ? "" : tabs.get(0));
 	}
 
-	private String createDiagramGridStyle(String tabString, List<CampaignDashboardElement> dashboardElements) {
-		return "." + tabString + GRID_CONTAINER + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr;"
-			+ " grid-template-areas:" + gridTemplateAreaCreator.createGridTemplate(dashboardElements) + "; }";
+	private String generateRandomString() {
+		return UUID.randomUUID().toString().substring(0, 6);
 	}
 
-	private String createDiagramStyle(String diagramId) {
-		return "." + diagramId + "{ " + GRID_AREA + ": " + diagramId + "; }";
+	private String createDiagramGridStyle(String tabString, List<CampaignDashboardElement> dashboardElements) {
+		String s = "." + tabString + GRID_CONTAINER;
+		campaignDashboardDiagramStyles.add(s);
+		return s + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr;" + " grid-template-areas:"
+			+ gridTemplateAreaCreator.createGridTemplate(dashboardElements) + "; }";
+	}
+
+	private String createDiagramStyle(String diagramGridClass, String diagramId) {
+		String s = "." + diagramGridClass;
+		campaignDashboardDiagramStyles.add(s);
+		final String style = s + "{ grid-area: " + diagramId + "; }";
+		return style;
+	}
+
+	private String removeStyles(String styleInnerText) {
+		return "var diagramStyles = document.getElementsByTagName('style');  for (var i=0; i < diagramStyles.length; i++) {"
+			+ "if (diagramStyles[i].innerText.startsWith(\"" + styleInnerText + "\" )) { diagramStyles[i].parentNode.removeChild(diagramStyles[i]);}}";
 	}
 
 	private Map<String, Map<CampaignDashboardDiagramDto, List<CampaignDiagramDataDto>>> groupCampaignFormDataByTab(

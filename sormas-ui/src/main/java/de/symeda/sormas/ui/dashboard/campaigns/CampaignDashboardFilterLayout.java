@@ -37,7 +37,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		this.districtFilter = new ComboBox();
 		this.areaFilter = new ComboBox();
 
-		setSpacing(false);
+		setSpacing(true);
 		setSizeUndefined();
 		setMargin(new MarginInfo(true, true, false, true));
 
