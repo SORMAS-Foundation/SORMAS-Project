@@ -16,6 +16,7 @@
 		<jersey.version>2.29.1</jersey.version>
 		<jackson.version>2.9.8</jackson.version>
 		<swagger.version>2.1.2</swagger.version>
+		<bouncycastle.version>1.66</bouncycastle.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -363,6 +364,13 @@
 				<artifactId>swagger-jaxrs2</artifactId>
 				<version>${swagger.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk15on</artifactId>
+				<version>${bouncycastle.version}</version>
+				<scope>provided</scope>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
@@ -677,13 +685,6 @@
 			</modules>
 		</profile>
 
-		<profile>
-			<id>with-dep-poms</id>
-			<modules>
-				<module>./dependencies/serverlibs.pom</module>
-			</modules>
-		</profile>
-
 	</profiles>
 
 	<modules>
@@ -693,5 +694,7 @@
 		<module>../sormas-ear</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
+		<module>./dependencies/serverlibs.pom</module>
+		<module>../sormas-cargoserver</module>
 	</modules>
 </project>

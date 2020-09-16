@@ -5256,10 +5256,16 @@ INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official
 
 -- 2020-07-29 Campaign diagram visualisation refinement
 
-ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
-ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
-ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
-ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
+-- Hotfix additions to avoid errors for servers older than 2 months
+ALTER TABLE campaignformmeta DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta_history DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta ADD COLUMN campaignformtranslations json;
+-- End of hotfix additions
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformelements TYPE json USING campaignformelements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformtranslations TYPE json USING campaignformtranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformelements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
 

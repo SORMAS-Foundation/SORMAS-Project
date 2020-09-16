@@ -54,7 +54,7 @@
 			<groupId>com.nexmo</groupId>
 			<artifactId>client</artifactId>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
@@ -108,7 +108,7 @@
 		    <groupId>org.glassfish</groupId>
 		    <artifactId>javax.el</artifactId>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -148,9 +148,15 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+		</dependency>
+
     </dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
 	</build>
 
 </project>
