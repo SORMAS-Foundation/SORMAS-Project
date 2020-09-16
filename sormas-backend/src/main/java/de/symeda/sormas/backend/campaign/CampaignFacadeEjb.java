@@ -1,10 +1,31 @@
 package de.symeda.sormas.backend.campaign;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -18,23 +39,6 @@ import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacad
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFacade")
 public class CampaignFacadeEjb implements CampaignFacade {
@@ -98,6 +102,22 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public List<CampaignReferenceDto> getAllCampaignsAsReference() {
 		return campaignService.getAll().stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public CampaignReferenceDto getLastStartedCampaign() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Campaign> query = cb.createQuery(Campaign.class);
+		final Root<Campaign> from = query.from(Campaign.class);
+		query.select(from);
+		query.where(cb.lessThanOrEqualTo(from.get(Campaign.START_DATE), new Date()));
+		query.orderBy(cb.desc(from.get(Campaign.START_DATE)));
+
+		final TypedQuery<Campaign> q = em.createQuery(query);
+		final Campaign lastStartedCampaign = q.getResultList().stream().findFirst().orElse(null);
+
+		return toReferenceDto(lastStartedCampaign);
 	}
 
 	@Override
@@ -169,6 +189,24 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Override
 	public CampaignDto getByUuid(String uuid) {
 		return toDto(campaignService.getByUuid(uuid));
+	}
+
+	@Override
+	public List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid) {
+		final List<CampaignDashboardElement> result = new ArrayList<>();
+		if (campaignUuid != null) {
+			List<CampaignDashboardElement> dashboardElements = campaignService.getByUuid(campaignUuid).getDashboardElements();
+			if (dashboardElements != null) {
+				result.addAll(dashboardElements);
+			}
+		} else {
+			campaignService.getAll().forEach(campaign -> {
+				if (campaign.getDashboardElements() != null) {
+					result.addAll(campaign.getDashboardElements());
+				}
+			});
+		}
+		return result;
 	}
 
 	@Override

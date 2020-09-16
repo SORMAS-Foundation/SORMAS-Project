@@ -112,7 +112,6 @@ public class CaseCountDifferenceComponent extends VerticalLayout {
 				 
 				"chart: {" + 
 					"type: 'bar'," + 
-					"styledMode: true," + 
 				"}," + 
 					
 				"series: [" +

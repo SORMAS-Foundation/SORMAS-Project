@@ -5255,14 +5255,37 @@ INSERT INTO schema_version (version_number, comment) VALUES (249, 'Add "Official
 
 -- 2020-07-29 Campaign diagram visualisation refinement
 
-ALTER TABLE campaignformmeta ALTER COLUMN campaignFormElements TYPE json USING campaignFormElements::json;
-ALTER TABLE campaignformmeta ALTER COLUMN campaignFormTranslations TYPE json USING campaignFormTranslations::json;
-ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormElements json;
-ALTER TABLE campaignformmeta_history ADD COLUMN campaignFormTranslations json;
+-- Hotfix additions to avoid errors for servers older than 2 months
+ALTER TABLE campaignformmeta DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta_history DROP COLUMN IF EXISTS campaignformtranslations;
+ALTER TABLE campaignformmeta ADD COLUMN campaignformtranslations json;
+-- End of hotfix additions
+
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformelements TYPE json USING campaignformelements::json;
+ALTER TABLE campaignformmeta ALTER COLUMN campaignformtranslations TYPE json USING campaignformtranslations::json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformelements json;
+ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
 
+-- 2020-09-07 Campaign dashboard element
+
+ALTER TABLE campaigns ADD COLUMN dashboardElements json;
+ALTER TABLE campaigns_history ADD COLUMN dashboardElements json;
+
+create or replace function cast_to_int(text, integer) returns integer as $$
+begin
+    return cast($1 as integer);
+exception
+    when invalid_text_representation then
+        return $2;
+end;
+$$ language plpgsql immutable;
+
+INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
+                                                                                                                                          
 -- 2020-09-14 Add person_locations table and remove person reference from locations #2746
+                                                                                                                                          
 CREATE TABLE person_locations(
 	person_id bigint NOT NULL,
 	location_id bigint NOT NULL,
@@ -5283,6 +5306,6 @@ INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id F
 
 ALTER TABLE location DROP COLUMN person_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (251, 'Add person_locations table and remove person reference from locations #2746');
+INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
 
 -- *** Insert new sql commands BEFORE this line ***
