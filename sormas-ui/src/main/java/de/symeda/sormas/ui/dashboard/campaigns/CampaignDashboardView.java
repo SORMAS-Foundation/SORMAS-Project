@@ -38,8 +38,6 @@ public class CampaignDashboardView extends AbstractDashboardView {
 	private List<VerticalLayout> campaignDashboardDiagramComponents = new ArrayList<>();
 	private List<String> campaignDashboardDiagramStyles = new ArrayList<>();
 
-	private GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator();
-
 	public CampaignDashboardView() {
 		super(VIEW_NAME);
 
@@ -108,21 +106,23 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		campaignFormDataTabMap.forEach((tabId, campaignFormDataMap) -> {
 
+			final List<CampaignDashboardElement> dashboardElements = campaignFormDataMap.keySet()
+				.stream()
+				.map(campaignDashboardDiagramDto -> campaignDashboardDiagramDto.getCampaignDashboardElement())
+				.collect(Collectors.toList());
+			final GridTemplateAreaCreator gridTemplateAreaCreator = new GridTemplateAreaCreator(dashboardElements);
+
 			final VerticalLayout diagramsWrapper = new VerticalLayout();
 			diagramsWrapper.setMargin(new MarginInfo(false, true, false, true));
 			diagramsWrapper.setId(tabId);
 			diagramsWrapper.setSizeFull();
 
 			final CssLayout diagramsLayout = new CssLayout();
-			diagramsLayout.setId(tabId);
-			diagramsLayout.setSizeFull();
+			diagramsLayout.setWidth(gridTemplateAreaCreator.getWidthsSum() < 100 ? gridTemplateAreaCreator.getWidthsSum() : 100, Unit.PERCENTAGE);
+			diagramsLayout.setHeight(gridTemplateAreaCreator.getGridContainerHeight(), Unit.PERCENTAGE);
 			final String gridCssClass = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
-			final List<CampaignDashboardElement> dashboardElements = campaignFormDataMap.keySet()
-				.stream()
-				.map(campaignDashboardDiagramDto -> campaignDashboardDiagramDto.getCampaignDashboardElement())
-				.collect(Collectors.toList());
 
-			styles.add(createDiagramGridStyle(gridCssClass, dashboardElements));
+			styles.add(createDiagramGridStyle(gridCssClass, gridTemplateAreaCreator.getFormattedGridTemplate()));
 			diagramsLayout.setStyleName(gridCssClass);
 
 			campaignFormDataMap.forEach((campaignDashboardDiagramDto, diagramData) -> {
@@ -156,18 +156,16 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		return UUID.randomUUID().toString().substring(0, 6);
 	}
 
-	private String createDiagramGridStyle(String gridCssClass, List<CampaignDashboardElement> dashboardElements) {
-		String s = "." + gridCssClass;
+	private String createDiagramGridStyle(String gridCssClass, String gridAreasTemplate) {
+		final String s = "." + gridCssClass;
 		campaignDashboardDiagramStyles.add(s);
-		return s + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr;" + " grid-template-areas:"
-			+ gridTemplateAreaCreator.createGridTemplate(dashboardElements) + "; }";
+		return s + "{ display: grid; grid-gap:10px; grid-auto-columns: 1fr; grid-auto-rows: 1fr; grid-template-areas:" + gridAreasTemplate + "; }";
 	}
 
 	private String createDiagramStyle(String diagramCssClass, String diagramId) {
-		String s = "." + diagramCssClass;
+		final String s = "." + diagramCssClass;
 		campaignDashboardDiagramStyles.add(s);
-		final String style = s + "{ grid-area: " + diagramId + "; }";
-		return style;
+		return s + "{ grid-area: " + diagramId + "; }";
 	}
 
 	private String removeStyles(String styleInnerText) {
