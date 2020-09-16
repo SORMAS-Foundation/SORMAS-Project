@@ -121,7 +121,9 @@ public class CampaignDashboardView extends AbstractDashboardView {
 			diagramsWrapper.setSizeFull();
 
 			final CssLayout diagramsLayout = new CssLayout();
-			diagramsLayout.setWidth(dashboardElements.size() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100, Unit.PERCENTAGE);
+			diagramsLayout.setWidth(
+				dashboardElements.size() == 1 && gridTemplateAreaCreator.getNrOfGridAreaColumns() == 1 ? gridTemplateAreaCreator.getWidthsSum() : 100,
+				Unit.PERCENTAGE);
 			diagramsLayout.setHeight(gridTemplateAreaCreator.getGridContainerHeight(), Unit.PERCENTAGE);
 			final String gridCssClass = tabId.replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
 
