@@ -227,6 +227,5 @@ public class EpidemiologicalDataReadFragment extends BaseReadFragment<FragmentRe
 	private void setFieldAccesses(Class<?> dtoClass, View view) {
 		FieldVisibilityAndAccessHelper
 			.setFieldVisibilitiesAndAccesses(dtoClass, (ViewGroup) view, new FieldVisibilityCheckers(), getFieldAccessCheckers());
-
 	}
 }
