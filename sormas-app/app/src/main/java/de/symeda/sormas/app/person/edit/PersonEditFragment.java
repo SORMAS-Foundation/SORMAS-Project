@@ -475,6 +475,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 				"ActivityRootData of class " + ado.getClass().getSimpleName() + " does not support PersonEditFragment");
 		}
 
+		// Workaround because person is not an embedded entity and therefore the locations are not 
+		// automatically loaded (because there's no additional queryForId call for person when the
+		// parent data is loaded)
 		DatabaseHelper.getPersonDao().initLocations(record);
 	}
 

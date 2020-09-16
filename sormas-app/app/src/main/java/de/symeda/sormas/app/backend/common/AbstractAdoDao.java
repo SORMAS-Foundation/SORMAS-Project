@@ -445,6 +445,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 			if (StringUtils.isNotBlank(parentPropertyName)) {
 				methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
 			} else {
+				// Explicitely used for location-person relation because locations don't have a distinct parent accessor;
+				// This only works if the field has the same name as its class (e.g. Person person)
 				methodName = "set" + parent.getClass().getSimpleName().substring(0, 1).toUpperCase() + parent.getClass().getSimpleName().substring(1);
 			}
 			Method parentSetter = getAdoClass().getMethod(methodName, parent.getClass());
@@ -798,6 +800,8 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 						if (StringUtils.isNotBlank(parentPropertyName)) {
 							methodName = "set" + parentPropertyName.substring(0, 1).toUpperCase() + parentPropertyName.substring(1);
 						} else {
+							// Explicitely used for location-person relation because locations don't have a distinct parent accessor;
+							// This only works if the field has the same name as its class (e.g. Person person)
 							methodName = "set" + parent.getClass().getSimpleName().substring(0, 1).toUpperCase()
 								+ parent.getClass().getSimpleName().substring(1);
 						}

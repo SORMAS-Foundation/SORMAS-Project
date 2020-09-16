@@ -247,6 +247,7 @@ public class PersonDtoHelper extends AdoDtoHelper<Person, PersonDto> {
 		target.setPlaceOfBirthFacilityType(source.getPlaceOfBirthFacilityType());
 
 		List<LocationDto> locationDtos = new ArrayList<>();
+		// Necessary because the person is synchronized independently
 		DatabaseHelper.getPersonDao().initLocations(source);
 		for (Location location : source.getAddresses()) {
 			LocationDto locationDto = locationHelper.adoToDto(location);

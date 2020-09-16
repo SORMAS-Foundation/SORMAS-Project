@@ -87,7 +87,8 @@ public class Location extends PseudonymizableAdo {
 
 	/**
 	 * Dirty fix for person-location association; doing this with a JoinTable is not
-	 * easy in SQLite
+	 * easy in SQLite; only locations that are part of the addresses field of a person
+	 * have this association.
 	 */
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Person person;
