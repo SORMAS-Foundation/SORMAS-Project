@@ -167,7 +167,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		campaignFormElementImportance
 			.setItemCaption(CampaignFormElementImportance.ALL, I18nProperties.getEnumCaption(CampaignFormElementImportance.ALL));
 
-		campaignFormElementImportance.setValue(CampaignFormElementImportance.IMPORTANT);
+		campaignFormElementImportance.setValue(CampaignFormElementImportance.ALL);
 		campaignFormElementImportance.setVisible(false);
 	}
 
