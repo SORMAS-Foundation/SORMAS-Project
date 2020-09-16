@@ -255,6 +255,7 @@
     <string name="error_no_pathogentest_labuser">der Erregertest hat keinen Labornutzer</string>
     <string name="heading_additional_details">Allgemeiner Kommentar</string>
     <string name="heading_additional_medical_information">Zusätzliche medizinische Informationen</string>
+    <string name="heading_addresses">Addresses</string>
     <string name="heading_animal_contacts">Tierkontakte</string>
     <string name="heading_app_download_failed">App-Download fehlgeschlagen</string>
     <string name="heading_app_downloading">Lade herunter</string>
