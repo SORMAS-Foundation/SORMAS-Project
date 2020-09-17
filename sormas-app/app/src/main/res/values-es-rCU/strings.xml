@@ -255,7 +255,7 @@
     <string name="error_no_pathogentest_labuser">la prueba de patógeno no tiene usuario de laboratorio</string>
     <string name="heading_additional_details">Comentario general</string>
     <string name="heading_additional_medical_information">Información médica adicional</string>
-    <string name="heading_addresses">Addresses</string>
+    <string name="heading_addresses">Direcciones</string>
     <string name="heading_animal_contacts">Contactos animales</string>
     <string name="heading_app_download_failed">Falló la descarga de la aplicación</string>
     <string name="heading_app_downloading">Descargando</string>
