@@ -377,7 +377,6 @@ public class TaskFacadeEjb implements TaskFacade {
 				task.get(Task.DUE_DATE), task.get(Task.SUGGESTED_START), task.get(Task.TASK_STATUS),
 				joins.getCreator().get(User.UUID), joins.getCreator().get(User.FIRST_NAME), joins.getCreator().get(User.LAST_NAME), task.get(Task.CREATOR_COMMENT),
 				joins.getAssignee().get(User.UUID), joins.getAssignee().get(User.FIRST_NAME), joins.getAssignee().get(User.LAST_NAME), task.get(Task.ASSIGNEE_REPLY),
-
 				joins.getCaseReportingUser().get(User.UUID), joins.getCaseRegion().get(Region.UUID), joins.getCaseDistrict().get(Region.UUID),
 				joins.getCaseCommunity().get(Community.UUID), joins.getCaseFacility().get(Community.UUID), joins.getCasePointOfEntry().get(Community.UUID),
 				joins.getContactReportingUser().get(User.UUID), joins.getContactRegion().get(Region.UUID), joins.getContactDistrict().get(District.UUID), joins.getContactCommunity().get(Community.UUID),
@@ -423,10 +422,14 @@ public class TaskFacadeEjb implements TaskFacade {
 					expression = task.get(sortProperty.propertyName);
 					break;
 				case TaskIndexDto.ASSIGNEE_USER:
-					expression = joins.getAssignee().get(User.USER_NAME);
+					expression = joins.getAssignee().get(User.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getAssignee().get(User.FIRST_NAME);
 					break;
 				case TaskIndexDto.CREATOR_USER:
-					expression = joins.getCreator().get(User.USER_NAME);
+					expression = joins.getCreator().get(User.LAST_NAME);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					expression = joins.getCreator().get(User.FIRST_NAME);
 					break;
 				case TaskIndexDto.CAZE:
 					expression = joins.getCasePerson().get(Person.LAST_NAME);
