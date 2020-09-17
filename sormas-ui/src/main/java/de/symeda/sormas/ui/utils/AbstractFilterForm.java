@@ -67,15 +67,19 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		}
 
 		this.addValueChangeListener(e -> {
-			hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
-			getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
-			Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
-			if (applyButton != null) {
-				applyButton.setVisible(hasFilter);
-			}
+			onChange();
 		});
 
 		addDefaultButtons();
+	}
+
+	public void onChange() {
+		hasFilter = streamFieldsForEmptyCheck(getContent()).anyMatch(f -> !f.isEmpty());
+		getContent().getComponent(RESET_BUTTON_ID).setVisible(hasFilter);
+		Component applyButton = getContent().getComponent(APPLY_BUTTON_ID);
+		if (applyButton != null) {
+			applyButton.setVisible(hasFilter);
+		}
 	}
 
 	@Override

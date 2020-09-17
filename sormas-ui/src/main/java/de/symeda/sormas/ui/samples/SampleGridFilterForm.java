@@ -128,7 +128,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null);
+		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(applyButton, false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptSampleEpiWeekTo));

@@ -318,7 +318,7 @@ public class DashboardFilterLayout extends HorizontalLayout {
 
 		// Date & Epi Week filter
 		EpiWeekAndDateFilterComponent<NewCaseDateType> weekAndDateFilter =
-			new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate));
+			new EpiWeekAndDateFilterComponent<>(applyButton, true, true, I18nProperties.getString(Strings.infoCaseDate), null);
 		customDateFilterLayout.addComponents(weekAndDateFilter, applyButton);
 
 		// Apply button listener
