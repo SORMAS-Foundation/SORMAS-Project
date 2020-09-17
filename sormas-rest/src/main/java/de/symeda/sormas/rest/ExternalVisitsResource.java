@@ -38,13 +38,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@GET
 	@Path("/person/{personUuid}")
 	@Operation(summary = "Get person information", description = "Get some personal data for a specific person")
-	@Parameter(in = ParameterIn.PATH,
-		name = "personUuid",
-		required = true,
-		description = "The Uuid of the person data is required for.",
-		schema = @Schema(type = "string",
-			format = "Uuid",
-			example = "UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M, where this is a personUuid that exists in your system."))
 	@ApiResponse(
 		description = "A selection of personal data, including first and last name, e-mail, phone number(s) and birth date if available"
 			+ "for that person. Note that Null value fields may not be returned. If you get an unexpected result, it might help to verify"
@@ -72,17 +65,9 @@ public class ExternalVisitsResource extends EntityDtoResource {
 
 	@GET
 	@Path("/person/{personUuid}/isValid")
-	@Operation(summary = "Check person validity",
-		responses = {
-			@ApiResponse(responseCode = "true", description = "If a person with the given Uuid exists in SORMAS."),
-			@ApiResponse(responseCode = "false", description = "Otherwise") })
-	@Parameter(in = ParameterIn.PATH,
-		name = "personUuid",
-		required = true,
-		description = "The Uuid of the person data is required for.",
-		schema = @Schema(type = "string",
-			format = "Uuid",
-			example = "UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M, where this is a personUuid that exists in your system."))
+	@Operation(summary = "Check person validity", description = "Check if a the Uuid given as parameter exists in SORMAS.",
+		responses = 
+			@ApiResponse(description = "true a person with the given Uuid exists in SORMAS, false otherwise.", content = @Content(schema = @Schema(example = "true"))))
 	public Boolean isValidPersonUuid(@PathParam("personUuid") String personUuid) {
 		return FacadeProvider.getPersonFacade().isValidPersonUuid(personUuid);
 	}
@@ -91,16 +76,9 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@POST
 	@Path("/person/{personUuid}/status")
 	@Operation(summary = "Save symptom journal status",
-		responses = {
-			@ApiResponse(responseCode = "true", description = "If the status was set succesfully."),
-			@ApiResponse(responseCode = "false", description = "Otherwise.") })
-	@Parameter(in = ParameterIn.PATH,
-		name = "personUuid",
-		required = true,
-		description = "The Uuid of the person data is posted for.",
-		schema = @Schema(type = "string",
-			format = "Uuid",
-			example = "UO2OCI-BPXSAO-7Q4RHO-RMXCKC4M, where this is a personUuid that exists in your system."))
+		responses = 
+			@ApiResponse(description = "true if the status was set succesfully, false otherwise.",
+					content = @Content(schema = @Schema(example = "true"))))
 	@RequestBody(
 		//@formatter:off
 		description = "status may be one of the following:<br/>" +
@@ -124,9 +102,9 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@POST
 	@Path("/")
 	@Operation(summary = "Save visits",
-		responses = {
-			@ApiResponse(responseCode = "OK", description = "Visit saved successfully."),
-			@ApiResponse(responseCode = "ERROR", description = "Otherwise.") })
+		description = "Upload visits with all symptom and disease related data to SORMAS.",
+		responses = @ApiResponse(description = "OK when visit was successfully saved, ERROR otherwise.",
+			content = @Content(schema = @Schema(name = "processing", example = "OK"))))
 	public List<PushResult> postExternalVisits(List<ExternalVisitDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getVisitFacade()::saveExternalVisit);
 		return result;
@@ -136,7 +114,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/version")
 	@Operation(summary = "Get API version")
 	@ApiResponse(description = "The minimal version needed for compatibility with the external ReST API of SORMAS.",
-		content = @Content(schema = @Schema(type = "String", example = "1.37.0")))
+		content = @Content(schema = @Schema(type = "string", example = "1.37.0")))
 	public String getVersion() {
 		return EXTERNAL_VISITS_API_VERSION;
 	}
@@ -151,13 +129,11 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/followUpEndDates/{since}")
 	@Operation(summary = "Get follow up end dates",
 		description = "Get latest follow up end date assigned to the specified person. "
-			+ "Note: Only returns values for persons who have their symptom journal status set to ACCEPTED!")
-	@Parameter(in = ParameterIn.PATH,
-		description = "Only data changed after this value is returned.",
-		name = "since",
-		schema = @Schema(format = "UNIX timestamp [Long)"))
+			+ "Note: Only returns values for persons who have their symptom journal status set to ACCEPTED! "
+			+ "Only returns values changed after {since}, which is interpreted as a UNIX timestamp.")
 	//@formatter:off
-	@ApiResponse(content = @Content(schema = @Schema(example = "[\n" +
+	@ApiResponse(description = "List of personUuids and their latest follow up end dates as UNIX timestamps.", 
+			content = @Content(schema = @Schema(example = "[\n" +
 			"  {\n" +
 			"    \"personUuid\": \"Q56VFD-G3TXKT-R2DBIW-FTWIKAMI\",\n" +
 			"    \"latestFollowUpEndDate\": 1599602400000\n" +
