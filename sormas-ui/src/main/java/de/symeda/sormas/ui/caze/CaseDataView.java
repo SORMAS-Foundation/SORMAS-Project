@@ -32,7 +32,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.eventLink.EventListComponent;
-import de.symeda.sormas.ui.caze.quarantine.QuarantineDecreeComponent;
+import de.symeda.sormas.ui.caze.quarantine.QuarantineOrderComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -54,7 +54,7 @@ public class CaseDataView extends AbstractCaseView {
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
-    public static final String QUARANTINE_LOC = "quarantine";
+	public static final String QUARANTINE_LOC = "quarantine";
 
 	public CaseDataView() {
 		super(VIEW_NAME, false);
@@ -72,8 +72,7 @@ public class CaseDataView extends AbstractCaseView {
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC)
-		);
+			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QUARANTINE_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -137,18 +136,17 @@ public class CaseDataView extends AbstractCaseView {
 		eventLayout.addComponent(eventList);
 		layout.addComponent(eventLayout, EVENTS_LOC);
 
-		// qurantine information component on right side of the case details screen
+		// quarantine information component on right side of the case details screen
 
-        VerticalLayout quarantineLayout = new VerticalLayout();
-        quarantineLayout.setMargin(false);
-        quarantineLayout.setSpacing(false);
+		VerticalLayout quarantineLayout = new VerticalLayout();
+		quarantineLayout.setMargin(false);
+		quarantineLayout.setSpacing(false);
 
-        QuarantineDecreeComponent quarantineDecree = new QuarantineDecreeComponent(getCaseRef());
-        quarantineDecree.addStyleName(CssStyles.SIDE_COMPONENT);
-        quarantineLayout.addComponent(quarantineDecree);
-        layout.addComponent(quarantineLayout, QUARANTINE_LOC);
+		QuarantineOrderComponent quarantineOrderComponent = new QuarantineOrderComponent(getCaseRef());
+		quarantineOrderComponent.addStyleName(CssStyles.SIDE_COMPONENT);
+		quarantineLayout.addComponent(quarantineOrderComponent);
+		layout.addComponent(quarantineLayout, QUARANTINE_LOC);
 
-
-        setCaseEditPermission(container);
+		setCaseEditPermission(container);
 	}
 }

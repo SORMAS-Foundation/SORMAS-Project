@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.caze.quarantine;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Properties;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -15,11 +16,11 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class QuarantineDecreeComponent extends VerticalLayout {
+public class QuarantineOrderComponent extends VerticalLayout {
 
 	private Button createButton;
 
-	public QuarantineDecreeComponent(CaseReferenceDto caseReferenceDto) {
+	public QuarantineOrderComponent(CaseReferenceDto caseReferenceDto) {
 		super();
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
@@ -27,7 +28,7 @@ public class QuarantineDecreeComponent extends VerticalLayout {
 		componentHeader.setWidth(100, Unit.PERCENTAGE);
 		addComponent(componentHeader);
 
-		Label tasksHeader = new Label("Quarantine Decree"); // new Label(I18nProperties.getString(Strings.entitySamples));
+		Label tasksHeader = new Label("Quarantine Order"); // new Label(I18nProperties.getString(Strings.entitySamples));
 		tasksHeader.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(tasksHeader);
 
@@ -42,7 +43,8 @@ public class QuarantineDecreeComponent extends VerticalLayout {
 			@Override
 			public InputStream getStream() {
 				QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
-				return new ByteArrayInputStream(quarantineOrderFacade.getGeneratedDocument("Quarantine.docx", "", null));
+				return new ByteArrayInputStream(
+					quarantineOrderFacade.getGeneratedDocument("Quarantine.docx", caseReferenceDto.getUuid(), new Properties()));
 			}
 		}, "Quarantine.docx");
 		new FileDownloader(streamResource).extend(createButton);
