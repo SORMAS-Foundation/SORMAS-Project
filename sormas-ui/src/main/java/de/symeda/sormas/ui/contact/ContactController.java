@@ -189,6 +189,8 @@ public class ContactController {
 				person.setBirthdateMM(createForm.getBirthdateMM());
 				person.setBirthdateDD(createForm.getBirthdateDD());
 				person.setSex(createForm.getSex());
+				person.setPhone(createForm.getPhone());
+				person.setEmailAddress(createForm.getEmailAddress());
 
 				ControllerProvider.getPersonController()
 					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
