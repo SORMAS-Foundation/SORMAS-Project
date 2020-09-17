@@ -255,7 +255,7 @@
     <string name="error_no_pathogentest_labuser">il test patogeno non ha un utilizzatore di laboratorio</string>
     <string name="heading_additional_details">Commento generale</string>
     <string name="heading_additional_medical_information">Ulteriori Informazioni Mediche</string>
-    <string name="heading_addresses">Addresses</string>
+    <string name="heading_addresses">Indirizzi</string>
     <string name="heading_animal_contacts">Contatti Animali</string>
     <string name="heading_app_download_failed">Download app non riuscito</string>
     <string name="heading_app_downloading">Download in corso</string>
