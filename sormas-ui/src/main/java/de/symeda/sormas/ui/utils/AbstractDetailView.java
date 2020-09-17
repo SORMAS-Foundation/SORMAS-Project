@@ -2,10 +2,16 @@ package de.symeda.sormas.ui.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 
 /**
  * A detail view shows specific details of an object identified by the URL parameter.
@@ -13,7 +19,7 @@ import de.symeda.sormas.api.ReferenceDto;
  * @param <R>
  *            {@link ReferenceDto} with the uuid as parsed from the URL.
  */
-public abstract class AbstractDetailView<R extends ReferenceDto> extends AbstractSubNavigationView {
+public abstract class AbstractDetailView<R extends ReferenceDto> extends AbstractSubNavigationView<Component> {
 
 	private static final long serialVersionUID = -8898842364286757415L;
 
@@ -60,6 +66,34 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 		}
 
 		return reference != null;
+	}
+
+	@Override
+	protected void setSubComponent(Component newComponent) {
+		super.setSubComponent(newComponent);
+	}
+
+	@Override
+	public void beforeLeave(ViewBeforeLeaveEvent event) {
+		if (((DirtyStateComponent) subComponent).isDirty()) {
+			Window warningPopup = VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getString(Strings.unsavedChanges_warningTitle),
+				new Label(I18nProperties.getString(Strings.unsavedChanges_warningMessage)),
+				I18nProperties.getString(Strings.unsavedChanges_save),
+				I18nProperties.getString(Strings.unsavedChanges_discard),
+				400,
+				(confirmed) -> {
+					if (confirmed) {
+						((DirtyStateComponent) subComponent).commitAndHandle();
+					}
+
+					event.navigate();
+				});
+
+			warningPopup.setClosable(true);
+		} else {
+			event.navigate();
+		}
 	}
 
 	/**

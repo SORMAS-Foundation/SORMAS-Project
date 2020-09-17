@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.configuration;
 import java.util.Optional;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -42,7 +43,7 @@ import de.symeda.sormas.ui.configuration.linelisting.LineListingConfigurationVie
 import de.symeda.sormas.ui.configuration.outbreak.OutbreaksView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
-public abstract class AbstractConfigurationView extends AbstractSubNavigationView {
+public abstract class AbstractConfigurationView extends AbstractSubNavigationView<Component> {
 
 	private static final long serialVersionUID = 3193505016439327054L;
 

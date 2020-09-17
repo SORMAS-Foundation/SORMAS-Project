@@ -741,6 +741,10 @@ public interface Strings {
 	String step = "step";
 	String toCase = "toCase";
 	String total = "total";
+	String unsavedChanges_discard = "unsavedChanges.discard";
+	String unsavedChanges_save = "unsavedChanges.save";
+	String unsavedChanges_warningMessage = "unsavedChanges.warningMessage";
+	String unsavedChanges_warningTitle = "unsavedChanges.warningTitle";
 	String until = "until";
 	String week = "week";
 	String weekShort = "weekShort";

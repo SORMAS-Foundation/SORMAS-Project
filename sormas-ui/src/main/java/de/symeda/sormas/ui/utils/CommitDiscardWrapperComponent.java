@@ -50,7 +50,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 
-public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements Buffered {
+public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
 
@@ -93,6 +93,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button deleteButton;
 
 	private boolean commited = false;
+	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
 	protected transient List<ClickShortcut> actions;
@@ -168,6 +169,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			if (wrappedComponent instanceof AbstractLegacyComponent && ((AbstractLegacyComponent) wrappedComponent).isReadOnly()) {
 				setReadOnly(true);
 			}
+		}
+
+		dirty = false;
+		if (fieldGroups != null) {
+			Stream.of(fieldGroups).forEach(fg -> fg.getFields().forEach(f -> f.addValueChangeListener(ev -> {
+				dirty = true;
+			})));
 		}
 	}
 
@@ -347,6 +355,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		onCommit();
 		commited = true;
+		dirty = false;
 
 		onDone();
 	}
@@ -626,5 +635,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			contentPanel.setHeight(100, Unit.PERCENTAGE);
 		}
+	}
+
+	@Override
+	public boolean isDirty() {
+		// Arrays.stream(fieldGroups).filter(FieldGroup::isModified).map(FieldGroup::getFields).map(f -> f.stream().filter(Buffered::isModified).collect(Collectors.toList())).collect(Collectors.toList())
+//		return Arrays.stream(fieldGroups).anyMatch(FieldGroup::isModified);
+		return dirty;
 	}
 }

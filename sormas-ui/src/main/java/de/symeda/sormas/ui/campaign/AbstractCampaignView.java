@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.ui.campaign;
 
+import java.util.Optional;
+
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
@@ -25,10 +29,8 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
-import java.util.Optional;
-
 @SuppressWarnings("serial")
-public abstract class AbstractCampaignView extends AbstractSubNavigationView {
+public abstract class AbstractCampaignView extends AbstractSubNavigationView<Component> {
 
 	public static final String ROOT_VIEW_NAME = "campaign";
 
