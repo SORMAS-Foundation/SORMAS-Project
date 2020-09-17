@@ -5308,4 +5308,11 @@ ALTER TABLE location DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
 
+-- 2020-09-16 Add total series to campaigndiagramdefinition to calculate percentage values #2528
+
+ALTER TABLE campaigndiagramdefinition ADD COLUMN campaignseriestotal json;
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN campaignseriestotal json;
+
+INSERT INTO schema_version (version_number, comment) VALUES (253, 'Add series total to campaigndiagramdefinition to calculate percentage values #2528');
+
 -- *** Insert new sql commands BEFORE this line ***

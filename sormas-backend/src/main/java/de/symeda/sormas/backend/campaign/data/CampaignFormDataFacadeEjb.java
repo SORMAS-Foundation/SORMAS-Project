@@ -20,27 +20,6 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
@@ -80,6 +59,26 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
@@ -286,13 +285,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	@Override
-	public List<CampaignDiagramDataDto> getDiagramData(
-		List<CampaignDiagramSeries> diagramSeriesList,
-		CampaignDiagramCriteria campaignDiagramCriteria) {
+	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria) {
 
 		List<CampaignDiagramDataDto> resultData = new ArrayList<CampaignDiagramDataDto>();
 
-		for (CampaignDiagramSeries diagramSeries : diagramSeriesList) {
+		for (CampaignDiagramSeries series : diagramSeries) {
 
 			//@formatter:off
 			final AreaReferenceDto area = campaignDiagramCriteria.getArea();
@@ -316,7 +313,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ ", jsonMeta->>'" + CampaignFormElement.CAPTION + "' as fieldCaption"
 							+ ", CASE"
 							+ " WHEN (jsonMeta ->> '" + CampaignFormElement.TYPE + "')  = '" + CampaignFormElementType.NUMBER.toString() + "' THEN sum(cast_to_int(jsonData->>'" + CampaignFormDataEntry.VALUE + "', 0))"
-							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + diagramSeries.getFieldValue() + "')"
+							+ " ELSE count((jsonData->>'" + CampaignFormDataEntry.VALUE + "') = '" + series.getReferenceValue() + "')"
 		      				+ " END as sumValue"
 							+ ", " + Region.TABLE_NAME + "." + Region.UUID
 							+ ", " + Region.TABLE_NAME + "." + Region.NAME
@@ -329,8 +326,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							+ " LEFT JOIN " + Campaign.TABLE_NAME + " ON " + CampaignFormData.CAMPAIGN + "_id = " + Campaign.TABLE_NAME + "." + Campaign.ID
 							+ ", json_array_elements(" + CampaignFormData.FORM_VALUES + ") as jsonData"
 							+ ", json_array_elements(" + CampaignFormMeta.CAMPAIGN_FORM_ELEMENTS + ") as jsonMeta"
-					+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + diagramSeries.getFormId() + "'"
-							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + diagramSeries.getFieldId() + "'"
+					+ " WHERE " + CampaignFormMeta.TABLE_NAME + "." + CampaignFormMeta.FORM_ID + " = '" + series.getFormId() + "'"
+							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = '" + series.getFieldId() + "'"
 							+ " AND jsonData->>'" + CampaignFormDataEntry.VALUE + "' IS NOT NULL"
 							+ " AND jsonData->>'" + CampaignFormDataEntry.ID + "' = jsonMeta->>'" + CampaignFormElement.ID + "'"
 							+ areaFilter
@@ -357,7 +354,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 							(String) result[1],
 							(String) result[2],
 							(String) result[3],
-							(Object) result[4],
+							(Number) result[4],
 							(String) result[5],
 							(String) result[6]))
 					.collect(Collectors.toList()));

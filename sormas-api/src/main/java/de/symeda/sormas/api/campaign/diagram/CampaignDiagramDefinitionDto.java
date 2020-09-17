@@ -1,15 +1,16 @@
 package de.symeda.sormas.api.campaign.diagram;
 
-import java.util.List;
-
 import de.symeda.sormas.api.EntityDto;
+
+import java.util.List;
 
 public class CampaignDiagramDefinitionDto extends EntityDto {
 
 	private String diagramId;
 	private String diagramCaption;
 	private DiagramType diagramType;
-	private List<CampaignDiagramSeries> campaignDiagramSeriesList;
+	private List<CampaignDiagramSeries> campaignDiagramSeries;
+	private List<CampaignDiagramSeries> campaignSeriesTotal;
 
 	public String getDiagramId() {
 		return diagramId;
@@ -35,11 +36,19 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 		this.diagramType = diagramType;
 	}
 
-	public List<CampaignDiagramSeries> getCampaignDiagramSeriesList() {
-		return campaignDiagramSeriesList;
+	public List<CampaignDiagramSeries> getCampaignDiagramSeries() {
+		return campaignDiagramSeries;
 	}
 
-	public void setCampaignDiagramSeriesList(List<CampaignDiagramSeries> campaignDiagramSeriesList) {
-		this.campaignDiagramSeriesList = campaignDiagramSeriesList;
+	public void setCampaignDiagramSeries(List<CampaignDiagramSeries> campaignDiagramSeries) {
+		this.campaignDiagramSeries = campaignDiagramSeries;
+	}
+
+	public List<CampaignDiagramSeries> getCampaignSeriesTotal() {
+		return campaignSeriesTotal;
+	}
+
+	public void setCampaignSeriesTotal(List<CampaignDiagramSeries> campaignSeriesTotal) {
+		this.campaignSeriesTotal = campaignSeriesTotal;
 	}
 }
