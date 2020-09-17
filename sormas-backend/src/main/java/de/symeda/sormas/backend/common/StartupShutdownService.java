@@ -175,6 +175,8 @@ public class StartupShutdownService {
 
 		createDefaultUsers();
 
+		createSormasToSormasUser();
+
 		upgrade();
 
 		createImportTemplateFiles();
@@ -418,8 +420,6 @@ public class StartupShutdownService {
 			poeInformant.setAssociatedOfficer(surveillanceOfficer);
 			userService.persist(poeInformant);
 		}
-
-		createSormasToSormasUser();
 	}
 
 	private void createSormasToSormasUser() {
@@ -430,12 +430,13 @@ public class StartupShutdownService {
 
 			if (sormasToSormasUser == null) {
 				if (!DataHelper.isNullOrEmpty(sormasToSormasUserPassword)) {
-					User newUser = MockDataGenerator.createUser(UserRole.REST_USER, "Sormas", "Sormas", sormasToSormasUserPassword);
+					User newUser =
+						MockDataGenerator.createUser(UserRole.SORMAS_TO_SORMAS_CLIENT, "Sormas to Sormas", "Client", sormasToSormasUserPassword);
 					newUser.setUserName(SORMAS_TO_SORMAS_USER_NAME);
 
 					userService.persist(newUser);
 				}
-			} else if (DataHelper
+			} else if (!DataHelper
 				.equal(sormasToSormasUser.getPassword(), PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()))) {
 				sormasToSormasUser.setSeed(PasswordHelper.createPass(16));
 				sormasToSormasUser.setPassword(PasswordHelper.encodePassword(sormasToSormasUserPassword, sormasToSormasUser.getSeed()));

@@ -28,13 +28,13 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"REST_USER" })
+@RolesAllowed(UserRole._SORMAS_TO_SORMAS_CLIENT)
 public class SormasToSormasResource {
 
 	@POST

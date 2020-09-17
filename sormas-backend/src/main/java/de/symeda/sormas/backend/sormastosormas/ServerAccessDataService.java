@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -30,6 +29,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.SormasToSormasConfig;
@@ -39,6 +42,8 @@ import de.symeda.sormas.api.utils.CSVUtils;
 @LocalBean
 public class ServerAccessDataService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerAccessDataService.class);
+
 	private static final String SERVER_ACCESS_DATA_FILE_NAME = "server-access-data.csv";
 
 	private static final String SERVER_LIST_FILE_NAME = "server-list.csv";
@@ -47,28 +52,44 @@ public class ServerAccessDataService {
 	private SormasToSormasConfig sormasToSormasConfig;
 
 	public Optional<ServerAccessData> getServerAccessData() {
-		Path inputFile = Paths.get(sormasToSormasConfig.getFilePath(), SERVER_ACCESS_DATA_FILE_NAME);
+
+		String configPath = sormasToSormasConfig.getPath();
+
+		if (StringUtils.isEmpty(configPath)) {
+			return Optional.empty();
+		}
+
+		Path inputFile = Paths.get(configPath, SERVER_ACCESS_DATA_FILE_NAME);
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
 			return Optional.of(buildServerAccessData(csvReader.readNext()));
 
-		} catch (IOException e) {
+		} catch (Exception e) {
+			LOGGER.warn("Unexpected error while reading sormas to sormas server access data", e);
 			return Optional.empty();
 		}
 	}
 
 	public List<ServerAccessListItem> getServerList() {
-		Path inputFile = Paths.get(sormasToSormasConfig.getFilePath(), SERVER_LIST_FILE_NAME);
+		String configPath = sormasToSormasConfig.getPath();
+
+		if (StringUtils.isEmpty(configPath)) {
+			return Collections.emptyList();
+		}
+
+		Path inputFile = Paths.get(configPath, SERVER_LIST_FILE_NAME);
+
 		try (Reader reader = Files.newBufferedReader(inputFile, StandardCharsets.UTF_8);
 			CSVReader csvReader = CSVUtils.createCSVReader(reader, ',')) {
 			return csvReader.readAll()
 				.stream()
-				// skip the empty line at the end
-				.filter(r -> r.length > 1)
+				// skip the empty line and comment lines(starting with #)
+				.filter(r -> r.length > 1 || r[0].startsWith("#"))
 				// parse non-empty lines
 				.map(this::buildServerAccessListItem)
 				.collect(Collectors.toList());
-		} catch (IOException e) {
+		} catch (Exception e) {
+			LOGGER.warn("Unexpected error while reading sormas to sormas server list", e);
 			return Collections.emptyList();
 		}
 	}

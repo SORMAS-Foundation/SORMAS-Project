@@ -28,6 +28,9 @@
 	<security-role>
         <role-name>CONTACT_OFFICER</role-name>
     </security-role>
+	<security-role>
+        <role-name>SORMAS_TO_SORMAS_CLIENT</role-name>
+    </security-role>
 	
 	<security-constraint>
 		<display-name>secure all</display-name>
@@ -40,6 +43,7 @@
 			<role-name>USER</role-name>
 			<role-name>REST_EXTERNAL_VISITS_USER</role-name>
 			<role-name>REST_USER</role-name>
+			<role-name>SORMAS_TO_SORMAS_CLIENT</role-name>
 		</auth-constraint>
 	</security-constraint>
 </web-app>

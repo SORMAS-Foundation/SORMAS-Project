@@ -52,7 +52,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] encrypt(byte[] data, String instanceID) throws SormasToSormasException {
 		try {
-			String filePath = sormasToSormasConfig.getFilePath();
+			String filePath = sormasToSormasConfig.getPath();
 			String keystoreName = sormasToSormasConfig.getKeystoreName();
 			Path keystorePath = Paths.get(filePath, keystoreName);
 			String keystorePass = sormasToSormasConfig.getKeystorePass();
@@ -75,7 +75,7 @@ public class SormasToSormasEncryptionService {
 
 	public byte[] decrypt(byte[] data, String instanceID) throws SormasToSormasException {
 		try {
-			String filePath = sormasToSormasConfig.getFilePath();
+			String filePath = sormasToSormasConfig.getPath();
 
 			Path keystorePath = Paths.get(filePath, sormasToSormasConfig.getKeystoreName());
 			String keystorePass = sormasToSormasConfig.getKeystorePass();

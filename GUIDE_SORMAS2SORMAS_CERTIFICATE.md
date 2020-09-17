@@ -31,7 +31,7 @@ the path to the ``sormas.properties`` file.
     to which the SORMAS instance will be assigned. <br/>
     E.g. *GA Braunschweig*
     * the REST user password environment variable should be named ``SORMAS_S2S_REST_PASSWORD``.
-    Please note that the password has to be at least 6 characters, or you will be prompted for a new one.
+    Please note that the password has to be at least 12 characters, or you will be prompted for a new one.
     
 5. After providing the requested data, the certificate files will be generated. <br/>
    The generated certificate has a validity of 3 years. 
@@ -68,11 +68,11 @@ list. To complete this setup, please follow the next steps:
 6. You will be prompted to provide the file name of the certificate to be imported. This certificate should be located
 in the ``/sormas2sormas`` folder. Please provide the name including the extension. E.g ``mycert.crt``
 7. After providing the requested data, the certificate will be imported to the truststore.
-8. Next you will be prompted to provide the `URL` and the `user password` of the **REST** api the certificate belongs too.
+8. Next you will be prompted to provide the `URL` and the `user password` of the **REST** api the certificate belongs to.
     > The `user password` should be provided together with the certificate. 
     It should be the same password that is requested while generating the certificate. 
 9. The new server information will be added to the ``server-list.csv`` file, then you will be able to select the new server in the application to share data with it.
 10. You may now delete the ``.crt`` file.
 
 ### SORMAS to SORMAS Feature
-In the application the sharing feature will get enabled after the certificate is generated end at least one other certificate is imported.  
+In the application the sharing feature will get enabled after the certificate is generated and at least one other certificate is imported.  

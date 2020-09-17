@@ -83,8 +83,8 @@ while [[ -z "${SORMAS_S2S_CERT_ORG}" ]]; do
   read -p "Please provide an Organization (O) for the certificate: " SORMAS_S2S_CERT_ORG
 done
 
-while [[ -z "${SORMAS_S2S_REST_PASSWORD}" ]] || [[ ${#SORMAS_S2S_REST_PASSWORD} -lt 6 ]]; do
-  read -sp "Please provide a password for the REST interface (at least 6 characters): " SORMAS_S2S_REST_PASSWORD
+while [[ -z "${SORMAS_S2S_REST_PASSWORD}" ]] || [[ ${#SORMAS_S2S_REST_PASSWORD} -lt 12 ]]; do
+  read -sp "Please provide a password for the REST interface (at least 12 characters): " SORMAS_S2S_REST_PASSWORD
   echo
 done
 

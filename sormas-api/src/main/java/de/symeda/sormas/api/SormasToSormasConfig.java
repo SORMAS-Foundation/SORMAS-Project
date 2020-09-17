@@ -10,19 +10,19 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -7981351672462016280L;
 
-	private String filePath;
+	private String path;
 	private String keyAlias;
 	private String keystoreName;
 	private String keystorePass;
 	private String truststoreName;
 	private String truststorePass;
 
-	public String getFilePath() {
-		return filePath;
+	public String getPath() {
+		return path;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public String getKeyAlias() {
@@ -72,7 +72,7 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		SormasToSormasConfig that = (SormasToSormasConfig) o;
-		return Objects.equals(filePath, that.filePath)
+		return Objects.equals(path, that.path)
 			&& Objects.equals(keyAlias, that.keyAlias)
 			&& Objects.equals(keystorePass, that.keystorePass)
 			&& Objects.equals(truststoreName, that.truststoreName)
@@ -81,7 +81,7 @@ public class SormasToSormasConfig implements Serializable, Cloneable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(filePath, keyAlias, keystorePass, truststoreName, truststorePass);
+		return Objects.hash(path, keyAlias, keystorePass, truststoreName, truststorePass);
 	}
 
 	@Override

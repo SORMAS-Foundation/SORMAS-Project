@@ -605,7 +605,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
 
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getFilePath()).thenReturn(file.getAbsolutePath());
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeyAlias()).thenReturn(DEFAULT_SERVER_ACCESS_CN);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certPass");
@@ -616,7 +616,7 @@ public class SormasToSormasFacadeEjbTest extends AbstractBeanTest {
 	private void mockSecondServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccesssecond");
 
-		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getFilePath()).thenReturn(file.getAbsolutePath());
+		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getPath()).thenReturn(file.getAbsolutePath());
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeyAlias()).thenReturn(SECOND_SERVER_ACCESS_CN);
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystoreName()).thenReturn("sormas2sormas.keystore.p12");
 		Mockito.when(MockSormasToSormasConfigProducer.sormasToSormasConfig.getKeystorePass()).thenReturn("certipass");

@@ -268,7 +268,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 	@Override
 	public boolean isFeatureEnabled() {
-		return serverAccessDataService.getServerList().size() > 0;
+		return !serverAccessDataService.getServerList().isEmpty();
 	}
 
 	@Override
