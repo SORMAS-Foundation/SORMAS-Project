@@ -229,7 +229,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
-			event.get(Event.EVENT_DESC),
+			event.get(Event.EVENT_TITLE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
 			district.get(District.UUID),
@@ -273,7 +273,7 @@ public class EventFacadeEjb implements EventFacade {
 				case EventIndexDto.DISEASE:
 				case EventIndexDto.DISEASE_DETAILS:
 				case EventIndexDto.START_DATE:
-				case EventIndexDto.EVENT_DESC:
+				case EventIndexDto.EVENT_TITLE:
 				case EventIndexDto.SRC_FIRST_NAME:
 				case EventIndexDto.SRC_LAST_NAME:
 				case EventIndexDto.SRC_TEL_NO:

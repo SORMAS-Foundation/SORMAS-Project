@@ -167,13 +167,13 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		eventCriteria.eventStatus(EventStatus.SIGNAL);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
-		assertEquals("DescriptionEv1", results.get(0).getEventDesc());
+		assertEquals("TitleEv1", results.get(0).getEventTitle());
 
 		eventCriteria.eventStatus(null);
 		eventCriteria.setTypeOfPlace(TypeOfPlace.HOSPITAL);
 		results = getEventFacade().getIndexList(eventCriteria, 0, 100, null);
 		assertEquals(1, results.size());
-		assertEquals("DescriptionEv2", results.get(0).getEventDesc());
+		assertEquals("TitleEv2", results.get(0).getEventTitle());
 	}
 
 	@Test
