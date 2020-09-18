@@ -135,9 +135,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			record.getHealthFacility(),
 			contentBinding.caseDataPointOfEntry,
 			initialPointsOfEntry,
-			record.getPointOfEntry());
+			record.getPointOfEntry(), getParentFragmentManager());
 
-		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
+		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease(), getParentFragmentManager());
 		contentBinding.caseDataDisease.addValueChangedListener(e -> {
 			contentBinding.rapidCaseEntryCheckBox.setVisibility(
 				e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
