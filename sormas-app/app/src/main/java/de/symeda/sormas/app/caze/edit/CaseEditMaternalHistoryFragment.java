@@ -86,7 +86,7 @@ public class CaseEditMaternalHistoryFragment extends BaseEditFragment<FragmentCa
 			record.getRashExposureDistrict(),
 			contentBinding.maternalHistoryRashExposureCommunity,
 			initialCommunities,
-			record.getRashExposureCommunity());
+			record.getRashExposureCommunity(), getParentFragmentManager());
 	}
 
 	@Override

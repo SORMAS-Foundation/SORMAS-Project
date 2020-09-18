@@ -308,7 +308,8 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			record.getCommunity(),
 			contentBinding.caseDataHealthFacility,
 			initialFacilities,
-			record.getHealthFacility());
+			record.getHealthFacility(),
+				getParentFragmentManager());
 
 		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.caseDataHealthFacility.setRequired(false);
@@ -343,7 +344,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		}
 
 		// Initialize ControlSpinnerFields
-		contentBinding.caseDataDisease.initializeSpinner(diseaseList);
+		contentBinding.caseDataDisease.initializeSpinner(diseaseList,  getParentFragmentManager());
 		contentBinding.caseDataCaseClassification.initializeSpinner(caseClassificationList);
 		contentBinding.caseDataOutcome.initializeSpinner(caseOutcomeList);
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
