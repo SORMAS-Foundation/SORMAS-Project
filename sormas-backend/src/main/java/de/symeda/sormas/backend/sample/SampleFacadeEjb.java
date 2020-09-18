@@ -50,7 +50,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
-import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactJurisdictionChecker;
@@ -690,13 +689,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
 			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
 		}
+
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.distinct(true);
-		cq.select(cb.count(root));
-		Long count = em.createQuery(cq).getSingleResult();
-		return count;
+
+		cq.select(cb.countDistinct(root));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override

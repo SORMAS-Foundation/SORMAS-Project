@@ -136,18 +136,31 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		}
 
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
-			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
-			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			if (getColumn(SampleIndexDto.ASSOCIATED_CONTACT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
-			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
-			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+
+			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
-			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
-			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_CONTACT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			}
 		}
 
 		for (Column<SampleIndexDto, ?> column : getColumns()) {

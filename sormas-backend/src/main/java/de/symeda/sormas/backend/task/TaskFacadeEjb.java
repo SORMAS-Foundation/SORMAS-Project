@@ -354,8 +354,7 @@ public class TaskFacadeEjb implements TaskFacade {
 			cq.where(filter);
 		}
 
-		cq.distinct(true);
-		cq.select(cb.count(task));
+		cq.select(cb.countDistinct(task));
 		return em.createQuery(cq).getSingleResult();
 	}
 
