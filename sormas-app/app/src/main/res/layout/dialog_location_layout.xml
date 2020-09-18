@@ -53,17 +53,17 @@
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.details}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                 android:id="@+id/location_region"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.region}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                 android:id="@+id/location_district"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.district}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                 android:id="@+id/location_community"
                 style="@style/ControlSingleColumnStyle"
                 app:value="@={data.community}" />
