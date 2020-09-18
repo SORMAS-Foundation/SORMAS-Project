@@ -135,12 +135,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_placeOfBirthRegion"
                     app:value="@={data.placeOfBirthRegion}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_placeOfBirthDistrict"
                     app:value="@={data.placeOfBirthDistrict}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -152,12 +152,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_placeOfBirthCommunity"
                     app:value="@={data.placeOfBirthCommunity}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_placeOfBirthFacility"
                     app:value="@={data.placeOfBirthFacility}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
@@ -373,14 +373,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_occupationRegion"
                     app:value="@={data.occupationRegion}"
                     app:dependencyParentField="@{personOccupationType}"
                     app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_occupationDistrict"
                     app:value="@={data.occupationDistrict}"
                     app:dependencyParentField="@{personOccupationType}"
@@ -394,14 +394,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_occupationCommunity"
                     app:value="@={data.occupationCommunity}"
                     app:dependencyParentField="@{personOccupationType}"
                     app:dependencyParentValue="@{OccupationType.HEALTHCARE_WORKER}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/person_occupationFacility"
                     app:value="@={data.occupationFacility}"
                     app:dependencyParentField="@{personOccupationType}"

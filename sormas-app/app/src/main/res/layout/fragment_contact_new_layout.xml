@@ -121,12 +121,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/contact_region"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:value="@={data.region}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/contact_district"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:value="@={data.district}" />

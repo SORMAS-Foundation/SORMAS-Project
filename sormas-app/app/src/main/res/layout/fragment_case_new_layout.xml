@@ -53,7 +53,7 @@
                 app:required="true"
                 app:value="@={data.caseOrigin}" />
 
-            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+            <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                 android:id="@+id/caseData_disease"
                 style="@style/ControlSingleColumnStyle"
                 app:required="true"
@@ -101,13 +101,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/caseData_region"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:required="true"
                     app:value="@={data.region}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/caseData_district"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"
@@ -121,13 +121,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/caseData_community"
                     style="@style/ControlFirstOfTwoColumnsStyle"
                     app:softRequired="true"
                     app:value="@={data.community}" />
 
-                <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                <de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField
                     android:id="@+id/caseData_healthFacility"
                     style="@style/ControlSecondOfTwoColumnsStyle"
                     app:required="true"
