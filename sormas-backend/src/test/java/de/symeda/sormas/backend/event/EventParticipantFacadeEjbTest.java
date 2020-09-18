@@ -52,6 +52,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
+			"Title",
 			"Description",
 			"First",
 			"Name",
