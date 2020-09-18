@@ -40,8 +40,8 @@ WebUI.click(findTestObject('Events/NewEventView/div_TypeOfPlace_v-filterselect-b
 WebUI.click(findTestObject('Events/NewEventView/td_TypeOfPlace_Festivities_DDItem'))
 
 //WebUI.setText(findTestObject('Events/NewEventView/input_SourceTelephoneNo_inputBox'), '555-35271')
-WebUI.click(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'))
-WebUI.setText(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'), 'Am Klammerberg 3')
+/*WebUI.click(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'))
+WebUI.setText(findTestObject('Events/NewEventView/textarea_AddressOrLandmark_TArea'), 'Am Klammerberg 3')*/
 
 WebUI.setText(findTestObject('Events/NewEventView/input_PostalCode_inptBox'), '12345')
 

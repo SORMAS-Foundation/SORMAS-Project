@@ -3,7 +3,7 @@
    <description></description>
    <name>test</name>
    <tag></tag>
-   <defaultProfile>false</defaultProfile>
+   <defaultProfile>true</defaultProfile>
    <GlobalVariableEntity>
       <description>Sormas Testapplication</description>
       <initValue>'https://test.sormas.netzlink.com/'</initValue>

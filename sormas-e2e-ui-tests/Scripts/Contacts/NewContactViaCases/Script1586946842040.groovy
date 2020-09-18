@@ -23,6 +23,8 @@ WebUI.click(findTestObject('Contacts/MainView/menu_Cases'))
 WebUI.setText(findTestObject('Contacts/ContactsOverview/NewContact/input_More_nameUuidEpidNumberLike'), findTestData(GlobalVariable.gContactTestDataName).getValue(
         2, 2))
 
+WebUI.click(findTestObject('Contacts/ContactsOverview/div_Apply filters'))
+
 WebUI.delay(1)
 
 WebUI.click(Helper.createTestObjectWithXPath('//table[@aria-rowcount]//a'))
