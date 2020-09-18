@@ -15,17 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
+
 package de.symeda.sormas.backend.person;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -196,10 +195,10 @@ public class PersonFacadeEjb implements PersonFacade {
 		Join<Case, Person> person = root.join(Case.PERSON, JoinType.LEFT);
 
 		Predicate filter = caseService.createUserFilter(
-			cb,
-			cq,
-			root,
-			new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
+				cb,
+				cq,
+				root,
+				new CaseUserFilterCriteria().excludeSharedCases(excludeSharedCases).excludeCasesFromContacts(excludeCasesFromContacts));
 		filter = AbstractAdoService.and(cb, filter, caseService.createCriteriaFilter(caseCriteria, cb, cq, root));
 		filter = AbstractAdoService.and(cb, filter, cb.equal(person.get(Person.CAUSE_OF_DEATH_DISEASE), root.get(Case.DISEASE)));
 
@@ -250,19 +249,37 @@ public class PersonFacadeEjb implements PersonFacade {
 	public PersonDto getPersonByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
 		return Optional.of(uuid)
-			.map(u -> personService.getByUuid(u))
-			.map(p -> convertToDto(pseudonymizer, p, isPersonInJurisdiction(p)))
-			.orElse(null);
+				.map(u -> personService.getByUuid(u))
+				.map(p -> convertToDto(pseudonymizer, p, isPersonInJurisdiction(p)))
+				.orElse(null);
+	}
+
+	@Override
+	public PersonDto getPersonForJournal(String Uuid) {
+		PersonDto detailedPerson = getPersonByUuid(Uuid);
+		//only specific attributes of the person shall be returned:
+		if (detailedPerson != null) {
+			PersonDto exportPerson = new PersonDto();
+			exportPerson.setUuid(detailedPerson.getUuid());
+			exportPerson.setEmailAddress(detailedPerson.getEmailAddress());
+			exportPerson.setPhone(detailedPerson.getPhone());
+			exportPerson.setPseudonymized(detailedPerson.isPseudonymized());
+			exportPerson.setFirstName(detailedPerson.getFirstName());
+			exportPerson.setLastName(detailedPerson.getLastName());
+			exportPerson.setBirthdateYYYY(detailedPerson.getBirthdateYYYY());
+			exportPerson.setBirthdateMM(detailedPerson.getBirthdateMM());
+			exportPerson.setBirthdateDD(detailedPerson.getBirthdateDD());
+			exportPerson.setSex(detailedPerson.getSex());
+			return exportPerson;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public PersonDto savePerson(PersonDto source) throws ValidationRuntimeException {
-
 		Person person = personService.getByUuid(source.getUuid());
-		Set<Location> existingAddresses = new HashSet<>();
-		if (person != null) {
-			existingAddresses = person.getAddresses();
-		}
+
 		PersonDto existingPerson = toDto(person);
 
 		restorePseudonymizedDto(source, person, existingPerson);
@@ -351,7 +368,8 @@ public class PersonFacadeEjb implements PersonFacade {
 	 */
 	private void cleanUp(Person person) {
 
-		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE) {
+		if (person.getPresentCondition() == null || person.getPresentCondition() == PresentCondition.ALIVE ||
+		    person.getPresentCondition()==PresentCondition.UNKNOWN) {
 			person.setDeathDate(null);
 			person.setCauseOfDeath(null);
 			person.setCauseOfDeathDisease(null);
@@ -404,7 +422,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		// Set approximate age if it hasn't been set before
 		if (newPerson.getApproximateAge() == null && newPerson.getBirthdateYYYY() != null) {
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
-				.getApproximateAge(newPerson.getBirthdateYYYY(), newPerson.getBirthdateMM(), newPerson.getBirthdateDD(), newPerson.getDeathDate());
+					.getApproximateAge(newPerson.getBirthdateYYYY(), newPerson.getBirthdateMM(), newPerson.getBirthdateDD(), newPerson.getDeathDate());
 			newPerson.setApproximateAge(pair.getElement0());
 			newPerson.setApproximateAgeType(pair.getElement1());
 			newPerson.setApproximateAgeReferenceDate(newPerson.getDeathDate() != null ? newPerson.getDeathDate() : new Date());
@@ -412,7 +430,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		// Update caseAge of all associated cases when approximateAge has changed
 		if ((existingPerson == null && newPerson.getApproximateAge() != null)
-			|| (existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
+				|| (existingPerson != null && existingPerson.getApproximateAge() != newPerson.getApproximateAge())) {
 			// Update case list after previous onCaseChanged
 			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 			for (Case personCase : personCases) {
@@ -476,7 +494,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		List<Location> locations = new ArrayList<>();
 		for (LocationDto locationDto : source.getAddresses()) {
 			Location location = locationFacade.fromDto(locationDto);
-			location.setPerson(target);
 			locations.add(location);
 		}
 		if (!DataHelper.equal(target.getAddresses(), locations)) {
@@ -528,9 +545,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	private PersonDto convertToDto(Pseudonymizer pseudonymizer, Person p, boolean hasJurisdiction) {
 		final PersonDto personDto = toDto(p);
-		if (!hasJurisdiction) {
-			pseudonymizeDto(false, personDto, pseudonymizer);
-		}
+		pseudonymizeDto(hasJurisdiction, personDto, pseudonymizer);
 		return personDto;
 	}
 
@@ -550,12 +565,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
 			source.getAddresses()
-				.forEach(
-					l -> pseudonymizer.restorePseudonymizedValues(
-						LocationDto.class,
-						l,
-						existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
-						isInJurisdiction));
+					.forEach(
+							l -> pseudonymizer.restorePseudonymizedValues(
+									LocationDto.class,
+									l,
+									existingPerson.getAddresses().stream().filter(a -> a.getUuid().equals(l.getUuid())).findFirst().orElse(null),
+									isInJurisdiction));
 		}
 	}
 
@@ -575,18 +590,18 @@ public class PersonFacadeEjb implements PersonFacade {
 	public static SimilarPersonDto toSimilarPersonDto(Person entity) {
 
 		SimilarPersonDto dto = new SimilarPersonDto(
-			entity.getUuid(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getNickname(),
-			entity.getApproximateAge(),
-			entity.getSex(),
-			entity.getPresentCondition(),
-			entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
-			entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
-			entity.getAddress().getCity(),
-			entity.getNationalHealthId(),
-			entity.getPassportNumber());
+				entity.getUuid(),
+				entity.getFirstName(),
+				entity.getLastName(),
+				entity.getNickname(),
+				entity.getApproximateAge(),
+				entity.getSex(),
+				entity.getPresentCondition(),
+				entity.getAddress().getDistrict() != null ? entity.getAddress().getDistrict().getName() : null,
+				entity.getAddress().getCommunity() != null ? entity.getAddress().getCommunity().getName() : null,
+				entity.getAddress().getCity(),
+				entity.getNationalHealthId(),
+				entity.getPassportNumber());
 		return dto;
 	}
 
@@ -614,7 +629,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// still not sure whether this is a good solution
 
 			Pair<Integer, ApproximateAgeType> pair = ApproximateAgeHelper
-				.getApproximateAge(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate());
+					.getApproximateAge(source.getBirthdateYYYY(), source.getBirthdateMM(), source.getBirthdateDD(), source.getDeathDate());
 			target.setApproximateAge(pair.getElement0());
 			target.setApproximateAgeType(pair.getElement1());
 			target.setApproximateAgeReferenceDate(source.getDeathDate() != null ? source.getDeathDate() : new Date());
