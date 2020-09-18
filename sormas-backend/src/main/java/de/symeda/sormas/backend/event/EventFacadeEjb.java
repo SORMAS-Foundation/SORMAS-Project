@@ -331,6 +331,7 @@ public class EventFacadeEjb implements EventFacade {
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
 			event.get(Event.END_DATE),
+			event.get(Event.EVENT_TITLE),
 			event.get(Event.EVENT_DESC),
 			event.get(Event.NOSOCOMIAL),
 			region.get(Region.UUID),
