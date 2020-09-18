@@ -23,12 +23,15 @@ import com.opencsv.validators.LineValidator;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * CSV Line validator which fails whenever a line which starts with {@link #DEFAULT_COMMENT_LINE_PREFIX} is found.
+ * Can be used to ignore commented CSV file lines.
+ *
  * @author Alex Vidrean
  * @since 14-Sep-20
  */
 public class CSVCommentLineValidator implements LineValidator {
 
-	private final String DEFAULT_COMMENT_LINE_PREFIX = "##";
+	public static final String DEFAULT_COMMENT_LINE_PREFIX = "##";
 
 	public static final String ERROR_MESSAGE = "comment";
 

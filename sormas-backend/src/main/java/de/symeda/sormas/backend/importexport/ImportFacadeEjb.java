@@ -28,7 +28,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -36,6 +39,11 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.CSVCommentLineValidator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,17 +159,21 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public void generateCaseImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, CaseDataDto.class, "");
 		appendListOfFields(columnNames, entityNames, SampleDto.class, "");
 		appendListOfFields(columnNames, entityNames, PathogenTestDto.class, "");
+
+		List<String> captions = computeCaptions(columnNames, entityNames, CaseDataDto.I18N_PREFIX);
+
 		Path filePath = Paths.get(getCaseImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(entityNames.toArray(new String[entityNames.size()]));
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(entityNames.toArray(new String[0]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
@@ -169,22 +181,28 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public void generateCaseContactImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(
-			Arrays.asList(
-				ContactDto.CAZE,
-				ContactDto.DISEASE,
-				ContactDto.DISEASE_DETAILS,
-				ContactDto.RESULTING_CASE,
-				ContactDto.CASE_ID_EXTERNAL_SYSTEM,
-				ContactDto.CASE_OR_EVENT_INFORMATION));
+
+		removeColumnNames(
+			columnNames,
+			entityNames,
+			ContactDto.CAZE,
+			ContactDto.DISEASE,
+			ContactDto.DISEASE_DETAILS,
+			ContactDto.RESULTING_CASE,
+			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
+			ContactDto.CASE_OR_EVENT_INFORMATION);
+
+		List<String> captions = computeCaptions(columnNames, entityNames, ContactDto.I18N_PREFIX);
+
 		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
@@ -192,16 +210,18 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public void generateContactImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		columnNames.removeAll(Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE));
+		removeColumnNames(columnNames, entityNames, ContactDto.CAZE, ContactDto.RESULTING_CASE);
+		List<String> captions = computeCaptions(columnNames, entityNames, ContactDto.I18N_PREFIX);
 
 		Path filePath = Paths.get(getContactImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
@@ -209,7 +229,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	@Override
 	public void generateCaseLineListingImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(CaseDataDto.DISEASE);
@@ -236,22 +256,25 @@ public class ImportFacadeEjb implements ImportFacade {
 		columnNames.add(CaseDataDto.POINT_OF_ENTRY_DETAILS);
 		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
 
+		List<String> captions = computeCaptions(columnNames, Collections.emptyList(), CaseDataDto.I18N_PREFIX);
+
 		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
 
 	@Override
 	public void generatePointOfEntryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()));
+		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()), PointOfEntryDto.I18N_PREFIX);
 	}
 
 	@Override
 	public void generatePopulationDataImportTemplateFile() throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(PopulationDataDto.REGION);
@@ -267,14 +290,33 @@ public class ImportFacadeEjb implements ImportFacade {
 			columnNames.add("FEMALE_" + ageGroup.name());
 			columnNames.add("OTHER_" + ageGroup.name());
 		}
+
+		List<String> entityNames = new ArrayList<>();
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		entityNames.add(RegionDto.I18N_PREFIX);
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		entityNames.add(PopulationDataDto.I18N_PREFIX);
+		for (AgeGroup ignored : AgeGroup.values()) {
+			entityNames.add(PopulationDataDto.I18N_PREFIX);
+			entityNames.add(PopulationDataDto.I18N_PREFIX);
+			entityNames.add(PopulationDataDto.I18N_PREFIX);
+			entityNames.add(PopulationDataDto.I18N_PREFIX);
+		}
+
+		List<String> captions = computeCaptions(columnNames, entityNames, PopulationDataDto.I18N_PREFIX);
+
 		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
 
-	private void createExportDirectoryIfNessecary() throws IOException {
+	private void createExportDirectoryIfNecessary() throws IOException {
 
 		try {
 			Files.createDirectories(Paths.get(configFacade.getGeneratedFilesPath()));
@@ -286,38 +328,42 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public void generateAreaImportTemplateFile() throws IOException {
-		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()));
+		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()), AreaDto.I18N_PREFIX);
 	}
 
 	@Override
 	public void generateRegionImportTemplateFile() throws IOException {
-		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
+		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()), RegionDto.I18N_PREFIX);
 	}
 
 	@Override
 	public void generateDistrictImportTemplateFile() throws IOException {
-		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()));
+		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()), DistrictDto.I18N_PREFIX);
 	}
 
 	@Override
 	public void generateCommunityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()));
+		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()), CommunityDto.I18N_PREFIX);
 	}
 
 	@Override
 	public void generateFacilityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()), FacilityDto.I18N_PREFIX);
 	}
 
-	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, String i18nPrefix) throws IOException {
 
-		createExportDirectoryIfNessecary();
+		createExportDirectoryIfNecessary();
 
 		List<String> columnNames = new ArrayList<>();
 		List<String> entityNames = new ArrayList<>();
 		appendListOfFields(columnNames, entityNames, clazz, "");
+
+		List<String> captions = computeCaptions(columnNames, entityNames, i18nPrefix);
+
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[columnNames.size()]));
+			writer.writeNext(columnNames.toArray(new String[0]));
+			writeCommentLine(writer, captions.toArray(new String[0]));
 			writer.flush();
 		}
 	}
@@ -472,7 +518,8 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
-				entityNames.add(DataHelper.getHumanClassName(clazz));
+				String className = DataHelper.getHumanClassName(clazz);
+				entityNames.add(className);
 				columnNames.add(prefix + field.getName());
 			}
 		}
@@ -490,6 +537,81 @@ public class ImportFacadeEjb implements ImportFacade {
 	@LocalBean
 	@Stateless
 	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
+
+	}
+
+	private void writeCommentLine(CSVWriter csvWriter, String[] line) {
+		String[] commentedLine = Arrays.copyOf(line, line.length);
+		commentedLine[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + commentedLine[0];
+		csvWriter.writeNext(commentedLine);
+	}
+
+	/**
+	 * Computes the captions based on the column name and entity name.
+	 *<p/>
+	 * Column name is composed (ex: <code>person.firstName</code> or <code>person.address.city</code>)<br/>
+	 * <ul>
+	 *     <li>Split it in parts and use the first part as entity name and last part as field name</li>
+	 *     <li>If an entity name exists for the same position in array as the column name -> combine the field name with the entity name</li>
+	 *     <li>If the entity name cannot be determined, use the first part as a prefix</li>
+	 * </ul>
+	 * <p/>
+	 * Column name is simple (ex: <code>diseaseDetails</code>)
+	 * <ul>
+	 *     <li>If an entity name exits for the same position in the array as the column name -> combine the column name with the entity name</li>
+	 *     <li>If the entity name cannot be determined, use the default prefix param</li>
+	 * </ul>
+	 * <p/>
+	 * The result is a list with the same length as the <code>columnNames</code>
+	 *
+	 * @param columnNames list of column names from the template
+	 * @param entityNames list of entity names for each column name
+	 * @param defaultI18nPrefix fallback prefix for column names if the <code>columnNames</code> and <code>entityNames</code> don't match
+	 * @return list of captions for each column name.
+	 */
+	private List<String> computeCaptions(List<String> columnNames, List<String> entityNames, String defaultI18nPrefix) {
+
+		boolean columnsMatch = CollectionUtils.isNotEmpty(entityNames) && columnNames.size() == entityNames.size();
+
+		return IntStream.range(0, columnNames.size())
+			.mapToObj(index -> {
+				String columnName = columnNames.get(index);
+				if(StringUtils.contains(columnName, ".")) {
+					String[] parts = columnName.split("\\.");
+					String prefix = parts[0];
+					String fieldName = parts[parts.length - 1];
+					if (columnsMatch) {
+						return I18nProperties.getPrefixCaption(entityNames.get(index), fieldName);
+					} else {
+						return I18nProperties.getPrefixCaption(prefix, fieldName);
+					}
+				} else {
+					if (columnsMatch) {
+						return I18nProperties.getPrefixCaption(entityNames.get(index), columnName);
+					} else {
+						return I18nProperties.getPrefixCaption(defaultI18nPrefix, columnName);
+					}
+				}
+			}).collect(Collectors.toList());
+	}
+
+	/**
+	 * Utility method used to synchronously remove the same column index from <code>columnName</code> and <code>entityNames</code>.
+	 *
+	 * @param columnNames list of column names
+	 * @param entityNames list of entity names
+	 * @param columns column names to remove
+	 */
+	private void removeColumnNames(List<String> columnNames, List<String> entityNames, String ... columns) {
+
+		if(ArrayUtils.isEmpty(columns)) {
+			return;
+		}
+
+		Arrays.stream(columns).mapToInt(columnNames::indexOf).forEach(index -> {
+			columnNames.remove(index);
+			entityNames.remove(index);
+		});
 
 	}
 }
