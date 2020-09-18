@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.util;
 
+import androidx.fragment.app.FragmentManager;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.symeda.sormas.app.util.DataUtils.toItems;
@@ -35,6 +37,7 @@ import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSearchableSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 
 public final class InfrastructureHelper {
@@ -64,15 +67,16 @@ public final class InfrastructureHelper {
 	}
 
 	public static void initializeRegionFields(
-		final ControlSpinnerField regionField,
+		final ControlSearchableSpinnerField regionField,
 		List<Item> initialRegions,
 		Region initialRegion,
-		final ControlSpinnerField districtField,
+		final ControlSearchableSpinnerField districtField,
 		List<Item> initialDistricts,
 		District initialDistrict,
-		final ControlSpinnerField communityField,
+		final ControlSearchableSpinnerField communityField,
 		List<Item> initialCommunities,
-		Community initialCommunity) {
+		Community initialCommunity,
+		final FragmentManager fm) {
 
 		Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
 		Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
@@ -99,7 +103,7 @@ public final class InfrastructureHelper {
 			} else {
 				districtField.setSpinnerData(null);
 			}
-		});
+		},fm);
 
 		if (communityField != null) {
 			districtField.initializeSpinner(initialDistricts, field -> {
@@ -115,29 +119,30 @@ public final class InfrastructureHelper {
 				} else {
 					communityField.setSpinnerData(null);
 				}
-			});
+			}, fm);
 		} else {
-			districtField.initializeSpinner(initialDistricts);
+			districtField.initializeSpinner(initialDistricts, fm);
 		}
 
 		if (communityField != null) {
-			communityField.initializeSpinner(initialCommunities);
+			communityField.initializeSpinner(initialCommunities, fm);
 		}
 	}
 
 	public static void initializeFacilityFields(
-		final ControlSpinnerField regionField,
+		final ControlSearchableSpinnerField regionField,
 		List<Item> regions,
 		Region initialRegion,
-		final ControlSpinnerField districtField,
+		final ControlSearchableSpinnerField districtField,
 		List<Item> districts,
 		District initialDistrict,
-		final ControlSpinnerField communityField,
+		final ControlSearchableSpinnerField communityField,
 		List<Item> communities,
 		Community initialCommunity,
-		final ControlSpinnerField facilityField,
+		final ControlSearchableSpinnerField facilityField,
 		List<Item> facilities,
-		Facility initialFacility) {
+		Facility initialFacility,
+		final FragmentManager fm) {
 		initializeFacilityFields(
 			regionField,
 			regions,
@@ -153,25 +158,26 @@ public final class InfrastructureHelper {
 			initialFacility,
 			null,
 			null,
-			null);
+			null, fm);
 	}
 
 	public static void initializeFacilityFields(
-		final ControlSpinnerField regionField,
+		final ControlSearchableSpinnerField regionField,
 		List<Item> regions,
 		Region initialRegion,
-		final ControlSpinnerField districtField,
+		final ControlSearchableSpinnerField districtField,
 		List<Item> districts,
 		District initialDistrict,
-		final ControlSpinnerField communityField,
+		final ControlSearchableSpinnerField communityField,
 		List<Item> communities,
 		Community initialCommunity,
-		final ControlSpinnerField facilityField,
+		final ControlSearchableSpinnerField facilityField,
 		List<Item> facilities,
 		Facility initialFacility,
 		final ControlSpinnerField pointOfEntryField,
 		List<Item> pointsOfEntry,
-		PointOfEntry initialPointOfEntry) {
+		PointOfEntry initialPointOfEntry,
+		final FragmentManager fm) {
 
 		Item regionItem = initialRegion != null ? DataUtils.toItem(initialRegion) : null;
 		Item districtItem = initialDistrict != null ? DataUtils.toItem(initialDistrict) : null;
@@ -206,7 +212,7 @@ public final class InfrastructureHelper {
 			} else {
 				districtField.setSpinnerData(null);
 			}
-		});
+		},fm);
 
 		districtField.initializeSpinner(districts, field -> {
 			District selectedDistrict = (District) field.getValue();
@@ -237,7 +243,7 @@ public final class InfrastructureHelper {
 					pointOfEntryField.setSpinnerData(null);
 				}
 			}
-		});
+		}, fm);
 
 		communityField.initializeSpinner(communities, field -> {
 			Community selectedCommunity = (Community) field.getValue();
@@ -258,9 +264,9 @@ public final class InfrastructureHelper {
 			} else {
 				facilityField.setSpinnerData(null);
 			}
-		});
+		}, fm);
 
-		facilityField.initializeSpinner(facilities);
+		facilityField.initializeSpinner(facilities, fm);
 
 		if (pointOfEntryField != null) {
 			pointOfEntryField.initializeSpinner(pointsOfEntry);
