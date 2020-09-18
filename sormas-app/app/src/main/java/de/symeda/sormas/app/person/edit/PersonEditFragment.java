@@ -143,7 +143,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			record.getOccupationCommunity(),
 			contentBinding.personOccupationFacility,
 			initialOccupationFacilities,
-			record.getOccupationFacility());
+			record.getOccupationFacility(), fragment.getParentFragmentManager());
 		InfrastructureHelper.initializeFacilityFields(
 			contentBinding.personPlaceOfBirthRegion,
 			initialPlaceOfBirthRegions,
@@ -156,7 +156,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			record.getPlaceOfBirthCommunity(),
 			contentBinding.personPlaceOfBirthFacility,
 			initialPlaceOfBirthFacilities,
-			record.getPlaceOfBirthFacility());
+			record.getPlaceOfBirthFacility(), fragment.getParentFragmentManager());
 
 		// Initialize ControlSpinnerFields
 		contentBinding.personBirthdateDD.initializeSpinner(new ArrayList<>(), field -> updateApproximateAgeField(contentBinding));

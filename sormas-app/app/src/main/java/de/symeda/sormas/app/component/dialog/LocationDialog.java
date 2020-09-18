@@ -91,7 +91,7 @@ public class LocationDialog extends AbstractDialog {
 			data.getDistrict(),
 			this.contentBinding.locationCommunity,
 			initialCommunities,
-			data.getCommunity());
+			data.getCommunity(), getFragmentManager());
 
 		FieldVisibilityAndAccessHelper.setFieldVisibilitiesAndAccesses(LocationDto.class, contentBinding.mainContent, null, fieldAccessCheckers);
 		if (!FieldVisibilityAndAccessHelper.isFieldAccessible(LocationDto.class, LocationDto.COMMUNITY, fieldAccessCheckers)) {

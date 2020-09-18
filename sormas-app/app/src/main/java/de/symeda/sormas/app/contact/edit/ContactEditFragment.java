@@ -194,7 +194,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 			record.getDistrict(),
 			null,
 			null,
-			null);
+			null, getParentFragmentManager());
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);

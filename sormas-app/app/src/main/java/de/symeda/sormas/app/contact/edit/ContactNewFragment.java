@@ -97,7 +97,7 @@ public class ContactNewFragment extends BaseEditFragment<FragmentContactNewLayou
 			record.getDistrict(),
 			null,
 			null,
-			null);
+			null, getParentFragmentManager());
 
 		contentBinding.contactDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
 		contentBinding.contactDisease.addValueChangedListener(e -> {
