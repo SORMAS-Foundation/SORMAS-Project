@@ -161,21 +161,12 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, CaseDataDto.class, "");
-		appendListOfFields(columnNames, entityNames, SampleDto.class, "");
-		appendListOfFields(columnNames, entityNames, PathogenTestDto.class, "");
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, CaseDataDto.class, "");
+		appendListOfFields(importColumns, SampleDto.class, "");
+		appendListOfFields(importColumns, PathogenTestDto.class, "");
 
-		List<String> captions = computeCaptions(columnNames, entityNames, CaseDataDto.I18N_PREFIX);
-
-		Path filePath = Paths.get(getCaseImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(entityNames.toArray(new String[0]));
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(Paths.get(getCaseImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
@@ -183,28 +174,18 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, ContactDto.class, "");
 
-		removeColumnNames(
-			columnNames,
-			entityNames,
-			ContactDto.CAZE,
+		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE,
 			ContactDto.DISEASE,
 			ContactDto.DISEASE_DETAILS,
 			ContactDto.RESULTING_CASE,
 			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			ContactDto.CASE_OR_EVENT_INFORMATION);
+		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
 
-		List<String> captions = computeCaptions(columnNames, entityNames, ContactDto.I18N_PREFIX);
-
-		Path filePath = Paths.get(getCaseContactImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
@@ -212,18 +193,12 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, ContactDto.class, "");
-		removeColumnNames(columnNames, entityNames, ContactDto.CAZE, ContactDto.RESULTING_CASE);
-		List<String> captions = computeCaptions(columnNames, entityNames, ContactDto.I18N_PREFIX);
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, ContactDto.class, "");
+		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
+		importColumns = importColumns.stream().filter(column -> !columnsToRemove.contains(column.getColumnName())).collect(Collectors.toList());
 
-		Path filePath = Paths.get(getContactImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
@@ -231,39 +206,32 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(CaseDataDto.DISEASE);
-		columnNames.add(CaseDataDto.DISEASE_DETAILS);
-		columnNames.add(CaseDataDto.PLAGUE_TYPE);
-		columnNames.add(CaseDataDto.DENGUE_FEVER_TYPE);
-		columnNames.add(CaseDataDto.RABIES_TYPE);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.LAST_NAME);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.SEX);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM);
-		columnNames.add(CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY);
-		columnNames.add(CaseDataDto.EPID_NUMBER);
-		columnNames.add(CaseDataDto.REPORT_DATE);
-		columnNames.add(CaseDataDto.CASE_ORIGIN);
-		columnNames.add(CaseDataDto.REGION);
-		columnNames.add(CaseDataDto.DISTRICT);
-		columnNames.add(CaseDataDto.COMMUNITY);
-		columnNames.add(CaseDataDto.FACILITY_TYPE);
-		columnNames.add(CaseDataDto.HEALTH_FACILITY);
-		columnNames.add(CaseDataDto.HEALTH_FACILITY_DETAILS);
-		columnNames.add(CaseDataDto.POINT_OF_ENTRY);
-		columnNames.add(CaseDataDto.POINT_OF_ENTRY_DETAILS);
-		columnNames.add(CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE);
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE_DETAILS));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.PLAGUE_TYPE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DENGUE_FEVER_TYPE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.RABIES_TYPE));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.LAST_NAME));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.SEX));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.EPID_NUMBER));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REPORT_DATE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.CASE_ORIGIN));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REGION));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISTRICT));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.COMMUNITY));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.FACILITY_TYPE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY_DETAILS));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY_DETAILS));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE));
 
-		List<String> captions = computeCaptions(columnNames, Collections.emptyList(), CaseDataDto.I18N_PREFIX);
-
-		Path filePath = Paths.get(getCaseLineListingImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(Paths.get(getCaseLineListingImportTemplateFilePath()), importColumns, false);
 	}
 
 	@Override
@@ -276,44 +244,22 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		columnNames.add(PopulationDataDto.REGION);
-		columnNames.add(PopulationDataDto.DISTRICT);
-		columnNames.add(RegionDto.GROWTH_RATE);
-		columnNames.add("TOTAL");
-		columnNames.add("MALE_TOTAL");
-		columnNames.add("FEMALE_TOTAL");
-		columnNames.add("OTHER_TOTAL");
+		List<ImportColumn> importColumns = new ArrayList<>();
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.REGION));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.DISTRICT));
+		importColumns.add(ImportColumn.from(RegionDto.class, RegionDto.GROWTH_RATE));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL"));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_TOTAL"));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_TOTAL"));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_TOTAL"));
 		for (AgeGroup ageGroup : AgeGroup.values()) {
-			columnNames.add("TOTAL_" + ageGroup.name());
-			columnNames.add("MALE_" + ageGroup.name());
-			columnNames.add("FEMALE_" + ageGroup.name());
-			columnNames.add("OTHER_" + ageGroup.name());
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_" + ageGroup.name()));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name()));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name()));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name()));
 		}
 
-		List<String> entityNames = new ArrayList<>();
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		entityNames.add(RegionDto.I18N_PREFIX);
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		entityNames.add(PopulationDataDto.I18N_PREFIX);
-		for (AgeGroup ignored : AgeGroup.values()) {
-			entityNames.add(PopulationDataDto.I18N_PREFIX);
-			entityNames.add(PopulationDataDto.I18N_PREFIX);
-			entityNames.add(PopulationDataDto.I18N_PREFIX);
-			entityNames.add(PopulationDataDto.I18N_PREFIX);
-		}
-
-		List<String> captions = computeCaptions(columnNames, entityNames, PopulationDataDto.I18N_PREFIX);
-
-		Path filePath = Paths.get(getPopulationDataImportTemplateFilePath());
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(Paths.get(getPopulationDataImportTemplateFilePath()), importColumns, false);
 	}
 
 	private void createExportDirectoryIfNecessary() throws IOException {
@@ -355,17 +301,10 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		createExportDirectoryIfNecessary();
 
-		List<String> columnNames = new ArrayList<>();
-		List<String> entityNames = new ArrayList<>();
-		appendListOfFields(columnNames, entityNames, clazz, "");
+		List<ImportColumn> importColumns = new ArrayList<>();
+		appendListOfFields(importColumns, clazz, "");
 
-		List<String> captions = computeCaptions(columnNames, entityNames, i18nPrefix);
-
-		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(filePath.toString()), configFacade.getCsvSeparator())) {
-			writer.writeNext(columnNames.toArray(new String[0]));
-			writeCommentLine(writer, captions.toArray(new String[0]));
-			writer.flush();
-		}
+		writeTemplate(filePath, importColumns, false);
 	}
 
 	@Override
@@ -462,7 +401,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<String> columnNames, List<String> entityNames, Class<?> clazz, String prefix) {
+	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix) {
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
@@ -507,20 +446,16 @@ public class ImportFacadeEjb implements ImportFacade {
 			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
 			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
-					columnNames,
-					entityNames,
+					importColumns,
 					field.getType(),
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
-					columnNames,
-					entityNames,
+					importColumns,
 					PersonDto.class,
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
-				String className = DataHelper.getHumanClassName(clazz);
-				entityNames.add(className);
-				columnNames.add(prefix + field.getName());
+				importColumns.add(ImportColumn.from(clazz, prefix + field.getName()));
 			}
 		}
 	}
@@ -546,72 +481,14 @@ public class ImportFacadeEjb implements ImportFacade {
 		csvWriter.writeNext(commentedLine);
 	}
 
-	/**
-	 * Computes the captions based on the column name and entity name.
-	 *<p/>
-	 * Column name is composed (ex: <code>person.firstName</code> or <code>person.address.city</code>)<br/>
-	 * <ul>
-	 *     <li>Split it in parts and use the first part as entity name and last part as field name</li>
-	 *     <li>If an entity name exists for the same position in array as the column name -> combine the field name with the entity name</li>
-	 *     <li>If the entity name cannot be determined, use the first part as a prefix</li>
-	 * </ul>
-	 * <p/>
-	 * Column name is simple (ex: <code>diseaseDetails</code>)
-	 * <ul>
-	 *     <li>If an entity name exits for the same position in the array as the column name -> combine the column name with the entity name</li>
-	 *     <li>If the entity name cannot be determined, use the default prefix param</li>
-	 * </ul>
-	 * <p/>
-	 * The result is a list with the same length as the <code>columnNames</code>
-	 *
-	 * @param columnNames list of column names from the template
-	 * @param entityNames list of entity names for each column name
-	 * @param defaultI18nPrefix fallback prefix for column names if the <code>columnNames</code> and <code>entityNames</code> don't match
-	 * @return list of captions for each column name.
-	 */
-	private List<String> computeCaptions(List<String> columnNames, List<String> entityNames, String defaultI18nPrefix) {
-
-		boolean columnsMatch = CollectionUtils.isNotEmpty(entityNames) && columnNames.size() == entityNames.size();
-
-		return IntStream.range(0, columnNames.size())
-			.mapToObj(index -> {
-				String columnName = columnNames.get(index);
-				if(StringUtils.contains(columnName, ".")) {
-					String[] parts = columnName.split("\\.");
-					String prefix = parts[0];
-					String fieldName = parts[parts.length - 1];
-					if (columnsMatch) {
-						return I18nProperties.getPrefixCaption(entityNames.get(index), fieldName);
-					} else {
-						return I18nProperties.getPrefixCaption(prefix, fieldName);
-					}
-				} else {
-					if (columnsMatch) {
-						return I18nProperties.getPrefixCaption(entityNames.get(index), columnName);
-					} else {
-						return I18nProperties.getPrefixCaption(defaultI18nPrefix, columnName);
-					}
-				}
-			}).collect(Collectors.toList());
-	}
-
-	/**
-	 * Utility method used to synchronously remove the same column index from <code>columnName</code> and <code>entityNames</code>.
-	 *
-	 * @param columnNames list of column names
-	 * @param entityNames list of entity names
-	 * @param columns column names to remove
-	 */
-	private void removeColumnNames(List<String> columnNames, List<String> entityNames, String ... columns) {
-
-		if(ArrayUtils.isEmpty(columns)) {
-			return;
+	private void writeTemplate(Path templatePath, List<ImportColumn> importColumns, boolean includeEntityNames) throws IOException {
+		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(templatePath.toString()), configFacade.getCsvSeparator())) {
+			if (includeEntityNames) {
+				writer.writeNext(importColumns.stream().map(ImportColumn::getEntityName).toArray(String[]::new));
+			}
+			writer.writeNext(importColumns.stream().map(ImportColumn::getColumnName).toArray(String[]::new));
+			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getCaption).toArray(String[]::new));
+			writer.flush();
 		}
-
-		Arrays.stream(columns).mapToInt(columnNames::indexOf).forEach(index -> {
-			columnNames.remove(index);
-			entityNames.remove(index);
-		});
-
 	}
 }
