@@ -81,9 +81,10 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 		area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
-		if (!create) {
-			area.setEnabled(false);
-		}
+		// area can always be changed, as it's not directly use for data references of other entities (e.g. case)
+//		if (!create) {
+//			area.setEnabled(false);
+//		}
 	}
 
 	@Override

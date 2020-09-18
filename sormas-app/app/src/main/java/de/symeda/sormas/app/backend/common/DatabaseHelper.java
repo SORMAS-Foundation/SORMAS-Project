@@ -128,7 +128,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 224;
+	public static final int DATABASE_VERSION = 227;
 
 	private static DatabaseHelper instance = null;
 
@@ -1566,6 +1566,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN additionalInformation varchar(255);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN addressType varchar(255);");
 				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN addressTypeDetails varchar(255);");
+
+			case 224:
+				currentVersion = 224;
+				getDao(EventParticipant.class).executeRaw("ALTER TABLE eventParticipants ADD COLUMN reportingUser_id bigint REFERENCES users(id);");
+
+			case 225:
+				currentVersion = 225;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOfficialOrderSent SMALLINT DEFAULT 0;");
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN quarantineOfficialOrderSentDate timestamp;");
+				getDao(Case.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOfficialOrderSent SMALLINT DEFAULT 0;");
+				getDao(Case.class).executeRaw("ALTER TABLE contacts ADD COLUMN quarantineOfficialOrderSentDate timestamp;");
+
+			case 226:
+				currentVersion = 226;
+				// Re-synchronize persons to retrieve new addresses
+				getDao(Location.class).executeRaw("ALTER TABLE location ADD COLUMN person_id bigint REFERENCES person(id);");
+				getDao(Person.class).executeRaw("UPDATE person SET changeDate = 0 WHERE changeDate IS NOT NULL;");
+				getDao(Location.class).executeRaw("UPDATE location SET changeDate = 0 WHERE changeDate IS NOT NULL;");
 
 				// ATTENTION: break should only be done after last version
 				break;

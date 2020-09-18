@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.event;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
@@ -78,26 +77,13 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdateOutsideJurisdiction() {
 		EventDto event = createEvent(user1, rdcf1);
 
-		event.setEventDesc(null);
-		event.setSrcFirstName(null);
-		event.setSrcLastName(null);
-
-		event.getEventLocation().setStreet(null);
-		event.getEventLocation().setHouseNumber(null);
-		event.getEventLocation().setAdditionalInformation(null);
-		event.getEventLocation().setPostalCode(null);
+		event.setSurveillanceOfficer(null);
 
 		getEventFacade().saveEvent(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
-		assertThat(savedEvent.getEventDesc(), is("Test Description"));
-		assertThat(savedEvent.getSrcFirstName(), is("John"));
-		assertThat(savedEvent.getSrcLastName(), is("Smith"));
-		assertThat(savedEvent.getEventLocation().getStreet(), is("Test street"));
-		assertThat(savedEvent.getEventLocation().getHouseNumber(), is("Test number"));
-		assertThat(savedEvent.getEventLocation().getAdditionalInformation(), is("Test information"));
-		assertThat(savedEvent.getEventLocation().getPostalCode(), is("123456"));
+		assertThat(savedEvent.getSurveillanceOfficer().getUuid(), is(user1.getUuid()));
 	}
 
 	@Test
@@ -105,27 +91,12 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		EventDto event = createEvent(user2, rdcf2);
 
 		event.setPseudonymized(true);
-		event.setEventDesc(null);
-		event.setSrcFirstName(null);
-		event.setSrcLastName(null);
-
-		event.getEventLocation().setPseudonymized(true);
-		event.getEventLocation().setStreet(null);
-		event.getEventLocation().setHouseNumber(null);
-		event.getEventLocation().setAdditionalInformation(null);
-		event.getEventLocation().setPostalCode(null);
-
+		event.setSurveillanceOfficer(null);
 		getEventFacade().saveEvent(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
-		assertThat(savedEvent.getEventDesc(), is("Test Description"));
-		assertThat(savedEvent.getSrcFirstName(), is("John"));
-		assertThat(savedEvent.getSrcLastName(), is("Smith"));
-		assertThat(savedEvent.getEventLocation().getStreet(), is("Test street"));
-		assertThat(savedEvent.getEventLocation().getHouseNumber(), is("Test number"));
-		assertThat(savedEvent.getEventLocation().getAdditionalInformation(), is("Test information"));
-		assertThat(savedEvent.getEventLocation().getPostalCode(), is("123456"));
+		assertThat(savedEvent.getSurveillanceOfficer().getUuid(), is(user2.getUuid()));
 	}
 
 	@Test
@@ -141,59 +112,15 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
 		return creator.createEvent(EventStatus.SIGNAL, "Test Description", user.toReference(), e -> {
-			e.setSrcFirstName("John");
-			e.setSrcLastName("Smith");
-			e.setSrcTelNo("12345678");
-			e.setSrcEmail("test@email.com");
-
 			e.setSurveillanceOfficer(user.toReference());
-
-			e.setReportLat(46.432);
-			e.setReportLon(23.234);
-			e.setReportLatLonAccuracy(10F);
-
-			e.getEventLocation().setRegion(rdcf.region);
-			e.getEventLocation().setDistrict(rdcf.district);
-			e.getEventLocation().setCommunity(rdcf.community);
-			e.getEventLocation().setStreet("Test street");
-			e.getEventLocation().setHouseNumber("Test number");
-			e.getEventLocation().setAdditionalInformation("Test information");
-			e.getEventLocation().setPostalCode("123456");
-			e.getEventLocation().setDetails("Test address details");
 		});
 	}
 
 	private void assertNotPseudonymized(EventDto event) {
-		assertThat(event.getEventDesc(), is("Test Description"));
-		assertThat(event.getSrcFirstName(), is("John"));
-		assertThat(event.getSrcLastName(), is("Smith"));
-		assertThat(event.getSrcTelNo(), is("12345678"));
-		assertThat(event.getSrcEmail(), is("test@email.com"));
 		assertThat(event.getSurveillanceOfficer(), is(user2));
-		assertThat(event.getReportLat(), is(46.432));
-		assertThat(event.getReportLon(), is(23.234));
-		assertThat(event.getEventLocation().getCommunity(), is(rdcf2.community));
-		assertThat(event.getEventLocation().getStreet(), is("Test street"));
-		assertThat(event.getEventLocation().getHouseNumber(), is("Test number"));
-		assertThat(event.getEventLocation().getAdditionalInformation(), is("Test information"));
-		assertThat(event.getEventLocation().getPostalCode(), is("123456"));
-		assertThat(event.getEventLocation().getDetails(), is("Test address details"));
 	}
 
 	private void assertPseudonymized(EventDto event) {
-		assertThat(event.getEventDesc(), isEmptyString());
-		assertThat(event.getSrcFirstName(), isEmptyString());
-		assertThat(event.getSrcLastName(), isEmptyString());
-		assertThat(event.getSrcTelNo(), isEmptyString());
-		assertThat(event.getSrcEmail(), isEmptyString());
 		assertThat(event.getSurveillanceOfficer(), is(nullValue()));
-		assertThat(event.getReportLat(), is(nullValue()));
-		assertThat(event.getReportLon(), is(nullValue()));
-		assertThat(event.getEventLocation().getCommunity(), is(nullValue()));
-		assertThat(event.getEventLocation().getStreet(), isEmptyString());
-		assertThat(event.getEventLocation().getHouseNumber(), isEmptyString());
-		assertThat(event.getEventLocation().getAdditionalInformation(), isEmptyString());
-		assertThat(event.getEventLocation().getPostalCode(), is("123"));
-		assertThat(event.getEventLocation().getDetails(), isEmptyString());
 	}
 }

@@ -17,13 +17,16 @@ package de.symeda.sormas.app.event.eventparticipant.read;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
@@ -76,5 +79,23 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 	@Override
 	protected int getActivityTitle() {
 		return R.string.heading_person_involved;
+	}
+
+	@Override
+	protected void processActionbarMenu() {
+		super.processActionbarMenu();
+
+		final MenuItem editMenu = getEditMenu();
+
+		final EventParticipant selectedEventParticipant =
+			DatabaseHelper.getEventParticipantDao().getByReferenceDto(new EventParticipantReferenceDto(getRootUuid()));
+
+		if (editMenu != null) {
+			if (EventEditAuthorization.isEventParticipantEditAllowed(selectedEventParticipant)) {
+				editMenu.setVisible(true);
+			} else {
+				editMenu.setVisible(false);
+			}
+		}
 	}
 }

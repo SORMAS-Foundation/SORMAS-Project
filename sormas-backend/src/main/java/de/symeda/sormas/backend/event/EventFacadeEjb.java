@@ -42,6 +42,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -53,11 +54,9 @@ import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.contact.Contact;
@@ -135,16 +134,7 @@ public class EventFacadeEjb implements EventFacade {
 	@Override
 	public List<DashboardEventDto> getNewEventsForDashboard(EventCriteria eventCriteria) {
 
-		List<DashboardEventDto> dashboardEvents = eventService.getNewEventsForDashboard(eventCriteria);
-
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight);
-		pseudonymizer.pseudonymizeDtoCollection(
-			DashboardEventDto.class,
-			dashboardEvents,
-			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
-			null);
-
-		return dashboardEvents;
+		return eventService.getNewEventsForDashboard(eventCriteria);
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
@@ -226,9 +216,15 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -308,13 +304,6 @@ public class EventFacadeEjb implements EventFacade {
 			indexList = em.createQuery(cq).getResultList();
 		}
 
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventIndexDto.class,
-			indexList,
-			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
-			null);
-
 		return indexList;
 	}
 
@@ -328,10 +317,16 @@ public class EventFacadeEjb implements EventFacade {
 		Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
 		Join<Location, Community> community = location.join(Location.COMMUNITY, JoinType.LEFT);
 
+		Subquery<Integer> participantCount = cq.subquery(Integer.class);
+		Root<Event> participantCountRoot = participantCount.from(Event.class);
+		participantCount.where(cb.equal(participantCountRoot.get(AbstractDomainObject.ID), event.get(AbstractDomainObject.ID)));
+		participantCount.select(cb.size(participantCountRoot.get(Event.EVENT_PERSONS)));
+
 		cq.multiselect(
 			event.get(Event.UUID),
 			event.get(Event.EXTERNAL_ID),
 			event.get(Event.EVENT_STATUS),
+			participantCount,
 			event.get(Event.DISEASE),
 			event.get(Event.DISEASE_DETAILS),
 			event.get(Event.START_DATE),
@@ -377,13 +372,6 @@ public class EventFacadeEjb implements EventFacade {
 		} else {
 			exportList = em.createQuery(cq).getResultList();
 		}
-
-		Pseudonymizer pseudonymizer = new Pseudonymizer(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(
-			EventExportDto.class,
-			exportList,
-			e -> eventJurisdictionChecker.isInJurisdictionOrOwned(e.getJurisdiction()),
-			null);
 
 		return exportList;
 	}
@@ -491,7 +479,6 @@ public class EventFacadeEjb implements EventFacade {
 			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(event);
 
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
-				pseudonymizer.pseudonymizeDto(LocationDto.class, dto.getEventLocation(), inJurisdiction, null);
 				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
 			});
 		}
@@ -501,7 +488,6 @@ public class EventFacadeEjb implements EventFacade {
 		if (existingDto != null) {
 			boolean inJurisdiction = eventJurisdictionChecker.isInJurisdictionOrOwned(existingEvent);
 			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
-			pseudonymizer.restorePseudonymizedValues(LocationDto.class, dto.getEventLocation(), existingDto.getEventLocation(), inJurisdiction);
 			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
 		}
 	}

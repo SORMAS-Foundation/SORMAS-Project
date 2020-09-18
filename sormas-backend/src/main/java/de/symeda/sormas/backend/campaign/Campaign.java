@@ -1,8 +1,11 @@
 package de.symeda.sormas.backend.campaign;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "campaigns")
 @Audited
@@ -33,6 +37,7 @@ public class Campaign extends CoreAdo {
 	private Date endDate;
 	private User creatingUser;
 	private boolean archived;
+	private List<CampaignDashboardElement> dashboardElements;
 
 	@Column(length = 255)
 	public String getName() {
@@ -92,5 +97,16 @@ public class Campaign extends CoreAdo {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@AuditedIgnore
+	@Type(type = "json")
+	@Column(columnDefinition = "json")
+	public List<CampaignDashboardElement> getDashboardElements() {
+		return dashboardElements;
+	}
+
+	public void setDashboardElements(List<CampaignDashboardElement> dashboardElements) {
+		this.dashboardElements = dashboardElements;
 	}
 }

@@ -26,6 +26,7 @@
 
     <data>
         <import type="de.symeda.sormas.app.component.controls.ControlButtonType" />
+        <import type="de.symeda.sormas.api.person.PersonAddressType" />
 
         <variable name="data" type="de.symeda.sormas.app.backend.location.Location" />
     </data>
@@ -42,6 +43,21 @@
             android:paddingLeft="@dimen/rowListItemHorizontalMargin"
             android:paddingRight="@dimen/rowListItemHorizontalMargin"
             android:id="@+id/main_content">
+
+            <de.symeda.sormas.app.component.controls.ControlSpinnerField
+                android:id="@+id/location_addressType"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="gone"
+                app:required="true"
+                app:value="@={data.addressType}" />
+
+            <de.symeda.sormas.app.component.controls.ControlTextEditField
+                android:id="@+id/location_addressTypeDetails"
+                style="@style/ControlSingleColumnStyle"
+                android:visibility="gone"
+                app:value="@={data.addressTypeDetails}"
+                app:dependencyParentField="@{locationAddressType}"
+                app:dependencyParentValue="@{PersonAddressType.OTHER_ADDRESS}" />
 
             <de.symeda.sormas.app.component.controls.ControlSpinnerField
                 android:id="@+id/location_region"

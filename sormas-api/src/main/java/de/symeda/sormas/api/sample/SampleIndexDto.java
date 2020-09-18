@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.sample;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseJurisdictionDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -35,6 +32,9 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
+
+import java.io.Serializable;
+import java.util.Date;
 
 public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, Serializable {
 
@@ -106,12 +106,11 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 						  String associatedContactUuid, String associatedContactFirstName, String associatedContactLastName,
 						  String associatedEventParticipantUuid, String associatedEventParticipantFirstName, String associatedEventParticipantLastName,
 						  Disease disease, String diseaseDetails, PathogenTestResultType pathogenTestResult, Boolean additionalTestingRequested, Boolean additionalTestPerformed,
-						  String caseDistrictName, String contactDistrictName, String contactCaseDistrictName,
-						  String reportingUserUuid, String labUuid,
+						  String districtName, String reportingUserUuid, String labUuid,
 						  String caseReportingUserUuid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						  String contactReportingUserUuid, String contactRegionUuid, String contactDistrictUuid, String contactCommunityUuid,
 						  String contactCaseReportingUserUuid, String contactCaseRegionUuid, String contactCaseDistrictUuid, 
-						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, String eventDistrictName,
+						  String contactCaseCommunityUuid, String contactCaseHealthFacilityUuid, String contactCasePointOfEntryUuid, 
 						  String eventReportingUserUuid, String eventOfficerUuid, String eventRegionUuid, String eventDistrictUuid, String eventCommunityUuid) {
 	//@formatter:on
 
@@ -133,15 +132,7 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 		this.labSampleID = labSampleId;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
-		this.district = createDistrictReference(
-			caseDistrictName,
-			contactDistrictName,
-			contactCaseDistrictName,
-			eventDistrictName,
-			caseDistrictUuid,
-			contactDistrictUuid,
-			contactCaseDistrictUuid,
-			eventDistrictUuid);
+		this.district = createDistrictReference(districtName, caseDistrictUuid, contactDistrictUuid, contactCaseDistrictUuid, eventDistrictUuid);
 		this.shipped = shipped;
 		this.received = received;
 		this.referred = referredSampleUuid != null;
@@ -179,13 +170,12 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 					contactCaseCommunityUuid,
 					contactCaseHealthFacilityUuid,
 					contactCasePointOfEntryUuid);
-			associatedContactJurisdiction =
-				new ContactJurisdictionDto(
-					contactReportingUserUuid,
-					contactRegionUuid,
-					contactDistrictUuid,
-					contactCommunityUuid,
-					contactCaseJurisdiction);
+			associatedContactJurisdiction = new ContactJurisdictionDto(
+				contactReportingUserUuid,
+				contactRegionUuid,
+				contactDistrictUuid,
+				contactCommunityUuid,
+				contactCaseJurisdiction);
 		}
 
 		EventJurisdictionDto eventJurisdiction = null;
@@ -199,10 +189,7 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 	}
 
 	private DistrictReferenceDto createDistrictReference(
-		String caseDistrictName,
-		String contactDistrictName,
-		String contactCaseDistrictName,
-		String eventDistrictName,
+		String districtName,
 		String caseDistrictUuid,
 		String contactDistrictUuid,
 		String contactCaseDistrictUuid,
@@ -210,13 +197,13 @@ public class SampleIndexDto implements WithJurisdiction<SampleJurisdictionDto>, 
 
 		DistrictReferenceDto ref = null;
 		if (caseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(caseDistrictUuid, caseDistrictName);
+			ref = new DistrictReferenceDto(caseDistrictUuid, districtName);
 		} else if (contactDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactDistrictUuid, contactDistrictName);
+			ref = new DistrictReferenceDto(contactDistrictUuid, districtName);
 		} else if (contactCaseDistrictUuid != null) {
-			ref = new DistrictReferenceDto(contactCaseDistrictUuid, contactCaseDistrictName);
+			ref = new DistrictReferenceDto(contactCaseDistrictUuid, districtName);
 		} else if (eventDistrictUuid != null) {
-			ref = new DistrictReferenceDto(eventDistrictUuid, eventDistrictName);
+			ref = new DistrictReferenceDto(eventDistrictUuid, districtName);
 		}
 
 		return ref;

@@ -16,10 +16,13 @@
 package de.symeda.sormas.app.backend.location;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.j256.ormlite.dao.Dao;
 
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.epidata.EpiDataBurial;
+import de.symeda.sormas.app.backend.person.Person;
 
 /**
  * Created by Martin Wahnschaffe on 22.07.2016.
@@ -28,6 +31,13 @@ public class LocationDao extends AbstractAdoDao<Location> {
 
 	public LocationDao(Dao<Location, Long> innerDao) throws SQLException {
 		super(innerDao);
+	}
+
+	public List<Location> getByPerson(Person person) {
+		if (person.isSnapshot()) {
+			return querySnapshotsForEq(Location.PERSON + "_id", person, Location.CHANGE_DATE, false);
+		}
+		return queryForEq(Location.PERSON + "_id", person, Location.CHANGE_DATE, false);
 	}
 
 	@Override

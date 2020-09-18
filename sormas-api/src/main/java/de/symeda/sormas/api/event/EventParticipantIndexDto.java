@@ -9,7 +9,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdictionDto>, Serializable {
+public class EventParticipantIndexDto implements WithJurisdiction<EventParticipantJurisdictionDto>, Serializable {
 
 	private static final long serialVersionUID = 1136399297437006739L;
 
@@ -19,7 +19,8 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 	public static final String PERSON_UUID = "personUuid";
 	public static final String CASE_UUID = "caseUuid";
 	public static final String EVENT_UUID = "eventUuid";
-	public static final String NAME = "name";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
 	public static final String SEX = "sex";
 	public static final String APPROXIMATE_AGE = "approximateAge";
 	public static final String INVOLVEMENT_DESCRIPTION = "involvementDescription";
@@ -30,13 +31,15 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 	private String eventUuid;
 	@PersonalData
 	@SensitiveData
-	private String name;
+	private String firstName;
+	@SensitiveData
+	private String lastName;
 	private Sex sex;
 	private String approximateAge;
 	@SensitiveData
 	private String involvementDescription;
 
-	private EventJurisdictionDto eventJurisdiction;
+	private EventParticipantJurisdictionDto eventJurisdiction;
 
 	public EventParticipantIndexDto(
 		String uuid,
@@ -49,23 +52,19 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 		Integer approximateAge,
 		ApproximateAgeType approximateAgeType,
 		String involvementDescription,
-		String eventReportingUserUuid,
-		String eventSurveillanceOfficerUuid,
-		String eventRegionUuid,
-		String eventDsitrictUuid,
-		String eventCommunityUuid) {
+		String reportingUserUuid) {
 
 		this.uuid = uuid;
 		this.personUuid = personUuid;
 		this.caseUuid = caseUuid;
 		this.eventUuid = eventUuid;
-		this.name = firstName + " " + lastName;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.sex = sex;
 		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
 		this.involvementDescription = involvementDescription;
 
-		this.eventJurisdiction =
-			new EventJurisdictionDto(eventReportingUserUuid, eventSurveillanceOfficerUuid, eventRegionUuid, eventDsitrictUuid, eventCommunityUuid);
+		this.eventJurisdiction = new EventParticipantJurisdictionDto(reportingUserUuid);
 	}
 
 	public String getUuid() {
@@ -100,12 +99,20 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 		this.eventUuid = eventUuid;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public Sex getSex() {
@@ -133,7 +140,7 @@ public class EventParticipantIndexDto implements WithJurisdiction<EventJurisdict
 	}
 
 	@Override
-	public EventJurisdictionDto getJurisdiction() {
+	public EventParticipantJurisdictionDto getJurisdiction() {
 		return eventJurisdiction;
 	}
 }

@@ -105,7 +105,8 @@ public class EventGrid extends FilteredGrid<EventIndexDto, EventCriteria> {
 			EventIndexDto.SRC_TYPE,
 			INFORMATION_SOURCE,
 			EventIndexDto.REPORT_DATE_TIME,
-			NUMBER_OF_PENDING_TASKS);
+			NUMBER_OF_PENDING_TASKS,
+			EventIndexDto.PARTICIPANT_COUNT);
 
 		((Column<EventIndexDto, String>) getColumn(EventIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventIndexDto, Date>) getColumn(EventIndexDto.REPORT_DATE_TIME))
