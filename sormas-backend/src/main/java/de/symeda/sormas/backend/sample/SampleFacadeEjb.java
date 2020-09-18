@@ -259,11 +259,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<SampleIndexDto> cq = cb.createQuery(SampleIndexDto.class);
 		final Root<Sample> sample = cq.from(Sample.class);
 
-		@SuppressWarnings({
-			"unchecked",
-			"rawtypes" })
-		final QueryContext qc = new QueryContext(cb, cq, sample);
-
 		SampleJoins joins = new SampleJoins(sample);
 
 		final Join<Sample, Case> caze = joins.getCaze();
@@ -284,14 +279,16 @@ public class SampleFacadeEjb implements SampleFacade {
 			.otherwise(cb.selectCase().when(cb.isNotNull(contact), contact.get(Contact.DISEASE_DETAILS)).otherwise(event.get(Event.DISEASE_DETAILS)));
 
 		Expression<Object> districtSelect = cb.selectCase()
-			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.UUID))
+			.when(cb.isNotNull(caseDistrict), caseDistrict.get(District.NAME))
 			.otherwise(
 				cb.selectCase()
-					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.UUID))
+					.when(cb.isNotNull(contactDistrict), contactDistrict.get(District.NAME))
 					.otherwise(
 						cb.selectCase()
-							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.UUID))
-							.otherwise(eventDistrict.get(District.UUID))));
+							.when(cb.isNotNull(contactCaseDistrict), contactCaseDistrict.get(District.NAME))
+							.otherwise(eventDistrict.get(District.NAME))));
+
+		cq.distinct(true);
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -322,18 +319,14 @@ public class SampleFacadeEjb implements SampleFacade {
 				sample.get(Sample.PATHOGEN_TEST_RESULT),
 				sample.get(Sample.ADDITIONAL_TESTING_REQUESTED),
 				cb.isNotEmpty(sample.get(Sample.ADDITIONAL_TESTS)),
-				joins.getCaseDistrict().get(Region.NAME),
-				joins.getContactDistrict().get(Region.NAME),
-				joins.getContactCaseDistrict().get(Region.NAME),
+				districtSelect,
 				joins.getReportingUser().get(User.UUID),
 				joins.getLab().get(Facility.UUID)));
 		selections.addAll(getCaseJurisdictionSelections(joins));
 		selections.addAll(getContactJurisdictionSelections(joins));
-		selections.add(joins.getEventDistrict().get(District.NAME));
 		selections.addAll(getEventJurisdictionSelections(joins));
 
 		cq.multiselect(selections);
-		cq.distinct(true);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins);
 
