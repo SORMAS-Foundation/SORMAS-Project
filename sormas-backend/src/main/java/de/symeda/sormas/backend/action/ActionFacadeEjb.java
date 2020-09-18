@@ -76,6 +76,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setReplyingUser(userService.getByReferenceDto(source.getReplyingUser()));
 		target.setReply(source.getReply());
 		target.setCreatorUser(userService.getByReferenceDto(source.getCreatorUser()));
+		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
@@ -116,6 +117,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setUuid(source.getUuid());
 
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
+		target.setTitle(source.getTitle());
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
 		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
