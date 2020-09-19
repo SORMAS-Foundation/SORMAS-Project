@@ -113,8 +113,8 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		TextField textFieldPhone = new TextField(I18nProperties.getCaption(Captions.contactPersonPhoneNumber));
 		textFieldPhone.setWidth(100, Unit.PERCENTAGE);
-		String phoneNumber =  (this.person.getPhone() == null) ? "" : this.person.getPhone();
-		textFieldPhone.setValue(phoneNumber);
+		textFieldPhone.setValue(this.person.getPhone());
+		textFieldPhone.setNullRepresentation("");
 		textFieldPhone.setReadOnly(true);
 		getContent().addComponent(textFieldPhone, CONTACT_PERSON_PHONE_NUMBER_LOC);
 
