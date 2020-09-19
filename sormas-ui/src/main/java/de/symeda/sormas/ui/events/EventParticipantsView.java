@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import org.vaadin.hene.popupbutton.PopupButton;
+
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -27,13 +30,17 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
+import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 
@@ -67,14 +74,47 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.setSpacing(true);
 		topLayout.setWidth("100%");
 
+		VerticalLayout exportLayout = new VerticalLayout();
+		{
+			exportLayout.setSpacing(true);
+			exportLayout.setMargin(true);
+			exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+			exportLayout.setWidth(250, Unit.PIXELS);
+		}
+
+		PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+		addHeaderComponent(exportPopupButton);
+
+		{
+			StreamResource streamResource =
+				new GridExportStreamResource(grid, "sormas_eventParticipants", createFileNameWithCurrentDate("sormas_eventParticipants_", ".csv"));
+			addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.exportBasic, Strings.infoBasicExport);
+		}
+
+		{
+			StreamResource extendedExportStreamResource =
+				EventParticipantDownloadUtil.createExtendedEventParticipantExportResource(grid.getCriteria());
+
+			addExportButton(
+				extendedExportStreamResource,
+				exportPopupButton,
+				exportLayout,
+				VaadinIcons.FILE_TEXT,
+				Captions.exportDetailed,
+				Descriptions.descDetailedExportButton);
+		}
+
 		filterForm = new EventParticipantsFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			navigateTo(criteria);
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
+			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
+		filterForm.addApplyHandler(e -> navigateTo(criteria));
 
 		topLayout.addComponent(filterForm);
 

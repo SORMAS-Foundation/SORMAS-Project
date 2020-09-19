@@ -17,11 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
@@ -50,7 +45,6 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -58,6 +52,11 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A DTO class that contains the properties that are exported during a detailed case export. These
@@ -186,10 +185,10 @@ public class CaseExportDto implements Serializable {
 	private int numberOfPrescriptions;
 	private int numberOfTreatments;
 	private int numberOfClinicalVisits;
-	private CaseExportSampleDto sample1 = new CaseExportSampleDto();
-	private CaseExportSampleDto sample2 = new CaseExportSampleDto();
-	private CaseExportSampleDto sample3 = new CaseExportSampleDto();
-	private List<CaseExportSampleDto> otherSamples = new ArrayList<>();
+	private EmbeddedSampleExportDto sample1 = new EmbeddedSampleExportDto();
+	private EmbeddedSampleExportDto sample2 = new EmbeddedSampleExportDto();
+	private EmbeddedSampleExportDto sample3 = new EmbeddedSampleExportDto();
+	private List<EmbeddedSampleExportDto> otherSamples = new ArrayList<>();
 
 	private QuarantineType quarantine;
 	@SensitiveData
@@ -202,6 +201,8 @@ public class CaseExportDto implements Serializable {
 	private Date quarantineOrderedVerballyDate;
 	private Date quarantineOrderedOfficialDocumentDate;
 	private boolean quarantineExtended;
+	private boolean quarantineOfficialOrderSent;
+	private Date quarantineOfficialOrderSentDate;
 
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
@@ -230,6 +231,7 @@ public class CaseExportDto implements Serializable {
 						 QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
 						 boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate,
 						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended,
+						 boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
 						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
 						 String addressRegion, String addressDistrict, String city, String street, String houseNumber, String additionalInformation, String postalCode,
@@ -277,6 +279,8 @@ public class CaseExportDto implements Serializable {
 		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
 		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
 		this.quarantineExtended = quarantineExtended;
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility, healthFacilityDetails);
 		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry, pointOfEntryDetails);
 		this.admittedToHealthFacility = admittedToHealthFacility;
@@ -633,7 +637,9 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	public boolean isQuarantineOrderedVerbally() {
 		return quarantineOrderedVerbally;
 	}
@@ -644,7 +650,9 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	public boolean isQuarantineOrderedOfficialDocument() {
 		return quarantineOrderedOfficialDocument;
 	}
@@ -655,7 +663,9 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	public Date getQuarantineOrderedVerballyDate() {
 		return quarantineOrderedVerballyDate;
 	}
@@ -666,7 +676,9 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
 	public Date getQuarantineOrderedOfficialDocumentDate() {
 		return quarantineOrderedOfficialDocumentDate;
 	}
@@ -677,11 +689,37 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public boolean isQuarantineOfficialOrderSent() {
+		return quarantineOfficialOrderSent;
+	}
+
+	@Order(42)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	@HideForCountriesExcept(countries = {
+		"de",
+		"ch" })
+	public Date getQuarantineOfficialOrderSentDate() {
+		return quarantineOfficialOrderSentDate;
+	}
+
+	@Order(43)
+	@ExportTarget(caseExportTypes = {
+		CaseExportType.CASE_SURVEILLANCE,
+		CaseExportType.CASE_MANAGEMENT })
+	@ExportProperty(value = QUARANTINE_INFORMATION, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public boolean isQuarantineExtended() {
 		return quarantineExtended;
 	}
 
-	@Order(42)
+	@Order(44)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(MAX_SOURCE_CASE_CLASSIFICATION)
@@ -690,7 +728,7 @@ public class CaseExportDto implements Serializable {
 		return maxSourceCaseClassification;
 	}
 
-	@Order(43)
+	@Order(45)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(ASSOCIATED_WITH_OUTBREAK)
@@ -703,7 +741,7 @@ public class CaseExportDto implements Serializable {
 		this.maxSourceCaseClassification = maxSourceCaseClassification;
 	}
 
-	@Order(44)
+	@Order(46)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -713,7 +751,7 @@ public class CaseExportDto implements Serializable {
 		return admittedToHealthFacility;
 	}
 
-	@Order(45)
+	@Order(47)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -723,7 +761,7 @@ public class CaseExportDto implements Serializable {
 		return admissionDate;
 	}
 
-	@Order(46)
+	@Order(48)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -737,7 +775,7 @@ public class CaseExportDto implements Serializable {
 		this.dischargeDate = dischargeDate;
 	}
 
-	@Order(47)
+	@Order(49)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
@@ -1065,7 +1103,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime1() {
-		return sample1.dateTime;
+		return sample1.getDateTime();
 	}
 
 	@Order(121)
@@ -1074,7 +1112,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab1() {
-		return sample1.lab;
+		return sample1.getLab();
 	}
 
 	@Order(122)
@@ -1083,7 +1121,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult1() {
-		return sample1.result;
+		return sample1.getResult();
 	}
 
 	@Order(123)
@@ -1092,7 +1130,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime2() {
-		return sample2.dateTime;
+		return sample2.getDateTime();
 	}
 
 	@Order(124)
@@ -1101,7 +1139,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab2() {
-		return sample2.lab;
+		return sample2.getLab();
 	}
 
 	@Order(125)
@@ -1110,7 +1148,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult2() {
-		return sample2.result;
+		return sample2.getResult();
 	}
 
 	@Order(126)
@@ -1119,7 +1157,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public Date getSampleDateTime3() {
-		return sample3.dateTime;
+		return sample3.getDateTime();
 	}
 
 	@Order(127)
@@ -1128,7 +1166,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSampleLab3() {
-		return sample3.lab;
+		return sample3.getLab();
 	}
 
 	@Order(128)
@@ -1137,7 +1175,7 @@ public class CaseExportDto implements Serializable {
 	@ExportProperty(value = SAMPLE_INFORMATION, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public PathogenTestResultType getSampleResult3() {
-		return sample3.result;
+		return sample3.getResult();
 	}
 
 	@Order(130)
@@ -1149,7 +1187,7 @@ public class CaseExportDto implements Serializable {
 		StringBuilder samples = new StringBuilder();
 		String separator = ", ";
 
-		for (CaseExportSampleDto sample : otherSamples) {
+		for (EmbeddedSampleExportDto sample : otherSamples) {
 			samples.append(sample.formatString()).append(separator);
 		}
 
@@ -1418,69 +1456,40 @@ public class CaseExportDto implements Serializable {
 		this.numberOfClinicalVisits = numberOfClinicalVisits;
 	}
 
-	public CaseExportSampleDto getSample1() {
+	public EmbeddedSampleExportDto getSample1() {
 		return sample1;
 	}
 
-	public void setSample1(CaseExportSampleDto sample1) {
+	public void setSample1(EmbeddedSampleExportDto sample1) {
 		this.sample1 = sample1;
 	}
 
-	public CaseExportSampleDto getSample2() {
+	public EmbeddedSampleExportDto getSample2() {
 		return sample2;
 	}
 
-	public void setSample2(CaseExportSampleDto sample2) {
+	public void setSample2(EmbeddedSampleExportDto sample2) {
 		this.sample2 = sample2;
 	}
 
-	public CaseExportSampleDto getSample3() {
+	public EmbeddedSampleExportDto getSample3() {
 		return sample3;
 	}
 
-	public void setSample3(CaseExportSampleDto sample3) {
+	public void setSample3(EmbeddedSampleExportDto sample3) {
 		this.sample3 = sample3;
 	}
 
-	public List<CaseExportSampleDto> getOtherSamples() {
+	public List<EmbeddedSampleExportDto> getOtherSamples() {
 		return otherSamples;
 	}
 
-	public void addOtherSample(CaseExportSampleDto otherSample) {
+	public void addOtherSample(EmbeddedSampleExportDto otherSample) {
 		this.otherSamples.add(otherSample);
 	}
 
 	public CaseJurisdictionDto getJurisdiction() {
 		return jurisdiction;
-	}
-
-	public static class CaseExportSampleDto implements Serializable {
-
-		private Date dateTime;
-		@SensitiveData
-		private String lab;
-		private PathogenTestResultType result;
-
-		public CaseExportSampleDto() {
-		}
-
-		public CaseExportSampleDto(Date dateTime, String lab, PathogenTestResultType result) {
-			this.dateTime = dateTime;
-			this.lab = lab;
-			this.result = result;
-		}
-
-		public String formatString() {
-			StringBuilder sb = new StringBuilder();
-
-			sb.append(DateHelper.formatDateForExport(dateTime)).append(" (");
-			if (lab != null && lab.length() > 0) {
-				sb.append(lab).append(", ");
-			}
-			sb.append(result).append(")");
-
-			return sb.toString();
-		}
 	}
 
 	public void setFollowUpStatus(FollowUpStatus followUpStatus) {

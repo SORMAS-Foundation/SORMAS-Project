@@ -471,7 +471,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			I18nProperties.getString(Strings.infoCaseDate),
 			NewCaseDateType.class,
 			I18nProperties.getString(Strings.promptNewCaseDateType),
-			null);
+			null,
+			this);
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesEpiWeekTo));
 		weekAndDateFilter.getDateFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptCasesDateFrom));
@@ -495,7 +496,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				criteria.newCaseDateBetween(fromDate, toDate, newCaseDateType != null ? newCaseDateType : NewCaseDateType.MOST_RELEVANT);
 				criteria.dateFilterOption(dateFilterOption);
 
-				fireValueChange(true);
+				((Button) getContent().getComponent(APPLY_BUTTON_ID)).click();
 			} else {
 				if (dateFilterOption == DateFilterOption.DATE) {
 					Notification notification = new Notification(

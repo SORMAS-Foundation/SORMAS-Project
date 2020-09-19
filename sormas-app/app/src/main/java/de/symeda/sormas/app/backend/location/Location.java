@@ -32,7 +32,9 @@ import de.symeda.sormas.api.location.AreaType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
+import de.symeda.sormas.app.backend.common.JoinTableReference;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
+import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
@@ -47,6 +49,7 @@ public class Location extends PseudonymizableAdo {
 	public static final String TABLE_NAME = "location";
 	public static final String I18N_PREFIX = "Location";
 	public static final String COMMUNITY = "community";
+	public static final String PERSON = "person";
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String details;
@@ -81,6 +84,14 @@ public class Location extends PseudonymizableAdo {
 	private PersonAddressType addressType;
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String addressTypeDetails;
+
+	/**
+	 * Dirty fix for person-location association; doing this with a JoinTable is not
+	 * easy in SQLite; only locations that are part of the addresses field of a person
+	 * have this association.
+	 */
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Person person;
 
 	@Bindable
 	public String getDetails() {
@@ -197,6 +208,15 @@ public class Location extends PseudonymizableAdo {
 
 	public void setAddressTypeDetails(String addressTypeDetails) {
 		this.addressTypeDetails = addressTypeDetails;
+	}
+
+	@JoinTableReference
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public String getCompleteString() {
@@ -326,4 +346,5 @@ public class Location extends PseudonymizableAdo {
 	public void setLatLonAccuracy(Float latLonAccuracy) {
 		this.latLonAccuracy = latLonAccuracy;
 	}
+
 }
