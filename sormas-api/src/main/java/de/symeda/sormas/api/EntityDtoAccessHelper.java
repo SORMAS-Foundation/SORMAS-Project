@@ -1,5 +1,7 @@
 package de.symeda.sormas.api;
 
+import de.symeda.sormas.api.utils.DataHelper;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -64,6 +66,10 @@ public class EntityDtoAccessHelper {
 			}
 		}
 		return currentEntity;
+	}
+
+	public static String getPropertyPathValueString(HasUuid entity, String propertyPath, IReferenceDtoResolver referenceDtoResolver) {
+		return DataHelper.valueToString(getPropertyPathValue(entity, propertyPath, referenceDtoResolver));
 	}
 
 	public interface IReferenceDtoResolver {

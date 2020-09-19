@@ -17,28 +17,23 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.BirthDateDto;
+import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.Sex;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 public final class DataHelper {
 
@@ -330,6 +325,42 @@ public final class DataHelper {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+
+	public static String valueToString(Object value) {
+		Language userLanguage = I18nProperties.getUserLanguage();
+		if (value == null) {
+			return "";
+		} else if (value instanceof Date) {
+			return DateFormatHelper.formatDate((Date) value);
+		} else if (value.getClass().equals(boolean.class) || value.getClass().equals(Boolean.class)) {
+			return DataHelper.parseBoolean((Boolean) value);
+		} else if (value instanceof Set) {
+			StringBuilder sb = new StringBuilder();
+			for (Object o : (Set<?>) value) {
+				if (sb.length() != 0) {
+					sb.append(", ");
+				}
+				sb.append(o);
+			}
+			return sb.toString();
+		} else if (value instanceof BurialInfoDto) {
+			return PersonHelper.buildBurialInfoString((BurialInfoDto) value, userLanguage);
+		} else if (value instanceof AgeAndBirthDateDto) {
+			AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
+			return PersonHelper.getAgeAndBirthdateString(
+				ageAndBirthDate.getAge(),
+				ageAndBirthDate.getAgeType(),
+				ageAndBirthDate.getBirthdateDD(),
+				ageAndBirthDate.getBirthdateMM(),
+				ageAndBirthDate.getBirthdateYYYY(),
+				userLanguage);
+		} else if (value instanceof BirthDateDto) {
+			BirthDateDto birthDate = (BirthDateDto) value;
+			return PersonHelper.formatBirthdate(birthDate.getBirthdateDD(), birthDate.getBirthdateMM(), birthDate.getBirthdateYYYY(), userLanguage);
+		} else {
+			return value.toString();
 		}
 	}
 }

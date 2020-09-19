@@ -1,19 +1,21 @@
 package de.symeda.sormas.api;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import de.symeda.sormas.api.EntityDtoAccessHelper.CachedReferenceDtoResolver;
 import de.symeda.sormas.api.EntityDtoAccessHelper.IReferenceDtoResolver;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public class EntityDtoAccessHelperTest {
 
@@ -21,6 +23,7 @@ public class EntityDtoAccessHelperTest {
 	private HospitalizationDto hospitalizationDto;
 	private PersonReferenceDto personReferenceDto;
 	private PersonDto personDto;
+	private IReferenceDtoResolver referenceDtoResolver;
 
 	@Before
 	public void setup() {
@@ -30,6 +33,7 @@ public class EntityDtoAccessHelperTest {
 
 		hospitalizationDto = new HospitalizationDto();
 		hospitalizationDto.setDischargeDate(new Date(1600387200000L));
+		hospitalizationDto.setIsolated(YesNoUnknown.NO);
 
 		personReferenceDto = new PersonReferenceDto();
 		personReferenceDto.setUuid("GHIJKL");
@@ -38,6 +42,17 @@ public class EntityDtoAccessHelperTest {
 		personDto.setUuid("GHIJKL");
 		personDto.setFirstName("Tenzing");
 		personDto.setLastName("Mike");
+
+		referenceDtoResolver = new IReferenceDtoResolver() {
+
+			@Override
+			public EntityDto resolve(ReferenceDto referenceDto) {
+				if (referenceDto != null && "GHIJKL".equals(referenceDto.getUuid())) {
+					return personDto;
+				}
+				return null;
+			}
+		};
 	}
 
 	@Test
@@ -73,7 +88,7 @@ public class EntityDtoAccessHelperTest {
 
 	@Test
 	public void readReferencedEntityDto() {
-		EntityDtoAccessHelper.IReferenceDtoResolver referenceDtoResolver = new EntityDtoAccessHelper.IReferenceDtoResolver() {
+		IReferenceDtoResolver referenceDtoResolver = new EntityDtoAccessHelper.IReferenceDtoResolver() {
 
 			@Override
 			public EntityDto resolve(ReferenceDto referenceDto) {
@@ -99,5 +114,16 @@ public class EntityDtoAccessHelperTest {
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", cachedReferenceDtoResolver));
 		verify(mockResolver, times(1)).resolve(personReferenceDto);
+	}
+
+	@Test
+	public void readPropertyValuesString() {
+		caseDataDto.setPerson(personReferenceDto);
+		caseDataDto.setHospitalization(hospitalizationDto);
+		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "person.firstName", referenceDtoResolver));
+		assertEquals("No", EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.isolated", referenceDtoResolver));
+		assertEquals(
+			"9/18/2020",
+			EntityDtoAccessHelper.getPropertyPathValueString(caseDataDto, "hospitalization.dischargeDate", referenceDtoResolver));
 	}
 }
