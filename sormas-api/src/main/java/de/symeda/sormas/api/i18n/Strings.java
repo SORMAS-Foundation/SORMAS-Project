@@ -180,6 +180,8 @@ public interface Strings {
 	String headingCasesDearchived = "headingCasesDearchived";
 	String headingCasesDeleted = "headingCasesDeleted";
 	String headingCasesGuide = "headingCasesGuide";
+	String headingCasesInQuarantine = "headingCasesInQuarantine";
+	String headingCasesPlacedInQuarantine = "headingCasesPlacedInQuarantine";
 	String headingCaseStatusMap = "headingCaseStatusMap";
 	String headingChangeCaseDisease = "headingChangeCaseDisease";
 	String headingChangePathogenTestResult = "headingChangePathogenTestResult";
@@ -199,8 +201,11 @@ public interface Strings {
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
 	String headingContactMap = "headingContactMap";
+	String headingContactsConvertedToCase = "headingContactsConvertedToCase";
 	String headingContactsDeleted = "headingContactsDeleted";
+	String headingContactsInQuarantine = "headingContactsInQuarantine";
 	String headingContactsPerCase = "headingContactsPerCase";
+	String headingContactsPlacedInQuarantine = "headingContactsPlacedInQuarantine";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateCampaignDataForm = "headingCreateCampaignDataForm";
 	String headingCreateEntry = "headingCreateEntry";
@@ -334,6 +339,7 @@ public interface Strings {
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
+	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
