@@ -51,8 +51,9 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
 
+
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -254,6 +255,12 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal sampleTestFacade;
+	@EJB
+	private EpiDataFacadeEjbLocal epiDataFacade;
+	@EJB
+	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -1469,36 +1476,35 @@ public class ContactFacadeEjb implements ContactFacade {
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr2 = cb.concat(nameSimilarityExpr2, person2.get(Person.LAST_NAME));
-		Predicate nameSimilarityFilter = cb.gt(
-				cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2),
-				FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
+		Predicate nameSimilarityFilter =
+			cb.gt(cb.function("similarity", double.class, nameSimilarityExpr, nameSimilarityExpr2), configFacade.getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
 		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
-		Predicate cazeFilter = cb.equal(root.get(Contact.CAZE),root2.get(Contact.CAZE));
+		Predicate cazeFilter = cb.equal(root.get(Contact.CAZE), root2.get(Contact.CAZE));
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
-				cb.abs(
-						cb.diff(
-								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
-								cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
-				new Long(30 * 24 * 60 * 60) // 30 days
+			cb.abs(
+				cb.diff(
+					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root.get(Contact.REPORT_DATE_TIME)),
+					cb.function("date_part", Long.class, cb.parameter(String.class, "date_type"), root2.get(Contact.REPORT_DATE_TIME)))),
+			new Long(30 * 24 * 60 * 60) // 30 days
 		);
 		// Sex filter: only when sex is filled in for both Contacts
 		Predicate sexFilter = cb.or(
-				cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
-				cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
+			cb.or(cb.isNull(person.get(Person.SEX)), cb.isNull(person2.get(Person.SEX))),
+			cb.equal(person.get(Person.SEX), person2.get(Person.SEX)));
 		// Birth date filter: only when birth date is filled in for both Contacts
 		Predicate birthDateFilter = cb.or(
-				cb.or(
-						cb.isNull(person.get(Person.BIRTHDATE_DD)),
-						cb.isNull(person.get(Person.BIRTHDATE_MM)),
-						cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
-						cb.isNull(person2.get(Person.BIRTHDATE_DD)),
-						cb.isNull(person2.get(Person.BIRTHDATE_MM)),
-						cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
-				cb.and(
-						cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
-						cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
-						cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
+			cb.or(
+				cb.isNull(person.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person.get(Person.BIRTHDATE_YYYY)),
+				cb.isNull(person2.get(Person.BIRTHDATE_DD)),
+				cb.isNull(person2.get(Person.BIRTHDATE_MM)),
+				cb.isNull(person2.get(Person.BIRTHDATE_YYYY))),
+			cb.and(
+				cb.equal(person.get(Person.BIRTHDATE_DD), person2.get(Person.BIRTHDATE_DD)),
+				cb.equal(person.get(Person.BIRTHDATE_MM), person2.get(Person.BIRTHDATE_MM)),
+				cb.equal(person.get(Person.BIRTHDATE_YYYY), person2.get(Person.BIRTHDATE_YYYY))));
 
 		Predicate creationDateFilter = cb.lessThan(root.get(Contact.CREATION_DATE), root2.get(Contact.CREATION_DATE));
 
@@ -1545,7 +1551,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			selectIndexDtoFields(indexContactsCq, indexRoot);
 			indexContactsCq.where(indexRoot.get(Contact.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
 			Map<Long, ContactIndexDto> indexContacts =
-					em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
+				em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
 				try {
@@ -1554,17 +1560,17 @@ public class ContactFacadeEjb implements ContactFacade {
 					ContactIndexDto child = (ContactIndexDto) indexContacts.get(idPair[1]).clone();
 
 					if (parent.getCompleteness() == null && child.getCompleteness() == null
-							|| parent.getCompleteness() != null
+						|| parent.getCompleteness() != null
 							&& (child.getCompleteness() == null || (parent.getCompleteness() >= child.getCompleteness()))) {
 						resultList.add(
-								new ContactIndexDto[] {
-										parent,
-										child });
+							new ContactIndexDto[] {
+								parent,
+								child });
 					} else {
 						resultList.add(
-								new ContactIndexDto[] {
-										child,
-										parent });
+							new ContactIndexDto[] {
+								child,
+								parent });
 					}
 				} catch (CloneNotSupportedException e) {
 					throw new RuntimeException(e);
@@ -1613,10 +1619,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (contact.getPerson().getSex() != null) {
 			completeness += 0.05f;
 		}
-		if(contact.getCaseOrEventInformation() != null){
+		if (contact.getCaseOrEventInformation() != null) {
 			completeness += 0.05f;
 		}
-		if(contact.getRelationDescription() != null){
+		if (contact.getRelationDescription() != null) {
 			completeness += 0.05f;
 		}
 		return completeness;
@@ -1647,7 +1653,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact leadCont = contactService.getByUuid(leadContact.getUuid());
 		Contact otherCont = contactService.getByUuid(otherContact.getUuid());
 
-
 		// 2.2 Samples
 		List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(otherCont.toReference()), null);
 		for (Sample sample : samples) {
@@ -1670,12 +1675,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-
 		// 2.4 Tasks
 		if (!cloning) {
 			// simply move existing entities to the merge target
 
-			List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(otherCont.getUuid())));
+			List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(otherCont.getUuid())),true);
 			for (Task task : tasks) {
 				task.setContact(leadCont);
 				taskService.ensurePersisted(task);
@@ -1693,10 +1697,6 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		deleteContact(contactUuid);
 	}
-
-
-
-
 
 	@Override
 	public boolean exists(String uuid) {
