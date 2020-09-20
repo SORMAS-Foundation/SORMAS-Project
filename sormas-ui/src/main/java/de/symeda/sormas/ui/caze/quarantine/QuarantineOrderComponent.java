@@ -44,9 +44,9 @@ public class QuarantineOrderComponent extends VerticalLayout {
 			public InputStream getStream() {
 				QuarantineOrderFacade quarantineOrderFacade = FacadeProvider.getQuarantineOrderFacade();
 				return new ByteArrayInputStream(
-					quarantineOrderFacade.getGeneratedDocument("Quarantine.docx", caseReferenceDto.getUuid(), new Properties()));
+					quarantineOrderFacade.getGeneratedDocument("Quarantine_LibreOffice.docx", caseReferenceDto.getUuid(), new Properties()));
 			}
-		}, "Quarantine.docx");
+		}, "Quarantine_LibreOffice.docx");
 		new FileDownloader(streamResource).extend(createButton);
 
 		componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

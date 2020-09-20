@@ -42,6 +42,10 @@ public class EntityDtoAccessHelperTest {
 		personDto.setUuid("GHIJKL");
 		personDto.setFirstName("Tenzing");
 		personDto.setLastName("Mike");
+		personDto.setBirthdateDD(26);
+		personDto.setBirthdateMM(11);
+		personDto.setBirthdateYYYY(1973);
+		personDto.setPhone("+49 681 1234");
 
 		referenceDtoResolver = new IReferenceDtoResolver() {
 
@@ -103,6 +107,10 @@ public class EntityDtoAccessHelperTest {
 		caseDataDto.setPerson(personReferenceDto);
 		assertNull(EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", null));
 		assertEquals("Tenzing", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.firstName", referenceDtoResolver));
+		assertEquals(26, EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.BirthdateDD", referenceDtoResolver));
+		assertEquals(11, EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.BirthdateMM", referenceDtoResolver));
+		assertEquals(1973, EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.BirthdateYYYY", referenceDtoResolver));
+		assertEquals("+49 681 1234", EntityDtoAccessHelper.getPropertyPathValue(caseDataDto, "person.phone", referenceDtoResolver));
 	}
 
 	@Test

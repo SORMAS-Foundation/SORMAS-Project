@@ -1,12 +1,12 @@
 package de.symeda.sormas.api;
 
-import de.symeda.sormas.api.utils.DataHelper;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class EntityDtoAccessHelper {
 
@@ -43,26 +43,34 @@ public class EntityDtoAccessHelper {
 			if (currentEntity == null) {
 				return null;
 			}
+			boolean isResolvable = referenceDtoResolver != null && ReferenceDto.class.isAssignableFrom(currentEntity.getClass());
+
 			if (!HasUuid.class.isAssignableFrom(currentEntity.getClass())) {
 				String errorPropertyPath = entity.getClass().getSimpleName() + "." + String.join(".", Arrays.copyOfRange(propertyKeys, 0, i));
 				throw new IllegalArgumentException(errorPropertyPath + " is not an EntityDto or ReferenceDto");
 			}
-			Object propertyValue;
+			Object propertyValue = null;
 			try {
 				propertyValue = getPropertyValue((HasUuid) currentEntity, propertyKeys[i]);
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new IllegalArgumentException(e);
+			} catch (IllegalArgumentException e) {
+				if (!isResolvable) {
+					throw e;
+				}
 			}
 			if (propertyValue != null) {
 				currentEntity = propertyValue;
-			} else if (referenceDtoResolver != null && ReferenceDto.class.isAssignableFrom(currentEntity.getClass())) {
-				try {
-					currentEntity = getPropertyValue(referenceDtoResolver.resolve((ReferenceDto) currentEntity), propertyKeys[i]);
-				} catch (InvocationTargetException | IllegalAccessException e) {
-					throw new IllegalArgumentException(e);
-				}
 			} else {
-				currentEntity = null;
+				if (isResolvable) {
+					try {
+						currentEntity = getPropertyValue(referenceDtoResolver.resolve((ReferenceDto) currentEntity), propertyKeys[i]);
+					} catch (InvocationTargetException | IllegalAccessException e) {
+						throw new IllegalArgumentException(e);
+					}
+				} else {
+					currentEntity = null;
+				}
 			}
 		}
 		return currentEntity;
