@@ -1,4 +1,4 @@
-Debord, Guy,
+Debord, Guy
 geb. am:
 28.12.1931
 
@@ -9,7 +9,7 @@ Telefon: +49 681 1234
 
 
 
-Dringende Empfehlung der Absonderung in sog. häusliche Quarantäne gem. § 30 Infektionsschutzgesetz
+Dringende Empfehlung der Absonderung in sog. häusliche Quarantäne gem. § 30 IfSG
 
 Zeitraum der Quarantäne: vom 9/10/2020  bis 9/24/2020
 
