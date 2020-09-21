@@ -836,4 +836,22 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
 		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
 	}
+
+	@Test
+	public void testSearchContactsWithReducedQuarantine() {
+		RDCF rdcf = creator.createRDCF();
+		ContactDto contact =
+				creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
+		contact.setQuarantineReduced(true);
+		getContactFacade().saveContact(contact);
+
+		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
+		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
+
+		ContactCriteria contactCriteria = new ContactCriteria();
+		contactCriteria.setWithReducedQuarantine(true);
+
+		List<ContactIndexDto> indexListFiltered = getContactFacade().getIndexList(contactCriteria, 0, 100, Collections.emptyList());
+		assertThat(indexListFiltered.get(0).getUuid(), is(contact.getUuid()));
+	}
 }
