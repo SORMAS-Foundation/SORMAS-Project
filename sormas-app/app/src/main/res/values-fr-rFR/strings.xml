@@ -229,6 +229,8 @@
     <string name="confirmation_delete">Voulez-vous vraiment supprimer cet enregistrement ?</string>
     <string name="confirmation_pick_gps">Êtes-vous dans cet endroit maintenant?</string>
     <string name="confirmation_extend_quarantine">Êtes-vous sûr de vouloir prolonger la quarantaine ?</string>
+    <string name="confirmation_reduce_quarantine">Are you sure you want to reduce the quarantine?</string>
+    <string name="confirmation_extend_followup">Would you also want the follow-up period to be extended accordingly?</string>
     <string name="description_epi_week">Semaine Epidemiologique</string>
     <string name="description_first_name">Prénom</string>
     <string name="description_last_name">Nom De Famille</string>
@@ -360,6 +362,8 @@
     <string name="heading_change_laboratory_result">Modifier le résultat du laboratoire</string>
     <string name="heading_change_case_disease">Changer la maladie de cas</string>
     <string name="heading_extend_quarantine">Prolonger la quarantaine</string>
+    <string name="heading_reduce_quarantine">Reduce quarantine</string>
+    <string name="heading_extend_followup">Extend follow-up period</string>
     <string name="hint_add_to_empty_list">Ajouter une nouvelle entrée en appuyant sur \"+\" en haut à droite.</string>
     <string name="hint_clear">Supprimer</string>
     <string name="hint_create_pin">Veuillez choisir un code PIN à quatre chiffres que vous utiliserez pour vous authentifier à chaque fois que vous ouvrirez l\'application SORMAS.</string>
