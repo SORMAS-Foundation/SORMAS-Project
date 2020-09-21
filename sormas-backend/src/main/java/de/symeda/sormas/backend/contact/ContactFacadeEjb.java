@@ -119,7 +119,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.common.FollowUpTaskCreationException;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
@@ -281,21 +281,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact entity = fromDto(dto);
 		contactService.ensurePersisted(entity);
 
-		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND) && existingContact == null) {
-			LocalDate now = LocalDate.now();
-			LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
-			if (DAYS.between(reportDate, now) <= 30) {
-				try {
-					User assignee = taskService.getTaskAssignee(entity);
-					LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
-					LocalDateTime toDateTime = fromDateTime.plusDays(1);
-					Task task = getContactTask(TaskType.CONTACT_INVESTIGATION, fromDateTime, toDateTime, entity, assignee);
-					taskService.ensurePersisted(task);
-				} catch (FollowUpTaskCreationException e) {
-					logger.warn(e.getMessage());
-				}
-			}
-		}
+		createInvestigationTask(entity);
 
 		if (handleChanges) {
 			updateContactVisitAssociations(existingContactDto, entity);
@@ -309,6 +295,22 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		return toDto(entity);
+	}
+
+	private void createInvestigationTask(Contact entity) {
+		LocalDate now = LocalDate.now();
+		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		if (DAYS.between(reportDate, now) <= 30) {
+			try {
+				User assignee = taskService.getTaskAssignee(entity);
+				LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
+				LocalDateTime toDateTime = fromDateTime.plusDays(1);
+				Task task = createContactTask(TaskType.CONTACT_INVESTIGATION, fromDateTime, toDateTime, entity, assignee);
+				taskService.ensurePersisted(task);
+			} catch (TaskCreationException e) {
+				logger.warn(e.getMessage());
+			}
+		}
 	}
 
 	private void updateContactVisitAssociations(ContactDto existingContact, Contact contact) {
@@ -1255,7 +1257,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			User assignee;
 			try {
 				assignee = taskService.getTaskAssignee(contact);
-			} catch (FollowUpTaskCreationException e) {
+			} catch (TaskCreationException e) {
 				logger.warn(e.getMessage());
 				continue;
 			}
@@ -1283,12 +1285,12 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 
 			// none found -> create the task
-			Task task = getContactTask(TaskType.CONTACT_FOLLOW_UP, fromDateTime, toDateTime, contact, assignee);
+			Task task = createContactTask(TaskType.CONTACT_FOLLOW_UP, fromDateTime, toDateTime, contact, assignee);
 			taskService.ensurePersisted(task);
 		}
 	}
 
-	private Task getContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
 		Task task = taskService.buildTask(null);
 		task.setTaskContext(TaskContext.CONTACT);
 		task.setContact(contact);

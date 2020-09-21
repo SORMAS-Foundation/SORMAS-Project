@@ -43,7 +43,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
-import de.symeda.sormas.backend.common.FollowUpTaskCreationException;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -291,7 +291,7 @@ public class TaskService extends AbstractAdoService<Task> {
 		return task;
 	}
 
-	public User getTaskAssignee(Contact contact) throws FollowUpTaskCreationException {
+	public User getTaskAssignee(Contact contact) throws TaskCreationException {
 		User assignee = null;
 
 		if (contact.getContactOfficer() != null) {
@@ -331,7 +331,7 @@ public class TaskService extends AbstractAdoService<Task> {
 				Random rand = new Random();
 				assignee = supervisors.get(rand.nextInt(supervisors.size()));
 			} else {
-				throw new FollowUpTaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
+				throw new TaskCreationException("Contact has not contact officer and no region - can't create follow-up task: " + contact.getUuid());
 			}
 		}
 

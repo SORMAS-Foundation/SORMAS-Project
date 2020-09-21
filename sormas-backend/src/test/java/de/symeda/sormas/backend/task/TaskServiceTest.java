@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.FollowUpTaskCreationException;
+import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -39,7 +39,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetTaskAssigneeFromContactWithContactOfficer() throws FollowUpTaskCreationException {
+	public void testGetTaskAssigneeFromContactWithContactOfficer() throws TaskCreationException {
 		User contactOfficer = new User();
 		contactOfficer.setId(1L);
 		Contact contact = new Contact();
@@ -50,7 +50,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetTaskAssigneeFromDistrictOfficers() throws FollowUpTaskCreationException {
+	public void testGetTaskAssigneeFromDistrictOfficers() throws TaskCreationException {
 		User contactOfficer = new User();
 		contactOfficer.setId(1L);
 		District district = new District();
@@ -65,7 +65,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetTaskAssigneeFromRegionSupervisors() throws FollowUpTaskCreationException {
+	public void testGetTaskAssigneeFromRegionSupervisors() throws TaskCreationException {
 		User contactOfficer = new User();
 		contactOfficer.setId(1L);
 		Contact contact = new Contact();
@@ -82,8 +82,8 @@ public class TaskServiceTest extends AbstractBeanTest {
 		assertEquals(actualAssignee.getId(), contactOfficer.getId());
 	}
 
-	@Test(expected = FollowUpTaskCreationException.class)
-	public void testGetTaskAssigneeException() throws FollowUpTaskCreationException {
+	@Test(expected = TaskCreationException.class)
+	public void testGetTaskAssigneeException() throws TaskCreationException {
 		Contact contact = new Contact();
 		Location location = new Location();
 		Person person = new Person();
