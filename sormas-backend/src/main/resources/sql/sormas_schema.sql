@@ -5267,14 +5267,6 @@ ALTER TABLE campaignformmeta_history ADD COLUMN campaignformelements json;
 ALTER TABLE campaignformmeta_history ADD COLUMN campaignformtranslations json;
 
 INSERT INTO schema_version (version_number, comment) VALUES (250, 'Campaign diagram visualization refinement #2753');
-                                                                                                                                          
-ALTER TABLE contact ADD completeness real;
-ALTER TABLE contact_history ADD completeness real;
-
-ALTER TABLE contact ADD duplicateof_id BIGINT;
-ALTER TABLE contact_history ADD duplicateof_id BIGINT;
-
-INSERT INTO schema_version (version_number, comment) VALUES (251, 'Add two columns completeness and duplicateOf for contact');                                                                                                                                          
 
 -- 2020-09-07 Campaign dashboard element
 
@@ -5325,5 +5317,13 @@ ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
 
+-- 2020-09-21 - Merge the duplicates for contacts #2409
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***
 
