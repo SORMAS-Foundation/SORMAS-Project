@@ -873,7 +873,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		return result;
 	}
 
-	public List<DashboardQuarantineDataDto> getCaseInQuarantineForDashBoard(
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,

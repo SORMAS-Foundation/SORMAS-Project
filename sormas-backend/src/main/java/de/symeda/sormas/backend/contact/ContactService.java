@@ -404,7 +404,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			}
 		}
 
-		filter = getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze, filter);
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
 
 		// Only retrieve contacts that are currently under follow-up
 		Predicate followUpFilter = cb.equal(contact.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
@@ -467,7 +467,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = dateFilter;
 		}
 
-		filter = getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze, filter);
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -529,42 +529,35 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Disease disease,
 		CriteriaBuilder cb,
 		Root<Contact> contact,
-		Join<Contact, Case> caze,
-		Predicate filter) {
+		Join<Contact, Case> caze) {
+
+		Predicate filter = null;
+
 		if (region != null) {
 			Predicate regionFilter = cb.or(
 				cb.equal(contact.get(Contact.REGION), region),
 				cb.and(cb.isNull(contact.get(Contact.REGION)), cb.equal(caze.get(Case.REGION), region)));
-			if (filter != null) {
-				filter = cb.and(filter, regionFilter);
-			} else {
-				filter = regionFilter;
-			}
+
+			filter = AbstractAdoService.and(cb, filter, regionFilter);
 		}
 
 		if (district != null) {
 			Predicate districtFilter = cb.or(
 				cb.equal(contact.get(Contact.DISTRICT), district),
 				cb.and(cb.isNull(contact.get(Contact.DISTRICT)), cb.equal(caze.get(Case.DISTRICT), district)));
-			if (filter != null) {
-				filter = cb.and(filter, districtFilter);
-			} else {
-				filter = districtFilter;
-			}
+
+			filter = AbstractAdoService.and(cb, filter, districtFilter);
 		}
 
 		if (disease != null) {
 			Predicate diseaseFilter = cb.equal(contact.get(Contact.DISEASE), disease);
-			if (filter != null) {
-				filter = cb.and(filter, diseaseFilter);
-			} else {
-				filter = diseaseFilter;
-			}
+
+			filter = AbstractAdoService.and(cb, filter, diseaseFilter);
 		}
 		return filter;
 	}
 
-	public List<DashboardQuarantineDataDto> getContactsInQuarantineForDashBoard(
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		Region region,
 		District district,
 		Disease disease,
@@ -584,7 +577,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		filter = AbstractAdoService.and(cb, filter, quarantineDateFilter);
 
-		filter = getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze, filter);
+		filter = AbstractAdoService.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze));
 
 		if (filter != null) {
 			cq.where(filter);

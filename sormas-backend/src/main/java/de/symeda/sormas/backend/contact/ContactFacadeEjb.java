@@ -1013,7 +1013,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public List<DashboardQuarantineDataDto> getContactsInQuarantineForDashBoard(
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,
@@ -1025,7 +1025,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		User user = userService.getCurrentUser();
 
 		List<DashboardQuarantineDataDto> dashboardContactsInQuarantine =
-			contactService.getContactsInQuarantineForDashBoard(region, district, disease, from, to, user);
+			contactService.getQuarantineDataForDashBoard(region, district, disease, from, to, user);
 
 		return dashboardContactsInQuarantine;
 	}

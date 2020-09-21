@@ -122,7 +122,7 @@ public interface ContactFacade {
 
 	boolean exists(String uuid);
 
-	List<DashboardQuarantineDataDto> getContactsInQuarantineForDashBoard(
+	List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
 		Disease disease,

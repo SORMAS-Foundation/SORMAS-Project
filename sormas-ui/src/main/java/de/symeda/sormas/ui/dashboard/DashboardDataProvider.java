@@ -93,7 +93,7 @@ public class DashboardDataProvider {
 	private void refreshDataForQuarantinedContacts() {
 
 		List<DashboardQuarantineDataDto> contactsInQuarantineDtos =
-			FacadeProvider.getContactFacade().getContactsInQuarantineForDashBoard(region, district, disease, fromDate, toDate);
+			FacadeProvider.getContactFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
 
 		setContactsInQuarantineCount((long) contactsInQuarantineDtos.size());
 
@@ -109,7 +109,7 @@ public class DashboardDataProvider {
 	private void refreshDataForQuarantinedCases() {
 
 		List<DashboardQuarantineDataDto> casesInQuarantineDtos =
-			FacadeProvider.getCaseFacade().getCaseInQuarantineForDashBoard(region, district, disease, fromDate, toDate);
+			FacadeProvider.getCaseFacade().getQuarantineDataForDashBoard(region, district, disease, fromDate, toDate);
 
 		setCasesInQuarantineCount((long) casesInQuarantineDtos.size());
 
