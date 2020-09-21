@@ -5283,9 +5283,9 @@ end;
 $$ language plpgsql immutable;
 
 INSERT INTO schema_version (version_number, comment) VALUES (251, 'Campaign dashboard element #2527');
-                                                                                                                                          
+
 -- 2020-09-14 Add person_locations table and remove person reference from locations #2746
-                                                                                                                                          
+
 CREATE TABLE person_locations(
 	person_id bigint NOT NULL,
 	location_id bigint NOT NULL,
@@ -5307,5 +5307,14 @@ INSERT INTO person_locations (person_id, location_id) SELECT l.person_id, l.id F
 ALTER TABLE location DROP COLUMN person_id;
 
 INSERT INTO schema_version (version_number, comment) VALUES (252, 'Add person_locations table and remove person reference from locations #2746');
+
+-- 2020-09-21 - Store if quarantine period has been reduced #2235
+ALTER TABLE cases ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+ALTER TABLE cases_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+ALTER TABLE contact_history ADD COLUMN quarantinereduced boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (253, 'Store if quarantine period has been reduced #2235');
 
 -- *** Insert new sql commands BEFORE this line ***

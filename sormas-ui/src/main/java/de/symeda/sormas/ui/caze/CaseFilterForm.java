@@ -70,7 +70,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseCriteria.BIRTHDATE_DD)			
 			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
-					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE)
+					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER, CaseCriteria.WITH_EXTENDED_QUARANTINE, CaseCriteria.WITH_REDUCED_QUARANTINE)
 			+ loc(WEEK_AND_DATE_FILTER);
 	//@formatter:on
 
@@ -250,6 +250,15 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 				CaseCriteria.WITH_EXTENDED_QUARANTINE,
 				I18nProperties.getCaption(Captions.caseFilterWithExtendedQuarantine),
 				I18nProperties.getDescription(Descriptions.descCaseFilterWithExtendedQuarantine),
+				CssStyles.CHECKBOX_FILTER_INLINE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				CaseCriteria.WITH_REDUCED_QUARANTINE,
+				I18nProperties.getCaption(Captions.caseFilterWithReducedQuarantine),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithReducedQuarantine),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);

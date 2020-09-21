@@ -76,7 +76,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			ContactCriteria.QUARANTINE_NOT_ORDERED,
 			ContactCriteria.ONLY_QUARANTINE_HELP_NEEDED,
 			ContactCriteria.ONLY_HIGH_PRIORITY_CONTACTS,
-			ContactCriteria.WITH_EXTENDED_QUARANTINE)
+			ContactCriteria.WITH_EXTENDED_QUARANTINE,
+			ContactCriteria.WITH_REDUCED_QUARANTINE)
 		+ loc(WEEK_AND_DATE_FILTER);
 
 	protected ContactsFilterForm() {
@@ -251,6 +252,15 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.WITH_EXTENDED_QUARANTINE,
 				I18nProperties.getCaption(Captions.contactOnlyWithExtendedQuarantine),
 				I18nProperties.getDescription(Descriptions.descContactOnlyWithExtendedQuarantine),
+				CHECKBOX_STYLE));
+
+		addField(
+			moreFiltersContainer,
+			CheckBox.class,
+			FieldConfiguration.withCaptionAndStyle(
+				ContactCriteria.WITH_REDUCED_QUARANTINE,
+				I18nProperties.getCaption(Captions.contactOnlyWithReducedQuarantine),
+				I18nProperties.getDescription(Descriptions.descContactOnlyWithReducedQuarantine),
 				CHECKBOX_STYLE));
 
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(), WEEK_AND_DATE_FILTER);
