@@ -101,6 +101,7 @@ import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.contact.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.epidata.EpiDataBurialDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataGatheringDto;
@@ -870,6 +871,73 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return result;
+	}
+
+	public List<DashboardQuarantineDataDto> getQuarantineDataForDashBoard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<DashboardQuarantineDataDto> cq = cb.createQuery(DashboardQuarantineDataDto.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.setRegion(regionRef);
+		caseCriteria.setDistrict(districtRef);
+		caseCriteria.setDisease(disease);
+
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+
+		Predicate dateFilter = buildQuarantineDateFilter(cb, caze, from, to);
+		if (filter != null) {
+			filter = cb.and(filter, dateFilter);
+		} else {
+			filter = dateFilter;
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(caze.get(AbstractDomainObject.ID), caze.get(Case.QUARANTINE_FROM), caze.get(Case.QUARANTINE_TO));
+
+			return em.createQuery(cq).getResultList();
+		}
+
+		return Collections.emptyList();
+	}
+
+	private Predicate buildQuarantineDateFilter(CriteriaBuilder cb, Root<Case> caze, Date from, Date to) {
+
+		return cb.or(
+			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), to)),
+			cb.and(cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), from), cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)),
+			cb.and(cb.lessThanOrEqualTo(caze.get(Case.QUARANTINE_FROM), from), cb.greaterThanOrEqualTo(caze.get(Case.QUARANTINE_TO), to)));
+	}
+
+	public long countCasesConvertedFromContacts(CaseCriteria caseCriteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		Predicate filter =
+			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, cb, cq, caze);
+		filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+
+		caze.join(Case.CONVERTED_FROM_CONTACT, JoinType.LEFT);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(caze));
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	@Override
