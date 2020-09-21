@@ -152,6 +152,17 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
+import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -168,40 +179,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 @Stateless(name = "ContactFacade")
@@ -243,10 +222,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
 	@EJB
-	private EpiDataFacadeEjbLocal epiDataFacade;
-	@EJB
-	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
-	@EJB
 	private SampleService sampleService;
 	@EJB
 	private SampleFacadeEjbLocal sampleFacade;
@@ -254,6 +229,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal sampleTestFacade;
+	@EJB
+	private EpiDataFacadeEjbLocal epiDataFacade;
+	@EJB
+	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 

@@ -153,9 +153,12 @@ public class Contact extends CoreAdo {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
+
+	public static final String COMPLETENESS = "completeness";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String COMPLETENESS = "completeness";
+
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -224,6 +227,8 @@ public class Contact extends CoreAdo {
 	private Date quarantineOfficialOrderSentDate;
 
 	private String additionalDetails;
+
+	private Contact duplicateOf;
 	private EpiData epiData;
 	private Contact duplicateOf;
 
@@ -797,6 +802,17 @@ public class Contact extends CoreAdo {
 	public void setAdditionalDetails(String additionalDetails) {
 		this.additionalDetails = additionalDetails;
 	}
+
+
+	public Float getCompleteness() { return completeness; }
+
+	public void setCompleteness(Float completeness) { this.completeness = completeness; }
+
+	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public Contact getDuplicateOf() { return duplicateOf; }
+
+	public void setDuplicateOf(Contact duplicateOf) { this.duplicateOf = duplicateOf; }
 
 	// It's necessary to do a lazy fetch here because having three eager fetching
 	// one to one relations

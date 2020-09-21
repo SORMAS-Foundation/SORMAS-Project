@@ -137,6 +137,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 			return label;
 		}).setId(COLUMN_COMPLETENESS);
 
+
 		Column<IndexDto, String> pendingTasksColumn = addColumn(
 			entry -> String.format(
 				I18nProperties.getCaption(Captions.formatSimpleNumberFormat),
@@ -154,6 +155,7 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		getColumn(COLUMN_COMPLETENESS).setCaption(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.COMPLETENESS));
 		getColumn(COLUMN_COMPLETENESS).setSortable(false);
+
 
 		for (Column<IndexDto, ?> column : getColumns()) {
 			column.setCaption(
