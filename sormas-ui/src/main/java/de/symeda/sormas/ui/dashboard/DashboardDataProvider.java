@@ -124,7 +124,7 @@ public class DashboardDataProvider {
 
 	private void refreshDataForConvertedContactsToCase() {
 		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.region(region).district(district).disease(null).newCaseDateBetween(fromDate, toDate, null);
+		caseCriteria.region(region).district(district).disease(disease).newCaseDateBetween(fromDate, toDate, null);
 
 		setContactsConvertedToCaseCount(FacadeProvider.getCaseFacade().countCasesConvertedFromContacts(caseCriteria));
 

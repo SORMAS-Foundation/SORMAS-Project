@@ -231,6 +231,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private HorizontalLayout createContactsInQuarantineLayout() {
 
 		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
 
 		Label captionInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsInQuarantine));
 		CssStyles.style(captionInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);
@@ -251,6 +253,8 @@ public class ContactsDashboardView extends AbstractDashboardView {
 	private HorizontalLayout createContactsPlacedInQuarantineLayout() {
 
 		HorizontalLayout layout = new HorizontalLayout();
+		layout.setMargin(new MarginInfo(false, true, false, true));
+		layout.setSpacing(false);
 
 		Label captionPlacedInQuarantine = new Label(I18nProperties.getString(Strings.headingContactsPlacedInQuarantine));
 		CssStyles.style(captionPlacedInQuarantine, CssStyles.H3, CssStyles.HSPACE_RIGHT_1, CssStyles.VSPACE_TOP_NONE);

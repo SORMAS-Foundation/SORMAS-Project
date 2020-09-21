@@ -580,12 +580,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		Predicate filter = createDefaultFilter(cb, contact);
 		filter = AbstractAdoService.and(cb, filter, createUserFilter(cb, cq, contact));
 
-		Predicate dateFilter = buildQuarantineDateFilter(cb, contact, from, to);
-		if (filter != null) {
-			filter = cb.and(filter, dateFilter);
-		} else {
-			filter = dateFilter;
-		}
+		Predicate quarantineDateFilter = buildQuarantineDateFilter(cb, contact, from, to);
+
+		filter = AbstractAdoService.and(cb, filter, quarantineDateFilter);
 
 		filter = getRegionDistrictDiseasePredicate(region, district, disease, cb, contact, caze, filter);
 

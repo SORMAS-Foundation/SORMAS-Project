@@ -886,6 +886,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.setRegion(regionRef);
 		caseCriteria.setDistrict(districtRef);
+		caseCriteria.setDisease(disease);
 
 		Predicate filter =
 			caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeSharedCases(false).excludeCasesFromContacts(false));

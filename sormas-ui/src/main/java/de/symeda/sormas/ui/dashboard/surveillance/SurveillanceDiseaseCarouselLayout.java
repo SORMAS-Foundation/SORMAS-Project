@@ -44,10 +44,8 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 	private DashboardDataProvider dashboardDataProvider;
 
 	private DiseaseStatisticsComponent statisticsComponent;
-	private CaseStatisticsComponent caseStatisticsComponent;
 	private SurveillanceEpiCurveComponent epiCurveComponent;
 	private DashboardMapComponent mapComponent;
-
 	private Consumer<Boolean> externalExpandListener;
 	private SubMenu carouselMenu;
 	private List<Disease> diseases;
@@ -57,8 +55,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		this.dashboardDataProvider = dashboardDataProvider;
 
 		statisticsComponent = new DiseaseStatisticsComponent(dashboardDataProvider);
-
-		caseStatisticsComponent = new CaseStatisticsComponent(dashboardDataProvider);
 
 		epiCurveComponent = new SurveillanceEpiCurveComponent(dashboardDataProvider);
 		mapComponent = new DashboardMapComponent(dashboardDataProvider);
@@ -87,10 +83,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		addComponent(statisticsComponent);
 		statisticsComponent.addStyleName(DashboardCssStyles.HIGHLIGHTED_STATISTICS_COMPONENT);
 		setExpandRatio(statisticsComponent, 0);
-
-		addComponent(caseStatisticsComponent);
-		caseStatisticsComponent.addStyleName(DashboardCssStyles.HIGHLIGHTED_STATISTICS_COMPONENT);
-		setExpandRatio(caseStatisticsComponent, 0);
 
 		HorizontalLayout epiCurveAndMapLayout = createEpiCurveAndMapLayout();
 		addComponent(epiCurveAndMapLayout);
@@ -234,7 +226,6 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 
 	public void refresh() {
 		this.statisticsComponent.refresh();
-		this.caseStatisticsComponent.refresh();
 		this.epiCurveComponent.clearAndFillEpiCurveChart();
 		this.mapComponent.refreshMap();
 	}
