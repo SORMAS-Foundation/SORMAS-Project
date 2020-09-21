@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.caze;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -17,11 +18,13 @@ public class CaseCriteriaTest {
 		DistrictReferenceDto district = new DistrictReferenceDto(DataHelper.createUuid());
 		criteria.setDistrict(district);
 		criteria.setNameUuidEpidNumberLike("test AHSDBSD-ADS");
+		criteria.setEventLike("test EVENT");
 		criteria.setDisease(Disease.CSM);
 
 		CaseCriteria generatedCriteria = new CaseCriteria();
 		generatedCriteria.fromUrlParams(criteria.toUrlParams());
 		assertEquals(criteria.getDistrict(), generatedCriteria.getDistrict());
 		assertEquals(criteria.getDisease(), generatedCriteria.getDisease());
+		assertNull(generatedCriteria.getEventLike());
 	}
 }

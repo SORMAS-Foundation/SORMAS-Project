@@ -53,6 +53,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String NAME_UUID_EPID_NUMBER_LIKE = "nameUuidEpidNumberLike";
+	public static final String EVENT_LIKE = "eventLike";
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
@@ -92,6 +93,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Boolean withReducedQuarantine;
 	private Boolean deleted = Boolean.FALSE;
 	private String nameUuidEpidNumberLike;
+	private String eventLike;
 	private String reportingUserLike;
 	private CaseOrigin caseOrigin;
 	private EntityRelevanceStatus relevanceStatus;
@@ -383,6 +385,20 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	@IgnoreForUrl
 	public String getNameUuidEpidNumberLike() {
 		return nameUuidEpidNumberLike;
+	}
+
+	public void setEventLike(String eventLike) {
+		this.eventLike = eventLike;
+	}
+
+	@IgnoreForUrl
+	public String getEventLike() {
+		return eventLike;
+	}
+
+	public CaseCriteria eventLike(String eventLike) {
+		setEventLike(eventLike);
+		return this;
 	}
 
 	@IgnoreForUrl

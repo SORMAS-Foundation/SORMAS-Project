@@ -78,6 +78,8 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataService;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -460,6 +462,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Community> community = joins.getCommunity();
 		Join<Case, Facility> facility = joins.getFacility();
 		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter =
@@ -638,6 +641,22 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 						cb.like(cb.lower(location.get(Location.CITY)), textFilter),
 						cb.like(cb.lower(location.get(Location.POSTAL_CODE)), textFilter));
 					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (caseCriteria.getEventLike() != null && !caseCriteria.getEventLike().trim().isEmpty()) {
+			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
+			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+
+			String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = formatForLike(textFilters[i]);
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+						cb.like(cb.lower(event.get(Event.EVENT_DESC)), textFilter),
+						cb.like(cb.lower(event.get(Event.EVENT_TITLE)), textFilter),
+						cb.like(cb.lower(event.get(Event.UUID)), textFilter));
+					filter = and(cb, filter, likeFilters, cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 				}
 			}
 		}
