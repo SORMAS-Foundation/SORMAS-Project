@@ -17,14 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples;
 
-import java.util.Date;
-import java.util.stream.Collectors;
-
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
-
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
@@ -46,6 +42,9 @@ import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
+
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
@@ -120,8 +119,16 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 			removeColumn(SampleIndexDto.RECEIVED_DATE);
 		}
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
 			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+		}
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+		}
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
+			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
 		}
 
 		if (!UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)) {
@@ -129,18 +136,31 @@ public class SampleGrid extends FilteredGrid<SampleIndexDto, SampleCriteria> {
 		}
 
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CASE) {
-			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
-			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			if (getColumn(SampleIndexDto.ASSOCIATED_CONTACT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.CONTACT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
-			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
-			removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+
+			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_EVENT_PARTICIPANT);
+			}
 		}
 		if (criteria.getSampleAssociationType() == SampleAssociationType.EVENT_PARTICIPANT) {
 			removeColumn(SampleIndexDto.EPID_NUMBER);
-			removeColumn(SampleIndexDto.ASSOCIATED_CASE);
-			removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			if (getColumn(SampleIndexDto.ASSOCIATED_CASE) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CASE);
+			}
+			if (getColumn(SampleIndexDto.ASSOCIATED_CONTACT) != null) {
+				removeColumn(SampleIndexDto.ASSOCIATED_CONTACT);
+			}
 		}
 
 		for (Column<SampleIndexDto, ?> column : getColumns()) {

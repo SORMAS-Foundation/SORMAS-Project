@@ -17,12 +17,21 @@ package de.symeda.sormas.app.backend.person;
 
 import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -173,6 +182,8 @@ public class Person extends PseudonymizableAdo {
 	private String passportNumber;
 	@Column
 	private String nationalHealthId;
+
+	private List<Location> addresses = new ArrayList<>();
 
 	public Person() {
 	}
@@ -575,5 +586,13 @@ public class Person extends PseudonymizableAdo {
 
 	public void setOccupationFacilityType(FacilityType occupationFacilityType) {
 		this.occupationFacilityType = occupationFacilityType;
+	}
+
+	public List<Location> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<Location> addresses) {
+		this.addresses = addresses;
 	}
 }

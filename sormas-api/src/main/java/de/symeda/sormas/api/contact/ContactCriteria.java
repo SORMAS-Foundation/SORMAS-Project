@@ -55,6 +55,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
+	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
@@ -102,6 +103,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 	private Boolean quarantineOrderedOfficialDocument;
 	private Boolean quarantineNotOrdered;
 	private Boolean withExtendedQuarantine;
+	private Boolean withReducedQuarantine;
 	private PersonReferenceDto person;
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
@@ -410,6 +412,14 @@ public class ContactCriteria extends BaseCriteria implements Serializable, Clone
 
 	public void setWithExtendedQuarantine(Boolean withExtendedQuarantine) {
 		this.withExtendedQuarantine = withExtendedQuarantine;
+	}
+
+	public Boolean getWithReducedQuarantine() {
+		return withReducedQuarantine;
+	}
+
+	public void setWithReducedQuarantine(Boolean withReducedQuarantine) {
+		this.withReducedQuarantine = withReducedQuarantine;
 	}
 
 	public PersonReferenceDto getPerson() {
