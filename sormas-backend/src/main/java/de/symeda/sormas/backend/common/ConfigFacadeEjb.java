@@ -87,6 +87,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_SYMPTOM_JOURNAL_CLIENT_ID = "interface.symptomjournal.clientid";
 	public static final String INTERFACE_SYMPTOM_JOURNAL_SECRET = "interface.symptomjournal.secret";
 
+	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
+
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
 
@@ -365,6 +367,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setTruststoreName(getProperty(SORMAS2SORMAS_TRUSTSTORE_NAME, null));
 		config.setTruststorePass(getProperty(SORMAS2SORMAS_TRUSTSTORE_PASS, null));
 		return config;
+	}
+
+	@Override
+	public String getPatientDiaryUrl() {
+		return getProperty(INTERFACE_PATIENT_DIARY_URL, null);
 	}
 
 	@Override

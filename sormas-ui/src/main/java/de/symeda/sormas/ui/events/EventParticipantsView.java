@@ -107,12 +107,15 @@ public class EventParticipantsView extends AbstractEventView {
 
 		filterForm = new EventParticipantsFilterForm();
 		filterForm.addValueChangeListener(e -> {
-			navigateTo(criteria);
+			if (!filterForm.hasFilter()) {
+				navigateTo(null);
+			}
 		});
 		filterForm.addResetHandler(e -> {
 			ViewModelProviders.of(EventParticipantsView.class).remove(EventParticipantCriteria.class);
 			navigateTo(null);
 		});
+		filterForm.addApplyHandler(e -> navigateTo(criteria));
 
 		topLayout.addComponent(filterForm);
 

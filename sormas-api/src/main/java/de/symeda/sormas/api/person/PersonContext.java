@@ -13,28 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.utils.jurisdiction;
+package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.event.EventParticipantJurisdictionDto;
-import de.symeda.sormas.api.user.JurisdictionLevel;
+public enum PersonContext {
 
-public class EventParticipantJurisdictionHelper {
+	CASE,
+	CONTACT,
+	EVENT_PARTICIPANT,
+	OTHER;
 
-	public static boolean isInJurisdictionOrOwned(
-		// jurisdictionLevel will be needed in the future
-		JurisdictionLevel jurisdictionLevel,
-		UserJurisdiction userJurisdiction,
-		EventParticipantJurisdictionDto eventParticipantJurisdiction) {
-
-		/*
-		 * if (eventParticipantJurisdiction.getReportingUserUuid() != null
-		 * && DataHelper.equal(eventParticipantJurisdiction.getReportingUserUuid(), userJurisdiction.getUuid())) {
-		 * return true;
-		 * }
-		 * return false;
-		 */
-
-		return true;
-
-	}
 }

@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.vaadin.event.ShortcutAction;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -93,6 +95,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private ComboBox officerFilter;
 	private TextField searchField;
 	private Button resetButton;
+	private Button applyButton;
 
 	private Button newButton;
 	private DetailSubComponentWrapper gridLayout;
@@ -118,10 +121,7 @@ public class CaseContactsView extends AbstractCaseView {
 		classificationFilter = new ComboBox();
 		classificationFilter.setWidth(240, Unit.PIXELS);
 		classificationFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_CLASSIFICATION));
-		classificationFilter.addValueChangeListener(e -> {
-			criteria.setContactClassification((ContactClassification) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
+		classificationFilter.addValueChangeListener(e -> criteria.setContactClassification((ContactClassification) e.getProperty().getValue()));
 		topLayout.addComponent(classificationFilter);
 
 		UserDto user = UserProvider.getCurrent().getUser();
@@ -138,7 +138,6 @@ public class CaseContactsView extends AbstractCaseView {
 					officerFilter.removeAllItems();
 				}
 				criteria.region(region);
-				navigateTo(criteria);
 			});
 			topLayout.addComponent(regionFilter);
 		}
@@ -146,10 +145,7 @@ public class CaseContactsView extends AbstractCaseView {
 		districtFilter = new ComboBox();
 		districtFilter.setWidth(240, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactJurisdictionDto.I18N_PREFIX, ContactJurisdictionDto.DISTRICT_UUID));
-		districtFilter.addValueChangeListener(e -> {
-			criteria.district((DistrictReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
+		districtFilter.addValueChangeListener(e -> criteria.district((DistrictReferenceDto) e.getProperty().getValue()));
 
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
@@ -178,10 +174,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter = new ComboBox();
 		officerFilter.setWidth(240, Unit.PIXELS);
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
-		officerFilter.addValueChangeListener(e -> {
-			criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
-		});
+		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
 			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
 		}
@@ -191,10 +184,7 @@ public class CaseContactsView extends AbstractCaseView {
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");
 		searchField.setInputPrompt(I18nProperties.getString(Strings.promptContactsSearchField));
-		searchField.addTextChangeListener(e -> {
-			criteria.setNameUuidCaseLike(e.getText());
-			((ContactGrid) grid).reload();
-		});
+		searchField.addTextChangeListener(e -> criteria.setNameUuidCaseLike(e.getText()));
 		topLayout.addComponent(searchField);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
@@ -202,8 +192,18 @@ public class CaseContactsView extends AbstractCaseView {
 			navigateTo(null);
 		});
 		resetButton.setVisible(false);
-
 		topLayout.addComponent(resetButton);
+
+		applyButton = ButtonHelper.createButton(Captions.actionApplyFilters, event -> navigateTo(criteria));
+		applyButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+		applyButton.setVisible(false);
+		topLayout.addComponent(applyButton);
+
+		classificationFilter.addValueChangeListener(e -> updateApplyResetButtons());
+		regionFilter.addValueChangeListener(e -> updateApplyResetButtons());
+		officerFilter.addValueChangeListener(e -> updateApplyResetButtons());
+		districtFilter.addValueChangeListener(e -> updateApplyResetButtons());
+		searchField.addValueChangeListener(e -> updateApplyResetButtons());
 
 		return topLayout;
 	}
@@ -252,29 +252,14 @@ public class CaseContactsView extends AbstractCaseView {
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkCancelFollowUp), VaadinIcons.CLOSE, selectedItem -> {
 					ControllerProvider.getContactController()
-						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
+						.cancelFollowUpOfAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkLostToFollowUp), VaadinIcons.UNLINK, selectedItem -> {
 					ControllerProvider.getContactController()
-						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-							public void run() {
-								navigateTo(criteria);
-							}
-						});
+						.setAllSelectedItemsToLostToFollowUp(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}),
 				new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, selectedItem -> {
-					ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), new Runnable() {
-
-						public void run() {
-							navigateTo(criteria);
-						}
-					});
+					ControllerProvider.getContactController().deleteAllSelectedItems(grid.asMultiSelect().getSelectedItems(), () -> navigateTo(criteria));
 				}));
 
 			statusFilterLayout.addComponent(bulkOperationsDropdown);
@@ -287,9 +272,7 @@ public class CaseContactsView extends AbstractCaseView {
 				Window popupWindow = VaadinUiUtil
 					.showPopupWindow(new CaseContactsImportLayout(FacadeProvider.getCaseFacade().getCaseDataByUuid(criteria.getCaze().getUuid())));
 				popupWindow.setCaption(I18nProperties.getString(Strings.headingImportCaseContacts));
-				popupWindow.addCloseListener(c -> {
-					grid.reload();
-				});
+				popupWindow.addCloseListener(c -> grid.reload());
 			}, ValoTheme.BUTTON_PRIMARY);
 
 			statusFilterLayout.addComponent(importButton);
@@ -361,9 +344,7 @@ public class CaseContactsView extends AbstractCaseView {
 			exportLayout.addComponent(warningLabel);
 			warningLabel.setVisible(false);
 
-			exportButton.addClickListener(e -> {
-				warningLabel.setVisible(!criteria.hasAnyFilterActive());
-			});
+			exportButton.addClickListener(e -> warningLabel.setVisible(!criteria.hasAnyFilterActive()));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE)) {
@@ -417,8 +398,6 @@ public class CaseContactsView extends AbstractCaseView {
 		// TODO replace with Vaadin 8 databinding
 		applyingCriteria = true;
 
-		resetButton.setVisible(criteria.hasAnyFilterActive());
-
 		updateStatusButtons();
 
 		classificationFilter.removeAllItems();
@@ -447,5 +426,22 @@ public class CaseContactsView extends AbstractCaseView {
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
+	}
+
+	private void updateApplyResetButtons() {
+		boolean hasFilters = hasFilters();
+		resetButton.setVisible(hasFilters);
+		applyButton.setVisible(hasFilters);
+		if (!hasFilters) {
+			navigateTo(null);
+		}
+	}
+
+	private boolean hasFilters() {
+		return !classificationFilter.isEmpty() ||
+				!regionFilter.isEmpty() ||
+				!districtFilter.isEmpty() ||
+				!officerFilter.isEmpty() ||
+				!searchField.isEmpty();
 	}
 }

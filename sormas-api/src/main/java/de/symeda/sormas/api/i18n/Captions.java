@@ -228,6 +228,7 @@ public interface Captions {
 	String CaseData_quarantineOrderedOfficialDocumentDate = "CaseData.quarantineOrderedOfficialDocumentDate";
 	String CaseData_quarantineOrderedVerbally = "CaseData.quarantineOrderedVerbally";
 	String CaseData_quarantineOrderedVerballyDate = "CaseData.quarantineOrderedVerballyDate";
+	String CaseData_quarantineReduced = "CaseData.quarantineReduced";
 	String CaseData_quarantineTo = "CaseData.quarantineTo";
 	String CaseData_quarantineTypeDetails = "CaseData.quarantineTypeDetails";
 	String CaseData_rabiesType = "CaseData.rabiesType";
@@ -306,6 +307,7 @@ public interface Captions {
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
 	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
@@ -387,6 +389,7 @@ public interface Captions {
 	String Contact_caze_uuid = "Contact.caze.uuid";
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_climedoAccount = "Contact.climedoAccount";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_contactCategory = "Contact.contactCategory";
@@ -431,6 +434,7 @@ public interface Captions {
 	String Contact_quarantineOrderedOfficialDocumentDate = "Contact.quarantineOrderedOfficialDocumentDate";
 	String Contact_quarantineOrderedVerbally = "Contact.quarantineOrderedVerbally";
 	String Contact_quarantineOrderedVerballyDate = "Contact.quarantineOrderedVerballyDate";
+	String Contact_quarantineReduced = "Contact.quarantineReduced";
 	String Contact_quarantineTo = "Contact.quarantineTo";
 	String Contact_quarantineTypeDetails = "Contact.quarantineTypeDetails";
 	String Contact_region = "Contact.region";
@@ -482,6 +486,7 @@ public interface Captions {
 	String contactOnlyHighPriorityContacts = "contactOnlyHighPriorityContacts";
 	String contactOnlyQuarantineHelpNeeded = "contactOnlyQuarantineHelpNeeded";
 	String contactOnlyWithExtendedQuarantine = "contactOnlyWithExtendedQuarantine";
+	String contactOnlyWithReducedQuarantine = "contactOnlyWithReducedQuarantine";
 	String contactOpenContactCase = "contactOpenContactCase";
 	String contactPersonVisits = "contactPersonVisits";
 	String contactPlusDays = "contactPlusDays";
