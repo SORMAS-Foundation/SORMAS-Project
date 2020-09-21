@@ -442,8 +442,8 @@ public interface Captions {
 	String Contact_reportDateTime = "Contact.reportDateTime";
 	String Contact_reportingUser = "Contact.reportingUser";
 	String Contact_reportLat = "Contact.reportLat";
-	String Contact_reportLon = "Contact.reportLon";
 	String Contact_reportLatLonAccuracy = "Contact.reportLatLonAccuracy";
+	String Contact_reportLon = "Contact.reportLon";
 	String Contact_resultingCase = "Contact.resultingCase";
 	String Contact_resultingCaseUser = "Contact.resultingCaseUser";
 	String Contact_tracingApp = "Contact.tracingApp";

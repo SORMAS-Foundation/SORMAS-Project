@@ -28,10 +28,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -39,11 +38,16 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseOrigin;
+import de.symeda.sormas.api.caze.DengueFeverType;
+import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.RabiesType;
+import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.facility.FacilityType;
+import de.symeda.sormas.api.importexport.ImportColumn;
+import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +81,6 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -207,29 +210,29 @@ public class ImportFacadeEjb implements ImportFacade {
 		createExportDirectoryIfNecessary();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE_DETAILS));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.PLAGUE_TYPE));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DENGUE_FEVER_TYPE));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.RABIES_TYPE));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.LAST_NAME));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.SEX));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM));
-		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.EPID_NUMBER));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REPORT_DATE));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.CASE_ORIGIN));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REGION));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISTRICT));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.COMMUNITY));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.FACILITY_TYPE));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY_DETAILS));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY_DETAILS));
-		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE, Disease.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISEASE_DETAILS, String.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.PLAGUE_TYPE, PlagueType.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DENGUE_FEVER_TYPE, DengueFeverType.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.RABIES_TYPE, RabiesType.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.FIRST_NAME, String.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.LAST_NAME, String.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.SEX, Sex.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_DD, Integer.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_MM, Integer.class));
+		importColumns.add(ImportColumn.from(PersonDto.class, CaseDataDto.PERSON + "." + PersonDto.BIRTH_DATE_YYYY, Integer.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.EPID_NUMBER, String.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REPORT_DATE, Date.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.CASE_ORIGIN, CaseOrigin.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.REGION, RegionReferenceDto.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.DISTRICT, DistrictReferenceDto.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.COMMUNITY, CommunityReferenceDto.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.FACILITY_TYPE, FacilityType.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY, FacilityReferenceDto.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.HEALTH_FACILITY_DETAILS, String.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY, PointOfEntryReferenceDto.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.POINT_OF_ENTRY_DETAILS, String.class));
+		importColumns.add(ImportColumn.from(CaseDataDto.class, CaseDataDto.SYMPTOMS + "." + SymptomsDto.ONSET_DATE, Date.class));
 
 		writeTemplate(Paths.get(getCaseLineListingImportTemplateFilePath()), importColumns, false);
 	}
@@ -245,18 +248,18 @@ public class ImportFacadeEjb implements ImportFacade {
 		createExportDirectoryIfNecessary();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.REGION));
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.DISTRICT));
-		importColumns.add(ImportColumn.from(RegionDto.class, RegionDto.GROWTH_RATE));
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL"));
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_TOTAL"));
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_TOTAL"));
-		importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_TOTAL"));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.REGION, RegionReferenceDto.class));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, PopulationDataDto.DISTRICT, DistrictReferenceDto.class));
+		importColumns.add(ImportColumn.from(RegionDto.class, RegionDto.GROWTH_RATE, Float.class));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL", Integer.class));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_TOTAL", Integer.class));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_TOTAL", Integer.class));
+		importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_TOTAL", Integer.class));
 		for (AgeGroup ageGroup : AgeGroup.values()) {
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_" + ageGroup.name()));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name()));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name()));
-			importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name()));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "TOTAL_" + ageGroup.name(), Integer.class));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "MALE_" + ageGroup.name(), Integer.class));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "FEMALE_" + ageGroup.name(), Integer.class));
+			importColumns.add(ImportColumn.from(PopulationDataDto.class, "OTHER_" + ageGroup.name(), Integer.class));
 		}
 
 		writeTemplate(Paths.get(getPopulationDataImportTemplateFilePath()), importColumns, false);
@@ -455,7 +458,7 @@ public class ImportFacadeEjb implements ImportFacade {
 					PersonDto.class,
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
-				importColumns.add(ImportColumn.from(clazz, prefix + field.getName()));
+				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType()));
 			}
 		}
 	}
@@ -488,6 +491,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			writer.writeNext(importColumns.stream().map(ImportColumn::getColumnName).toArray(String[]::new));
 			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getCaption).toArray(String[]::new));
+			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getDataDescription).toArray(String[]::new));
 			writer.flush();
 		}
 	}

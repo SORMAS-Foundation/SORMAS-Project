@@ -104,6 +104,7 @@ public interface Strings {
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String date = "date";
 	String day = "day";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
@@ -642,6 +643,7 @@ public interface Strings {
 	String min = "min";
 	String mmhg = "mmhg";
 	String month = "month";
+	String nameOf = "nameOf";
 	String no = "no";
 	String none = "none";
 	String notAnswered = "notAnswered";
@@ -678,6 +680,7 @@ public interface Strings {
 	String notificationVisitCompleted = "notificationVisitCompleted";
 	String notificationVisitCompletedSubject = "notificationVisitCompletedSubject";
 	String notSpecified = "notSpecified";
+	String number = "number";
 	String numberEight = "numberEight";
 	String numberEleven = "numberEleven";
 	String numberFive = "numberFive";
@@ -739,6 +742,7 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
+	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
 	String until = "until";

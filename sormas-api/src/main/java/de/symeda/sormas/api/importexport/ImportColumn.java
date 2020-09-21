@@ -16,11 +16,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.importexport;
+package de.symeda.sormas.api.importexport;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Detailed import template column entity with information like entity name, column name, caption and data type.
@@ -36,10 +43,13 @@ public class ImportColumn {
 
 	private String caption;
 
-	private ImportColumn(String entityName, String columnName, String caption) {
+	private String dataDescription;
+
+	private ImportColumn(String entityName, String columnName, String caption, String dataDescription) {
 		this.entityName = entityName;
 		this.columnName = columnName;
 		this.caption = caption;
+		this.dataDescription = dataDescription;
 	}
 
 	public String getEntityName() {
@@ -54,10 +64,15 @@ public class ImportColumn {
 		return caption;
 	}
 
-	public static ImportColumn from(Class<?> entityType, String columnName) {
+	public String getDataDescription() {
+		return dataDescription;
+	}
+
+	public static ImportColumn from(Class<?> entityType, String columnName, Class<?> fieldType) {
 		String entityName = DataHelper.getHumanClassName(entityType);
-		String caption = calculateCaption(entityName, columnName);
-		return new ImportColumn(entityName, columnName, caption);
+		String caption = computeCaption(entityName, columnName);
+		String dataType = computeDataType(fieldType);
+		return new ImportColumn(entityName, columnName, caption, dataType);
 	}
 
 	/**
@@ -75,13 +90,41 @@ public class ImportColumn {
 	 * @param columnName column name from the CSV
 	 * @return list of captions for each column name.
 	 */
-	private static String calculateCaption(String entityName, String columnName) {
+	private static String computeCaption(String entityName, String columnName) {
 		if (StringUtils.contains(columnName, ".")) {
 			String[] parts = columnName.split("\\.");
 			String fieldName = parts[parts.length - 1];
 			return I18nProperties.getPrefixCaption(entityName, fieldName);
 		} else {
 			return I18nProperties.getPrefixCaption(entityName, columnName);
+		}
+	}
+
+	/**
+	 * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: <code>${activeDiseases}</code>.
+	 *
+	 * @param fieldType type of a CSV field (column)
+	 * @return a data type description, example or placeholder
+	 */
+	private static String computeDataType(Class<?> fieldType) {
+		if (String.class.isAssignableFrom(fieldType)) {
+			return I18nProperties.getString(Strings.text);
+		} else if (Date.class.isAssignableFrom(fieldType)) {
+			return I18nProperties.getString(Strings.date) + ": dd/MM/yyyy";
+		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
+			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassName(fieldType));
+		} else if (Disease.class.isAssignableFrom(fieldType)) {
+			return "${activeDiseases}";
+		} else if (fieldType.isEnum()) {
+			List<String> enumNames = new ArrayList<>();
+			for (Object enumConstant : fieldType.getEnumConstants()) {
+				enumNames.add(((Enum<?>) enumConstant).name());
+			}
+			return StringUtils.join(enumNames, ",");
+		} else if (Number.class.isAssignableFrom(fieldType)) {
+			return I18nProperties.getString(Strings.number);
+		} else {
+			return "";
 		}
 	}
 }
