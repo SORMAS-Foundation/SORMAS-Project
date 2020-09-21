@@ -342,8 +342,8 @@ public interface Strings {
 	String headingPointOfEntryImport = "headingPointOfEntryImport";
 	String headingPointOfEntryInformation = "headingPointOfEntryInformation";
 	String headingPrescriptionsDeleted = "headingPrescriptionsDeleted";
-	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingQuarantineForCases = "headingQuarantineForCases";
+	String headingReduceQuarantine = "headingReduceQuarantine";
 	String headingReferCaseFromPointOfEntry = "headingReferCaseFromPointOfEntry";
 	String headingReferSample = "headingReferSample";
 	String headingRemoveCaseFromContact = "headingRemoveCaseFromContact";
