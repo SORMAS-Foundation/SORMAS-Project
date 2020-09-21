@@ -101,7 +101,7 @@ public class ImportColumn {
 	}
 
 	/**
-	 * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: <code>${activeDiseases}</code>.
+	 * Computes the data type accepted for a certain field type. For values which cannot be determined at start a placeholder will be used (ex: {@link ImportFacade#ACTIVE_DISEASES_PLACEHOLDER}).
 	 *
 	 * @param fieldType type of a CSV field (column)
 	 * @return a data type description, example or placeholder
@@ -114,7 +114,7 @@ public class ImportColumn {
 		} else if (ReferenceDto.class.isAssignableFrom(fieldType)) {
 			return String.format(I18nProperties.getString(Strings.nameOf), DataHelper.getHumanClassName(fieldType));
 		} else if (Disease.class.isAssignableFrom(fieldType)) {
-			return "${activeDiseases}";
+			return ImportFacade.ACTIVE_DISEASES_PLACEHOLDER;
 		} else if (fieldType.isEnum()) {
 			List<String> enumNames = new ArrayList<>();
 			for (Object enumConstant : fieldType.getEnumConstants()) {

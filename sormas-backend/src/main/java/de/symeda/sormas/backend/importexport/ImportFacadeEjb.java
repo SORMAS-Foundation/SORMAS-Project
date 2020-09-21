@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,14 +31,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Provider;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -48,6 +51,7 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,70 +86,20 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
-import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.epidata.EpiDataService;
-import de.symeda.sormas.backend.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.hospitalization.HospitalizationService;
-import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
-import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.region.CommunityFacadeEjb.CommunityFacadeEjbLocal;
-import de.symeda.sormas.backend.region.CommunityService;
-import de.symeda.sormas.backend.region.DistrictFacadeEjb.DistrictFacadeEjbLocal;
-import de.symeda.sormas.backend.region.DistrictService;
-import de.symeda.sormas.backend.region.RegionFacadeEjb.RegionFacadeEjbLocal;
-import de.symeda.sormas.backend.region.RegionService;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "ImportFacade")
 public class ImportFacadeEjb implements ImportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private CaseService caseService;
-	@EJB
-	private UserService userService;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
-	@EJB
-	private RegionService regionService;
-	@EJB
-	private RegionFacadeEjbLocal regionFacade;
-	@EJB
-	private DistrictService districtService;
-	@EJB
-	private DistrictFacadeEjbLocal districtFacade;
-	@EJB
-	private CommunityService communityService;
-	@EJB
-	private CommunityFacadeEjbLocal communityFacade;
-	@EJB
-	private FacilityService facilityService;
-	@EJB
-	private FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private PersonFacadeEjbLocal personFacade;
-	@EJB
-	private PersonService personService;
-	@EJB
-	private HospitalizationService hospitalizationService;
-	@EJB
-	private EpiDataService epiDataService;
-	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private DiseaseConfigurationFacade diseaseConfigurationFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
@@ -239,7 +193,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public void generatePointOfEntryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()), PointOfEntryDto.I18N_PREFIX);
+		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()));
 	}
 
 	@Override
@@ -277,30 +231,30 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	@Override
 	public void generateAreaImportTemplateFile() throws IOException {
-		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()), AreaDto.I18N_PREFIX);
+		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()));
 	}
 
 	@Override
 	public void generateRegionImportTemplateFile() throws IOException {
-		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()), RegionDto.I18N_PREFIX);
+		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
 	}
 
 	@Override
 	public void generateDistrictImportTemplateFile() throws IOException {
-		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()), DistrictDto.I18N_PREFIX);
+		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()));
 	}
 
 	@Override
 	public void generateCommunityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()), CommunityDto.I18N_PREFIX);
+		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()));
 	}
 
 	@Override
 	public void generateFacilityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()), FacilityDto.I18N_PREFIX);
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
 	}
 
-	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, String i18nPrefix) throws IOException {
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
@@ -433,8 +387,8 @@ public class ImportFacadeEjb implements ImportFacade {
 			// Fields that are depending on a certain feature type to be active may be ignored
 			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
 				List<FeatureType> activeServerFeatures = featureConfigurationFacade.getActiveServerFeatureTypes();
-				if (!activeServerFeatures.isEmpty()
-					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
+				if (!activeServerFeatures.isEmpty() && !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class)
+					.featureType())) {
 					continue;
 				}
 			}
@@ -448,13 +402,11 @@ public class ImportFacadeEjb implements ImportFacade {
 			}
 			// Other non-infrastructure EntityDto/ReferenceDto classes, recursively call this method to include fields of the sub-entity
 			if (EntityDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				appendListOfFields(
-					importColumns,
+				appendListOfFields(importColumns,
 					field.getType(),
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
-				appendListOfFields(
-					importColumns,
+				appendListOfFields(importColumns,
 					PersonDto.class,
 					prefix == null || prefix.isEmpty() ? field.getName() + "." : prefix + field.getName() + ".");
 			} else {
@@ -465,11 +417,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	private boolean isInfrastructureClass(Class<?> clazz) {
 
-		return clazz == RegionReferenceDto.class
-			|| clazz == DistrictReferenceDto.class
-			|| clazz == CommunityReferenceDto.class
-			|| clazz == FacilityReferenceDto.class
-			|| clazz == PointOfEntryReferenceDto.class;
+		return clazz == RegionReferenceDto.class || clazz == DistrictReferenceDto.class || clazz == CommunityReferenceDto.class || clazz == FacilityReferenceDto.class || clazz == PointOfEntryReferenceDto.class;
 	}
 
 	@LocalBean
@@ -494,5 +442,25 @@ public class ImportFacadeEjb implements ImportFacade {
 			writeCommentLine(writer, importColumns.stream().map(ImportColumn::getDataDescription).toArray(String[]::new));
 			writer.flush();
 		}
+	}
+
+	@Override
+	public String getImportTemplateContent(String templateFilePath) throws IOException {
+		Charset charset = StandardCharsets.UTF_8;
+		String content = new String(Files.readAllBytes(Paths.get(templateFilePath)), charset);
+		return resolvePlaceholders(content);
+	}
+
+	private String resolvePlaceholders(String content) {
+		Map<String, Provider<String>> placeholderResolvers = new HashMap<>();
+		placeholderResolvers.put(ImportFacade.ACTIVE_DISEASES_PLACEHOLDER,
+			() -> StringUtils.join(diseaseConfigurationFacade.getAllActiveDiseases().stream().map(Disease::getName).collect(Collectors.toList()),
+				configFacade.getCsvSeparator()));
+
+		for (Map.Entry<String, Provider<String>> placeholderResolver : placeholderResolvers.entrySet()) {
+			content = content.replace(placeholderResolver.getKey(), placeholderResolver.getValue().get());
+		}
+
+		return content;
 	}
 }
