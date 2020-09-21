@@ -51,6 +51,8 @@ import de.symeda.sormas.api.facility.FacilityType;
 import de.symeda.sormas.api.importexport.ImportColumn;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +101,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private DiseaseConfigurationFacade diseaseConfigurationFacade;
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
 	private static final String CASE_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_template.csv";
 	private static final String CASE_CONTACT_IMPORT_TEMPLATE_FILE_NAME = ImportExportUtils.FILE_PREFIX + "_import_case_contact_template.csv";
