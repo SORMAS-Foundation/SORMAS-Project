@@ -152,7 +152,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.backend.visit.VisitSummaryExportDetails;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -255,10 +254,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal sampleTestFacade;
-	@EJB
-	private EpiDataFacadeEjbLocal epiDataFacade;
-	@EJB
-	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 

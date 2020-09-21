@@ -122,13 +122,13 @@ public abstract class AbstractContactGrid<IndexDto extends ContactIndexDto> exte
 
 		addComponentColumn(indexDto -> {
 			Label label =
-					new Label(IndexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
-			if (IndexDto.getCompleteness() != null) {
-				if (IndexDto.getCompleteness() < 0.25f) {
+					new Label(indexDto.getCompleteness() != null ? new DecimalFormat("#").format(indexDto.getCompleteness() * 100) + " %" : "-");
+			if (indexDto.getCompleteness() != null) {
+				if (indexDto.getCompleteness() < 0.25f) {
 					CssStyles.style(label, CssStyles.LABEL_CRITICAL);
-				} else if (IndexDto.getCompleteness() < 0.5f) {
+				} else if (indexDto.getCompleteness() < 0.5f) {
 					CssStyles.style(label, CssStyles.LABEL_IMPORTANT);
-				} else if (IndexDto.getCompleteness() < 0.75f) {
+				} else if (indexDto.getCompleteness() < 0.75f) {
 					CssStyles.style(label, CssStyles.LABEL_RELEVANT);
 				} else {
 					CssStyles.style(label, CssStyles.LABEL_POSITIVE);

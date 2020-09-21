@@ -144,7 +144,6 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 		this.creationDate = creationDate;
 		this.completeness = completeness;
-		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, caseJurisdiction);
 	}
 
 	public String getUuid() {
