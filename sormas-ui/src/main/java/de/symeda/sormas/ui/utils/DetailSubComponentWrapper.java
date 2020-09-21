@@ -15,13 +15,14 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.vaadin.ui.VerticalLayout;
 
 public class DetailSubComponentWrapper extends VerticalLayout implements DirtyStateComponent {
 
-	private Supplier<DirtyStateComponent> dirtyStateComponentSupplier;
+	private final Supplier<DirtyStateComponent> dirtyStateComponentSupplier;
 
 	public DetailSubComponentWrapper(Supplier<DirtyStateComponent> dirtyStateComponentSupplier) {
 		this.dirtyStateComponentSupplier = dirtyStateComponentSupplier;
@@ -29,11 +30,20 @@ public class DetailSubComponentWrapper extends VerticalLayout implements DirtySt
 
 	@Override
 	public boolean isDirty() {
-		return dirtyStateComponentSupplier.get().isDirty();
+		return getWrappedComponent().map(DirtyStateComponent::isDirty).orElse(false);
 	}
 
 	@Override
 	public void commitAndHandle() {
-		dirtyStateComponentSupplier.get().commitAndHandle();
+		getWrappedComponent().ifPresent(DirtyStateComponent::commitAndHandle);
+	}
+
+	@Override
+	public void discard() {
+		getWrappedComponent().ifPresent(DirtyStateComponent::discard);
+	}
+
+	private Optional<DirtyStateComponent> getWrappedComponent() {
+		return Optional.ofNullable(dirtyStateComponentSupplier.get());
 	}
 }

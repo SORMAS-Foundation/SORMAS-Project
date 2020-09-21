@@ -352,11 +352,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			// NOOP
 		}
+		dirty = false;
 
 		onCommit();
 		commited = true;
-		dirty = false;
-
 		onDone();
 	}
 
@@ -430,6 +429,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		} else {
 			// NOOP
 		}
+		dirty = false;
+
 		onDiscard();
 		onDone();
 	}
@@ -639,8 +640,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	@Override
 	public boolean isDirty() {
-		// Arrays.stream(fieldGroups).filter(FieldGroup::isModified).map(FieldGroup::getFields).map(f -> f.stream().filter(Buffered::isModified).collect(Collectors.toList())).collect(Collectors.toList())
-//		return Arrays.stream(fieldGroups).anyMatch(FieldGroup::isModified);
 		return dirty;
 	}
 }

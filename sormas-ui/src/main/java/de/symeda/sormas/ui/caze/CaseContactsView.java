@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.caze;
 import java.util.Date;
 import java.util.HashMap;
 
-import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -44,6 +43,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactJurisdictionDto;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -67,6 +67,7 @@ import de.symeda.sormas.ui.contact.importer.CaseContactsImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -94,7 +95,7 @@ public class CaseContactsView extends AbstractCaseView {
 	private Button resetButton;
 
 	private Button newButton;
-	private VerticalLayout gridLayout;
+	private DetailSubComponentWrapper gridLayout;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
 
@@ -389,7 +390,7 @@ public class CaseContactsView extends AbstractCaseView {
 
 		if (grid == null) {
 			grid = new ContactGrid(criteria, getClass());
-			gridLayout = new VerticalLayout();
+			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.addComponent(createFilterBar());
 			gridLayout.addComponent(createStatusFilterBar());
 			gridLayout.addComponent(grid);

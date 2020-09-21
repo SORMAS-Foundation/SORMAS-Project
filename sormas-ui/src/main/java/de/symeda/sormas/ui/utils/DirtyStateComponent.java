@@ -22,4 +22,6 @@ public interface DirtyStateComponent extends Component {
 	boolean isDirty();
 
 	void commitAndHandle();
+
+	void discard();
 }

@@ -39,6 +39,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -55,7 +56,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 	private EventParticipantsGrid grid;
 	private Button addButton;
-	private VerticalLayout gridLayout;
+	private DetailSubComponentWrapper gridLayout;
 	private Button activeStatusButton;
 	private EventParticipantsFilterForm filterForm;
 
@@ -141,7 +142,7 @@ public class EventParticipantsView extends AbstractEventView {
 
 		if (grid == null) {
 			grid = new EventParticipantsGrid(criteria);
-			gridLayout = new VerticalLayout();
+			gridLayout = new DetailSubComponentWrapper(() -> null);
 			gridLayout.setSizeFull();
 			gridLayout.setMargin(true);
 			gridLayout.setSpacing(false);

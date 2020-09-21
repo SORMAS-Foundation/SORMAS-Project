@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
@@ -19,7 +18,7 @@ import de.symeda.sormas.api.i18n.Strings;
  * @param <R>
  *            {@link ReferenceDto} with the uuid as parsed from the URL.
  */
-public abstract class AbstractDetailView<R extends ReferenceDto> extends AbstractSubNavigationView<Component> {
+public abstract class AbstractDetailView<R extends ReferenceDto> extends AbstractSubNavigationView<DirtyStateComponent> {
 
 	private static final long serialVersionUID = -8898842364286757415L;
 
@@ -69,13 +68,8 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 	}
 
 	@Override
-	protected void setSubComponent(Component newComponent) {
-		super.setSubComponent(newComponent);
-	}
-
-	@Override
 	public void beforeLeave(ViewBeforeLeaveEvent event) {
-		if (((DirtyStateComponent) subComponent).isDirty()) {
+		if (subComponent.isDirty()) {
 			Window warningPopup = VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.unsavedChanges_warningTitle),
 				new Label(I18nProperties.getString(Strings.unsavedChanges_warningMessage)),
@@ -84,7 +78,9 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 				400,
 				(confirmed) -> {
 					if (confirmed) {
-						((DirtyStateComponent) subComponent).commitAndHandle();
+						subComponent.commitAndHandle();
+					} else {
+						subComponent.discard();
 					}
 
 					event.navigate();
