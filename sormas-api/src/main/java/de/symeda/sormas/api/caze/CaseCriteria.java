@@ -110,7 +110,6 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
-	private ContactReferenceDto contact;
 
 	@Override
 	public CaseCriteria clone() {
@@ -538,13 +537,5 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setFacilityType(FacilityType type) {
 		this.facilityType = type;
-	}
-
-
-	public ContactReferenceDto getContact() { return contact; }
-
-	public CaseCriteria contact(ContactReferenceDto contact) {
-		this.contact = contact;
-		return this;
 	}
 }

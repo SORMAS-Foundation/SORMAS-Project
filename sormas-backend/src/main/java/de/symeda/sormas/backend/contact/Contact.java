@@ -157,7 +157,6 @@ public class Contact extends CoreAdo {
 	public static final String COMPLETENESS = "completeness";
 	public static final String EPI_DATA = "epiData";
 	public static final String HEALTH_CONDITIONS = "healthConditions";
-	public static final String COMPLETENESS = "completeness";
 
 
 	private Date reportDateTime;
@@ -230,7 +229,6 @@ public class Contact extends CoreAdo {
 
 	private Contact duplicateOf;
 	private EpiData epiData;
-	private Contact duplicateOf;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
@@ -839,15 +837,4 @@ public class Contact extends CoreAdo {
 	public void setHealthConditions(HealthConditions healthConditions) {
 		this.healthConditions = healthConditions;
 	}
-
-
-	public Float getCompleteness() { return completeness; }
-
-	public void setCompleteness(Float completeness) { this.completeness = completeness; }
-
-	@OneToOne(cascade = {}, fetch = FetchType.LAZY)
-	@AuditedIgnore
-	public Contact getDuplicateOf() { return duplicateOf; }
-
-	public void setDuplicateOf(Contact duplicateOf) { this.duplicateOf = duplicateOf; }
 }
