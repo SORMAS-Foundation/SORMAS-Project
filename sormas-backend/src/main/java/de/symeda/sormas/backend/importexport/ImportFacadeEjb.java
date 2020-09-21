@@ -422,18 +422,30 @@ public class ImportFacadeEjb implements ImportFacade {
 		return clazz == RegionReferenceDto.class || clazz == DistrictReferenceDto.class || clazz == CommunityReferenceDto.class || clazz == FacilityReferenceDto.class || clazz == PointOfEntryReferenceDto.class;
 	}
 
-	@LocalBean
-	@Stateless
-	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
-
-	}
-
+	/**
+	 * Writes the given line as a comment line
+	 * @param csvWriter file writer
+	 * @param line line to write
+	 */
 	private void writeCommentLine(CSVWriter csvWriter, String[] line) {
 		String[] commentedLine = Arrays.copyOf(line, line.length);
 		commentedLine[0] = CSVCommentLineValidator.DEFAULT_COMMENT_LINE_PREFIX + commentedLine[0];
 		csvWriter.writeNext(commentedLine);
 	}
 
+	/**
+	 * Writes template files with the following lines:
+	 * <ul>
+	 *     <li><code>entityNames</code> - only if <code>includeEntityNames</code> is <code>true</code></li>
+	 *     <li><code>columnNames</code> - represent the DTO properties that can be filled</li>
+	 *     <li><code>captions</code> - (commented) internationalized caption for each field</li>
+	 *     <li><code>dataDescription</code> - (commented) data examples or description for each field</li>
+	 * </ul>
+	 * @param templatePath path to write the template to
+	 * @param importColumns details about each CSV column
+	 * @param includeEntityNames weather to include the <code>entityNames</code> or not
+	 * @throws IOException
+	 */
 	private void writeTemplate(Path templatePath, List<ImportColumn> importColumns, boolean includeEntityNames) throws IOException {
 		try (CSVWriter writer = CSVUtils.createCSVWriter(new FileWriter(templatePath.toString()), configFacade.getCsvSeparator())) {
 			if (includeEntityNames) {
@@ -453,6 +465,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		return resolvePlaceholders(content);
 	}
 
+	/**
+	 * Replaces placeholders in the given file content.
+	 * The placeholders are resolved using dynamic data. For any static data extend {@link ImportColumn}.
+	 * @param content file content.
+	 * @return
+	 * @see ImportFacade#ACTIVE_DISEASES_PLACEHOLDER
+	 */
 	private String resolvePlaceholders(String content) {
 		Map<String, Provider<String>> placeholderResolvers = new HashMap<>();
 		placeholderResolvers.put(ImportFacade.ACTIVE_DISEASES_PLACEHOLDER,
@@ -464,5 +483,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 
 		return content;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class ImportFacadeEjbLocal extends ImportFacadeEjb {
+
 	}
 }
